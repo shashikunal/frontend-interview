@@ -1,0 +1,1805 @@
+[
+  {
+    "id": 9000000,
+    "category": "Algorithms",
+    "difficulty": "Easy",
+    "question": "Mirror Sequence: Return true if the second half of an integer array is the reverse of the first half.\n\nExamples:\n- `arr = [1, 2, 3, 3, 2, 1]` -> `true`\n- `arr = [7, 8, 9, 8, 7]` -> `false`",
+    "answer": "A sequence is called a Mirror Sequence if the second half of the sequence is the exact reverse of the first half. We can check by comparing elements from index 0 to n/2 with their corresponding mirror elements from the end.",
+    "code": "function isMirrorSequence(arr) {\n  const n = arr.length;\n  for (let i = 0; i < Math.floor(n / 2); i++) {\n    if (arr[i] !== arr[n - 1 - i]) return false;\n  }\n  return true;\n}\n\n// Example executions:\nconsole.log('Test 1 [1, 2, 3, 3, 2, 1]:', isMirrorSequence([1, 2, 3, 3, 2, 1]));\nconsole.log('Test 2 [7, 8, 9, 8, 7]:', isMirrorSequence([7, 8, 9, 8, 7]));"
+  },
+  {
+    "id": 9000001,
+    "category": "Algorithms",
+    "difficulty": "Medium",
+    "question": "Unique Substring (Longest Substring Without Repeating Characters)\n\nGiven a string `s`, find the length of the longest unique substring where all characters are distinct.\n\nExamples:\n- Example 1: `s = \"abcabcbb\"` -> `3` (The longest unique substring is `\"abc\"`)\n- Example 2: `s = \"bbbbb\"` -> `1` (The longest unique substring is `\"b\"`)\n- Example 3: `s = \"pwwkew\"` -> `3` (The longest unique substring is `\"wke\"`)\n\nConstraints:\n- `1 <= s.length <= 10^5`\n- `s` contains only lowercase English letters (`'a'`–`'z'`).",
+    "answer": "Use a sliding window with a hash map to track the last seen index of each character.\n\n1. Maintain a pointer `left` for the start of the current window and `maxLength` for the record.\n2. As the `right` pointer iterates through `s`, check if `s[right]` has already been seen at or after `left`.\n3. If it has, move `left` to `seen.get(s[right]) + 1`.\n4. Update the character's last seen index and recalculate `maxLength = Math.max(maxLength, right - left + 1)`.\n\nTime Complexity: O(n)\nSpace Complexity: O(min(m, n)) where m is the alphabet size.",
+    "code": "function lengthOfLongestSubstring(s) {\n  const seen = new Map();\n  let left = 0;\n  let maxLength = 0;\n\n  for (let right = 0; right < s.length; right++) {\n    const char = s[right];\n    if (seen.has(char) && seen.get(char) >= left) {\n      left = seen.get(char) + 1;\n    }\n    seen.set(char, right);\n    maxLength = Math.max(maxLength, right - left + 1);\n  }\n\n  return maxLength;\n}\n\n// Example executions:\nconsole.log('Example 1 (\"abcabcbb\"):', lengthOfLongestSubstring(\"abcabcbb\")); // 3\nconsole.log('Example 2 (\"bbbbb\"):', lengthOfLongestSubstring(\"bbbbb\"));       // 1\nconsole.log('Example 3 (\"pwwkew\"):', lengthOfLongestSubstring(\"pwwkew\"));     // 3"
+  },
+  {
+    "id": 9000002,
+    "category": "Algorithms",
+    "difficulty": "Medium",
+    "question": "Subarray Removal: Find the minimum length of a contiguous subarray to remove so that all remaining elements in `nums` are distinct.\n\nExamples:\n- `nums = [1, 2, 3, 4]` -> `0` (Already distinct)\n- `nums = [1, 2, 1, 2, 3]` -> `2` (Remove `[2, 1]` to get `[1, 2, 3]`)\n- `nums = [2, 2, 2]` -> `2` (Leave a single `[2]`)\n\nConstraints:\n- `1 <= nums.length <= 2 * 10^5`",
+    "answer": "Find the longest suffix of distinct elements, then try extending a prefix of distinct elements while shrinking the suffix overlap with a two-pointer sliding window.",
+    "code": "function minSubarrayRemoval(nums) {\n  const n = nums.length;\n  let right = n - 1;\n  const rightSet = new Set();\n  while (right >= 0 && !rightSet.has(nums[right])) {\n    rightSet.add(nums[right]);\n    right--;\n  }\n  right++;\n  if (right === 0) return 0;\n\n  let minRemoval = right;\n  const leftSet = new Set();\n  for (let left = 0; left < n; left++) {\n    if (leftSet.has(nums[left])) break;\n    leftSet.add(nums[left]);\n    while (right < n && rightSet.has(nums[left])) {\n      rightSet.delete(nums[right]);\n      right++;\n    }\n    minRemoval = Math.min(minRemoval, Math.max(0, right - left - 1));\n  }\n  return minRemoval;\n}\n\n// Example executions:\nconsole.log('Example 1 [1, 2, 3, 4]:', minSubarrayRemoval([1, 2, 3, 4]));\nconsole.log('Example 2 [1, 2, 1, 2, 3]:', minSubarrayRemoval([1, 2, 1, 2, 3]));\nconsole.log('Example 3 [2, 2, 2]:', minSubarrayRemoval([2, 2, 2]));"
+  },
+  {
+    "id": 9000003,
+    "category": "Algorithms",
+    "difficulty": "Medium",
+    "question": "Closest Pair Sum: Given an array of integers `numbers` and an integer `target`, find two distinct elements whose sum is closest to `target`. Return the absolute difference between their sum and the target.\n\nExamples:\n- `numbers = [1, 3, 8, 10], target = 12` -> `1` (Pair 1+10=11 has difference |11-12|=1)\n- `numbers = [5, 2, 7, 4], target = 10` -> `1` (Pair 2+7=9 has difference |9-10|=1)",
+    "answer": "Sort the array and use two pointers (one at the start, one at the end) to search for the closest sum in O(n log n) time.",
+    "code": "function closestPairDifference(numbers, target) {\n  const nums = [...numbers].sort((a, b) => a - b);\n  let left = 0, right = nums.length - 1;\n  let minDiff = Infinity;\n\n  while (left < right) {\n    const sum = nums[left] + nums[right];\n    const diff = Math.abs(sum - target);\n    minDiff = Math.min(minDiff, diff);\n    if (sum < target) left++;\n    else if (sum > target) right--;\n    else return 0;\n  }\n  return minDiff;\n}\n\n// Example executions:\nconsole.log('Example 1 ([1, 3, 8, 10], 12):', closestPairDifference([1, 3, 8, 10], 12));\nconsole.log('Example 2 ([5, 2, 7, 4], 10):', closestPairDifference([5, 2, 7, 4], 10));"
+  },
+  {
+    "id": 9000004,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "ArrayList Add Element",
+    "answer": "An ArrayList is a resizable list in Java that can grow and shrink dynamically, unlike fixed-size arrays.\r\nGiven a space-separated string of integers, add each integer to an ArrayList and return the size of the list.\r\n\r\nExample:\r\n  input = \"1 2 3 4 5\"\r\n  Add 5 elements -> size = 5\r\n  Output: 5"
+  },
+  {
+    "id": 9000005,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "ArrayList Get Element",
+    "answer": "ArrayList provides O(1) random access to elements using an index, just like an array.\r\nGiven a space-separated string of integers and an index k, return the element at index k in the list.\r\n\r\nExample:\r\n  s = \"10 20 30 40\", k = 2\r\n  List: [10,20,30,40]\r\n  Element at index 2 = 30\r\n  Output: 30"
+  },
+  {
+    "id": 9000006,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "ArrayList Remove by Index",
+    "answer": "ArrayList allows you to remove an element at a specific index. All subsequent elements shift left by one position.\r\nGiven a space-separated string of integers and an index k, remove the element at index k and return the remaining list size.\r\n\r\nExample:\r\n  s = \"1 2 3 4 5\", k = 2\r\n  Remove element at index 2 (value 3) -> [1,2,4,5]\r\n  Size = 4\r\n  Output: 4"
+  },
+  {
+    "id": 9000007,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "ArrayList Contains Element",
+    "answer": "The contains() method checks if a specific value exists anywhere in the list.\r\nGiven a space-separated string of integers and a target value t, return 1 if t is in the list, else 0.\r\n\r\nExample:\r\n  s = \"1 2 3 4 5\", t = 3\r\n  3 is in [1,2,3,4,5] -> Output: 1\r\n\r\n  s = \"1 2 3\", t = 7\r\n  7 not in list -> Output: 0"
+  },
+  {
+    "id": 9000008,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "ArrayList Size",
+    "answer": "The size() method returns the number of elements currently stored in the ArrayList.\r\nGiven a space-separated string of integers, build an ArrayList and return its size.\r\n\r\nExample:\r\n  s = \"5 10 15 20\"\r\n  4 elements -> Output: 4"
+  },
+  {
+    "id": 9000009,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "ArrayList indexOf",
+    "answer": "indexOf() returns the position (index) of the first occurrence of an element in the list, or -1 if not found.\r\nGiven a space-separated string of integers and a target value t, return the index of t in the list.\r\n\r\nExample:\r\n  s = \"10 20 30 20\", t = 20\r\n  First occurrence of 20 is at index 1\r\n  Output: 1"
+  },
+  {
+    "id": 9000010,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "LinkedList Add and Size",
+    "answer": "A LinkedList in Java is a doubly-linked list that allows efficient insertion and deletion at both ends.\r\nGiven a space-separated string of integers, add each to a LinkedList and return its size.\r\n\r\nExample:\r\n  s = \"1 2 3\"\r\n  LinkedList: [1,2,3] -> size = 3\r\n  Output: 3"
+  },
+  {
+    "id": 9000011,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "LinkedList Add First and Last",
+    "answer": "LinkedList provides addFirst() and addLast() methods to efficiently add elements at the beginning or end.\r\nGiven a space-separated list of integers, add the first half to the front and second half to the back. Return the first element.\r\n\r\nActually: Given integers s, add all to LinkedList. Return the first element (head).\r\n\r\nExample:\r\n  s = \"5 10 15\"\r\n  LinkedList: [5,10,15] -> first = 5\r\n  Output: 5"
+  },
+  {
+    "id": 9000012,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "LinkedList Remove First",
+    "answer": "LinkedList's removeFirst() removes and returns the first element (the head of the list).\r\nGiven a space-separated string of integers, build a LinkedList, remove the first element, and return the new first element.\r\n\r\nExample:\r\n  s = \"10 20 30\"\r\n  Remove 10 -> new list [20,30] -> new first = 20\r\n  Output: 20"
+  },
+  {
+    "id": 9000013,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "Stack Push and Pop",
+    "answer": "A Stack in Java follows the LIFO (Last In, First Out) principle — the last element pushed is the first one popped.\r\nGiven a space-separated string of integers, push each onto a Stack and then pop and return the top element.\r\n\r\nExample:\r\n  s = \"1 2 3 4\"\r\n  Push: 1,2,3,4 -> Stack top = 4\r\n  Pop -> returns 4\r\n  Output: 4"
+  },
+  {
+    "id": 9000014,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "Stack Peek",
+    "answer": "The peek() method looks at the top element of a Stack without removing it, unlike pop() which removes it.\r\nGiven a space-separated string of integers, push each onto a Stack and return the top element using peek().\r\n\r\nExample:\r\n  s = \"5 10 15\"\r\n  Stack top = 15\r\n  peek() -> 15 (stack still has 3 elements)\r\n  Output: 15"
+  },
+  {
+    "id": 9000015,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "Stack Size After Operations",
+    "answer": "Understanding stack size after push/pop operations helps you reason about LIFO data structures.\r\nGiven a space-separated string of integers, push all onto a Stack, then pop half (floor(n/2)) elements, and return the remaining stack size.\r\n\r\nExample:\r\n  s = \"1 2 3 4 5\" (5 elements)\r\n  Push 5, pop floor(5/2)=2 -> remaining size = 3\r\n  Output: 3"
+  },
+  {
+    "id": 9000016,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "Queue Offer and Poll",
+    "answer": "A Queue follows FIFO (First In, First Out) — elements are added at the back and removed from the front.\r\nGiven a space-separated string of integers, add each to a Queue using offer(), then poll() all elements and return the first one that was polled.\r\n\r\nExample:\r\n  s = \"5 10 15\"\r\n  Offer: 5,10,15 -> Queue: [5,10,15]\r\n  poll() -> returns 5 (first in)\r\n  Output: 5"
+  },
+  {
+    "id": 9000017,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "Queue Peek",
+    "answer": "queue.peek() returns the head (front) element of the queue without removing it.\r\nGiven a space-separated string of integers, add each to a Queue and return the front element using peek().\r\n\r\nExample:\r\n  s = \"7 14 21\"\r\n  Queue: [7,14,21] -> peek() = 7\r\n  Output: 7"
+  },
+  {
+    "id": 9000018,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "HashSet Add and Size",
+    "answer": "A HashSet stores unique elements — duplicates are automatically ignored.\r\nGiven a space-separated string of integers, add each to a HashSet and return its size (number of unique elements).\r\n\r\nExample:\r\n  s = \"1 2 3 2 1\"\r\n  Unique elements: {1,2,3} -> size = 3\r\n  Output: 3"
+  },
+  {
+    "id": 9000019,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "HashSet Contains",
+    "answer": "HashSet.contains() checks in O(1) average time whether an element exists in the set.\r\nGiven a space-separated string of integers and a target value t, build a HashSet and return 1 if t is in it, else 0.\r\n\r\nExample:\r\n  s = \"10 20 30\", t = 20\r\n  20 is in {10,20,30} -> Output: 1\r\n\r\n  s = \"10 20 30\", t = 5\r\n  5 not in set -> Output: 0"
+  },
+  {
+    "id": 9000020,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "HashSet Remove Element",
+    "answer": "HashSet.remove() deletes an element from the set if it exists, and does nothing if it is not present.\r\nGiven a space-separated string of integers and a target value t, build a HashSet, remove t from it, and return the new size.\r\n\r\nExample:\r\n  s = \"1 2 3 4\", t = 3\r\n  Remove 3 -> {1,2,4} -> size = 3\r\n  Output: 3"
+  },
+  {
+    "id": 9000021,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "HashMap Put and Get",
+    "answer": "A HashMap stores key-value pairs. You can put() to store and get() to retrieve by key in O(1) average time.\r\nGiven pairs of space-separated key-value integers (alternating: k1 v1 k2 v2 ...) and a query key q, return the value for q.\r\n\r\nExample:\r\n  s = \"1 10 2 20 3 30\", q = 2\r\n  Map: {1->10, 2->20, 3->30}\r\n  get(2) = 20\r\n  Output: 20"
+  },
+  {
+    "id": 9000022,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "HashMap Size",
+    "answer": "HashMap.size() returns the number of key-value pairs currently stored in the map.\r\nGiven alternating key-value pairs in string s (k1 v1 k2 v2 ...), return the number of unique keys (map size).\r\n\r\nExample:\r\n  s = \"1 10 2 20 3 30\"\r\n  3 key-value pairs -> size = 3\r\n  Output: 3"
+  },
+  {
+    "id": 9000023,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "HashMap ContainsKey",
+    "answer": "HashMap.containsKey() checks in O(1) whether a specific key exists in the map.\r\nGiven alternating key-value pairs in string s and a query key q, return 1 if q is a key in the map, else 0.\r\n\r\nExample:\r\n  s = \"1 10 2 20\", q = 2\r\n  2 is a key -> Output: 1\r\n\r\n  s = \"1 10 2 20\", q = 5\r\n  5 is not a key -> Output: 0"
+  },
+  {
+    "id": 9000024,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "TreeSet Sorted Order",
+    "answer": "A TreeSet stores elements in sorted (ascending) order and guarantees no duplicates.\r\nGiven a space-separated string of integers, add each to a TreeSet and return the smallest element.\r\n\r\nExample:\r\n  s = \"5 3 8 1 9\"\r\n  TreeSet (sorted): {1,3,5,8,9} -> first = 1\r\n  Output: 1"
+  },
+  {
+    "id": 9000025,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "TreeSet Last Element",
+    "answer": "A TreeSet keeps elements sorted. The last() method returns the largest element.\r\nGiven a space-separated string of integers, add each to a TreeSet and return the largest element.\r\n\r\nExample:\r\n  s = \"5 3 8 1 9\"\r\n  TreeSet: {1,3,5,8,9} -> last = 9\r\n  Output: 9"
+  },
+  {
+    "id": 9000026,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "TreeMap Get and Put",
+    "answer": "A TreeMap stores key-value pairs in sorted key order, unlike HashMap which has no guaranteed order.\r\nGiven alternating key-value pairs in string s and a query key q, return the value for q from the TreeMap.\r\n\r\nExample:\r\n  s = \"3 30 1 10 2 20\", q = 1\r\n  TreeMap: {1->10, 2->20, 3->30} (sorted by key)\r\n  get(1) = 10\r\n  Output: 10"
+  },
+  {
+    "id": 9000027,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "Collections Sort",
+    "answer": "Collections.sort() sorts a List in ascending natural order. It uses a modified merge sort algorithm.\r\nGiven a space-separated string of integers, add them to an ArrayList, sort it, and return the first element.\r\n\r\nExample:\r\n  s = \"5 3 8 1 9\"\r\n  After sorting: [1,3,5,8,9] -> first = 1\r\n  Output: 1"
+  },
+  {
+    "id": 9000028,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "Collections Max",
+    "answer": "Collections.max() returns the largest element in a collection using natural ordering.\r\nGiven a space-separated string of integers, build an ArrayList and return the maximum value.\r\n\r\nExample:\r\n  s = \"3 7 2 9 4\"\r\n  max = 9\r\n  Output: 9"
+  },
+  {
+    "id": 9000029,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "Collections Min",
+    "answer": "Collections.min() returns the smallest element in a collection using natural ordering.\r\nGiven a space-separated string of integers, build an ArrayList and return the minimum value.\r\n\r\nExample:\r\n  s = \"3 7 2 9 4\"\r\n  min = 2\r\n  Output: 2"
+  },
+  {
+    "id": 9000030,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "Collections Reverse",
+    "answer": "Collections.reverse() reverses the order of elements in a list in-place.\r\nGiven a space-separated string of integers, build an ArrayList, reverse it, and return the first element.\r\n\r\nExample:\r\n  s = \"1 2 3 4 5\"\r\n  After reverse: [5,4,3,2,1] -> first = 5\r\n  Output: 5"
+  },
+  {
+    "id": 9000031,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "Collections Frequency",
+    "answer": "Collections.frequency() counts how many times a specific element appears in a collection.\r\nGiven a space-separated string of integers and a target value t, return how many times t appears in the list.\r\n\r\nExample:\r\n  s = \"1 2 3 2 4 2\", t = 2\r\n  2 appears 3 times\r\n  Output: 3"
+  },
+  {
+    "id": 9000032,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "Deque Push and Pop",
+    "answer": "A Deque (Double-Ended Queue) allows adding/removing elements from both ends. ArrayDeque is commonly used.\r\nGiven a space-separated string of integers, push each to an ArrayDeque, then pop (from front) and return the first popped value.\r\n\r\nExample:\r\n  s = \"10 20 30\"\r\n  Push: 10,20,30 -> Deque: [10,20,30]\r\n  poll() from front -> 10\r\n  Output: 10"
+  },
+  {
+    "id": 9000033,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "PriorityQueue Min Heap",
+    "answer": "A PriorityQueue in Java is a min-heap by default — the smallest element is always at the top and is polled first.\r\nGiven a space-separated string of integers, add each to a PriorityQueue and poll() to return the smallest element.\r\n\r\nExample:\r\n  s = \"5 3 8 1\"\r\n  PriorityQueue (min-heap): poll() returns 1 (smallest)\r\n  Output: 1"
+  },
+  {
+    "id": 9000034,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "ArrayList Sort with Comparator",
+    "answer": "A Comparator allows custom sorting logic. You can sort an ArrayList in descending order using Comparator.reverseOrder().\r\nGiven a space-separated string of integers, sort them in descending order and return the first element.\r\n\r\nExample:\r\n  s = \"3 1 4 1 5 9\"\r\n  Sorted descending: [9,5,4,3,1,1] -> first = 9\r\n  Output: 9"
+  },
+  {
+    "id": 9000035,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "ArrayList SubList",
+    "answer": "subList(from, to) returns a view of the portion of a list between from (inclusive) and to (exclusive).\r\nGiven a space-separated string of integers, from index, and to index, return the size of the sublist.\r\n\r\nExample:\r\n  s = \"1 2 3 4 5\", from=1, to=4\r\n  Sublist: [2,3,4] -> size = 3\r\n  Output: 3"
+  },
+  {
+    "id": 9000036,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "ArrayList to Array Conversion",
+    "answer": "You can convert a List to a regular Java array using toArray(). This is useful when you need array-based APIs.\r\nGiven a space-separated string of integers, add to ArrayList, convert to array, and return the element at index k.\r\n\r\nExample:\r\n  s = \"10 20 30\", k = 1\r\n  Array: [10,20,30] -> element at 1 = 20\r\n  Output: 20"
+  },
+  {
+    "id": 9000037,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "LinkedList as Stack",
+    "answer": "A LinkedList can be used as a stack (LIFO) by using push() and pop(). push() adds to the front, pop() removes from front.\r\nGiven a space-separated string of integers, push each to a LinkedList stack, then pop all and return the first value popped.\r\n\r\nExample:\r\n  s = \"1 2 3\"\r\n  push(1), push(2), push(3) -> top is 3\r\n  pop() -> 3\r\n  Output: 3"
+  },
+  {
+    "id": 9000038,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "LinkedList as Queue",
+    "answer": "A LinkedList implements the Queue interface and can be used as a FIFO queue. offer() adds to tail, poll() removes from head.\r\nGiven a space-separated string of integers, offer each to a LinkedList queue, then poll all and return the last polled value.\r\n\r\nExample:\r\n  s = \"1 2 3 4\"\r\n  Queue: [1,2,3,4] -> poll sequence: 1,2,3,4\r\n  Last polled = 4\r\n  Output: 4"
+  },
+  {
+    "id": 9000039,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "HashSet Union",
+    "answer": "The union of two sets contains all elements from both sets, with duplicates counted only once.\r\nGiven two space-separated integer lists separated by a pipe '|', return the size of their union.\r\n\r\nExample:\r\n  s = \"1 2 3|2 3 4\"\r\n  Set1: {1,2,3}, Set2: {2,3,4}\r\n  Union: {1,2,3,4} -> size = 4\r\n  Output: 4"
+  },
+  {
+    "id": 9000040,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "HashSet Intersection",
+    "answer": "The intersection of two sets contains only elements that appear in BOTH sets.\r\nGiven two space-separated integer lists separated by a pipe '|', return the size of their intersection.\r\n\r\nExample:\r\n  s = \"1 2 3 4|2 3 5\"\r\n  Set1: {1,2,3,4}, Set2: {2,3,5}\r\n  Intersection: {2,3} -> size = 2\r\n  Output: 2"
+  },
+  {
+    "id": 9000041,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "HashSet Difference",
+    "answer": "The difference of Set1 - Set2 contains elements that are in Set1 but NOT in Set2.\r\nGiven two space-separated integer lists separated by a pipe '|', return the size of Set1 - Set2.\r\n\r\nExample:\r\n  s = \"1 2 3 4|2 4\"\r\n  Set1: {1,2,3,4}, Set2: {2,4}\r\n  Difference: {1,3} -> size = 2\r\n  Output: 2"
+  },
+  {
+    "id": 9000042,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "HashMap Word Count",
+    "answer": "Word counting using a HashMap is a classic use case: the word is the key and the frequency is the value.\r\nGiven a space-separated sentence s, return the number of times the most frequent word appears.\r\n\r\nExample:\r\n  s = \"the cat sat on the mat the cat\"\r\n  Frequencies: the->3, cat->2, sat->1, on->1, mat->1\r\n  Max = 3\r\n  Output: 3"
+  },
+  {
+    "id": 9000043,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "HashMap Remove Key",
+    "answer": "HashMap.remove() deletes a key-value pair from the map, returning the value if the key existed.\r\nGiven alternating key-value integer pairs in s and a key to remove k, return the map size after removal.\r\n\r\nExample:\r\n  s = \"1 10 2 20 3 30\", k = 2\r\n  Remove key 2 -> {1->10, 3->30} -> size = 2\r\n  Output: 2"
+  },
+  {
+    "id": 9000044,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "TreeMap First and Last Key",
+    "answer": "TreeMap's firstKey() returns the smallest key and lastKey() returns the largest key.\r\nGiven alternating key-value integer pairs in s, return the difference: lastKey - firstKey.\r\n\r\nExample:\r\n  s = \"3 30 1 10 5 50\"\r\n  TreeMap keys: {1,3,5} -> lastKey=5, firstKey=1\r\n  Difference = 5-1 = 4\r\n  Output: 4"
+  },
+  {
+    "id": 9000045,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "PriorityQueue Max Heap",
+    "answer": "To use PriorityQueue as a max-heap, provide Collections.reverseOrder() as the comparator.\r\nGiven a space-separated string of integers, add to a max-heap PriorityQueue and poll() to return the largest element.\r\n\r\nExample:\r\n  s = \"5 3 8 1\"\r\n  Max-heap: poll() returns 8 (largest)\r\n  Output: 8"
+  },
+  {
+    "id": 9000046,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "PriorityQueue K Smallest Elements",
+    "answer": "Using a max-heap of size k, you can efficiently maintain the k smallest elements seen so far.\r\nGiven a space-separated string of integers and integer k, return the k-th smallest element.\r\n\r\nExample:\r\n  s = \"3 1 4 1 5 9 2 6\", k = 3\r\n  Sorted: [1,1,2,3,4,5,6,9] -> 3rd smallest = 2\r\n  Output: 2"
+  },
+  {
+    "id": 9000047,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "Stack Check Empty",
+    "answer": "stack.isEmpty() returns true if the stack has no elements, false otherwise. Always check before pop/peek.\r\nGiven a space-separated string of integers, push all to a Stack, then pop all, and return 1 if the stack is empty, else 0.\r\n\r\nExample:\r\n  s = \"1 2 3\"\r\n  Push 3 elements, pop 3 -> stack is empty -> Output: 1"
+  },
+  {
+    "id": 9000048,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "Queue Size After Polls",
+    "answer": "After offering n elements and polling m of them, the queue size equals n - m.\r\nGiven a space-separated string of integers, offer all, then poll floor(n/2) times, and return remaining size.\r\n\r\nExample:\r\n  s = \"1 2 3 4 5\" (n=5)\r\n  Poll floor(5/2)=2 -> remaining size = 3\r\n  Output: 3"
+  },
+  {
+    "id": 9000049,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "LinkedList Reverse Iteration",
+    "answer": "A LinkedList's descendingIterator() lets you traverse from tail to head (reverse order).\r\nGiven a space-separated string of integers, add to LinkedList and return the last element using getLast().\r\n\r\nExample:\r\n  s = \"1 2 3 4 5\"\r\n  LinkedList: [1,2,3,4,5] -> getLast() = 5\r\n  Output: 5"
+  },
+  {
+    "id": 9000050,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "ArrayList Binary Search",
+    "answer": "Collections.binarySearch() performs binary search on a sorted list, returning the index of the target.\r\nGiven a space-separated string of integers and a target t, sort the list and return the index of t using binary search.\r\n\r\nExample:\r\n  s = \"5 3 1 4 2\", t = 4\r\n  Sorted: [1,2,3,4,5] -> binarySearch returns index 3\r\n  Output: 3"
+  },
+  {
+    "id": 9000051,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "HashMap getOrDefault",
+    "answer": "getOrDefault(key, defaultValue) returns the value for a key, or a default if the key does not exist.\r\nGiven alternating key-value pairs in s and a query key q and default value d, return map.getOrDefault(q, d).\r\n\r\nExample:\r\n  s = \"1 10 2 20\", q = 5, d = 99\r\n  Key 5 not in map -> return 99\r\n  Output: 99"
+  },
+  {
+    "id": 9000052,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "HashMap Merge",
+    "answer": "map.merge(key, value, remappingFunction) inserts the value if key is absent, or applies the function if the key exists.\r\nGiven a space-separated string of integers (with repeats), count each number's frequency using merge() and return the count for target t.\r\n\r\nExample:\r\n  s = \"1 2 1 3 1 2\", t = 1\r\n  Frequencies: 1->3, 2->2, 3->1\r\n  count for 1 = 3\r\n  Output: 3"
+  },
+  {
+    "id": 9000053,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "TreeSet HeadSet and TailSet",
+    "answer": "TreeSet.headSet(e) returns all elements strictly less than e. tailSet(e) returns all elements >= e.\r\nGiven a space-separated string of integers and a value v, return the number of elements strictly less than v.\r\n\r\nExample:\r\n  s = \"1 3 5 7 9\", v = 5\r\n  headSet(5) = {1,3} -> size = 2\r\n  Output: 2"
+  },
+  {
+    "id": 9000054,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "Collections Fill",
+    "answer": "Collections.fill() replaces all elements of a list with a specified value.\r\nGiven a size n and a fill value v, create an ArrayList of size n filled with 0s, then fill with v using Collections.fill(), and return the sum.\r\n\r\nExample:\r\n  n = 5, v = 3\r\n  List: [3,3,3,3,3] -> sum = 15\r\n  Output: 15"
+  },
+  {
+    "id": 9000055,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "Collections nCopies",
+    "answer": "Collections.nCopies(n, obj) creates an immutable list containing n copies of obj.\r\nGiven count n and value v, return the size of nCopies(n, v).\r\n\r\nExample:\r\n  n = 7, v = 5\r\n  nCopies(7, 5) = [5,5,5,5,5,5,5] -> size = 7\r\n  Output: 7"
+  },
+  {
+    "id": 9000056,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "Deque as Stack",
+    "answer": "ArrayDeque is preferred over Stack class as a stack implementation. push() adds to front, pop() removes from front.\r\nGiven a space-separated string of integers, push each to an ArrayDeque stack and return the top after all pushes.\r\n\r\nExample:\r\n  s = \"10 20 30\"\r\n  push(10), push(20), push(30) -> top = 30\r\n  peek() = 30\r\n  Output: 30"
+  },
+  {
+    "id": 9000057,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "Deque Add Both Ends",
+    "answer": "ArrayDeque's offerFirst() adds to the front and offerLast() adds to the back.\r\nGiven a space-separated string of integers, add odd-indexed elements to front and even-indexed to back, return total size.\r\n\r\nActually: Given s, addFirst() the first half and addLast() the second half. Return the total size.\r\n\r\nExample:\r\n  s = \"1 2 3 4\"\r\n  All added -> size = 4\r\n  Output: 4"
+  },
+  {
+    "id": 9000058,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "Collections disjoint",
+    "answer": "Collections.disjoint() returns true if two collections have no elements in common (no intersection).\r\nGiven two space-separated integer lists separated by '|', return 1 if they are disjoint, else 0.\r\n\r\nExample:\r\n  s = \"1 2 3|4 5 6\"\r\n  No common elements -> disjoint -> Output: 1\r\n\r\n  s = \"1 2 3|3 4 5\"\r\n  Common element: 3 -> not disjoint -> Output: 0"
+  },
+  {
+    "id": 9000059,
+    "category": "Programming",
+    "difficulty": "Medium",
+    "question": "Two Sum using HashMap",
+    "answer": "The classic Two Sum problem can be solved efficiently using a HashMap: for each number, check if the complement (target - number) exists.\r\nGiven a space-separated string of integers and a target sum t, return 1 if any two distinct elements sum to t, else 0.\r\n\r\nExample:\r\n  s = \"2 7 11 15\", t = 9\r\n  2 + 7 = 9 -> Output: 1\r\n\r\nFor each element x, check if (t - x) is in the map."
+  },
+  {
+    "id": 9000060,
+    "category": "Programming",
+    "difficulty": "Medium",
+    "question": "Group Anagrams Count using HashMap",
+    "answer": "Group anagrams by using the sorted version of each word as a HashMap key.\r\nGiven a space-separated list of words, return the number of distinct anagram groups.\r\n\r\nExample:\r\n  s = \"eat tea tan ate nat bat\"\r\n  Groups: {eat,tea,ate}, {tan,nat}, {bat} -> 3 groups\r\n  Output: 3"
+  },
+  {
+    "id": 9000061,
+    "category": "Programming",
+    "difficulty": "Medium",
+    "question": "Top K Frequent Elements",
+    "answer": "Finding the k most frequent elements uses a combination of HashMap (for counting) and PriorityQueue (for top-k selection).\r\nGiven a space-separated string of integers and k, return the frequency of the k-th most frequent element.\r\n\r\nExample:\r\n  s = \"1 1 1 2 2 3\", k = 2\r\n  Frequencies: 1->3, 2->2, 3->1\r\n  k=2 most frequent: 1(freq 3), 2(freq 2) -> k-th freq = 2\r\n  Output: 2"
+  },
+  {
+    "id": 9000062,
+    "category": "Programming",
+    "difficulty": "Medium",
+    "question": "Sliding Window Maximum using Deque",
+    "answer": "A monotonic Deque maintains a decreasing sequence of indices so the front always has the maximum for the current window.\r\nGiven a space-separated string of integers and window size k, return the number of windows (n-k+1).\r\n\r\nActually: Return the maximum of all window maximums.\r\n\r\nExample:\r\n  s = \"1 3 -1 -3 5 3 6 7\", k = 3\r\n  Windows: [1,3,-1],[3,-1,-3],[-1,-3,5],[-3,5,3],[5,3,6],[3,6,7]\r\n  Maxes: 3,3,5,5,6,7 -> overall max = 7\r\n  Output: 7"
+  },
+  {
+    "id": 9000063,
+    "category": "Programming",
+    "difficulty": "Medium",
+    "question": "LRU Cache Simulation",
+    "answer": "An LRU (Least Recently Used) Cache evicts the least recently used item when at capacity. Using a LinkedHashMap simplifies implementation.\r\nGiven operations as a string: 'put k v' or 'get k', capacity c, simulate an LRU cache and return the result of the last get operation.\r\n\r\nExample:\r\n  capacity=2, ops=\"put 1 1|put 2 2|get 1|put 3 3|get 2\"\r\n  get 2 returns -1 (evicted)\r\n  Output: -1"
+  },
+  {
+    "id": 9000064,
+    "category": "Programming",
+    "difficulty": "Medium",
+    "question": "Frequency Sort using TreeMap",
+    "answer": "Sorting by frequency means ordering elements from most frequent to least frequent.\r\nGiven a space-separated string of integers, sort by frequency (descending) and return the most frequent element. Break ties by returning the smaller element.\r\n\r\nExample:\r\n  s = \"3 1 2 3 3 2\"\r\n  Frequencies: 3->3, 2->2, 1->1\r\n  Most frequent: 3\r\n  Output: 3"
+  },
+  {
+    "id": 9000065,
+    "category": "Programming",
+    "difficulty": "Medium",
+    "question": "Subarray Sum Equals K using HashMap",
+    "answer": "The prefix sum + HashMap technique counts subarrays with sum equal to k in O(n) time.\r\nGiven a space-separated string of integers and target sum k, return the count of subarrays with sum exactly k.\r\n\r\nExample:\r\n  s = \"1 1 1\", k = 2\r\n  Subarrays: [1,1](sum=2), [1,1](sum=2) -> count = 2\r\n  Output: 2"
+  },
+  {
+    "id": 9000066,
+    "category": "Programming",
+    "difficulty": "Medium",
+    "question": "Longest Consecutive Sequence using HashSet",
+    "answer": "Using a HashSet to find the start of each sequence and expanding gives O(n) time for finding the longest consecutive sequence.\r\nGiven a space-separated string of integers, return the length of the longest consecutive sequence.\r\n\r\nExample:\r\n  s = \"100 4 200 1 3 2\"\r\n  Longest consecutive: 1,2,3,4 -> length = 4\r\n  Output: 4"
+  },
+  {
+    "id": 9000067,
+    "category": "Programming",
+    "difficulty": "Medium",
+    "question": "Valid Parentheses using Stack",
+    "answer": "A stack naturally solves bracket matching: push opening brackets and pop/check when closing brackets are encountered.\r\nGiven a string containing '(', ')', '{', '}', '[', ']', return 1 if all brackets are properly matched, else 0.\r\n\r\nExample:\r\n  s = \"{[()]}\" -> valid -> Output: 1\r\n  s = \"([)]\" -> invalid -> Output: 0"
+  },
+  {
+    "id": 9000068,
+    "category": "Programming",
+    "difficulty": "Medium",
+    "question": "Daily Temperatures using Stack",
+    "answer": "The monotonic stack pattern finds the next greater element efficiently.\r\nGiven a space-separated string of daily temperatures, return the sum of days waited for a warmer temperature (0 if none).\r\n\r\nExample:\r\n  s = \"73 74 75 71 69 72 76 73\"\r\n  Days waited: [1,1,4,2,1,1,0,0] -> sum = 10\r\n  Output: 10"
+  },
+  {
+    "id": 9000069,
+    "category": "Programming",
+    "difficulty": "Medium",
+    "question": "Minimum Stack",
+    "answer": "A MinStack supports push, pop, and getMin() in O(1) time by maintaining a parallel min-tracking stack.\r\nGiven operations as 'push v' or 'pop' or 'min' (pipe-separated), return the result of the last 'min' operation.\r\n\r\nExample:\r\n  ops = \"push 5|push 3|push 7|min\"\r\n  Minimum = 3\r\n  Output: 3"
+  },
+  {
+    "id": 9000070,
+    "category": "Programming",
+    "difficulty": "Medium",
+    "question": "First Non-Repeating Character using LinkedHashMap",
+    "answer": "LinkedHashMap preserves insertion order, making it ideal for finding the first non-repeating element.\r\nGiven a space-separated string of integers, return the first integer that appears exactly once.\r\n\r\nExample:\r\n  s = \"1 2 3 2 1 4\"\r\n  Frequencies: 1->2, 2->2, 3->1, 4->1\r\n  First with count 1: 3\r\n  Output: 3"
+  },
+  {
+    "id": 9000071,
+    "category": "Programming",
+    "difficulty": "Medium",
+    "question": "Kth Largest Element using PriorityQueue",
+    "answer": "A min-heap of size k efficiently tracks the k largest elements. The root is always the k-th largest.\r\nGiven a space-separated string of integers and k, return the k-th largest element.\r\n\r\nExample:\r\n  s = \"3 2 1 5 6 4\", k = 2\r\n  Sorted desc: [6,5,4,3,2,1] -> k=2: 5\r\n  Output: 5"
+  },
+  {
+    "id": 9000072,
+    "category": "Programming",
+    "difficulty": "Medium",
+    "question": "Merge K Sorted Lists using PriorityQueue",
+    "answer": "Merging k sorted arrays can be done with a min-heap: add the first element of each array, then repeatedly extract min and add next.\r\nGiven k space-separated sorted integer arrays (pipe-separated), return the smallest element in the merged result.\r\n\r\nExample:\r\n  s = \"1 4 7|2 5 8|3 6 9\"\r\n  Merged min = 1\r\n  Output: 1"
+  },
+  {
+    "id": 9000073,
+    "category": "Programming",
+    "difficulty": "Medium",
+    "question": "Anagram Detection using HashMap",
+    "answer": "Two strings are anagrams if their character frequency maps are identical.\r\nGiven two space-separated words, return 1 if they are anagrams, else 0.\r\n\r\nExample:\r\n  s = \"listen silent\"\r\n  listen and silent have same char frequencies -> Output: 1"
+  },
+  {
+    "id": 9000074,
+    "category": "Programming",
+    "difficulty": "Medium",
+    "question": "Count Distinct Elements in Window using HashMap",
+    "answer": "Sliding window with a HashMap counting element frequencies lets you track how many distinct elements are in each window.\r\nGiven a space-separated string of integers and window size k, return the maximum number of distinct elements in any window.\r\n\r\nExample:\r\n  s = \"1 2 1 3 4 2 3\", k = 4\r\n  Windows of size 4: max distinct = 4 (e.g., [1,3,4,2])\r\n  Output: 4"
+  },
+  {
+    "id": 9000075,
+    "category": "Programming",
+    "difficulty": "Medium",
+    "question": "Stack Sort Using Another Stack",
+    "answer": "You can sort a stack using only one additional stack: pop from the original and insert in sorted order into the auxiliary stack.\r\nGiven a space-separated string of integers, simulate sorted-stack insertion and return the top element (which will be smallest).\r\n\r\nExample:\r\n  s = \"3 1 4 2\"\r\n  Sorted stack (ascending top to bottom, min at top): top = 1\r\n  Output: 1"
+  },
+  {
+    "id": 9000076,
+    "category": "Programming",
+    "difficulty": "Medium",
+    "question": "Implement Queue Using Two Stacks",
+    "answer": "Two stacks can simulate a queue: one for enqueue (push), one for dequeue (pop + reverse to other stack).\r\nGiven pipe-separated ops 'enq v' or 'deq', simulate and return the last dequeued value.\r\n\r\nExample:\r\n  ops = \"enq 1|enq 2|enq 3|deq\"\r\n  deq returns 1 (FIFO)\r\n  Output: 1"
+  },
+  {
+    "id": 9000077,
+    "category": "Programming",
+    "difficulty": "Medium",
+    "question": "Implement Stack Using Two Queues",
+    "answer": "Two queues can simulate a stack by re-queuing elements to maintain LIFO order on dequeue.\r\nGiven pipe-separated ops 'push v' or 'pop', simulate and return the last popped value.\r\n\r\nExample:\r\n  ops = \"push 1|push 2|push 3|pop\"\r\n  pop returns 3 (LIFO)\r\n  Output: 3"
+  },
+  {
+    "id": 9000078,
+    "category": "Programming",
+    "difficulty": "Medium",
+    "question": "Majority Element using HashMap",
+    "answer": "The majority element appears more than n/2 times. A HashMap counts all elements; the majority one has count > n/2.\r\nGiven a space-separated string of integers, return the majority element.\r\n\r\nExample:\r\n  s = \"3 2 3\"\r\n  3 appears 2 times, n/2 = 1.5 -> 3 is majority\r\n  Output: 3"
+  },
+  {
+    "id": 9000079,
+    "category": "Programming",
+    "difficulty": "Medium",
+    "question": "Next Greater Element using Stack",
+    "answer": "For each element, the next greater element is the first larger element to its right. A monotonic stack solves this in O(n).\r\nGiven a space-separated string of integers, return the sum of all next greater elements (use 0 when none exists).\r\n\r\nExample:\r\n  s = \"4 5 2 10\"\r\n  NGE: 5,10,10,0 -> sum = 25\r\n  Output: 25"
+  },
+  {
+    "id": 9000080,
+    "category": "Programming",
+    "difficulty": "Medium",
+    "question": "Four Sum Count using HashMap",
+    "answer": "Count tuples (i,j,k,l) such that A[i]+B[j]+C[k]+D[l] = 0 using two-pass HashMap.\r\nGiven four space-separated integer arrays (pipe-separated), return the count of valid 4-tuples.\r\n\r\nExample:\r\n  s = \"1 2|−2 −1|−1 2|0 2\"\r\n  A=[1,2], B=[-2,-1], C=[-1,2], D=[0,2]\r\n  (0,0,0,0): 1+(-2)+(-1)+2=0 and others -> count = 2\r\n  Output: 2"
+  },
+  {
+    "id": 9000081,
+    "category": "Programming",
+    "difficulty": "Medium",
+    "question": "Longest Subarray with Equal 0s and 1s using HashMap",
+    "answer": "Replace 0s with -1s and find the longest subarray with sum 0 using prefix sum + HashMap.\r\nGiven a space-separated binary string (0s and 1s), return the length of the longest subarray with equal 0s and 1s.\r\n\r\nExample:\r\n  s = \"0 1 0\"\r\n  Subarrays: [0,1] len 2, [1,0] len 2 -> max = 2\r\n  Output: 2"
+  },
+  {
+    "id": 9000082,
+    "category": "Programming",
+    "difficulty": "Medium",
+    "question": "Word Frequency using TreeMap",
+    "answer": "A TreeMap keeps words in alphabetical order. Using it for word count gives a lexicographically sorted frequency table.\r\nGiven a space-separated sentence s, return the word that appears most frequently. If tied, return the alphabetically first one.\r\n\r\nExample:\r\n  s = \"cat bat cat mat bat cat\"\r\n  cat->3, bat->2, mat->1 -> most frequent: cat\r\n  Output: cat"
+  },
+  {
+    "id": 9000083,
+    "category": "Programming",
+    "difficulty": "Hard",
+    "question": "Alien Dictionary using BFS Topological Sort",
+    "answer": "Given a sorted list of words in an alien language, derive the character order using topological sort (Kahn's algorithm with a Queue).\r\nGiven pipe-separated words sorted in alien order, return the number of characters in the determined order (or -1 if cycle).\r\n\r\nExample:\r\n  words = \"wrt|wrf|er|ett|rftt\"\r\n  Derived order has 5 characters: w,e,r,t,f -> count = 5\r\n  Output: 5"
+  },
+  {
+    "id": 9000084,
+    "category": "Programming",
+    "difficulty": "Hard",
+    "question": "Course Schedule using BFS Topological Sort",
+    "answer": "Detecting cycles in a directed graph (prerequisites) uses topological sort with Kahn's algorithm.\r\nGiven n courses and pipe-separated prerequisites as 'a b' (a depends on b), return 1 if all courses can be completed, else 0.\r\n\r\nExample:\r\n  n=2, prereqs=\"1 0\"\r\n  Course 1 depends on 0 -> no cycle -> Output: 1\r\n\r\n  n=2, prereqs=\"1 0|0 1\" -> cycle -> Output: 0"
+  },
+  {
+    "id": 9000085,
+    "category": "Programming",
+    "difficulty": "Hard",
+    "question": "Task Scheduler using PriorityQueue",
+    "answer": "Task scheduling with cooldown n requires always executing the most frequent remaining task, using a max-heap.\r\nGiven a string of task letters and cooldown n, return the minimum total time to finish all tasks.\r\n\r\nExample:\r\n  tasks = \"AAABBB\", n = 2\r\n  Schedule: A,B,idle,A,B,idle,A,B -> 8 units\r\n  Output: 8"
+  },
+  {
+    "id": 9000086,
+    "category": "Programming",
+    "difficulty": "Hard",
+    "question": "Find Median from Data Stream using Two Heaps",
+    "answer": "Two heaps (max-heap for lower half, min-heap for upper half) maintain the median dynamically.\r\nGiven a space-separated string of integers added one by one, return the median after all insertions (as integer floor).\r\n\r\nExample:\r\n  s = \"1 2 3 4 5\"\r\n  After all: [1,2,3,4,5] -> median = 3\r\n  Output: 3"
+  },
+  {
+    "id": 9000087,
+    "category": "Programming",
+    "difficulty": "Hard",
+    "question": "Reorganize String using PriorityQueue",
+    "answer": "Rearranging a string so no two adjacent characters are the same uses a max-heap to always place the most frequent character.\r\nGiven a string s (lowercase letters), return 1 if such rearrangement is possible, else 0.\r\n\r\nExample:\r\n  s = \"aab\" -> rearrange to \"aba\" -> Output: 1\r\n  s = \"aaab\" -> impossible -> Output: 0"
+  },
+  {
+    "id": 9000088,
+    "category": "Programming",
+    "difficulty": "Hard",
+    "question": "Number of Islands using BFS with Queue",
+    "answer": "BFS from each unvisited '1' cell explores connected land cells using a Queue.\r\nGiven a grid encoded as rows separated by '|' (0s and 1s separated by spaces), return the number of islands.\r\n\r\nExample:\r\n  grid = \"1 1 0|0 0 1|1 1 1\"\r\n  Islands: top-left group + right group -> 2 islands\r\n  Output: 2"
+  },
+  {
+    "id": 9000089,
+    "category": "Programming",
+    "difficulty": "Hard",
+    "question": "Word Ladder using BFS with Queue",
+    "answer": "BFS on the word transformation graph finds the shortest path (minimum transformations).\r\nGiven beginWord, endWord, and pipe-separated dictionary words, return length of shortest transformation sequence (0 if impossible).\r\n\r\nExample:\r\n  begin=hit, end=cog, dict=\"hot|dot|dog|lot|log|cog\"\r\n  hit->hot->dot->dog->cog = 5 words\r\n  Output: 5"
+  },
+  {
+    "id": 9000090,
+    "category": "Programming",
+    "difficulty": "Hard",
+    "question": "Serialize and Deserialize BST using Queue",
+    "answer": "BFS (level-order) traversal with a Queue serializes a BST. Deserializing reconstructs it.\r\nGiven a space-separated string of integers representing BST insertion order, serialize (BFS) and return the number of nodes.\r\n\r\nExample:\r\n  s = \"4 2 6 1 3 5 7\" (BST values by insertion)\r\n  7 nodes -> Output: 7"
+  },
+  {
+    "id": 9000091,
+    "category": "Programming",
+    "difficulty": "Hard",
+    "question": "Design Twitter using HashMap and LinkedList",
+    "answer": "A simplified Twitter has users who can post tweets and follow others. Feed retrieval requires merging sorted tweet lists.\r\nSimulate: ops are 'post userId tweetId' or 'follow u1 u2' or 'feed userId' (pipe-separated). Return count of tweets in last feed.\r\n\r\nExample:\r\n  ops = \"post 1 5|post 1 3|feed 1\"\r\n  User 1 has 2 tweets -> feed size = 2 (capped at 10)\r\n  Output: 2"
+  },
+  {
+    "id": 9000092,
+    "category": "Programming",
+    "difficulty": "Hard",
+    "question": "Graph Clone using HashMap",
+    "answer": "Cloning a graph requires a HashMap mapping original nodes to their copies, using BFS or DFS.\r\nGiven adjacency list as 'node:neighbor1,neighbor2' pipe-separated, return the number of nodes in the clone.\r\n\r\nExample:\r\n  s = \"1:2,4|2:1,3|3:2,4|4:1,3\"\r\n  4 nodes -> Output: 4"
+  },
+  {
+    "id": 9000093,
+    "category": "Programming",
+    "difficulty": "Hard",
+    "question": "Skyline Problem using TreeMap",
+    "answer": "The skyline problem uses a TreeMap as a sorted multiset of building heights, tracking height changes at critical points.\r\nGiven buildings as 'left right height' (pipe-separated), return the number of critical skyline points.\r\n\r\nExample:\r\n  buildings = \"2 9 10|3 7 15|5 12 12|15 20 10|19 24 8\"\r\n  Critical points define the skyline shape -> count them\r\n  Output: 8"
+  },
+  {
+    "id": 9000094,
+    "category": "Programming",
+    "difficulty": "Hard",
+    "question": "Open the Lock using BFS",
+    "answer": "BFS finds the minimum number of turns to reach a target combination while avoiding dead ends.\r\nGiven pipe-separated dead ends and a target combination, return minimum turns from '0000' to target, or -1 if impossible.\r\n\r\nExample:\r\n  deadends = \"0201|0101|0102|1212|2002\", target = \"0202\"\r\n  Minimum turns = 6\r\n  Output: 6"
+  },
+  {
+    "id": 9000095,
+    "category": "Programming",
+    "difficulty": "Hard",
+    "question": "Minimum Cost to Connect Ropes using PriorityQueue",
+    "answer": "To minimize the total cost of connecting ropes, always connect the two shortest ropes first (greedy with min-heap).\r\nGiven space-separated rope lengths, return the minimum total cost to connect all ropes into one.\r\n\r\nExample:\r\n  s = \"4 3 2 6\"\r\n  Connect 2+3=5 (cost 5), 4+5=9 (cost 9), 6+9=15 (cost 15) -> total = 29\r\n  Output: 29"
+  },
+  {
+    "id": 9000096,
+    "category": "Programming",
+    "difficulty": "Hard",
+    "question": "Rearrange String K Distance Apart using PriorityQueue",
+    "answer": "Placing characters at least k apart requires always picking the most frequent available character using a max-heap and a cooldown queue.\r\nGiven a string s and distance k, return 1 if rearrangement is possible, else 0.\r\n\r\nExample:\r\n  s = \"aabbcc\", k = 3\r\n  Possible: \"abcabc\" -> Output: 1\r\n\r\n  s = \"aaabc\", k = 3\r\n  Impossible -> Output: 0"
+  },
+  {
+    "id": 9000097,
+    "category": "Programming",
+    "difficulty": "Hard",
+    "question": "Vertical Order Traversal using TreeMap",
+    "answer": "Vertical order traversal groups BST nodes by their horizontal distance, using a TreeMap of TreeMaps.\r\nGiven BST insertion values and a query column c, return the count of nodes in vertical column c.\r\n\r\nExample:\r\n  s = \"3 9 20 15 7\", c = 0\r\n  Column 0 has node 3 -> count = 1\r\n  Output: 1"
+  },
+  {
+    "id": 9000098,
+    "category": "Programming",
+    "difficulty": "Hard",
+    "question": "Design Phone Directory using HashSet and Queue",
+    "answer": "A phone number directory allocates unused numbers and releases them back to the pool.\r\nGiven capacity n and pipe-separated ops 'get' or 'release k', return the count of available numbers after all ops.\r\n\r\nExample:\r\n  n=3, ops=\"get|get|release 0|get\"\r\n  get->0, get->1, release 0, get->0 -> available = 1 (number 2)\r\n  Output: 1"
+  },
+  {
+    "id": 9000099,
+    "category": "Programming",
+    "difficulty": "Hard",
+    "question": "Find All Duplicates using HashMap",
+    "answer": "Finding all duplicates in an array using a HashMap (frequency map) is a classic O(n) time, O(n) space solution.\r\nGiven a space-separated string of integers (1  count = 2\r\n  Output: 2"
+  },
+  {
+    "id": 9000100,
+    "category": "Programming",
+    "difficulty": "Hard",
+    "question": "Implement Trie using HashMap",
+    "answer": "A Trie (prefix tree) stores strings by sharing common prefixes. Each node is a HashMap mapping char -> child.\r\nGiven pipe-separated ops 'insert w' or 'search w' or 'startsWith p', return the result of the last search (1/0) or startsWith (1/0).\r\n\r\nExample:\r\n  ops = \"insert apple|search apple|search app\"\r\n  search apple -> 1, search app -> 0 -> last result = 0\r\n  Output: 0"
+  },
+  {
+    "id": 9000101,
+    "category": "Programming",
+    "difficulty": "Hard",
+    "question": "Decode String using Stack",
+    "answer": "Decode a run-length encoded string like '3[a]2[bc]' = 'aaabcbc' using a Stack to handle nesting.\r\nGiven encoded string s, return the length of the decoded string.\r\n\r\nExample:\r\n  s = \"3[a]2[bc]\" -> \"aaabcbc\" -> length = 7\r\n  Output: 7"
+  },
+  {
+    "id": 9000102,
+    "category": "Programming",
+    "difficulty": "Hard",
+    "question": "Zombie Infection using BFS Queue",
+    "answer": "BFS spreading from multiple sources (zombies) models multi-source infection. Each day, infected cells infect all 4 neighbors.\r\nGiven a grid (pipe-separated rows, 0=safe, 1=zombie), return the number of days until all cells are infected (or -1 if isolated).\r\n\r\nExample:\r\n  grid = \"0 1 0|0 0 0|0 0 0\"\r\n  All cells connected -> 3 days\r\n  Output: 3"
+  },
+  {
+    "id": 9000103,
+    "category": "Programming",
+    "difficulty": "Hard",
+    "question": "Segment Tree using ArrayList",
+    "answer": "A Segment Tree supports range sum queries and point updates in O(log n) time, stored as an ArrayList.\r\nGiven a space-separated integer array and a range [l, r], return the sum of elements from index l to r.\r\n\r\nExample:\r\n  s = \"1 3 5 7 9 11\", l = 1, r = 3\r\n  Sum of indices 1,2,3: 3+5+7 = 15\r\n  Output: 15"
+  },
+  {
+    "id": 9000104,
+    "category": "Programming",
+    "difficulty": "Hard",
+    "question": "Fenwick Tree (BIT) using ArrayList",
+    "answer": "A Fenwick Tree (Binary Indexed Tree) supports prefix sum queries and point updates in O(log n) time.\r\nGiven a space-separated integer array and a range [l, r], return the sum from l to r using BIT.\r\n\r\nExample:\r\n  s = \"1 2 3 4 5\", l = 1, r = 3\r\n  Sum of indices 1,2,3: 2+3+4 = 9\r\n  Output: 9"
+  },
+  {
+    "id": 9000105,
+    "category": "Programming",
+    "difficulty": "Hard",
+    "question": "Disjoint Set Union Find with Path Compression",
+    "answer": "Union-Find with path compression and union by rank runs in near O(1) amortized per operation.\r\nGiven n nodes and pipe-separated union operations 'u a b', return the number of connected components.\r\n\r\nExample:\r\n  n=5, ops=\"u 0 1|u 1 2\"\r\n  Component {0,1,2} and {3} and {4} -> 3 components\r\n  Output: 3"
+  },
+  {
+    "id": 9000106,
+    "category": "Programming",
+    "difficulty": "Hard",
+    "question": "Skip List Implementation using LinkedList",
+    "answer": "A Skip List provides O(log n) average search, insertion, and deletion by maintaining multiple levels of linked lists.\r\nSimulate a sorted LinkedList (simpler proxy): given space-separated integers and a target t, return its sorted position (1-indexed).\r\n\r\nExample:\r\n  s = \"5 3 8 1 9\", t = 5\r\n  Sorted: [1,3,5,8,9] -> 5 is at position 3\r\n  Output: 3"
+  },
+  {
+    "id": 9000107,
+    "category": "Programming",
+    "difficulty": "Hard",
+    "question": "LFU Cache using HashMap and TreeMap",
+    "answer": "An LFU (Least Frequently Used) Cache evicts the least frequently used item (ties broken by LRU).\r\nGiven capacity c and pipe-separated ops 'put k v' or 'get k', return the result of the last get.\r\n\r\nExample:\r\n  c=2, ops=\"put 1 1|put 2 2|get 1|put 3 3|get 2\"\r\n  get 2 -> 2 was evicted (less frequent than 1) -> -1\r\n  Output: -1"
+  },
+  {
+    "id": 9000108,
+    "category": "Programming",
+    "difficulty": "Hard",
+    "question": "Max Frequency Stack using HashMap",
+    "answer": "A FreqStack pushes elements and pops the most frequently seen element (ties broken by recency).\r\nGiven pipe-separated ops 'push v' or 'pop', return the result of the last pop.\r\n\r\nExample:\r\n  ops = \"push 5|push 7|push 5|push 7|push 4|push 5|pop\"\r\n  Most frequent=5 (3 times), last push of 5 -> pop returns 5\r\n  Output: 5"
+  },
+  {
+    "id": 9000109,
+    "category": "Programming",
+    "difficulty": "Hard",
+    "question": "Consistent Hashing Ring using TreeMap",
+    "answer": "Consistent hashing uses a sorted ring (TreeMap) to distribute keys among servers with minimal remapping.\r\nGiven server positions (space-separated) and a key position k, return the server position responsible for key k (ceiling in ring).\r\n\r\nExample:\r\n  servers = \"10 20 30 40\", k = 25\r\n  Ceiling of 25 in {10,20,30,40} = 30\r\n  Output: 30"
+  },
+  {
+    "id": 9000110,
+    "category": "Programming",
+    "difficulty": "Hard",
+    "question": "Event Simulation using PriorityQueue",
+    "answer": "Event-driven simulation processes events in time order using a min-heap priority queue.\r\nGiven events as 'time action' (pipe-separated), return the count of events processed by time T.\r\n\r\nExample:\r\n  events = \"3 A|1 B|4 C|1 D\", T = 3\r\n  Events at time  count = 3\r\n  Output: 3"
+  },
+  {
+    "id": 9000111,
+    "category": "Programming",
+    "difficulty": "Hard",
+    "question": "Detect Cycle in Directed Graph using HashMap",
+    "answer": "Cycle detection in a directed graph uses DFS with a recursion stack (visited + rec_stack) tracked in HashSets.\r\nGiven n nodes and pipe-separated directed edges 'u v', return 1 if cycle exists, else 0.\r\n\r\nExample:\r\n  n=4, edges=\"0 1|1 2|2 0\"\r\n  0->1->2->0 is a cycle -> Output: 1"
+  },
+  {
+    "id": 9000112,
+    "category": "Programming",
+    "difficulty": "Hard",
+    "question": "Shortest Path BFS using HashMap Adjacency List",
+    "answer": "BFS on an unweighted graph using a HashMap adjacency list finds the shortest path in O(V+E).\r\nGiven n nodes, pipe-separated edges 'u v', start s, and end e, return shortest path length (-1 if unreachable).\r\n\r\nExample:\r\n  n=6, edges=\"0 1|0 2|1 3|2 4|3 5|4 5\", s=0, e=5\r\n  Shortest: 0->1->3->5 or 0->2->4->5 -> length = 3\r\n  Output: 3"
+  },
+  {
+    "id": 9000113,
+    "category": "Programming",
+    "difficulty": "Hard",
+    "question": "Dijkstra Shortest Path using PriorityQueue",
+    "answer": "Dijkstra's algorithm uses a min-heap (PriorityQueue) to greedily select the nearest unvisited node.\r\nGiven n nodes, weighted edges 'u v w' (pipe-separated), start s, return shortest distances sum to all nodes (-1 for unreachable).\r\n\r\nExample:\r\n  n=4, edges=\"0 1 1|0 2 4|1 2 2|1 3 6|2 3 3\", s=0\r\n  Distances: [0,1,3,6] -> sum = 10\r\n  Output: 10"
+  },
+  {
+    "id": 9000114,
+    "category": "Programming",
+    "difficulty": "Hard",
+    "question": "Topological Sort using DFS and Stack",
+    "answer": "DFS-based topological sort pushes nodes to a Stack after all neighbors are visited, producing reverse finish order.\r\nGiven n nodes and pipe-separated directed edges, return the count of nodes in topological order (should equal n if DAG).\r\n\r\nExample:\r\n  n=6, edges=\"5 2|5 0|4 0|4 1|2 3|3 1\"\r\n  Valid topological order exists -> count = 6\r\n  Output: 6"
+  },
+  {
+    "id": 9000115,
+    "category": "Programming",
+    "difficulty": "Hard",
+    "question": "Bellman-Ford using ArrayList",
+    "answer": "Bellman-Ford detects negative cycles and finds shortest paths with negative edges using V-1 relaxation rounds.\r\nGiven n nodes and weighted edges 'u v w' (pipe-separated), start s, return shortest distance to all nodes sum (-999 if negative cycle).\r\n\r\nExample:\r\n  n=5, edges=\"0 1 -1|0 2 4|1 2 3|1 3 2|1 4 2|3 2 5|3 1 1|4 3 -3\", s=0\r\n  Distances: [0,-1,2,-2,1] -> sum = 0\r\n  Output: 0"
+  },
+  {
+    "id": 9000116,
+    "category": "Programming",
+    "difficulty": "Hard",
+    "question": "Floyd-Warshall All Pairs Shortest Path",
+    "answer": "Floyd-Warshall computes shortest paths between all pairs in O(V^3) using dynamic programming.\r\nGiven n nodes and weighted edges 'u v w' (pipe-separated), return the shortest distance between nodes s and t.\r\n\r\nExample:\r\n  n=4, edges=\"0 1 3|0 2 6|1 3 2|2 3 1\", s=0, t=3\r\n  0->1->3 = 5, 0->2->3 = 7 -> min = 5\r\n  Output: 5"
+  },
+  {
+    "id": 9000117,
+    "category": "Programming",
+    "difficulty": "Hard",
+    "question": "Trie with HashMap for Autocomplete",
+    "answer": "A Trie supports prefix search efficiently. Using HashMap for children nodes gives flexible character support.\r\nGiven pipe-separated ops 'insert w' or 'count p' (count words starting with prefix p), return result of last count.\r\n\r\nExample:\r\n  ops = \"insert apple|insert app|insert application|count app\"\r\n  Words with prefix 'app': apple, app, application -> count = 3\r\n  Output: 3"
+  },
+  {
+    "id": 9000118,
+    "category": "Programming",
+    "difficulty": "Hard",
+    "question": "Kruskal's MST using Union Find and PriorityQueue",
+    "answer": "Kruskal's algorithm builds an MST by sorting edges by weight and using Union-Find to avoid cycles.\r\nGiven n nodes and weighted edges 'u v w' (pipe-separated), return total weight of the Minimum Spanning Tree.\r\n\r\nExample:\r\n  n=4, edges=\"0 1 10|0 2 6|0 3 5|1 3 15|2 3 4\"\r\n  MST edges: 2-3(4), 0-3(5), 0-1(10) -> total = 19\r\n  Output: 19"
+  },
+  {
+    "id": 9000119,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "Get String Length",
+    "answer": "A string is a sequence of characters like \"hello\" or \"Java\". The length of a string is the total number of characters it contains, including spaces.\r\nGiven a string s, return its length (number of characters).\r\n\r\nExample:\r\n  s = \"hello\"\r\n  Length = 5\r\n  Output: 5\r\n\r\nIn Java, use s.length() to get the number of characters."
+  },
+  {
+    "id": 9000120,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "Get First Character",
+    "answer": "Characters in a string are indexed starting from 0. The first character is at index 0.\r\nGiven a non-empty string s, return the first character as a string.\r\n\r\nExample:\r\n  s = \"hello\"\r\n  First character = 'h'\r\n  Output: \"h\"\r\n\r\nUse s.charAt(0) to get the character, then String.valueOf() to convert it."
+  },
+  {
+    "id": 9000121,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "Get Last Character",
+    "answer": "The last character of a string is at index length-1.\r\nGiven a non-empty string s, return the last character as a string.\r\n\r\nExample:\r\n  s = \"hello\"\r\n  Last index = 5 - 1 = 4\r\n  s.charAt(4) = 'o'\r\n  Output: \"o\"\r\n\r\nUse s.charAt(s.length() - 1)."
+  },
+  {
+    "id": 9000122,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "Convert String to Uppercase",
+    "answer": "Converting a string to uppercase means changing every lowercase letter to its capital form. Non-letter characters like digits and spaces stay the same.\r\nGiven a string s, return it fully converted to uppercase.\r\n\r\nExample:\r\n  s = \"hello world\"\r\n  Output: \"HELLO WORLD\"\r\n\r\nUse s.toUpperCase() in Java."
+  },
+  {
+    "id": 9000123,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "Convert String to Lowercase",
+    "answer": "Converting a string to lowercase means changing every uppercase letter to its small form. Digits, spaces, and punctuation are unchanged.\r\nGiven a string s, return it fully converted to lowercase.\r\n\r\nExample:\r\n  s = \"HELLO WORLD\"\r\n  Output: \"hello world\"\r\n\r\nUse s.toLowerCase() in Java."
+  },
+  {
+    "id": 9000124,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "Reverse a String",
+    "answer": "Reversing a string means writing it backwards. The last character becomes the first, and the first becomes the last.\r\nGiven a string s, return the reversed string.\r\n\r\nExample:\r\n  s = \"hello\"\r\n  Reversed = \"olleh\"\r\n  Output: \"olleh\"\r\n\r\nUse StringBuilder: new StringBuilder(s).reverse().toString()"
+  },
+  {
+    "id": 9000125,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "Check if String is Empty",
+    "answer": "An empty string has no characters at all — its length is 0. It is written as \"\" (two quotes with nothing between them).\r\nGiven a string s, return 1 if it is empty, else return 0.\r\n\r\nExample 1:\r\n  s = \"\" -> empty -> Output: 1\r\n\r\nExample 2:\r\n  s = \"hello\" -> not empty -> Output: 0\r\n\r\nUse s.isEmpty() or s.length() == 0."
+  },
+  {
+    "id": 9000126,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "Concatenate Two Strings",
+    "answer": "Concatenation means joining two strings end-to-end into one longer string.\r\nGiven two strings s1 and s2, return their concatenation (s1 followed by s2).\r\n\r\nExample:\r\n  s1 = \"Hello\", s2 = \" World\"\r\n  Result = \"Hello World\"\r\n  Output: \"Hello World\"\r\n\r\nUse s1 + s2 or s1.concat(s2) in Java."
+  },
+  {
+    "id": 9000127,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "Check String Contains Substring",
+    "answer": "A substring is a contiguous sequence of characters within a string. Checking if it exists is a fundamental string operation.\r\nGiven strings s and sub, return 1 if s contains sub anywhere in it, else return 0.\r\n\r\nExample 1:\r\n  s = \"hello world\", sub = \"world\"\r\n  \"world\" found in \"hello world\" -> Output: 1\r\n\r\nExample 2:\r\n  s = \"hello\", sub = \"xyz\"\r\n  \"xyz\" not found -> Output: 0\r\n\r\nUse s.contains(sub) in Java."
+  },
+  {
+    "id": 9000128,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "Get Character at Index",
+    "answer": "Just like arrays, strings allow you to access any specific character using its index (starting at 0).\r\nGiven a string s and an integer k, return the character at index k as a string.\r\n\r\nExample:\r\n  s = \"hello\", k = 1\r\n  Character at index 1 = 'e'\r\n  Output: \"e\"\r\n\r\nUse s.charAt(k), then convert to String."
+  },
+  {
+    "id": 9000129,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "Count Occurrences of a Character",
+    "answer": "Counting how many times a specific character appears in a string is a basic string scanning task.\r\nGiven a string s and a character c (as a single-character string), return how many times c appears in s.\r\n\r\nExample:\r\n  s = \"hello\", c = \"l\"\r\n  'l' appears at index 2 and 3 -> count = 2\r\n  Output: 2\r\n\r\nLoop through s.toCharArray() and count matches."
+  },
+  {
+    "id": 9000130,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "Check String Starts With Prefix",
+    "answer": "A prefix is a string that appears at the very beginning of another string.\r\nGiven strings s and prefix, return 1 if s starts with prefix, else return 0.\r\n\r\nExample 1:\r\n  s = \"hello world\", prefix = \"hello\"\r\n  Starts with \"hello\" -> Output: 1\r\n\r\nExample 2:\r\n  s = \"hello\", prefix = \"world\"\r\n  Does not start with \"world\" -> Output: 0\r\n\r\nUse s.startsWith(prefix) in Java."
+  },
+  {
+    "id": 9000131,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "Check String Ends With Suffix",
+    "answer": "A suffix is a string that appears at the very end of another string.\r\nGiven strings s and suffix, return 1 if s ends with suffix, else return 0.\r\n\r\nExample 1:\r\n  s = \"hello world\", suffix = \"world\" -> Ends with \"world\" -> Output: 1\r\n\r\nExample 2:\r\n  s = \"hello\", suffix = \"world\" -> Does not end with \"world\" -> Output: 0\r\n\r\nUse s.endsWith(suffix) in Java."
+  },
+  {
+    "id": 9000132,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "Remove Leading and Trailing Spaces",
+    "answer": "Extra spaces at the beginning or end of a string (called whitespace) often need to be removed when processing user input.\r\nGiven a string s that may have leading/trailing spaces, return the string with all leading and trailing spaces removed.\r\n\r\nExample:\r\n  s = \"  hello  \"\r\n  After trimming: \"hello\"\r\n  Output: \"hello\"\r\n\r\nUse s.trim() in Java."
+  },
+  {
+    "id": 9000133,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "Extract Substring",
+    "answer": "A substring is a portion of a string from one index to another.\r\nGiven a string s, a start index, and an end index, return the substring from start (inclusive) to end (exclusive).\r\n\r\nExample:\r\n  s = \"hello world\", start = 6, end = 11\r\n  Characters from index 6 to 10 = \"world\"\r\n  Output: \"world\"\r\n\r\nUse s.substring(start, end). The character at 'end' index is NOT included."
+  },
+  {
+    "id": 9000134,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "Replace Character in String",
+    "answer": "Replacing characters means swapping every occurrence of one character with another throughout the string.\r\nGiven string s, and single-character strings oldChar and newChar, replace every occurrence of oldChar with newChar and return the result.\r\n\r\nExample:\r\n  s = \"hello\", oldChar = \"l\", newChar = \"r\"\r\n  Replace all 'l' with 'r' -> \"herro\"\r\n  Output: \"herro\"\r\n\r\nUse s.replace(oldChar.charAt(0), newChar.charAt(0))."
+  },
+  {
+    "id": 9000135,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "Find Index of Substring",
+    "answer": "Finding where a substring first appears gives you its starting index within the main string.\r\nGiven strings s and sub, return the index of the first occurrence of sub in s. Return -1 if not found.\r\n\r\nExample 1:\r\n  s = \"hello world\", sub = \"world\"\r\n  \"world\" starts at index 6 -> Output: 6\r\n\r\nExample 2:\r\n  s = \"hello\", sub = \"xyz\"\r\n  Not found -> Output: -1\r\n\r\nUse s.indexOf(sub) in Java."
+  },
+  {
+    "id": 9000136,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "Check String Equality",
+    "answer": "Two strings are equal if they contain exactly the same characters in the same order, with the same case.\r\nGiven two strings s1 and s2, return 1 if they are exactly equal, else return 0.\r\n\r\nExample 1:\r\n  s1 = \"hello\", s2 = \"hello\" -> equal -> Output: 1\r\n\r\nExample 2:\r\n  s1 = \"Hello\", s2 = \"hello\" -> different case -> Output: 0\r\n\r\nAlways use s1.equals(s2) in Java (NOT ==, which compares references)."
+  },
+  {
+    "id": 9000137,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "Count Words in String",
+    "answer": "Words in a sentence are separated by spaces. Counting words is a fundamental text processing task.\r\nGiven a non-empty string s containing words separated by single spaces, return the number of words.\r\n\r\nExample:\r\n  s = \"hello world java\"\r\n  Words: \"hello\", \"world\", \"java\" -> count = 3\r\n  Output: 3\r\n\r\nSplit the string: s.trim().split(\"\\\\s+\").length"
+  },
+  {
+    "id": 9000138,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "Repeat String N Times",
+    "answer": "Repeating a string means concatenating it with itself a specified number of times.\r\nGiven a string s and integer n, return the string repeated n times.\r\n\r\nExample:\r\n  s = \"ab\", n = 3\r\n  Result = \"ababab\"\r\n  Output: \"ababab\"\r\n\r\nUse s.repeat(n) in Java 11+, or a loop to build the result."
+  },
+  {
+    "id": 9000139,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "Check Palindrome String",
+    "answer": "A palindrome reads the same forwards and backwards, like \"racecar\" or \"madam\".\r\nGiven a string s (all lowercase letters, no spaces), return 1 if it is a palindrome, else return 0.\r\n\r\nExample 1:\r\n  s = \"racecar\" -> reads same forwards and backwards -> Output: 1\r\n\r\nExample 2:\r\n  s = \"hello\" -> \"hello\" != \"olleh\" -> Output: 0\r\n\r\nCompare the string with its reverse."
+  },
+  {
+    "id": 9000140,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "Count Vowels in String",
+    "answer": "Vowels in English are the letters a, e, i, o, u (both uppercase and lowercase).\r\nGiven a string s, count and return the total number of vowels in it.\r\n\r\nExample:\r\n  s = \"Hello World\"\r\n  Vowels: e, o, o -> count = 3\r\n  Output: 3\r\n\r\nCheck each character against the set {a,e,i,o,u,A,E,I,O,U}."
+  },
+  {
+    "id": 9000141,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "Convert Integer to String",
+    "answer": "Sometimes you need to convert a number into its string representation so you can process it character by character.\r\nGiven an integer n, return it converted to a String.\r\n\r\nExample:\r\n  n = 42\r\n  String representation = \"42\"\r\n  Output: \"42\"\r\n\r\nUse String.valueOf(n) or Integer.toString(n)."
+  },
+  {
+    "id": 9000142,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "Convert String to Integer",
+    "answer": "When a number is stored as a string (like \"123\"), you need to convert it to an actual integer to do math.\r\nGiven a string s that represents a valid integer, return the integer value.\r\n\r\nExample:\r\n  s = \"42\"\r\n  Integer value = 42\r\n  Output: 42\r\n\r\nUse Integer.parseInt(s) in Java."
+  },
+  {
+    "id": 9000143,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "Check if String Contains Only Digits",
+    "answer": "A string made entirely of digits (0-9) and nothing else is a \"numeric string\".\r\nGiven a non-empty string s, return 1 if every character is a digit (0-9), else return 0.\r\n\r\nExample 1:\r\n  s = \"12345\" -> all digits -> Output: 1\r\n\r\nExample 2:\r\n  s = \"12a45\" -> 'a' is not a digit -> Output: 0\r\n\r\nCheck each character: Character.isDigit(c)"
+  },
+  {
+    "id": 9000144,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "Get Middle Character",
+    "answer": "For strings with an odd length, the middle character is at index length/2. For even lengths, return the two middle characters.\r\nGiven a string s, return the middle character(s): one character if odd length, two if even length.\r\n\r\nExample 1:\r\n  s = \"hello\" (length 5, odd) -> middle at index 2 -> \"l\" -> Output: \"l\"\r\n\r\nExample 2:\r\n  s = \"test\" (length 4, even) -> middle two at index 1,2 -> \"es\" -> Output: \"es\""
+  },
+  {
+    "id": 9000145,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "Remove All Spaces from String",
+    "answer": "Sometimes you need to remove all whitespace characters from a string, leaving only non-space characters.\r\nGiven a string s, return it with all space characters removed.\r\n\r\nExample:\r\n  s = \"hello world java\"\r\n  After removing spaces: \"helloworldjava\"\r\n  Output: \"helloworldjava\"\r\n\r\nUse s.replace(\" \", \"\") or s.replaceAll(\"\\\\s\", \"\")."
+  },
+  {
+    "id": 9000146,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "Check Case Insensitive Equality",
+    "answer": "Case-insensitive comparison treats uppercase and lowercase letters as the same (\"Hello\" and \"hello\" are equal).\r\nGiven two strings s1 and s2, return 1 if they are equal ignoring case, else return 0.\r\n\r\nExample 1:\r\n  s1 = \"Hello\", s2 = \"hello\" -> equal ignoring case -> Output: 1\r\n\r\nExample 2:\r\n  s1 = \"Hello\", s2 = \"world\" -> not equal -> Output: 0\r\n\r\nUse s1.equalsIgnoreCase(s2)."
+  },
+  {
+    "id": 9000147,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "Split String and Count Parts",
+    "answer": "Splitting a string means breaking it into parts wherever a specific character (called a delimiter) appears.\r\nGiven a string s and a single-character delimiter, split s by that delimiter and return the number of resulting parts.\r\n\r\nExample:\r\n  s = \"a,b,c,d\", delimiter = \",\"\r\n  Parts: [\"a\",\"b\",\"c\",\"d\"] -> count = 4\r\n  Output: 4"
+  },
+  {
+    "id": 9000148,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "Capitalize First Letter",
+    "answer": "Capitalizing the first letter means converting only the very first character to uppercase while keeping the rest unchanged.\r\nGiven a non-empty string s, return the string with only its first character converted to uppercase.\r\n\r\nExample:\r\n  s = \"hello world\"\r\n  First letter capitalized: \"Hello world\"\r\n  Output: \"Hello world\"\r\n\r\nUse Character.toUpperCase(s.charAt(0)) + s.substring(1)."
+  },
+  {
+    "id": 9000149,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "Check if String is Blank",
+    "answer": "A blank string is one that contains ONLY whitespace characters (spaces, tabs, etc.) or is completely empty.\r\nNote: A blank string is not the same as empty — \"   \" (three spaces) is blank but not empty.\r\nGiven a string s, return 1 if it is blank (empty or whitespace-only), else return 0.\r\n\r\nExample:\r\n  s = \"\" -> empty -> Output: 1\r\n  s = \"   \" -> only spaces -> Output: 1\r\n  s = \"hi\" -> not blank -> Output: 0\r\n\r\nUse s.isBlank() (Java 11+) or s.trim().isEmpty()."
+  },
+  {
+    "id": 9000150,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "Count Consonants in String",
+    "answer": "Consonants are all English alphabet letters that are NOT vowels (a,e,i,o,u). Letters like b,c,d,f,g... are consonants.\r\nGiven a string s, count and return the number of consonants (both lowercase and uppercase).\r\n\r\nExample:\r\n  s = \"Hello World\"\r\n  Letters: H,e,l,l,o,W,o,r,l,d\r\n  Vowels: e,o,o -> Consonants: H,l,l,W,r,l,d -> count = 7\r\n  Output: 7"
+  },
+  {
+    "id": 9000151,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "Check Anagram",
+    "answer": "Two strings are anagrams if they contain exactly the same characters with the same frequencies, just arranged differently.\r\nGiven two strings s1 and s2 (lowercase letters only), return 1 if they are anagrams, else 0.\r\n\r\nExample 1:\r\n  s1 = \"listen\", s2 = \"silent\"\r\n  Same chars: l,i,s,t,e,n  s,i,l,e,n,t -> anagram -> Output: 1\r\n\r\nExample 2:\r\n  s1 = \"hello\", s2 = \"world\" -> Different chars -> Output: 0"
+  },
+  {
+    "id": 9000152,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "Find Most Frequent Character",
+    "answer": "The most frequent character is the one that appears the greatest number of times in a string. If there is a tie, return the one with the smallest alphabetical order.\r\nGiven a string s (lowercase letters only), return the character that appears most frequently.\r\n\r\nExample:\r\n  s = \"aabbccc\"\r\n  Frequencies: a->2, b->2, c->3\r\n  Most frequent: 'c' -> Output: \"c\""
+  },
+  {
+    "id": 9000153,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "Remove Duplicate Characters",
+    "answer": "Removing duplicates from a string means keeping only the FIRST occurrence of each character and discarding subsequent repeats.\r\nGiven a string s (lowercase letters), return the string with duplicate characters removed (preserving original order).\r\n\r\nExample:\r\n  s = \"programming\"\r\n  Keep first of each: p,r,o,g,a,m,i,n\r\n  Result: \"progamin\"\r\n  Output: \"progamin\""
+  },
+  {
+    "id": 9000154,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "Count Unique Characters",
+    "answer": "Unique characters are those that appear exactly ONCE in the string.\r\nGiven a string s, count and return the number of characters that appear exactly once.\r\n\r\nExample:\r\n  s = \"aabbcde\"\r\n  Frequencies: a->2, b->2, c->1, d->1, e->1\r\n  Unique: c, d, e -> count = 3\r\n  Output: 3"
+  },
+  {
+    "id": 9000155,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "Check if Two Strings are Rotations",
+    "answer": "String s2 is a rotation of s1 if you can rotate (shift) s1 by some positions to get s2.\r\nFor example, \"abcde\" rotated by 2 becomes \"cdeab\".\r\nGiven two strings s1 and s2 of equal length, return 1 if s2 is a rotation of s1, else 0.\r\n\r\nExample:\r\n  s1 = \"abcde\", s2 = \"cdeab\"\r\n  Rotate s1 by 2 -> \"cdeab\" = s2 -> Output: 1\r\n\r\nTrick: s2 is a rotation of s1 if and only if s2 appears in (s1 + s1)."
+  },
+  {
+    "id": 9000156,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "Replace Substring",
+    "answer": "Unlike replacing single characters, this replaces entire substrings (sequences of characters) with another sequence.\r\nGiven string s, a target substring to find, and a replacement string, replace ALL occurrences of target with replacement and return the result.\r\n\r\nExample:\r\n  s = \"I love cats and cats\", target = \"cats\", replacement = \"dogs\"\r\n  Result = \"I love dogs and dogs\"\r\n  Output: \"I love dogs and dogs\""
+  },
+  {
+    "id": 9000157,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "Count Substring Occurrences",
+    "answer": "Sometimes a substring appears multiple times in a string. You need to count all non-overlapping occurrences.\r\nGiven string s and substring sub, return how many times sub appears in s (non-overlapping).\r\n\r\nExample:\r\n  s = \"abababab\", sub = \"ab\"\r\n  Occurrences: at index 0, 2, 4, 6 -> count = 4\r\n  Output: 4"
+  },
+  {
+    "id": 9000158,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "Check All Characters Unique",
+    "answer": "A string has all unique characters if no character appears more than once — every character is different.\r\nGiven a string s, return 1 if all characters are unique (no duplicates), else return 0.\r\n\r\nExample 1:\r\n  s = \"abcdef\" -> all different -> Output: 1\r\n\r\nExample 2:\r\n  s = \"hello\" -> 'l' appears twice -> Output: 0\r\n\r\nUse a HashSet: try adding each character. If add() returns false, it is a duplicate."
+  },
+  {
+    "id": 9000159,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "Reverse Words in Sentence",
+    "answer": "Reversing words means keeping each word intact but reordering them so the last word comes first and the first word comes last.\r\nGiven a string s with words separated by single spaces, return the words in reversed order.\r\n\r\nExample:\r\n  s = \"Hello World Java\"\r\n  Reversed word order: \"Java World Hello\"\r\n  Output: \"Java World Hello\""
+  },
+  {
+    "id": 9000160,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "Find First Non-Repeating Character",
+    "answer": "The first non-repeating character is the leftmost character in the string that appears exactly once.\r\nGiven a string s (lowercase letters), return the first character that appears exactly once. Return \"#\" if all characters repeat.\r\n\r\nExample:\r\n  s = \"leetcode\"\r\n  Frequencies: l->1,e->2,t->1,c->1,o->1,d->1\r\n  First non-repeating: 'l' at index 0 -> Output: \"l\""
+  },
+  {
+    "id": 9000161,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "Check Valid Parentheses String",
+    "answer": "A string of only parentheses is valid if every opening bracket '(' has a matching closing bracket ')' in the correct order.\r\nGiven a string s containing only '(' and ')', return 1 if valid, else 0.\r\n\r\nExample 1:\r\n  s = \"(())\" -> valid -> Output: 1\r\n\r\nExample 2:\r\n  s = \")((\" -> invalid -> Output: 0\r\n\r\nUse a counter: increment for '(', decrement for ')'. If counter ever goes negative, invalid. Valid if counter = 0 at end."
+  },
+  {
+    "id": 9000162,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "Longest Common Prefix Length",
+    "answer": "The common prefix of two strings is the longest sequence of characters that both strings share at their beginning.\r\nGiven two strings s1 and s2, return the LENGTH of their longest common prefix.\r\n\r\nExample:\r\n  s1 = \"flower\", s2 = \"flow\"\r\n  Common prefix = \"flow\" -> length = 4\r\n  Output: 4\r\n\r\nCompare characters one by one from the start until they differ or one string ends."
+  },
+  {
+    "id": 9000163,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "Count Capital Letters",
+    "answer": "Capital letters (also called uppercase letters) are A, B, C, ..., Z.\r\nGiven a string s, count and return the number of uppercase letters in it.\r\n\r\nExample:\r\n  s = \"Hello World\"\r\n  Uppercase: H, W -> count = 2\r\n  Output: 2\r\n\r\nUse Character.isUpperCase(c) to check each character."
+  },
+  {
+    "id": 9000164,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "Toggle Case of String",
+    "answer": "Toggling case means converting each uppercase letter to lowercase and each lowercase letter to uppercase.\r\nGiven a string s, return the string with each letter's case toggled. Non-letter characters stay the same.\r\n\r\nExample:\r\n  s = \"Hello World\"\r\n  Toggle: H->h, e->E, l->L, l->L, o->O, W->w, o->O, r->R, l->L, d->D\r\n  Result: \"hELLO wORLD\"\r\n  Output: \"hELLO wORLD\""
+  },
+  {
+    "id": 9000165,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "Check if String is Numeric",
+    "answer": "A numeric string represents a valid number — it may have an optional leading minus sign, digits, and optionally one decimal point.\r\nGiven a string s, return 1 if it represents a valid number (integer or decimal, optionally negative), else 0.\r\n\r\nExample 1:\r\n  s = \"123\" -> valid -> Output: 1\r\n  s = \"-12.5\" -> valid -> Output: 1\r\n  s = \"12.3.4\" -> invalid (two dots) -> Output: 0\r\n  s = \"abc\" -> invalid -> Output: 0\r\n\r\nTry using Double.parseDouble() inside a try-catch."
+  },
+  {
+    "id": 9000166,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "Find Longest Word in Sentence",
+    "answer": "Given a sentence with words separated by spaces, find the length of the longest word.\r\nGiven a string s with space-separated words, return the length of the longest word.\r\n\r\nExample:\r\n  s = \"The quick brown fox\"\r\n  Lengths: The->3, quick->5, brown->5, fox->3\r\n  Longest = 5\r\n  Output: 5"
+  },
+  {
+    "id": 9000167,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "Check Substring at Position",
+    "answer": "Sometimes you need to verify if a specific substring starts at a specific position in the main string.\r\nGiven string s, substring sub, and integer pos, return 1 if sub starts exactly at index pos in s, else return 0.\r\n\r\nExample:\r\n  s = \"hello world\", sub = \"world\", pos = 6\r\n  s.substring(6) starts with \"world\" -> Output: 1\r\n\r\nUse s.startsWith(sub, pos)."
+  },
+  {
+    "id": 9000168,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "Encode String Run-Length",
+    "answer": "Run-length encoding (RLE) compresses a string by replacing consecutive repeated characters with the character followed by its count.\r\nGiven a string s of lowercase letters, return the run-length encoded string.\r\n\r\nExample:\r\n  s = \"aaabbbcccd\"\r\n  a x3, b x3, c x3, d x1 -> \"a3b3c3d1\"\r\n  Output: \"a3b3c3d1\"\r\n\r\nScan through characters, count consecutive runs."
+  },
+  {
+    "id": 9000169,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "Count Lines in String",
+    "answer": "A multi-line string contains newline characters that separate it into lines. Counting lines tells you how many distinct lines of text exist.\r\nGiven a string s (which may contain newline characters), return the number of lines.\r\n\r\nExample:\r\n  s contains two newlines -> 3 lines -> Output: 3\r\n\r\nSplit by newline and count parts."
+  },
+  {
+    "id": 9000170,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "Check Balanced Brackets",
+    "answer": "A string with brackets is balanced if every type of opening bracket has a matching closing bracket in the correct order.\r\nGiven a string s containing only '(', ')', '{', '}', '[', ']', return 1 if balanced, else 0.\r\n\r\nExample 1:\r\n  s = \"{[()]}\" -> balanced -> Output: 1\r\n\r\nExample 2:\r\n  s = \"{[(])}\" -> wrong order -> Output: 0\r\n\r\nUse a stack: push opening brackets, pop and verify match when closing bracket found."
+  },
+  {
+    "id": 9000171,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "Sort Characters in String",
+    "answer": "Sorting the characters of a string means arranging them in alphabetical (lexicographic) order.\r\nGiven a string s (lowercase letters only), return the string with its characters sorted in ascending order.\r\n\r\nExample:\r\n  s = \"dcba\"\r\n  Sorted: \"abcd\"\r\n  Output: \"abcd\"\r\n\r\nConvert to char array, sort it, convert back to String."
+  },
+  {
+    "id": 9000172,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "Check if String is Subsequence",
+    "answer": "String s is a subsequence of string t if all characters of s appear in t in the same relative order, though not necessarily consecutively.\r\nGiven strings s and t, return 1 if s is a subsequence of t, else 0.\r\n\r\nExample 1:\r\n  s = \"ace\", t = \"abcde\"\r\n  a(0), c(2), e(4) found in order -> Output: 1\r\n\r\nExample 2:\r\n  s = \"aec\", t = \"abcde\"\r\n  After 'a' and 'e', no 'c' after -> Output: 0\r\n\r\nTwo-pointer: advance pointer in s whenever a match is found in t."
+  },
+  {
+    "id": 9000173,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "Count Words Starting with Vowel",
+    "answer": "A word starts with a vowel if its first character is one of: a, e, i, o, u (or uppercase version).\r\nGiven a sentence s with space-separated words, return the count of words that start with a vowel.\r\n\r\nExample:\r\n  s = \"An elephant is an animal\"\r\n  Words starting with vowel: An, elephant, an, animal -> 4\r\n  Output: 4"
+  },
+  {
+    "id": 9000174,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "Compress String If Shorter",
+    "answer": "Run-length compression of \"aabcccccaaa\" gives \"a2b1c5a3\". If the compressed version is shorter, return it; otherwise return the original.\r\nGiven a string s (lowercase letters), return the compressed version if it is strictly shorter, otherwise return the original.\r\n\r\nExample 1:\r\n  s = \"aabcccccaaa\" -> compressed \"a2b1c5a3\" (length 8  Output: \"a2b1c5a3\"\r\n\r\nExample 2:\r\n  s = \"abc\" -> compressed \"a1b1c1\" (length 6 > 3) -> Output: \"abc\""
+  },
+  {
+    "id": 9000175,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "Rotate String Left by K",
+    "answer": "Rotating a string left by k positions means moving the first k characters to the end.\r\nGiven a string s and integer k, return the string rotated left by k positions.\r\n\r\nExample:\r\n  s = \"abcdefg\", k = 2\r\n  First 2 chars: \"ab\"\r\n  Remaining: \"cdefg\"\r\n  Rotated: \"cdefgab\"\r\n  Output: \"cdefgab\"\r\n\r\nUse s.substring(k) + s.substring(0, k). Handle k > s.length() with k % s.length()."
+  },
+  {
+    "id": 9000176,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "Find Duplicate Characters",
+    "answer": "Duplicate characters are those that appear MORE than once in the string.\r\nGiven a string s (lowercase letters), return the count of distinct characters that appear more than once.\r\n\r\nExample:\r\n  s = \"programming\"\r\n  Characters appearing more than once: r(2), g(2), m(2) -> count = 3\r\n  Output: 3"
+  },
+  {
+    "id": 9000177,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "Sum of Digit Characters in String",
+    "answer": "A string may contain a mix of letters and digits. This task extracts all the digit characters and sums their numeric values.\r\nGiven a string s, find all digit characters (0-9), and return the sum of their numeric values.\r\n\r\nExample:\r\n  s = \"a1b2c3\"\r\n  Digits: 1, 2, 3 -> sum = 6\r\n  Output: 6"
+  },
+  {
+    "id": 9000178,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "Check if String is Pangram",
+    "answer": "A pangram is a sentence that contains every letter of the English alphabet at least once.\r\nThe famous example: \"The quick brown fox jumps over the lazy dog\"\r\nGiven a string s, return 1 if it is a pangram (contains all 26 letters a-z, ignoring case), else 0.\r\n\r\nExample 1:\r\n  s = \"The quick brown fox jumps over the lazy dog\" -> all 26 letters -> Output: 1\r\n\r\nExample 2:\r\n  s = \"Hello World\" -> missing many letters -> Output: 0"
+  },
+  {
+    "id": 9000179,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "Swap Adjacent Characters",
+    "answer": "Swapping adjacent pairs means exchanging s[0] with s[1], s[2] with s[3], etc.\r\nGiven a string s with EVEN length, swap every pair of adjacent characters and return the result.\r\n\r\nExample:\r\n  s = \"abcdef\"\r\n  Swap (a,b)->ba, (c,d)->dc, (e,f)->fe\r\n  Result: \"badcfe\"\r\n  Output: \"badcfe\""
+  },
+  {
+    "id": 9000180,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "Add Binary Strings",
+    "answer": "Binary numbers use only digits 0 and 1. Adding two binary numbers follows these rules: 0+0=0, 1+0=1, 1+1=10 (carry 1).\r\nGiven two binary strings a and b (strings of '0' and '1'), return their sum as a binary string.\r\n\r\nExample:\r\n  a = \"11\", b = \"1\"\r\n  11 (decimal 3) + 1 (decimal 1) = 100 (decimal 4)\r\n  Output: \"100\"\r\n\r\nProcess from right to left with a carry variable, similar to manual addition."
+  },
+  {
+    "id": 9000181,
+    "category": "Programming",
+    "difficulty": "Medium",
+    "question": "Longest Substring Without Repeating Characters",
+    "answer": "A substring is a contiguous part of a string. A substring without repeating characters means every character in it appears exactly once.\r\nGiven a string s, return the LENGTH of the longest substring that contains no repeated characters.\r\n\r\nExample:\r\n  s = \"abcabcbb\"\r\n  \"abc\" (length 3) is the longest with no repeats\r\n  Output: 3\r\n\r\nSliding window + HashSet: maintain a window [left, right]. Expand right; when duplicate found, shrink from left until no duplicate."
+  },
+  {
+    "id": 9000182,
+    "category": "Programming",
+    "difficulty": "Medium",
+    "question": "Valid Anagram Check",
+    "answer": "Two strings are valid anagrams of each other if they contain the exact same characters with the same frequencies, just potentially in a different order.\r\nGiven strings s and t, return 1 if t is an anagram of s, else 0.\r\n\r\nExample 1:\r\n  s = \"anagram\", t = \"nagaram\" -> anagram -> Output: 1\r\n\r\nExample 2:\r\n  s = \"rat\", t = \"car\" -> not anagram -> Output: 0\r\n\r\nCount character frequencies for both strings and compare."
+  },
+  {
+    "id": 9000183,
+    "category": "Programming",
+    "difficulty": "Medium",
+    "question": "Group Anagrams Count",
+    "answer": "When you have a list of words, anagram groups are sets of words that are anagrams of each other.\r\nGiven a space-separated list of words in string s, return the number of distinct anagram groups.\r\n\r\nExample:\r\n  s = \"eat tea tan ate nat bat\"\r\n  Groups: {eat,tea,ate}, {tan,nat}, {bat} -> 3 groups\r\n  Output: 3\r\n\r\nSort each word's characters to create a key. Words with the same key belong to the same group."
+  },
+  {
+    "id": 9000184,
+    "category": "Programming",
+    "difficulty": "Medium",
+    "question": "Minimum Window Substring Length",
+    "answer": "Find the smallest contiguous window in s that contains ALL characters of t (including duplicates).\r\nGiven strings s and t, return the length of the minimum window substring of s that contains all characters of t. Return 0 if no such window exists.\r\n\r\nExample:\r\n  s = \"ADOBECODEBANC\", t = \"ABC\"\r\n  Minimum window = \"BANC\" (length 4)\r\n  Output: 4\r\n\r\nSliding window: expand right to include all chars of t, shrink left to minimize window."
+  },
+  {
+    "id": 9000185,
+    "category": "Programming",
+    "difficulty": "Medium",
+    "question": "Longest Palindromic Substring Length",
+    "answer": "A palindromic substring reads the same forwards and backwards. You want the longest one inside the given string.\r\nGiven a string s, return the LENGTH of the longest palindromic substring.\r\n\r\nExample:\r\n  s = \"babad\"\r\n  Palindromes: \"bab\"(len 3), \"aba\"(len 3) -> longest length = 3\r\n  Output: 3\r\n\r\nExpand around center: for each position (and between positions), expand outward as long as characters match."
+  },
+  {
+    "id": 9000186,
+    "category": "Programming",
+    "difficulty": "Medium",
+    "question": "String to Integer Atoi",
+    "answer": "Convert a string to a 32-bit signed integer, handling leading whitespace, optional sign (+/-), and stopping at non-digit characters.\r\nIf the result overflows, clamp to Integer.MAX_VALUE (2147483647) or Integer.MIN_VALUE (-2147483648).\r\n\r\nExample:\r\n  s = \"42\" -> Output: 42\r\n  s = \"   -42\" -> skip spaces, negative -> Output: -42\r\n  s = \"4193 with words\" -> stop at space -> Output: 4193\r\n  s = \"9999999999\" -> overflow -> Output: 2147483647"
+  },
+  {
+    "id": 9000187,
+    "category": "Programming",
+    "difficulty": "Medium",
+    "question": "Count and Say Length",
+    "answer": "The Count and Say sequence describes how digits appear in the previous term:\r\n  Term 1: \"1\"\r\n  Term 2: one '1' -> \"11\"\r\n  Term 3: two '1's -> \"21\"\r\n  Term 4: one '2' then one '1' -> \"1211\"\r\nGiven n, return the length of the n-th term.\r\n\r\nExample:\r\n  n = 4 -> \"1211\" -> length = 4\r\n  Output: 4"
+  },
+  {
+    "id": 9000188,
+    "category": "Programming",
+    "difficulty": "Medium",
+    "question": "Decode String Length",
+    "answer": "An encoded string uses the format k[encoded_string] meaning encoded_string repeated k times. The encoding can be nested.\r\nGiven an encoded string s, return the length of its fully decoded version.\r\n\r\nExample:\r\n  s = \"3[a]2[bc]\" -> \"aaabcbc\" -> length = 7\r\n  s = \"3[a2[c]]\" -> \"accaccacc\" -> length = 9\r\n  Output for \"3[a]2[bc]\": 7\r\n\r\nUse a stack: push count and current string, process inner brackets first."
+  },
+  {
+    "id": 9000189,
+    "category": "Programming",
+    "difficulty": "Medium",
+    "question": "Roman to Integer",
+    "answer": "Roman numerals use letters to represent values: I=1, V=5, X=10, L=50, C=100, D=500, M=1000.\r\nUsually larger values precede smaller ones, but when a smaller value precedes a larger one, subtract it (e.g., IV=4, IX=9, XL=40).\r\nGiven a valid Roman numeral string s, return its integer value.\r\n\r\nExample:\r\n  s = \"MCMXCIV\"\r\n  M=1000, CM=900, XC=90, IV=4 -> total = 1994\r\n  Output: 1994"
+  },
+  {
+    "id": 9000190,
+    "category": "Programming",
+    "difficulty": "Medium",
+    "question": "Integer to Roman",
+    "answer": "Convert an integer to its Roman numeral representation. Use standard Roman numeral values including the subtractive forms (IV, IX, XL, XC, CD, CM).\r\nGiven an integer num (1  \"MCMXCIV\"\r\n  1000=M, 900=CM, 90=XC, 4=IV\r\n  Output: \"MCMXCIV\"\r\n\r\nUse greedy: repeatedly subtract the largest possible Roman value and append its symbol."
+  },
+  {
+    "id": 9000191,
+    "category": "Programming",
+    "difficulty": "Medium",
+    "question": "Longest Common Subsequence Length",
+    "answer": "A subsequence is formed by deleting some characters (without reordering). The Longest Common Subsequence (LCS) is the longest subsequence present in BOTH strings.\r\nGiven strings s1 and s2, return the length of their LCS.\r\n\r\nExample:\r\n  s1 = \"abcde\", s2 = \"ace\"\r\n  LCS = \"ace\" -> length = 3\r\n  Output: 3\r\n\r\nDynamic programming: dp[i][j] = LCS length for s1[0..i-1] and s2[0..j-1]."
+  },
+  {
+    "id": 9000192,
+    "category": "Programming",
+    "difficulty": "Medium",
+    "question": "Edit Distance",
+    "answer": "Edit distance (Levenshtein distance) is the minimum number of single-character operations (insert, delete, or replace) needed to transform one string into another.\r\nGiven strings word1 and word2, return the minimum edit distance.\r\n\r\nExample:\r\n  word1 = \"horse\", word2 = \"ros\"\r\n  horse->rorse (replace h->r), rorse->rose (delete r), rose->ros (delete e) -> 3 operations\r\n  Output: 3\r\n\r\nClassic DP: dp[i][j] = edit distance for word1[0..i-1] and word2[0..j-1]."
+  },
+  {
+    "id": 9000193,
+    "category": "Programming",
+    "difficulty": "Medium",
+    "question": "Wildcard Pattern Matching",
+    "answer": "A wildcard pattern uses '?' to match any single character, and '*' to match any sequence of characters (including empty).\r\nGiven string s and pattern p, return 1 if s matches the full pattern p, else 0.\r\n\r\nExample 1:\r\n  s = \"aa\", p = \"*\" -> '*' matches everything -> Output: 1\r\n\r\nExample 2:\r\n  s = \"cb\", p = \"?a\" -> '?'=c, 'a'!=b -> Output: 0\r\n\r\nDP approach: dp[i][j] = whether s[0..i-1] matches p[0..j-1]."
+  },
+  {
+    "id": 9000194,
+    "category": "Programming",
+    "difficulty": "Medium",
+    "question": "Implement strStr",
+    "answer": "Find the first occurrence of a substring (needle) inside a larger string (haystack).\r\nGiven strings haystack and needle, return the index of the first occurrence of needle in haystack, or -1 if not present.\r\n\r\nExample 1:\r\n  haystack = \"hello\", needle = \"ll\" -> found at index 2 -> Output: 2\r\n\r\nExample 2:\r\n  haystack = \"aaaaa\", needle = \"bba\" -> not found -> Output: -1\r\n\r\nImplement a substring search. KMP algorithm achieves O(n) time."
+  },
+  {
+    "id": 9000195,
+    "category": "Programming",
+    "difficulty": "Medium",
+    "question": "Largest Number from Digit Array",
+    "answer": "Rearranging digits of a number means choosing the best order to maximize the resulting value.\r\nGiven a space-separated string of non-negative integers s, arrange them to form the largest possible number and return it as a string.\r\n\r\nExample:\r\n  s = \"3 30 34 5 9\"\r\n  Arranged: \"9534330\"\r\n  Output: \"9534330\"\r\n\r\nCustom sort: compare by concatenation order (a+b vs b+a as strings)."
+  },
+  {
+    "id": 9000196,
+    "category": "Programming",
+    "difficulty": "Medium",
+    "question": "String Compression Length",
+    "answer": "String compression using run-length encoding: replace consecutive identical characters with character + count (omit count if 1).\r\nGiven a string s, return the length of the compressed string.\r\n\r\nExample:\r\n  s = \"aabcccccaaa\"\r\n  Compressed: \"a2bc5a3\" -> length = 7\r\n  Output: 7\r\n\r\nBuild the compressed string (char + count if > 1) and return its length."
+  },
+  {
+    "id": 9000197,
+    "category": "Programming",
+    "difficulty": "Medium",
+    "question": "Longest Substring with At Most K Distinct Characters",
+    "answer": "A window with at most k distinct characters means you can use at most k different letters within any chosen contiguous section.\r\nGiven a string s and integer k, return the length of the longest substring with at most k distinct characters.\r\n\r\nExample:\r\n  s = \"eceba\", k = 2\r\n  Longest with  length = 3\r\n  Output: 3\r\n\r\nSliding window + HashMap for character frequencies."
+  },
+  {
+    "id": 9000198,
+    "category": "Programming",
+    "difficulty": "Medium",
+    "question": "Palindrome Partitioning Count",
+    "answer": "Partitioning a string means splitting it into one or more non-overlapping substrings. A palindrome partition means every part is a palindrome.\r\nGiven a string s, return the total number of ways to partition it so every substring is a palindrome.\r\n\r\nExample:\r\n  s = \"aab\"\r\n  Partitions: [\"a\",\"a\",\"b\"] and [\"aa\",\"b\"] -> count = 2\r\n  Output: 2\r\n\r\nBacktracking or DP: try all cut positions and check if each part is a palindrome."
+  },
+  {
+    "id": 9000199,
+    "category": "Programming",
+    "difficulty": "Medium",
+    "question": "Reverse Each Word in Sentence",
+    "answer": "Given a sentence, reverse each individual WORD but keep the order of words the same.\r\nGiven a string s with space-separated words, reverse the characters within each word while maintaining word positions.\r\n\r\nExample:\r\n  s = \"Hello World\"\r\n  Each word reversed: \"olleH dlroW\"\r\n  Output: \"olleH dlroW\"\r\n\r\nSplit by spaces, reverse each word, rejoin."
+  },
+  {
+    "id": 9000200,
+    "category": "Programming",
+    "difficulty": "Medium",
+    "question": "Count Unique Permutations",
+    "answer": "A permutation is an arrangement of all characters in a different order. The number of unique permutations of a string with repeated characters uses the formula n! / (count1! x count2! x ...).\r\nGiven a string s (lowercase letters), return the number of unique permutations (modulo 10^9+7).\r\n\r\nExample:\r\n  s = \"aab\"\r\n  Unique permutations: aab, aba, baa -> count = 3\r\n  Output: 3\r\n\r\nUse factorial divided by product of factorials of each character's count."
+  },
+  {
+    "id": 9000201,
+    "category": "Programming",
+    "difficulty": "Medium",
+    "question": "Multiply Strings",
+    "answer": "Multiply two large non-negative integers given as strings. The result may be too large for a regular int or long, so work entirely with string/array representation.\r\nGiven strings num1 and num2 representing non-negative integers, return their product as a string.\r\n\r\nExample:\r\n  num1 = \"123\", num2 = \"456\"\r\n  123 x 456 = 56088\r\n  Output: \"56088\"\r\n\r\nSimulate grade-school multiplication: each digit of num1 x each digit of num2, accumulate with position offsets."
+  },
+  {
+    "id": 9000202,
+    "category": "Programming",
+    "difficulty": "Medium",
+    "question": "Check if Strings are K-Anagrams",
+    "answer": "Two strings are k-anagrams if you can make them anagrams by changing at most k characters in one of them.\r\nGiven strings s1 and s2 of equal length and integer k, return 1 if they are k-anagrams, else 0.\r\n\r\nExample:\r\n  s1 = \"anagram\", s2 = \"grammar\", k = 3\r\n  Need 3 changes -> Output: 1\r\n\r\nCount characters that differ: if the excess count in s1 is <= k, they are k-anagrams."
+  },
+  {
+    "id": 9000203,
+    "category": "Programming",
+    "difficulty": "Medium",
+    "question": "Find Distinct Substrings of Length K",
+    "answer": "A sliding window of size k generates all contiguous substrings of exactly k characters.\r\nGiven a string s and integer k, return the count of DISTINCT substrings of length exactly k.\r\n\r\nExample:\r\n  s = \"abcabc\", k = 3\r\n  Substrings: \"abc\",\"bca\",\"cab\",\"abc\" -> distinct: {\"abc\",\"bca\",\"cab\"} -> count = 3\r\n  Output: 3\r\n\r\nUse a HashSet and a sliding window of size k."
+  },
+  {
+    "id": 9000204,
+    "category": "Programming",
+    "difficulty": "Medium",
+    "question": "Check No Adjacent Repeats Possible",
+    "answer": "Rearranging a string so no two adjacent characters are the same requires careful placement of the most frequent characters first.\r\nGiven a string s (lowercase letters), return 1 if it can be rearranged so no two adjacent characters are the same, else return 0.\r\n\r\nExample 1:\r\n  s = \"aab\" -> can rearrange to \"aba\" -> Output: 1\r\n\r\nExample 2:\r\n  s = \"aaab\" -> too many a's, impossible -> Output: 0\r\n\r\nIf max frequency > (n+1)/2, it is impossible."
+  },
+  {
+    "id": 9000205,
+    "category": "Programming",
+    "difficulty": "Medium",
+    "question": "Minimum Deletions to Balance String",
+    "answer": "A string of only 'a' and 'b' is balanced if all 'a's come before all 'b's.\r\nGiven a string s containing only 'a' and 'b', return the minimum number of deletions to make it balanced.\r\n\r\nExample:\r\n  s = \"aababbab\"\r\n  Delete 2 characters to make \"aaabbb\" -> 2 deletions\r\n  Output: 2\r\n\r\nGreedy: for each 'a' seen after a 'b', either delete the 'a' or all previous 'b's — choose the cheaper option."
+  },
+  {
+    "id": 9000206,
+    "category": "Programming",
+    "difficulty": "Medium",
+    "question": "Longest Repeating Substring Length",
+    "answer": "A repeating substring appears at least twice in a string (possibly overlapping).\r\nGiven a string s, return the length of the longest substring that appears at least twice.\r\n\r\nExample:\r\n  s = \"abcabc\"\r\n  \"abc\" appears twice -> length = 3\r\n  Output: 3\r\n\r\nBinary search on length: for each candidate length, check if any substring appears twice using a HashSet."
+  },
+  {
+    "id": 9000207,
+    "category": "Programming",
+    "difficulty": "Medium",
+    "question": "Count Palindromic Substrings",
+    "answer": "A palindromic substring reads the same forwards and backwards.\r\nGiven a string s, return the total count of substrings that are palindromes (including single-character substrings).\r\n\r\nExample:\r\n  s = \"aaa\"\r\n  Palindromes: \"a\"(3 times), \"aa\"(2 times), \"aaa\"(1 time) -> total = 6\r\n  Output: 6\r\n\r\nExpand around each center (odd and even length palindromes), count every valid expansion."
+  },
+  {
+    "id": 9000208,
+    "category": "Programming",
+    "difficulty": "Medium",
+    "question": "Word Break Possible",
+    "answer": "Word break checks if a string can be completely split into words from a dictionary.\r\nGiven a string s and a space-separated list of dictionary words, return 1 if s can be segmented entirely into dictionary words, else 0.\r\n\r\nExample:\r\n  s = \"leetcode\", words = \"leet code\"\r\n  \"leet\" + \"code\" = \"leetcode\" -> Output: 1\r\n\r\nDP: dp[i] = true if s[0..i-1] can be segmented. For each position, try all dictionary words."
+  },
+  {
+    "id": 9000209,
+    "category": "Programming",
+    "difficulty": "Medium",
+    "question": "Find and Replace Pattern Count",
+    "answer": "A word matches a pattern if there is a bijection (one-to-one mapping) from letters in the pattern to letters in the word.\r\nGiven a space-separated list of words and a pattern, return how many words match the pattern.\r\n\r\nExample:\r\n  words = \"mee aqq foo\", pattern = \"abb\"\r\n  mee: m->a, e->b, e->b matches abb. aqq: a->a, q->b, q->b matches. foo: f->a, o->b, o->b matches -> count = 3\r\n  Output: 3\r\n\r\nMap each char in pattern to word and verify it is consistent and bijective."
+  },
+  {
+    "id": 9000210,
+    "category": "Programming",
+    "difficulty": "Medium",
+    "question": "Number of Matching Subsequences",
+    "answer": "Count how many words in a list are subsequences of a given string.\r\nGiven string s and space-separated words list, return how many words are subsequences of s.\r\n\r\nExample:\r\n  s = \"abcde\", words = \"a bb acd ace\"\r\n  a: yes, bb: no, acd: yes, ace: yes -> count = 3\r\n  Output: 3"
+  },
+  {
+    "id": 9000211,
+    "category": "Programming",
+    "difficulty": "Medium",
+    "question": "Longest Word Built from Characters",
+    "answer": "A word can be built one letter at a time if all its prefixes exist in the dictionary.\r\nGiven a space-separated list of words in string s, return the longest word where every prefix also exists in the list. Return lexicographically smallest if tied.\r\n\r\nExample:\r\n  s = \"w wo wor word world\"\r\n  \"world\": w, wo, wor, word, world all exist -> length 5 -> Output: \"world\"\r\n\r\nSort words, use a HashSet. A word is valid if its prefix (without last char) is in the set."
+  },
+  {
+    "id": 9000212,
+    "category": "Programming",
+    "difficulty": "Hard",
+    "question": "Regular Expression Matching",
+    "answer": "Implement regular expression matching with '.' (matches any single character) and '*' (matches zero or more of the preceding element).\r\nGiven string s and pattern p, return 1 if s fully matches p, else 0.\r\n\r\nExample 1:\r\n  s = \"aa\", p = \"a*\" -> 'a*' matches zero or more 'a' -> matches \"aa\" -> Output: 1\r\n\r\nExample 2:\r\n  s = \"aab\", p = \"c*a*b\" -> c*(zero c's) + a*(two a's) + b -> Output: 1\r\n\r\nDP: dp[i][j] = whether s[0..i-1] matches p[0..j-1]."
+  },
+  {
+    "id": 9000213,
+    "category": "Programming",
+    "difficulty": "Hard",
+    "question": "Minimum Window Substring",
+    "answer": "Find the smallest contiguous window in string s that contains every character of string t (including duplicates). If none exists, return \"\".\r\nGiven strings s and t, return the minimum window substring.\r\n\r\nExample:\r\n  s = \"ADOBECODEBANC\", t = \"ABC\"\r\n  Minimum window = \"BANC\"\r\n  Output: \"BANC\"\r\n\r\nSliding window: expand right to find a valid window, then shrink from left to minimize it. Use two frequency maps."
+  },
+  {
+    "id": 9000214,
+    "category": "Programming",
+    "difficulty": "Hard",
+    "question": "Palindrome Pairs Count",
+    "answer": "Two words form a palindrome pair if their concatenation (in some order) is a palindrome.\r\nGiven a space-separated list of unique words in string s, return the count of pairs (i, j) where i!=j and words[i]+words[j] is a palindrome.\r\n\r\nExample:\r\n  words = \"abcd dcba lls s sssll\"\r\n  Pairs forming palindromes: (abcd,dcba),(dcba,abcd),(lls,s),(sssll,lls) -> count = 4\r\n  Output: 4\r\n\r\nFor each word, check if its reverse exists in the word set, with additional palindrome prefix/suffix checks."
+  },
+  {
+    "id": 9000215,
+    "category": "Programming",
+    "difficulty": "Hard",
+    "question": "Shortest Palindrome Length",
+    "answer": "Make the shortest palindrome by adding characters only at the FRONT of the string.\r\nGiven a string s, return the length of the shortest palindrome you can form.\r\n\r\nExample:\r\n  s = \"aacecaaa\"\r\n  Add \"a\" at front -> \"aaacecaaa\" (length 9)\r\n  Output: 9\r\n\r\nFind the longest palindrome prefix of s using KMP failure function on s + \"#\" + reverse(s)."
+  },
+  {
+    "id": 9000216,
+    "category": "Programming",
+    "difficulty": "Hard",
+    "question": "Word Ladder Length",
+    "answer": "A word ladder transforms one word into another by changing exactly one letter at a time, and each intermediate word must be in a given dictionary.\r\nGiven beginWord, endWord, and a space-separated wordList, return the number of words in the shortest transformation sequence. Return 0 if none exists.\r\n\r\nExample:\r\n  beginWord=\"hit\", endWord=\"cog\", wordList=\"hot dot dog lot log cog\"\r\n  hit->hot->dot->dog->cog = 5 words\r\n  Output: 5\r\n\r\nBFS: each level changes one character. Use a HashSet for O(1) word lookup."
+  },
+  {
+    "id": 9000217,
+    "category": "Programming",
+    "difficulty": "Hard",
+    "question": "Distinct Subsequences Count",
+    "answer": "Count in how many distinct ways you can choose characters from s (in order, without reusing) to form the string t.\r\nGiven strings s and t, return the number of distinct subsequences of s that equal t (modulo 10^9+7).\r\n\r\nExample:\r\n  s = \"rabbbit\", t = \"rabbit\"\r\n  You can choose the 3 'b's in 3 different ways -> count = 3\r\n  Output: 3\r\n\r\nDP: dp[i][j] = number of ways to form t[0..j-1] using s[0..i-1]."
+  },
+  {
+    "id": 9000218,
+    "category": "Programming",
+    "difficulty": "Hard",
+    "question": "Interleaving String Check",
+    "answer": "String s3 is an interleaving of s1 and s2 if it can be formed by interleaving the characters of s1 and s2 while maintaining their relative order.\r\nGiven strings s1, s2, s3, return 1 if s3 is a valid interleaving of s1 and s2, else 0.\r\n\r\nExample:\r\n  s1 = \"aabcc\", s2 = \"dbbca\", s3 = \"aadbbcbcac\"\r\n  Valid interleaving -> Output: 1\r\n\r\nDP: dp[i][j] = whether s3[0..i+j-1] can be formed from s1[0..i-1] and s2[0..j-1]."
+  },
+  {
+    "id": 9000219,
+    "category": "Programming",
+    "difficulty": "Hard",
+    "question": "Most Frequent Word in Text",
+    "answer": "Given a paragraph of text, find the most frequently occurring word (ignoring punctuation and case).\r\nGiven string s (may contain letters, spaces, and punctuation), return the frequency count of the most common word.\r\n\r\nExample:\r\n  s = \"Bob hit a ball the hit BALL flew far after it was hit\"\r\n  After cleaning: frequencies counted, \"hit\" appears 3 times -> max = 3\r\n  Output: 3"
+  },
+  {
+    "id": 9000220,
+    "category": "Programming",
+    "difficulty": "Hard",
+    "question": "Minimum Steps to Make String",
+    "answer": "Starting from a single character, you can either append one character or copy-all and paste. Find minimum steps to build a string of n same characters.\r\nGiven a string s of length n (all same character), return the minimum steps to make it.\r\nMinimum steps = sum of prime factors of n.\r\n\r\nExample:\r\n  n = 9: 9 = 3x3 -> 3+3 = 6 steps\r\n  Output: 6"
+  },
+  {
+    "id": 9000221,
+    "category": "Programming",
+    "difficulty": "Hard",
+    "question": "Alien Dictionary Order Check",
+    "answer": "In an alien language, letters are ordered differently. Verify if a given list of words is lexicographically sorted according to the alien alphabet order.\r\nGiven space-separated words and an alien order string, return 1 if words are sorted per alien order, else 0.\r\n\r\nExample:\r\n  words = \"hello world\", order = \"hlabcdefgijkmnopqrstuvwxyz\"\r\n  In alien order: h comes before w -> \"hello\"  Output: 1"
+  },
+  {
+    "id": 9000222,
+    "category": "Programming",
+    "difficulty": "Hard",
+    "question": "Count Unique Palindromic Subsequences",
+    "answer": "Count the number of distinct 3-character palindromic subsequences of the form \"aba\" where outer chars are same and inner char is anything.\r\nGiven a string s (lowercase only), return the count of distinct 3-character palindromic subsequences.\r\n\r\nExample:\r\n  s = \"aabca\"\r\n  Unique 3-char palindromic subsequences: \"aba\", \"aaa\", \"aca\" -> count = 3\r\n  Output: 3\r\n\r\nFor each character as the boundary, count distinct characters that appear between its first and last occurrence."
+  },
+  {
+    "id": 9000223,
+    "category": "Programming",
+    "difficulty": "Hard",
+    "question": "Minimum Cost to Remove Consecutive Duplicates",
+    "answer": "For each group of consecutive identical characters in a string, you must keep at most one. The cost to delete a character is given by cost[i]. Return the minimum total deletion cost.\r\nGiven s and space-separated costs, return minimum deletion cost.\r\n\r\nExample:\r\n  s = \"abaac\", cost = \"1 2 3 4 5\"\r\n  Consecutive duplicates: \"aa\" at index 2-3 (costs 3,4) -> delete 3, keep 4 -> min cost = 3\r\n  Output: 3"
+  },
+  {
+    "id": 9000224,
+    "category": "Programming",
+    "difficulty": "Hard",
+    "question": "Detect Pattern in String",
+    "answer": "A pattern of length k repeats m or more times consecutively (without gaps) somewhere in s.\r\nGiven string s, integer k (pattern length) and m (minimum repetitions), return 1 if such a pattern exists, else 0.\r\n\r\nExample:\r\n  s = \"ababababab\", k = 2, m = 5\r\n  \"ab\" repeats 5 consecutive times -> Output: 1\r\n\r\nFor each starting position, extract the pattern of length k and check if it repeats m times consecutively."
+  },
+  {
+    "id": 9000225,
+    "category": "Programming",
+    "difficulty": "Hard",
+    "question": "Minimum Insertions to Make Palindrome",
+    "answer": "Find the minimum number of characters you need to INSERT (anywhere in the string) to make it a palindrome.\r\nGiven a string s, return the minimum insertions needed.\r\n\r\nExample:\r\n  s = \"mbadm\" -> insert 2 chars -> make palindrome in 2 insertions\r\n  Output: 2\r\n\r\nRelated to LCS: min insertions = length - LCS(s, reverse(s))."
+  },
+  {
+    "id": 9000226,
+    "category": "Programming",
+    "difficulty": "Hard",
+    "question": "Minimum Cuts for Palindrome Partitioning",
+    "answer": "Partition a string into substrings such that every part is a palindrome. Minimize the number of cuts.\r\nGiven a string s, return the minimum number of cuts needed so that every part is a palindrome.\r\n\r\nExample:\r\n  s = \"aab\"\r\n  Cut \"aa|b\" -> \"aa\" is palindrome, \"b\" is palindrome -> 1 cut\r\n  Output: 1\r\n\r\nDP: precompute palindrome table, then dp[i] = min cuts for s[0..i]."
+  },
+  {
+    "id": 9000227,
+    "category": "Programming",
+    "difficulty": "Hard",
+    "question": "Minimum Bracket Reversals",
+    "answer": "Given a string of only '{' and '}' brackets, find the minimum number of bracket reversals needed to make it balanced.\r\nReturn -1 if balancing is impossible (odd length string can never be balanced).\r\n\r\nExample:\r\n  s = \"}{\" -> Reverse both -> \"{}\" -> 2 reversals -> Output: 2\r\n  s = \"{{{\" -> Length 3 (odd) -> impossible -> Output: -1\r\n\r\nRemove all matched pairs, then for remaining unmatched pattern count ceil(close/2) + ceil(open/2)."
+  },
+  {
+    "id": 9000228,
+    "category": "Programming",
+    "difficulty": "Hard",
+    "question": "Largest Rectangle in String Histogram",
+    "answer": "Given a numeric string where each character is a digit (bar height), find the largest rectangle area in the resulting histogram.\r\nGiven a string s of digits, return the largest rectangle area.\r\n\r\nExample:\r\n  s = \"25126\"\r\n  Heights: [2,5,1,2,6]\r\n  Largest rectangle = 6 (single bar of height 6)\r\n  Output: 6\r\n\r\nUse a stack to track bars and compute area when a shorter bar is encountered."
+  },
+  {
+    "id": 9000229,
+    "category": "Programming",
+    "difficulty": "Hard",
+    "question": "Reconstruct String from RLE Encoding",
+    "answer": "A string is encoded in run-length format: each pair is (character)(count), e.g., \"a2b3c1\".\r\nGiven an encoded string in the format (char)(count)(char)(count)..., return the original decoded string.\r\n\r\nExample:\r\n  s = \"a2b3c1\"\r\n  a x2 + b x3 + c x1 = \"aabbbc\"\r\n  Output: \"aabbbc\"\r\n\r\nParse pairs of (character, number): append each character the given number of times."
+  },
+  {
+    "id": 9000230,
+    "category": "Programming",
+    "difficulty": "Hard",
+    "question": "Find Minimum Character in Rotated String",
+    "answer": "A sorted string (alphabetically) can be rotated — imagine the characters cycling left or right.\r\nGiven a rotated alphabetically-sorted string of distinct lowercase letters s, find and return the minimum character.\r\n\r\nExample:\r\n  s = \"dcab\" (sorted would be \"abcd\", rotated)\r\n  Minimum character = 'a'\r\n  Output: \"a\"\r\n\r\nAdapted binary search: compare characters mid vs end to determine which half has the minimum."
+  },
+  {
+    "id": 9000231,
+    "category": "Programming",
+    "difficulty": "Hard",
+    "question": "KMP String Search Count",
+    "answer": "The Knuth-Morris-Pratt (KMP) algorithm searches for a pattern in a text in O(n+m) time by using a failure function to avoid redundant comparisons.\r\nGiven a text and a pattern, implement KMP to count all occurrences of pattern in text.\r\n\r\nExample:\r\n  text = \"aabaacaadaabaaba\", pattern = \"aaba\"\r\n  Occurrences at index 0, 9, 12 -> count = 3\r\n  Output: 3\r\n\r\nBuild the KMP failure function (partial match table), then search using it."
+  },
+  {
+    "id": 9000232,
+    "category": "Programming",
+    "difficulty": "Hard",
+    "question": "Z-Algorithm String Matching",
+    "answer": "The Z-algorithm builds a Z-array where Z[i] is the length of the longest substring starting at i that is also a prefix of the string.\r\nUse it to find all occurrences of a pattern in text.\r\nGiven text and pattern, return the count of pattern occurrences.\r\n\r\nExample:\r\n  text = \"aabxaab\", pattern = \"aab\"\r\n  Occurrences at 0 and 4 -> count = 2\r\n  Output: 2\r\n\r\nBuild combined = pattern + \"$\" + text, compute Z-array. Any Z[i] == pattern.length() is a match."
+  },
+  {
+    "id": 9000233,
+    "category": "Programming",
+    "difficulty": "Hard",
+    "question": "Suffix Array Vowel Count",
+    "answer": "A suffix array is a sorted array of all suffixes of a string. It enables efficient string operations.\r\nGiven a string s, build the suffix array (sorted order of suffixes) and return the number of suffixes that start with a vowel (a,e,i,o,u).\r\n\r\nExample:\r\n  s = \"banana\"\r\n  Suffixes sorted: \"a\",\"ana\",\"anana\",\"banana\",\"na\",\"nana\"\r\n  Starting with vowel: \"a\",\"ana\",\"anana\" -> count = 3\r\n  Output: 3"
+  },
+  {
+    "id": 9000234,
+    "category": "Programming",
+    "difficulty": "Hard",
+    "question": "Longest Repeated Substring via Suffix Array",
+    "answer": "Using a suffix array with an LCP (Longest Common Prefix) array, find the longest substring that appears at least twice.\r\nGiven a string s, return the length of the longest repeated (appearing at least twice) substring.\r\n\r\nExample:\r\n  s = \"banana\"\r\n  Longest repeated substring = \"ana\" (appears at index 1 and 3) -> length = 3\r\n  Output: 3\r\n\r\nBuild suffix array, compute LCP array, return maximum LCP value."
+  },
+  {
+    "id": 9000235,
+    "category": "Programming",
+    "difficulty": "Hard",
+    "question": "Smallest Window Containing All Unique Characters",
+    "answer": "Find the smallest contiguous window in the string that contains ALL distinct characters of the string at least once.\r\nGiven a string s, return the length of the smallest such window.\r\n\r\nExample:\r\n  s = \"aabcbcdbca\"\r\n  All distinct chars: {a,b,c,d} -> 4 distinct\r\n  Smallest window containing all 4: \"dbca\" (length 4)\r\n  Output: 4\r\n\r\nSliding window: maintain character frequency map. Track how many distinct characters are currently in the window."
+  },
+  {
+    "id": 9000236,
+    "category": "Programming",
+    "difficulty": "Hard",
+    "question": "Count Distinct Palindromic Substrings",
+    "answer": "Using the concept of expanding around centers (similar to Manacher's algorithm), find all distinct palindromic substrings.\r\nGiven a string s (lowercase letters), return the total count of distinct palindromic substrings (including length-1 ones).\r\n\r\nExample:\r\n  s = \"abacaba\"\r\n  Distinct palindromes: \"a\",\"b\",\"c\",\"aba\",\"aca\",\"abacaba\" -> 6\r\n  Output: 6\r\n\r\nExpand around each center to find all palindromes, collect into a HashSet to count distinct ones."
+  },
+  {
+    "id": 9000237,
+    "category": "Programming",
+    "difficulty": "Hard",
+    "question": "Minimum Window with K Repeating Characters",
+    "answer": "Find the length of the smallest substring of s where every character that appears in that substring appears at least k times.\r\nGiven a string s and integer k, return the length of the smallest such substring, or -1 if impossible.\r\n\r\nExample:\r\n  s = \"aaabb\", k = 2\r\n  'a' appears 3x, 'b' appears 2x. Smallest window with both >=2: \"aabb\" (length 4)\r\n  Output: 4\r\n\r\nDivide and conquer: split on chars with count < k, recursively find answer in substrings."
+  },
+  {
+    "id": 9000238,
+    "category": "Programming",
+    "difficulty": "Hard",
+    "question": "Rabin-Karp Multiple Pattern Match",
+    "answer": "The Rabin-Karp algorithm uses rolling hash to search for patterns efficiently. It is especially powerful when searching for multiple patterns at once.\r\nGiven a text and space-separated patterns, return the total number of pattern occurrences in the text (summed across all patterns).\r\n\r\nExample:\r\n  text = \"abcabc\", patterns = \"abc ab\"\r\n  \"abc\" appears 2 times, \"ab\" appears 2 times -> total = 4\r\n  Output: 4\r\n\r\nFor each pattern, use rolling hash or indexOf to count all non-overlapping occurrences."
+  },
+  {
+    "id": 9000239,
+    "category": "Programming",
+    "difficulty": "Hard",
+    "question": "Aho-Corasick Pattern Count",
+    "answer": "The Aho-Corasick algorithm simultaneously searches for multiple patterns in a text in O(n + sum of pattern lengths + matches) time.\r\nGiven text and space-separated patterns, return the count of total pattern occurrences across all patterns.\r\n\r\nExample:\r\n  text = \"ahishers\", patterns = \"he she his hers\"\r\n  he: 1, she: 1, his: 1, hers: 1 -> total = 4\r\n  Output: 4\r\n\r\nBuild a trie with failure links, then scan the text once to find all matches."
+  },
+  {
+    "id": 9000240,
+    "category": "Programming",
+    "difficulty": "Hard",
+    "question": "Longest Palindromic Subsequence",
+    "answer": "A palindromic subsequence reads the same forwards and backwards (characters don't need to be consecutive).\r\nGiven a string s, return the length of the longest palindromic subsequence.\r\n\r\nExample:\r\n  s = \"bbbab\"\r\n  Longest palindromic subsequence = \"bbbb\" -> length = 4\r\n  Output: 4\r\n\r\nDP: LPS(s) = LCS(s, reverse(s)). Or directly: dp[i][j] = LPS length for s[i..j]."
+  },
+  {
+    "id": 9000241,
+    "category": "Programming",
+    "difficulty": "Hard",
+    "question": "Count Distinct Subsequences",
+    "answer": "Count the number of distinct non-empty subsequences of a string (a subsequence is formed by deleting some characters while preserving order).\r\nGiven string s, return the count of distinct non-empty subsequences modulo 10^9+7.\r\n\r\nExample:\r\n  s = \"abc\"\r\n  Subsequences: a, b, c, ab, ac, bc, abc -> count = 7\r\n  Output: 7\r\n\r\nDP: dp[i] = count of distinct subsequences using s[0..i-1]. Handle duplicates to avoid counting same subsequence twice."
+  },
+  {
+    "id": 9000242,
+    "category": "Programming",
+    "difficulty": "Hard",
+    "question": "Shortest Superstring Length",
+    "answer": "Given a set of words, find the shortest string that contains all words as substrings. This uses bitmask DP.\r\nGiven space-separated words, return the length of the shortest superstring.\r\n\r\nExample:\r\n  words = \"alex loves leetcode\"\r\n  One superstring: \"alexlovesleetcode\" (length 17)\r\n  Output: 17\r\n\r\nBitmask DP: dp[mask][i] = min length when the set of words in mask is included and last word is i."
+  },
+  {
+    "id": 9000243,
+    "category": "Programming",
+    "difficulty": "Hard",
+    "question": "Maximum XOR of Two String Numbers",
+    "answer": "Given two space-separated lists of integers as strings, find the maximum XOR value between any number from s1 and any number from s2.\r\nReturn the maximum XOR value.\r\n\r\nExample:\r\n  s1 = \"3 10 5 25 2 8\", s2 = \"3 10 5 25 2 8\"\r\n  Max XOR of any two: 25 XOR 5 = 28\r\n  Output: 28\r\n\r\nFor small inputs, try all pairs. For large inputs, build a Trie on binary representations."
+  },
+  {
+    "id": 9000244,
+    "category": "Programming",
+    "difficulty": "Hard",
+    "question": "Minimum ASCII Delete Sum",
+    "answer": "Find the minimum sum of ASCII values of deleted characters to make two strings equal. You delete characters from either string.\r\nGiven strings s1 and s2, return the minimum ASCII delete sum.\r\n\r\nExample:\r\n  s1 = \"sea\", s2 = \"eat\"\r\n  Delete 's' (115) from s1, delete 't' (116) from s2 -> sum = 231\r\n  Output: 231\r\n\r\nDP: dp[i][j] = min delete sum to make s1[0..i-1] == s2[0..j-1]."
+  },
+  {
+    "id": 9000245,
+    "category": "Programming",
+    "difficulty": "Hard",
+    "question": "Concatenated Words Count",
+    "answer": "A concatenated word is one that can be formed entirely by joining two or more shorter words from the same list.\r\nGiven a space-separated list of words, return the count of words that are concatenated words.\r\n\r\nExample:\r\n  words = \"cat cats catsdogcats dog dogcatsdog hippopotamuses rat ratcatdogcat\"\r\n  catsdogcats = cats+dog+cats, dogcatsdog = dog+cats+dog, ratcatdogcat = rat+cat+dog+cat -> count = 3\r\n  Output: 3\r\n\r\nFor each word, check if it can be broken into 2+ shorter words using word break DP."
+  },
+  {
+    "id": 9000246,
+    "category": "Programming",
+    "difficulty": "Hard",
+    "question": "Minimum ASCII Delete Sum for Equal Strings",
+    "answer": "This is a variant that also returns the actual characters to delete. Given two strings, return the minimum cost to make them equal where cost is the sum of ASCII values of deleted characters.\r\nBut here: return the minimum number of characters to delete total (not ASCII sum), to make s1 and s2 equal.\r\n\r\nExample:\r\n  s1 = \"sea\", s2 = \"eat\"\r\n  LCS = \"ea\" (length 2). Delete: s (from s1), t (from s2) -> 2 deletions\r\n  Output: 2\r\n\r\nMin deletions = (m + n) - 2 * LCS(s1, s2)."
+  },
+  {
+    "id": 9000247,
+    "category": "Programming",
+    "difficulty": "Hard",
+    "question": "Scrambled String Count",
+    "answer": "Count all distinct scrambled strings that can be generated from a given string (through recursive splits and swaps).\r\nGiven a string s of distinct lowercase letters, return the total number of distinct scrambled strings (including s itself).\r\n\r\nExample:\r\n  s = \"ab\"\r\n  Scrambles: \"ab\" and \"ba\" -> count = 2\r\n  Output: 2\r\n\r\nUse memoization. For each split point, generate scrambles of both halves and combine by either swapping or not swapping."
+  },
+  {
+    "id": 9000248,
+    "category": "Programming",
+    "difficulty": "Hard",
+    "question": "Burrows Wheeler Transform Length",
+    "answer": "The Burrows-Wheeler Transform (BWT) is used in data compression. It rearranges a string to produce one that compresses better.\r\nTo compute BWT of s: append a special end character '$', generate all rotations, sort them lexicographically, take the last character of each sorted rotation.\r\nGiven string s (lowercase letters), return the length of the BWT output (length of s + 1 for the '$').\r\n\r\nExample:\r\n  s = \"banana\"\r\n  BWT(\"banana$\") has 7 characters -> Output: 7"
+  },
+  {
+    "id": 9000249,
+    "category": "Programming",
+    "difficulty": "Hard",
+    "question": "Count Palindromic Subsequences of Length Three",
+    "answer": "Count all distinct 3-character palindromic subsequences (not necessarily contiguous) of the form xyx.\r\nGiven string s, return the count.\r\n\r\nExample:\r\n  s = \"aabca\" -> \"aba\", \"aaa\", \"aca\" -> 3\r\n  Output: 3"
+  },
+  {
+    "id": 9000250,
+    "category": "Programming",
+    "difficulty": "Hard",
+    "question": "Scramble String Check",
+    "answer": "A scrambled string is created by recursively swapping any non-leaf node's two children in the binary tree representation of the string.\r\nGiven strings s1 and s2 of the same length, return 1 if s2 is a scrambled version of s1, else 0.\r\n\r\nExample:\r\n  s1 = \"great\", s2 = \"rgeat\" -> scramble -> Output: 1"
+  },
+  {
+    "id": 9000251,
+    "category": "Programming",
+    "difficulty": "Hard",
+    "question": "String to Words Frequency Max",
+    "answer": "Given text with spaces and punctuation, find the word that appears most often (case insensitive, ignoring punctuation).\r\nReturn the most frequent word as a string.\r\n\r\nExample:\r\n  s = \"the sky is blue and the sky is high\" -> \"the\" or \"sky\" appear twice\r\n  Output: \"the\" (first alphabetically among tied)"
+  },
+  {
+    "id": 9000252,
+    "category": "Programming",
+    "difficulty": "Hard",
+    "question": "Number of Substrings Containing All Three Characters",
+    "answer": "Count substrings that contain at least one 'a', one 'b', and one 'c'.\r\nGiven string s containing only 'a', 'b', 'c', return the number of such substrings.\r\n\r\nExample:\r\n  s = \"abcabc\" -> 10 valid substrings\r\n  Output: 10\r\n\r\nSliding window: for each right pointer, find smallest left such that window contains a,b,c. All longer substrings also valid."
+  },
+  {
+    "id": 9000253,
+    "category": "Programming",
+    "difficulty": "Hard",
+    "question": "Minimum Remove to Make Valid Parentheses",
+    "answer": "Given a string with parentheses and lowercase letters, remove the minimum number of parentheses to make it valid.\r\nReturn the resulting string.\r\n\r\nExample:\r\n  s = \"lee(t(c)o)de)\" -> \"lee(t(c)o)de\"\r\n  Output: \"lee(t(c)o)de\"\r\n\r\nTwo-pass: mark invalid ')' left-to-right, then mark unmatched '(' right-to-left, then rebuild."
+  },
+  {
+    "id": 9000254,
+    "category": "Programming",
+    "difficulty": "Hard",
+    "question": "String Interleaving Minimum Deletions",
+    "answer": "Return the minimum number of characters to delete from s1+s2 to make the concatenation a palindrome.\r\nMin deletions = (s1.length + s2.length) - LPS(s1+s2).\r\n\r\nExample:\r\n  s1 = \"ab\", s2 = \"cd\"\r\n  Concatenation \"abcd\". LPS = 1. Min deletions = 4-1 = 3\r\n  Output: 3"
+  },
+  {
+    "id": 9000255,
+    "category": "Programming",
+    "difficulty": "Hard",
+    "question": "Longest Palindrome by Removing One Character",
+    "answer": "Find the longest palindromic substring achievable by removing exactly one character from s.\r\nGiven string s, return the length of the longest palindrome obtainable by deleting at most one character.\r\n\r\nExample:\r\n  s = \"abca\" -> remove 'b' or 'c' -> \"aca\" or \"aba\" -> length 3\r\n  Output: 3\r\n\r\nFor each position where palindrome expansion fails, try skipping either left or right character."
+  },
+  {
+    "id": 9000256,
+    "category": "Programming",
+    "difficulty": "Easy",
+    "question": "closest sum diffrence",
+    "answer": "Closest Pair Sum\n\nDescription\n\nGiven an array of integers numbers and an integer target, find two distinct elements in the array whose sum is closest to the target.\n\nReturn the absolute difference between the sum of the selected pair and the target.\n\nThe pair must consist of two different elements (different indices).\n\nNotes\n\nExactly one best pair exists.\n\nThe pair must consist of two different elements (by index).\n\nFunction Signature\n\nPython\n\ndef closestSumDifference(numbers, target):\n\nParameters\n\nnumbers (List[int]): A list of integers.\n\ntarget (int): The target sum.\n\nReturns\n\nint: The absolute difference between the closest pair sum and the target.\n\nExample 1\n\nInput\n\nnumbers = [1, 3, 8, 10]\ntarget = 12\n\nExplanation\n\nPossible pair sums:\n\nPairSumDifference\n1 + 348\n1 + 893\n1 + 10111\n3 + 8111\n3 + 10131\n8 + 10186\n\nThe minimum absolute difference is 1.\n\nOutput\n\n1"
+  }
+]

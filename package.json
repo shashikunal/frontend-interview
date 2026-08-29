@@ -1,0 +1,34 @@
+{
+  "name": "react-interview-prep",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "lint": "oxlint",
+    "scrape": "node scripts/scrape-greatfrontend.mjs",
+    "scrape:jsasgn": "node scripts/scrape-js-assignments.mjs",
+    "scrape:premium": "node scripts/scrape.mjs",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@babel/standalone": "^8.0.4",
+    "@monaco-editor/react": "^4.7.0",
+    "monaco-editor": "^0.56.0",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
+    "react-router-dom": "^7.18.1"
+  },
+  "devDependencies": {
+    "@types/babel__standalone": "^7.1.9",
+    "@types/node": "^24.13.2",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.3",
+    "oxlint": "^1.71.0",
+    "playwright": "^1.55.0",
+    "typescript": "~6.0.2",
+    "vite": "^8.1.1"
+  }
+}

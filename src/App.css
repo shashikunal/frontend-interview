@@ -1,0 +1,41 @@
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+/* ambient background glows */
+.app::before,
+.app::after {
+  content: '';
+  position: fixed;
+  z-index: -1;
+  border-radius: 50%;
+  filter: blur(120px);
+  pointer-events: none;
+}
+
+.app::before {
+  width: 560px;
+  height: 560px;
+  top: -220px;
+  left: -140px;
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.16), transparent 70%);
+}
+
+.app::after {
+  width: 480px;
+  height: 480px;
+  bottom: -200px;
+  right: -120px;
+  background: radial-gradient(circle, rgba(168, 85, 247, 0.1), transparent 70%);
+}
+
+.main-content {
+  flex: 1;
+  max-width: none;
+  width: 100%;
+  margin: 0;
+  padding: 36px 24px 72px;
+}
