@@ -32,6 +32,10 @@ export default function QuestionDetailPage() {
   }, [])
 
   useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
+  }, [id])
+
+  useEffect(() => {
     setCode(question?.code || '')
     setOutput([])
     setPreviewDoc('')
@@ -395,8 +399,10 @@ export default function QuestionDetailPage() {
         {prevQuestion ? (
           <Link to={`/questions/${prevQuestion.id}/detail`} className="nav-arrow">&larr; Previous</Link>
         ) : <span className="nav-placeholder" />}
-        <Link to="/questions" className="nav-back">Back to List</Link>
-        <Link to={`/questions/${question.id}`} className="nav-simple">Simple View</Link>
+        <div className="detail-nav-center">
+          <Link to="/questions" className="nav-back">Back to List</Link>
+          <Link to={`/questions/${question.id}`} className="nav-simple">Simple View</Link>
+        </div>
         {nextQuestion ? (
           <Link to={`/questions/${nextQuestion.id}/detail`} className="nav-arrow">Next &rarr;</Link>
         ) : <span className="nav-placeholder" />}
@@ -432,9 +438,22 @@ export default function QuestionDetailPage() {
       </article>
 
       <footer className="detail-footer">
-        <Link to="/questions" className="btn btn-secondary">All Questions</Link>
-        {prevQuestion && <Link to={`/questions/${prevQuestion.id}/detail`} className="btn btn-primary">&larr; Previous</Link>}
-        {nextQuestion && <Link to={`/questions/${nextQuestion.id}/detail`} className="btn btn-primary">Next &rarr;</Link>}
+        <div className="footer-nav-links">
+          <Link to="/questions" className="btn btn-secondary">All Questions</Link>
+          {prevQuestion && <Link to={`/questions/${prevQuestion.id}/detail`} className="btn btn-primary">&larr; Previous</Link>}
+          {nextQuestion && <Link to={`/questions/${nextQuestion.id}/detail`} className="btn btn-primary">Next &rarr;</Link>}
+        </div>
+        <button
+          type="button"
+          className="btn btn-secondary btn-scroll-top"
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          title="Scroll to top of the page"
+        >
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <polyline points="18 15 12 9 6 15" />
+          </svg>
+          Back to Top
+        </button>
       </footer>
     </div>
   )
@@ -874,29 +893,4 @@ function generateBrowserCompat(question: any): Array<{name: string, desktop: str
   }
 
   return compat
-}
-
-function getCodeOutput(question: any): string {
-  if (!question.code) return 'No code example available for this question.'
-
-  // Simulate common outputs based on question type
-  const q = question.question.toLowerCase()
-
-  if (q.includes('typeof null')) {
-    return '"object"'
-  }
-  if (q.includes('===') || q.includes('==')) {
-    return `// Example outputs:
-5 == "5"        // true
-5 === "5"       // false
-null == undefined  // true
-null === undefined // false`
-  }
-  if (question.code) {
-    return `// Run the code to see output
-// The code editor above is interactive
-// Click "Run Code" to execute`
-  }
-
-  return 'Click "Run Code" to execute the example.'
 }

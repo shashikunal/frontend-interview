@@ -9,11 +9,13 @@ import CodingList from './components/coding/CodingList'
 import Workspace from './components/workspace/Workspace'
 import Videos from './components/videos/Videos'
 import Quiz from './components/quiz/Quiz'
+import ScrollToTop from './components/common/ScrollToTop'
 import './App.css'
 
 export default function App() {
   return (
     <div className="app">
+      <ScrollToTop />
       <Header />
       <main className="main-content">
         <Routes>
