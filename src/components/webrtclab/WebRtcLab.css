@@ -1,0 +1,455 @@
+.webrtc-page {
+  padding-bottom: 80px;
+}
+
+.webrtc-header {
+  margin-bottom: 24px;
+}
+
+.webrtc-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #0284c7;
+  background: rgba(2, 132, 199, 0.12);
+  border: 1px solid rgba(2, 132, 199, 0.35);
+  padding: 4px 14px;
+  border-radius: 999px;
+  margin-bottom: 12px;
+}
+
+/* 1. TABS BAR */
+.webrtc-tabs-bar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.rtc-tab {
+  padding: 10px 18px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.rtc-tab:hover {
+  color: var(--text-primary);
+  border-color: var(--accent-bright);
+}
+
+.rtc-tab.active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+/* 2. SIGNALING GRID */
+.signaling-grid {
+  display: grid;
+  grid-template-columns: 1.25fr 1fr;
+  gap: 24px;
+}
+
+@media (max-width: 900px) {
+  .signaling-grid { grid-template-columns: 1fr; }
+}
+
+.step-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.signaling-state-tag {
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
+  font-weight: 800;
+  color: #10b981;
+  background: rgba(16, 185, 129, 0.12);
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+
+.stepper-visual-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--surface-hover);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
+  margin: 8px 0;
+}
+
+.step-node {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.step-node.completed {
+  color: var(--accent-bright);
+}
+
+.step-connector {
+  flex: 1;
+  height: 2px;
+  background: var(--border-strong);
+  margin: 0 10px;
+}
+
+.step-description-box {
+  background: var(--surface-hover);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--radius-md);
+  padding: 16px;
+}
+
+.step-description-box h4 {
+  margin: 0 0 6px;
+  font-size: 0.95rem;
+}
+
+.step-description-box p {
+  margin: 0;
+  font-size: 0.84rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.step-btn {
+  font-weight: 800;
+  padding: 12px;
+}
+
+.sdp-pre {
+  margin: 0;
+  background: var(--code-bg);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  line-height: 1.5;
+  color: #38bdf8;
+  max-height: 380px;
+  overflow-y: auto;
+}
+
+/* 3. ICE GRID */
+.ice-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  gap: 24px;
+}
+
+@media (max-width: 900px) {
+  .ice-grid { grid-template-columns: 1fr; }
+}
+
+.nat-selector-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.nat-btn {
+  flex: 1;
+  padding: 10px 14px;
+  background: var(--surface-hover);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.nat-btn.active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+.ice-resolution-card {
+  border-radius: var(--radius-md);
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ice-resolution-card.stun-success {
+  background: rgba(16, 185, 129, 0.08);
+  border: 2px solid #10b981;
+}
+
+.ice-resolution-card.turn-fallback {
+  background: rgba(245, 158, 11, 0.08);
+  border: 2px solid #f59e0b;
+}
+
+.res-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.res-type {
+  font-size: 0.74rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.res-status {
+  font-size: 0.76rem;
+  font-weight: 800;
+  font-family: var(--font-mono);
+}
+
+.stun-success .res-status { color: #10b981; }
+.turn-fallback .res-status { color: #f59e0b; }
+
+.ice-resolution-card h4 {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.ice-resolution-card p {
+  margin: 0;
+  font-size: 0.84rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.candidates-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cand-item {
+  background: var(--surface-hover);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cand-tag {
+  font-size: 0.74rem;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 4px;
+  align-self: flex-start;
+}
+
+.cand-tag.host { background: rgba(56, 189, 248, 0.15); color: #38bdf8; }
+.cand-tag.srflx { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+.cand-tag.relay { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
+
+.cand-item code {
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  color: #f59e0b;
+}
+
+.cand-item p {
+  margin: 0;
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+}
+
+/* 4. DATACHANNEL */
+.dc-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 24px;
+}
+
+@media (max-width: 900px) {
+  .dc-grid { grid-template-columns: 1fr; }
+}
+
+.dc-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.mode-toggle {
+  display: flex;
+  gap: 6px;
+  background: var(--surface-hover);
+  padding: 4px;
+  border-radius: var(--radius-sm);
+}
+
+.mode-btn {
+  padding: 6px 10px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 0.74rem;
+  font-weight: 700;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.mode-btn.active {
+  background: var(--accent);
+  color: #fff;
+}
+
+.dc-chat-stream {
+  background: #090d16;
+  border: 1px solid #1e293b;
+  border-radius: var(--radius-md);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.dc-message-bubble {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.msg-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
+.msg-sender {
+  font-weight: 800;
+  color: #38bdf8;
+}
+
+.msg-content {
+  font-size: 0.84rem;
+  color: var(--text-primary);
+}
+
+.dc-input-row {
+  display: flex;
+  gap: 8px;
+}
+
+.dc-input {
+  flex: 1;
+  background: var(--surface-hover);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  font-size: 0.84rem;
+  color: var(--text-primary);
+  outline: none;
+}
+
+.dc-input:focus {
+  border-color: var(--accent);
+}
+
+.send-btn {
+  font-weight: 800;
+  padding: 10px 18px;
+}
+
+/* 5. TOPOLOGIES */
+.topos-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.topos-intro-banner {
+  background: var(--surface);
+  border-left: 4px solid var(--accent);
+  border-radius: var(--radius-lg);
+  padding: 20px 24px;
+  box-shadow: var(--shadow-sm);
+}
+
+.topos-intro-banner h3 {
+  margin: 0 0 6px;
+  font-size: 1.15rem;
+}
+
+.topos-intro-banner p {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+}
+
+.topos-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 20px;
+}
+
+@media (max-width: 800px) {
+  .topos-grid { grid-template-columns: 1fr; }
+}
+
+.topo-card {
+  gap: 10px;
+}
+
+.topo-tag {
+  font-size: 0.74rem;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 4px;
+  align-self: flex-start;
+}
+
+.topo-tag.mesh { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
+.topo-tag.sfu { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+.topo-tag.mcu { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
+
+.topo-card h4 {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.topo-card p {
+  margin: 0;
+  font-size: 0.84rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.webrtc-footer {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 32px;
+  flex-wrap: wrap;
+  gap: 12px;
+}

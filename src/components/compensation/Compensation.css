@@ -1,0 +1,353 @@
+.comp-page {
+  padding-bottom: 80px;
+}
+
+.comp-header {
+  margin-bottom: 24px;
+}
+
+.comp-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #10b981;
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  padding: 4px 14px;
+  border-radius: 999px;
+  margin-bottom: 12px;
+}
+
+/* 1. TABS BAR */
+.comp-tabs-bar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.comp-tab {
+  padding: 10px 18px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.comp-tab:hover {
+  color: var(--text-primary);
+  border-color: var(--accent-bright);
+}
+
+.comp-tab.active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+/* 2. PRESETS BAR */
+.presets-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  font-size: 0.86rem;
+  color: var(--text-secondary);
+}
+
+.presets-pills {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.preset-pill {
+  padding: 6px 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.preset-pill:hover {
+  border-color: var(--accent-bright);
+}
+
+.preset-pill.active {
+  background: rgba(99, 102, 241, 0.12);
+  border-color: var(--accent-bright);
+  color: var(--accent-bright);
+}
+
+/* 3. CALCULATOR GRID */
+.calc-main-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 1.2fr;
+  gap: 24px;
+}
+
+@media (max-width: 900px) {
+  .calc-main-grid { grid-template-columns: 1fr; }
+}
+
+.inputs-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  box-shadow: var(--shadow-sm);
+}
+
+.card-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-header-row h3 {
+  margin: 0;
+  font-size: 1.15rem;
+}
+
+.preset-level-tag {
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: var(--accent-bright);
+  background: var(--surface-hover);
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.vesting-desc-note {
+  margin: 0;
+  font-size: 0.84rem;
+  color: var(--text-muted);
+  line-height: 1.45;
+}
+
+.slider-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.slider-label-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.84rem;
+  color: var(--text-secondary);
+}
+
+.slider-label-row strong {
+  color: #10b981;
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+}
+
+/* Results Column */
+.calc-results-column {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.tc-summary-hero {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 16px;
+  box-shadow: var(--shadow-sm);
+}
+
+.hero-tc-box, .hero-y1-box {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.hero-tc-val {
+  font-size: 2.2rem;
+  font-weight: 900;
+  color: #10b981;
+  font-family: var(--font-mono);
+  line-height: 1;
+}
+
+.hero-tc-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.hero-y1-val {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--accent-bright);
+  font-family: var(--font-mono);
+  line-height: 1;
+}
+
+.hero-y1-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.year-breakdown-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.year-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.year-title {
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.year-total {
+  margin: 0;
+  font-size: 1.3rem;
+  font-family: var(--font-mono);
+  color: var(--text-primary);
+}
+
+.year-details-list {
+  margin: 6px 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+}
+
+/* 4. SCRIPTS TAB */
+.scripts-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.scripts-intro-banner {
+  background: var(--surface);
+  border-left: 4px solid #10b981;
+  border-radius: var(--radius-lg);
+  padding: 20px 24px;
+  box-shadow: var(--shadow-sm);
+}
+
+.scripts-intro-banner h3 {
+  margin: 0 0 6px;
+  font-size: 1.15rem;
+}
+
+.scripts-intro-banner p {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.scripts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.script-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: var(--shadow-sm);
+}
+
+.script-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.script-title {
+  margin: 0 0 2px;
+  font-size: 1.1rem;
+}
+
+.script-tagline {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+.copy-script-btn {
+  font-weight: 700;
+}
+
+.scenario-context-box {
+  background: var(--surface-hover);
+  border-radius: 6px;
+  padding: 10px 14px;
+  font-size: 0.84rem;
+  color: var(--text-secondary);
+}
+
+.scenario-context-box strong {
+  color: var(--text-primary);
+}
+
+.script-body-box {
+  margin: 0;
+  background: var(--code-bg);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  line-height: 1.6;
+  color: var(--code-text);
+  white-space: pre-wrap;
+  overflow-x: auto;
+}
+
+.comp-footer {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 32px;
+  flex-wrap: wrap;
+  gap: 12px;
+}

@@ -14,7 +14,9 @@
   },
   "dependencies": {
     "@babel/standalone": "^8.0.4",
+    "@emailjs/browser": "^4.4.1",
     "@monaco-editor/react": "^4.7.0",
+    "@supabase/supabase-js": "^2.113.0",
     "monaco-editor": "^0.56.0",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",

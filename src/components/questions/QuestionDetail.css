@@ -116,6 +116,82 @@
   margin-bottom: 14px;
 }
 
+.detail-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+
+.detail-solved-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: var(--surface-hover);
+  border: 1px solid var(--border-strong);
+  color: var(--text-secondary);
+  font-size: 0.84rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.detail-solved-btn .check-icon {
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.detail-solved-btn:hover {
+  border-color: #34d399;
+  color: var(--text-primary);
+  transform: translateY(-1px);
+}
+
+.detail-solved-btn.solved {
+  background: rgba(16, 185, 129, 0.12);
+  border-color: rgba(16, 185, 129, 0.45);
+  color: #10b981;
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.2);
+}
+
+.detail-bookmark-btn {
+
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: var(--surface-hover);
+  border: 1px solid var(--border-strong);
+  color: var(--text-secondary);
+  font-size: 0.84rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.detail-bookmark-btn .star-icon {
+  color: #fbbf24;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.detail-bookmark-btn:hover {
+  border-color: #fbbf24;
+  color: var(--text-primary);
+  transform: translateY(-1px);
+}
+
+.detail-bookmark-btn.bookmarked {
+  background: rgba(245, 158, 11, 0.12);
+  border-color: rgba(245, 158, 11, 0.45);
+  color: #f59e0b;
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.2);
+}
+
 .detail-header h2 {
   font-size: clamp(1.3rem, 2.8vw, 1.8rem);
   line-height: 1.35;
@@ -125,11 +201,12 @@
   letter-spacing: -0.01em;
 }
 
+
 .question-id-tag {
   color: var(--text-muted);
   font-size: 0.85rem;
   font-family: var(--font-mono);
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--surface-hover);
   padding: 4px 10px;
   border-radius: 6px;
   border: 1px solid var(--border);
@@ -274,8 +351,8 @@
   border-radius: var(--radius-md);
   overflow: hidden;
   border: 1px solid var(--border-strong);
-  background: #0d1117;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+  background: var(--code-bg);
+  box-shadow: var(--shadow-md);
 }
 
 .code-window-bar {
@@ -283,8 +360,8 @@
   align-items: center;
   gap: 10px;
   padding: 8px 14px;
-  background: #161b22;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--code-header-bg);
+  border-bottom: 1px solid var(--border);
 }
 
 .window-dots {
@@ -317,8 +394,8 @@
 }
 
 .window-btn {
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--btn-secondary-bg);
+  border: 1px solid var(--btn-secondary-border);
   color: var(--text-secondary);
   font-size: 0.76rem;
   padding: 3px 8px;
@@ -328,7 +405,7 @@
 }
 
 .window-btn:hover {
-  background: rgba(255, 255, 255, 0.14);
+  background: var(--btn-secondary-hover);
   color: var(--text-primary);
 }
 
@@ -340,7 +417,7 @@
   font-size: 0.88rem;
   padding: 16px 18px;
   background: transparent;
-  color: #e6edf3;
+  color: var(--code-text);
   border: none;
   resize: vertical;
   outline: none;
@@ -353,7 +430,7 @@
 .code-editor-readonly {
   min-height: 220px;
   cursor: default;
-  color: #e6edf3;
+  color: var(--code-text);
 }
 
 .code-actions-bar {
@@ -466,8 +543,8 @@
   font-family: var(--font-mono);
   font-size: 0.85rem;
   line-height: 1.6;
-  background: #0d1117;
-  color: #e6edf3;
+  background: var(--terminal-bg);
+  color: var(--code-text);
   border: 1px solid var(--border-strong);
   border-radius: var(--radius-md);
   padding: 14px 16px;
@@ -477,7 +554,7 @@
   max-height: 320px;
   overflow-y: auto;
   margin: 0;
-  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.3);
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
 .console-line {
@@ -487,7 +564,7 @@
 }
 
 .console-line-no {
-  color: rgba(255, 255, 255, 0.25);
+  color: var(--text-muted);
   font-size: 0.76rem;
   user-select: none;
   min-width: 18px;
@@ -499,7 +576,7 @@
 }
 
 .console-placeholder {
-  color: rgba(255, 255, 255, 0.35);
+  color: var(--text-muted);
   font-style: italic;
   font-size: 0.82rem;
 }
@@ -511,7 +588,7 @@
   text-align: center;
   color: var(--text-muted);
   font-size: 0.85rem;
-  background: rgba(255, 255, 255, 0.02);
+  background: var(--surface-hover);
 }
 
 .not-found {

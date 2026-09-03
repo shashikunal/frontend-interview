@@ -1,5 +1,7 @@
 import { useState, useMemo, useEffect, useRef } from 'react'
 import { useParams, Link } from 'react-router-dom'
+import { useBookmarks } from '../../context/BookmarkContext'
+import { useProgress } from '../../context/ProgressContext'
 import { getById } from '../../data/questionService'
 import { useQuestions } from '../../data/useQuestions'
 import { buildJsSrcDoc, buildReactSrcDoc, buildHtmlSrcDoc, isReactCode, isHtmlWorkspace } from '../../lib/runner'
@@ -9,9 +11,14 @@ import './QuestionDetail.css'
 
 export default function QuestionDetail() {
   const { id } = useParams<{ id: string }>()
+  const { isBookmarked, toggleBookmark } = useBookmarks()
+  const { isSolved, toggleSolved } = useProgress()
   const { questions: allQuestions, loading } = useQuestions()
   const question = useMemo(() => getById(allQuestions, Number(id)), [allQuestions, id])
+  const bookmarked = question ? isBookmarked(question.id) : false
+  const solved = question ? isSolved(question.id) : false
   const [showAnswer, setShowAnswer] = useState(true)
+
   const [code, setCode] = useState('')
   const [output, setOutput] = useState<string[]>([])
   const [previewDoc, setPreviewDoc] = useState('')
@@ -22,6 +29,7 @@ export default function QuestionDetail() {
   const [copied, setCopied] = useState(false)
   const runIdRef = useRef(0)
   const handlersRef = useRef<(e: MessageEvent) => void>(() => {})
+
 
   useEffect(() => {
     const listener = (e: MessageEvent) => handlersRef.current(e)
@@ -153,7 +161,30 @@ export default function QuestionDetail() {
         <div className="detail-header">
           <div className="detail-header-top">
             <h2>{question.question}</h2>
-            <span className="question-id-tag">#{question.id}</span>
+            <div className="detail-header-actions">
+              <button
+                type="button"
+                className={`detail-solved-btn ${solved ? 'solved' : ''}`}
+                onClick={() => toggleSolved(question.id)}
+                aria-label={solved ? 'Mark as uncompleted' : 'Mark as solved'}
+                title={solved ? 'Mark as uncompleted' : 'Mark as solved'}
+              >
+                <span className="check-icon">{solved ? '✓' : '○'}</span>
+                <span>{solved ? 'Solved' : 'Mark Solved'}</span>
+              </button>
+              <button
+                type="button"
+                className={`detail-bookmark-btn ${bookmarked ? 'bookmarked' : ''}`}
+                onClick={() => toggleBookmark(question.id)}
+                aria-label={bookmarked ? 'Remove from saved questions' : 'Save question for revision'}
+                title={bookmarked ? 'Remove from saved questions' : 'Save question for revision'}
+              >
+                <span className="star-icon">★</span>
+                <span>{bookmarked ? 'Saved' : 'Save'}</span>
+              </button>
+              <span className="question-id-tag">#{question.id}</span>
+            </div>
+
           </div>
           <div className="detail-meta">
             <span className={`badge badge-category cat-${question.category.toLowerCase().replace(/[^a-z]+/g, '-')}`}>
@@ -169,6 +200,7 @@ export default function QuestionDetail() {
             )}
           </div>
         </div>
+
 
         <div className="detail-body">
           <div className="section-toolbar">

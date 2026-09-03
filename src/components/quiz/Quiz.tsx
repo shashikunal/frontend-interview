@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { useProgress } from '../../context/ProgressContext'
 import { useQuestions } from '../../data/useQuestions'
 import { getSources } from '../../data/questionService'
 import { DIFFICULTIES } from '../../models/question'
@@ -14,6 +15,7 @@ function catClass(name: string): string {
 
 export default function Quiz() {
   const { questions, loading, error } = useQuestions()
+  const { markSolved, recordQuizSession, recordActivity } = useProgress()
   const sources = useMemo(() => getSources(questions), [questions])
 
   const [filterSource, setFilterSource] = useState('')
@@ -54,17 +56,24 @@ export default function Quiz() {
 
   const next = useCallback(
     (knewIt?: boolean, markKnown?: boolean) => {
+      recordActivity()
       if (markKnown && q) {
         const s = new Set(knownIds)
         s.add(q.id)
         persistKnown(s)
+        markSolved(q.id)
       }
+      const newSeen = stats.seen + 1
+      const newKnown = stats.known + (knewIt ? 1 : 0)
+      setStats({ seen: newSeen, known: newKnown })
+      recordQuizSession(newKnown, newSeen, filterSource || undefined)
+
       setIdx(pool.length ? Math.floor(Math.random() * pool.length) : 0)
       setRevealed(false)
-      setStats(s => ({ seen: s.seen + 1, known: s.known + (knewIt ? 1 : 0) }))
     },
-    [pool.length, q, knownIds]
+    [pool.length, q, knownIds, stats, filterSource, markSolved, recordQuizSession, recordActivity]
   )
+
 
   if (loading) {
     return (

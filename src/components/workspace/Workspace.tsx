@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Editor, { type OnMount } from '@monaco-editor/react'
 import { Link, useParams } from 'react-router-dom'
+import { useTheme } from '../../context/ThemeContext'
 import { getById } from '../../data/questionService'
 import { useQuestions } from '../../data/useQuestions'
 import {
@@ -38,6 +39,7 @@ interface SavedWorkspace {
 
 export default function Workspace() {
   const { id } = useParams<{ id: string }>()
+  const { resolvedTheme } = useTheme()
   const { questions, loading } = useQuestions()
   const question = useMemo(() => getById(questions, Number(id)), [questions, id])
 
@@ -542,7 +544,7 @@ try {
               value={files[activeFile] ?? ''}
               onChange={handleEditorChange}
               onMount={onMount}
-              theme="vs-dark"
+              theme={resolvedTheme === 'dark' ? 'vs-dark' : 'light'}
               loading={<div className="skeleton" style={{ width: '100%', height: '100%' }} />}
               options={{
                 minimap: { enabled: false },

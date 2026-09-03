@@ -1,4 +1,7 @@
 import { Link } from 'react-router-dom'
+import { useBookmarks } from '../../context/BookmarkContext'
+import { useProgress } from '../../context/ProgressContext'
+import { useAuth } from '../../context/AuthContext'
 import { getStats, getCodingCount, getSources, getDifficultyBreakdown } from '../../data/questionService'
 import { useQuestions } from '../../data/useQuestions'
 import { DIFFICULTIES } from '../../models/question'
@@ -15,6 +18,10 @@ const CATEGORY_SLUGS: Record<string, string> = {
 
 export default function Home() {
   const { questions, loading, error } = useQuestions()
+  const { bookmarkedCount } = useBookmarks()
+  const { totalSolved, streak } = useProgress()
+  const { user, isAuthenticated, openAuthModal } = useAuth()
+
 
   if (loading) {
     return (
@@ -40,6 +47,7 @@ export default function Home() {
   const breakdown = getDifficultyBreakdown(questions)
   const totalDiff = breakdown.easy + breakdown.medium + breakdown.hard || 1
   const diffPct = (n: number) => `${Math.round((n / totalDiff) * 100)}%`
+  const overallProgressPct = Math.round((totalSolved / (questions.length || 1)) * 100)
 
   return (
     <div className="home page-enter">
@@ -58,10 +66,21 @@ export default function Home() {
           explanations and hands-on coding snippets.
         </p>
         <div className="hero-actions">
-          <Link to="/questions" className="btn btn-primary">Browse Questions</Link>
-          <Link to="/coding" className="btn btn-secondary">Coding Challenges</Link>
-          <Link to="/quiz" className="btn btn-secondary">Practice Mode</Link>
+          <Link to="/questions" className="btn btn-primary">📚 Practice Questions (22,222)</Link>
+          <Link to="/coding" className="btn btn-secondary">💻 Coding Challenges</Link>
+          <Link to="/system-design" className="btn btn-secondary">🏗️ System Design</Link>
+          <Link to="/quiz" className="btn btn-secondary">⚡ Timed Quiz</Link>
+          <Link to="/dashboard" className="btn btn-secondary">
+            {streak > 0 ? `🔥 ${streak} Day Streak · Tracker` : '📊 Study Tracker'}
+          </Link>
+          {bookmarkedCount > 0 && (
+            <Link to="/questions?saved=true" className="btn btn-saved-hero">
+              ★ Saved for Revision ({bookmarkedCount})
+            </Link>
+          )}
         </div>
+
+
 
         <div className="stat-row">
           <div className="stat-chip">
@@ -96,6 +115,67 @@ export default function Home() {
           ))}
         </div>
       </section>
+
+      <section className="home-progress-section">
+        <div className="home-progress-card">
+          <div className="home-progress-left">
+            <div className="progress-streak-bubble">
+              <span className="flame-emoji" aria-hidden="true">🔥</span>
+              <div className="streak-bubble-info">
+                <span className="streak-num">{streak}</span>
+                <span className="streak-text">Day Streak</span>
+              </div>
+            </div>
+            <div className="home-progress-details">
+              <div className="hp-user-badge-row">
+                <h3>{isAuthenticated && user ? `Welcome back, ${user.name}!` : 'Your Interview Readiness Tracker'}</h3>
+                {isAuthenticated && user && (
+                  <span className={`hp-role-tag ${user.role}`}>
+                    {user.role === 'admin' ? '🔒 ADMIN' : user.role === 'pro_member' ? '⚡ PRO MEMBER' : 'CANDIDATE'}
+                  </span>
+                )}
+              </div>
+              <p>{totalSolved.toLocaleString()} of {questions.length.toLocaleString()} questions mastered ({overallProgressPct}%) • Synced to Supabase Cloud</p>
+              <div className="home-progress-bar">
+                <div className="home-progress-fill" style={{ width: `${Math.max(overallProgressPct, 1)}%` }} />
+              </div>
+            </div>
+          </div>
+          <div className="home-progress-right-actions">
+            {isAuthenticated ? (
+              <Link to="/profile" className="btn btn-primary btn-sm">
+                👤 View Profile Hub →
+              </Link>
+            ) : (
+              <button type="button" className="btn btn-primary btn-sm" onClick={openAuthModal}>
+                🔐 Sign In (OTP) →
+              </button>
+            )}
+            <Link to="/user-management" className="btn btn-secondary btn-sm">
+              🛡️ Auth Studio
+            </Link>
+          </div>
+        </div>
+      </section>
+
+
+      {bookmarkedCount > 0 && (
+        <section className="saved-revision-section">
+          <div className="saved-revision-card">
+            <div className="saved-revision-left">
+              <span className="saved-revision-star">★</span>
+              <div>
+                <h3>Personal Revision Deck</h3>
+                <p>You have {bookmarkedCount} question{bookmarkedCount !== 1 ? 's' : ''} saved for targeted review before your interviews.</p>
+              </div>
+            </div>
+            <Link to="/questions?saved=true" className="btn btn-primary btn-sm">
+              Review Saved Questions →
+            </Link>
+          </div>
+        </section>
+      )}
+
 
       <section className="sources-section">
         <h2>Browse by source</h2>
@@ -146,3 +226,4 @@ export default function Home() {
     </div>
   )
 }
+

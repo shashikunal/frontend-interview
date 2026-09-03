@@ -169,7 +169,7 @@
   flex-direction: column;
   border: 1px solid var(--border-strong);
   border-radius: var(--radius-md);
-  background: #0d1117;
+  background: var(--terminal-bg);
 }
 
 .tb-console-out {
@@ -177,7 +177,7 @@
   min-height: 0;
   font-family: var(--font-mono);
   font-size: 0.82rem;
-  color: #e6edf3;
+  color: var(--code-text);
   padding: 12px 14px;
   margin: 0;
   white-space: pre-wrap;

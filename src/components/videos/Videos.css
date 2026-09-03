@@ -280,7 +280,7 @@
   align-items: center;
   justify-content: space-between;
   padding-top: 10px;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  border-top: 1px solid var(--border);
 }
 
 .video-watch-btn {
@@ -293,7 +293,7 @@
 }
 
 .video-card:hover .video-watch-btn {
-  color: #a855f7;
+  color: var(--violet);
 }
 
 .video-yt-link {
@@ -323,7 +323,7 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  border: 3px solid rgba(255, 255, 255, 0.1);
+  border: 3px solid var(--border-strong);
   border-top-color: var(--accent-bright);
   animation: spin 0.8s linear infinite;
 }
@@ -353,7 +353,7 @@
 .video-modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(4, 7, 16, 0.85);
+  background: var(--modal-backdrop);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   z-index: 9999;
@@ -370,8 +370,8 @@
 }
 
 .video-modal-content {
-  background: #111528;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: var(--modal-bg);
+  border: 1px solid var(--border-strong);
   border-radius: var(--radius-lg, 14px);
   width: 100%;
   max-width: 960px;
@@ -379,7 +379,7 @@
   display: flex;
   flex-direction: column;
   overflow-y: auto;
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.85), 0 0 40px rgba(99, 102, 241, 0.2);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.4), 0 0 40px rgba(99, 102, 241, 0.15);
   animation: modalSlideUp 0.28s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -400,7 +400,7 @@
   justify-content: space-between;
   gap: 16px;
   padding: 20px 24px 16px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid var(--border);
 }
 
 .video-modal-title-wrap {
@@ -414,13 +414,13 @@
   margin: 0;
   font-size: 1.25rem;
   font-weight: 700;
-  color: #fff;
+  color: var(--text-primary);
   line-height: 1.35;
 }
 
 .video-modal-close-btn {
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: var(--btn-secondary-bg);
+  border: 1px solid var(--btn-secondary-border);
   color: var(--text-secondary);
   width: 36px;
   height: 36px;
@@ -464,8 +464,8 @@
 }
 
 .video-modal-desc-box {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  background: var(--surface-hover);
+  border: 1px solid var(--border);
   border-radius: var(--radius-md, 8px);
   padding: 16px;
 }
@@ -514,7 +514,7 @@
 .modal-nav-btn:hover:not(:disabled) {
   background: var(--surface-hover);
   border-color: var(--accent-bright);
-  color: #fff;
+  color: var(--accent-bright);
   transform: translateY(-1px);
 }
 

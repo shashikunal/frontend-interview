@@ -1,5 +1,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
+import { useBookmarks } from '../../context/BookmarkContext'
+import { useProgress } from '../../context/ProgressContext'
 import { getCategories, getSources, getDifficultyBreakdown, search as searchQuestions } from '../../data/questionService'
 import { useQuestions } from '../../data/useQuestions'
 import type { Question } from '../../models/question'
@@ -14,13 +16,20 @@ function catClass(name: string): string {
 
 export default function QuestionList() {
   const [searchParams, setSearchParams] = useSearchParams()
+  const { isBookmarked, toggleBookmark, bookmarkedCount } = useBookmarks()
+  const { isSolved, toggleSolved, totalSolved } = useProgress()
   const categoryFilter = searchParams.get('category') || ''
   const sourceFilter = searchParams.get('source') || ''
   const qParam = searchParams.get('q') || ''
+  const savedParam = searchParams.get('saved') === 'true'
+  const statusParam = searchParams.get('status') || ''
+
   const [searchTerm, setSearchTerm] = useState(qParam)
   const [selectedCategory, setSelectedCategory] = useState(categoryFilter)
   const [selectedSource, setSelectedSource] = useState(sourceFilter)
   const [selectedDifficulty, setSelectedDifficulty] = useState('')
+  const [selectedStatus, setSelectedStatus] = useState(statusParam)
+  const [savedOnly, setSavedOnly] = useState(savedParam)
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE)
   const { questions: allQuestions, loading, error } = useQuestions()
 
@@ -29,18 +38,21 @@ export default function QuestionList() {
 
   const filtered = useMemo(() => {
     let results: Question[] = searchTerm ? searchQuestions(allQuestions, searchTerm) : allQuestions
+    if (savedOnly) results = results.filter(q => isBookmarked(q.id))
+    if (selectedStatus === 'solved') results = results.filter(q => isSolved(q.id))
+    if (selectedStatus === 'unsolved') results = results.filter(q => !isSolved(q.id))
     if (selectedCategory) results = results.filter(q => q.category === selectedCategory)
     if (selectedSource) results = results.filter(q => (q.source ?? '') === selectedSource)
     if (selectedDifficulty) results = results.filter(q => q.difficulty === selectedDifficulty)
     return results
-  }, [searchTerm, selectedCategory, selectedSource, selectedDifficulty, allQuestions])
+  }, [searchTerm, savedOnly, selectedStatus, selectedCategory, selectedSource, selectedDifficulty, allQuestions, isBookmarked, isSolved])
 
   const breakdown = useMemo(() => getDifficultyBreakdown(filtered), [filtered])
 
   useEffect(() => {
     setVisibleCount(PAGE_SIZE)
     window.scrollTo({ top: 0 })
-  }, [searchTerm, selectedCategory, selectedSource, selectedDifficulty])
+  }, [searchTerm, savedOnly, selectedStatus, selectedCategory, selectedSource, selectedDifficulty])
 
   useEffect(() => {
     if (categoryFilter) {
@@ -58,7 +70,24 @@ export default function QuestionList() {
     setSearchTerm(qParam)
   }, [qParam])
 
-  const hasFilters = searchTerm || selectedCategory || selectedSource || selectedDifficulty
+  useEffect(() => {
+    setSavedOnly(searchParams.get('saved') === 'true')
+  }, [searchParams])
+
+  const handleSavedToggle = () => {
+    const nextSaved = !savedOnly
+    setSavedOnly(nextSaved)
+    const newParams = new URLSearchParams(searchParams)
+    if (nextSaved) {
+      newParams.set('saved', 'true')
+    } else {
+      newParams.delete('saved')
+    }
+    setSearchParams(newParams)
+  }
+
+  const hasFilters = searchTerm || savedOnly || selectedStatus || selectedCategory || selectedSource || selectedDifficulty
+
 
   if (loading) {
     return (
@@ -82,7 +111,19 @@ export default function QuestionList() {
 
   return (
     <div className="question-list-page page-enter">
-      <h1>Questions</h1>
+      <div className="questions-title-row">
+        <h1>{savedOnly ? 'Saved Questions' : 'Questions'}</h1>
+        <button
+          type="button"
+          className={`saved-filter-pill ${savedOnly ? 'active' : ''}`}
+          onClick={handleSavedToggle}
+          title={savedOnly ? 'Show all questions' : 'Show saved questions only'}
+        >
+          <span className="star-icon">★</span>
+          <span>Saved Questions</span>
+          <span className="pill-count">{bookmarkedCount}</span>
+        </button>
+      </div>
 
       <div className="filters">
         <input
@@ -97,7 +138,10 @@ export default function QuestionList() {
           value={selectedCategory}
           onChange={e => {
             setSelectedCategory(e.target.value)
-            setSearchParams(e.target.value ? { category: e.target.value, source: selectedSource } : { source: selectedSource })
+            const newParams = new URLSearchParams(searchParams)
+            if (e.target.value) newParams.set('category', e.target.value)
+            else newParams.delete('category')
+            setSearchParams(newParams)
           }}
           className="category-select"
           aria-label="Filter by category"
@@ -111,7 +155,10 @@ export default function QuestionList() {
           value={selectedSource}
           onChange={e => {
             setSelectedSource(e.target.value)
-            setSearchParams(e.target.value ? { source: e.target.value, category: selectedCategory } : { category: selectedCategory })
+            const newParams = new URLSearchParams(searchParams)
+            if (e.target.value) newParams.set('source', e.target.value)
+            else newParams.delete('source')
+            setSearchParams(newParams)
           }}
           className="category-select"
           aria-label="Filter by source"
@@ -131,6 +178,16 @@ export default function QuestionList() {
           {DIFFICULTIES.map(d => (
             <option key={d} value={d}>{d}</option>
           ))}
+        </select>
+        <select
+          value={selectedStatus}
+          onChange={e => setSelectedStatus(e.target.value)}
+          className="category-select"
+          aria-label="Filter by solved status"
+        >
+          <option value="">All Statuses</option>
+          <option value="solved">Solved ({totalSolved})</option>
+          <option value="unsolved">Unsolved ({(allQuestions.length - totalSolved).toLocaleString()})</option>
         </select>
       </div>
 
@@ -157,6 +214,8 @@ export default function QuestionList() {
               setSelectedCategory('')
               setSelectedSource('')
               setSelectedDifficulty('')
+              setSelectedStatus('')
+              setSavedOnly(false)
               setSearchParams({})
             }}
           >
@@ -167,22 +226,94 @@ export default function QuestionList() {
 
       {visible.length === 0 ? (
         <div className="empty-state">
-          <h3>No questions match</h3>
-          <p>Try a different keyword or clear the filters.</p>
+          {savedOnly && bookmarkedCount === 0 ? (
+            <>
+              <h3>No saved questions yet ⭐</h3>
+              <p>Click the star icon on any question card to save it for quick revision.</p>
+              <button
+                type="button"
+                className="btn btn-primary"
+                style={{ marginTop: 12 }}
+                onClick={() => {
+                  setSavedOnly(false)
+                  const newParams = new URLSearchParams(searchParams)
+                  newParams.delete('saved')
+                  setSearchParams(newParams)
+                }}
+              >
+                Browse All Questions
+              </button>
+            </>
+          ) : selectedStatus === 'solved' && totalSolved === 0 ? (
+            <>
+              <h3>No solved questions yet ✓</h3>
+              <p>Mark questions as solved as you study to track your interview readiness.</p>
+              <button
+                type="button"
+                className="btn btn-primary"
+                style={{ marginTop: 12 }}
+                onClick={() => setSelectedStatus('')}
+              >
+                Show All Questions
+              </button>
+            </>
+          ) : (
+            <>
+              <h3>No questions match</h3>
+              <p>Try a different keyword or clear the filters.</p>
+            </>
+          )}
         </div>
       ) : (
         <>
           <div className="question-grid">
-            {visible.map(q => (
-              <Link key={q.id} to={`/questions/${q.id}`} className={`question-card ${catClass(q.category)}`}>
-                <div className="card-header">
-                  <span className={`badge badge-category ${catClass(q.category)}`}>{q.category}</span>
-                  <span className={`badge badge-${q.difficulty.toLowerCase()}`}>{q.difficulty}</span>
-                  {q.source && <span className="badge badge-source">{q.source}</span>}
+            {visible.map(q => {
+              const bookmarked = isBookmarked(q.id)
+              const solved = isSolved(q.id)
+              return (
+                <div key={q.id} className={`question-card-wrapper ${catClass(q.category)}`}>
+                  <Link to={`/questions/${q.id}`} className={`question-card ${catClass(q.category)} ${solved ? 'is-solved' : ''}`}>
+                    <div className="card-header">
+                      <span className={`badge badge-category ${catClass(q.category)}`}>{q.category}</span>
+                      <span className={`badge badge-${q.difficulty.toLowerCase()}`}>{q.difficulty}</span>
+                      {q.source && <span className="badge badge-source">{q.source}</span>}
+                      {solved && <span className="badge badge-solved-pill">✓ Solved</span>}
+                    </div>
+                    <p className="card-question">{q.question}</p>
+                  </Link>
+                  <div className="card-actions">
+                    <button
+                      type="button"
+                      className={`card-solved-btn ${solved ? 'solved' : ''}`}
+                      onClick={e => {
+                        e.preventDefault()
+                        e.stopPropagation()
+                        toggleSolved(q.id)
+                      }}
+                      aria-label={solved ? 'Mark as unsolved' : 'Mark as solved'}
+                      title={solved ? 'Mark as unsolved' : 'Mark as solved'}
+                    >
+                      <span className="card-action-icon">{solved ? '✓' : '○'}</span>
+                    </button>
+                    <button
+                      type="button"
+                      className={`card-bookmark-btn ${bookmarked ? 'bookmarked' : ''}`}
+                      onClick={e => {
+                        e.preventDefault()
+                        e.stopPropagation()
+                        toggleBookmark(q.id)
+                      }}
+                      aria-label={bookmarked ? 'Remove bookmark' : 'Bookmark question'}
+                      title={bookmarked ? 'Remove bookmark' : 'Bookmark question'}
+                    >
+                      <svg viewBox="0 0 24 24" width="18" height="18" fill={bookmarked ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                      </svg>
+                    </button>
+                  </div>
                 </div>
-                <p className="card-question">{q.question}</p>
-              </Link>
-            ))}
+              )
+            })}
           </div>
 
           {visibleCount < filtered.length && (
@@ -197,3 +328,5 @@ export default function QuestionList() {
     </div>
   )
 }
+
+

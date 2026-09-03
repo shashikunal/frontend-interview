@@ -5,10 +5,10 @@
   width: 46px;
   height: 46px;
   border-radius: 50%;
-  background: rgba(19, 19, 29, 0.88);
+  background: var(--surface);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid var(--border-strong);
   color: var(--text-primary);
   display: flex;
   align-items: center;
@@ -19,7 +19,7 @@
   visibility: hidden;
   transform: translateY(16px) scale(0.88);
   transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.25s ease, background 0.2s ease, border-color 0.2s ease, box-shadow 0.25s ease;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(99, 102, 241, 0.15);
+  box-shadow: var(--shadow-md);
   padding: 0;
 }
 
@@ -30,11 +30,11 @@
 }
 
 .scroll-to-top-btn:hover {
-  background: rgba(26, 26, 40, 0.95);
-  border-color: rgba(99, 102, 241, 0.5);
+  background: var(--surface-hover);
+  border-color: var(--accent);
   transform: translateY(-3px) scale(1.06);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(99, 102, 241, 0.35);
-  color: #fff;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25), 0 0 20px rgba(99, 102, 241, 0.25);
+  color: var(--accent-bright);
 }
 
 .scroll-to-top-btn:active {
@@ -52,7 +52,7 @@
 }
 
 .scroll-progress-bg {
-  stroke: rgba(255, 255, 255, 0.08);
+  stroke: var(--border-strong);
 }
 
 .scroll-progress-fill {
@@ -62,7 +62,7 @@
 }
 
 .scroll-to-top-btn:hover .scroll-progress-fill {
-  stroke: #a855f7;
+  stroke: var(--violet);
 }
 
 .scroll-arrow-icon {
@@ -82,8 +82,8 @@
   right: calc(100% + 12px);
   top: 50%;
   transform: translateY(-50%) translateX(6px);
-  background: #191926;
-  color: #ededf4;
+  background: var(--surface);
+  color: var(--text-primary);
   padding: 5px 10px;
   border-radius: 6px;
   font-size: 12px;
@@ -92,7 +92,7 @@
   pointer-events: none;
   opacity: 0;
   border: 1px solid var(--border-strong);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+  box-shadow: var(--shadow-md);
   transition: opacity 0.2s ease, transform 0.2s ease;
 }
 

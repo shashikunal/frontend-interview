@@ -1,0 +1,316 @@
+.code-review-page {
+  padding-bottom: 80px;
+}
+
+.code-review-header {
+  margin-bottom: 24px;
+}
+
+.cr-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #a855f7;
+  background: rgba(168, 85, 247, 0.12);
+  border: 1px solid rgba(168, 85, 247, 0.35);
+  padding: 4px 14px;
+  border-radius: 999px;
+  margin-bottom: 12px;
+}
+
+/* 1. PRESETS ROW */
+.presets-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  font-size: 0.86rem;
+  color: var(--text-secondary);
+}
+
+.preset-buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.preset-btn {
+  padding: 8px 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.preset-btn:hover {
+  border-color: var(--accent-bright);
+}
+
+.preset-btn.active {
+  background: rgba(99, 102, 241, 0.12);
+  border-color: var(--accent-bright);
+  color: var(--accent-bright);
+}
+
+/* 2. MAIN REVIEW GRID */
+.review-main-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  gap: 24px;
+}
+
+@media (max-width: 960px) {
+  .review-main-grid { grid-template-columns: 1fr; }
+}
+
+.code-editor-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: var(--shadow-sm);
+}
+
+.editor-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.editor-lang-tag {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.apply-fix-btn {
+  font-weight: 700;
+}
+
+.source-code-editor {
+  width: 100%;
+  background: var(--code-bg);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  padding: 14px;
+  color: var(--code-text);
+  font-family: var(--font-mono);
+  font-size: 0.84rem;
+  line-height: 1.6;
+  resize: vertical;
+  outline: none;
+}
+
+/* Diagnostics Column */
+.diagnostics-column {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.health-score-hero {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  box-shadow: var(--shadow-sm);
+}
+
+.score-dial {
+  width: 74px;
+  height: 74px;
+  border-radius: 50%;
+  background: var(--surface-hover);
+  border: 3px solid var(--accent);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.score-digit {
+  font-size: 1.35rem;
+  font-weight: 900;
+  font-family: var(--font-mono);
+  line-height: 1;
+}
+
+.score-digit.good { color: #10b981; }
+.score-digit.warn { color: #f59e0b; }
+.score-digit.bad { color: #ef4444; }
+
+.score-sub {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.health-meta h4 {
+  margin: 0 0 8px;
+  font-size: 1.05rem;
+}
+
+.severity-counts-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.sev-pill {
+  font-size: 0.74rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.sev-crit { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
+.sev-warn { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
+.sev-comp { background: var(--surface-hover); color: var(--text-secondary); }
+
+/* Issues List Card */
+.issues-list-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.issues-list-card h4 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.clean-code-state {
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: var(--radius-md);
+  padding: 28px 24px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.clean-icon {
+  font-size: 2.2rem;
+  line-height: 1;
+}
+
+.clean-code-state strong {
+  font-size: 1.05rem;
+  color: #10b981;
+}
+
+.clean-code-state p {
+  margin: 0;
+  font-size: 0.86rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.issues-cards-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 520px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.issue-card {
+  background: var(--surface-hover);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border-left: 4px solid var(--border);
+}
+
+.sev-border-critical { border-left-color: #ef4444; }
+.sev-border-warning { border-left-color: #f59e0b; }
+.sev-border-optimization { border-left-color: #38bdf8; }
+
+.issue-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.issue-sev-tag {
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  padding: 1px 6px;
+  border-radius: 3px;
+}
+
+.sev-critical { background: rgba(239, 68, 68, 0.18); color: #ef4444; }
+.sev-warning { background: rgba(245, 158, 11, 0.18); color: #f59e0b; }
+.sev-optimization { background: rgba(56, 189, 248, 0.18); color: #38bdf8; }
+
+.issue-cat-tag {
+  font-size: 0.74rem;
+  color: var(--text-muted);
+}
+
+.issue-title {
+  margin: 2px 0 0;
+  font-size: 0.92rem;
+  color: var(--text-primary);
+}
+
+.issue-desc {
+  margin: 0;
+  font-size: 0.84rem;
+  color: var(--text-secondary);
+  line-height: 1.45;
+}
+
+.issue-fix-box {
+  background: var(--surface);
+  border-radius: 4px;
+  padding: 8px 12px;
+  font-size: 0.8rem;
+  margin-top: 4px;
+}
+
+.issue-fix-box strong {
+  display: block;
+  margin-bottom: 2px;
+  color: #10b981;
+}
+
+.issue-fix-box p {
+  margin: 0;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+.review-footer {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 32px;
+  flex-wrap: wrap;
+  gap: 12px;
+}

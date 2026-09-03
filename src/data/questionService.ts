@@ -14,6 +14,7 @@ export const SOURCE_LABELS: Record<string, string> = {
   'frontendlead': 'FrontendLead',
   'topbrains': 'TopBrains',
   'js-assignments': 'JS Assignments',
+  'system-design': 'System Design & Arch',
 }
 
 export const GENERATED_SOURCE = 'LeetCode-style'
@@ -31,7 +32,9 @@ export const DATA_FILES = [
   'frontendlead',
   'topbrains',
   'js-assignments',
+  'system-design',
 ] as const
+
 
 let cache: Question[] | null = null
 let loading: Promise<Question[]> | null = null

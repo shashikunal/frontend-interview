@@ -1,0 +1,498 @@
+.experience-page {
+  padding-bottom: 80px;
+}
+
+.experience-header {
+  margin-bottom: 24px;
+}
+
+.exp-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #a855f7;
+  background: rgba(168, 85, 247, 0.12);
+  border: 1px solid rgba(168, 85, 247, 0.35);
+  padding: 4px 14px;
+  border-radius: 999px;
+  margin-bottom: 12px;
+}
+
+/* 1. TIERS GRID */
+.experience-tiers-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 14px;
+  margin-bottom: 28px;
+}
+
+.tier-card {
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 18px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.2s;
+  box-shadow: var(--shadow-sm);
+}
+
+.tier-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--accent-bright);
+}
+
+.tier-card.active {
+  background: rgba(99, 102, 241, 0.08);
+  border-color: var(--accent-bright);
+  box-shadow: 0 0 14px rgba(99, 102, 241, 0.25);
+}
+
+.tier-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.tier-icon {
+  font-size: 1.6rem;
+  line-height: 1;
+}
+
+.tier-years-tag {
+  font-size: 0.76rem;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: var(--surface-hover);
+  color: var(--accent-bright);
+}
+
+.tier-title {
+  margin: 2px 0 0;
+  font-size: 1.02rem;
+  font-weight: 800;
+}
+
+.tier-levels-sub {
+  font-size: 0.74rem;
+  color: var(--text-muted);
+}
+
+.tier-salary-pill {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #10b981;
+  background: rgba(16, 185, 129, 0.1);
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-top: 4px;
+  align-self: flex-start;
+}
+
+/* 2. DOSSIER HERO */
+.tier-dossier-hero {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 28px 32px;
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  gap: 32px;
+  align-items: center;
+  margin-bottom: 28px;
+  box-shadow: var(--shadow-md);
+}
+
+@media (max-width: 860px) {
+  .tier-dossier-hero { grid-template-columns: 1fr; }
+}
+
+.tier-hero-title-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.tier-hero-icon {
+  font-size: 3rem;
+  line-height: 1;
+}
+
+.tier-hero-exp-tag {
+  font-size: 0.8rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: var(--accent-bright);
+}
+
+.tier-hero-title-row h2 {
+  margin: 2px 0 0;
+  font-size: 1.35rem;
+}
+
+.tier-summary-text {
+  margin: 0 0 16px;
+  font-size: 0.92rem;
+  color: var(--text-secondary);
+  line-height: 1.55;
+}
+
+.tier-meta-badges {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.t-badge {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  background: var(--surface-hover);
+  padding: 4px 12px;
+  border-radius: 6px;
+}
+
+.t-badge strong {
+  color: var(--text-primary);
+}
+
+/* Hero Right: Readiness & Mock Launcher */
+.tier-hero-right {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  background: var(--surface-hover);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  padding: 20px;
+}
+
+.tier-readiness-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.readiness-label {
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.readiness-bar-wrap {
+  width: 100%;
+  height: 8px;
+  background: var(--surface);
+  border-radius: 999px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.readiness-bar-fill {
+  height: 100%;
+  background: var(--grad-brand);
+  border-radius: 999px;
+  transition: width 0.4s ease;
+}
+
+.readiness-sub {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.launch-tier-mock-btn {
+  width: 100%;
+  padding: 12px;
+  font-weight: 700;
+  border-radius: 999px;
+}
+
+/* 3. DETAIL TABS */
+.tier-tabs-bar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.tier-tab {
+  padding: 10px 18px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.tier-tab:hover {
+  color: var(--text-primary);
+  border-color: var(--accent-bright);
+}
+
+.tier-tab.active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+/* 4. OVERVIEW & LEVEL EQUIVALENCES */
+.competencies-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 20px;
+}
+
+@media (max-width: 800px) {
+  .competencies-grid { grid-template-columns: 1fr; }
+}
+
+.comp-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.comp-panel h3 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.comp-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.comp-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  line-height: 1.4;
+}
+
+.check-bullet {
+  color: #10b981;
+  font-weight: 900;
+}
+
+.level-equiv-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.equiv-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--surface-hover);
+  padding: 10px 14px;
+  border-radius: 6px;
+  font-size: 0.86rem;
+}
+
+.equiv-company {
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.equiv-level {
+  color: var(--accent-bright);
+  font-family: var(--font-mono);
+  font-size: 0.84rem;
+}
+
+/* 5. DOMAIN DEEP DIVES */
+.deep-dives-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.deep-dive-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-shadow: var(--shadow-sm);
+}
+
+.dd-icon {
+  font-size: 1.8rem;
+  line-height: 1;
+}
+
+.deep-dive-card h4 {
+  margin: 0;
+  font-size: 1.05rem;
+  color: var(--text-primary);
+}
+
+.deep-dive-card p {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  line-height: 1.55;
+}
+
+/* 6. 8-WEEK STUDY TIMELINE */
+.study-timeline {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+.timeline-block {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  position: relative;
+  box-shadow: var(--shadow-sm);
+}
+
+.time-badge {
+  font-size: 0.74rem;
+  font-weight: 800;
+  color: var(--accent-bright);
+  background: rgba(99, 102, 241, 0.12);
+  padding: 2px 8px;
+  border-radius: 4px;
+  align-self: flex-start;
+}
+
+.timeline-block h4 {
+  margin: 4px 0 0;
+  font-size: 0.98rem;
+}
+
+.timeline-block p {
+  margin: 0;
+  font-size: 0.86rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* 7. SIGNATURE PROBLEM CARD & RUBRIC */
+.signature-problem-card {
+  background: var(--surface);
+  border: 2px solid rgba(99, 102, 241, 0.4);
+  border-radius: var(--radius-lg);
+  padding: 24px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow-md);
+}
+
+.sig-badge {
+  font-size: 0.76rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: var(--accent-bright);
+}
+
+.signature-problem-card h3 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.sig-prompt {
+  margin: 0;
+  font-size: 0.92rem;
+  line-height: 1.55;
+  color: var(--text-primary);
+}
+
+.sig-solution {
+  background: var(--surface-hover);
+  border-radius: 8px;
+  padding: 14px 18px;
+  font-size: 0.88rem;
+}
+
+.sig-solution strong {
+  display: block;
+  margin-bottom: 4px;
+  color: #10b981;
+}
+
+.sig-solution p {
+  margin: 0;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.rubric-summary-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+}
+
+.rubric-summary-card h3 {
+  margin: 0 0 14px;
+  font-size: 1.1rem;
+}
+
+.rubric-expectations-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.rubric-exp-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  background: var(--surface-hover);
+  border-radius: 8px;
+  padding: 14px 16px;
+}
+
+.exp-num {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.rubric-exp-item p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  line-height: 1.45;
+}
