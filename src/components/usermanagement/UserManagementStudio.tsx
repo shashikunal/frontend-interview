@@ -6,7 +6,6 @@ import {
   type FeatureEntitlements,
   type StoredUserAccount,
 } from '../../context/AuthContext'
-import { isSupabaseConfigured } from '../../lib/supabase'
 
 import './UserManagementStudio.css'
 
@@ -90,9 +89,6 @@ export default function UserManagementStudio() {
       <div className="um-header">
         <div className="um-title-row">
           <span className="um-badge">🛡️ Enterprise Identity &amp; RBAC Studio</span>
-          <span className={`um-status-pill ${isSupabaseConfigured ? 'supabase' : 'local'}`}>
-            {isSupabaseConfigured ? '🟢 Supabase Cloud Auth Active' : '⚡ Real Salted Hashing &amp; Auth Engine'}
-          </span>
           {statusNotification && (
             <span className="um-alert-toast">✅ {statusNotification}</span>
           )}

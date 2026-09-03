@@ -1,0 +1,281 @@
+/* ==============================================================================
+   Admin Notification Bell & Flyout Drawer Styles
+   ============================================================================== */
+
+.admin-bell-container {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.admin-bell-btn {
+  background: var(--surface-hover);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 7px 11px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  color: var(--text-primary);
+}
+
+.admin-bell-btn:hover,
+.admin-bell-btn.active {
+  background: rgba(99, 102, 241, 0.12);
+  border-color: var(--accent-bright, #6366f1);
+  transform: translateY(-1px);
+}
+
+.bell-icon {
+  font-size: 1.15rem;
+  line-height: 1;
+}
+
+.bell-badge-count {
+  position: absolute;
+  top: -4px;
+  right: -5px;
+  background: #ef4444;
+  color: #ffffff;
+  font-size: 0.68rem;
+  font-weight: 800;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.5);
+}
+
+.bell-badge-count.pulse {
+  animation: badgePulse 2s infinite;
+}
+
+@keyframes badgePulse {
+  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.6); }
+  70% { transform: scale(1.05); box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
+  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+}
+
+/* Dropdown Menu */
+.admin-bell-dropdown {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  width: 380px;
+  max-width: 90vw;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-xl);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(16px);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  animation: flyoutSlide 0.22s ease-out;
+  overflow: hidden;
+}
+
+@keyframes flyoutSlide {
+  from { opacity: 0; transform: translateY(-8px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.abd-header {
+  padding: 16px 18px 12px;
+  border-bottom: 1px solid var(--border-subtle);
+  background: linear-gradient(180deg, rgba(99, 102, 241, 0.08) 0%, transparent 100%);
+}
+
+.abd-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.abd-title {
+  font-size: 0.96rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.abd-status-pill {
+  font-size: 0.72rem;
+  font-weight: 700;
+  background: rgba(245, 158, 11, 0.15);
+  color: #f59e0b;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  padding: 2px 8px;
+  border-radius: 12px;
+}
+
+.abd-sub {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+/* Inline Toast */
+.abd-toast-inline {
+  background: rgba(16, 185, 129, 0.12);
+  border-bottom: 1px solid rgba(16, 185, 129, 0.25);
+  color: #34d399;
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 8px 16px;
+  animation: fadeIn 0.2s ease-out;
+}
+
+/* Notification List */
+.abd-list {
+  max-height: 380px;
+  overflow-y: auto;
+  padding: 10px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.abd-empty {
+  text-align: center;
+  padding: 32px 16px;
+  color: var(--text-muted);
+  font-size: 0.86rem;
+}
+
+.abd-empty span {
+  font-size: 2rem;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.abd-item {
+  padding: 12px 14px;
+  border-radius: var(--radius-lg);
+  background: var(--surface-hover);
+  border: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: all 0.2s;
+}
+
+.abd-item.pending {
+  border-left: 3px solid #f59e0b;
+}
+
+.abd-item.approved {
+  border-left: 3px solid #10b981;
+  opacity: 0.75;
+}
+
+.abd-item-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.abd-user-info strong {
+  display: block;
+  font-size: 0.88rem;
+  color: var(--text-primary);
+}
+
+.abd-email {
+  font-size: 0.76rem;
+  color: var(--text-muted);
+}
+
+.abd-tag {
+  font-size: 0.65rem;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: 8px;
+  text-transform: uppercase;
+}
+
+.abd-tag.pending {
+  background: rgba(245, 158, 11, 0.15);
+  color: #f59e0b;
+}
+
+.abd-tag.approved {
+  background: rgba(16, 185, 129, 0.15);
+  color: #10b981;
+}
+
+.abd-feature-badge {
+  font-size: 0.8rem;
+  color: var(--accent-bright, #818cf8);
+  background: rgba(99, 102, 241, 0.08);
+  padding: 4px 8px;
+  border-radius: 6px;
+  align-self: flex-start;
+}
+
+.abd-item-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 2px;
+}
+
+.abd-time {
+  font-size: 0.74rem;
+  color: var(--text-muted);
+}
+
+.abd-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.abd-btn-approve {
+  padding: 4px 10px;
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+
+.abd-btn-decline {
+  padding: 4px 10px;
+  font-size: 0.76rem;
+  color: var(--text-muted);
+}
+
+.abd-granted-tag {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #10b981;
+}
+
+.abd-declined-tag {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #ef4444;
+}
+
+.abd-footer {
+  padding: 10px 16px;
+  border-top: 1px solid var(--border-subtle);
+  background: var(--surface-hover);
+  text-align: center;
+}
+
+.abd-view-all-link {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--accent-bright, #6366f1);
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+
+.abd-view-all-link:hover {
+  text-decoration: underline;
+  opacity: 0.85;
+}

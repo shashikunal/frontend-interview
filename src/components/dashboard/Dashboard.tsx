@@ -1,9 +1,12 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useProgress } from '../../context/ProgressContext'
 import { useBookmarks } from '../../context/BookmarkContext'
+import { useAuth } from '../../context/AuthContext'
 import { useQuestions } from '../../data/useQuestions'
 import { getCategories } from '../../data/questionService'
+import { progressSyncService, type UserTrackProgress } from '../../features/auth/services/progressSync.service'
+import AdminDashboard from './AdminDashboard'
 import './Dashboard.css'
 
 function catClass(name: string): string {
@@ -15,11 +18,33 @@ function formatDate(dateStr: string): string {
   return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
 }
 
-export default function Dashboard() {
+function CandidateDashboard() {
+  const { user } = useAuth()
   const { questions, loading, error } = useQuestions()
   const { solvedIds, totalSolved, streak, studyDates, quizSessions, mockInterviews, resetProgress } = useProgress()
   const { bookmarkedCount } = useBookmarks()
   const [showResetConfirm, setShowResetConfirm] = useState(false)
+  const [assignedTrack, setAssignedTrack] = useState<UserTrackProgress | null>(null)
+  const [trackAlert, setTrackAlert] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (!user) return
+    progressSyncService.getAllUsersProgress().then(all => {
+      if (all[user.id]) {
+        setAssignedTrack(all[user.id])
+      }
+    })
+
+    const unsubscribe = progressSyncService.subscribeToProgress(updated => {
+      if (updated.userId === user.id) {
+        setAssignedTrack(updated)
+        setTrackAlert(`🎯 Your learning track was updated by Platform Administrator to ${updated.trackName}!`)
+        setTimeout(() => setTrackAlert(null), 6000)
+      }
+    })
+
+    return () => unsubscribe()
+  }, [user])
 
   const categories = useMemo(() => getCategories(questions), [questions])
 
@@ -136,6 +161,38 @@ export default function Dashboard() {
           </button>
         </div>
       </div>
+
+      {trackAlert && (
+        <div className="candidate-track-live-alert">
+          <span>🔔</span> {trackAlert}
+        </div>
+      )}
+
+      {assignedTrack && (
+        <div className="candidate-track-banner-card card-box">
+          <div className="ctb-left">
+            <span className="ctb-icon">{assignedTrack.trackIcon || '⚛️'}</span>
+            <div>
+              <span className="ctb-tag">OFFICIAL ASSIGNED CURRICULUM</span>
+              <h3>{assignedTrack.trackName}</h3>
+              {assignedTrack.focusModules && assignedTrack.focusModules.length > 0 && (
+                <div className="ctb-modules-list">
+                  <strong>Allocated Focus Modules:</strong>
+                  {assignedTrack.focusModules.map(m => (
+                    <span key={m} className="ctb-mod-tag">{m}</span>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+          <div className="ctb-right">
+            <div className="ctb-progress-box">
+              <span className="ctb-pct">{Math.round((totalSolved / (assignedTrack.totalQuestions || 75)) * 100)}%</span>
+              <span className="ctb-label">{totalSolved}/{assignedTrack.totalQuestions || 75} Solved</span>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Hero Stats Row */}
       <div className="dashboard-stats-grid">
@@ -317,4 +374,12 @@ export default function Dashboard() {
       )}
     </div>
   )
+}
+
+export default function Dashboard() {
+  const { user } = useAuth()
+  if (user?.role === 'admin') {
+    return <AdminDashboard />
+  }
+  return <CandidateDashboard />
 }

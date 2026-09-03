@@ -441,3 +441,126 @@
   justify-content: flex-end;
   gap: 10px;
 }
+
+/* Candidate Assigned Track Hero Banner */
+.candidate-track-live-alert {
+  background: linear-gradient(90deg, rgba(16, 185, 129, 0.2) 0%, rgba(99, 102, 241, 0.2) 100%);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  color: #34d399;
+  padding: 12px 20px;
+  border-radius: var(--radius-lg);
+  font-size: 0.92rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+  animation: slideDown 0.3s ease-out;
+}
+
+.candidate-track-banner-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.12) 0%, rgba(16, 185, 129, 0.08) 100%);
+  border: 1px solid rgba(99, 102, 241, 0.35);
+  border-radius: var(--radius-xl);
+  padding: 24px 28px;
+  margin-bottom: 28px;
+  position: relative;
+  overflow: hidden;
+}
+
+.candidate-track-banner-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 4px;
+  background: linear-gradient(180deg, #6366f1, #10b981);
+}
+
+.ctb-left {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.ctb-icon {
+  font-size: 2.2rem;
+  line-height: 1;
+}
+
+.ctb-tag {
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  color: #818cf8;
+  background: rgba(99, 102, 241, 0.15);
+  padding: 3px 8px;
+  border-radius: 6px;
+  display: inline-block;
+  margin-bottom: 6px;
+}
+
+.ctb-left h3 {
+  font-size: 1.35rem;
+  font-weight: 800;
+  margin: 0 0 8px;
+  color: var(--text-primary);
+}
+
+.ctb-modules-list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+}
+
+.ctb-modules-list strong {
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+  margin-right: 4px;
+}
+
+.ctb-mod-tag {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.ctb-right {
+  display: flex;
+  align-items: center;
+}
+
+.ctb-progress-box {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  padding: 12px 20px;
+  border-radius: var(--radius-lg);
+}
+
+.ctb-pct {
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: #34d399;
+  line-height: 1;
+}
+
+.ctb-label {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+

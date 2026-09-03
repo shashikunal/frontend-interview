@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { useProgress } from '../../context/ProgressContext'
 import { useBookmarks } from '../../context/BookmarkContext'
-import { isSupabaseConfigured, dbActivityService, type ActivityLogItem } from '../../lib/supabase'
+import { dbActivityService, type ActivityLogItem } from '../../lib/supabase'
 import './UserProfile.css'
 
 const TARGET_COMPANIES = ['Google', 'Meta', 'Amazon', 'Apple', 'Netflix', 'Microsoft', 'Stripe', 'Airbnb', 'Uber', 'ByteDance']
@@ -16,7 +16,7 @@ const EXPERIENCE_LEVELS = [
 ]
 
 export default function UserProfile() {
-  const { user, isAuthenticated, openAuthModal, switchRole } = useAuth()
+  const { user, isAuthenticated, openAuthModal } = useAuth()
   const { solvedIds, streak, mockInterviews } = useProgress()
   const { bookmarkedCount } = useBookmarks()
 
@@ -69,9 +69,6 @@ export default function UserProfile() {
         <div className="ph-left">
           <div className="ph-badge-row">
             <span className="profile-badge">👤 Profile &amp; Progress Hub</span>
-            <span className={`sync-status-pill ${isSupabaseConfigured ? 'supabase' : 'local'}`}>
-              {isSupabaseConfigured ? '🟢 Supabase Postgres DB Connected' : '⚡ Local Storage DB (Auto-Sync)'}
-            </span>
           </div>
           <h1>Candidate Progress &amp; Activity Tracker</h1>
           <p className="subtitle">
@@ -146,22 +143,6 @@ export default function UserProfile() {
                   <option key={lvl} value={lvl}>{lvl}</option>
                 ))}
               </select>
-            </div>
-          </div>
-
-          <div className="role-switch-tester">
-            <span className="rst-title">Test RBAC Tier Permissions:</span>
-            <div className="rst-btns">
-              {(['candidate', 'pro_member', 'admin'] as const).map(r => (
-                <button
-                  key={r}
-                  type="button"
-                  className={`rst-btn ${user?.role === r ? 'active' : ''}`}
-                  onClick={() => switchRole(r)}
-                >
-                  {r === 'pro_member' ? 'PRO' : r.toUpperCase()}
-                </button>
-              ))}
             </div>
           </div>
         </div>

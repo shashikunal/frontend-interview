@@ -45,7 +45,10 @@ import WebComponentsStudio from './components/webcomponents/WebComponentsStudio'
 import SearchEngineStudio from './components/searchengine/SearchEngineStudio'
 import UserProfile from './components/profile/UserProfile'
 import UserManagementStudio from './components/usermanagement/UserManagementStudio'
+import AdminDashboard from './components/dashboard/AdminDashboard'
 import RoleGuard from './components/auth/RoleGuard'
+import FeatureGuard from './components/auth/FeatureGuard'
+import { ProtectedRoute } from './features/auth'
 import AuthModal from './components/auth/AuthModal'
 import ScrollToTop from './components/common/ScrollToTop'
 import './App.css'
@@ -60,16 +63,35 @@ export default function App() {
 
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/profile" element={<UserProfile />} />
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <UserProfile />
+              </ProtectedRoute>
+            }
+          />
           <Route
             path="/user-management"
             element={
               <RoleGuard
                 minRole="admin"
                 fallbackTitle="🔒 Administrator Access Required"
-                fallbackMessage="User Management & Feature Entitlement Studio is restricted to Platform Administrators. Please sign in with an Admin account (admin@faang.io) or switch to Admin tier."
+                fallbackMessage="User Management & Feature Entitlement Studio is restricted to Platform Administrators. Please sign in with an Admin account or request Admin permissions."
               >
                 <UserManagementStudio />
+              </RoleGuard>
+            }
+          />
+          <Route
+            path="/admin"
+            element={
+              <RoleGuard
+                minRole="admin"
+                fallbackTitle="🔒 Administrator Access Required"
+                fallbackMessage="Enterprise Operations Command Center is restricted to Platform Administrators."
+              >
+                <AdminDashboard />
               </RoleGuard>
             }
           />
@@ -82,9 +104,23 @@ export default function App() {
           <Route path="/compensation" element={<Compensation />} />
           <Route path="/resume-optimizer" element={<ResumeOptimizer />} />
           <Route path="/flashcards" element={<Flashcards />} />
-          <Route path="/system-design" element={<SystemDesignCanvas />} />
+          <Route
+            path="/system-design"
+            element={
+              <FeatureGuard feature="system_design" featureName="System Design Studio">
+                <SystemDesignCanvas />
+              </FeatureGuard>
+            }
+          />
           <Route path="/case-studies" element={<CaseStudies />} />
-          <Route path="/ast-explorer" element={<AstExplorer />} />
+          <Route
+            path="/ast-explorer"
+            element={
+              <FeatureGuard feature="compiler_studios" featureName="AST Explorer & Compiler Visualizer">
+                <AstExplorer />
+              </FeatureGuard>
+            }
+          />
           <Route path="/security" element={<SecuritySandbox />} />
           <Route path="/state-machine" element={<StateMachine />} />
           <Route path="/capacity-estimator" element={<CapacityEstimator />} />
@@ -93,7 +129,14 @@ export default function App() {
           <Route path="/whiteboard" element={<Whiteboard />} />
           <Route path="/protocols" element={<ProtocolPlayground />} />
           <Route path="/css-pipeline" element={<CssPipeline />} />
-          <Route path="/wasm-lab" element={<WasmLab />} />
+          <Route
+            path="/wasm-lab"
+            element={
+              <FeatureGuard feature="compiler_studios" featureName="WebAssembly Compiler Studio">
+                <WasmLab />
+              </FeatureGuard>
+            }
+          />
           <Route path="/webrtc-lab" element={<WebRtcLab />} />
           <Route path="/local-first" element={<LocalFirstStudio />} />
           <Route path="/design-system" element={<DesignSystemStudio />} />
@@ -109,7 +152,14 @@ export default function App() {
           <Route path="/behavioral" element={<Behavioral />} />
           <Route path="/peer-room" element={<PeerRoom />} />
           <Route path="/mock-interview" element={<MockInterview />} />
-          <Route path="/video-mock" element={<VideoMockInterview />} />
+          <Route
+            path="/video-mock"
+            element={
+              <FeatureGuard feature="video_mock" featureName="AI Video Mock Interview">
+                <VideoMockInterview />
+              </FeatureGuard>
+            }
+          />
           <Route path="/questions" element={<QuestionList />} />
 
 

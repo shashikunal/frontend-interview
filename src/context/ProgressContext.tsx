@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState, useCallback, useMemo, type ReactNode } from 'react'
 import { dbActivityService } from '../lib/supabase'
+import { progressSyncService } from '../features/auth/services/progressSync.service'
 
 const PROGRESS_STORAGE_KEY = 'interview-prep-progress'
 
@@ -225,10 +226,28 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
           title: `Solved Question #${id}`,
           details: `Completed review and verification of Question #${id}`,
         })
+        progressSyncService.syncProgress({
+          userId: 'current-user',
+          userEmail: 'candidate@interviewprep.io',
+          userName: 'Active Candidate',
+          trackName: 'React 19 & Architecture',
+          trackIcon: '⚛️',
+          solvedCount: next.size,
+          totalQuestions: 75,
+          completionPct: Math.round((next.size / 75) * 100),
+          streak: streak || 1,
+          quizAccuracy: 86,
+          mockScore: 4.5,
+          lastActive: new Date().toISOString(),
+          categoryBreakdown: {
+            'React Core': { solved: Math.min(next.size, 25), total: 25, pct: Math.round((Math.min(next.size, 25) / 25) * 100) },
+            'Architecture': { solved: Math.max(0, next.size - 25), total: 25, pct: Math.round((Math.max(0, next.size - 25) / 25) * 100) },
+          },
+        })
       }
       return next
     })
-  }, [recordActivity])
+  }, [recordActivity, streak])
 
   const markSolved = useCallback((id: number) => {
     recordActivity()
@@ -242,9 +261,27 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
         title: `Solved Question #${id}`,
         details: `Successfully completed Question #${id}`,
       })
+      progressSyncService.syncProgress({
+        userId: 'current-user',
+        userEmail: 'candidate@interviewprep.io',
+        userName: 'Active Candidate',
+        trackName: 'React 19 & Architecture',
+        trackIcon: '⚛️',
+        solvedCount: next.size,
+        totalQuestions: 75,
+        completionPct: Math.round((next.size / 75) * 100),
+        streak: streak || 1,
+        quizAccuracy: 86,
+        mockScore: 4.5,
+        lastActive: new Date().toISOString(),
+        categoryBreakdown: {
+          'React Core': { solved: Math.min(next.size, 25), total: 25, pct: Math.round((Math.min(next.size, 25) / 25) * 100) },
+          'Architecture': { solved: Math.max(0, next.size - 25), total: 25, pct: Math.round((Math.max(0, next.size - 25) / 25) * 100) },
+        },
+      })
       return next
     })
-  }, [recordActivity])
+  }, [recordActivity, streak])
 
   const unmarkSolved = useCallback((id: number) => {
     setSolvedIds(prev => {

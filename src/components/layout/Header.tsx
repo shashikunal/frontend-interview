@@ -4,6 +4,7 @@ import { useBookmarks } from '../../context/BookmarkContext'
 import { useProgress } from '../../context/ProgressContext'
 import { useAuth } from '../../context/AuthContext'
 import ThemeToggle from './ThemeToggle'
+import AdminNotificationBell from './AdminNotificationBell'
 import './Header.css'
 
 export default function Header() {
@@ -12,11 +13,11 @@ export default function Header() {
   const [term, setTerm] = useState('')
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
   const [isUserMenuOpen, setIsUserMenuOpen] = useState<boolean>(false)
-  const navRef = useRef<HTMLElement | null>(null)
+  const headerRef = useRef<HTMLElement | null>(null)
 
   const { bookmarkedCount } = useBookmarks()
   const { streak } = useProgress()
-  const { user, isAuthenticated, openAuthModal, signOut, switchRole } = useAuth()
+  const { user, isAuthenticated, openAuthModal, signOut } = useAuth()
 
 
   const isSavedActive = location.pathname === '/questions' && location.search.includes('saved=true')
@@ -33,19 +34,7 @@ export default function Header() {
   const isArchitectureActive = ['/experience', '/pathways', '/system-design', '/case-studies', '/ast-explorer', '/security', '/user-management', '/state-machine', '/capacity-estimator', '/memory-profiler', '/module-federation', '/whiteboard', '/webrtc-lab', '/local-first', '/search-engine', '/design-system', '/i18n-lab', '/sdui-lab', '/web-components', '/protocols', '/css-pipeline', '/wasm-lab', '/visualizer', '/profiler', '/resume-optimizer', '/compensation'].some(p => isActive(p))
   const isMockActive = ['/mock-interview', '/video-mock', '/behavioral', '/peer-room'].some(p => isActive(p))
 
-
-
-
-
-
-
-
-
-
-
-
-
-  // Close dropdown on navigation or click outside
+  // Close dropdown on navigation
   useEffect(() => {
     setActiveDropdown(null)
     setIsUserMenuOpen(false)
@@ -58,13 +47,25 @@ export default function Header() {
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (navRef.current && !navRef.current.contains(e.target as Node)) {
+      if (headerRef.current && !headerRef.current.contains(e.target as Node)) {
         setActiveDropdown(null)
         setIsUserMenuOpen(false)
       }
     }
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setActiveDropdown(null)
+        setIsUserMenuOpen(false)
+      }
+    }
+
     document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
+    document.addEventListener('keydown', handleKeyDown)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+      document.removeEventListener('keydown', handleKeyDown)
+    }
   }, [])
 
 
@@ -79,78 +80,92 @@ export default function Header() {
   }
 
   return (
-    <header className="header">
+    <header className="header" ref={headerRef}>
       <div className="header-inner">
-        <Link to="/" className="logo">
+        <Link to={isAuthenticated && user?.role === 'admin' ? '/dashboard' : '/'} className="logo">
           <span className="logo-mark" aria-hidden="true" />
           <span className="logo-text">Interview<span className="logo-accent">Prep</span></span>
+          {isAuthenticated && user?.role === 'admin' && (
+            <span className="admin-header-pill">🛡️ ADMIN CONSOLE</span>
+          )}
         </Link>
 
-        <nav className="nav" ref={navRef} aria-label="Main navigation">
-          <form className="header-search" onSubmit={onSearch} role="search">
-            <input
-              type="search"
-              className="header-search-input"
-              placeholder="Search 22,222 questions…"
-              value={term}
-              onChange={e => setTerm(e.target.value)}
-              aria-label="Search all questions"
-            />
-          </form>
-
-          {/* 1. Direct Questions Bank Link */}
-          <Link to="/questions" className={`nav-link ${isActive('/questions') ? 'active' : ''}`}>
-            Questions (22K)
-          </Link>
-
-          {/* 2. Direct Coding Challenges Link */}
-          <Link to="/coding" className={`nav-link ${isActive('/coding') ? 'active' : ''}`}>
-            Coding
-          </Link>
-
-          {/* 3. Practice Labs Dropdown */}
-          <div className="nav-dropdown-wrap">
-            <button
-              type="button"
-              className={`nav-link nav-dropdown-btn ${isPracticeActive || activeDropdown === 'practice' ? 'active' : ''}`}
-              onClick={() => toggleDropdown('practice')}
-              aria-expanded={activeDropdown === 'practice'}
+        <nav className="nav" aria-label="Main navigation">
+          {isAuthenticated && user?.role === 'admin' ? (
+            /* Admin Only Navigation: Only Dashboard */
+            <Link
+              to="/dashboard"
+              className={`nav-link nav-link-dashboard ${isActive('/dashboard') ? 'active' : ''}`}
             >
-              Practice Labs <span className="dropdown-caret">▾</span>
-            </button>
-          </div>
+              📊 Operations Dashboard
+            </Link>
+          ) : (
+            /* Candidate / Standard Navigation */
+            <>
+              <form className="header-search" onSubmit={onSearch} role="search">
+                <input
+                  type="search"
+                  className="header-search-input"
+                  placeholder="Search 22,222 questions…"
+                  value={term}
+                  onChange={e => setTerm(e.target.value)}
+                  aria-label="Search all questions"
+                />
+              </form>
 
+              {/* 1. Direct Questions Bank Link */}
+              <Link to="/questions" className={`nav-link ${isActive('/questions') ? 'active' : ''}`}>
+                Questions (22K)
+              </Link>
 
-          {/* 4. Architecture & Career Dropdown */}
-          <div className="nav-dropdown-wrap">
-            <button
-              type="button"
-              className={`nav-link nav-dropdown-btn ${isArchitectureActive || activeDropdown === 'architecture' ? 'active' : ''}`}
-              onClick={() => toggleDropdown('architecture')}
-              aria-expanded={activeDropdown === 'architecture'}
-            >
-              Architecture <span className="dropdown-caret">▾</span>
-            </button>
-          </div>
+              {/* 2. Direct Coding Challenges Link */}
+              <Link to="/coding" className={`nav-link ${isActive('/coding') ? 'active' : ''}`}>
+                Coding
+              </Link>
 
-          {/* 5. Mock Interviews Dropdown */}
-          <div className="nav-dropdown-wrap">
-            <button
-              type="button"
-              className={`nav-link nav-dropdown-btn ${isMockActive || activeDropdown === 'mock' ? 'active' : ''}`}
-              onClick={() => toggleDropdown('mock')}
-              aria-expanded={activeDropdown === 'mock'}
-            >
-              Mocks <span className="dropdown-caret">▾</span>
-            </button>
-          </div>
+              {/* 3. Practice Labs Dropdown */}
+              <div className="nav-dropdown-wrap">
+                <button
+                  type="button"
+                  className={`nav-link nav-dropdown-btn ${isPracticeActive || activeDropdown === 'practice' ? 'active' : ''}`}
+                  onClick={() => toggleDropdown('practice')}
+                  aria-expanded={activeDropdown === 'practice'}
+                >
+                  Practice Labs <span className="dropdown-caret">▾</span>
+                </button>
+              </div>
 
-          {/* 6. Dashboard */}
-          <Link to="/dashboard" className={`nav-link nav-link-dashboard ${isActive('/dashboard') ? 'active' : ''}`}>
-            Dashboard
-            {streak > 0 && <span className="streak-badge" title={`${streak} day study streak`}>🔥 {streak}</span>}
-          </Link>
+              {/* 4. Architecture & Career Dropdown */}
+              <div className="nav-dropdown-wrap">
+                <button
+                  type="button"
+                  className={`nav-link nav-dropdown-btn ${isArchitectureActive || activeDropdown === 'architecture' ? 'active' : ''}`}
+                  onClick={() => toggleDropdown('architecture')}
+                  aria-expanded={activeDropdown === 'architecture'}
+                >
+                  Architecture <span className="dropdown-caret">▾</span>
+                </button>
+              </div>
 
+              {/* 5. Mock Interviews Dropdown */}
+              <div className="nav-dropdown-wrap">
+                <button
+                  type="button"
+                  className={`nav-link nav-dropdown-btn ${isMockActive || activeDropdown === 'mock' ? 'active' : ''}`}
+                  onClick={() => toggleDropdown('mock')}
+                  aria-expanded={activeDropdown === 'mock'}
+                >
+                  Mocks <span className="dropdown-caret">▾</span>
+                </button>
+              </div>
+
+              {/* 6. Dashboard */}
+              <Link to="/dashboard" className={`nav-link nav-link-dashboard ${isActive('/dashboard') ? 'active' : ''}`}>
+                Dashboard
+                {streak > 0 && <span className="streak-badge" title={`${streak} day study streak`}>🔥 {streak}</span>}
+              </Link>
+            </>
+          )}
 
           {/* 5. Theme Toggle */}
           <div className="header-toggle-wrap">
@@ -159,6 +174,10 @@ export default function Header() {
 
           {/* 6. User Auth Button / Profile Menu */}
           <div className="header-auth-wrap">
+            {isAuthenticated && user?.role === 'admin' && (
+              <AdminNotificationBell />
+            )}
+
             {isAuthenticated && user ? (
               <div className="user-profile-menu-wrap">
                 <button
@@ -169,7 +188,7 @@ export default function Header() {
                 >
                   <span className="u-avatar-icon">👨‍💻</span>
                   <span className={`u-role-pill ${user.role}`}>
-                    {user.role === 'admin' ? '🔒 ADMIN' : user.role === 'pro_member' ? '⚡ PRO' : 'CANDIDATE'}
+                    {user.role === 'admin' ? 'ADMIN' : user.role === 'pro_member' ? 'PRO' : 'CANDIDATE'}
                   </span>
                 </button>
 
@@ -178,50 +197,39 @@ export default function Header() {
                     <div className="ud-header">
                       <strong>{user.name}</strong>
                       <span className="ud-email">{user.email}</span>
-                      <span className={`ud-badge ${user.role}`}>{user.role.toUpperCase()} TIER</span>
+                      <span className={`ud-badge ${user.role}`}>{user.role.toUpperCase()}</span>
                     </div>
 
                     <div className="ud-divider" />
 
-                    <div className="ud-role-switch-section">
-                      <span className="ud-switch-label">Switch Role (Testing):</span>
-                      <div className="ud-role-btns">
-                        {(['candidate', 'pro_member', 'admin'] as const).map(r => (
-                          <button
-                            key={r}
-                            type="button"
-                            className={`ud-role-btn ${user.role === r ? 'active' : ''}`}
-                            onClick={() => {
-                              switchRole(r)
-                              setIsUserMenuOpen(false)
-                            }}
-                          >
-                            {r === 'pro_member' ? 'PRO' : r.toUpperCase()}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
+                    {user.role === 'admin' ? (
+                      <>
+                        <Link
+                          to="/dashboard"
+                          className="ud-profile-link ud-mgmt-link"
+                          onClick={() => setIsUserMenuOpen(false)}
+                        >
+                          🛡️ Admin Operations Command Center
+                        </Link>
+                        <Link
+                          to="/user-management"
+                          className="ud-profile-link"
+                          onClick={() => setIsUserMenuOpen(false)}
+                        >
+                          ⚙️ RBAC &amp; Permissions Studio
+                        </Link>
+                      </>
+                    ) : (
+                      <Link
+                        to="/profile"
+                        className="ud-profile-link"
+                        onClick={() => setIsUserMenuOpen(false)}
+                      >
+                        👤 View Profile &amp; Progress Tracker
+                      </Link>
+                    )}
 
                     <div className="ud-divider" />
-
-                    <Link
-                      to="/profile"
-                      className="ud-profile-link"
-                      onClick={() => setIsUserMenuOpen(false)}
-                    >
-                      👤 View Profile &amp; Progress Tracker
-                    </Link>
-
-                    <Link
-                      to="/user-management"
-                      className="ud-profile-link ud-mgmt-link"
-                      onClick={() => setIsUserMenuOpen(false)}
-                    >
-                      🛡️ User Management &amp; Auth Studio
-                    </Link>
-
-                    <div className="ud-divider" />
-
 
                     <button
                       type="button"
@@ -255,7 +263,12 @@ export default function Header() {
 
       {/* 1. PRACTICE MEGA-MENU */}
       {activeDropdown === 'practice' && (
-        <div className="mega-menu-overlay" onClick={closeMenus}>
+        <div
+          className="mega-menu-overlay"
+          onClick={e => {
+            if (e.target === e.currentTarget) closeMenus()
+          }}
+        >
           <div
             className="mega-menu-content"
             onClick={e => {
@@ -357,7 +370,12 @@ export default function Header() {
 
       {/* 2. ARCHITECTURE MEGA-MENU */}
       {activeDropdown === 'architecture' && (
-        <div className="mega-menu-overlay" onClick={closeMenus}>
+        <div
+          className="mega-menu-overlay"
+          onClick={e => {
+            if (e.target === e.currentTarget) closeMenus()
+          }}
+        >
           <div
             className="mega-menu-content"
             onClick={e => {
@@ -615,7 +633,12 @@ export default function Header() {
 
       {/* 3. MOCKS MEGA-MENU */}
       {activeDropdown === 'mock' && (
-        <div className="mega-menu-overlay" onClick={closeMenus}>
+        <div
+          className="mega-menu-overlay"
+          onClick={e => {
+            if (e.target === e.currentTarget) closeMenus()
+          }}
+        >
           <div
             className="mega-menu-content"
             onClick={e => {
