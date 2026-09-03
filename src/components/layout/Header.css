@@ -323,11 +323,36 @@
 }
 
 .drop-title {
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
   font-size: 0.9rem;
   font-weight: 700;
   color: var(--text-primary);
   margin-bottom: 2px;
+}
+
+.drop-lock-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: rgba(168, 85, 247, 0.12);
+  color: #c084fc;
+  border: 1px solid rgba(168, 85, 247, 0.3);
+  letter-spacing: 0.02em;
+}
+
+.nav-lock-tag {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.72rem;
+  margin-left: 3px;
+  opacity: 0.85;
 }
 
 .drop-desc {

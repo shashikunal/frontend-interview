@@ -4,39 +4,23 @@ import { DEFAULT_ENTITLEMENTS } from '../types/auth.types'
 
 const PROFILES_LOCAL_KEY = 'supabase_profiles_real'
 
-export const KNOWN_SUPABASE_AUTH_USERS: AuthUserProfile[] = [
-  {
-    id: 'usr_shashikunal_sb',
-    email: 'shashikunal@gmail.com',
-    name: 'Shashi Kunal',
-    role: 'candidate',
-    targetCompany: 'Google',
-    experienceLevel: 'L5 (Senior 5-9y)',
-    entitlements: DEFAULT_ENTITLEMENTS.candidate,
-    status: 'ACTIVE',
-    createdAt: new Date().toISOString(),
-  },
-]
-
 function getLocalProfiles(): AuthUserProfile[] {
   try {
-    const raw = localStorage.getItem(PROFILES_LOCAL_KEY)
-    const list: AuthUserProfile[] = raw ? JSON.parse(raw) : []
-    // Ensure all verified Supabase Auth users exist in the list
-    for (const known of KNOWN_SUPABASE_AUTH_USERS) {
-      if (!list.some(p => p.email.toLowerCase() === known.email.toLowerCase())) {
-        list.push(known)
-      }
+    if (typeof localStorage !== 'undefined') {
+      const raw = localStorage.getItem(PROFILES_LOCAL_KEY)
+      return raw ? JSON.parse(raw) : []
     }
-    return list
   } catch {
-    return [...KNOWN_SUPABASE_AUTH_USERS]
+    // ignore
   }
+  return []
 }
 
 function saveLocalProfiles(profiles: AuthUserProfile[]): void {
   try {
-    localStorage.setItem(PROFILES_LOCAL_KEY, JSON.stringify(profiles))
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem(PROFILES_LOCAL_KEY, JSON.stringify(profiles))
+    }
   } catch {
     // ignore
   }

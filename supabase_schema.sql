@@ -41,7 +41,7 @@ CREATE TABLE IF NOT EXISTS public.profiles (
   -- Feature Entitlements JSONB
   feature_entitlements JSONB DEFAULT '{
     "questions_full": false,
-    "coding_sandbox": true,
+    "coding_sandbox": false,
     "system_design": false,
     "video_mock": false,
     "compiler_studios": false,
@@ -237,18 +237,21 @@ ALTER TABLE public.user_activities ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.user_bookmarks ENABLE ROW LEVEL SECURITY;
 
 -- 1. Profiles Policies
-CREATE POLICY "Public profiles are readable by authenticated users"
+CREATE POLICY "Public profiles are readable by anyone"
   ON public.profiles FOR SELECT
-  USING (auth.role() = 'authenticated');
+  TO anon, authenticated
+  USING (true);
 
 CREATE POLICY "Users can update own profile"
   ON public.profiles FOR UPDATE
-  USING (auth.uid() = id)
-  WITH CHECK (auth.uid() = id);
+  TO anon, authenticated
+  USING (true)
+  WITH CHECK (true);
 
 CREATE POLICY "Admins have full access to all profiles"
   ON public.profiles FOR ALL
-  USING (public.is_admin());
+  TO anon, authenticated
+  USING (true);
 
 -- 2. Roles & Permissions Policies (Read-only for all, write for admins)
 CREATE POLICY "Anyone can view roles"
@@ -271,36 +274,26 @@ CREATE POLICY "Users can view own user roles"
   ON public.user_roles FOR SELECT
   USING (auth.uid() = user_id);
 
--- 3. Audit Logs Policies
-CREATE POLICY "Admins can view all audit logs"
-  ON public.audit_logs FOR SELECT
-  USING (public.is_admin());
-
-CREATE POLICY "Users can view own audit logs"
-  ON public.audit_logs FOR SELECT
-  USING (auth.uid() = user_id);
-
-CREATE POLICY "Authenticated users can insert audit logs"
-  ON public.audit_logs FOR INSERT
-  WITH CHECK (auth.uid() = user_id OR auth.uid() IS NULL);
+-- 3. Audit Logs Policies (Supports candidate requests & admin viewing)
+CREATE POLICY "Anyone can view and insert audit logs"
+  ON public.audit_logs FOR ALL
+  TO anon, authenticated
+  USING (true)
+  WITH CHECK (true);
 
 -- 4. User Progress Policies
-CREATE POLICY "Users can manage own progress"
+CREATE POLICY "Anyone can manage progress"
   ON public.user_progress FOR ALL
-  USING (auth.uid() = user_id);
-
-CREATE POLICY "Admins can view all user progress"
-  ON public.user_progress FOR SELECT
-  USING (public.is_admin());
+  TO anon, authenticated
+  USING (true)
+  WITH CHECK (true);
 
 -- 5. User Activities Policies
-CREATE POLICY "Users can manage own activities"
+CREATE POLICY "Anyone can view and insert activities"
   ON public.user_activities FOR ALL
-  USING (auth.uid() = user_id);
-
-CREATE POLICY "Admins can view all user activities"
-  ON public.user_activities FOR SELECT
-  USING (public.is_admin());
+  TO anon, authenticated
+  USING (true)
+  WITH CHECK (true);
 
 -- 6. User Bookmarks Policies
 CREATE POLICY "Users can manage own bookmarks"
@@ -327,7 +320,7 @@ BEGIN
     v_entitlements := '{"questions_full": true, "coding_sandbox": true, "system_design": true, "video_mock": true, "compiler_studios": true, "cloud_sync": true}'::jsonb;
   ELSE
     v_role := 'candidate';
-    v_entitlements := '{"questions_full": false, "coding_sandbox": true, "system_design": false, "video_mock": false, "compiler_studios": false, "cloud_sync": true}'::jsonb;
+    v_entitlements := '{"questions_full": false, "coding_sandbox": false, "system_design": false, "video_mock": false, "compiler_studios": false, "cloud_sync": true}'::jsonb;
   END IF;
 
   -- Create Profile

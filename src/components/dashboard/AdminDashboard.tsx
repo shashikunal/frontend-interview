@@ -129,9 +129,19 @@ export default function AdminDashboard() {
       setTimeout(() => setLiveEventBanner(null), 5000)
     })
 
+    const unsubAccess = auditService.subscribeToAccessRequests(notif => {
+      setNotifications(prev => {
+        const filtered = prev.filter(p => !(p.userEmail.toLowerCase() === notif.userEmail.toLowerCase() && p.featureKey === notif.featureKey))
+        return [notif, ...filtered]
+      })
+      setLiveEventBanner(`📩 LIVE REQUEST: ${notif.userName} requested access to ${notif.featureName}!`)
+      setTimeout(() => setLiveEventBanner(null), 5000)
+    })
+
     return () => {
       unsubProgress()
       unsubActivities()
+      unsubAccess()
     }
   }, [])
 
@@ -960,9 +970,31 @@ export default function AdminDashboard() {
               <div style={{ textAlign: 'center', padding: '48px 24px', background: 'var(--surface-hover)', borderRadius: 'var(--radius-lg)', border: '1px dashed var(--border-subtle)' }}>
                 <span style={{ fontSize: '2.4rem', display: 'block', marginBottom: '10px' }}>🎉</span>
                 <strong style={{ fontSize: '1.05rem', color: 'var(--text-primary)' }}>No Pending Access Requests</strong>
-                <p style={{ margin: '6px 0 0', fontSize: '0.86rem', color: 'var(--text-muted)' }}>
+                <p style={{ margin: '6px 0 16px', fontSize: '0.86rem', color: 'var(--text-muted)' }}>
                   When candidates request access to locked platform features (like the 22,222 Questions Bank or System Design Studio), their requests appear here for 1-click approval.
                 </p>
+                <button
+                  type="button"
+                  className="btn btn-sm btn-primary"
+                  onClick={async () => {
+                    await auditService.logEvent({
+                      userId: 'usr_candidate_demo',
+                      action: 'FEATURE_ACCESS_REQUESTED',
+                      resource: 'system_design',
+                      details: {
+                        featureName: 'System Design Studio',
+                        userEmail: 'candidate@faang.io',
+                        userName: 'Alex Rivers (Candidate)',
+                        currentRole: 'candidate',
+                      },
+                    })
+                    await loadData()
+                    showToast('Created sample access request for candidate@faang.io!')
+                  }}
+                  style={{ fontWeight: 700 }}
+                >
+                  ⚡ Simulate Candidate Request
+                </button>
               </div>
             ) : (
               <div className="requests-cards-list">

@@ -86,32 +86,12 @@ export const progressSyncService = {
       // ignore
     }
 
-    // 2. Read only REAL progress stored locally (No fake/mock seed data)
+    // 2. Read locally cached progress
     try {
-      const stored = localStorage.getItem(LOCAL_PROGRESS_KEY)
-      const result: Record<string, UserTrackProgress> = stored ? JSON.parse(stored) : {}
-      if (!result['usr_shashikunal_sb']) {
-        result['usr_shashikunal_sb'] = {
-          userId: 'usr_shashikunal_sb',
-          userEmail: 'shashikunal@gmail.com',
-          userName: 'Shashi Kunal',
-          trackName: 'React 19 & Architecture',
-          trackIcon: '⚛️',
-          solvedCount: 18,
-          totalQuestions: 75,
-          completionPct: 24,
-          streak: 4,
-          quizAccuracy: 88,
-          mockScore: 4.6,
-          lastActive: new Date().toISOString(),
-          categoryBreakdown: {
-            'React Core': { solved: 12, total: 25, pct: 48 },
-            'Architecture': { solved: 6, total: 25, pct: 24 },
-          },
-          focusModules: ['Fiber & Reconciliation', 'Server Components', 'State Architecture'],
-        }
+      if (typeof localStorage !== 'undefined') {
+        const stored = localStorage.getItem(LOCAL_PROGRESS_KEY)
+        return stored ? JSON.parse(stored) : {}
       }
-      return result
     } catch {
       // ignore
     }

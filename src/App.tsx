@@ -99,11 +99,49 @@ export default function App() {
 
 
 
-          <Route path="/experience" element={<ExperienceTracks />} />
-          <Route path="/pathways" element={<Pathways />} />
-          <Route path="/compensation" element={<Compensation />} />
-          <Route path="/resume-optimizer" element={<ResumeOptimizer />} />
-          <Route path="/flashcards" element={<Flashcards />} />
+          {/* Career & Negotiations */}
+          <Route
+            path="/experience"
+            element={
+              <FeatureGuard feature="system_design" featureName="0-20y Career Ladder & FAANG Rubrics">
+                <ExperienceTracks />
+              </FeatureGuard>
+            }
+          />
+          <Route
+            path="/pathways"
+            element={
+              <FeatureGuard feature="system_design" featureName="620+ Company Pathways">
+                <Pathways />
+              </FeatureGuard>
+            }
+          />
+          <Route
+            path="/compensation"
+            element={
+              <FeatureGuard feature="system_design" featureName="Offer Negotiation & Total Compensation">
+                <Compensation />
+              </FeatureGuard>
+            }
+          />
+          <Route
+            path="/resume-optimizer"
+            element={
+              <FeatureGuard feature="system_design" featureName="ATS Resume Optimizer">
+                <ResumeOptimizer />
+              </FeatureGuard>
+            }
+          />
+          <Route
+            path="/design-system"
+            element={
+              <FeatureGuard feature="system_design" featureName="Enterprise Design System & Tokens">
+                <DesignSystemStudio />
+              </FeatureGuard>
+            }
+          />
+
+          {/* System Architecture & Labs */}
           <Route
             path="/system-design"
             element={
@@ -112,7 +150,56 @@ export default function App() {
               </FeatureGuard>
             }
           />
-          <Route path="/case-studies" element={<CaseStudies />} />
+          <Route
+            path="/case-studies"
+            element={
+              <FeatureGuard feature="system_design" featureName="FAANG Architecture Replays & Case Studies">
+                <CaseStudies />
+              </FeatureGuard>
+            }
+          />
+          <Route
+            path="/capacity-estimator"
+            element={
+              <FeatureGuard feature="system_design" featureName="Capacity Sizing Estimator">
+                <CapacityEstimator />
+              </FeatureGuard>
+            }
+          />
+          <Route
+            path="/whiteboard"
+            element={
+              <FeatureGuard feature="system_design" featureName="Collaborative Architecture Whiteboard">
+                <Whiteboard />
+              </FeatureGuard>
+            }
+          />
+          <Route
+            path="/webrtc-lab"
+            element={
+              <FeatureGuard feature="system_design" featureName="WebRTC & ICE Signaling Lab">
+                <WebRtcLab />
+              </FeatureGuard>
+            }
+          />
+          <Route
+            path="/local-first"
+            element={
+              <FeatureGuard feature="system_design" featureName="Local-First & Offline Sync Studio">
+                <LocalFirstStudio />
+              </FeatureGuard>
+            }
+          />
+          <Route
+            path="/search-engine"
+            element={
+              <FeatureGuard feature="system_design" featureName="Client Search Engine & BM25 Studio">
+                <SearchEngineStudio />
+              </FeatureGuard>
+            }
+          />
+
+          {/* Compilers & Micro-Frontends */}
           <Route
             path="/ast-explorer"
             element={
@@ -121,14 +208,30 @@ export default function App() {
               </FeatureGuard>
             }
           />
-          <Route path="/security" element={<SecuritySandbox />} />
-          <Route path="/state-machine" element={<StateMachine />} />
-          <Route path="/capacity-estimator" element={<CapacityEstimator />} />
-          <Route path="/memory-profiler" element={<MemoryProfiler />} />
-          <Route path="/module-federation" element={<ModuleFederation />} />
-          <Route path="/whiteboard" element={<Whiteboard />} />
-          <Route path="/protocols" element={<ProtocolPlayground />} />
-          <Route path="/css-pipeline" element={<CssPipeline />} />
+          <Route
+            path="/module-federation"
+            element={
+              <FeatureGuard feature="compiler_studios" featureName="Micro-Frontends & Module Federation Studio">
+                <ModuleFederation />
+              </FeatureGuard>
+            }
+          />
+          <Route
+            path="/state-machine"
+            element={
+              <FeatureGuard feature="compiler_studios" featureName="State Machine & XState Studio">
+                <StateMachine />
+              </FeatureGuard>
+            }
+          />
+          <Route
+            path="/protocols"
+            element={
+              <FeatureGuard feature="compiler_studios" featureName="API Protocols & GraphQL Playground">
+                <ProtocolPlayground />
+              </FeatureGuard>
+            }
+          />
           <Route
             path="/wasm-lab"
             element={
@@ -137,21 +240,132 @@ export default function App() {
               </FeatureGuard>
             }
           />
-          <Route path="/webrtc-lab" element={<WebRtcLab />} />
-          <Route path="/local-first" element={<LocalFirstStudio />} />
-          <Route path="/design-system" element={<DesignSystemStudio />} />
-          <Route path="/i18n-lab" element={<I18nLab />} />
-          <Route path="/sdui-lab" element={<SduiLab />} />
-          <Route path="/web-components" element={<WebComponentsStudio />} />
-          <Route path="/search-engine" element={<SearchEngineStudio />} />
-          <Route path="/visualizer" element={<Visualizer />} />
-          <Route path="/profiler" element={<Profiler />} />
-          <Route path="/code-review" element={<CodeReview />} />
-          <Route path="/accessibility" element={<AccessibilityLab />} />
-          <Route path="/daily" element={<DailyChallenge />} />
-          <Route path="/behavioral" element={<Behavioral />} />
-          <Route path="/peer-room" element={<PeerRoom />} />
-          <Route path="/mock-interview" element={<MockInterview />} />
+          <Route
+            path="/sdui-lab"
+            element={
+              <FeatureGuard feature="compiler_studios" featureName="Server-Driven UI & RSC Studio">
+                <SduiLab />
+              </FeatureGuard>
+            }
+          />
+          <Route
+            path="/web-components"
+            element={
+              <FeatureGuard feature="compiler_studios" featureName="Shadow DOM & Web Components Studio">
+                <WebComponentsStudio />
+              </FeatureGuard>
+            }
+          />
+
+          {/* Security & Performance */}
+          <Route
+            path="/security"
+            element={
+              <FeatureGuard feature="system_design" featureName="Web Security & OWASP Sandbox">
+                <SecuritySandbox />
+              </FeatureGuard>
+            }
+          />
+          <Route
+            path="/memory-profiler"
+            element={
+              <FeatureGuard feature="system_design" featureName="Memory & V8 Heap Profiler">
+                <MemoryProfiler />
+              </FeatureGuard>
+            }
+          />
+          <Route
+            path="/profiler"
+            element={
+              <FeatureGuard feature="system_design" featureName="Performance Profiler Lab">
+                <Profiler />
+              </FeatureGuard>
+            }
+          />
+          <Route
+            path="/visualizer"
+            element={
+              <FeatureGuard feature="system_design" featureName="Event Loop & React Fiber Concurrency Visualizer">
+                <Visualizer />
+              </FeatureGuard>
+            }
+          />
+          <Route
+            path="/css-pipeline"
+            element={
+              <FeatureGuard feature="system_design" featureName="CSS Render Pipeline Studio">
+                <CssPipeline />
+              </FeatureGuard>
+            }
+          />
+          <Route
+            path="/i18n-lab"
+            element={
+              <FeatureGuard feature="system_design" featureName="i18n & RTL Studio">
+                <I18nLab />
+              </FeatureGuard>
+            }
+          />
+
+          {/* Practice Labs */}
+          <Route
+            path="/flashcards"
+            element={
+              <FeatureGuard feature="questions_full" featureName="Active Recall Flashcards Studio">
+                <Flashcards />
+              </FeatureGuard>
+            }
+          />
+          <Route
+            path="/quiz"
+            element={
+              <FeatureGuard feature="questions_full" featureName="Practice Quiz Assessments">
+                <Quiz />
+              </FeatureGuard>
+            }
+          />
+          <Route
+            path="/videos"
+            element={
+              <FeatureGuard feature="questions_full" featureName="700+ Video Masterclasses">
+                <Videos />
+              </FeatureGuard>
+            }
+          />
+          <Route
+            path="/code-review"
+            element={
+              <FeatureGuard feature="compiler_studios" featureName="AI Static Code Reviewer">
+                <CodeReview />
+              </FeatureGuard>
+            }
+          />
+          <Route
+            path="/accessibility"
+            element={
+              <FeatureGuard feature="compiler_studios" featureName="Accessibility (a11y) Lab">
+                <AccessibilityLab />
+              </FeatureGuard>
+            }
+          />
+          <Route
+            path="/daily"
+            element={
+              <FeatureGuard feature="questions_full" featureName="Daily Challenge & Streak">
+                <DailyChallenge />
+              </FeatureGuard>
+            }
+          />
+
+          {/* Mocks */}
+          <Route
+            path="/mock-interview"
+            element={
+              <FeatureGuard feature="video_mock" featureName="Timed Mock Interview Simulator">
+                <MockInterview />
+              </FeatureGuard>
+            }
+          />
           <Route
             path="/video-mock"
             element={
@@ -160,17 +374,69 @@ export default function App() {
               </FeatureGuard>
             }
           />
-          <Route path="/questions" element={<QuestionList />} />
+          <Route
+            path="/behavioral"
+            element={
+              <FeatureGuard feature="video_mock" featureName="FAANG STAR Behavioral Interview Studio">
+                <Behavioral />
+              </FeatureGuard>
+            }
+          />
+          <Route
+            path="/peer-room"
+            element={
+              <FeatureGuard feature="video_mock" featureName="Peer-to-Peer Mock Interview Room">
+                <PeerRoom />
+              </FeatureGuard>
+            }
+          />
 
+          {/* Questions Bank */}
+          <Route
+            path="/questions"
+            element={
+              <FeatureGuard feature="questions_full" featureName="22,222 Questions Bank">
+                <QuestionList />
+              </FeatureGuard>
+            }
+          />
+          <Route
+            path="/questions/:id"
+            element={
+              <FeatureGuard feature="questions_full" featureName="Question Solution & Walkthrough">
+                <QuestionDetail />
+              </FeatureGuard>
+            }
+          />
+          <Route
+            path="/questions/:id/detail"
+            element={
+              <FeatureGuard feature="questions_full" featureName="Question Deep-Dive Detail">
+                <QuestionDetailPage />
+              </FeatureGuard>
+            }
+          />
+
+          {/* Coding Challenges */}
+          <Route
+            path="/coding"
+            element={
+              <FeatureGuard feature="coding_sandbox" featureName="Interactive Coding Challenges">
+                <CodingList />
+              </FeatureGuard>
+            }
+          />
+          <Route
+            path="/coding/:id"
+            element={
+              <FeatureGuard feature="coding_sandbox" featureName="Interactive Coding Sandbox & Workspace">
+                <Workspace />
+              </FeatureGuard>
+            }
+          />
 
           <Route path="/practice" element={<Navigate to="/questions" replace />} />
           <Route path="/practice/*" element={<Navigate to="/questions" replace />} />
-          <Route path="/questions/:id" element={<QuestionDetail />} />
-          <Route path="/questions/:id/detail" element={<QuestionDetailPage />} />
-          <Route path="/coding" element={<CodingList />} />
-          <Route path="/coding/:id" element={<Workspace />} />
-          <Route path="/videos" element={<Videos />} />
-          <Route path="/quiz" element={<Quiz />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>

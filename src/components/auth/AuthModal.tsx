@@ -12,6 +12,7 @@ export default function AuthModal() {
     signInWithOAuth,
     sendOtp,
     verifyOtp,
+    switchRole,
     user,
     isAuthenticated,
   } = useAuth()
@@ -287,6 +288,51 @@ export default function AuthModal() {
           </div>
         ) : (
           <>
+            {/* QUICK DEV ACCOUNTS / 1-CLICK DEMO LOGIN */}
+            <div className="quick-roles-panel" style={{ marginBottom: '16px', padding: '12px 14px', background: 'rgba(168, 85, 247, 0.08)', borderRadius: 'var(--radius-md)', border: '1px solid rgba(168, 85, 247, 0.25)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+                <span style={{ fontSize: '0.74rem', fontWeight: 800, color: 'var(--brand-purple, #a855f7)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                  ⚡ 1-Click Role Switch &amp; Testing:
+                </span>
+                <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)' }}>No password needed</span>
+              </div>
+              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                <button
+                  type="button"
+                  className="btn btn-sm btn-primary"
+                  style={{ flex: '1 1 120px', fontWeight: 800, background: 'linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%)', border: 'none', padding: '8px 10px' }}
+                  onClick={() => {
+                    switchRole('admin')
+                    closeAuthModal()
+                  }}
+                >
+                  🛡️ Admin (Full)
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-sm btn-secondary"
+                  style={{ flex: '1 1 100px', fontWeight: 700, padding: '8px 10px' }}
+                  onClick={() => {
+                    switchRole('candidate')
+                    closeAuthModal()
+                  }}
+                >
+                  👨‍💻 Candidate (Locked)
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-sm btn-secondary"
+                  style={{ flex: '1 1 100px', fontWeight: 700, padding: '8px 10px' }}
+                  onClick={() => {
+                    switchRole('pro_member')
+                    closeAuthModal()
+                  }}
+                >
+                  ⭐ Pro Member
+                </button>
+              </div>
+            </div>
+
             {/* OAUTH PROVIDERS */}
             <div className="oauth-buttons-row">
               <button

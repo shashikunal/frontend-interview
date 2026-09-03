@@ -21,9 +21,19 @@ export default function AdminNotificationBell() {
 
   useEffect(() => {
     loadNotifications()
-    // Poll notifications every 30 seconds for live requests
-    const interval = setInterval(loadNotifications, 30000)
-    return () => clearInterval(interval)
+
+    // 1. Instant Real-Time WebSocket & BroadcastChannel subscription
+    const unsub = auditService.subscribeToAccessRequests(() => {
+      loadNotifications()
+    })
+
+    // 2. Active 2-second heartbeat
+    const interval = setInterval(loadNotifications, 2000)
+
+    return () => {
+      unsub()
+      clearInterval(interval)
+    }
   }, [loadNotifications])
 
   // Click outside to close
@@ -65,6 +75,24 @@ export default function AdminNotificationBell() {
     setTimeout(() => setFeedbackMsg(null), 3000)
   }
 
+  // Simulate candidate request for instant verification
+  const handleCreateTestRequest = async () => {
+    await auditService.logEvent({
+      userId: 'usr_candidate_demo',
+      action: 'FEATURE_ACCESS_REQUESTED',
+      resource: 'system_design',
+      details: {
+        featureName: 'System Design Studio',
+        userEmail: 'candidate@faang.io',
+        userName: 'Alex Rivers (Candidate)',
+        currentRole: 'candidate',
+      },
+    })
+    await loadNotifications()
+    setFeedbackMsg('Created access request for candidate@faang.io!')
+    setTimeout(() => setFeedbackMsg(null), 3000)
+  }
+
   return (
     <div className="admin-bell-container" ref={bellRef}>
       <button
@@ -98,9 +126,19 @@ export default function AdminNotificationBell() {
 
           <div className="abd-list">
             {notifications.length === 0 ? (
-              <div className="abd-empty">
-                <span>🎉</span>
-                <p>No pending access requests.</p>
+              <div className="abd-empty" style={{ padding: '20px 12px', textAlign: 'center' }}>
+                <span style={{ fontSize: '1.6rem', display: 'block', marginBottom: '8px' }}>🎉</span>
+                <p style={{ margin: '0 0 12px', fontSize: '0.84rem', color: 'var(--text-muted)' }}>
+                  No pending access requests.
+                </p>
+                <button
+                  type="button"
+                  className="btn btn-sm btn-secondary"
+                  onClick={handleCreateTestRequest}
+                  style={{ fontSize: '0.76rem', padding: '6px 12px', fontWeight: 700 }}
+                >
+                  ⚡ Simulate Candidate Request
+                </button>
               </div>
             ) : (
               notifications.slice(0, 6).map(notif => {

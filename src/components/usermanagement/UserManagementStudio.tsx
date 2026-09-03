@@ -11,7 +11,7 @@ import './UserManagementStudio.css'
 
 const PERMISSIONS = [
   { key: 'questions_full', label: 'Full 22,222 Questions Bank Access', candidate: false, pro: true, admin: true },
-  { key: 'coding_sandbox', label: 'Execute Monaco Code Sandbox', candidate: true, pro: true, admin: true },
+  { key: 'coding_sandbox', label: 'Execute Monaco Code Sandbox', candidate: false, pro: true, admin: true },
   { key: 'system_design', label: 'System Design Canvas & Blueprints', candidate: false, pro: true, admin: true },
   { key: 'video_mock', label: 'AI Video Mock Interviews with Rubrics', candidate: false, pro: true, admin: true },
   { key: 'compiler_studios', label: 'AST & Compiler Visualizers', candidate: false, pro: true, admin: true },

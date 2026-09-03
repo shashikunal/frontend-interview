@@ -16,18 +16,63 @@ export interface AccessNotificationItem {
 const AUDIT_LOCAL_KEY = 'supabase_audit_logs_local'
 const REQUESTS_LOCAL_KEY = 'supabase_access_requests_local'
 
+let memoryRequests: AccessNotificationItem[] = []
+let memoryAudit: AuditLogEntry[] = []
+
+function isValidUUID(id?: string): boolean {
+  if (!id) return false
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id)
+}
+
+// BroadcastChannel instance for cross-tab 0ms synchronization
+const accessChannel = typeof BroadcastChannel !== 'undefined' ? new BroadcastChannel('interviewprep_access_channel') : null
+
 function getLocalRequests(): AccessNotificationItem[] {
   try {
-    const raw = localStorage.getItem(REQUESTS_LOCAL_KEY)
-    return raw ? JSON.parse(raw) : []
+    if (typeof localStorage !== 'undefined') {
+      const raw = localStorage.getItem(REQUESTS_LOCAL_KEY)
+      if (raw) return JSON.parse(raw)
+    }
   } catch {
-    return []
+    // ignore
   }
+  return memoryRequests
 }
 
 function saveLocalRequests(items: AccessNotificationItem[]): void {
+  memoryRequests = [...items]
   try {
-    localStorage.setItem(REQUESTS_LOCAL_KEY, JSON.stringify(items))
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem(REQUESTS_LOCAL_KEY, JSON.stringify(items))
+    }
+  } catch {
+    // ignore
+  }
+}
+
+function broadcastAccessUpdate(item: AccessNotificationItem): void {
+  // 1. Cross-tab BroadcastChannel
+  if (accessChannel) {
+    try {
+      accessChannel.postMessage({ type: 'ACCESS_REQUEST_UPDATE', payload: item })
+    } catch {
+      // ignore
+    }
+  }
+
+  // 2. Same-window custom event
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('platform_access_request', { detail: item }))
+  }
+
+  // 3. Supabase Realtime Broadcast
+  try {
+    const sbChannel = supabase.channel('platform_access_requests')
+    sbChannel.send({
+      type: 'broadcast',
+      event: 'live_access_request',
+      payload: item,
+    })
   } catch {
     // ignore
   }
@@ -35,18 +80,26 @@ function saveLocalRequests(items: AccessNotificationItem[]): void {
 
 function getLocalAudit(): AuditLogEntry[] {
   try {
-    const raw = localStorage.getItem(AUDIT_LOCAL_KEY)
-    return raw ? JSON.parse(raw) : []
+    if (typeof localStorage !== 'undefined') {
+      const raw = localStorage.getItem(AUDIT_LOCAL_KEY)
+      if (raw) return JSON.parse(raw)
+    }
   } catch {
-    return []
+    // ignore
   }
+  return memoryAudit
 }
 
 function appendLocalAudit(entry: AuditLogEntry): void {
+  memoryAudit.unshift(entry)
   try {
-    const current = getLocalAudit()
-    current.unshift(entry)
-    localStorage.setItem(AUDIT_LOCAL_KEY, JSON.stringify(current.slice(0, 100)))
+    if (typeof localStorage !== 'undefined') {
+      const current = getLocalAudit()
+      if (!current.some(c => c.id === entry.id)) {
+        current.unshift(entry)
+      }
+      localStorage.setItem(AUDIT_LOCAL_KEY, JSON.stringify(current.slice(0, 100)))
+    }
   } catch {
     // ignore
   }
@@ -68,7 +121,7 @@ export const auditService = {
       action: params.action,
       resource: params.resource,
       details: params.details || {},
-      userAgent: navigator.userAgent,
+      userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : 'Node',
       createdAt: new Date().toISOString(),
     }
 
@@ -89,23 +142,85 @@ export const auditService = {
         status: 'PENDING',
       }
       const existing = getLocalRequests()
-      // Only add if not already requested
-      if (!existing.some(r => r.userEmail === notifItem.userEmail && r.featureKey === notifItem.featureKey && r.status === 'PENDING')) {
-        existing.unshift(notifItem)
-        saveLocalRequests(existing)
-      }
+      // Always replace existing request for same email+feature to refresh to PENDING
+      const filtered = existing.filter(
+        r => !(r.userEmail.toLowerCase() === notifItem.userEmail.toLowerCase() && r.featureKey === notifItem.featureKey)
+      )
+      filtered.unshift(notifItem)
+      saveLocalRequests(filtered)
+      broadcastAccessUpdate(notifItem)
     }
 
     try {
       await supabase.from('audit_logs').insert({
-        user_id: params.userId || null,
+        user_id: isValidUUID(params.userId) ? params.userId : null,
         action: params.action,
         resource: params.resource,
         details: params.details || {},
-        user_agent: navigator.userAgent,
+        user_agent: typeof navigator !== 'undefined' ? navigator.userAgent : 'Node',
       })
     } catch {
-      // Table may not exist yet; gracefully handled by persistent mirror
+      // Gracefully handled by persistent mirror
+    }
+  },
+
+  /**
+   * Subscribe to real-time access requests (Multi-tab + Supabase WebSocket + Local Events)
+   */
+  subscribeToAccessRequests: (callback: (item: AccessNotificationItem) => void): (() => void) => {
+    // 1. BroadcastChannel listener
+    const bcHandler = (e: MessageEvent) => {
+      if (e.data?.type === 'ACCESS_REQUEST_UPDATE' && e.data?.payload) {
+        callback(e.data.payload)
+      }
+    }
+    if (accessChannel) {
+      accessChannel.addEventListener('message', bcHandler)
+    }
+
+    // 2. Custom Window Event listener
+    const windowHandler = (e: Event) => {
+      const detail = (e as CustomEvent<AccessNotificationItem>).detail
+      if (detail) callback(detail)
+    }
+    if (typeof window !== 'undefined') {
+      window.addEventListener('platform_access_request', windowHandler)
+    }
+
+    // 3. Supabase Realtime WebSocket channel
+    const sbChannel = supabase
+      .channel('platform_access_requests')
+      .on('broadcast', { event: 'live_access_request' }, payload => {
+        if (payload?.payload) {
+          callback(payload.payload as AccessNotificationItem)
+        }
+      })
+      .subscribe()
+
+    // 4. Storage event listener (fallback for other windows)
+    const storageHandler = (e: StorageEvent) => {
+      if (e.key === REQUESTS_LOCAL_KEY && e.newValue) {
+        try {
+          const parsed = JSON.parse(e.newValue)
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            callback(parsed[0])
+          }
+        } catch {
+          // ignore
+        }
+      }
+    }
+    if (typeof window !== 'undefined') {
+      window.addEventListener('storage', storageHandler)
+    }
+
+    return () => {
+      if (accessChannel) accessChannel.removeEventListener('message', bcHandler)
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('platform_access_request', windowHandler)
+        window.removeEventListener('storage', storageHandler)
+      }
+      supabase.removeChannel(sbChannel)
     }
   },
 
@@ -143,6 +258,7 @@ export const auditService = {
    * Admin: Fetch access request notifications (Real Data Only)
    */
   getAccessNotifications: async (): Promise<AccessNotificationItem[]> => {
+    const local = getLocalRequests()
     try {
       const { data, error } = await supabase
         .from('audit_logs')
@@ -152,7 +268,7 @@ export const auditService = {
         .limit(25)
 
       if (!error && Array.isArray(data) && data.length > 0) {
-        return data.map(d => {
+        const remoteItems: AccessNotificationItem[] = data.map(d => {
           const details = d.details || {}
           return {
             id: d.id,
@@ -165,13 +281,19 @@ export const auditService = {
             status: (details.status as AccessNotificationItem['status']) || 'PENDING',
           }
         })
+        const merged = [...local]
+        for (const rem of remoteItems) {
+          if (!merged.some(m => m.id === rem.id || (m.userEmail.toLowerCase() === rem.userEmail.toLowerCase() && m.featureKey === rem.featureKey))) {
+            merged.push(rem)
+          }
+        }
+        return merged
       }
     } catch {
       // ignore
     }
 
-    // Return real local requests (defaults to empty array if no requests made yet)
-    return getLocalRequests()
+    return local
   },
 
   /**

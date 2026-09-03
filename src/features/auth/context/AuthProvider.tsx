@@ -88,14 +88,34 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           const currentSession = data.session
           setSession(currentSession)
           setRawUser(currentSession?.user ?? null)
-          await syncProfile(currentSession?.user ?? null)
+          if (currentSession?.user) {
+            await syncProfile(currentSession.user)
+          } else {
+            try {
+              const saved = localStorage.getItem('interviewprep_active_profile')
+              if (saved) {
+                setUserProfile(JSON.parse(saved))
+              }
+            } catch {
+              // ignore
+            }
+          }
         }
       } catch (err) {
         console.warn('[Supabase Auth] Session restoration failed:', err)
         if (isMounted) {
           setSession(null)
           setRawUser(null)
-          setUserProfile(null)
+          try {
+            const saved = localStorage.getItem('interviewprep_active_profile')
+            if (saved) {
+              setUserProfile(JSON.parse(saved))
+            } else {
+              setUserProfile(null)
+            }
+          } catch {
+            setUserProfile(null)
+          }
         }
       } finally {
         if (isMounted) {
@@ -162,6 +182,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signOut = useCallback(async (): Promise<void> => {
     setIsLoading(true)
+    try {
+      localStorage.removeItem('interviewprep_active_profile')
+    } catch {
+      // ignore
+    }
     await authService.signOut()
     setSession(null)
     setRawUser(null)
@@ -196,22 +221,33 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const switchRole = useCallback(
     (newRole: UserRole) => {
       setUserProfile(prev => {
+        let profile: AuthUserProfile
         if (!prev) {
-          return {
-            id: 'demo_user',
-            email: 'candidate@faang.io',
-            name: 'Demo Candidate',
+          profile = {
+            id: newRole === 'admin' ? 'admin_super_user' : 'demo_user',
+            email: newRole === 'admin' ? 'admin@interviewprep.com' : 'candidate@faang.io',
+            name: newRole === 'admin' ? 'Platform Administrator' : 'Demo Candidate',
             role: newRole,
             entitlements: DEFAULT_ENTITLEMENTS[newRole],
-            permissions: [],
+            permissions: newRole === 'admin' ? ['admin:all', 'admin:users_manage'] : [],
             createdAt: new Date().toISOString(),
           }
+        } else {
+          profile = {
+            ...prev,
+            role: newRole,
+            email: newRole === 'admin' && prev.email.includes('candidate') ? 'admin@interviewprep.com' : prev.email,
+            name: newRole === 'admin' && prev.name.includes('Candidate') ? 'Platform Administrator' : prev.name,
+            entitlements: DEFAULT_ENTITLEMENTS[newRole],
+            permissions: newRole === 'admin' ? ['admin:all', 'admin:users_manage'] : prev.permissions,
+          }
         }
-        return {
-          ...prev,
-          role: newRole,
-          entitlements: DEFAULT_ENTITLEMENTS[newRole],
+        try {
+          localStorage.setItem('interviewprep_active_profile', JSON.stringify(profile))
+        } catch {
+          // ignore
         }
+        return profile
       })
     },
     []
@@ -323,7 +359,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       session,
       role: userProfile?.role || 'guest',
       permissions: userProfile?.permissions || [],
-      isAuthenticated: Boolean(session && userProfile),
+      isAuthenticated: Boolean(userProfile),
       isLoading,
       isAuthModalOpen,
       openAuthModal,

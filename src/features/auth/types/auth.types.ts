@@ -12,8 +12,8 @@ export interface FeatureEntitlements {
 }
 
 export const DEFAULT_ENTITLEMENTS: Record<UserRole, FeatureEntitlements> = {
-  guest: { questions_full: false, coding_sandbox: true, system_design: false, video_mock: false, compiler_studios: false, cloud_sync: false },
-  candidate: { questions_full: false, coding_sandbox: true, system_design: false, video_mock: false, compiler_studios: false, cloud_sync: true },
+  guest: { questions_full: false, coding_sandbox: false, system_design: false, video_mock: false, compiler_studios: false, cloud_sync: false },
+  candidate: { questions_full: false, coding_sandbox: false, system_design: false, video_mock: false, compiler_studios: false, cloud_sync: true },
   pro_member: { questions_full: true, coding_sandbox: true, system_design: true, video_mock: true, compiler_studios: true, cloud_sync: true },
   interviewer: { questions_full: true, coding_sandbox: true, system_design: true, video_mock: true, compiler_studios: true, cloud_sync: true },
   admin: { questions_full: true, coding_sandbox: true, system_design: true, video_mock: true, compiler_studios: true, cloud_sync: true },
