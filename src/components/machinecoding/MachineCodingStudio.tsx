@@ -3,8 +3,9 @@ import { useSearchParams } from 'react-router-dom';
 import Editor, { DiffEditor } from '@monaco-editor/react';
 import { useTheme } from '../../context/ThemeContext';
 import { buildReactSrcDoc } from '../../lib/runner';
+import { exportMachineCodingZip } from '../../lib/zipExport';
 import { MACHINE_CODING_QUESTIONS } from './machineCodingQuestions';
-import { getQuestionTestCases, type MCTestResult } from './data/machineCodingTests';
+import { getQuestionTestCases, type MCTestCase, type MCTestResult } from './data/machineCodingTests';
 import InterviewScorecardModal, { type ScorecardData } from './InterviewScorecardModal';
 import AIInterviewPrompter from './AIInterviewPrompter';
 import './MachineCodingStudio.css';
@@ -208,6 +209,20 @@ export default function MachineCodingStudio() {
   const [testResults, setTestResults] = useState<MCTestResult[] | null>(null);
   const [isRunningTests, setIsRunningTests] = useState(false);
   const testResultResolverRef = useRef<((res: MCTestResult[]) => void) | null>(null);
+
+  // Custom Test Builder State
+  const [customTestsMap, setCustomTestsMap] = useState<Record<string, MCTestCase[]>>(() => {
+    try {
+      const saved = localStorage.getItem('mc_custom_tests_v1');
+      return saved ? JSON.parse(saved) : {};
+    } catch {
+      return {};
+    }
+  });
+  const [isAddingCustomTest, setIsAddingCustomTest] = useState(false);
+  const [newTestName, setNewTestName] = useState('');
+  const [newTestDesc, setNewTestDesc] = useState('');
+  const [newTestAssertion, setNewTestAssertion] = useState('');
 
   // Timed Interview Simulator State
   const [isInterviewActive, setIsInterviewActive] = useState(false);
@@ -453,11 +468,83 @@ export default function MachineCodingStudio() {
     executeCode(rest);
   };
 
+  const getAllQuestionTests = (q: any): MCTestCase[] => {
+    if (!q) return [];
+    const builtIn = getQuestionTestCases(q);
+    const custom = customTestsMap[q.id] || [];
+    return [...builtIn, ...custom];
+  };
+
+  const handleAddCustomTest = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!activeQuestion) return;
+    const name = newTestName.trim();
+    const assertion = newTestAssertion.trim();
+    if (!name || !assertion) {
+      showToast('⚠️ Please provide both a test name and assertion code.');
+      return;
+    }
+
+    const newTest: MCTestCase = {
+      id: `custom-${Date.now()}`,
+      name,
+      description: newTestDesc.trim() || 'Custom test assertion',
+      assertion,
+    };
+
+    setCustomTestsMap(prev => {
+      const current = prev[activeQuestion.id] || [];
+      const updated = { ...prev, [activeQuestion.id]: [...current, newTest] };
+      try {
+        localStorage.setItem('mc_custom_tests_v1', JSON.stringify(updated));
+      } catch (_) {}
+      return updated;
+    });
+
+    setIsAddingCustomTest(false);
+    setNewTestName('');
+    setNewTestDesc('');
+    setNewTestAssertion('');
+    showToast(`✓ Custom test "${name}" added!`);
+  };
+
+  const handleDeleteCustomTest = (testId: string) => {
+    if (!activeQuestion) return;
+    setCustomTestsMap(prev => {
+      const current = prev[activeQuestion.id] || [];
+      const updated = {
+        ...prev,
+        [activeQuestion.id]: current.filter(t => t.id !== testId),
+      };
+      try {
+        localStorage.setItem('mc_custom_tests_v1', JSON.stringify(updated));
+      } catch (_) {}
+      return updated;
+    });
+    showToast('Custom test removed.');
+  };
+
+  const handleExportProject = () => {
+    if (!activeQuestion) return;
+    try {
+      exportMachineCodingZip({
+        questionId: activeQuestion.id,
+        title: activeQuestion.title,
+        description: activeQuestion.description,
+        files,
+      });
+      showToast(`📦 Downloaded Vite + React project for ${activeQuestion.id}!`);
+    } catch (err: any) {
+      console.error(err);
+      showToast('⚠️ Failed to package project ZIP export.');
+    }
+  };
+
   const handleRunTests = async () => {
     if (!activeQuestion) return;
     setIsRunningTests(true);
     setActiveTab('tests');
-    const tests = getQuestionTestCases(activeQuestion);
+    const tests = getAllQuestionTests(activeQuestion);
 
     // Make sure latest multi-file code is compiled and mounted
     await executeCode(files);
@@ -479,7 +566,7 @@ export default function MachineCodingStudio() {
 
     return new Promise((resolve) => {
       testResultResolverRef.current = resolve;
-      const tests = getQuestionTestCases(activeQuestion);
+      const tests = getAllQuestionTests(activeQuestion);
 
       setTimeout(() => {
         if (iframeRef.current && iframeRef.current.contentWindow) {
@@ -810,6 +897,14 @@ export default function MachineCodingStudio() {
             </button>
 
             <button
+              className="mc-action-btn mc-btn-export"
+              onClick={handleExportProject}
+              title="Download standalone Vite + React project (.zip) with all multi-file workspace code"
+            >
+              📦 Export Project
+            </button>
+
+            <button
               className="mc-action-btn mc-btn-run"
               onClick={() => executeCode(files)}
               disabled={isCompiling}
@@ -1040,14 +1135,78 @@ export default function MachineCodingStudio() {
                       </p>
                     </div>
 
-                    <button
-                      className="mc-action-btn mc-btn-tests"
-                      onClick={handleRunTests}
-                      disabled={isRunningTests || isCompiling}
-                    >
-                      {isRunningTests ? '🧪 Running...' : '▶ Run Test Suite'}
-                    </button>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <button
+                        type="button"
+                        className="mc-btn-add-test"
+                        onClick={() => {
+                          setIsAddingCustomTest(prev => !prev);
+                          if (!newTestAssertion) {
+                            setNewTestAssertion(`// Write assertion helpers: expect, root, getByText, getAll, fireClick, fireInput, wait\nexpect(root && root.children.length > 0, "Component mounted into root");\n`);
+                          }
+                        }}
+                        title="Add custom assertion test case"
+                      >
+                        {isAddingCustomTest ? '✕ Cancel' : '+ Custom Test'}
+                      </button>
+
+                      <button
+                        className="mc-action-btn mc-btn-tests"
+                        onClick={handleRunTests}
+                        disabled={isRunningTests || isCompiling}
+                      >
+                        {isRunningTests ? '🧪 Running...' : '▶ Run Suite'}
+                      </button>
+                    </div>
                   </div>
+
+                  {/* Inline Custom Test Creator Form */}
+                  {isAddingCustomTest && (
+                    <form className="mc-custom-test-card-form" onSubmit={handleAddCustomTest}>
+                      <div className="mc-test-form-row">
+                        <label>Test Title</label>
+                        <input
+                          type="text"
+                          className="mc-test-form-input"
+                          placeholder="e.g. Reset button restores count to 0"
+                          value={newTestName}
+                          onChange={e => setNewTestName(e.target.value)}
+                          autoFocus
+                        />
+                      </div>
+                      <div className="mc-test-form-row">
+                        <label>Description</label>
+                        <input
+                          type="text"
+                          className="mc-test-form-input"
+                          placeholder="e.g. Verifies clicking the reset button resets display to 0"
+                          value={newTestDesc}
+                          onChange={e => setNewTestDesc(e.target.value)}
+                        />
+                      </div>
+                      <div className="mc-test-form-row">
+                        <label>DOM Assertion Script (helpers: expect, root, getByText, getAll, fireClick, fireInput, wait)</label>
+                        <textarea
+                          className="mc-test-form-textarea"
+                          value={newTestAssertion}
+                          onChange={e => setNewTestAssertion(e.target.value)}
+                          placeholder="expect(root.innerText.includes('0'), 'Counter has 0');"
+                        />
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
+                        <button
+                          type="button"
+                          className="btn btn-secondary btn-sm"
+                          onClick={() => setIsAddingCustomTest(false)}
+                        >
+                          Cancel
+                        </button>
+                        <button type="submit" className="btn btn-primary btn-sm">
+                          ✓ Save Custom Test
+                        </button>
+                      </div>
+                    </form>
+                  )}
 
                   {/* Progress Meter */}
                   {testResults && (
@@ -1074,22 +1233,37 @@ export default function MachineCodingStudio() {
 
                   {/* Test Cases List */}
                   <div className="mc-test-case-list">
-                    {(testResults ? testResults : getQuestionTestCases(activeQuestion).map(tc => ({ ...tc, status: 'pending' as const, durationMs: 0 }))).map((tc, idx) => (
+                    {(testResults ? testResults : getAllQuestionTests(activeQuestion).map(tc => ({ ...tc, status: 'pending' as const, durationMs: 0 }))).map((tc, idx) => (
                       <div key={tc.id} className={`mc-test-card ${tc.status}`}>
                         <div className="mc-test-card-header">
                           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                             <span className={`mc-test-badge ${tc.status}`}>
                               {tc.status === 'passed' ? '✓ PASS' : tc.status === 'failed' ? '✕ FAIL' : '○ READY'}
                             </span>
+                            {tc.id.startsWith('custom-') && (
+                              <span className="mc-test-badge custom">CUSTOM</span>
+                            )}
                             <span style={{ fontSize: '13px', fontWeight: '600', color: 'var(--text-primary)' }}>
                               #{idx + 1} {tc.name}
                             </span>
                           </div>
-                          {tc.durationMs > 0 && (
-                            <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
-                              {tc.durationMs}ms
-                            </span>
-                          )}
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            {tc.durationMs > 0 && (
+                              <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
+                                {tc.durationMs}ms
+                              </span>
+                            )}
+                            {tc.id.startsWith('custom-') && (
+                              <button
+                                type="button"
+                                className="mc-test-delete-btn"
+                                onClick={() => handleDeleteCustomTest(tc.id)}
+                                title="Delete this custom test"
+                              >
+                                🗑️
+                              </button>
+                            )}
+                          </div>
                         </div>
 
                         <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginTop: '4px', lineHeight: '1.4' }}>
