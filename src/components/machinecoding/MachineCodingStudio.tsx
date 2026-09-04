@@ -1148,18 +1148,18 @@ export default function MachineCodingStudio() {
                   className="mc-duration-select"
                   value={interviewDuration}
                   onChange={(e) => setInterviewDuration(Number(e.target.value))}
-                  title="Select interview round duration"
+                  title="Interview round duration"
                 >
-                  <option value={30 * 60}>30m Sprint</option>
-                  <option value={45 * 60}>45m FAANG</option>
-                  <option value={60 * 60}>60m Deep Dive</option>
+                  <option value={30 * 60}>30m</option>
+                  <option value={45 * 60}>45m</option>
+                  <option value={60 * 60}>60m</option>
                 </select>
                 <button
                   className="mc-action-btn mc-btn-interview-start"
                   onClick={() => handleStartInterview(interviewDuration)}
-                  title="Begin timed FAANG machine coding simulation round"
+                  title="Begin timed FAANG interview simulation"
                 >
-                  ⏱️ Start Interview
+                  ⏱️ Start
                 </button>
               </div>
             ) : (
@@ -1168,108 +1168,123 @@ export default function MachineCodingStudio() {
                   className={`mc-interview-hud ${
                     interviewTimeLeft < 180 ? 'urgent-critical' : interviewTimeLeft < 600 ? 'urgent-warn' : 'normal'
                   }`}
-                  title="Remaining time in active interview round"
+                  title="Remaining time"
                 >
                   <span className="mc-hud-pulse" />
-                  <span className="mc-hud-label">INTERVIEW ROUND</span>
                   <span className="mc-hud-timer">{formatMMSS(interviewTimeLeft)}</span>
                 </div>
                 <button
                   className="mc-action-btn mc-btn-interview-finish"
                   onClick={handleFinishInterview}
-                  title="Submit candidate code and generate scorecard"
+                  title="Submit code & generate evaluation report"
                 >
-                  🏁 Finish & Submit
+                  🏁 Submit
                 </button>
               </div>
             )}
 
-            <button
-              type="button"
-              className="mc-action-btn mc-btn-view-scorecard"
-              onClick={async () => {
-                if (!activeQuestion) return;
-                let results = testResults;
-                if (!results) {
-                  showToast('🧪 Compiling test results and static code audit...');
-                  results = await runTestsAsync(files);
-                }
-                const passed = results ? results.filter(r => r.status === 'passed').length : 0;
-                const total = results ? results.length : 0;
-                setScorecardData({
-                  question: activeQuestion,
-                  timeSpentSeconds: isInterviewActive ? Math.max(1, interviewDuration - interviewTimeLeft) : 720,
-                  totalDurationSeconds: interviewDuration,
-                  testResults: results || [],
-                  passedTests: passed,
-                  totalTests: total,
-                  files: { ...files },
-                });
-                setShowScorecard(true);
-              }}
-              title="View Senior Staff Evaluation Scorecard & Anti-Pattern Audit"
-            >
-              📊 Scorecard
-            </button>
+            {/* Smart Utility Icon Toolbar */}
+            <div className="mc-topbar-tool-group">
+              <button
+                type="button"
+                className={`mc-topbar-icon-btn ${showAIPrompter ? 'active' : ''}`}
+                onClick={() => setShowAIPrompter(prev => !prev)}
+                title="AI Staff Interviewer Prompter (Ctrl+B)"
+              >
+                🎙️
+                {showAIPrompter && <span className="mc-ai-pulse-dot" />}
+              </button>
 
-            <button
-              className={`mc-action-btn mc-btn-ai-interviewer ${showAIPrompter ? 'active' : ''}`}
-              onClick={() => setShowAIPrompter(prev => !prev)}
-              title="Toggle Interactive AI Staff Interviewer & Voice Prompter"
-            >
-              <span className="mc-ai-pulse-dot" />
-              🎙️ AI Interviewer
-            </button>
+              <button
+                type="button"
+                className="mc-topbar-icon-btn"
+                onClick={async () => {
+                  if (!activeQuestion) return;
+                  let results = testResults;
+                  if (!results) {
+                    showToast('🧪 Compiling test assertions & code audit...');
+                    results = await runTestsAsync(files);
+                  }
+                  const passed = results ? results.filter(r => r.status === 'passed').length : 0;
+                  const total = results ? results.length : 0;
+                  setScorecardData({
+                    question: activeQuestion,
+                    timeSpentSeconds: isInterviewActive ? Math.max(1, interviewDuration - interviewTimeLeft) : 720,
+                    totalDurationSeconds: interviewDuration,
+                    testResults: results || [],
+                    passedTests: passed,
+                    totalTests: total,
+                    files: { ...files },
+                  });
+                  setShowScorecard(true);
+                }}
+                title="Senior Staff Evaluation Scorecard & Anti-Pattern Audit"
+              >
+                📊
+              </button>
 
+              <button
+                type="button"
+                className="mc-topbar-icon-btn"
+                onClick={handleLoadSolution}
+                disabled={isInterviewActive}
+                title={isInterviewActive ? "Reference solution locked during active interview" : "Inspect Reference Solution"}
+              >
+                💡
+              </button>
+
+              <button
+                type="button"
+                className="mc-topbar-icon-btn"
+                onClick={handleResetStarter}
+                title="Reset Starter Template"
+              >
+                ↺
+              </button>
+
+              <button
+                type="button"
+                className="mc-topbar-icon-btn"
+                onClick={handleExportProject}
+                title="Export Standalone Project (.ZIP)"
+              >
+                📦
+              </button>
+
+              <button
+                type="button"
+                className="mc-topbar-icon-btn"
+                onClick={() => setShowShortcutsModal(true)}
+                title="Keyboard Shortcuts Cheat Sheet (?)"
+              >
+                ⌨️
+              </button>
+            </div>
+
+            {/* Solved Toggle */}
             <button
               className={`mc-action-btn mc-btn-solved-toggle ${isSolved ? 'solved' : ''}`}
               onClick={() => toggleSolved(activeQuestion.id)}
+              title={isSolved ? 'Mark problem as uncompleted' : 'Mark problem as completed'}
             >
-              {isSolved ? '✓ Completed' : 'Mark as Solved'}
+              {isSolved ? '✓ Solved' : 'Mark Solved'}
             </button>
 
-            <button className="mc-action-btn mc-btn-reset" onClick={handleResetStarter} title="Reset to initial boilerplate">
-              ↺ Reset
-            </button>
-            <button
-              className={`mc-action-btn mc-btn-solution ${isInterviewActive ? 'locked' : ''}`}
-              onClick={handleLoadSolution}
-              disabled={isInterviewActive}
-              title={isInterviewActive ? "Reference solution is locked during active interview round" : "Inspect reference solution"}
-            >
-              {isInterviewActive ? '🔒 Solution Locked' : '💡 Load Solution'}
-            </button>
-
+            {/* Primary Actions */}
             <button
               className="mc-action-btn mc-btn-tests"
               onClick={handleRunTests}
               disabled={isRunningTests || isCompiling}
               title="Run automated test suite (Ctrl+Shift+T)"
             >
-              {isRunningTests ? '🧪 Running Tests...' : '🧪 Run Tests'}
-            </button>
-
-            <button
-              type="button"
-              className="mc-action-btn mc-btn-shortcuts"
-              onClick={() => setShowShortcutsModal(true)}
-              title="Keyboard shortcuts cheat sheet (?)"
-            >
-              ⌨️ Hotkeys
-            </button>
-
-            <button
-              className="mc-action-btn mc-btn-export"
-              onClick={handleExportProject}
-              title="Download standalone Vite + React project (.zip) with all multi-file workspace code"
-            >
-              📦 Export Project
+              {isRunningTests ? '🧪 Testing...' : '🧪 Tests'}
             </button>
 
             <button
               className="mc-action-btn mc-btn-run"
               onClick={() => executeCode(files)}
               disabled={isCompiling}
+              title="Compile and preview live in sandbox (Ctrl+Enter)"
             >
               {isCompiling ? 'Compiling...' : '▶ Run Live'}
             </button>
@@ -1309,34 +1324,34 @@ export default function MachineCodingStudio() {
                   className={`mc-spec-tab ${activeTab === 'specs' ? 'active' : ''}`}
                   onClick={() => setActiveTab('specs')}
                 >
-                  Problem Specs
+                  Specs
                 </button>
                 <button
                   className={`mc-spec-tab ${activeTab === 'tips' ? 'active' : ''}`}
                   onClick={() => setActiveTab('tips')}
                 >
-                  Interviewer Rubric
+                  Rubric
                 </button>
                 <button
                   className={`mc-spec-tab ${activeTab === 'solution' ? 'active' : ''} ${isInterviewActive ? 'locked' : ''}`}
                   onClick={() => setActiveTab('solution')}
                 >
-                  {isInterviewActive ? '🔒 Solution (Locked)' : 'Solution Code'}
+                  {isInterviewActive ? '🔒 Solution' : '💡 Solution'}
                 </button>
                 <button
                   className={`mc-spec-tab ${activeTab === 'tests' ? 'active' : ''}`}
                   onClick={() => setActiveTab('tests')}
                 >
-                  🧪 Test Cases {testResults ? `(${testResults.filter(r => r.status === 'passed').length}/${testResults.length})` : ''}
+                  🧪 Tests {testResults ? `(${testResults.filter(r => r.status === 'passed').length}/${testResults.length})` : ''}
                 </button>
               </div>
               <button
                 type="button"
-                className={`mc-panel-tool-btn ${fullscreenPanel === 'specs' ? 'active' : ''}`}
+                className={`mc-icon-tool-btn ${fullscreenPanel === 'specs' ? 'active' : ''}`}
                 onClick={() => setFullscreenPanel(prev => prev === 'specs' ? 'none' : 'specs')}
-                title={fullscreenPanel === 'specs' ? 'Restore panel size' : 'Expand Problem Specs to fullscreen'}
+                title={fullscreenPanel === 'specs' ? 'Restore Specs Size (Esc)' : 'Maximize Specs (Fullscreen)'}
               >
-                {fullscreenPanel === 'specs' ? '⤓ Restore' : '⛶ Fullscreen'}
+                {fullscreenPanel === 'specs' ? '⤓' : '⛶'}
               </button>
             </div>
 
@@ -1732,13 +1747,13 @@ export default function MachineCodingStudio() {
                     </button>
                   </div>
 
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
                     <div className="mc-editor-mode-toggle">
                       <button
                         className={`mc-toggle-pill ${editorViewMode === 'code' ? 'active' : ''}`}
                         onClick={() => setEditorViewMode('code')}
                       >
-                        Code Editor
+                        Code
                       </button>
                       <button
                         className={`mc-toggle-pill ${editorViewMode === 'diff' ? 'active' : ''}`}
@@ -1752,27 +1767,29 @@ export default function MachineCodingStudio() {
                         disabled={isInterviewActive}
                         title={isInterviewActive ? "Diff comparison locked during active round" : "Compare your code with staff reference solution"}
                       >
-                        {isInterviewActive ? '🔒 Diff (Locked)' : '🔀 Diff vs Solution'}
+                        {isInterviewActive ? '🔒 Diff' : '🔀 Diff'}
                       </button>
                     </div>
 
                     <button
                       type="button"
-                      className="mc-panel-tool-btn"
+                      className="mc-icon-tool-btn"
                       onClick={handleFormatCode}
-                      title="Format Code document cleanly (Alt+F or Ctrl+S)"
+                      title="Format Code Document (Alt+F or Ctrl+S)"
                     >
-                      🪄 Format
+                      🪄
                     </button>
 
                     <div className="mc-snapshot-menu-wrapper" ref={snapshotMenuRef}>
                       <button
                         type="button"
-                        className={`mc-panel-tool-btn ${showSnapshotMenu ? 'active' : ''}`}
+                        className={`mc-icon-tool-btn ${showSnapshotMenu ? 'active' : ''}`}
                         onClick={() => setShowSnapshotMenu(prev => !prev)}
-                        title="Local snapshots & revision history"
+                        title={`Snapshots & History (${snapshots.length} saved)`}
+                        style={{ position: 'relative' }}
                       >
-                        📸 Snapshots {snapshots.length > 0 ? `(${snapshots.length})` : ''}
+                        📸
+                        {snapshots.length > 0 && <span className="mc-badge-count">{snapshots.length}</span>}
                       </button>
 
                       {showSnapshotMenu && (
@@ -1853,11 +1870,11 @@ export default function MachineCodingStudio() {
 
                     <button
                       type="button"
-                      className={`mc-panel-tool-btn ${fullscreenPanel === 'editor' ? 'active' : ''}`}
+                      className={`mc-icon-tool-btn ${fullscreenPanel === 'editor' ? 'active' : ''}`}
                       onClick={() => setFullscreenPanel(prev => prev === 'editor' ? 'none' : 'editor')}
-                      title={fullscreenPanel === 'editor' ? 'Restore editor size' : 'Expand Code Editor to fullscreen'}
+                      title={fullscreenPanel === 'editor' ? 'Restore Editor Size (Esc)' : 'Maximize Code Editor (Fullscreen)'}
                     >
-                      {fullscreenPanel === 'editor' ? '⤓ Restore' : '⛶ Fullscreen'}
+                      {fullscreenPanel === 'editor' ? '⤓' : '⛶'}
                     </button>
                   </div>
                 </div>
@@ -2024,22 +2041,26 @@ export default function MachineCodingStudio() {
               >
                 <div className="mc-panel-header">
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span>⚡ Interactive Execution Sandbox</span>
+                    <span>⚡ Live Preview</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                     <button
+                      type="button"
+                      className="mc-icon-tool-btn"
                       onClick={() => executeCode(files)}
-                      style={{ background: 'none', border: 'none', color: '#38bdf8', cursor: 'pointer', fontSize: '11px' }}
+                      title="Refresh Live Sandbox (Ctrl+Enter)"
                     >
-                      ⟳ Refresh
+                      ⟳
+                    </button>
+                    <button
+                      type="button"
+                      className={`mc-icon-tool-btn ${fullscreenPanel === 'preview' ? 'active' : ''}`}
+                      onClick={() => setFullscreenPanel(prev => prev === 'preview' ? 'none' : 'preview')}
+                      title={fullscreenPanel === 'preview' ? 'Restore Sandbox Size (Esc)' : 'Maximize Sandbox (Fullscreen)'}
+                    >
+                      {fullscreenPanel === 'preview' ? '⤓' : '⛶'}
                     </button>
                   </div>
-                  <button
-                    type="button"
-                    className={`mc-panel-tool-btn ${fullscreenPanel === 'preview' ? 'active' : ''}`}
-                    onClick={() => setFullscreenPanel(prev => prev === 'preview' ? 'none' : 'preview')}
-                    title={fullscreenPanel === 'preview' ? 'Restore preview size' : 'Expand Sandbox to fullscreen'}
-                  >
-                    {fullscreenPanel === 'preview' ? '⤓ Restore' : '⛶ Fullscreen'}
-                  </button>
                 </div>
                 <iframe
                   ref={iframeRef}

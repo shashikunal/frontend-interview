@@ -538,6 +538,107 @@
   user-select: none;
 }
 
+/* ==========================================================================
+   Smart Icon Toolbars & Panel Icon Buttons
+   ========================================================================== */
+
+.mc-topbar-tool-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  background: rgba(30, 41, 59, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 2px 4px;
+  flex-shrink: 0;
+}
+
+.mc-topbar-icon-btn {
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  color: #94a3b8;
+  font-size: 13.5px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  position: relative;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.mc-topbar-icon-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #f8fafc;
+  transform: translateY(-1px);
+}
+
+.mc-topbar-icon-btn.active {
+  background: rgba(99, 102, 241, 0.25);
+  color: #a5b4fc;
+}
+
+.mc-topbar-icon-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Panel Header Icon Buttons (Fullscreen, Format, Snapshots, Refresh) */
+.mc-icon-tool-btn {
+  width: 26px;
+  height: 26px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 5px;
+  color: #94a3b8;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+  padding: 0;
+  line-height: 1;
+  user-select: none;
+}
+
+.mc-icon-tool-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #f8fafc;
+  border-color: rgba(255, 255, 255, 0.25);
+  transform: translateY(-1px);
+}
+
+.mc-icon-tool-btn.active {
+  background: rgba(99, 102, 241, 0.25);
+  color: #a5b4fc;
+  border-color: #6366f1;
+}
+
+.mc-badge-count {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: #6366f1;
+  color: #ffffff;
+  font-size: 9px;
+  font-weight: 700;
+  min-width: 14px;
+  height: 14px;
+  padding: 0 2px;
+  border-radius: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #0f172a;
+}
+
 .mc-toast-banner {
   background: linear-gradient(90deg, rgba(16, 185, 129, 0.18), rgba(59, 130, 246, 0.18));
   border-bottom: 1px solid rgba(16, 185, 129, 0.4);
