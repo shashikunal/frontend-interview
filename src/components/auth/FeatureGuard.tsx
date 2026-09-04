@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useAuth, type FeatureEntitlements } from '../../context/AuthContext'
 import { auditService } from '../../features/auth/services/audit.service'
-import './RoleGuard.css'
+import './FeatureGuard.css'
 
 interface FeatureGuardProps {
   children: React.ReactNode
@@ -16,77 +16,112 @@ export default function FeatureGuard({
   featureName,
   fallbackMessage,
 }: FeatureGuardProps) {
-  const { isAuthenticated, hasFeature, user, openAuthModal, switchRole } = useAuth()
+  const { isAuthenticated, isLoading, hasFeature, user, openAuthModal } = useAuth()
   const [requested, setRequested] = useState<boolean>(false)
+
+  // Still loading auth state — don't flash restriction screen
+  if (isLoading) {
+    return (
+      <div className="feature-guard-loading">
+        <div className="feature-guard-spinner" />
+        <p>Loading...</p>
+      </div>
+    )
+  }
 
   // If user has the feature entitlement, render content
   if (hasFeature(feature)) {
     return <>{children}</>
   }
 
+  // ── Guest path: Not logged in ──────────────────────────────
+  if (!isAuthenticated) {
+    return (
+      <>
+        <div className="feature-guard-card">
+          <div className="feature-guard-icon">🔐</div>
+          <h2 className="feature-guard-title">Sign In to Access {featureName}</h2>
+          <p className="feature-guard-desc">
+            Create a free account or sign in to unlock the <strong>{featureName}</strong> module and track your progress across all FAANG prep areas.
+          </p>
+          <div className="feature-guard-actions">
+            <button
+              type="button"
+              className="btn btn-primary feature-guard-btn-main"
+              onClick={() => openAuthModal('user')}
+            >
+              🚀 User Sign In / Register
+            </button>
+            <button
+              type="button"
+              className="btn btn-secondary"
+              onClick={() => openAuthModal('admin')}
+            >
+              🛡️ Admin Login
+            </button>
+          </div>
+          <p className="feature-guard-hint">
+            Free accounts get access to the full Questions Bank, Coding Sandbox &amp; more.
+          </p>
+        </div>
+      </>
+    )
+  }
+
+  // ── Authenticated but missing entitlement path ─────────────
   const handleRequestAccess = async () => {
-    const targetEmail = user?.email || 'candidate@faang.io'
-    const targetName = user?.name || (targetEmail.includes('@') ? targetEmail.split('@')[0] : 'Candidate')
-
     setRequested(true)
-
     await auditService.logEvent({
       userId: user?.id || 'candidate_req_user',
       action: 'FEATURE_ACCESS_REQUESTED',
       resource: feature,
       details: {
         featureName,
-        userEmail: targetEmail,
-        userName: targetName,
+        userEmail: user?.email,
+        userName: user?.name,
         currentRole: user?.role || 'candidate',
       },
     })
   }
 
   return (
-    <div className="role-guard-lock-card card-box" style={{ maxWidth: '640px', margin: '48px auto', textAlign: 'center', padding: '36px 28px' }}>
-      <div className="lock-icon-circle" style={{ fontSize: '2.5rem', marginBottom: '16px' }}>🔒</div>
-      <h2 style={{ fontSize: '1.4rem', fontWeight: 800, marginBottom: '8px' }}>{featureName} Access Restricted</h2>
-      <p className="lock-desc" style={{ color: 'var(--text-muted)', fontSize: '0.92rem', marginBottom: '24px', lineHeight: 1.6 }}>
-        {fallbackMessage ||
-          `This module is restricted by Administrator policy. Your account (${user?.email || 'Candidate'}) currently lacks the "${feature}" entitlement.`}
-      </p>
+    <>
+      <div className="feature-guard-card">
+        <div className="feature-guard-icon">🔒</div>
+        <h2 className="feature-guard-title">{featureName} — Upgrade Required</h2>
+        <p className="feature-guard-desc">
+          {fallbackMessage ||
+            `Your current plan doesn't include the "${feature}" entitlement. Upgrade to Pro or ask your Administrator to grant access.`}
+        </p>
 
-      <div className="lock-actions-row" style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
-        {requested ? (
-          <div className="alert alert-success" style={{ padding: '10px 18px', background: 'rgba(16, 185, 129, 0.1)', color: 'var(--success, #10b981)', borderRadius: 'var(--radius-md)', fontWeight: 600 }}>
-            ✅ Access request sent to Admin! Switch to Admin to view and approve in the notification bell 🔔.
-          </div>
-        ) : (
-          <>
-            <button
-              type="button"
-              className="btn btn-primary"
-              onClick={handleRequestAccess}
-              style={{ fontWeight: 700 }}
-            >
-              📩 Request Access from Admin
-            </button>
-            <button
-              type="button"
-              className="btn btn-secondary"
-              onClick={() => switchRole('admin')}
-              style={{ fontWeight: 700 }}
-            >
-              ⚡ Instant Admin Unlock (Demo)
-            </button>
-            {!isAuthenticated && (
+        <div className="feature-guard-actions">
+          {requested ? (
+            <div className="feature-guard-success">
+              ✅ Access request sent to Admin! Check the notification bell 🔔.
+            </div>
+          ) : (
+            <>
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={handleRequestAccess}
+              >
+                📩 Request Access from Admin
+              </button>
               <button
                 type="button"
                 className="btn btn-secondary"
-                onClick={openAuthModal}
+                onClick={() => openAuthModal('admin')}
               >
-                🔐 Sign In
+                🛡️ Admin Login
               </button>
-            )}
-          </>
-        )}
+            </>
+          )}
+        </div>
+        <p className="feature-guard-meta">
+          Signed in as <strong>{user?.email}</strong> · Role: <code>{user?.role}</code>
+        </p>
       </div>
-    </div>
+    </>
   )
 }

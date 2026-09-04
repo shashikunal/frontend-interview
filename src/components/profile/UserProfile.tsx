@@ -111,7 +111,7 @@ export default function UserProfile() {
             <div className="id-avatar-circle">👨‍💻</div>
             <div className="id-meta">
               <h2>{user?.name || 'Staff Candidate'}</h2>
-              <span className="id-email">{user?.email || 'guest.candidate@faang.io'}</span>
+              <span className="id-email">{user?.email || 'guest@interviewprep.com'}</span>
               <span className={`id-role-tag ${user?.role || 'candidate'}`}>
                 {user?.role ? user.role.toUpperCase() : 'CANDIDATE (FREE)'}
               </span>

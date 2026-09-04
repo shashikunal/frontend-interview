@@ -13,7 +13,7 @@ export interface FeatureEntitlements {
 
 export const DEFAULT_ENTITLEMENTS: Record<UserRole, FeatureEntitlements> = {
   guest: { questions_full: false, coding_sandbox: false, system_design: false, video_mock: false, compiler_studios: false, cloud_sync: false },
-  candidate: { questions_full: false, coding_sandbox: false, system_design: false, video_mock: false, compiler_studios: false, cloud_sync: true },
+  candidate: { questions_full: true, coding_sandbox: true, system_design: false, video_mock: false, compiler_studios: false, cloud_sync: true },
   pro_member: { questions_full: true, coding_sandbox: true, system_design: true, video_mock: true, compiler_studios: true, cloud_sync: true },
   interviewer: { questions_full: true, coding_sandbox: true, system_design: true, video_mock: true, compiler_studios: true, cloud_sync: true },
   admin: { questions_full: true, coding_sandbox: true, system_design: true, video_mock: true, compiler_studios: true, cloud_sync: true },
@@ -108,8 +108,10 @@ export interface AuthContextValue {
   isAuthenticated: boolean
   isLoading: boolean
   isAuthModalOpen: boolean
-  openAuthModal: () => void
+  authModalMode: 'user' | 'admin'
+  openAuthModal: (mode?: 'user' | 'admin') => void
   closeAuthModal: () => void
+  loginAsAdmin: (username: string, password: string) => Promise<{ success: boolean; message: string }>
   signUp: (params: SignUpCredentials) => Promise<AuthActionResult>
   signIn: (params: SignInCredentials) => Promise<AuthActionResult>
   signOut: () => Promise<void>
@@ -127,5 +129,5 @@ export interface AuthContextValue {
   signInWithPassword: (email: string, password: string) => Promise<{ success: boolean; message: string }>
   updateUserEntitlements: (userId: string, entitlements: FeatureEntitlements) => Promise<{ success: boolean; message: string }>
   adminUpdateUserRole: (userId: string, newRole: UserRole) => Promise<{ success: boolean; message: string }>
-  getAllUsers: () => StoredUserAccount[]
+  getAllUsers: () => Promise<StoredUserAccount[]>
 }

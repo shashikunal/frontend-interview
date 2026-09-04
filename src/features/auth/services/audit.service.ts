@@ -27,23 +27,51 @@ function isValidUUID(id?: string): boolean {
 // BroadcastChannel instance for cross-tab 0ms synchronization
 const accessChannel = typeof BroadcastChannel !== 'undefined' ? new BroadcastChannel('interviewprep_access_channel') : null
 
+// Singleton Supabase Realtime channel for access request broadcasts
+let _accessRealtimeChannel: ReturnType<typeof supabase.channel> | null = null
+function getAccessRealtimeChannel() {
+  if (!_accessRealtimeChannel) {
+    _accessRealtimeChannel = supabase.channel('platform_access_requests', {
+      config: { broadcast: { self: true } },
+    })
+    _accessRealtimeChannel.subscribe()
+  }
+  return _accessRealtimeChannel
+}
+
 function getLocalRequests(): AccessNotificationItem[] {
   try {
     if (typeof localStorage !== 'undefined') {
       const raw = localStorage.getItem(REQUESTS_LOCAL_KEY)
-      if (raw) return JSON.parse(raw)
+      if (raw) {
+        const parsed: AccessNotificationItem[] = JSON.parse(raw)
+        // Clean out any legacy demo mock requests for candidate@faang.io
+        const cleaned = parsed.filter(
+          r => r.userEmail !== 'candidate@faang.io' && r.userId !== 'usr_candidate_demo'
+        )
+        if (cleaned.length !== parsed.length) {
+          localStorage.setItem(REQUESTS_LOCAL_KEY, JSON.stringify(cleaned))
+        }
+        return cleaned
+      }
     }
   } catch {
     // ignore
   }
-  return memoryRequests
+  return memoryRequests.filter(
+    r => r.userEmail !== 'candidate@faang.io' && r.userId !== 'usr_candidate_demo'
+  )
 }
 
 function saveLocalRequests(items: AccessNotificationItem[]): void {
-  memoryRequests = [...items]
+  // Ensure no demo requests enter
+  const sanitized = items.filter(
+    r => r.userEmail !== 'candidate@faang.io' && r.userId !== 'usr_candidate_demo'
+  )
+  memoryRequests = [...sanitized]
   try {
     if (typeof localStorage !== 'undefined') {
-      localStorage.setItem(REQUESTS_LOCAL_KEY, JSON.stringify(items))
+      localStorage.setItem(REQUESTS_LOCAL_KEY, JSON.stringify(sanitized))
     }
   } catch {
     // ignore
@@ -65,10 +93,9 @@ function broadcastAccessUpdate(item: AccessNotificationItem): void {
     window.dispatchEvent(new CustomEvent('platform_access_request', { detail: item }))
   }
 
-  // 3. Supabase Realtime Broadcast
+  // 3. Supabase Realtime Broadcast (persistent singleton channel)
   try {
-    const sbChannel = supabase.channel('platform_access_requests')
-    sbChannel.send({
+    getAccessRealtimeChannel().send({
       type: 'broadcast',
       event: 'live_access_request',
       payload: item,
@@ -268,22 +295,28 @@ export const auditService = {
         .limit(25)
 
       if (!error && Array.isArray(data) && data.length > 0) {
-        const remoteItems: AccessNotificationItem[] = data.map(d => {
-          const details = d.details || {}
-          return {
-            id: d.id,
-            userId: d.user_id,
-            userEmail: (details.userEmail as string) || 'candidate@interviewprep.io',
-            userName: (details.userName as string) || (details.userEmail as string)?.split('@')[0] || 'Candidate',
-            featureKey: (d.resource as keyof FeatureEntitlements) || 'system_design',
-            featureName: (details.featureName as string) || String(d.resource),
-            createdAt: d.created_at,
-            status: (details.status as AccessNotificationItem['status']) || 'PENDING',
-          }
-        })
+        const remoteItems: AccessNotificationItem[] = data
+          .map(d => {
+            const details = d.details || {}
+            return {
+              id: d.id,
+              userId: d.user_id,
+              userEmail: (details.userEmail as string) || 'candidate@interviewprep.io',
+              userName: (details.userName as string) || (details.userEmail as string)?.split('@')[0] || 'Candidate',
+              featureKey: (d.resource as keyof FeatureEntitlements) || 'system_design',
+              featureName: (details.featureName as string) || String(d.resource),
+              createdAt: d.created_at,
+              status: (details.status as AccessNotificationItem['status']) || 'PENDING',
+            }
+          })
+          .filter(r => r.userEmail !== 'candidate@faang.io' && r.userId !== 'usr_candidate_demo')
+
         const merged = [...local]
         for (const rem of remoteItems) {
-          if (!merged.some(m => m.id === rem.id || (m.userEmail.toLowerCase() === rem.userEmail.toLowerCase() && m.featureKey === rem.featureKey))) {
+          const localMatch = local.find(
+            l => l.id === rem.id || (l.userEmail.toLowerCase() === rem.userEmail.toLowerCase() && l.featureKey === rem.featureKey)
+          )
+          if (!localMatch) {
             merged.push(rem)
           }
         }
@@ -337,7 +370,7 @@ export const auditService = {
           featureName: notification.featureName,
           approvedAt: new Date().toISOString(),
         },
-        user_agent: navigator.userAgent,
+        user_agent: typeof navigator !== 'undefined' ? navigator.userAgent : 'Node',
       })
 
       return {
@@ -368,5 +401,21 @@ export const auditService = {
       r.id === notificationId ? { ...r, status: 'DECLINED' as const } : r
     )
     saveLocalRequests(updated)
+  },
+
+  /**
+   * Admin: Delete/Dismiss a single access request notification
+   */
+  deleteNotification: (notificationId: string): void => {
+    const localRequests = getLocalRequests()
+    const updated = localRequests.filter(r => r.id !== notificationId)
+    saveLocalRequests(updated)
+  },
+
+  /**
+   * Admin: Clear all access request notifications
+   */
+  clearAllNotifications: (): void => {
+    saveLocalRequests([])
   },
 }

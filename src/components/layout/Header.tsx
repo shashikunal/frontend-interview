@@ -228,13 +228,38 @@ export default function Header() {
                         </Link>
                       </>
                     ) : (
-                      <Link
-                        to="/profile"
-                        className="ud-profile-link"
-                        onClick={() => setIsUserMenuOpen(false)}
-                      >
-                        👤 View Profile &amp; Progress Tracker
-                      </Link>
+                      <>
+                        <Link
+                          to="/profile"
+                          className="ud-profile-link"
+                          onClick={() => setIsUserMenuOpen(false)}
+                        >
+                          👤 View Profile &amp; Progress Tracker
+                        </Link>
+                        <button
+                          type="button"
+                          className="ud-profile-link"
+                          style={{
+                            background: 'none',
+                            border: 'none',
+                            width: '100%',
+                            textAlign: 'left',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '8px',
+                            padding: '8px 12px',
+                            color: 'var(--text-primary)',
+                            fontSize: '0.85rem',
+                          }}
+                          onClick={() => {
+                            setIsUserMenuOpen(false)
+                            openAuthModal('admin')
+                          }}
+                        >
+                          🛡️ Admin Portal Login
+                        </button>
+                      </>
                     )}
 
                     <div className="ud-divider" />
@@ -254,13 +279,28 @@ export default function Header() {
               </div>
 
             ) : (
-              <button
-                type="button"
-                className="btn btn-primary btn-sm auth-trigger-btn"
-                onClick={openAuthModal}
-              >
-                🔐 Sign In (OTP)
-              </button>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <button
+                  type="button"
+                  className="btn btn-secondary btn-sm"
+                  style={{ fontWeight: 700 }}
+                  onClick={() => openAuthModal('user')}
+                >
+                  🔐 User Login
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-primary btn-sm"
+                  style={{
+                    background: 'linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%)',
+                    border: 'none',
+                    fontWeight: 700,
+                  }}
+                  onClick={() => openAuthModal('admin')}
+                >
+                  🛡️ Admin Login
+                </button>
+              </div>
             )}
           </div>
         </nav>

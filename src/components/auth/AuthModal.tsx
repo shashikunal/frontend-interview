@@ -6,23 +6,26 @@ export default function AuthModal() {
   const {
     isAuthModalOpen,
     closeAuthModal,
+    authModalMode,
     signInWithPassword,
     signUpWithPassword,
     resetPassword,
     signInWithOAuth,
     sendOtp,
     verifyOtp,
-    switchRole,
+    loginAsAdmin,
+    signOut,
     user,
     isAuthenticated,
   } = useAuth()
 
-  // Auth Mode: 'password' vs 'otp' vs 'reset'
-  const [authMethod, setAuthMethod] = useState<'password' | 'otp' | 'reset'>('password')
-  // Password Submode: 'signin' vs 'signup'
-  const [passwordMode, setPasswordMode] = useState<'signin' | 'signup'>('signin')
+  // Top-Level Portal: 'user' vs 'admin'
+  const [portalTab, setPortalTab] = useState<'user' | 'admin'>('user')
 
-  // Form Fields
+  // User Auth Sub-Methods: 'signin' | 'signup' | 'otp' | 'reset'
+  const [userAuthMethod, setUserAuthMethod] = useState<'signin' | 'signup' | 'otp' | 'reset'>('signin')
+
+  // User Form Fields
   const [email, setEmail] = useState<string>('')
   const [password, setPassword] = useState<string>('')
   const [fullName, setFullName] = useState<string>('')
@@ -33,38 +36,44 @@ export default function AuthModal() {
   const [otpDigits, setOtpDigits] = useState<string[]>(['', '', '', '', '', ''])
   const [timer, setTimer] = useState<number>(60)
 
+  // Admin Form Fields
+  const [adminUsername, setAdminUsername] = useState<string>('')
+  const [adminPassword, setAdminPassword] = useState<string>('')
+  const [showAdminPassword, setShowAdminPassword] = useState<boolean>(false)
+
   // Feedback State
   const [statusMsg, setStatusMsg] = useState<{ type: 'info' | 'error' | 'success'; text: string } | null>(null)
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
 
   const otpInputRefs = useRef<(HTMLInputElement | null)[]>([])
+  const adminUsernameRef = useRef<HTMLInputElement>(null)
 
-  // Reset modal state on open
+  // Sync portalTab with authModalMode whenever modal opens
   useEffect(() => {
     if (isAuthModalOpen) {
+      setPortalTab(authModalMode || 'user')
       setStatusMsg(null)
-      if (!isAuthenticated) {
-        setOtpStep('email')
-        setOtpDigits(['', '', '', '', '', ''])
+      if (authModalMode === 'admin') {
+        setTimeout(() => adminUsernameRef.current?.focus(), 150)
       }
     }
-  }, [isAuthModalOpen, isAuthenticated])
+  }, [isAuthModalOpen, authModalMode])
 
   // Countdown timer for OTP
   useEffect(() => {
     let interval: ReturnType<typeof setInterval> | undefined
-    if (authMethod === 'otp' && otpStep === 'otp' && timer > 0) {
+    if (userAuthMethod === 'otp' && otpStep === 'otp' && timer > 0) {
       interval = setInterval(() => setTimer(prev => prev - 1), 1000)
     }
     return () => {
       if (interval) clearInterval(interval)
     }
-  }, [authMethod, otpStep, timer])
+  }, [userAuthMethod, otpStep, timer])
 
   if (!isAuthModalOpen) return null
 
-  // 1. Handle Password Sign Up / Sign In
-  const handlePasswordAuth = async (e: React.FormEvent) => {
+  // 1. Handle User Password Sign In / Sign Up
+  const handleUserPasswordAuth = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!email || !email.includes('@')) {
       setStatusMsg({ type: 'error', text: 'Please enter a valid email address.' })
@@ -79,7 +88,7 @@ export default function AuthModal() {
     setStatusMsg(null)
 
     try {
-      if (passwordMode === 'signup') {
+      if (userAuthMethod === 'signup') {
         const res = await signUpWithPassword(email, password, fullName)
         if (res.success) {
           if (res.needsEmailConfirmation) {
@@ -89,6 +98,7 @@ export default function AuthModal() {
             })
           } else {
             setStatusMsg({ type: 'success', text: 'Account registered and signed in successfully!' })
+            setTimeout(closeAuthModal, 800)
           }
         } else {
           setStatusMsg({ type: 'error', text: res.message })
@@ -96,7 +106,8 @@ export default function AuthModal() {
       } else {
         const res = await signInWithPassword(email, password)
         if (res.success) {
-          setStatusMsg({ type: 'success', text: 'Signed in successfully! Session verified.' })
+          setStatusMsg({ type: 'success', text: 'Signed in successfully!' })
+          setTimeout(closeAuthModal, 600)
         } else {
           setStatusMsg({ type: 'error', text: res.message })
         }
@@ -167,7 +178,7 @@ export default function AuthModal() {
         setTimer(60)
         setStatusMsg({
           type: 'success',
-          text: res.message || `Verification code sent to ${email}. Check your email inbox!`,
+          text: res.message || `Verification code sent to ${email}. Check your inbox!`,
         })
         setTimeout(() => otpInputRefs.current[0]?.focus(), 100)
       } else {
@@ -195,12 +206,42 @@ export default function AuthModal() {
     try {
       const res = await verifyOtp(email, code)
       if (res.success) {
-        setStatusMsg({ type: 'success', text: 'Authentication verified successfully!' })
+        setStatusMsg({ type: 'success', text: 'Authenticated successfully!' })
+        setTimeout(closeAuthModal, 600)
       } else {
         setStatusMsg({ type: 'error', text: res.message })
       }
     } catch (err: unknown) {
       setStatusMsg({ type: 'error', text: (err as Error).message || 'Verification failed.' })
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  // 6. Handle Admin Authentication
+  const handleAdminAuth = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!adminUsername.trim() || !adminPassword) {
+      setStatusMsg({ type: 'error', text: 'Please enter both administrator username and password.' })
+      return
+    }
+
+    setIsSubmitting(true)
+    setStatusMsg(null)
+
+    try {
+      const res = await loginAsAdmin(adminUsername, adminPassword)
+      if (res.success) {
+        setStatusMsg({ type: 'success', text: 'Administrator credentials verified! Opening Command Center...' })
+        setTimeout(() => {
+          closeAuthModal()
+        }, 600)
+      } else {
+        setStatusMsg({ type: 'error', text: res.message || 'Invalid administrator credentials. Access denied.' })
+        setAdminPassword('')
+      }
+    } catch (err: unknown) {
+      setStatusMsg({ type: 'error', text: (err as Error).message || 'Admin authentication failed.' })
     } finally {
       setIsSubmitting(false)
     }
@@ -219,15 +260,37 @@ export default function AuthModal() {
           ✕
         </button>
 
-        {/* Modal Header */}
-        <div className="auth-modal-header">
-          <div className="auth-logo-badge">🛡️ SUPABASE AUTH</div>
-          <h2>{isAuthenticated ? 'Your Account Session' : 'Sign in to Platform'}</h2>
-          <p className="auth-sub">
-            {isAuthenticated
-              ? `Signed in as ${user?.name} (${user?.email})`
-              : 'Sign in with your Email & Password, OTP passcode, or Google OAuth.'}
-          </p>
+        {/* Top-Level Portal Switcher: User Login vs Admin Login */}
+        <div className="auth-portal-selector">
+          <button
+            type="button"
+            className={`portal-tab-btn ${portalTab === 'user' ? 'active' : ''}`}
+            onClick={() => {
+              setPortalTab('user')
+              setStatusMsg(null)
+            }}
+          >
+            <span className="portal-tab-icon">👤</span>
+            <div className="portal-tab-text">
+              <span className="portal-tab-title">User Account</span>
+              <span className="portal-tab-sub">Candidate / Learner</span>
+            </div>
+          </button>
+          <button
+            type="button"
+            className={`portal-tab-btn admin-portal-btn ${portalTab === 'admin' ? 'active' : ''}`}
+            onClick={() => {
+              setPortalTab('admin')
+              setStatusMsg(null)
+              setTimeout(() => adminUsernameRef.current?.focus(), 100)
+            }}
+          >
+            <span className="portal-tab-icon">🛡️</span>
+            <div className="portal-tab-text">
+              <span className="portal-tab-title">Admin Portal</span>
+              <span className="portal-tab-sub">Restricted Staff Access</span>
+            </div>
+          </button>
         </div>
 
         {/* Status Alerts */}
@@ -238,15 +301,15 @@ export default function AuthModal() {
           </div>
         )}
 
-        {/* If Authenticated: Show Session & Entitlements Overview */}
-        {isAuthenticated && user ? (
+        {/* ── ALREADY AUTHENTICATED OVERVIEW (If matching current portal) ── */}
+        {isAuthenticated && user && portalTab === (user.role === 'admin' ? 'admin' : 'user') ? (
           <div className="auth-success-box">
             <div className="profile-summary-card">
-              <div className="profile-avatar">👨‍💻</div>
+              <div className="profile-avatar">{user.role === 'admin' ? '🛡️' : '👨‍💻'}</div>
               <div className="profile-info">
                 <h3>{user.name}</h3>
                 <span className="profile-email">{user.email}</span>
-                <div className="role-pill-badge">
+                <div className={`role-pill-badge ${user.role}`}>
                   ROLE: <strong>{user.role.toUpperCase()}</strong>
                 </div>
               </div>
@@ -257,7 +320,7 @@ export default function AuthModal() {
               <ul className="perms-list">
                 <li>
                   {user.entitlements.questions_full ? '✅' : '🔒'}{' '}
-                  <strong>22,222 Questions Bank</strong> {user.entitlements.questions_full ? '(Full Access)' : '(Restricted to 500)'}
+                  <strong>22,222 Questions Bank</strong> {user.entitlements.questions_full ? '(Full Access)' : '(Restricted)'}
                 </li>
                 <li>
                   {user.entitlements.coding_sandbox ? '✅' : '🔒'}{' '}
@@ -265,75 +328,127 @@ export default function AuthModal() {
                 </li>
                 <li>
                   {user.entitlements.system_design ? '✅' : '🔒'}{' '}
-                  <strong>Interactive System Design Canvas &amp; Blueprints</strong>
+                  <strong>System Design Architecture Blueprints</strong>
                 </li>
                 <li>
                   {user.entitlements.video_mock ? '✅' : '🔒'}{' '}
-                  <strong>AI Video Mock Interviews with Audio Rubrics</strong>
-                </li>
-                <li>
-                  {user.entitlements.compiler_studios ? '✅' : '🔒'}{' '}
-                  <strong>Compilers, AST &amp; WebAssembly Studios</strong>
+                  <strong>AI Video Mock Interview Simulator</strong>
                 </li>
               </ul>
             </div>
 
-            <button
-              type="button"
-              className="btn btn-primary auth-submit-btn"
-              onClick={closeAuthModal}
-            >
-              🚀 Continue to Platform
-            </button>
+            <div style={{ display: 'flex', gap: '10px', marginTop: '14px' }}>
+              <button
+                type="button"
+                className="btn btn-primary"
+                style={{ flex: 1 }}
+                onClick={closeAuthModal}
+              >
+                🚀 Continue to Platform
+              </button>
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={() => {
+                  signOut()
+                  setStatusMsg({ type: 'info', text: 'You have been signed out.' })
+                }}
+              >
+                🚪 Sign Out
+              </button>
+            </div>
           </div>
-        ) : (
-          <>
-            {/* QUICK DEV ACCOUNTS / 1-CLICK DEMO LOGIN */}
-            <div className="quick-roles-panel" style={{ marginBottom: '16px', padding: '12px 14px', background: 'rgba(168, 85, 247, 0.08)', borderRadius: 'var(--radius-md)', border: '1px solid rgba(168, 85, 247, 0.25)' }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-                <span style={{ fontSize: '0.74rem', fontWeight: 800, color: 'var(--brand-purple, #a855f7)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                  ⚡ 1-Click Role Switch &amp; Testing:
-                </span>
-                <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)' }}>No password needed</span>
-              </div>
-              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                <button
-                  type="button"
-                  className="btn btn-sm btn-primary"
-                  style={{ flex: '1 1 120px', fontWeight: 800, background: 'linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%)', border: 'none', padding: '8px 10px' }}
-                  onClick={() => {
-                    switchRole('admin')
-                    closeAuthModal()
-                  }}
-                >
-                  🛡️ Admin (Full)
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-sm btn-secondary"
-                  style={{ flex: '1 1 100px', fontWeight: 700, padding: '8px 10px' }}
-                  onClick={() => {
-                    switchRole('candidate')
-                    closeAuthModal()
-                  }}
-                >
-                  👨‍💻 Candidate (Locked)
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-sm btn-secondary"
-                  style={{ flex: '1 1 100px', fontWeight: 700, padding: '8px 10px' }}
-                  onClick={() => {
-                    switchRole('pro_member')
-                    closeAuthModal()
-                  }}
-                >
-                  ⭐ Pro Member
-                </button>
-              </div>
+        ) : portalTab === 'admin' ? (
+          /* ══════════════════════════════════════════════════════════ */
+          /* 🛡️ TAB 2: ADMINISTRATOR LOGIN                             */
+          /* ══════════════════════════════════════════════════════════ */
+          <div className="admin-portal-panel">
+            <div className="admin-portal-header">
+              <span className="admin-auth-shield-badge">🛡️ RESTRICTED ACCESS</span>
+              <h3>Platform Administrator Console</h3>
+              <p className="auth-sub">
+                Enter your administrative credentials to unlock the operations dashboard and user management controls.
+              </p>
             </div>
 
-            {/* OAUTH PROVIDERS */}
+            <form onSubmit={handleAdminAuth} className="auth-form mt-3" autoComplete="off">
+              <div className="input-group">
+                <label htmlFor="admin-portal-username">Administrator Username:</label>
+                <div className="email-input-wrapper">
+                  <span className="email-input-icon">👤</span>
+                  <input
+                    id="admin-portal-username"
+                    ref={adminUsernameRef}
+                    type="text"
+                    className="auth-input visible-field"
+                    placeholder="Admin username (e.g. shashi)"
+                    value={adminUsername}
+                    onChange={e => {
+                      setAdminUsername(e.target.value)
+                      setStatusMsg(null)
+                    }}
+                    autoComplete="off"
+                    spellCheck={false}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="input-group">
+                <label htmlFor="admin-portal-password">Administrator Password:</label>
+                <div className="email-input-wrapper">
+                  <span className="email-input-icon">🔑</span>
+                  <input
+                    id="admin-portal-password"
+                    type={showAdminPassword ? 'text' : 'password'}
+                    className="auth-input visible-field"
+                    placeholder="Admin password"
+                    value={adminPassword}
+                    onChange={e => {
+                      setAdminPassword(e.target.value)
+                      setStatusMsg(null)
+                    }}
+                    autoComplete="current-password"
+                    required
+                  />
+                  <button
+                    type="button"
+                    className="pwd-toggle-btn"
+                    onClick={() => setShowAdminPassword(!showAdminPassword)}
+                    tabIndex={-1}
+                  >
+                    {showAdminPassword ? '👁️' : '🙈'}
+                  </button>
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                className="btn btn-primary auth-submit-btn admin-submit-glow"
+                disabled={isSubmitting || !adminUsername.trim() || !adminPassword}
+                style={{
+                  background: 'linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%)',
+                  fontWeight: 800,
+                  fontSize: '0.95rem',
+                  padding: '12px',
+                  marginTop: '6px',
+                }}
+              >
+                {isSubmitting ? 'Verifying Admin Credentials...' : '🚀 Authenticate as Administrator'}
+              </button>
+
+              <div className="admin-portal-footnote">
+                <span className="footnote-icon">🔒</span>
+                <span>Administrator access is recorded and audited to the system security log.</span>
+              </div>
+            </form>
+          </div>
+        ) : (
+          /* ══════════════════════════════════════════════════════════ */
+          /* 👤 TAB 1: REGULAR USER LOGIN & SIGNUP                     */
+          /* ══════════════════════════════════════════════════════════ */
+          <div className="user-portal-panel">
+            {/* Google OAuth */}
             <div className="oauth-buttons-row">
               <button
                 type="button"
@@ -347,14 +462,14 @@ export default function AuthModal() {
                   justifyContent: 'center',
                   gap: '10px',
                   padding: '10px 16px',
-                  background: 'var(--surface-hover)',
+                  background: 'rgba(255, 255, 255, 0.05)',
                   border: '1px solid var(--border-strong)',
                   borderRadius: 'var(--radius-md)',
                   color: 'var(--text-primary)',
                   fontWeight: 700,
                   fontSize: '0.88rem',
                   cursor: 'pointer',
-                  marginBottom: '16px',
+                  marginBottom: '14px',
                   transition: 'all 0.2s',
                 }}
               >
@@ -368,7 +483,7 @@ export default function AuthModal() {
               </button>
             </div>
 
-            <div className="divider-text" style={{ margin: '8px 0 16px', textAlign: 'center' }}>
+            <div className="divider-text" style={{ margin: '6px 0 14px', textAlign: 'center' }}>
               <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                 Or continue with email
               </span>
@@ -378,159 +493,135 @@ export default function AuthModal() {
             <div className="auth-method-tabs">
               <button
                 type="button"
-                className={`amt-btn ${authMethod === 'password' ? 'active' : ''}`}
+                className={`amt-btn ${userAuthMethod === 'signin' ? 'active' : ''}`}
                 onClick={() => {
-                  setAuthMethod('password')
+                  setUserAuthMethod('signin')
                   setStatusMsg(null)
                 }}
               >
-                🔑 Password
+                🔑 Sign In
               </button>
               <button
                 type="button"
-                className={`amt-btn ${authMethod === 'otp' ? 'active' : ''}`}
+                className={`amt-btn ${userAuthMethod === 'signup' ? 'active' : ''}`}
                 onClick={() => {
-                  setAuthMethod('otp')
+                  setUserAuthMethod('signup')
+                  setStatusMsg(null)
+                }}
+              >
+                ✨ Register
+              </button>
+              <button
+                type="button"
+                className={`amt-btn ${userAuthMethod === 'otp' ? 'active' : ''}`}
+                onClick={() => {
+                  setUserAuthMethod('otp')
                   setStatusMsg(null)
                 }}
               >
                 📩 Email OTP
               </button>
-              <button
-                type="button"
-                className={`amt-btn ${authMethod === 'reset' ? 'active' : ''}`}
-                onClick={() => {
-                  setAuthMethod('reset')
-                  setStatusMsg(null)
-                }}
-              >
-                🔄 Reset
-              </button>
             </div>
 
-            {/* METHOD 1: EMAIL & PASSWORD */}
-            {authMethod === 'password' && (
-              <div className="password-auth-container">
-                <div className="password-mode-toggle">
-                  <button
-                    type="button"
-                    className={`pmt-btn ${passwordMode === 'signin' ? 'active' : ''}`}
-                    onClick={() => {
-                      setPasswordMode('signin')
-                      setStatusMsg(null)
-                    }}
-                  >
-                    Sign In
-                  </button>
-                  <button
-                    type="button"
-                    className={`pmt-btn ${passwordMode === 'signup' ? 'active' : ''}`}
-                    onClick={() => {
-                      setPasswordMode('signup')
-                      setStatusMsg(null)
-                    }}
-                  >
-                    Create Account (Sign Up)
-                  </button>
+            {/* METHOD: SIGN IN / SIGN UP WITH PASSWORD */}
+            {(userAuthMethod === 'signin' || userAuthMethod === 'signup') && (
+              <form onSubmit={handleUserPasswordAuth} className="auth-form mt-3">
+                {userAuthMethod === 'signup' && (
+                  <div className="input-group">
+                    <label htmlFor="auth-pwd-name">Full Name:</label>
+                    <div className="email-input-wrapper">
+                      <span className="email-input-icon">👤</span>
+                      <input
+                        id="auth-pwd-name"
+                        type="text"
+                        className="auth-input visible-field"
+                        placeholder="Your full name"
+                        value={fullName}
+                        onChange={e => setFullName(e.target.value)}
+                        required
+                        autoFocus
+                      />
+                    </div>
+                  </div>
+                )}
+
+                <div className="input-group">
+                  <label htmlFor="auth-pwd-email">Email Address:</label>
+                  <div className="email-input-wrapper">
+                    <span className="email-input-icon">✉️</span>
+                    <input
+                      id="auth-pwd-email"
+                      type="email"
+                      className="auth-input visible-field"
+                      placeholder="name@company.com"
+                      value={email}
+                      onChange={e => setEmail(e.target.value)}
+                      required
+                      autoFocus={userAuthMethod === 'signin'}
+                    />
+                  </div>
                 </div>
 
-                <form onSubmit={handlePasswordAuth} className="auth-form mt-3">
-                  {passwordMode === 'signup' && (
-                    <div className="input-group">
-                      <label htmlFor="auth-pwd-name">Full Name:</label>
-                      <div className="email-input-wrapper">
-                        <span className="email-input-icon">👤</span>
-                        <input
-                          id="auth-pwd-name"
-                          type="text"
-                          className="auth-input visible-field"
-                          placeholder="Candidate Name"
-                          value={fullName}
-                          onChange={e => setFullName(e.target.value)}
-                          required
-                          autoFocus
-                        />
-                      </div>
-                    </div>
-                  )}
-
-                  <div className="input-group">
-                    <label htmlFor="auth-pwd-email">Email Address:</label>
-                    <div className="email-input-wrapper">
-                      <span className="email-input-icon">✉️</span>
-                      <input
-                        id="auth-pwd-email"
-                        type="email"
-                        className="auth-input visible-field"
-                        placeholder="name@company.com"
-                        value={email}
-                        onChange={e => setEmail(e.target.value)}
-                        required
-                        autoFocus={passwordMode === 'signin'}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="input-group">
-                    <div className="label-with-hint" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <label htmlFor="auth-pwd">Password:</label>
-                      {passwordMode === 'signin' && (
-                        <button
-                          type="button"
-                          className="btn-link"
-                          onClick={() => {
-                            setAuthMethod('reset')
-                            setStatusMsg(null)
-                          }}
-                          style={{ fontSize: '0.74rem', background: 'none', border: 'none', color: 'var(--accent-bright)', cursor: 'pointer', padding: 0 }}
-                        >
-                          Forgot password?
-                        </button>
-                      )}
-                    </div>
-                    <div className="email-input-wrapper">
-                      <span className="email-input-icon">🔒</span>
-                      <input
-                        id="auth-pwd"
-                        type={showPassword ? 'text' : 'password'}
-                        className="auth-input visible-field"
-                        placeholder="••••••••"
-                        value={password}
-                        onChange={e => setPassword(e.target.value)}
-                        required
-                      />
+                <div className="input-group">
+                  <div className="label-with-hint" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <label htmlFor="auth-pwd">Password:</label>
+                    {userAuthMethod === 'signin' && (
                       <button
                         type="button"
-                        className="pwd-toggle-btn"
-                        onClick={() => setShowPassword(!showPassword)}
+                        className="btn-link"
+                        onClick={() => {
+                          setUserAuthMethod('reset')
+                          setStatusMsg(null)
+                        }}
+                        style={{ fontSize: '0.74rem', background: 'none', border: 'none', color: 'var(--accent-bright)', cursor: 'pointer', padding: 0 }}
                       >
-                        {showPassword ? '👁️' : '🙈'}
+                        Forgot password?
                       </button>
-                    </div>
+                    )}
                   </div>
+                  <div className="email-input-wrapper">
+                    <span className="email-input-icon">🔒</span>
+                    <input
+                      id="auth-pwd"
+                      type={showPassword ? 'text' : 'password'}
+                      className="auth-input visible-field"
+                      placeholder="••••••••"
+                      value={password}
+                      onChange={e => setPassword(e.target.value)}
+                      required
+                    />
+                    <button
+                      type="button"
+                      className="pwd-toggle-btn"
+                      onClick={() => setShowPassword(!showPassword)}
+                      tabIndex={-1}
+                    >
+                      {showPassword ? '👁️' : '🙈'}
+                    </button>
+                  </div>
+                </div>
 
-                  <button
-                    type="submit"
-                    className="btn btn-primary auth-submit-btn"
-                    disabled={isSubmitting}
-                  >
-                    {isSubmitting
-                      ? 'Authenticating with Supabase...'
-                      : passwordMode === 'signup'
-                      ? '✨ Create Account'
-                      : '🔑 Sign In with Password'}
-                  </button>
-                </form>
-              </div>
+                <button
+                  type="submit"
+                  className="btn btn-primary auth-submit-btn"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting
+                    ? 'Authenticating...'
+                    : userAuthMethod === 'signup'
+                    ? '✨ Create Free Account'
+                    : '🔑 Sign In'}
+                </button>
+              </form>
             )}
 
-            {/* METHOD 2: ONE-TIME PASSCODE (OTP) */}
-            {authMethod === 'otp' && (
+            {/* METHOD: ONE-TIME PASSCODE (OTP) */}
+            {userAuthMethod === 'otp' && (
               <>
                 {otpStep === 'email' ? (
                   <form onSubmit={handleSendOtp} className="auth-form mt-3">
                     <div className="input-group">
-                      <label htmlFor="auth-otp-email">Email Address:</label>
+                      <label htmlFor="auth-otp-email">Email Address for Instant Passcode:</label>
                       <div className="email-input-wrapper">
                         <span className="email-input-icon">✉️</span>
                         <input
@@ -551,7 +642,7 @@ export default function AuthModal() {
                       className="btn btn-primary auth-submit-btn"
                       disabled={isSubmitting}
                     >
-                      {isSubmitting ? 'Sending OTP via Supabase...' : '📩 Send 6-Digit Passcode (OTP)'}
+                      {isSubmitting ? 'Sending Passcode...' : '📩 Send 6-Digit Email Passcode'}
                     </button>
                   </form>
                 ) : (
@@ -559,8 +650,8 @@ export default function AuthModal() {
                     <div className="email-sent-notice">
                       <span className="esn-icon">📬</span>
                       <div>
-                        <strong>Check your email inbox</strong>
-                        <p>We sent a 6-digit passcode to <code>{email}</code>. Enter it below.</p>
+                        <strong>Verification Code Sent</strong>
+                        <p>We sent a 6-digit code to <code>{email}</code>. Enter it below:</p>
                       </div>
                     </div>
 
@@ -607,7 +698,7 @@ export default function AuthModal() {
                       className="btn btn-primary auth-submit-btn"
                       disabled={isSubmitting || otpDigits.join('').length !== 6}
                     >
-                      {isSubmitting ? 'Verifying with Supabase...' : '⚡ Verify Passcode &amp; Sign In'}
+                      {isSubmitting ? 'Verifying...' : '⚡ Verify Code & Sign In'}
                     </button>
 
                     <div className="otp-actions-row">
@@ -625,7 +716,7 @@ export default function AuthModal() {
                         disabled={timer > 0}
                         onClick={() => handleSendOtp()}
                       >
-                        {timer > 0 ? `Resend in ${timer}s` : 'Resend Passcode'}
+                        {timer > 0 ? `Resend in ${timer}s` : 'Resend Code'}
                       </button>
                     </div>
                   </form>
@@ -633,11 +724,11 @@ export default function AuthModal() {
               </>
             )}
 
-            {/* METHOD 3: PASSWORD RESET */}
-            {authMethod === 'reset' && (
+            {/* METHOD: PASSWORD RESET */}
+            {userAuthMethod === 'reset' && (
               <form onSubmit={handlePasswordReset} className="auth-form mt-3">
                 <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', marginBottom: '14px' }}>
-                  Enter your registered email address and we will send you secure instructions to reset your password.
+                  Enter your registered account email and we will send you secure instructions to reset your password.
                 </p>
                 <div className="input-group">
                   <label htmlFor="auth-reset-email">Registered Email Address:</label>
@@ -661,7 +752,7 @@ export default function AuthModal() {
                   className="btn btn-primary auth-submit-btn"
                   disabled={isSubmitting}
                 >
-                  {isSubmitting ? 'Sending Reset Instructions...' : '🔄 Send Password Reset Link'}
+                  {isSubmitting ? 'Sending Reset Instructions...' : '🔄 Send Reset Link'}
                 </button>
 
                 <div style={{ marginTop: '12px', textAlign: 'center' }}>
@@ -669,7 +760,7 @@ export default function AuthModal() {
                     type="button"
                     className="btn-link"
                     onClick={() => {
-                      setAuthMethod('password')
+                      setUserAuthMethod('signin')
                       setStatusMsg(null)
                     }}
                     style={{ fontSize: '0.8rem', color: 'var(--accent-bright)', background: 'none', border: 'none', cursor: 'pointer' }}
@@ -679,7 +770,7 @@ export default function AuthModal() {
                 </div>
               </form>
             )}
-          </>
+          </div>
         )}
       </div>
     </div>

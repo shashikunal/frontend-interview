@@ -52,6 +52,21 @@ function saveLocalActivities(items: ActivityLogItem[]): void {
   }
 }
 
+// ─── Singleton channel for activity broadcasting ───────────────────────────
+// We create the channel once and subscribe, then reuse it for all sends.
+// Creating a new channel per send is incorrect Supabase Realtime usage.
+let _activityChannel: ReturnType<typeof supabase.channel> | null = null
+
+function getActivityChannel() {
+  if (!_activityChannel) {
+    _activityChannel = supabase.channel('platform_activity_stream', {
+      config: { broadcast: { self: true } },
+    })
+    _activityChannel.subscribe()
+  }
+  return _activityChannel
+}
+
 // Activity Service using Supabase & Realtime Broadcast
 export const dbActivityService = {
   logActivity: async (item: Omit<ActivityLogItem, 'id' | 'timestamp'>): Promise<ActivityLogItem> => {
@@ -76,24 +91,21 @@ export const dbActivityService = {
       window.dispatchEvent(new CustomEvent('platform_live_activity', { detail: fullItem }))
     }
 
-    // 3. Write to Supabase table
+    // 3. Write to Supabase table (schema: id auto-generated UUID, no user_name/user_email cols)
     try {
       await supabase.from('user_activities').insert({
-        id: fullItem.id,
         user_id: item.userId,
         type: item.type,
         title: item.title,
-        details: item.details,
-        created_at: fullItem.timestamp,
+        details: item.details || '',
       })
     } catch {
-      // ignore
+      // ignore — table may not exist yet
     }
 
-    // 4. Broadcast live WebSocket message
+    // 4. Broadcast on persistent singleton channel
     try {
-      const channel = supabase.channel('platform_activity_stream')
-      await channel.send({
+      await getActivityChannel().send({
         type: 'broadcast',
         event: 'live_user_activity',
         payload: fullItem,
@@ -161,15 +173,13 @@ export const dbActivityService = {
   },
 
   subscribeToActivities: (onActivity: (item: ActivityLogItem) => void) => {
-    // 1. Supabase Realtime broadcast subscription
-    const channel = supabase
-      .channel('platform_activity_stream')
-      .on('broadcast', { event: 'live_user_activity' }, payload => {
-        if (payload && payload.payload) {
-          onActivity(payload.payload as ActivityLogItem)
-        }
-      })
-      .subscribe()
+    // 1. Use the persistent singleton channel for Realtime subscription
+    const channel = getActivityChannel()
+    channel.on('broadcast', { event: 'live_user_activity' }, payload => {
+      if (payload && payload.payload) {
+        onActivity(payload.payload as ActivityLogItem)
+      }
+    })
 
     // 2. Window custom event listener for in-app events
     const customHandler = (e: Event) => {
@@ -194,9 +204,9 @@ export const dbActivityService = {
     window.addEventListener('storage', storageHandler)
 
     return () => {
-      supabase.removeChannel(channel)
       window.removeEventListener('platform_live_activity', customHandler)
       window.removeEventListener('storage', storageHandler)
+      // Note: don't remove the singleton channel — it should stay alive
     }
   },
 }

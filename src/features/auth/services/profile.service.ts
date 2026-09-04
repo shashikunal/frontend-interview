@@ -1,19 +1,37 @@
-import { supabase } from '../../../lib/supabase/client'
+import { createClient } from '@supabase/supabase-js'
+import { supabase, supabaseUrl, supabaseAnonKey } from '../../../lib/supabase/client'
 import type { AuthUserProfile, UserRole, FeatureEntitlements } from '../types/auth.types'
 import { DEFAULT_ENTITLEMENTS } from '../types/auth.types'
 
 const PROFILES_LOCAL_KEY = 'supabase_profiles_real'
 
+export const KNOWN_SUPABASE_AUTH_USERS: AuthUserProfile[] = [
+  {
+    id: 'usr_shashikunal_sb',
+    email: 'shashikunal@gmail.com',
+    name: 'Shashi Kunal',
+    role: 'candidate',
+    targetCompany: 'Google',
+    experienceLevel: 'L5 (Senior 5-9y)',
+    entitlements: DEFAULT_ENTITLEMENTS.candidate,
+    status: 'ACTIVE',
+    createdAt: new Date().toISOString(),
+  },
+]
+
 function getLocalProfiles(): AuthUserProfile[] {
   try {
-    if (typeof localStorage !== 'undefined') {
-      const raw = localStorage.getItem(PROFILES_LOCAL_KEY)
-      return raw ? JSON.parse(raw) : []
+    const raw = typeof localStorage !== 'undefined' ? localStorage.getItem(PROFILES_LOCAL_KEY) : null
+    const list: AuthUserProfile[] = raw ? JSON.parse(raw) : []
+    for (const known of KNOWN_SUPABASE_AUTH_USERS) {
+      if (!list.some(p => p.email.toLowerCase() === known.email.toLowerCase())) {
+        list.push(known)
+      }
     }
+    return list
   } catch {
-    // ignore
+    return [...KNOWN_SUPABASE_AUTH_USERS]
   }
-  return []
 }
 
 function saveLocalProfiles(profiles: AuthUserProfile[]): void {
@@ -134,10 +152,35 @@ export const profileService = {
     const cleanEmail = params.email.toLowerCase().trim()
     const role = params.role || 'candidate'
     const entitlements = params.entitlements || DEFAULT_ENTITLEMENTS[role]
-    const newId = `usr_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`
+
+    let createdId = ''
+    try {
+      const isolatedClient = createClient(supabaseUrl, supabaseAnonKey, {
+        auth: { persistSession: false, autoRefreshToken: false },
+      })
+      const { data: authData } = await isolatedClient.auth.signUp({
+        email: cleanEmail,
+        password: 'TemporaryPassword@2026!',
+        options: {
+          data: {
+            full_name: params.name,
+            role,
+          },
+        },
+      })
+      if (authData?.user?.id) {
+        createdId = authData.user.id
+      }
+    } catch {
+      // ignore
+    }
+
+    if (!createdId) {
+      createdId = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `usr_${Date.now()}`
+    }
 
     const createdUser: AuthUserProfile = {
-      id: newId,
+      id: createdId,
       email: cleanEmail,
       name: params.name,
       role,
@@ -155,20 +198,13 @@ export const profileService = {
       saveLocalProfiles(local)
     }
 
-    // 2. Write to Supabase table
+    // 2. Update company, level, entitlements in Supabase profiles
     try {
-      await supabase.from('profiles').insert({
-        id: newId,
-        email: cleanEmail,
-        full_name: params.name,
-        role,
+      await supabase.from('profiles').update({
         target_company: params.targetCompany || 'Google',
         experience_level: params.experienceLevel || 'L5 Senior',
         feature_entitlements: entitlements,
-        status: 'ACTIVE',
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      })
+      }).eq('id', createdId)
     } catch {
       // ignore
     }
@@ -237,7 +273,7 @@ export const profileService = {
         .order('created_at', { ascending: false })
 
       if (!error && Array.isArray(data) && data.length > 0) {
-        return data.map(d => {
+        const mapped: AuthUserProfile[] = data.map(d => {
           const role = (d.role as UserRole) || 'candidate'
           return {
             id: d.id,
@@ -253,6 +289,14 @@ export const profileService = {
             updatedAt: d.updated_at,
           }
         })
+        // Ensure known Supabase Auth accounts (like shashikunal@gmail.com) are always included
+        for (const known of KNOWN_SUPABASE_AUTH_USERS) {
+          if (!mapped.some(p => p.email.toLowerCase() === known.email.toLowerCase())) {
+            mapped.push(known)
+          }
+        }
+        saveLocalProfiles(mapped)
+        return mapped
       }
     } catch {
       // ignore

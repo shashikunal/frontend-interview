@@ -37,7 +37,6 @@ export default function AdminDashboard() {
   const [notifications, setNotifications] = useState<AccessNotificationItem[]>([])
   const [_auditLogs, _setAuditLogs] = useState<Array<{ id: string; action: string; resource: string; createdAt: string; details?: Record<string, unknown> }>>([])
   const [progressMap, setProgressMap] = useState<Record<string, UserTrackProgress>>({})
-  const [liveEventBanner, setLiveEventBanner] = useState<string | null>(null)
 
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [searchTerm, setSearchTerm] = useState<string>('')
@@ -92,12 +91,12 @@ export default function AdminDashboard() {
       setProgressMap(fetchedProgress)
       setLiveActivities(fetchedActivities)
 
-      // Only REAL users from Supabase / database
-      if (fetchedProfiles.length === 0 && user) {
-        setProfiles([user])
-      } else {
-        setProfiles(fetchedProfiles)
+      // Real users from Supabase PostgreSQL + active admin account
+      let mergedProfiles = [...fetchedProfiles]
+      if (user && !mergedProfiles.some(p => p.id === user.id || p.email === user.email)) {
+        mergedProfiles = [user, ...mergedProfiles]
       }
+      setProfiles(mergedProfiles)
 
       setNotifications(fetchedNotifications)
       _setAuditLogs(fetchedAuditLogs)
@@ -119,14 +118,10 @@ export default function AdminDashboard() {
         ...prev,
         [updatedProgress.userId]: updatedProgress,
       }))
-      setLiveEventBanner(`⚡ LIVE SYNC: ${updatedProgress.userName} solved a question in ${updatedProgress.trackName}! (${updatedProgress.completionPct}%)`)
-      setTimeout(() => setLiveEventBanner(null), 5000)
     })
 
     const unsubActivities = dbActivityService.subscribeToActivities(newActivity => {
       setLiveActivities(prev => [newActivity, ...prev.slice(0, 99)])
-      setLiveEventBanner(`⚡ LIVE EVENT: ${newActivity.userName || 'Candidate'} • ${newActivity.title}`)
-      setTimeout(() => setLiveEventBanner(null), 5000)
     })
 
     const unsubAccess = auditService.subscribeToAccessRequests(notif => {
@@ -134,8 +129,6 @@ export default function AdminDashboard() {
         const filtered = prev.filter(p => !(p.userEmail.toLowerCase() === notif.userEmail.toLowerCase() && p.featureKey === notif.featureKey))
         return [notif, ...filtered]
       })
-      setLiveEventBanner(`📩 LIVE REQUEST: ${notif.userName} requested access to ${notif.featureName}!`)
-      setTimeout(() => setLiveEventBanner(null), 5000)
     })
 
     return () => {
@@ -175,10 +168,25 @@ export default function AdminDashboard() {
 
   // 2. Decline Access Request
   const handleDeclineRequest = (id: string, email: string, feature: string) => {
+    auditService.declineAccessRequest(id)
     setNotifications(prev =>
       prev.map(n => (n.id === id ? { ...n, status: 'DECLINED' } : n))
     )
     showToast(`Declined ${feature} access request for ${email}.`)
+  }
+
+  // 2b. Delete / Dismiss Access Request
+  const handleDeleteRequest = (id: string) => {
+    auditService.deleteNotification(id)
+    setNotifications(prev => prev.filter(n => n.id !== id))
+    showToast('Access request removed.')
+  }
+
+  // 2c. Clear All Requests
+  const handleClearAllRequests = () => {
+    auditService.clearAllNotifications()
+    setNotifications([])
+    showToast('All access requests cleared.')
   }
 
   // 3. Toggle single feature entitlement on user
@@ -530,13 +538,6 @@ export default function AdminDashboard() {
         </div>
       )}
 
-      {/* Live Sync Banner */}
-      {liveEventBanner && (
-        <div className="admin-live-banner-alert">
-          <span className="alb-pulse">🟢</span>
-          <strong>{liveEventBanner}</strong>
-        </div>
-      )}
 
       {/* Admin Header */}
       <div className="admin-header-hero">
@@ -961,8 +962,18 @@ export default function AdminDashboard() {
                   When candidates navigate to restricted features (such as System Design Studio or the 22,222 Questions Bank), their access requests appear here. Click <strong>Approve &amp; Grant Access</strong> to immediately unlock that feature in Supabase.
                 </p>
               </div>
-              <div className="np-badge-count">
+              <div className="np-badge-count" style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                 <span>{pendingRequestsCount} Pending Approval</span>
+                {notifications.length > 0 && (
+                  <button
+                    type="button"
+                    className="btn btn-sm btn-secondary"
+                    onClick={handleClearAllRequests}
+                    style={{ fontSize: '0.74rem', padding: '4px 10px', fontWeight: 700 }}
+                  >
+                    🗑️ Clear All
+                  </button>
+                )}
               </div>
             </div>
 
@@ -970,31 +981,9 @@ export default function AdminDashboard() {
               <div style={{ textAlign: 'center', padding: '48px 24px', background: 'var(--surface-hover)', borderRadius: 'var(--radius-lg)', border: '1px dashed var(--border-subtle)' }}>
                 <span style={{ fontSize: '2.4rem', display: 'block', marginBottom: '10px' }}>🎉</span>
                 <strong style={{ fontSize: '1.05rem', color: 'var(--text-primary)' }}>No Pending Access Requests</strong>
-                <p style={{ margin: '6px 0 16px', fontSize: '0.86rem', color: 'var(--text-muted)' }}>
-                  When candidates request access to locked platform features (like the 22,222 Questions Bank or System Design Studio), their requests appear here for 1-click approval.
+                <p style={{ margin: '6px 0 0', fontSize: '0.86rem', color: 'var(--text-muted)' }}>
+                  When candidates request access to locked platform features, their requests appear here for administrator approval.
                 </p>
-                <button
-                  type="button"
-                  className="btn btn-sm btn-primary"
-                  onClick={async () => {
-                    await auditService.logEvent({
-                      userId: 'usr_candidate_demo',
-                      action: 'FEATURE_ACCESS_REQUESTED',
-                      resource: 'system_design',
-                      details: {
-                        featureName: 'System Design Studio',
-                        userEmail: 'candidate@faang.io',
-                        userName: 'Alex Rivers (Candidate)',
-                        currentRole: 'candidate',
-                      },
-                    })
-                    await loadData()
-                    showToast('Created sample access request for candidate@faang.io!')
-                  }}
-                  style={{ fontWeight: 700 }}
-                >
-                  ⚡ Simulate Candidate Request
-                </button>
               </div>
             ) : (
               <div className="requests-cards-list">
@@ -1051,6 +1040,15 @@ export default function AdminDashboard() {
                           ❌ Request Dismissed
                         </span>
                       )}
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-ghost"
+                        onClick={() => handleDeleteRequest(notif.id)}
+                        title="Dismiss notification"
+                        style={{ padding: '6px 8px', fontSize: '0.8rem', opacity: 0.7 }}
+                      >
+                        🗑️
+                      </button>
                     </div>
                   </div>
                 )

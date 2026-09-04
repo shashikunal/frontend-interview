@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import {
   useAuth,
@@ -37,6 +37,7 @@ export default function UserManagementStudio() {
 
   // User Management State
   const [usersList, setUsersList] = useState<StoredUserAccount[]>([])
+  const [isLoadingUsers, setIsLoadingUsers] = useState<boolean>(true)
   const [searchFilter, setSearchFilter] = useState<string>('')
   const [selectedRoleFilter, setSelectedRoleFilter] = useState<string>('ALL')
   const [editingUserId, setEditingUserId] = useState<string | null>(null)
@@ -45,15 +46,27 @@ export default function UserManagementStudio() {
   // RLS Simulation State
   const [rlsUserContext, setRlsUserContext] = useState<'anon' | 'candidate' | 'pro_member' | 'admin'>('candidate')
 
-  // Load real user list
-  useEffect(() => {
-    setUsersList(getAllUsers())
+  // Load real user list from Supabase
+  const refreshUsers = useCallback(async () => {
+    setIsLoadingUsers(true)
+    try {
+      const users = await getAllUsers()
+      setUsersList(users)
+    } catch (err) {
+      console.warn('[UserManagementStudio] Error loading users:', err)
+    } finally {
+      setIsLoadingUsers(false)
+    }
   }, [getAllUsers])
+
+  useEffect(() => {
+    refreshUsers()
+  }, [refreshUsers])
 
   // Update user role
   const handleUpdateUserRole = async (id: string, newRole: UserRole) => {
     await adminUpdateUserRole(id, newRole)
-    setUsersList(getAllUsers())
+    await refreshUsers()
     setStatusNotification(`Role updated to ${newRole.toUpperCase()}`)
     setTimeout(() => setStatusNotification(null), 3000)
   }
@@ -69,7 +82,7 @@ export default function UserManagementStudio() {
     }
 
     await updateUserEntitlements(targetUser.id, nextEntitlements)
-    setUsersList(getAllUsers())
+    await refreshUsers()
     setStatusNotification(`Updated '${featureKey}' for ${targetUser.name}`)
     setTimeout(() => setStatusNotification(null), 3000)
   }
@@ -177,8 +190,22 @@ export default function UserManagementStudio() {
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredUsers.map(u => (
-                    <tr key={u.id}>
+                  {isLoadingUsers ? (
+                    <tr>
+                      <td colSpan={6} style={{ textAlign: 'center', padding: '36px', color: 'var(--text-muted)' }}>
+                        <div className="feature-guard-spinner" style={{ margin: '0 auto 12px' }} />
+                        <span>Fetching real user accounts from Supabase PostgreSQL...</span>
+                      </td>
+                    </tr>
+                  ) : filteredUsers.length === 0 ? (
+                    <tr>
+                      <td colSpan={6} style={{ textAlign: 'center', padding: '36px', color: 'var(--text-muted)' }}>
+                        No user accounts found matching your filter criteria.
+                      </td>
+                    </tr>
+                  ) : (
+                    filteredUsers.map(u => (
+                      <tr key={u.id}>
                       <td>
                         <div className="user-cell">
                           <strong>{u.name}</strong>
@@ -259,7 +286,7 @@ export default function UserManagementStudio() {
                         </div>
                       </td>
                     </tr>
-                  ))}
+                  )))}
                 </tbody>
               </table>
             </div>
@@ -687,7 +714,7 @@ USING (auth.uid() = user_id);`}
                   <tr>
                     <td>Just now</td>
                     <td><code>AUTH_VERIFIED</code></td>
-                    <td>{user?.email || 'candidate@faang.io'}</td>
+                    <td>{user?.email || 'candidate@interviewprep.com'}</td>
                     <td><span className="audit-tag success">SUCCESS</span></td>
                   </tr>
                   <tr>

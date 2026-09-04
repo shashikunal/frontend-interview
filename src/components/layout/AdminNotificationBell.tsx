@@ -22,19 +22,22 @@ export default function AdminNotificationBell() {
   useEffect(() => {
     loadNotifications()
 
-    // 1. Instant Real-Time WebSocket & BroadcastChannel subscription
+    // Real-Time subscription for incoming access requests
     const unsub = auditService.subscribeToAccessRequests(() => {
       loadNotifications()
     })
 
-    // 2. Active 2-second heartbeat
-    const interval = setInterval(loadNotifications, 2000)
-
     return () => {
       unsub()
-      clearInterval(interval)
     }
   }, [loadNotifications])
+
+  // Refresh when user opens the notification bell
+  useEffect(() => {
+    if (isOpen) {
+      loadNotifications()
+    }
+  }, [isOpen, loadNotifications])
 
   // Click outside to close
   useEffect(() => {
@@ -68,6 +71,7 @@ export default function AdminNotificationBell() {
   // Decline action
   const handleDecline = (e: React.MouseEvent, notifId: string) => {
     e.stopPropagation()
+    auditService.declineAccessRequest(notifId)
     setNotifications(prev =>
       prev.map(n => (n.id === notifId ? { ...n, status: 'DECLINED' } : n))
     )
@@ -75,22 +79,20 @@ export default function AdminNotificationBell() {
     setTimeout(() => setFeedbackMsg(null), 3000)
   }
 
-  // Simulate candidate request for instant verification
-  const handleCreateTestRequest = async () => {
-    await auditService.logEvent({
-      userId: 'usr_candidate_demo',
-      action: 'FEATURE_ACCESS_REQUESTED',
-      resource: 'system_design',
-      details: {
-        featureName: 'System Design Studio',
-        userEmail: 'candidate@faang.io',
-        userName: 'Alex Rivers (Candidate)',
-        currentRole: 'candidate',
-      },
-    })
-    await loadNotifications()
-    setFeedbackMsg('Created access request for candidate@faang.io!')
-    setTimeout(() => setFeedbackMsg(null), 3000)
+  // Dismiss / Delete single notification
+  const handleDismiss = (e: React.MouseEvent, notifId: string) => {
+    e.stopPropagation()
+    auditService.deleteNotification(notifId)
+    setNotifications(prev => prev.filter(n => n.id !== notifId))
+  }
+
+  // Clear all notifications
+  const handleClearAll = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    auditService.clearAllNotifications()
+    setNotifications([])
+    setFeedbackMsg('All notifications cleared.')
+    setTimeout(() => setFeedbackMsg(null), 2500)
   }
 
   return (
@@ -113,7 +115,28 @@ export default function AdminNotificationBell() {
           <div className="abd-header">
             <div className="abd-title-row">
               <span className="abd-title">Admin Access Requests</span>
-              <span className="abd-status-pill">{pendingCount} Pending</span>
+              <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                <span className="abd-status-pill">{pendingCount} Pending</span>
+                {notifications.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={handleClearAll}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: 'var(--text-muted)',
+                      fontSize: '0.72rem',
+                      cursor: 'pointer',
+                      padding: '2px 6px',
+                      borderRadius: '4px',
+                      fontWeight: 600,
+                    }}
+                    title="Clear all notifications"
+                  >
+                    Clear All
+                  </button>
+                )}
+              </div>
             </div>
             <p className="abd-sub">Candidate requests for locked platform features.</p>
           </div>
@@ -126,19 +149,11 @@ export default function AdminNotificationBell() {
 
           <div className="abd-list">
             {notifications.length === 0 ? (
-              <div className="abd-empty" style={{ padding: '20px 12px', textAlign: 'center' }}>
+              <div className="abd-empty" style={{ padding: '24px 12px', textAlign: 'center' }}>
                 <span style={{ fontSize: '1.6rem', display: 'block', marginBottom: '8px' }}>🎉</span>
-                <p style={{ margin: '0 0 12px', fontSize: '0.84rem', color: 'var(--text-muted)' }}>
+                <p style={{ margin: '0', fontSize: '0.84rem', color: 'var(--text-muted)' }}>
                   No pending access requests.
                 </p>
-                <button
-                  type="button"
-                  className="btn btn-sm btn-secondary"
-                  onClick={handleCreateTestRequest}
-                  style={{ fontSize: '0.76rem', padding: '6px 12px', fontWeight: 700 }}
-                >
-                  ⚡ Simulate Candidate Request
-                </button>
               </div>
             ) : (
               notifications.slice(0, 6).map(notif => {
@@ -155,9 +170,28 @@ export default function AdminNotificationBell() {
                         <strong>{notif.userName}</strong>
                         <span className="abd-email">{notif.userEmail}</span>
                       </div>
-                      <span className={`abd-tag ${notif.status.toLowerCase()}`}>
-                        {notif.status}
-                      </span>
+                      <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                        <span className={`abd-tag ${notif.status.toLowerCase()}`}>
+                          {notif.status}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={e => handleDismiss(e, notif.id)}
+                          style={{
+                            background: 'none',
+                            border: 'none',
+                            color: 'var(--text-muted)',
+                            cursor: 'pointer',
+                            fontSize: '0.78rem',
+                            padding: '2px 4px',
+                            lineHeight: 1,
+                            opacity: 0.7,
+                          }}
+                          title="Dismiss"
+                        >
+                          ✕
+                        </button>
+                      </div>
                     </div>
 
                     <div className="abd-feature-badge">

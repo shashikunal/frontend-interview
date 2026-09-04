@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState, useCallback, useMemo, type ReactNode } from 'react'
 import { dbActivityService } from '../lib/supabase'
 import { progressSyncService } from '../features/auth/services/progressSync.service'
+import { useAuth } from './AuthContext'
 
 const PROGRESS_STORAGE_KEY = 'interview-prep-progress'
 
@@ -101,6 +102,7 @@ function calculateStreak(datesSet: Set<string>): number {
 }
 
 export function ProgressProvider({ children }: { children: ReactNode }) {
+  const { user: authUser } = useAuth()
   const [solvedIds, setSolvedIds] = useState<Set<number>>(() => {
     if (typeof window !== 'undefined') {
       try {
@@ -220,16 +222,60 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
         next.delete(id)
       } else {
         next.add(id)
+        const uid = authUser?.id || 'guest'
+        if (authUser) {
+          dbActivityService.logActivity({
+            userId: uid,
+            userName: authUser.name,
+            userEmail: authUser.email,
+            type: 'QUESTION_SOLVED',
+            title: `Solved Question #${id}`,
+            details: `Completed review and verification of Question #${id}`,
+          })
+          progressSyncService.syncProgress({
+            userId: uid,
+            userEmail: authUser.email,
+            userName: authUser.name,
+            trackName: 'React 19 & Architecture',
+            trackIcon: '⚛️',
+            solvedCount: next.size,
+            totalQuestions: 75,
+            completionPct: Math.round((next.size / 75) * 100),
+            streak: streak || 1,
+            quizAccuracy: 86,
+            mockScore: 4.5,
+            lastActive: new Date().toISOString(),
+            categoryBreakdown: {
+              'React Core': { solved: Math.min(next.size, 25), total: 25, pct: Math.round((Math.min(next.size, 25) / 25) * 100) },
+              'Architecture': { solved: Math.max(0, next.size - 25), total: 25, pct: Math.round((Math.max(0, next.size - 25) / 25) * 100) },
+            },
+          })
+        }
+      }
+      return next
+    })
+  }, [recordActivity, streak])
+
+  const markSolved = useCallback((id: number) => {
+    recordActivity()
+    setSolvedIds(prev => {
+      if (prev.has(id)) return prev
+      const next = new Set(prev)
+      next.add(id)
+      const uid = authUser?.id || 'guest'
+      if (authUser) {
         dbActivityService.logActivity({
-          userId: 'current-user',
+          userId: uid,
+          userName: authUser.name,
+          userEmail: authUser.email,
           type: 'QUESTION_SOLVED',
           title: `Solved Question #${id}`,
-          details: `Completed review and verification of Question #${id}`,
+          details: `Successfully completed Question #${id}`,
         })
         progressSyncService.syncProgress({
-          userId: 'current-user',
-          userEmail: 'candidate@interviewprep.io',
-          userName: 'Active Candidate',
+          userId: uid,
+          userEmail: authUser.email,
+          userName: authUser.name,
           trackName: 'React 19 & Architecture',
           trackIcon: '⚛️',
           solvedCount: next.size,
@@ -245,40 +291,6 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
           },
         })
       }
-      return next
-    })
-  }, [recordActivity, streak])
-
-  const markSolved = useCallback((id: number) => {
-    recordActivity()
-    setSolvedIds(prev => {
-      if (prev.has(id)) return prev
-      const next = new Set(prev)
-      next.add(id)
-      dbActivityService.logActivity({
-        userId: 'current-user',
-        type: 'QUESTION_SOLVED',
-        title: `Solved Question #${id}`,
-        details: `Successfully completed Question #${id}`,
-      })
-      progressSyncService.syncProgress({
-        userId: 'current-user',
-        userEmail: 'candidate@interviewprep.io',
-        userName: 'Active Candidate',
-        trackName: 'React 19 & Architecture',
-        trackIcon: '⚛️',
-        solvedCount: next.size,
-        totalQuestions: 75,
-        completionPct: Math.round((next.size / 75) * 100),
-        streak: streak || 1,
-        quizAccuracy: 86,
-        mockScore: 4.5,
-        lastActive: new Date().toISOString(),
-        categoryBreakdown: {
-          'React Core': { solved: Math.min(next.size, 25), total: 25, pct: Math.round((Math.min(next.size, 25) / 25) * 100) },
-          'Architecture': { solved: Math.max(0, next.size - 25), total: 25, pct: Math.round((Math.max(0, next.size - 25) / 25) * 100) },
-        },
-      })
       return next
     })
   }, [recordActivity, streak])
@@ -301,23 +313,31 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
       category,
     }
     setQuizSessions(prev => [...prev, session])
-    dbActivityService.logActivity({
-      userId: 'current-user',
-      type: 'QUIZ_SCORED',
-      title: `Completed ${category || 'Frontend'} Practice Quiz`,
-      details: `Scored ${score}/${total} (${Math.round((score / total) * 100)}%)`,
-    })
+    if (authUser) {
+      dbActivityService.logActivity({
+        userId: authUser.id,
+        userName: authUser.name,
+        userEmail: authUser.email,
+        type: 'QUIZ_SCORED',
+        title: `Completed ${category || 'Frontend'} Practice Quiz`,
+        details: `Scored ${score}/${total} (${Math.round((score / total) * 100)}%)`,
+      })
+    }
   }, [recordActivity])
 
   const recordMockInterview = useCallback((result: MockInterviewResult) => {
     recordActivity()
     setMockInterviews(prev => [result, ...prev])
-    dbActivityService.logActivity({
-      userId: 'current-user',
-      type: 'MOCK_COMPLETED',
-      title: `Completed ${result.track} (${result.level}) Mock Interview`,
-      details: `Verdict: ${result.verdict} with average score of ${result.averageScore}/5.0`,
-    })
+    if (authUser) {
+      dbActivityService.logActivity({
+        userId: authUser.id,
+        userName: authUser.name,
+        userEmail: authUser.email,
+        type: 'MOCK_COMPLETED',
+        title: `Completed ${result.track} (${result.level}) Mock Interview`,
+        details: `Verdict: ${result.verdict} with average score of ${result.averageScore}/5.0`,
+      })
+    }
     // Auto-mark questions as studied/solved if scored high
     if (result.averageScore >= 3.5) {
       setSolvedIds(prev => {

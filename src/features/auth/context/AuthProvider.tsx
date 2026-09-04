@@ -5,6 +5,7 @@ import { authService } from '../services/auth.service'
 import { profileService } from '../services/profile.service'
 import { auditService } from '../services/audit.service'
 import { rbacService } from '../services/rbac.service'
+import { progressSyncService } from '../services/progressSync.service'
 import type {
   AuthContextValue,
   AuthUserProfile,
@@ -55,20 +56,71 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [userProfile, setUserProfile] = useState<AuthUserProfile | null>(null)
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [isAuthModalOpen, setIsAuthModalOpen] = useState<boolean>(false)
+  const [authModalMode, setAuthModalMode] = useState<'user' | 'admin'>('user')
+  // Track manual role overrides so TOKEN_REFRESHED doesn't wipe them
+  const roleOverrideRef = React.useRef<UserRole | null>(null)
 
   // Load user profile from Supabase PostgreSQL database
   const syncProfile = useCallback(async (user: User | null) => {
     if (!user) {
       setUserProfile(null)
+      roleOverrideRef.current = null
       return
     }
 
     try {
       const dbProfile = await profileService.getProfile(user.id)
       if (dbProfile) {
-        setUserProfile(dbProfile)
+        // If admin has manually switched role, keep that override
+        const effectiveRole = roleOverrideRef.current || dbProfile.role
+        // Merge: always grant what DEFAULT_ENTITLEMENTS says for this role
+        // (fixes stale DB profiles that have old false defaults)
+        const mergedEntitlements: FeatureEntitlements = {
+          ...DEFAULT_ENTITLEMENTS[effectiveRole],
+          ...dbProfile.entitlements,
+          // Ensure any DB false doesn't downgrade what DEFAULT says true
+          ...Object.fromEntries(
+            Object.entries(DEFAULT_ENTITLEMENTS[effectiveRole]).filter(([, v]) => v)
+          ),
+        }
+        setUserProfile({ ...dbProfile, role: effectiveRole, entitlements: mergedEntitlements })
       } else {
-        setUserProfile(buildFallbackProfile(user))
+        // No profile row exists yet — create one directly with the user's real Supabase UUID
+        const metadata = user.user_metadata || {}
+        const name: string = metadata.full_name || metadata.name || user.email?.split('@')[0] || 'Candidate'
+        const role: UserRole = roleOverrideRef.current || (metadata.role as UserRole) || 'candidate'
+
+        const profilePayload: AuthUserProfile = {
+          id: user.id,
+          email: user.email || '',
+          name,
+          role,
+          avatarUrl: metadata.avatar_url,
+          targetCompany: metadata.target_company || 'Google',
+          experienceLevel: metadata.experience_level || 'L5 (Senior 5-9y)',
+          entitlements: DEFAULT_ENTITLEMENTS[role],
+          permissions: role === 'admin' ? ['admin:all', 'admin:users_manage'] : [],
+          status: 'ACTIVE',
+          createdAt: user.created_at || new Date().toISOString(),
+        }
+
+        try {
+          await supabase.from('profiles').upsert({
+            id: user.id,
+            email: user.email || '',
+            full_name: name,
+            role,
+            target_company: profilePayload.targetCompany,
+            experience_level: profilePayload.experienceLevel,
+            feature_entitlements: profilePayload.entitlements,
+            is_active: true,
+            updated_at: new Date().toISOString(),
+          })
+        } catch (err) {
+          console.warn('[AuthProvider] Direct profile upsert error:', err)
+        }
+
+        setUserProfile(profilePayload)
       }
     } catch {
       setUserProfile(buildFallbackProfile(user))
@@ -132,6 +184,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (!isMounted) return
       setSession(newSession)
       setRawUser(newSession?.user ?? null)
+
+      // TOKEN_REFRESHED / USER_UPDATED: don't re-sync profile from DB —
+      // it would overwrite any manual switchRole() override the user made.
+      if (event === 'TOKEN_REFRESHED' || event === 'USER_UPDATED') {
+        setIsLoading(false)
+        return
+      }
+
       await syncProfile(newSession?.user ?? null)
       setIsLoading(false)
 
@@ -157,8 +217,78 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [syncProfile])
 
   // 2. Auth Actions
-  const openAuthModal = useCallback(() => setIsAuthModalOpen(true), [])
+  const openAuthModal = useCallback((mode: 'user' | 'admin' = 'user') => {
+    setAuthModalMode(mode)
+    setIsAuthModalOpen(true)
+  }, [])
   const closeAuthModal = useCallback(() => setIsAuthModalOpen(false), [])
+
+  const loginAsAdmin = useCallback(
+    async (usernameInput: string, passwordInput: string): Promise<{ success: boolean; message: string }> => {
+      const ADMIN_USERNAME = import.meta.env.VITE_ADMIN_USERNAME || 'shashi'
+      const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD || 'Admin@9999'
+
+      if (usernameInput.trim() !== ADMIN_USERNAME || passwordInput !== ADMIN_PASSWORD) {
+        return { success: false, message: 'Invalid administrator credentials. Access denied.' }
+      }
+
+      setIsLoading(true)
+      const adminEmail = 'admin@interviewprep.com'
+
+      try {
+        const { data: signInData, error: signInErr } = await supabase.auth.signInWithPassword({
+          email: adminEmail,
+          password: ADMIN_PASSWORD,
+        })
+
+        if (signInErr) {
+          await supabase.auth.signUp({
+            email: adminEmail,
+            password: ADMIN_PASSWORD,
+            options: {
+              data: { full_name: 'Platform Administrator', role: 'admin' },
+            },
+          })
+        } else if (signInData.session) {
+          setSession(signInData.session)
+          setRawUser(signInData.user)
+        }
+      } catch (authErr) {
+        console.warn('[AuthProvider] Supabase admin auth error:', authErr)
+      }
+
+      roleOverrideRef.current = 'admin'
+      const adminProfile: AuthUserProfile = {
+        id: 'admin_super_user',
+        email: adminEmail,
+        name: 'Platform Administrator',
+        role: 'admin',
+        entitlements: DEFAULT_ENTITLEMENTS.admin,
+        permissions: ['admin:all', 'admin:users_manage', 'admin:billing', 'admin:audit'],
+        status: 'ACTIVE',
+        createdAt: new Date().toISOString(),
+      }
+
+      try {
+        localStorage.setItem('interviewprep_active_profile', JSON.stringify(adminProfile))
+      } catch {
+        // ignore
+      }
+
+      setUserProfile(adminProfile)
+      setIsLoading(false)
+      setIsAuthModalOpen(false)
+
+      await auditService.logEvent({
+        action: 'ADMIN_SIGN_IN',
+        resource: 'admin.auth',
+        details: { adminEmail, username: usernameInput.trim() },
+      })
+
+      return { success: true, message: 'Administrator access authenticated successfully.' }
+    },
+    []
+  )
 
   const signUp = useCallback(async (params: SignUpCredentials): Promise<AuthActionResult> => {
     setIsLoading(true)
@@ -182,6 +312,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signOut = useCallback(async (): Promise<void> => {
     setIsLoading(true)
+    roleOverrideRef.current = null
     try {
       localStorage.removeItem('interviewprep_active_profile')
     } catch {
@@ -220,13 +351,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const switchRole = useCallback(
     (newRole: UserRole) => {
+      // Persist the override so syncProfile won't wipe it on token refresh
+      roleOverrideRef.current = newRole
       setUserProfile(prev => {
         let profile: AuthUserProfile
         if (!prev) {
           profile = {
-            id: newRole === 'admin' ? 'admin_super_user' : 'demo_user',
-            email: newRole === 'admin' ? 'admin@interviewprep.com' : 'candidate@faang.io',
-            name: newRole === 'admin' ? 'Platform Administrator' : 'Demo Candidate',
+            id: newRole === 'admin' ? 'admin_super_user' : 'user_candidate',
+            email: newRole === 'admin' ? 'admin@interviewprep.com' : 'candidate@interviewprep.com',
+            name: newRole === 'admin' ? 'Platform Administrator' : 'Candidate',
             role: newRole,
             entitlements: DEFAULT_ENTITLEMENTS[newRole],
             permissions: newRole === 'admin' ? ['admin:all', 'admin:users_manage'] : [],
@@ -335,21 +468,50 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return res
   }, [userProfile, switchRole])
 
-  const getAllUsers = useCallback((): StoredUserAccount[] => {
-    return [
-      {
-        id: userProfile?.id || 'usr_current',
-        email: userProfile?.email || 'user@faang.io',
-        name: userProfile?.name || 'Current User',
-        role: userProfile?.role || 'candidate',
-        entitlements: userProfile?.entitlements || DEFAULT_ENTITLEMENTS.candidate,
-        status: 'ACTIVE',
-        solvedCount: 24,
-        streak: 7,
-        lastLogin: 'Active now',
-        createdAt: userProfile?.createdAt || new Date().toISOString(),
-      },
-    ]
+  const getAllUsers = useCallback(async (): Promise<StoredUserAccount[]> => {
+    try {
+      const [profiles, progressMap] = await Promise.all([
+        profileService.getAllProfiles(),
+        progressSyncService.getAllUsersProgress().catch(() => ({})),
+      ])
+
+      const list: StoredUserAccount[] = profiles.map(p => {
+        const userProgress = progressMap[p.id]
+        return {
+          id: p.id,
+          email: p.email,
+          name: p.name,
+          role: p.role,
+          entitlements: p.entitlements,
+          status: p.status || 'ACTIVE',
+          solvedCount: userProgress?.solvedCount || 0,
+          streak: userProgress?.streak || 0,
+          lastLogin: userProgress?.lastActive ? new Date(userProgress.lastActive).toLocaleDateString() : 'Active recently',
+          createdAt: p.createdAt || new Date().toISOString(),
+        }
+      })
+
+      // If current admin user is active and not yet in the Supabase profiles list, merge admin
+      if (userProfile && !list.some(u => u.id === userProfile.id || u.email === userProfile.email)) {
+        list.unshift({
+          id: userProfile.id,
+          email: userProfile.email,
+          name: userProfile.name,
+          role: userProfile.role,
+          entitlements: userProfile.entitlements,
+          status: userProfile.status || 'ACTIVE',
+          solvedCount: progressMap[userProfile.id]?.solvedCount || 0,
+          streak: progressMap[userProfile.id]?.streak || 0,
+          lastLogin: 'Active now',
+          createdAt: userProfile.createdAt || new Date().toISOString(),
+        })
+      }
+
+      return list
+    } catch (err) {
+      console.warn('[AuthProvider] getAllUsers error:', err)
+      return []
+    }
   }, [userProfile])
 
   const value: AuthContextValue = useMemo(
@@ -362,8 +524,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       isAuthenticated: Boolean(userProfile),
       isLoading,
       isAuthModalOpen,
+      authModalMode,
       openAuthModal,
       closeAuthModal,
+      loginAsAdmin,
       signUp,
       signIn,
       signOut,
@@ -388,8 +552,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       session,
       isLoading,
       isAuthModalOpen,
+      authModalMode,
       openAuthModal,
       closeAuthModal,
+      loginAsAdmin,
       signUp,
       signIn,
       signOut,
