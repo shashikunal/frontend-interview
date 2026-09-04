@@ -720,7 +720,8 @@ export default function MachineCodingStudio() {
       totalDurationSeconds: interviewDuration,
       testResults: results,
       passedTests: passed,
-      totalTests: total
+      totalTests: total,
+      files: { ...files }
     });
     setShowScorecard(true);
   };
@@ -1183,15 +1184,33 @@ export default function MachineCodingStudio() {
               </div>
             )}
 
-            {interviewFinished && !isInterviewActive && scorecardData && (
-              <button
-                className="mc-action-btn mc-btn-view-scorecard"
-                onClick={() => setShowScorecard(true)}
-                title="Re-open candidate interview scorecard"
-              >
-                📊 Scorecard
-              </button>
-            )}
+            <button
+              type="button"
+              className="mc-action-btn mc-btn-view-scorecard"
+              onClick={async () => {
+                if (!activeQuestion) return;
+                let results = testResults;
+                if (!results) {
+                  showToast('🧪 Compiling test results and static code audit...');
+                  results = await runTestsAsync(files);
+                }
+                const passed = results ? results.filter(r => r.status === 'passed').length : 0;
+                const total = results ? results.length : 0;
+                setScorecardData({
+                  question: activeQuestion,
+                  timeSpentSeconds: isInterviewActive ? Math.max(1, interviewDuration - interviewTimeLeft) : 720,
+                  totalDurationSeconds: interviewDuration,
+                  testResults: results || [],
+                  passedTests: passed,
+                  totalTests: total,
+                  files: { ...files },
+                });
+                setShowScorecard(true);
+              }}
+              title="View Senior Staff Evaluation Scorecard & Anti-Pattern Audit"
+            >
+              📊 Scorecard
+            </button>
 
             <button
               className={`mc-action-btn mc-btn-ai-interviewer ${showAIPrompter ? 'active' : ''}`}
