@@ -283,6 +283,71 @@ function __hasDom() {
   if (!root) return false;
   return root.children.length > 0 || !!root.innerText.trim();
 }
+
+window.addEventListener('message', async (e) => {
+  if (e.data && e.data.t === 'run_tests') {
+    const testCases = e.data.testCases || [];
+    const root = document.getElementById('root');
+    const results = [];
+
+    const helpers = {
+      root,
+      document,
+      window,
+      expect: (condition, msg) => {
+        if (!condition) throw new Error(msg || 'Assertion failed');
+      },
+      wait: (ms) => new Promise(res => setTimeout(res, ms)),
+      fireClick: (el) => {
+        if (!el) throw new Error('Target element not found for click');
+        el.click();
+        el.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+      },
+      fireInput: (el, val) => {
+        if (!el) throw new Error('Target element not found for input');
+        el.value = val;
+        el.dispatchEvent(new Event('input', { bubbles: true }));
+        el.dispatchEvent(new Event('change', { bubbles: true }));
+      },
+      getAll: (selector) => Array.from(document.querySelectorAll(selector)),
+      getByText: (text) => {
+        const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_ELEMENT);
+        let node;
+        while (node = walker.nextNode()) {
+          if (node.innerText && node.innerText.includes(text)) return node;
+        }
+        return null;
+      }
+    };
+
+    for (const tc of testCases) {
+      const t0 = performance.now();
+      try {
+        const AsyncFn = Object.getPrototypeOf(async function(){}).constructor;
+        const testFn = new AsyncFn('ctx', 'with(ctx) { ' + tc.assertion + ' }');
+        await testFn(helpers);
+        results.push({
+          id: tc.id,
+          name: tc.name,
+          description: tc.description,
+          status: 'passed',
+          durationMs: Math.max(1, Math.round(performance.now() - t0))
+        });
+      } catch (err) {
+        results.push({
+          id: tc.id,
+          name: tc.name,
+          description: tc.description,
+          status: 'failed',
+          durationMs: Math.max(1, Math.round(performance.now() - t0)),
+          error: err && err.message ? err.message : String(err)
+        });
+      }
+    }
+
+    __post({ t: 'test_results', results });
+  }
+});
 `
 
   const moduleScript = `import React from 'https://esm.sh/react@${REACT_VERSION}';

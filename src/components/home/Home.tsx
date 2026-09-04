@@ -147,7 +147,7 @@ export default function Home() {
                 👤 View Profile Hub →
               </Link>
             ) : (
-              <button type="button" className="btn btn-primary btn-sm" onClick={openAuthModal}>
+              <button type="button" className="btn btn-primary btn-sm" onClick={() => openAuthModal()}>
                 🔐 Sign In (OTP) →
               </button>
             )}

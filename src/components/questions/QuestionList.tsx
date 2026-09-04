@@ -138,7 +138,7 @@ export default function QuestionList() {
           <div style={{ fontSize: '0.86rem', color: 'var(--text-secondary)' }}>
             <strong style={{ color: 'var(--text-primary)' }}>🔒 Standard Preview Access:</strong> You are browsing preview questions. Access to the full 22,222 questions bank is granted and managed by Platform Administrators.
           </div>
-          <button type="button" className="btn btn-secondary btn-sm" onClick={openAuthModal} style={{ whiteSpace: 'nowrap' }}>
+          <button type="button" className="btn btn-secondary btn-sm" onClick={() => openAuthModal()} style={{ whiteSpace: 'nowrap' }}>
             {user ? 'View Entitlements' : 'Sign In'}
           </button>
         </div>

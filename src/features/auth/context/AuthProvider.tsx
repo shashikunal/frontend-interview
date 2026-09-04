@@ -475,8 +475,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         progressSyncService.getAllUsersProgress().catch(() => ({})),
       ])
 
+      const progressRecord = progressMap as Record<string, any>
       const list: StoredUserAccount[] = profiles.map(p => {
-        const userProgress = progressMap[p.id]
+        const userProgress = progressRecord[p.id]
         return {
           id: p.id,
           email: p.email,
@@ -500,8 +501,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           role: userProfile.role,
           entitlements: userProfile.entitlements,
           status: userProfile.status || 'ACTIVE',
-          solvedCount: progressMap[userProfile.id]?.solvedCount || 0,
-          streak: progressMap[userProfile.id]?.streak || 0,
+          solvedCount: progressRecord[userProfile.id]?.solvedCount || 0,
+          streak: progressRecord[userProfile.id]?.streak || 0,
           lastLogin: 'Active now',
           createdAt: userProfile.createdAt || new Date().toISOString(),
         })

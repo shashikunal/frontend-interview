@@ -97,7 +97,7 @@ export default function UserProfile() {
             <h3>🔐 Sign in with Email OTP to Sync Progress to Supabase Cloud</h3>
             <p>You are currently studying in Guest Mode. Sign in with a 6-digit email OTP to save your 22,222 questions progress across all devices.</p>
           </div>
-          <button type="button" className="btn btn-primary" onClick={openAuthModal}>
+          <button type="button" className="btn btn-primary" onClick={() => openAuthModal()}>
             Sign In with OTP →
           </button>
         </div>

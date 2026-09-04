@@ -35,10 +35,11 @@ export default function Header() {
     return location.pathname === path || location.pathname.startsWith(path + '/')
   }
 
-  const isPracticeActive = ['/flashcards', '/quiz', '/videos', '/code-review', '/accessibility', '/daily'].some(p => isActive(p)) || isSavedActive
+  const isPracticeActive = ['/flashcards', '/quiz', '/videos', '/code-review', '/accessibility', '/daily', '/coding'].some(p => isActive(p)) || isSavedActive
 
   const isArchitectureActive = ['/experience', '/pathways', '/system-design', '/case-studies', '/ast-explorer', '/security', '/user-management', '/state-machine', '/capacity-estimator', '/memory-profiler', '/module-federation', '/whiteboard', '/webrtc-lab', '/local-first', '/search-engine', '/design-system', '/i18n-lab', '/sdui-lab', '/web-components', '/protocols', '/css-pipeline', '/wasm-lab', '/visualizer', '/profiler', '/resume-optimizer', '/compensation'].some(p => isActive(p))
   const isMockActive = ['/mock-interview', '/video-mock', '/behavioral', '/peer-room'].some(p => isActive(p))
+  const isMachineCodingActive = isActive('/machine-coding') || isActive('/machine-level-coding')
 
   // Close dropdown on navigation
   useEffect(() => {
@@ -121,13 +122,14 @@ export default function Header() {
 
               {/* 1. Direct Questions Bank Link */}
               <Link to="/questions" className={`nav-link ${isActive('/questions') ? 'active' : ''}`}>
-                Questions (22K)
+                Questions
                 {!hasQuestionsFull && <span className="nav-lock-tag">🔒</span>}
               </Link>
 
-              {/* 2. Direct Coding Challenges Link */}
-              <Link to="/coding" className={`nav-link ${isActive('/coding') ? 'active' : ''}`}>
-                Coding
+              {/* 2. Direct Machine Coding Masterclass Link */}
+              <Link to="/machine-coding" className={`nav-link nav-link-mc ${isMachineCodingActive ? 'active' : ''}`}>
+                <span className="mc-nav-glow-dot"></span>
+                Machine Coding
                 {!hasCodingSandbox && <span className="nav-lock-tag">🔒</span>}
               </Link>
 
@@ -423,6 +425,17 @@ export default function Header() {
                         {!hasCompilerStudios && <span className="drop-lock-tag">🔒 PRO</span>}
                       </span>
                       <span className="drop-desc">Screen reader simulator &amp; WCAG AAA tools</span>
+                    </div>
+                  </Link>
+
+                  <Link to="/coding" className={`mega-item ${isActive('/coding') ? 'active' : ''}`}>
+                    <span className="drop-icon">💻</span>
+                    <div>
+                      <span className="drop-title">
+                        Coding Sandbox &amp; Snippets
+                        {!hasCodingSandbox && <span className="drop-lock-tag">🔒 PRO</span>}
+                      </span>
+                      <span className="drop-desc">Interactive challenges &amp; code playground</span>
                     </div>
                   </Link>
 

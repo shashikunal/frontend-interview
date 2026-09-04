@@ -1,3 +1,4 @@
+import { lazy, Suspense } from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import Header from './components/layout/Header'
 import Footer from './components/layout/Footer'
@@ -46,6 +47,8 @@ import SearchEngineStudio from './components/searchengine/SearchEngineStudio'
 import UserProfile from './components/profile/UserProfile'
 import UserManagementStudio from './components/usermanagement/UserManagementStudio'
 import AdminDashboard from './components/dashboard/AdminDashboard'
+const MachineCodingStudio = lazy(() => import('./components/machinecoding/MachineCodingStudio'))
+const AnalyticsDashboard = lazy(() => import('./components/analytics/AnalyticsDashboard'))
 import RoleGuard from './components/auth/RoleGuard'
 import FeatureGuard from './components/auth/FeatureGuard'
 import { ProtectedRoute } from './features/auth'
@@ -60,8 +63,8 @@ export default function App() {
       <Header />
       <AuthModal />
       <main className="main-content">
-
-        <Routes>
+        <Suspense fallback={<div className="app-route-loader"><div className="app-route-spinner" /><p>Loading masterclass studio...</p></div>}>
+          <Routes>
           <Route path="/" element={<Home />} />
           <Route
             path="/profile"
@@ -96,6 +99,7 @@ export default function App() {
             }
           />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/analytics" element={<AnalyticsDashboard />} />
 
 
 
@@ -434,11 +438,24 @@ export default function App() {
               </FeatureGuard>
             }
           />
+          <Route
+            path="/machine-coding"
+            element={
+              <FeatureGuard feature="coding_sandbox" featureName="Machine-Level Coding Masterclass">
+                <MachineCodingStudio />
+              </FeatureGuard>
+            }
+          />
+          <Route
+            path="/machine-level-coding"
+            element={<Navigate to="/machine-coding" replace />}
+          />
 
           <Route path="/practice" element={<Navigate to="/questions" replace />} />
           <Route path="/practice/*" element={<Navigate to="/questions" replace />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
+        </Suspense>
       </main>
       <Footer />
     </div>

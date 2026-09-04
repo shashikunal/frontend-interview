@@ -41,7 +41,7 @@ export function ProtectedRoute({
           <button
             type="button"
             className="btn btn-primary"
-            onClick={openAuthModal}
+            onClick={() => openAuthModal()}
           >
             🔐 Sign In to Continue
           </button>

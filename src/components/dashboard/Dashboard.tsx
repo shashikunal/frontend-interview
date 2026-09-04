@@ -145,6 +145,9 @@ function CandidateDashboard() {
           </p>
         </div>
         <div className="dashboard-header-actions">
+          <Link to="/analytics" className="btn btn-primary btn-sm">
+            📊 Analytics
+          </Link>
           <Link to="/mock-interview" className="btn btn-primary btn-sm">
             ⏱️ Start Mock Interview
           </Link>
