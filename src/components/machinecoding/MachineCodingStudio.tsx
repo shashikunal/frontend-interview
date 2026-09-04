@@ -14,6 +14,123 @@ interface ConsoleLog {
   message: string;
 }
 
+const DEFAULT_STARTER_CSS = `/* Custom Stylesheet for Component */
+.container {
+  padding: 1rem;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: #1e293b;
+}
+
+button {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: 0.375rem;
+  border: 1px solid #cbd5e1;
+  background-color: #f8fafc;
+  color: #0f172a;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+button:hover {
+  background-color: #f1f5f9;
+  border-color: #94a3b8;
+}
+
+input, select, textarea {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  border-radius: 0.375rem;
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  color: #0f172a;
+  outline: none;
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+}
+`;
+
+const FILE_PRESETS = [
+  {
+    name: 'styles.css',
+    icon: '🎨',
+    desc: 'CSS Stylesheet (injected into live sandbox)',
+    template: DEFAULT_STARTER_CSS,
+  },
+  {
+    name: 'mockData.ts',
+    icon: '📋',
+    desc: 'Mock data arrays, API fixtures & models',
+    template: `// Mock data definitions
+export interface Item {
+  id: string;
+  name: string;
+  category: string;
+  value: number;
+}
+
+export const MOCK_ITEMS: Item[] = [
+  { id: '1', name: 'Item Alpha', category: 'Frontend', value: 120 },
+  { id: '2', name: 'Item Beta', category: 'Backend', value: 85 },
+  { id: '3', name: 'Item Gamma', category: 'Design', value: 240 },
+];
+`,
+  },
+  {
+    name: 'types.ts',
+    icon: '🏷️',
+    desc: 'TypeScript interfaces and type declarations',
+    template: `// Common TypeScript types & interfaces
+export type Status = 'idle' | 'loading' | 'success' | 'error';
+
+export interface BaseEntity {
+  id: string;
+  createdAt: number;
+  updatedAt: number;
+}
+`,
+  },
+  {
+    name: 'utils.ts',
+    icon: '⚙️',
+    desc: 'Helper algorithms, formatting & debounce tools',
+    template: `// Utility functions
+export function debounce<T extends (...args: any[]) => any>(fn: T, delayMs: number) {
+  let timer: any;
+  return (...args: Parameters<T>) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => fn(...args), delayMs);
+  };
+}
+
+export function formatCurrency(val: number): string {
+  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(val);
+}
+`,
+  },
+];
+
+const getEditorLanguage = (fileName: string): string => {
+  if (fileName.endsWith('.css')) return 'css';
+  if (fileName.endsWith('.json')) return 'json';
+  if (fileName.endsWith('.html')) return 'html';
+  if (fileName.endsWith('.ts') || fileName.endsWith('.tsx')) return 'typescript';
+  return 'javascript';
+};
+
+const getFileIcon = (fileName: string): string => {
+  if (fileName.endsWith('.css')) return '🎨';
+  if (fileName.endsWith('.json')) return '📋';
+  if (fileName.endsWith('.html')) return '🌐';
+  if (fileName.endsWith('.tsx') || fileName.endsWith('.jsx')) return '⚛️';
+  if (fileName.endsWith('.ts') || fileName.endsWith('.js')) return '📄';
+  return '📄';
+};
+
 export default function MachineCodingStudio() {
   const [searchParams, setSearchParams] = useSearchParams();
   const activeId = searchParams.get('id');
@@ -57,6 +174,20 @@ export default function MachineCodingStudio() {
       return {};
     }
   });
+
+  // Multi-file project workspace state
+  const [files, setFiles] = useState<Record<string, string>>({ 'App.tsx': '' });
+  const [activeFileName, setActiveFileName] = useState<string>('App.tsx');
+  const [multiFilesMap, setMultiFilesMap] = useState<Record<string, Record<string, string>>>(() => {
+    try {
+      const saved = localStorage.getItem('mc_multi_files_v2');
+      return saved ? JSON.parse(saved) : {};
+    } catch {
+      return {};
+    }
+  });
+  const [showAddFileModal, setShowAddFileModal] = useState(false);
+  const [newFileNameInput, setNewFileNameInput] = useState('');
 
   // Monaco Diff Editor State
   const [editorViewMode, setEditorViewMode] = useState<'code' | 'diff'>('code');
@@ -136,13 +267,30 @@ export default function MachineCodingStudio() {
     if (activeQuestion) {
       setTestResults(null);
       setIsRunningTests(false);
-      const savedCode = userCodeMap[activeQuestion.id];
-      const initial = savedCode || activeQuestion.starterCode;
-      setCurrentCode(initial);
-      if (editorRef.current) {
-        editorRef.current.setValue(initial);
+
+      let questionFiles = multiFilesMap[activeQuestion.id];
+      if (!questionFiles) {
+        const legacyCode = userCodeMap[activeQuestion.id] || activeQuestion.starterCode;
+        questionFiles = {
+          'App.tsx': legacyCode,
+          'styles.css': DEFAULT_STARTER_CSS,
+        };
+      } else {
+        questionFiles = { ...questionFiles };
       }
-      executeCode(initial);
+
+      if (!questionFiles['App.tsx']) {
+        questionFiles['App.tsx'] = activeQuestion.starterCode;
+      }
+
+      setFiles(questionFiles);
+      setActiveFileName('App.tsx');
+      const initialCode = questionFiles['App.tsx'];
+      setCurrentCode(initialCode);
+      if (editorRef.current) {
+        editorRef.current.setValue(initialCode);
+      }
+      executeCode(questionFiles);
     }
   }, [activeQuestion?.id]);
 
@@ -181,6 +329,22 @@ export default function MachineCodingStudio() {
     return () => window.removeEventListener('message', handleMessage);
   }, [activeQuestion, solvedMap]);
 
+  // Keyboard Shortcuts: Ctrl+Enter (Run Tests), Ctrl+S (Save Draft)
+  useEffect(() => {
+    if (!activeQuestion) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        e.preventDefault();
+        handleRunTests();
+      } else if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        e.preventDefault();
+        showToast('💾 Project draft saved to local workspace!');
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [activeQuestion?.id, files, activeFileName]);
+
   // Interview Timer Countdown Effect
   useEffect(() => {
     if (!isInterviewActive) return;
@@ -201,15 +365,16 @@ export default function MachineCodingStudio() {
     return () => clearInterval(timer);
   }, [isInterviewActive, interviewDuration, activeQuestion, currentCode]);
 
-  // Code Execution via buildReactSrcDoc
-  const executeCode = async (codeToRun: string) => {
+  // Code Execution via buildReactSrcDoc with multi-file support
+  const executeCode = async (filesToRun?: Record<string, string>) => {
+    const targetFiles = filesToRun || files;
     setIsCompiling(true);
     setConsoleLogs([]);
     const nextRunId = runId + 1;
     setRunId(nextRunId);
 
     try {
-      const srcDoc = await buildReactSrcDoc({ 'App.jsx': codeToRun }, 'App.jsx', nextRunId);
+      const srcDoc = await buildReactSrcDoc(targetFiles, 'App.tsx', nextRunId);
       setPreviewSrcDoc(srcDoc);
     } catch (err: any) {
       console.error(err);
@@ -219,14 +384,83 @@ export default function MachineCodingStudio() {
     }
   };
 
+  const handleSelectFile = (fileName: string) => {
+    if (fileName === activeFileName) return;
+    setActiveFileName(fileName);
+    const content = files[fileName] ?? '';
+    setCurrentCode(content);
+    if (editorRef.current) {
+      editorRef.current.setValue(content);
+    }
+  };
+
+  const handleAddFile = (name: string, template = '') => {
+    const trimmed = name.trim();
+    if (!trimmed) return;
+    if (files[trimmed]) {
+      showToast(`⚠️ File "${trimmed}" already exists!`);
+      handleSelectFile(trimmed);
+      setShowAddFileModal(false);
+      return;
+    }
+    const updatedFiles = { ...files, [trimmed]: template };
+    setFiles(updatedFiles);
+    setActiveFileName(trimmed);
+    setCurrentCode(template);
+    if (editorRef.current) {
+      editorRef.current.setValue(template);
+    }
+    if (activeQuestion) {
+      setMultiFilesMap(prev => {
+        const updated = { ...prev, [activeQuestion.id]: updatedFiles };
+        try {
+          localStorage.setItem('mc_multi_files_v2', JSON.stringify(updated));
+        } catch (_) {}
+        return updated;
+      });
+    }
+    setShowAddFileModal(false);
+    setNewFileNameInput('');
+    showToast(`✓ Created file "${trimmed}"!`);
+    executeCode(updatedFiles);
+  };
+
+  const handleDeleteFile = (name: string) => {
+    if (name === 'App.tsx') {
+      showToast('⚠️ App.tsx is the primary entrypoint and cannot be deleted.');
+      return;
+    }
+    const { [name]: _, ...rest } = files;
+    setFiles(rest);
+    if (activeFileName === name) {
+      setActiveFileName('App.tsx');
+      const fallbackCode = rest['App.tsx'] || '';
+      setCurrentCode(fallbackCode);
+      if (editorRef.current) {
+        editorRef.current.setValue(fallbackCode);
+      }
+    }
+    if (activeQuestion) {
+      setMultiFilesMap(prev => {
+        const updated = { ...prev, [activeQuestion.id]: rest };
+        try {
+          localStorage.setItem('mc_multi_files_v2', JSON.stringify(updated));
+        } catch (_) {}
+        return updated;
+      });
+    }
+    showToast(`Deleted file "${name}"`);
+    executeCode(rest);
+  };
+
   const handleRunTests = async () => {
     if (!activeQuestion) return;
     setIsRunningTests(true);
     setActiveTab('tests');
     const tests = getQuestionTestCases(activeQuestion);
 
-    // Make sure latest code is compiled and mounted
-    await executeCode(currentCode);
+    // Make sure latest multi-file code is compiled and mounted
+    await executeCode(files);
 
     // Wait a brief tick for iframe DOM to mount, then trigger test execution
     setTimeout(() => {
@@ -236,12 +470,12 @@ export default function MachineCodingStudio() {
     }, 250);
   };
 
-  const runTestsAsync = async (codeToTest: string): Promise<MCTestResult[]> => {
+  const runTestsAsync = async (filesToTest?: Record<string, string>): Promise<MCTestResult[]> => {
     if (!activeQuestion) return [];
     setIsRunningTests(true);
     setActiveTab('tests');
 
-    await executeCode(codeToTest);
+    await executeCode(filesToTest || files);
 
     return new Promise((resolve) => {
       testResultResolverRef.current = resolve;
@@ -283,7 +517,7 @@ export default function MachineCodingStudio() {
     setInterviewFinished(true);
     showToast('🏁 Round submitted! Generating candidate evaluation scorecard...');
 
-    const results = await runTestsAsync(currentCode);
+    const results = await runTestsAsync(files);
     const passed = results.filter(r => r.status === 'passed').length;
     const total = results.length;
     const timeSpent = Math.max(1, interviewDuration - Math.max(0, interviewTimeLeft));
@@ -302,14 +536,27 @@ export default function MachineCodingStudio() {
   const handleCodeChange = (val?: string) => {
     const nextVal = val ?? '';
     setCurrentCode(nextVal);
+    const updatedFiles = { ...files, [activeFileName]: nextVal };
+    setFiles(updatedFiles);
+
     if (activeQuestion) {
-      setUserCodeMap(prev => {
-        const updated = { ...prev, [activeQuestion.id]: nextVal };
+      setMultiFilesMap(prev => {
+        const updated = { ...prev, [activeQuestion.id]: updatedFiles };
         try {
-          localStorage.setItem('mc_code_drafts_v1', JSON.stringify(updated));
+          localStorage.setItem('mc_multi_files_v2', JSON.stringify(updated));
         } catch (_) {}
         return updated;
       });
+
+      if (activeFileName === 'App.tsx') {
+        setUserCodeMap(prev => {
+          const updated = { ...prev, [activeQuestion.id]: nextVal };
+          try {
+            localStorage.setItem('mc_code_drafts_v1', JSON.stringify(updated));
+          } catch (_) {}
+          return updated;
+        });
+      }
     }
   };
 
@@ -320,11 +567,22 @@ export default function MachineCodingStudio() {
       return;
     }
     const sol = activeQuestion.solutionCode;
-    setCurrentCode(sol);
-    if (editorRef.current) {
-      editorRef.current.setValue(sol);
+    const updatedFiles = { ...files, 'App.tsx': sol };
+    setFiles(updatedFiles);
+    if (activeFileName === 'App.tsx') {
+      setCurrentCode(sol);
+      if (editorRef.current) {
+        editorRef.current.setValue(sol);
+      }
     }
-    executeCode(sol);
+    executeCode(updatedFiles);
+    setMultiFilesMap(prev => {
+      const updated = { ...prev, [activeQuestion.id]: updatedFiles };
+      try {
+        localStorage.setItem('mc_multi_files_v2', JSON.stringify(updated));
+      } catch (_) {}
+      return updated;
+    });
     setUserCodeMap(prev => {
       const updated = { ...prev, [activeQuestion.id]: sol };
       try {
@@ -332,17 +590,30 @@ export default function MachineCodingStudio() {
       } catch (_) {}
       return updated;
     });
-    showToast('✓ Reference solution loaded into editor & executed!');
+    showToast('✓ Reference solution loaded into App.tsx & executed!');
   };
 
   const handleResetStarter = () => {
     if (!activeQuestion) return;
     const starter = activeQuestion.starterCode;
+    const resetFiles: Record<string, string> = {
+      'App.tsx': starter,
+      'styles.css': DEFAULT_STARTER_CSS,
+    };
+    setFiles(resetFiles);
+    setActiveFileName('App.tsx');
     setCurrentCode(starter);
     if (editorRef.current) {
       editorRef.current.setValue(starter);
     }
-    executeCode(starter);
+    executeCode(resetFiles);
+    setMultiFilesMap(prev => {
+      const updated = { ...prev, [activeQuestion.id]: resetFiles };
+      try {
+        localStorage.setItem('mc_multi_files_v2', JSON.stringify(updated));
+      } catch (_) {}
+      return updated;
+    });
     setUserCodeMap(prev => {
       const updated = { ...prev, [activeQuestion.id]: starter };
       try {
@@ -350,7 +621,7 @@ export default function MachineCodingStudio() {
       } catch (_) {}
       return updated;
     });
-    showToast('↺ Code reset to initial challenge template!');
+    showToast('↺ Project files reset to initial challenge template!');
   };
 
   const selectQuestion = (id: string) => {
@@ -540,7 +811,7 @@ export default function MachineCodingStudio() {
 
             <button
               className="mc-action-btn mc-btn-run"
-              onClick={() => executeCode(currentCode)}
+              onClick={() => executeCode(files)}
               disabled={isCompiling}
             >
               {isCompiling ? 'Compiling...' : '▶ Run Live'}
@@ -845,8 +1116,42 @@ export default function MachineCodingStudio() {
               {/* Editor */}
               <div className="mc-editor-container">
                 <div className="mc-panel-header">
+                  <div className="mc-file-tabs-bar">
+                    {Object.keys(files).map(fileName => (
+                      <div
+                        key={fileName}
+                        className={`mc-file-tab ${fileName === activeFileName ? 'active' : ''}`}
+                        onClick={() => handleSelectFile(fileName)}
+                        title={`Switch to ${fileName}`}
+                      >
+                        <span className="mc-file-icon">{getFileIcon(fileName)}</span>
+                        <span className="mc-file-name">{fileName}</span>
+                        {fileName !== 'App.tsx' && (
+                          <button
+                            type="button"
+                            className="mc-file-close-btn"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeleteFile(fileName);
+                            }}
+                            title={`Delete ${fileName}`}
+                          >
+                            ×
+                          </button>
+                        )}
+                      </div>
+                    ))}
+                    <button
+                      type="button"
+                      className="mc-add-file-btn"
+                      onClick={() => setShowAddFileModal(true)}
+                      title="Add new file to workspace (styles.css, mockData.ts, types.ts)"
+                    >
+                      + New File
+                    </button>
+                  </div>
+
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span>💻 App.jsx</span>
                     <div className="mc-editor-mode-toggle">
                       <button
                         className={`mc-toggle-pill ${editorViewMode === 'code' ? 'active' : ''}`}
@@ -870,8 +1175,10 @@ export default function MachineCodingStudio() {
                       </button>
                     </div>
                   </div>
+                </div>
 
-                  {editorViewMode === 'diff' ? (
+                {editorViewMode === 'diff' && (
+                  <div className="mc-panel-header" style={{ borderTop: 'none', background: '#161b22', justifyContent: 'flex-end' }}>
                     <div className="mc-diff-header-controls">
                       <select
                         className="mc-diff-target-select"
@@ -907,10 +1214,8 @@ export default function MachineCodingStudio() {
                         ✕ Close Diff
                       </button>
                     </div>
-                  ) : (
-                    <span style={{ fontSize: '11px', color: '#64748b' }}>Babel Standalone compiler</span>
-                  )}
-                </div>
+                  </div>
+                )}
 
                 <div className="mc-monaco-wrapper">
                   {editorViewMode === 'diff' ? (
@@ -919,7 +1224,7 @@ export default function MachineCodingStudio() {
                         <div className="mc-diff-legend-col">
                           <span className="mc-diff-tag original">ORIGINAL</span>
                           <span style={{ fontWeight: '600', fontSize: '12px', color: 'var(--text-primary)' }}>
-                            👤 Your Implementation
+                            👤 Your Implementation ({activeFileName})
                           </span>
                         </div>
                         <div className="mc-diff-legend-col">
@@ -932,10 +1237,10 @@ export default function MachineCodingStudio() {
                       <div style={{ flex: 1, minHeight: 0 }}>
                         <DiffEditor
                           height="100%"
-                          language="javascript"
+                          language={getEditorLanguage(activeFileName)}
                           theme={resolvedTheme === 'light' ? 'light' : 'vs-dark'}
                           original={currentCode}
-                          modified={diffTarget === 'solution' ? activeQuestion.solutionCode : activeQuestion.starterCode}
+                          modified={diffTarget === 'solution' ? (activeFileName === 'App.tsx' ? activeQuestion.solutionCode : '') : (activeFileName === 'App.tsx' ? activeQuestion.starterCode : '')}
                           options={{
                             readOnly: true,
                             renderSideBySide: diffSideBySide,
@@ -951,7 +1256,7 @@ export default function MachineCodingStudio() {
                   ) : (
                     <Editor
                       height="100%"
-                      defaultLanguage="javascript"
+                      language={getEditorLanguage(activeFileName)}
                       theme={resolvedTheme === 'light' ? 'light' : 'vs-dark'}
                       value={currentCode}
                       onChange={handleCodeChange}
@@ -976,7 +1281,7 @@ export default function MachineCodingStudio() {
                 <div className="mc-panel-header">
                   <span>⚡ Interactive Execution Sandbox</span>
                   <button
-                    onClick={() => executeCode(currentCode)}
+                    onClick={() => executeCode(files)}
                     style={{ background: 'none', border: 'none', color: '#38bdf8', cursor: 'pointer', fontSize: '11px' }}
                   >
                     ⟳ Refresh
@@ -1041,6 +1346,79 @@ export default function MachineCodingStudio() {
               handleStartInterview(interviewDuration);
             }}
           />
+        )}
+
+        {/* Add New File Modal */}
+        {showAddFileModal && (
+          <div className="mc-file-modal-overlay" onClick={() => setShowAddFileModal(false)}>
+            <div className="mc-file-modal-card" onClick={e => e.stopPropagation()}>
+              <div className="mc-file-modal-header">
+                <h3>📂 Add File to Workspace</h3>
+                <button
+                  type="button"
+                  className="mc-file-modal-close"
+                  onClick={() => setShowAddFileModal(false)}
+                >
+                  ✕
+                </button>
+              </div>
+              <p style={{ margin: '0 0 12px', fontSize: '12px', color: '#94a3b8' }}>
+                Choose a starter template or create a custom file for styles, mock data, or types.
+              </p>
+
+              <div className="mc-file-presets-grid">
+                {FILE_PRESETS.map(preset => {
+                  const alreadyExists = !!files[preset.name];
+                  return (
+                    <button
+                      key={preset.name}
+                      type="button"
+                      className="mc-file-preset-card"
+                      style={{ opacity: alreadyExists ? 0.5 : 1, cursor: alreadyExists ? 'default' : 'pointer' }}
+                      onClick={() => {
+                        if (!alreadyExists) {
+                          handleAddFile(preset.name, preset.template);
+                        } else {
+                          handleSelectFile(preset.name);
+                          setShowAddFileModal(false);
+                        }
+                      }}
+                    >
+                      <span className="mc-preset-icon">{preset.icon}</span>
+                      <div>
+                        <div className="mc-preset-title">{preset.name} {alreadyExists ? '(Open)' : ''}</div>
+                        <div className="mc-preset-desc">{preset.desc}</div>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+
+              <form
+                className="mc-custom-file-form"
+                onSubmit={e => {
+                  e.preventDefault();
+                  handleAddFile(newFileNameInput, '// Custom module\n');
+                }}
+              >
+                <input
+                  type="text"
+                  className="mc-custom-file-input"
+                  placeholder="Custom filename (e.g. helpers.ts, constants.ts)"
+                  value={newFileNameInput}
+                  onChange={e => setNewFileNameInput(e.target.value)}
+                  autoFocus
+                />
+                <button
+                  type="submit"
+                  className="mc-custom-file-btn"
+                  disabled={!newFileNameInput.trim()}
+                >
+                  Create File
+                </button>
+              </form>
+            </div>
+          </div>
         )}
       </div>
     );

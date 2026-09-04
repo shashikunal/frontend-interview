@@ -174,18 +174,18 @@ async function loadBabel() {
   return babel
 }
 
-function transformJsx(source: string): string {
+function transformJsx(source: string, filename = 'App.tsx'): string {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const result = (babel as any).transform(source, {
-    filename: 'App.jsx',
-    presets: [['react', { runtime: 'classic' }]],
+    filename,
+    presets: [['react', { runtime: 'classic' }], 'typescript'],
   })
   // The output is evaluated inside new Function(), so ESM syntax must be removed.
   return (result.code as string)
     .replace(/^\s*import[\s\S]*?from\s*['"][^'"]*['"];?[ \t]*$/gm, '')
     .replace(/^\s*import\s*['"][^'"]*['"];?[ \t]*$/gm, '')
     .replace(/^\s*export\s+default\s+/gm, '')
-    .replace(/^\s*export\s+(?=(const|let|var|function|class)\b)/gm, '')
+    .replace(/^\s*export\s+(?=(const|let|var|function|class|type|interface)\b)/gm, '')
 }
 
 const REACT_VERSION = '19.2.0'
@@ -242,9 +242,26 @@ function collectFree(raw: string): string[] {
 
 export async function buildReactSrcDoc(files: Files, entryFile: string, runId: number): Promise<string> {
   await loadBabel()
-  const raw = files[entryFile] ?? ''
+  const resolvedEntry = files[entryFile] !== undefined
+    ? entryFile
+    : Object.keys(files).find(k => k.startsWith('App.')) || Object.keys(files)[0] || entryFile
+  const raw = files[resolvedEntry] ?? ''
   const head = REACT_STUB + '\n' + `const { ${REACT_APIS} } = React;\n`
-  const body = transformJsx(raw)
+
+  // Compile all non-entry helper modules (utils.ts, mockData.ts, etc.)
+  const helperCodes = Object.entries(files)
+    .filter(([name]) => name !== resolvedEntry && !name.endsWith('.css') && !name.endsWith('.html'))
+    .map(([name, content]) => {
+      if (name.endsWith('.json')) {
+        const varName = name.replace(/\.json$/, '').replace(/[^a-zA-Z0-9_$]/g, '_')
+        return `const ${varName} = ${content.trim() || '{}'};`
+      }
+      return transformJsx(content, name)
+    })
+    .join('\n\n')
+
+  const body = (helperCodes ? helperCodes + '\n\n' : '') + transformJsx(raw, resolvedEntry)
+
 
   const definesApp = /\b(function|const|let|var|class)\s+App\b/.test(raw)
   const callsRender = /createRoot|ReactDOM\.render|\brender\(/.test(raw)

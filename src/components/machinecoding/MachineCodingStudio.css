@@ -1346,3 +1346,253 @@
   margin-bottom: 0;
   border-left: 4px solid var(--accent);
 }
+
+/* ── Multi-File Project Workspace Tab Bar ───────────────── */
+.mc-file-tabs-bar {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 0 4px;
+  overflow-x: auto;
+  user-select: none;
+  scrollbar-width: thin;
+}
+
+.mc-file-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  font-size: 11.5px;
+  font-family: var(--font-mono, monospace);
+  color: var(--text-muted);
+  background: transparent;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.mc-file-tab:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.mc-file-tab.active {
+  color: var(--text-primary);
+  background: var(--code-bg);
+  border-bottom-color: #6366f1;
+  font-weight: 600;
+}
+
+.mc-file-icon {
+  font-size: 12px;
+}
+
+.mc-file-name {
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mc-file-close-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 11px;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  margin-left: 3px;
+  opacity: 0.6;
+  transition: opacity 0.15s, background 0.15s, color 0.15s;
+}
+
+.mc-file-close-btn:hover {
+  opacity: 1;
+  background: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+}
+
+.mc-add-file-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #38bdf8;
+  background: rgba(56, 189, 248, 0.08);
+  border: 1px dashed rgba(56, 189, 248, 0.35);
+  border-radius: 4px;
+  cursor: pointer;
+  margin-left: 6px;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.mc-add-file-btn:hover {
+  background: rgba(56, 189, 248, 0.18);
+  border-color: #38bdf8;
+  color: #7dd3fc;
+}
+
+/* ── Add File Modal ─────────────────────────────────────── */
+.mc-file-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  animation: mcFadeIn 0.2s ease;
+}
+
+.mc-file-modal-card {
+  background: #1e2430;
+  border: 1px solid #334155;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 460px;
+  padding: 24px;
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.6);
+  color: #f8fafc;
+  animation: mcScaleIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes mcFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes mcScaleIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.mc-file-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.mc-file-modal-header h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: #f8fafc;
+}
+
+.mc-file-modal-close {
+  background: none;
+  border: none;
+  color: #94a3b8;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  line-height: 1;
+}
+
+.mc-file-modal-close:hover {
+  color: #f8fafc;
+  background: #334155;
+}
+
+.mc-file-presets-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin: 14px 0 18px;
+}
+
+.mc-file-preset-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 12px;
+  background: #0f172a;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.15s ease;
+}
+
+.mc-file-preset-card:hover {
+  border-color: #6366f1;
+  background: #1e1b4b;
+  transform: translateY(-1px);
+}
+
+.mc-preset-icon {
+  font-size: 18px;
+  line-height: 1;
+}
+
+.mc-preset-title {
+  font-weight: 600;
+  font-size: 12.5px;
+  color: #f8fafc;
+  font-family: var(--font-mono, monospace);
+  margin-bottom: 2px;
+}
+
+.mc-preset-desc {
+  font-size: 10.5px;
+  color: #94a3b8;
+  line-height: 1.3;
+}
+
+.mc-custom-file-form {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.mc-custom-file-input {
+  flex: 1;
+  padding: 8px 12px;
+  background: #0f172a;
+  border: 1px solid #334155;
+  border-radius: 6px;
+  color: #f8fafc;
+  font-size: 12.5px;
+  font-family: var(--font-mono, monospace);
+  outline: none;
+}
+
+.mc-custom-file-input:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.25);
+}
+
+.mc-custom-file-btn {
+  padding: 8px 14px;
+  background: #6366f1;
+  border: none;
+  border-radius: 6px;
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 12px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s;
+}
+
+.mc-custom-file-btn:hover {
+  background: #4f46e5;
+}
+
