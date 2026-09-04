@@ -243,6 +243,15 @@ export default function MachineCodingStudio() {
   const handleFormatCodeRef = useRef<() => void>(() => {});
   const handleSaveAndFormatRef = useRef<() => void>(() => {});
 
+  // Command Palette & Quick Switcher State
+  const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
+  const [paletteSearchQuery, setPaletteSearchQuery] = useState('');
+  const [paletteCategoryFilter, setPaletteCategoryFilter] = useState('All');
+  const [paletteDifficultyFilter, setPaletteDifficultyFilter] = useState('All');
+  const [paletteSelectedIndex, setPaletteSelectedIndex] = useState(0);
+  const paletteSearchInputRef = useRef<HTMLInputElement>(null);
+  const paletteListRef = useRef<HTMLDivElement>(null);
+
   // Resizable Panels & Fullscreen Layout State
   const [leftPanelWidth, setLeftPanelWidth] = useState<number>(() => {
     try {
@@ -892,9 +901,83 @@ export default function MachineCodingStudio() {
   handleFormatCodeRef.current = handleFormatCode;
   handleSaveAndFormatRef.current = handleSaveAndFormat;
 
+  // Filtered Questions for Command Palette Spotlight
+  const filteredPaletteQuestions = useMemo(() => {
+    return MACHINE_CODING_QUESTIONS.filter(q => {
+      const matchesCat = paletteCategoryFilter === 'All' || q.category === paletteCategoryFilter;
+      const matchesDiff = paletteDifficultyFilter === 'All' || q.difficulty === paletteDifficultyFilter;
+      const query = paletteSearchQuery.trim().toLowerCase();
+      const matchesSearch = !query ||
+        q.title.toLowerCase().includes(query) ||
+        q.id.toLowerCase().includes(query) ||
+        q.category.toLowerCase().includes(query) ||
+        q.summary.toLowerCase().includes(query);
+      return matchesCat && matchesDiff && matchesSearch;
+    });
+  }, [paletteSearchQuery, paletteCategoryFilter, paletteDifficultyFilter]);
+
+  // Keep selection within bounds
+  useEffect(() => {
+    setPaletteSelectedIndex(0);
+  }, [paletteSearchQuery, paletteCategoryFilter, paletteDifficultyFilter]);
+
+  // Auto-focus input when palette opens
+  useEffect(() => {
+    if (isCommandPaletteOpen) {
+      setTimeout(() => {
+        paletteSearchInputRef.current?.focus();
+      }, 50);
+    }
+  }, [isCommandPaletteOpen]);
+
+  // Scroll active item into view
+  useEffect(() => {
+    if (isCommandPaletteOpen && paletteListRef.current) {
+      const selectedEl = paletteListRef.current.querySelector('.mc-palette-item.selected') as HTMLElement | null;
+      if (selectedEl) {
+        selectedEl.scrollIntoView({ block: 'nearest' });
+      }
+    }
+  }, [paletteSelectedIndex, isCommandPaletteOpen]);
+
   // Global Keyboard Shortcuts Listener
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      // Command Palette (Ctrl+K or Cmd+K)
+      if ((e.ctrlKey || e.metaKey) && (e.key === 'k' || e.key === 'K')) {
+        e.preventDefault();
+        setIsCommandPaletteOpen(prev => !prev);
+        return;
+      }
+
+      // If Command Palette is open, handle navigation keys
+      if (isCommandPaletteOpen) {
+        if (e.key === 'Escape') {
+          e.preventDefault();
+          setIsCommandPaletteOpen(false);
+          return;
+        }
+        if (e.key === 'ArrowDown') {
+          e.preventDefault();
+          setPaletteSelectedIndex(prev => Math.min(prev + 1, filteredPaletteQuestions.length - 1));
+          return;
+        }
+        if (e.key === 'ArrowUp') {
+          e.preventDefault();
+          setPaletteSelectedIndex(prev => Math.max(prev - 1, 0));
+          return;
+        }
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          const target = filteredPaletteQuestions[paletteSelectedIndex];
+          if (target) {
+            selectQuestion(target.id);
+            setIsCommandPaletteOpen(false);
+          }
+          return;
+        }
+      }
+
       // Escape: exit any fullscreen panel or close modals
       if (e.key === 'Escape') {
         if (showShortcutsModal) {
@@ -950,7 +1033,7 @@ export default function MachineCodingStudio() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [files, activeQuestion?.id, fullscreenPanel, showShortcutsModal, showSnapshotMenu, currentCode]);
+  }, [files, activeQuestion?.id, fullscreenPanel, showShortcutsModal, showSnapshotMenu, currentCode, isCommandPaletteOpen, filteredPaletteQuestions, paletteSelectedIndex]);
 
   const selectQuestion = (id: string) => {
     if (isInterviewActive) {
@@ -1009,6 +1092,16 @@ export default function MachineCodingStudio() {
           <div className="mc-topbar-left">
             <button className="mc-back-btn" onClick={closeStudio} title="Back to All Questions">
               ← Hub Directory
+            </button>
+
+            <button
+              type="button"
+              className="mc-btn-palette"
+              onClick={() => setIsCommandPaletteOpen(true)}
+              title="Quick Search & Switch Challenge across all 500 questions (Ctrl+K)"
+            >
+              <span>🔍 Quick Switch</span>
+              <span className="mc-btn-palette-kbd">Ctrl K</span>
             </button>
 
             <div className="mc-nav-arrows">
@@ -1863,10 +1956,14 @@ export default function MachineCodingStudio() {
                         editor.addCommand(monaco.KeyMod.Alt | monaco.KeyCode.KeyF, () => {
                           handleFormatCodeRef.current();
                         });
+                        editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyK, () => {
+                          setIsCommandPaletteOpen(prev => !prev);
+                        });
                         editor.addCommand(monaco.KeyCode.Escape, () => {
                           setFullscreenPanel('none');
                           setShowShortcutsModal(false);
                           setShowSnapshotMenu(false);
+                          setIsCommandPaletteOpen(false);
                         });
                       }}
                       options={{
@@ -2156,6 +2253,18 @@ export default function MachineCodingStudio() {
 
                 <div className="mc-shortcut-row">
                   <div className="mc-shortcut-info">
+                    <span className="mc-shortcut-name">Quick Switch Challenge (Spotlight)</span>
+                    <span className="mc-shortcut-desc">Instant fuzzy search across all 500 curriculum challenges</span>
+                  </div>
+                  <div className="mc-shortcut-keys">
+                    <kbd className="mc-kbd">Ctrl</kbd>
+                    <span style={{ color: '#64748b' }}>+</span>
+                    <kbd className="mc-kbd">K</kbd>
+                  </div>
+                </div>
+
+                <div className="mc-shortcut-row">
+                  <div className="mc-shortcut-info">
                     <span className="mc-shortcut-name">Shortcuts Cheat Sheet</span>
                     <span className="mc-shortcut-desc">Opens this shortcuts reference dialog</span>
                   </div>
@@ -2168,6 +2277,135 @@ export default function MachineCodingStudio() {
               <div className="mc-shortcuts-footer">
                 <span>💡 Press <kbd className="mc-kbd">Esc</kbd> anytime to dismiss</span>
                 <span>Works on Mac (use <kbd className="mc-kbd">⌘</kbd>) & Windows</span>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Command Palette & Quick Switcher Spotlight Modal (Ctrl+K) */}
+        {isCommandPaletteOpen && (
+          <div
+            className="mc-palette-overlay"
+            onClick={() => setIsCommandPaletteOpen(false)}
+          >
+            <div
+              className="mc-palette-modal"
+              onClick={e => e.stopPropagation()}
+            >
+              {/* Search Bar */}
+              <div className="mc-palette-search-box">
+                <span className="mc-palette-search-icon">🔍</span>
+                <input
+                  ref={paletteSearchInputRef}
+                  type="text"
+                  className="mc-palette-search-input"
+                  placeholder="Type problem name, ID (e.g. Q042), or topic..."
+                  value={paletteSearchQuery}
+                  onChange={(e) => setPaletteSearchQuery(e.target.value)}
+                />
+                <span className="mc-palette-count-badge">
+                  {filteredPaletteQuestions.length} matches
+                </span>
+              </div>
+
+              {/* Quick Filters */}
+              <div className="mc-palette-filters-bar">
+                {['All', 'State Management', 'Interactive UI', 'Custom Hooks', 'Async & Performance', 'Architecture'].map(cat => (
+                  <button
+                    key={cat}
+                    type="button"
+                    className={`mc-palette-filter-chip ${paletteCategoryFilter === cat ? 'active' : ''}`}
+                    onClick={() => setPaletteCategoryFilter(cat)}
+                  >
+                    {cat}
+                  </button>
+                ))}
+                <span style={{ color: 'rgba(255,255,255,0.15)', margin: '0 4px' }}>|</span>
+                {['All', 'Easy', 'Medium', 'Hard', 'Senior'].map(diff => (
+                  <button
+                    key={diff}
+                    type="button"
+                    className={`mc-palette-filter-chip ${paletteDifficultyFilter === diff ? 'active' : ''}`}
+                    onClick={() => setPaletteDifficultyFilter(diff)}
+                  >
+                    {diff}
+                  </button>
+                ))}
+              </div>
+
+              {/* Results List */}
+              <div className="mc-palette-results-list" ref={paletteListRef}>
+                {filteredPaletteQuestions.length === 0 ? (
+                  <div className="mc-palette-empty">
+                    No challenges found matching "{paletteSearchQuery}". Try another keyword or reset filters.
+                  </div>
+                ) : (
+                  filteredPaletteQuestions.slice(0, 100).map((q, idx) => {
+                    const isSelected = idx === paletteSelectedIndex;
+                    const isCurrent = q.id === activeQuestion.id;
+                    const isSolved = !!solvedMap[q.id];
+
+                    return (
+                      <div
+                        key={q.id}
+                        className={`mc-palette-item ${isSelected ? 'selected' : ''} ${isCurrent ? 'current' : ''}`}
+                        onMouseEnter={() => setPaletteSelectedIndex(idx)}
+                        onClick={() => {
+                          selectQuestion(q.id);
+                          setIsCommandPaletteOpen(false);
+                        }}
+                      >
+                        <div className="mc-palette-item-left">
+                          <span className="mc-palette-item-id">{q.id}</span>
+                          <div className="mc-palette-item-title-col">
+                            <div className="mc-palette-item-title">{q.title}</div>
+                            <div className="mc-palette-item-sub">
+                              <span>⏱️ {q.timeEstimate}</span>
+                              <span>•</span>
+                              <span>{q.category}</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="mc-palette-item-right">
+                          <span className={`mc-badge ${q.difficulty.toLowerCase()}`}>
+                            {q.difficulty}
+                          </span>
+                          {isSolved && (
+                            <span className="mc-palette-solved-pill" title="Completed">
+                              ✓ Solved
+                            </span>
+                          )}
+                          {isCurrent && (
+                            <span className="mc-palette-active-pill">
+                              Active
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+
+              {/* Footer */}
+              <div className="mc-palette-footer">
+                <div className="mc-palette-footer-hints">
+                  <span className="mc-palette-hint">
+                    <kbd className="mc-kbd">↑</kbd>
+                    <kbd className="mc-kbd">↓</kbd>
+                    <span>navigate</span>
+                  </span>
+                  <span className="mc-palette-hint">
+                    <kbd className="mc-kbd">↵</kbd>
+                    <span>jump to problem</span>
+                  </span>
+                  <span className="mc-palette-hint">
+                    <kbd className="mc-kbd">Esc</kbd>
+                    <span>dismiss</span>
+                  </span>
+                </div>
+                <span>500 Curriculum Challenges</span>
               </div>
             </div>
           </div>
