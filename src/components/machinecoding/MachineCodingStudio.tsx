@@ -224,6 +224,77 @@ export default function MachineCodingStudio() {
   const [newTestDesc, setNewTestDesc] = useState('');
   const [newTestAssertion, setNewTestAssertion] = useState('');
 
+  // Resizable Panels & Fullscreen Layout State
+  const [leftPanelWidth, setLeftPanelWidth] = useState<number>(() => {
+    try {
+      const saved = localStorage.getItem('mc_panel_left_w');
+      return saved ? Number(saved) : 420;
+    } catch {
+      return 420;
+    }
+  });
+  const [editorWidthPct, setEditorWidthPct] = useState<number>(() => {
+    try {
+      const saved = localStorage.getItem('mc_panel_editor_pct');
+      return saved ? Number(saved) : 52;
+    } catch {
+      return 52;
+    }
+  });
+  const [fullscreenPanel, setFullscreenPanel] = useState<'none' | 'specs' | 'editor' | 'preview'>('none');
+  const [isDraggingLeft, setIsDraggingLeft] = useState(false);
+  const [isDraggingEditor, setIsDraggingEditor] = useState(false);
+  const rightPanelRef = useRef<HTMLDivElement>(null);
+
+  // Dragging Mouse Event Listeners for Resizable Panels
+  useEffect(() => {
+    if (!isDraggingLeft && !isDraggingEditor) return;
+
+    const handleMouseMove = (e: MouseEvent) => {
+      if (isDraggingLeft) {
+        const minW = 240;
+        const maxW = Math.max(300, window.innerWidth - 420);
+        const nextW = Math.max(minW, Math.min(maxW, e.clientX));
+        setLeftPanelWidth(nextW);
+        try {
+          localStorage.setItem('mc_panel_left_w', String(nextW));
+        } catch (_) {}
+      } else if (isDraggingEditor && rightPanelRef.current) {
+        const rect = rightPanelRef.current.getBoundingClientRect();
+        if (rect.width > 0) {
+          const pct = Math.round(((e.clientX - rect.left) / rect.width) * 100);
+          const clamped = Math.max(20, Math.min(80, pct));
+          setEditorWidthPct(clamped);
+          try {
+            localStorage.setItem('mc_panel_editor_pct', String(clamped));
+          } catch (_) {}
+        }
+      }
+    };
+
+    const handleMouseUp = () => {
+      setIsDraggingLeft(false);
+      setIsDraggingEditor(false);
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+      if (editorRef.current && typeof editorRef.current.layout === 'function') {
+        editorRef.current.layout();
+      }
+    };
+
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+    };
+  }, [isDraggingLeft, isDraggingEditor]);
+
   // Timed Interview Simulator State
   const [isInterviewActive, setIsInterviewActive] = useState(false);
   const [interviewDuration, setInterviewDuration] = useState(45 * 60); // default 45 mins
@@ -932,31 +1003,49 @@ export default function MachineCodingStudio() {
         {/* Split screen body */}
         <div className="mc-split-body">
           {/* Left panel: Specifications & Checklist */}
-          <div className="mc-spec-panel">
+          <div
+            className="mc-spec-panel"
+            style={{
+              width: fullscreenPanel === 'specs' ? '100%' : `${leftPanelWidth}px`,
+              display: (fullscreenPanel === 'editor' || fullscreenPanel === 'preview') ? 'none' : 'flex',
+              flex: fullscreenPanel === 'specs' ? 1 : undefined,
+              borderRight: fullscreenPanel === 'specs' ? 'none' : undefined,
+            }}
+          >
             <div className="mc-spec-tabs">
+              <div className="mc-spec-tabs-list">
+                <button
+                  className={`mc-spec-tab ${activeTab === 'specs' ? 'active' : ''}`}
+                  onClick={() => setActiveTab('specs')}
+                >
+                  Problem Specs
+                </button>
+                <button
+                  className={`mc-spec-tab ${activeTab === 'tips' ? 'active' : ''}`}
+                  onClick={() => setActiveTab('tips')}
+                >
+                  Interviewer Rubric
+                </button>
+                <button
+                  className={`mc-spec-tab ${activeTab === 'solution' ? 'active' : ''} ${isInterviewActive ? 'locked' : ''}`}
+                  onClick={() => setActiveTab('solution')}
+                >
+                  {isInterviewActive ? '🔒 Solution (Locked)' : 'Solution Code'}
+                </button>
+                <button
+                  className={`mc-spec-tab ${activeTab === 'tests' ? 'active' : ''}`}
+                  onClick={() => setActiveTab('tests')}
+                >
+                  🧪 Test Cases {testResults ? `(${testResults.filter(r => r.status === 'passed').length}/${testResults.length})` : ''}
+                </button>
+              </div>
               <button
-                className={`mc-spec-tab ${activeTab === 'specs' ? 'active' : ''}`}
-                onClick={() => setActiveTab('specs')}
+                type="button"
+                className={`mc-panel-tool-btn ${fullscreenPanel === 'specs' ? 'active' : ''}`}
+                onClick={() => setFullscreenPanel(prev => prev === 'specs' ? 'none' : 'specs')}
+                title={fullscreenPanel === 'specs' ? 'Restore panel size' : 'Expand Problem Specs to fullscreen'}
               >
-                Problem Specs
-              </button>
-              <button
-                className={`mc-spec-tab ${activeTab === 'tips' ? 'active' : ''}`}
-                onClick={() => setActiveTab('tips')}
-              >
-                Interviewer Rubric
-              </button>
-              <button
-                className={`mc-spec-tab ${activeTab === 'solution' ? 'active' : ''} ${isInterviewActive ? 'locked' : ''}`}
-                onClick={() => setActiveTab('solution')}
-              >
-                {isInterviewActive ? '🔒 Solution (Locked)' : 'Solution Code'}
-              </button>
-              <button
-                className={`mc-spec-tab ${activeTab === 'tests' ? 'active' : ''}`}
-                onClick={() => setActiveTab('tests')}
-              >
-                🧪 Test Cases {testResults ? `(${testResults.filter(r => r.status === 'passed').length}/${testResults.length})` : ''}
+                {fullscreenPanel === 'specs' ? '⤓ Restore' : '⛶ Fullscreen'}
               </button>
             </div>
 
@@ -1284,11 +1373,38 @@ export default function MachineCodingStudio() {
             </div>
           </div>
 
+          {/* Draggable resizer divider between Specs and Right Panel */}
+          {fullscreenPanel === 'none' && (
+            <div
+              className={`mc-resizer-col ${isDraggingLeft ? 'dragging' : ''}`}
+              onMouseDown={(e) => {
+                e.preventDefault();
+                setIsDraggingLeft(true);
+              }}
+              title="Drag to resize Problem Specs"
+            />
+          )}
+
           {/* Right Area: Monaco Editor + Live Sandbox */}
-          <div className="mc-right-panel">
+          <div
+            ref={rightPanelRef}
+            className="mc-right-panel"
+            style={{
+              display: fullscreenPanel === 'specs' ? 'none' : 'flex',
+              flex: 1,
+            }}
+          >
             <div className="mc-editor-preview-split">
               {/* Editor */}
-              <div className="mc-editor-container">
+              <div
+                className="mc-editor-container"
+                style={{
+                  width: fullscreenPanel === 'editor' ? '100%' : `${editorWidthPct}%`,
+                  display: fullscreenPanel === 'preview' ? 'none' : 'flex',
+                  flex: fullscreenPanel === 'editor' ? 1 : undefined,
+                  borderRight: fullscreenPanel === 'editor' ? 'none' : undefined,
+                }}
+              >
                 <div className="mc-panel-header">
                   <div className="mc-file-tabs-bar">
                     {Object.keys(files).map(fileName => (
@@ -1348,6 +1464,15 @@ export default function MachineCodingStudio() {
                         {isInterviewActive ? '🔒 Diff (Locked)' : '🔀 Diff vs Solution'}
                       </button>
                     </div>
+
+                    <button
+                      type="button"
+                      className={`mc-panel-tool-btn ${fullscreenPanel === 'editor' ? 'active' : ''}`}
+                      onClick={() => setFullscreenPanel(prev => prev === 'editor' ? 'none' : 'editor')}
+                      title={fullscreenPanel === 'editor' ? 'Restore editor size' : 'Expand Code Editor to fullscreen'}
+                    >
+                      {fullscreenPanel === 'editor' ? '⤓ Restore' : '⛶ Fullscreen'}
+                    </button>
                   </div>
                 </div>
 
@@ -1422,7 +1547,9 @@ export default function MachineCodingStudio() {
                             automaticLayout: true,
                             fontSize: 13,
                             scrollBeyondLastLine: false,
-                            wordWrap: 'on'
+                            wordWrap: 'on',
+                            renderValidationDecorations: 'off',
+                            quickSuggestions: false,
                           }}
                         />
                       </div>
@@ -1434,8 +1561,20 @@ export default function MachineCodingStudio() {
                       theme={resolvedTheme === 'light' ? 'light' : 'vs-dark'}
                       value={currentCode}
                       onChange={handleCodeChange}
-                      onMount={(editor) => {
+                      onMount={(editor, monaco) => {
                         editorRef.current = editor;
+                        if (monaco?.languages?.typescript) {
+                          monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
+                            noSemanticValidation: true,
+                            noSyntaxValidation: true,
+                            noSuggestionDiagnostics: true,
+                          });
+                          monaco.languages.typescript.javascriptDefaults.setDiagnosticsOptions({
+                            noSemanticValidation: true,
+                            noSyntaxValidation: true,
+                            noSuggestionDiagnostics: true,
+                          });
+                        }
                       }}
                       options={{
                         fontSize: 13,
@@ -1443,22 +1582,54 @@ export default function MachineCodingStudio() {
                         scrollBeyondLastLine: false,
                         automaticLayout: true,
                         tabSize: 2,
-                        wordWrap: 'on'
+                        wordWrap: 'on',
+                        renderValidationDecorations: 'off',
+                        quickSuggestions: false,
+                        lightbulb: { enabled: false }
                       }}
                     />
                   )}
                 </div>
               </div>
 
+              {/* Draggable resizer divider between Editor and Preview */}
+              {fullscreenPanel === 'none' && (
+                <div
+                  className={`mc-resizer-col ${isDraggingEditor ? 'dragging' : ''}`}
+                  onMouseDown={(e) => {
+                    e.preventDefault();
+                    setIsDraggingEditor(true);
+                  }}
+                  title="Drag to resize Editor vs Preview Sandbox"
+                />
+              )}
+
               {/* Live Preview */}
-              <div className="mc-preview-container">
+              <div
+                className="mc-preview-container"
+                style={{
+                  width: fullscreenPanel === 'preview' ? '100%' : `${100 - editorWidthPct}%`,
+                  display: fullscreenPanel === 'editor' ? 'none' : 'flex',
+                  flex: fullscreenPanel === 'preview' ? 1 : undefined,
+                }}
+              >
                 <div className="mc-panel-header">
-                  <span>⚡ Interactive Execution Sandbox</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span>⚡ Interactive Execution Sandbox</span>
+                    <button
+                      onClick={() => executeCode(files)}
+                      style={{ background: 'none', border: 'none', color: '#38bdf8', cursor: 'pointer', fontSize: '11px' }}
+                    >
+                      ⟳ Refresh
+                    </button>
+                  </div>
                   <button
-                    onClick={() => executeCode(files)}
-                    style={{ background: 'none', border: 'none', color: '#38bdf8', cursor: 'pointer', fontSize: '11px' }}
+                    type="button"
+                    className={`mc-panel-tool-btn ${fullscreenPanel === 'preview' ? 'active' : ''}`}
+                    onClick={() => setFullscreenPanel(prev => prev === 'preview' ? 'none' : 'preview')}
+                    title={fullscreenPanel === 'preview' ? 'Restore preview size' : 'Expand Sandbox to fullscreen'}
                   >
-                    ⟳ Refresh
+                    {fullscreenPanel === 'preview' ? '⤓ Restore' : '⛶ Fullscreen'}
                   </button>
                 </div>
                 <iframe
@@ -1472,7 +1643,12 @@ export default function MachineCodingStudio() {
             </div>
 
             {/* Live Console Drawer */}
-            <div className="mc-console-drawer">
+            <div
+              className="mc-console-drawer"
+              style={{
+                display: fullscreenPanel === 'editor' ? 'none' : 'flex',
+              }}
+            >
               <div className="mc-panel-header" style={{ borderTop: 'none', background: '#161b22' }}>
                 <span>Terminal Output / Logs ({consoleLogs.length})</span>
                 <button
