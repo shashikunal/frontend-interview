@@ -224,6 +224,25 @@ export default function MachineCodingStudio() {
   const [newTestDesc, setNewTestDesc] = useState('');
   const [newTestAssertion, setNewTestAssertion] = useState('');
 
+  // Hotkeys & Snapshots State
+  interface CodeSnapshot {
+    id: string;
+    timestamp: number;
+    label: string;
+    files: Record<string, string>;
+  }
+  const [showShortcutsModal, setShowShortcutsModal] = useState(false);
+  const [showSnapshotMenu, setShowSnapshotMenu] = useState(false);
+  const [newSnapshotLabel, setNewSnapshotLabel] = useState('');
+  const [snapshots, setSnapshots] = useState<CodeSnapshot[]>([]);
+  const snapshotMenuRef = useRef<HTMLDivElement>(null);
+  const filesRef = useRef(files);
+  filesRef.current = files;
+  const executeCodeRef = useRef<() => void>(() => {});
+  const handleRunTestsRef = useRef<() => void>(() => {});
+  const handleFormatCodeRef = useRef<() => void>(() => {});
+  const handleSaveAndFormatRef = useRef<() => void>(() => {});
+
   // Resizable Panels & Fullscreen Layout State
   const [leftPanelWidth, setLeftPanelWidth] = useState<number>(() => {
     try {
@@ -415,21 +434,27 @@ export default function MachineCodingStudio() {
     return () => window.removeEventListener('message', handleMessage);
   }, [activeQuestion, solvedMap]);
 
-  // Keyboard Shortcuts: Ctrl+Enter (Run Tests), Ctrl+S (Save Draft)
+  // Sync snapshots from localStorage on question change
   useEffect(() => {
     if (!activeQuestion) return;
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-        e.preventDefault();
-        handleRunTests();
-      } else if ((e.ctrlKey || e.metaKey) && e.key === 's') {
-        e.preventDefault();
-        showToast('💾 Project draft saved to local workspace!');
+    try {
+      const raw = localStorage.getItem(`mc_snapshots_${activeQuestion.id}`);
+      setSnapshots(raw ? JSON.parse(raw) : []);
+    } catch {
+      setSnapshots([]);
+    }
+  }, [activeQuestion?.id]);
+
+  // Close snapshot menu on outside click
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (snapshotMenuRef.current && !snapshotMenuRef.current.contains(e.target as Node)) {
+        setShowSnapshotMenu(false);
       }
     };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [activeQuestion?.id, files, activeFileName]);
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   // Interview Timer Countdown Effect
   useEffect(() => {
@@ -782,6 +807,151 @@ export default function MachineCodingStudio() {
     showToast('↺ Project files reset to initial challenge template!');
   };
 
+  // Format Code Helper
+  const handleFormatCode = () => {
+    if (editorRef.current) {
+      const action = editorRef.current.getAction('editor.action.formatDocument');
+      if (action) {
+        action.run();
+        showToast('🪄 Code formatted cleanly!');
+        return;
+      }
+    }
+    showToast('🪄 Format action triggered');
+  };
+
+  // Save Draft & Auto-Format Helper
+  const handleSaveAndFormat = () => {
+    handleFormatCode();
+    if (activeQuestion) {
+      setUserCodeMap(prev => {
+        const updated = { ...prev, [activeQuestion.id]: currentCode };
+        try {
+          localStorage.setItem('mc_code_drafts_v1', JSON.stringify(updated));
+        } catch (_) {}
+        return updated;
+      });
+      setMultiFilesMap(prev => {
+        const updated = { ...prev, [activeQuestion.id]: files };
+        try {
+          localStorage.setItem('mc_multi_files_v2', JSON.stringify(updated));
+        } catch (_) {}
+        return updated;
+      });
+    }
+    executeCode(files);
+    showToast('💾 Draft saved & compiled!');
+  };
+
+  // Snapshot Management Helpers
+  const handleCreateSnapshot = (customLabel?: string) => {
+    if (!activeQuestion) return;
+    const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    const newSnap: CodeSnapshot = {
+      id: `snap_${Date.now()}`,
+      timestamp: Date.now(),
+      label: customLabel?.trim() || `Snapshot at ${timeStr}`,
+      files: { ...files },
+    };
+    const updated = [newSnap, ...snapshots].slice(0, 10);
+    setSnapshots(updated);
+    try {
+      localStorage.setItem(`mc_snapshots_${activeQuestion.id}`, JSON.stringify(updated));
+    } catch (_) {}
+    setNewSnapshotLabel('');
+    showToast(`📸 Saved snapshot: "${newSnap.label}"`);
+  };
+
+  const handleRestoreSnapshot = (snap: CodeSnapshot) => {
+    setFiles(snap.files);
+    const curFile = snap.files[activeFileName] !== undefined ? activeFileName : 'App.tsx';
+    setActiveFileName(curFile);
+    const code = snap.files[curFile] || '';
+    setCurrentCode(code);
+    if (editorRef.current) {
+      editorRef.current.setValue(code);
+    }
+    executeCode(snap.files);
+    showToast(`↺ Restored snapshot: ${snap.label}`);
+    setShowSnapshotMenu(false);
+  };
+
+  const handleDeleteSnapshot = (id: string) => {
+    if (!activeQuestion) return;
+    const updated = snapshots.filter(s => s.id !== id);
+    setSnapshots(updated);
+    try {
+      localStorage.setItem(`mc_snapshots_${activeQuestion.id}`, JSON.stringify(updated));
+    } catch (_) {}
+    showToast('Snapshot removed.');
+  };
+
+  // Sync ref callbacks for Monaco editor commands
+  executeCodeRef.current = () => executeCode(filesRef.current);
+  handleRunTestsRef.current = handleRunTests;
+  handleFormatCodeRef.current = handleFormatCode;
+  handleSaveAndFormatRef.current = handleSaveAndFormat;
+
+  // Global Keyboard Shortcuts Listener
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Escape: exit any fullscreen panel or close modals
+      if (e.key === 'Escape') {
+        if (showShortcutsModal) {
+          setShowShortcutsModal(false);
+          return;
+        }
+        if (showSnapshotMenu) {
+          setShowSnapshotMenu(false);
+          return;
+        }
+        if (fullscreenPanel !== 'none') {
+          setFullscreenPanel('none');
+          return;
+        }
+      }
+
+      // Question mark (?): open shortcuts modal if not typing in text fields
+      if (e.key === '?' && !['INPUT', 'TEXTAREA'].includes((e.target as HTMLElement)?.tagName || '')) {
+        e.preventDefault();
+        setShowShortcutsModal(prev => !prev);
+        return;
+      }
+
+      // Ctrl+Enter or Cmd+Enter: Run Live
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        e.preventDefault();
+        executeCode(files);
+        showToast('⚡ Executing sandbox (Ctrl+Enter)');
+        return;
+      }
+
+      // Ctrl+Shift+T or Cmd+Shift+T: Run Test Suite
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'T' || e.key === 't')) {
+        e.preventDefault();
+        handleRunTests();
+        return;
+      }
+
+      // Ctrl+S or Cmd+S: Save Draft & Format
+      if ((e.ctrlKey || e.metaKey) && (e.key === 's' || e.key === 'S')) {
+        e.preventDefault();
+        handleSaveAndFormat();
+        return;
+      }
+
+      // Ctrl+B or Cmd+B: Toggle AI Interviewer Drawer
+      if ((e.ctrlKey || e.metaKey) && (e.key === 'b' || e.key === 'B')) {
+        e.preventDefault();
+        setShowAIPrompter(prev => !prev);
+        return;
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [files, activeQuestion?.id, fullscreenPanel, showShortcutsModal, showSnapshotMenu, currentCode]);
+
   const selectQuestion = (id: string) => {
     if (isInterviewActive) {
       const confirmExit = window.confirm('An interview round is currently active. Are you sure you want to exit and switch questions?');
@@ -962,9 +1132,18 @@ export default function MachineCodingStudio() {
               className="mc-action-btn mc-btn-tests"
               onClick={handleRunTests}
               disabled={isRunningTests || isCompiling}
-              title="Run automated test suite"
+              title="Run automated test suite (Ctrl+Shift+T)"
             >
               {isRunningTests ? '🧪 Running Tests...' : '🧪 Run Tests'}
+            </button>
+
+            <button
+              type="button"
+              className="mc-action-btn mc-btn-shortcuts"
+              onClick={() => setShowShortcutsModal(true)}
+              title="Keyboard shortcuts cheat sheet (?)"
+            >
+              ⌨️ Hotkeys
             </button>
 
             <button
@@ -1467,6 +1646,101 @@ export default function MachineCodingStudio() {
 
                     <button
                       type="button"
+                      className="mc-panel-tool-btn"
+                      onClick={handleFormatCode}
+                      title="Format Code document cleanly (Alt+F or Ctrl+S)"
+                    >
+                      🪄 Format
+                    </button>
+
+                    <div className="mc-snapshot-menu-wrapper" ref={snapshotMenuRef}>
+                      <button
+                        type="button"
+                        className={`mc-panel-tool-btn ${showSnapshotMenu ? 'active' : ''}`}
+                        onClick={() => setShowSnapshotMenu(prev => !prev)}
+                        title="Local snapshots & revision history"
+                      >
+                        📸 Snapshots {snapshots.length > 0 ? `(${snapshots.length})` : ''}
+                      </button>
+
+                      {showSnapshotMenu && (
+                        <div className="mc-snapshot-dropdown">
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <span style={{ fontSize: '12px', fontWeight: '700', color: '#f1f5f9' }}>
+                              Code Revision Snapshots
+                            </span>
+                            <span style={{ fontSize: '10px', color: '#94a3b8' }}>
+                              {snapshots.length}/10 saved
+                            </span>
+                          </div>
+
+                          <div className="mc-snapshot-create-row">
+                            <input
+                              type="text"
+                              className="mc-snapshot-input"
+                              placeholder="Snapshot label (optional)..."
+                              value={newSnapshotLabel}
+                              onChange={(e) => setNewSnapshotLabel(e.target.value)}
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                  e.preventDefault();
+                                  handleCreateSnapshot(newSnapshotLabel);
+                                }
+                              }}
+                            />
+                            <button
+                              type="button"
+                              className="mc-snapshot-save-btn"
+                              onClick={() => handleCreateSnapshot(newSnapshotLabel)}
+                            >
+                              + Save
+                            </button>
+                          </div>
+
+                          <div className="mc-snapshot-list">
+                            {snapshots.length === 0 ? (
+                              <div style={{ padding: '16px', textAlign: 'center', color: '#64748b', fontSize: '11px' }}>
+                                No snapshots saved yet. Click "+ Save" to take a point-in-time backup of your code!
+                              </div>
+                            ) : (
+                              snapshots.map(snap => (
+                                <div key={snap.id} className="mc-snapshot-item">
+                                  <div className="mc-snapshot-meta">
+                                    <span className="mc-snapshot-label" title={snap.label}>
+                                      {snap.label}
+                                    </span>
+                                    <span className="mc-snapshot-time">
+                                      {new Date(snap.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} • {Object.keys(snap.files).length} files
+                                    </span>
+                                  </div>
+                                  <div className="mc-snapshot-actions">
+                                    <button
+                                      type="button"
+                                      className="mc-snapshot-btn-restore"
+                                      onClick={() => handleRestoreSnapshot(snap)}
+                                      title="Restore this snapshot into workspace"
+                                    >
+                                      Restore
+                                    </button>
+                                    <button
+                                      type="button"
+                                      className="mc-snapshot-btn-del"
+                                      onClick={() => handleDeleteSnapshot(snap.id)}
+                                      title="Delete snapshot"
+                                    >
+                                      ×
+                                    </button>
+                                  </div>
+                                </div>
+                              ))
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    <button
+                      type="button"
                       className={`mc-panel-tool-btn ${fullscreenPanel === 'editor' ? 'active' : ''}`}
                       onClick={() => setFullscreenPanel(prev => prev === 'editor' ? 'none' : 'editor')}
                       title={fullscreenPanel === 'editor' ? 'Restore editor size' : 'Expand Code Editor to fullscreen'}
@@ -1575,6 +1849,25 @@ export default function MachineCodingStudio() {
                             noSuggestionDiagnostics: true,
                           });
                         }
+
+                        // Register Monaco-level key commands
+                        editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, () => {
+                          executeCodeRef.current();
+                        });
+                        editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | monaco.KeyCode.KeyT, () => {
+                          handleRunTestsRef.current();
+                        });
+                        editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, () => {
+                          handleSaveAndFormatRef.current();
+                        });
+                        editor.addCommand(monaco.KeyMod.Alt | monaco.KeyCode.KeyF, () => {
+                          handleFormatCodeRef.current();
+                        });
+                        editor.addCommand(monaco.KeyCode.Escape, () => {
+                          setFullscreenPanel('none');
+                          setShowShortcutsModal(false);
+                          setShowSnapshotMenu(false);
+                        });
                       }}
                       options={{
                         fontSize: 13,
@@ -1767,6 +2060,115 @@ export default function MachineCodingStudio() {
                   Create File
                 </button>
               </form>
+            </div>
+          </div>
+        )}
+
+        {/* Keyboard Shortcuts Cheat Sheet Modal */}
+        {showShortcutsModal && (
+          <div className="mc-shortcuts-modal-overlay" onClick={() => setShowShortcutsModal(false)}>
+            <div className="mc-shortcuts-modal" onClick={e => e.stopPropagation()}>
+              <div className="mc-shortcuts-header">
+                <h3 className="mc-shortcuts-title">
+                  <span>⌨️</span> Developer Keyboard Shortcuts
+                </h3>
+                <button
+                  type="button"
+                  className="mc-shortcuts-close"
+                  onClick={() => setShowShortcutsModal(false)}
+                >
+                  ✕
+                </button>
+              </div>
+
+              <div className="mc-shortcuts-body">
+                <div className="mc-shortcut-row">
+                  <div className="mc-shortcut-info">
+                    <span className="mc-shortcut-name">Run Live Sandbox</span>
+                    <span className="mc-shortcut-desc">Compiles multi-file project and refreshes sandbox</span>
+                  </div>
+                  <div className="mc-shortcut-keys">
+                    <kbd className="mc-kbd">Ctrl</kbd>
+                    <span style={{ color: '#64748b' }}>+</span>
+                    <kbd className="mc-kbd">Enter</kbd>
+                  </div>
+                </div>
+
+                <div className="mc-shortcut-row">
+                  <div className="mc-shortcut-info">
+                    <span className="mc-shortcut-name">Run Automated Tests</span>
+                    <span className="mc-shortcut-desc">Runs edge-case suite and calculates pass rate</span>
+                  </div>
+                  <div className="mc-shortcut-keys">
+                    <kbd className="mc-kbd">Ctrl</kbd>
+                    <span style={{ color: '#64748b' }}>+</span>
+                    <kbd className="mc-kbd">Shift</kbd>
+                    <span style={{ color: '#64748b' }}>+</span>
+                    <kbd className="mc-kbd">T</kbd>
+                  </div>
+                </div>
+
+                <div className="mc-shortcut-row">
+                  <div className="mc-shortcut-info">
+                    <span className="mc-shortcut-name">Save Draft & Auto-Format</span>
+                    <span className="mc-shortcut-desc">Formats code, saves to browser storage, and compiles</span>
+                  </div>
+                  <div className="mc-shortcut-keys">
+                    <kbd className="mc-kbd">Ctrl</kbd>
+                    <span style={{ color: '#64748b' }}>+</span>
+                    <kbd className="mc-kbd">S</kbd>
+                  </div>
+                </div>
+
+                <div className="mc-shortcut-row">
+                  <div className="mc-shortcut-info">
+                    <span className="mc-shortcut-name">Format Code Document</span>
+                    <span className="mc-shortcut-desc">Auto-indents and cleans active file</span>
+                  </div>
+                  <div className="mc-shortcut-keys">
+                    <kbd className="mc-kbd">Alt</kbd>
+                    <span style={{ color: '#64748b' }}>+</span>
+                    <kbd className="mc-kbd">F</kbd>
+                  </div>
+                </div>
+
+                <div className="mc-shortcut-row">
+                  <div className="mc-shortcut-info">
+                    <span className="mc-shortcut-name">Exit Fullscreen / Close Modal</span>
+                    <span className="mc-shortcut-desc">Restores split layout or dismisses popups</span>
+                  </div>
+                  <div className="mc-shortcut-keys">
+                    <kbd className="mc-kbd">Esc</kbd>
+                  </div>
+                </div>
+
+                <div className="mc-shortcut-row">
+                  <div className="mc-shortcut-info">
+                    <span className="mc-shortcut-name">Toggle AI Staff Interviewer</span>
+                    <span className="mc-shortcut-desc">Opens/collapses the AI voice prompter drawer</span>
+                  </div>
+                  <div className="mc-shortcut-keys">
+                    <kbd className="mc-kbd">Ctrl</kbd>
+                    <span style={{ color: '#64748b' }}>+</span>
+                    <kbd className="mc-kbd">B</kbd>
+                  </div>
+                </div>
+
+                <div className="mc-shortcut-row">
+                  <div className="mc-shortcut-info">
+                    <span className="mc-shortcut-name">Shortcuts Cheat Sheet</span>
+                    <span className="mc-shortcut-desc">Opens this shortcuts reference dialog</span>
+                  </div>
+                  <div className="mc-shortcut-keys">
+                    <kbd className="mc-kbd">?</kbd>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mc-shortcuts-footer">
+                <span>💡 Press <kbd className="mc-kbd">Esc</kbd> anytime to dismiss</span>
+                <span>Works on Mac (use <kbd className="mc-kbd">⌘</kbd>) & Windows</span>
+              </div>
             </div>
           </div>
         )}
