@@ -14,6 +14,8 @@ export default function AdminAttemptsTab({
 }: AdminAttemptsTabProps) {
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState('ALL')
+  const [currentPage, setCurrentPage] = useState(1)
+  const [pageSize, setPageSize] = useState(25)
 
   const effectiveList = attempts || initialAttempts || []
 
@@ -27,6 +29,17 @@ export default function AdminAttemptsTab({
       return matchStatus && matchSearch
     })
   }, [effectiveList, statusFilter, search])
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize))
+  const paginated = useMemo(() => {
+    const start = (currentPage - 1) * pageSize
+    return filtered.slice(start, start + pageSize)
+  }, [filtered, currentPage, pageSize])
+
+  const handleFilterChange = (setter: (val: string) => void, val: string) => {
+    setter(val)
+    setCurrentPage(1)
+  }
 
   const formatDuration = (seconds: number) => {
     if (!seconds) return '0s'
@@ -52,13 +65,13 @@ export default function AdminAttemptsTab({
               className="search-field"
               placeholder="Search by question ID or user ID..."
               value={search}
-              onChange={e => setSearch(e.target.value)}
+              onChange={e => handleFilterChange(setSearch, e.target.value)}
             />
 
             <select
               className="role-dropdown"
               value={statusFilter}
-              onChange={e => setStatusFilter(e.target.value)}
+              onChange={e => handleFilterChange(setStatusFilter, e.target.value)}
             >
               <option value="ALL">All Statuses</option>
               <option value="started">Started</option>
@@ -88,14 +101,14 @@ export default function AdminAttemptsTab({
               </tr>
             </thead>
             <tbody>
-              {filtered.length === 0 ? (
+              {paginated.length === 0 ? (
                 <tr>
                   <td colSpan={8} style={{ textAlign: 'center', padding: '36px', color: 'var(--text-muted)' }}>
                     No attempt records found.
                   </td>
                 </tr>
               ) : (
-                filtered.map(att => (
+                paginated.map(att => (
                   <tr key={att.id}>
                     <td>
                       <code style={{ fontSize: '11px', color: '#94a3b8' }}>{att.id.slice(0, 12)}...</code>
@@ -137,6 +150,63 @@ export default function AdminAttemptsTab({
             </tbody>
           </table>
         </div>
+
+        {/* Pagination Bar */}
+        {filtered.length > 0 && (
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: '16px 20px',
+            borderTop: '1px solid var(--border-color, rgba(255,255,255,0.08))',
+            flexWrap: 'wrap',
+            gap: '12px',
+          }}>
+            <div style={{ fontSize: '13px', color: 'var(--text-muted)' }}>
+              Showing {Math.min((currentPage - 1) * pageSize + 1, filtered.length)}–
+              {Math.min(currentPage * pageSize, filtered.length)} of {filtered.length} attempts
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <button
+                type="button"
+                className="btn btn-sm btn-secondary"
+                disabled={currentPage <= 1}
+                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+              >
+                ← Prev
+              </button>
+
+              <span style={{ fontSize: '13px', padding: '0 8px', color: 'var(--text-primary)' }}>
+                Page {currentPage} of {totalPages}
+              </span>
+
+              <button
+                type="button"
+                className="btn btn-sm btn-secondary"
+                disabled={currentPage >= totalPages}
+                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+              >
+                Next →
+              </button>
+
+              <select
+                className="role-dropdown"
+                style={{ marginLeft: '12px', padding: '4px 8px', fontSize: '12px' }}
+                value={pageSize}
+                onChange={e => {
+                  setPageSize(Number(e.target.value))
+                  setCurrentPage(1)
+                }}
+              >
+                <option value={10}>10 / page</option>
+                <option value={25}>25 / page</option>
+                <option value={50}>50 / page</option>
+                <option value={100}>100 / page</option>
+              </select>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )

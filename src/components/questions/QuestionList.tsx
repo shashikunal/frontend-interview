@@ -8,6 +8,7 @@ import { useQuestions } from '../../data/useQuestions'
 import type { Question } from '../../models/question'
 import { DIFFICULTIES } from '../../models/question'
 import { detectTemplateType } from '../../lib/questionTemplate'
+import { trackingService, type UserQuestionProgress } from '../../lib/trackingService'
 import './QuestionList.css'
 import './templates/Templates.css'
 
@@ -20,7 +21,7 @@ function catClass(name: string): string {
 export default function QuestionList() {
   const [searchParams, setSearchParams] = useSearchParams()
   const { isBookmarked, toggleBookmark, bookmarkedCount } = useBookmarks()
-  const { isSolved, toggleSolved, totalSolved } = useProgress()
+  const { isSolved, toggleSolved } = useProgress()
   const { hasFeature, user, openAuthModal } = useAuth()
   const hasFullAccess = hasFeature('questions_full')
   const categoryFilter = searchParams.get('category') || ''
@@ -37,7 +38,14 @@ export default function QuestionList() {
   const [selectedTemplate, setSelectedTemplate] = useState(searchParams.get('template') || '')
   const [savedOnly, setSavedOnly] = useState(savedParam)
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE)
+  const [progressMap, setProgressMap] = useState<Map<string, UserQuestionProgress>>(new Map())
   const { questions: allQuestions, loading, error } = useQuestions()
+
+  useEffect(() => {
+    trackingService.getAllUserQuestionProgress().then(map => {
+      setProgressMap(map)
+    })
+  }, [user])
 
   const categories = useMemo(() => getCategories(allQuestions), [allQuestions])
   const sources = useMemo(() => getSources(allQuestions), [allQuestions])
@@ -49,17 +57,53 @@ export default function QuestionList() {
     return map
   }, [allQuestions])
 
+  const statusCounts = useMemo(() => {
+    let completed = 0
+    let inProg = 0
+    for (const q of allQuestions) {
+      const p = progressMap.get(String(q.id))
+      const isDone = isSolved(q.id) || p?.status === 'completed'
+      if (isDone) {
+        completed++
+      } else if (p?.status === 'in_progress' || (p?.attemptCount || 0) > 0) {
+        inProg++
+      }
+    }
+    return {
+      completed,
+      inProgress: inProg,
+      notStarted: Math.max(0, allQuestions.length - completed - inProg),
+    }
+  }, [allQuestions, progressMap, isSolved])
+
   const filtered = useMemo(() => {
     let results: Question[] = searchTerm ? searchQuestions(allQuestions, searchTerm) : allQuestions
     if (savedOnly) results = results.filter(q => isBookmarked(q.id))
-    if (selectedStatus === 'solved') results = results.filter(q => isSolved(q.id))
-    if (selectedStatus === 'unsolved') results = results.filter(q => !isSolved(q.id))
+
+    if (selectedStatus === 'completed' || selectedStatus === 'solved') {
+      results = results.filter(q => isSolved(q.id) || progressMap.get(String(q.id))?.status === 'completed')
+    } else if (selectedStatus === 'in_progress') {
+      results = results.filter(q => {
+        const isDone = isSolved(q.id) || progressMap.get(String(q.id))?.status === 'completed'
+        if (isDone) return false
+        const p = progressMap.get(String(q.id))
+        return p?.status === 'in_progress' || (p?.attemptCount || 0) > 0
+      })
+    } else if (selectedStatus === 'not_started' || selectedStatus === 'unsolved') {
+      results = results.filter(q => {
+        const isDone = isSolved(q.id) || progressMap.get(String(q.id))?.status === 'completed'
+        if (isDone) return false
+        const p = progressMap.get(String(q.id))
+        return !(p?.status === 'in_progress' || (p?.attemptCount || 0) > 0)
+      })
+    }
+
     if (selectedCategory) results = results.filter(q => q.category === selectedCategory)
     if (selectedSource) results = results.filter(q => (q.source ?? '') === selectedSource)
     if (selectedDifficulty) results = results.filter(q => q.difficulty === selectedDifficulty)
     if (selectedTemplate) results = results.filter(q => detectTemplateType(q) === selectedTemplate)
     return results
-  }, [searchTerm, savedOnly, selectedStatus, selectedCategory, selectedSource, selectedDifficulty, selectedTemplate, allQuestions, isBookmarked, isSolved])
+  }, [searchTerm, savedOnly, selectedStatus, selectedCategory, selectedSource, selectedDifficulty, selectedTemplate, allQuestions, isBookmarked, isSolved, progressMap])
 
   const breakdown = useMemo(() => getDifficultyBreakdown(filtered), [filtered])
 
@@ -264,11 +308,12 @@ export default function QuestionList() {
           value={selectedStatus}
           onChange={e => setSelectedStatus(e.target.value)}
           className="category-select"
-          aria-label="Filter by solved status"
+          aria-label="Filter by question progress status"
         >
           <option value="">All Statuses</option>
-          <option value="solved">Solved ({totalSolved})</option>
-          <option value="unsolved">Unsolved ({(allQuestions.length - totalSolved).toLocaleString()})</option>
+          <option value="completed">✓ Completed ({statusCounts.completed})</option>
+          <option value="in_progress">◐ In Progress ({statusCounts.inProgress})</option>
+          <option value="not_started">○ Not Started ({statusCounts.notStarted.toLocaleString()})</option>
         </select>
       </div>
 
@@ -326,10 +371,10 @@ export default function QuestionList() {
                 Browse All Questions
               </button>
             </>
-          ) : selectedStatus === 'solved' && totalSolved === 0 ? (
+          ) : selectedStatus === 'completed' && statusCounts.completed === 0 ? (
             <>
-              <h3>No solved questions yet ✓</h3>
-              <p>Mark questions as solved as you study to track your interview readiness.</p>
+              <h3>No completed questions yet ✓</h3>
+              <p>Solve questions and submit solutions to track your interview readiness.</p>
               <button
                 type="button"
                 className="btn btn-primary"
@@ -351,16 +396,24 @@ export default function QuestionList() {
           <div className="question-grid">
             {visible.map(q => {
               const bookmarked = isBookmarked(q.id)
-              const solved = isSolved(q.id)
+              const prog = progressMap.get(String(q.id))
+              const solved = isSolved(q.id) || prog?.status === 'completed'
+              const inProgress = !solved && (prog?.status === 'in_progress' || (prog?.attemptCount || 0) > 0)
               const tType = detectTemplateType(q)
               return (
                 <div key={q.id} className={`question-card-wrapper ${catClass(q.category)}`}>
-                  <Link to={`/questions/${q.id}`} className={`question-card ${catClass(q.category)} ${solved ? 'is-solved' : ''}`}>
+                  <Link to={`/questions/${q.id}`} className={`question-card ${catClass(q.category)} ${solved ? 'is-solved' : inProgress ? 'is-in-progress' : ''}`}>
                     <div className="card-header">
                       <span className={`badge badge-category ${catClass(q.category)}`}>{q.category}</span>
                       <span className={`badge badge-${q.difficulty.toLowerCase()}`}>{q.difficulty}</span>
                       {q.source && <span className="badge badge-source">{q.source}</span>}
-                      {solved && <span className="badge badge-solved-pill">✓ Solved</span>}
+                      {solved ? (
+                        <span className="badge badge-solved-pill" style={{ background: 'rgba(44, 187, 93, 0.18)', color: '#2cbb5d', border: '1px solid rgba(44, 187, 93, 0.35)' }}>✓ Completed</span>
+                      ) : inProgress ? (
+                        <span className="badge" style={{ background: 'rgba(245, 158, 11, 0.18)', color: '#f59e0b', border: '1px solid rgba(245, 158, 11, 0.35)', fontSize: '0.72rem', padding: '2px 8px', borderRadius: '4px', fontWeight: 600 }}>◐ In Progress</span>
+                      ) : (
+                        <span className="badge" style={{ background: 'rgba(148, 163, 184, 0.12)', color: '#94a3b8', border: '1px solid rgba(148, 163, 184, 0.2)', fontSize: '0.72rem', padding: '2px 8px', borderRadius: '4px' }}>○ Not Started</span>
+                      )}
                       {tType === 'leetcode' && (
                         <span className="template-type-badge leetcode" style={{ fontSize: '0.68rem', padding: '2px 8px' }}>
                           ⚡ LeetCode

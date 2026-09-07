@@ -375,7 +375,7 @@ CREATE TRIGGER on_profile_updated
   FOR EACH ROW EXECUTE PROCEDURE public.handle_profile_updated();
 
 -- ==============================================================================
--- 11. Question Attempts, Submissions, User Question Progress & Activity Logs
+-- -- 11. Question Attempts, Submissions, User Question Progress, Drafts & Code Runs
 -- ==============================================================================
 
 CREATE TABLE IF NOT EXISTS public.question_attempts (
@@ -383,12 +383,38 @@ CREATE TABLE IF NOT EXISTS public.question_attempts (
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   question_id TEXT NOT NULL,
   started_at TIMESTAMPTZ DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
+  last_activity_at TIMESTAMPTZ DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
   completed_at TIMESTAMPTZ,
   status TEXT NOT NULL DEFAULT 'started',
   attempt_count INTEGER DEFAULT 1,
+  time_spent_seconds INTEGER DEFAULT 0,
   time_spent INTEGER DEFAULT 0,
   created_at TIMESTAMPTZ DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
   updated_at TIMESTAMPTZ DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS public.question_drafts (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  question_id TEXT NOT NULL,
+  attempt_id UUID REFERENCES public.question_attempts(id) ON DELETE SET NULL,
+  language TEXT NOT NULL DEFAULT 'javascript',
+  code TEXT NOT NULL,
+  updated_at TIMESTAMPTZ DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
+  CONSTRAINT uq_question_drafts_user_q_lang UNIQUE (user_id, question_id, language)
+);
+
+CREATE TABLE IF NOT EXISTS public.code_executions (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  question_id TEXT NOT NULL,
+  attempt_id UUID REFERENCES public.question_attempts(id) ON DELETE SET NULL,
+  language TEXT NOT NULL DEFAULT 'javascript',
+  execution_status TEXT NOT NULL DEFAULT 'success',
+  execution_time NUMERIC DEFAULT 0,
+  memory_used NUMERIC DEFAULT 0,
+  error_message TEXT,
+  created_at TIMESTAMPTZ DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS public.submissions (
@@ -413,8 +439,10 @@ CREATE TABLE IF NOT EXISTS public.user_question_progress (
   status TEXT NOT NULL DEFAULT 'not_started',
   best_score NUMERIC DEFAULT 0,
   attempt_count INTEGER DEFAULT 0,
+  time_spent_seconds INTEGER DEFAULT 0,
   time_spent INTEGER DEFAULT 0,
   first_attempt_at TIMESTAMPTZ DEFAULT TIMEZONE('utc'::text, NOW()),
+  last_attempt_at TIMESTAMPTZ DEFAULT TIMEZONE('utc'::text, NOW()),
   completed_at TIMESTAMPTZ,
   updated_at TIMESTAMPTZ DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
   UNIQUE (user_id, question_id)
@@ -437,6 +465,15 @@ CREATE INDEX IF NOT EXISTS idx_question_attempts_status ON public.question_attem
 CREATE INDEX IF NOT EXISTS idx_question_attempts_created_at ON public.question_attempts(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_question_attempts_user_q ON public.question_attempts(user_id, question_id);
 
+CREATE INDEX IF NOT EXISTS idx_question_drafts_user_id ON public.question_drafts(user_id);
+CREATE INDEX IF NOT EXISTS idx_question_drafts_user_q ON public.question_drafts(user_id, question_id);
+CREATE INDEX IF NOT EXISTS idx_question_drafts_updated_at ON public.question_drafts(updated_at DESC);
+
+CREATE INDEX IF NOT EXISTS idx_code_executions_user_id ON public.code_executions(user_id);
+CREATE INDEX IF NOT EXISTS idx_code_executions_question_id ON public.code_executions(question_id);
+CREATE INDEX IF NOT EXISTS idx_code_executions_user_q ON public.code_executions(user_id, question_id);
+CREATE INDEX IF NOT EXISTS idx_code_executions_created_at ON public.code_executions(created_at DESC);
+
 CREATE INDEX IF NOT EXISTS idx_submissions_user_id ON public.submissions(user_id);
 CREATE INDEX IF NOT EXISTS idx_submissions_question_id ON public.submissions(question_id);
 CREATE INDEX IF NOT EXISTS idx_submissions_attempt_id ON public.submissions(attempt_id);
@@ -456,6 +493,8 @@ CREATE INDEX IF NOT EXISTS idx_activity_logs_created_at ON public.activity_logs(
 
 -- Enable RLS
 ALTER TABLE public.question_attempts ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.question_drafts ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.code_executions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.submissions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.user_question_progress ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.activity_logs ENABLE ROW LEVEL SECURITY;
@@ -465,6 +504,14 @@ CREATE POLICY "Users and admins can view attempts" ON public.question_attempts F
 CREATE POLICY "Users can insert attempts" ON public.question_attempts FOR INSERT TO authenticated WITH CHECK (auth.uid() = user_id);
 CREATE POLICY "Users and admins can update attempts" ON public.question_attempts FOR UPDATE TO authenticated USING (auth.uid() = user_id OR public.is_admin()) WITH CHECK (auth.uid() = user_id OR public.is_admin());
 
+CREATE POLICY "Users can view own drafts" ON public.question_drafts FOR SELECT TO authenticated USING (auth.uid() = user_id OR public.is_admin());
+CREATE POLICY "Users can insert own drafts" ON public.question_drafts FOR INSERT TO authenticated WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Users can update own drafts" ON public.question_drafts FOR UPDATE TO authenticated USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Users can delete own drafts" ON public.question_drafts FOR DELETE TO authenticated USING (auth.uid() = user_id);
+
+CREATE POLICY "Users and admins can view code executions" ON public.code_executions FOR SELECT TO authenticated USING (auth.uid() = user_id OR public.is_admin());
+CREATE POLICY "Users can insert code executions" ON public.code_executions FOR INSERT TO authenticated WITH CHECK (auth.uid() = user_id);
+
 CREATE POLICY "Users and admins can view submissions" ON public.submissions FOR SELECT TO authenticated USING (auth.uid() = user_id OR public.is_admin());
 CREATE POLICY "Users can insert submissions" ON public.submissions FOR INSERT TO authenticated WITH CHECK (auth.uid() = user_id);
 
@@ -473,4 +520,3 @@ CREATE POLICY "Users and admins can manage question progress" ON public.user_que
 
 CREATE POLICY "Users and admins can view activity logs" ON public.activity_logs FOR SELECT TO authenticated USING (auth.uid() = user_id OR public.is_admin());
 CREATE POLICY "Users can insert activity logs" ON public.activity_logs FOR INSERT TO authenticated WITH CHECK (auth.uid() = user_id OR user_id IS NULL);
-

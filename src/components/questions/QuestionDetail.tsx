@@ -91,14 +91,13 @@ export default function QuestionDetail() {
         setExecTime(duration)
         if (question?.id && attemptPromise) {
           attemptPromise.then(attId => {
-            trackingService.recordSubmission({
+            void trackingService.recordCodeExecution({
               questionId: question.id,
               attemptId: attId,
-              code: source,
               language: isReactCode(source) ? 'react' : 'javascript',
-              status: 'runtime_error',
-              score: 0,
+              executionStatus: 'runtime_error',
               executionTime: duration,
+              errorMessage: m.stack || m.message,
             })
           }).catch(() => {})
         }
@@ -108,13 +107,11 @@ export default function QuestionDetail() {
         setExecTime(duration)
         if (question?.id && attemptPromise) {
           attemptPromise.then(attId => {
-            trackingService.recordSubmission({
+            void trackingService.recordCodeExecution({
               questionId: question.id,
               attemptId: attId,
-              code: source,
               language: isReactCode(source) ? 'react' : 'javascript',
-              status: 'accepted',
-              score: 100,
+              executionStatus: 'success',
               executionTime: duration,
             })
           }).catch(() => {})

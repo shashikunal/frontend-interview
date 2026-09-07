@@ -17,6 +17,8 @@ export default function AdminSubmissionsTab({
   const [statusFilter, setStatusFilter] = useState('ALL')
   const [langFilter, setLangFilter] = useState('ALL')
   const [search, setSearch] = useState('')
+  const [currentPage, setCurrentPage] = useState(1)
+  const [pageSize, setPageSize] = useState(25)
 
   const effectiveList = submissions || initialSubmissions || []
 
@@ -32,6 +34,17 @@ export default function AdminSubmissionsTab({
       return matchStatus && matchLang && matchSearch
     })
   }, [effectiveList, statusFilter, langFilter, search])
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize))
+  const paginated = useMemo(() => {
+    const start = (currentPage - 1) * pageSize
+    return filtered.slice(start, start + pageSize)
+  }, [filtered, currentPage, pageSize])
+
+  const handleFilterChange = (setter: (val: string) => void, val: string) => {
+    setter(val)
+    setCurrentPage(1)
+  }
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -65,13 +78,13 @@ export default function AdminSubmissionsTab({
               className="search-field"
               placeholder="Search user, email, question..."
               value={search}
-              onChange={e => setSearch(e.target.value)}
+              onChange={e => handleFilterChange(setSearch, e.target.value)}
             />
 
             <select
               className="role-dropdown"
               value={statusFilter}
-              onChange={e => setStatusFilter(e.target.value)}
+              onChange={e => handleFilterChange(setStatusFilter, e.target.value)}
             >
               <option value="ALL">All Statuses</option>
               <option value="accepted">Accepted (100%)</option>
@@ -83,7 +96,7 @@ export default function AdminSubmissionsTab({
             <select
               className="role-dropdown"
               value={langFilter}
-              onChange={e => setLangFilter(e.target.value)}
+              onChange={e => handleFilterChange(setLangFilter, e.target.value)}
             >
               <option value="ALL">All Languages</option>
               <option value="javascript">JavaScript</option>
@@ -113,14 +126,14 @@ export default function AdminSubmissionsTab({
               </tr>
             </thead>
             <tbody>
-              {filtered.length === 0 ? (
+              {paginated.length === 0 ? (
                 <tr>
                   <td colSpan={8} style={{ textAlign: 'center', padding: '36px', color: 'var(--text-muted)' }}>
                     No submission records found.
                   </td>
                 </tr>
               ) : (
-                filtered.map(sub => (
+                paginated.map(sub => (
                   <tr key={sub.id}>
                     <td>
                       <span className="sub-time">
@@ -167,6 +180,63 @@ export default function AdminSubmissionsTab({
             </tbody>
           </table>
         </div>
+
+        {/* Pagination Bar */}
+        {filtered.length > 0 && (
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: '16px 20px',
+            borderTop: '1px solid var(--border-color, rgba(255,255,255,0.08))',
+            flexWrap: 'wrap',
+            gap: '12px',
+          }}>
+            <div style={{ fontSize: '13px', color: 'var(--text-muted)' }}>
+              Showing {Math.min((currentPage - 1) * pageSize + 1, filtered.length)}–
+              {Math.min(currentPage * pageSize, filtered.length)} of {filtered.length} submissions
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <button
+                type="button"
+                className="btn btn-sm btn-secondary"
+                disabled={currentPage <= 1}
+                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+              >
+                ← Prev
+              </button>
+
+              <span style={{ fontSize: '13px', padding: '0 8px', color: 'var(--text-primary)' }}>
+                Page {currentPage} of {totalPages}
+              </span>
+
+              <button
+                type="button"
+                className="btn btn-sm btn-secondary"
+                disabled={currentPage >= totalPages}
+                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+              >
+                Next →
+              </button>
+
+              <select
+                className="role-dropdown"
+                style={{ marginLeft: '12px', padding: '4px 8px', fontSize: '12px' }}
+                value={pageSize}
+                onChange={e => {
+                  setPageSize(Number(e.target.value))
+                  setCurrentPage(1)
+                }}
+              >
+                <option value={10}>10 / page</option>
+                <option value={25}>25 / page</option>
+                <option value={50}>50 / page</option>
+                <option value={100}>100 / page</option>
+              </select>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )

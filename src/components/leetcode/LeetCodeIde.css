@@ -851,3 +851,199 @@
   flex-direction: column;
   gap: 4px;
 }
+
+/* Question Tracking, Telemetry & Lifecycle Badges */
+.lc-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 999px;
+  text-transform: capitalize;
+  letter-spacing: 0.02em;
+}
+
+.lc-status-badge.completed {
+  background: rgba(44, 187, 93, 0.15);
+  color: #2cbb5d;
+  border: 1px solid rgba(44, 187, 93, 0.35);
+}
+
+.lc-status-badge.in-progress {
+  background: rgba(245, 158, 11, 0.15);
+  color: #f59e0b;
+  border: 1px solid rgba(245, 158, 11, 0.35);
+}
+
+.lc-status-badge.not-started {
+  background: rgba(148, 163, 184, 0.12);
+  color: #94a3b8;
+  border: 1px solid rgba(148, 163, 184, 0.25);
+}
+
+.lc-telemetry-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.lc-telemetry-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: #94a3b8;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 2px 7px;
+  border-radius: 4px;
+}
+
+[data-theme='light'] .lc-telemetry-chip,
+.light-mode .lc-telemetry-chip {
+  background: #f3f4f6;
+  border-color: #e5e7eb;
+  color: #6b7280;
+}
+
+.lc-draft-indicator {
+  font-size: 0.72rem;
+  color: #64748b;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.lc-draft-indicator.saving {
+  color: #f59e0b;
+}
+
+/* Submissions History Tab */
+.lc-submissions-container {
+  padding: 16px 20px;
+}
+
+.lc-submissions-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.84rem;
+}
+
+.lc-submissions-table th {
+  text-align: left;
+  padding: 8px 12px;
+  color: #94a3b8;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  font-weight: 600;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.lc-submissions-table td {
+  padding: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  color: #eff2f6;
+}
+
+.lc-sub-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 0.74rem;
+  font-weight: 600;
+}
+
+.lc-sub-badge.accepted {
+  background: rgba(44, 187, 93, 0.18);
+  color: #2cbb5d;
+}
+
+.lc-sub-badge.wrong_answer,
+.lc-sub-badge.failed,
+.lc-sub-badge.runtime_error,
+.lc-sub-badge.compile_error {
+  background: rgba(239, 71, 67, 0.18);
+  color: #ef4743;
+}
+
+.lc-btn-view-code {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #eff2f6;
+  font-size: 0.75rem;
+  padding: 3px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.lc-btn-view-code:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+/* Submission Code Modal */
+.lc-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.lc-modal-content {
+  background: #1e1e1e;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
+  width: 100%;
+  max-width: 650px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+}
+
+.lc-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.lc-modal-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #eff2f6;
+  margin: 0;
+}
+
+.lc-modal-close {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.lc-modal-body {
+  padding: 16px;
+  overflow-y: auto;
+  font-family: 'JetBrains Mono', Consolas, monospace;
+  font-size: 0.85rem;
+  background: #141414;
+  color: #f1f5f9;
+  margin: 0;
+  white-space: pre-wrap;
+}
+

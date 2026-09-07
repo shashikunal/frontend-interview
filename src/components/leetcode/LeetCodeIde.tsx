@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef } from 'react'
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import Editor from '@monaco-editor/react'
 import { useBookmarks } from '../../context/BookmarkContext'
@@ -13,6 +13,11 @@ import {
   type TestCaseItem,
 } from '../../lib/questionTemplate'
 import { JsRunner, type LogLevel } from '../../lib/runner'
+import {
+  trackingService,
+  type SubmissionRecord,
+  type UserQuestionProgress,
+} from '../../lib/trackingService'
 import './LeetCodeIde.css'
 
 interface RunResult {
@@ -22,6 +27,16 @@ interface RunResult {
   expected?: string
   logs: string[]
   error?: string
+  totalCases?: number
+  passedCases?: number
+}
+
+function formatDuration(seconds: number): string {
+  if (!seconds || seconds <= 0) return '0s'
+  if (seconds < 60) return `${seconds}s`
+  const mins = Math.floor(seconds / 60)
+  const secs = seconds % 60
+  return secs > 0 ? `${mins}m ${secs}s` : `${mins}m`
 }
 
 export default function LeetCodeIde() {
@@ -29,7 +44,7 @@ export default function LeetCodeIde() {
   const navigate = useNavigate()
   const { resolvedTheme } = useTheme()
   const { isBookmarked, toggleBookmark } = useBookmarks()
-  const { isSolved, toggleSolved } = useProgress()
+  const { isSolved, markSolved, toggleSolved } = useProgress()
   const { questions: allQuestions, loading } = useQuestions()
 
   const question: Question | undefined = useMemo(() => {
@@ -57,48 +72,124 @@ export default function LeetCodeIde() {
   const [selectedCaseIdx, setSelectedCaseIdx] = useState(0)
   const [code, setCode] = useState('')
   const [running, setRunning] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
   const [runResult, setRunResult] = useState<RunResult | null>(null)
   const [copied, setCopied] = useState(false)
 
-  const runnerRef = useRef<JsRunner>(new JsRunner())
+  // Tracking & Persistence State
+  const [activeAttemptId, setActiveAttemptId] = useState<string | null>(null)
+  const [questionProgress, setQuestionProgress] = useState<UserQuestionProgress | null>(null)
+  const [draftStatus, setDraftStatus] = useState<'saved' | 'saving' | 'idle'>('idle')
+  const [submissionsList, setSubmissionsList] = useState<SubmissionRecord[]>([])
+  const [loadingSubmissions, setLoadingSubmissions] = useState(false)
+  const [inspectingSub, setInspectingSub] = useState<SubmissionRecord | null>(null)
 
-  // Initialize or reset starter code when question changes
-  useEffect(() => {
-    if (!parsed) return
-    const key = `lc_code_${parsed.questionNumber}`
-    const saved = localStorage.getItem(key)
-    if (saved && saved.trim()) {
-      setCode(saved)
-    } else {
-      setCode(parsed.starterCode || parsed.solution || '')
+  const runnerRef = useRef<JsRunner>(new JsRunner())
+  const activeAttemptIdRef = useRef<string | null>(null)
+  activeAttemptIdRef.current = activeAttemptId
+
+  // Load Submissions History
+  const loadSubmissions = useCallback(async (qId: number) => {
+    setLoadingSubmissions(true)
+    try {
+      const subs = await trackingService.getQuestionSubmissions(qId)
+      setSubmissionsList(subs)
+    } finally {
+      setLoadingSubmissions(false)
     }
+  }, [])
+
+  // Initialize or resume question session, progress, and draft
+  useEffect(() => {
+    if (!question || !parsed) return
+
+    let isMounted = true
+
+    // 1. Log question view
+    void trackingService.trackActivity('question_viewed', 'question', question.id, {
+      title: parsed.title,
+      difficulty: parsed.difficulty,
+      category: question.category,
+    })
+
+    // 2. Start or Resume Attempt
+    trackingService.startOrResumeQuestionAttempt(question.id).then(attId => {
+      if (isMounted) setActiveAttemptId(attId)
+    })
+
+    // 3. Load Progress
+    trackingService.getUserQuestionProgress(question.id).then(prog => {
+      if (isMounted) setQuestionProgress(prog)
+    })
+
+    // 4. Load Draft or Starter Code
+    trackingService.getDraft(question.id, 'javascript').then(draft => {
+      if (!isMounted) return
+      if (draft?.code && draft.code.trim()) {
+        setCode(draft.code)
+        setDraftStatus('saved')
+      } else {
+        const localKey = `lc_code_${parsed.questionNumber}`
+        const localSaved = localStorage.getItem(localKey)
+        if (localSaved && localSaved.trim()) {
+          setCode(localSaved)
+          setDraftStatus('saved')
+        } else {
+          setCode(parsed.starterCode || parsed.solution || '')
+          setDraftStatus('idle')
+        }
+      }
+    })
+
+    // 5. Preload Submissions
+    void loadSubmissions(question.id)
+
     setRunResult(null)
     setSelectedCaseIdx(0)
-  }, [parsed?.questionNumber])
 
-  // Save code changes to localStorage
+    // Listen to draft saved event
+    const handleDraftSaved = (e: Event) => {
+      const customEvent = e as CustomEvent<{ questionId: string }>
+      if (customEvent.detail?.questionId === String(question.id)) {
+        setDraftStatus('saved')
+      }
+    }
+    window.addEventListener('platform_draft_saved', handleDraftSaved)
+
+    return () => {
+      isMounted = false
+      window.removeEventListener('platform_draft_saved', handleDraftSaved)
+    }
+  }, [question?.id, parsed?.questionNumber, loadSubmissions])
+
+  // Save code changes with debouncing
   const handleEditorChange = (val: string | undefined) => {
     const next = val ?? ''
     setCode(next)
-    if (parsed) {
+    setDraftStatus('saving')
+
+    if (parsed && question) {
       localStorage.setItem(`lc_code_${parsed.questionNumber}`, next)
+      trackingService.saveDraft(question.id, next, 'javascript', activeAttemptIdRef.current)
     }
   }
 
   const handleReset = () => {
-    if (!parsed) return
+    if (!parsed || !question) return
     const initial = parsed.starterCode || parsed.solution || ''
     setCode(initial)
     localStorage.setItem(`lc_code_${parsed.questionNumber}`, initial)
+    trackingService.saveDraft(question.id, initial, 'javascript', activeAttemptIdRef.current)
     setRunResult(null)
+    setDraftStatus('saved')
   }
 
   const handleLoadSolution = () => {
-    if (!parsed) return
+    if (!parsed || !question) return
     setCode(parsed.solution)
-    if (parsed) {
-      localStorage.setItem(`lc_code_${parsed.questionNumber}`, parsed.solution)
-    }
+    localStorage.setItem(`lc_code_${parsed.questionNumber}`, parsed.solution)
+    trackingService.saveDraft(question.id, parsed.solution, 'javascript', activeAttemptIdRef.current)
+    setDraftStatus('saved')
     setLeftTab('description')
   }
 
@@ -122,9 +213,34 @@ export default function LeetCodeIde() {
     ]
   }, [parsed])
 
-  // Execute Code against active test case
-  const executeCode = async () => {
-    if (!parsed || !code.trim()) return
+  // Helper to construct execution harness for a test case
+  const buildTestHarness = (userCode: string, testCase: TestCaseItem): string => {
+    const fnMatch = userCode.match(/function\s+([a-zA-Z0-9_]+)\s*\(/) || userCode.match(/(?:const|let|var)\s+([a-zA-Z0-9_]+)\s*=\s*\(/)
+    const fnName = fnMatch ? fnMatch[1] : null
+
+    let execPayload = userCode
+    if (fnName) {
+      let callArgs = ''
+      const rawInput = testCase.input || ''
+      const assignments = rawInput.split(/,\s*(?=[a-zA-Z0-9_]+\s*=)/)
+      if (assignments.length > 0 && assignments[0].includes('=')) {
+        const vals = assignments.map(a => {
+          const eqIdx = a.indexOf('=')
+          return eqIdx > -1 ? a.slice(eqIdx + 1).trim() : a.trim()
+        })
+        callArgs = vals.join(', ')
+      } else {
+        callArgs = rawInput
+      }
+
+      execPayload += `\n\ntry {\n  const __res = ${fnName}(${callArgs});\n  console.log('__RESULT__:' + JSON.stringify(__res));\n} catch(e) {\n  console.error(e);\n}`
+    }
+    return execPayload
+  }
+
+  // 1. RUN CODE: Execute against current testcase (recorded in code_executions, NOT submission)
+  const executeRunCode = async () => {
+    if (!parsed || !question || !code.trim()) return
     setRunning(true)
     setConsoleTab('testresult')
     const activeCase = testCases[selectedCaseIdx] || testCases[0]
@@ -132,30 +248,7 @@ export default function LeetCodeIde() {
     const capturedLogs: string[] = []
 
     try {
-      // Find candidate function name
-      const fnMatch = code.match(/function\s+([a-zA-Z0-9_]+)\s*\(/) || code.match(/(?:const|let|var)\s+([a-zA-Z0-9_]+)\s*=\s*\(/)
-      const fnName = fnMatch ? fnMatch[1] : null
-
-      // Build execution payload
-      let execPayload = code
-      if (fnName) {
-        // Parse input argument values if format is `nums = [1,2], target = 3`
-        let callArgs = ''
-        const rawInput = activeCase.input || ''
-        const assignments = rawInput.split(/,\s*(?=[a-zA-Z0-9_]+\s*=)/)
-        if (assignments.length > 0 && assignments[0].includes('=')) {
-          const vals = assignments.map(a => {
-            const eqIdx = a.indexOf('=')
-            return eqIdx > -1 ? a.slice(eqIdx + 1).trim() : a.trim()
-          })
-          callArgs = vals.join(', ')
-        } else {
-          callArgs = rawInput
-        }
-
-        execPayload += `\n\ntry {\n  const __res = ${fnName}(${callArgs});\n  console.log('__RESULT__:' + JSON.stringify(__res));\n} catch(e) {\n  console.error(e);\n}`
-      }
-
+      const execPayload = buildTestHarness(code, activeCase)
       runnerRef.current.stop()
       const runner = new JsRunner()
       runnerRef.current = runner
@@ -203,6 +296,16 @@ export default function LeetCodeIde() {
       const { ms } = await outputPromise
       const elapsed = ms || Math.round(performance.now() - startTime)
 
+      // Record Code Execution
+      void trackingService.recordCodeExecution({
+        questionId: question.id,
+        attemptId: activeAttemptId,
+        language: 'javascript',
+        executionStatus: hadError ? 'runtime_error' : 'success',
+        executionTime: elapsed,
+        errorMessage: hadError ? errorMessage : undefined,
+      })
+
       if (hadError) {
         setRunResult({
           status: 'Runtime Error',
@@ -236,6 +339,146 @@ export default function LeetCodeIde() {
     }
   }
 
+  // 2. SUBMIT: Evaluates against ALL test cases, creates submission, updates progress & attempt
+  const handleSubmitSolution = async () => {
+    if (!parsed || !question || !code.trim() || submitting) return
+    setSubmitting(true)
+    setConsoleTab('testresult')
+    const startTime = performance.now()
+
+    let passedCases = 0
+    let hadRuntimeError = false
+    let lastErrorMsg = ''
+    let lastOutput = ''
+    const capturedLogs: string[] = []
+
+    try {
+      for (let i = 0; i < testCases.length; i++) {
+        const tc = testCases[i]
+        const execPayload = buildTestHarness(code, tc)
+        const runner = new JsRunner()
+
+        let caseActual: string | undefined
+        let caseError = false
+
+        await new Promise<void>((resolve) => {
+          const timeout = setTimeout(() => resolve(), 2500)
+          runner.run(
+            { 'main.js': execPayload },
+            'main.js',
+            {
+              onLog: (lvl: LogLevel, parts: string[]) => {
+                const text = parts.join(' ')
+                if (text.startsWith('__RESULT__:')) {
+                  caseActual = text.replace('__RESULT__:', '')
+                } else {
+                  capturedLogs.push(`[Case ${i + 1}] ${text}`)
+                  if (lvl === 'error') {
+                    caseError = true
+                    lastErrorMsg = text
+                  }
+                }
+              },
+              onFiles: () => {},
+              onDone: () => {
+                clearTimeout(timeout)
+                resolve()
+              },
+              onError: (msg: string) => {
+                caseError = true
+                lastErrorMsg = msg
+                clearTimeout(timeout)
+                resolve()
+              },
+            }
+          )
+        })
+
+        if (caseError) {
+          hadRuntimeError = true
+          break
+        }
+
+        const expClean = (tc.expected || '').trim()
+        const isMatch = expClean && caseActual
+          ? caseActual.replace(/\s+/g, '') === expClean.replace(/\s+/g, '')
+          : Boolean(caseActual)
+
+        if (isMatch) {
+          passedCases++
+        }
+        if (caseActual) lastOutput = caseActual
+      }
+
+      const totalElapsed = Math.round(performance.now() - startTime)
+      const isAllPassed = !hadRuntimeError && passedCases === testCases.length
+      const submissionStatus = hadRuntimeError
+        ? 'runtime_error'
+        : isAllPassed
+          ? 'accepted'
+          : 'wrong_answer'
+      const score = Math.round((passedCases / testCases.length) * 100)
+
+      // Set Run Result in UI
+      setRunResult({
+        status: isAllPassed ? 'Accepted' : hadRuntimeError ? 'Runtime Error' : 'Wrong Answer',
+        runtime: totalElapsed,
+        output: lastOutput || (isAllPassed ? 'All test cases passed' : `${passedCases}/${testCases.length} passed`),
+        expected: testCases[0]?.expected,
+        logs: capturedLogs,
+        error: hadRuntimeError ? lastErrorMsg : undefined,
+        totalCases: testCases.length,
+        passedCases,
+      })
+
+      // Record Submission to Supabase & Local Mirror
+      const subRecord = await trackingService.recordSubmission({
+        questionId: question.id,
+        attemptId: activeAttemptId,
+        code,
+        language: 'javascript',
+        status: submissionStatus,
+        score,
+        executionTime: totalElapsed,
+      })
+
+      // If accepted: mark solved in context and update progress status
+      if (isAllPassed) {
+        markSolved(question.id)
+        setQuestionProgress(prev => ({
+          userId: prev?.userId || 'current',
+          questionId: String(question.id),
+          status: 'completed',
+          bestScore: 100,
+          attemptCount: (prev?.attemptCount || 0) + 1,
+          timeSpent: (prev?.timeSpent || 0) + Math.round(totalElapsed / 1000),
+          firstAttemptAt: prev?.firstAttemptAt || new Date().toISOString(),
+          completedAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        }))
+      } else {
+        setQuestionProgress(prev => ({
+          userId: prev?.userId || 'current',
+          questionId: String(question.id),
+          status: prev?.status === 'completed' ? 'completed' : 'in_progress',
+          bestScore: Math.max(prev?.bestScore || 0, score),
+          attemptCount: (prev?.attemptCount || 0) + 1,
+          timeSpent: (prev?.timeSpent || 0) + Math.round(totalElapsed / 1000),
+          firstAttemptAt: prev?.firstAttemptAt || new Date().toISOString(),
+          completedAt: prev?.completedAt,
+          updatedAt: new Date().toISOString(),
+        }))
+      }
+
+      // Prepend to submissions list
+      setSubmissionsList(prev => [subRecord, ...prev])
+    } catch (err) {
+      console.error('Submission execution failure:', err)
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
   if (loading) {
     return (
       <div className="leetcode-ide-wrapper" style={{ alignItems: 'center', justifyContent: 'center' }}>
@@ -254,6 +497,13 @@ export default function LeetCodeIde() {
       </div>
     )
   }
+
+  // Derive current question lifecycle status
+  const isCompleted = questionProgress?.status === 'completed' || solved
+  const isInProgress = !isCompleted && (questionProgress?.status === 'in_progress' || (questionProgress?.attemptCount || 0) > 0)
+  const attemptCount = questionProgress?.attemptCount || (isInProgress || isCompleted ? 1 : 0)
+  const bestScore = questionProgress?.bestScore || (isCompleted ? 100 : 0)
+  const timeSpentSecs = questionProgress?.timeSpent || 0
 
   return (
     <div className="leetcode-ide-wrapper">
@@ -290,28 +540,64 @@ export default function LeetCodeIde() {
             <span className={`lc-diff-badge ${parsed.difficulty.toLowerCase()}`}>
               {parsed.difficulty}
             </span>
+
+            {/* Lifecycle Status Pill */}
+            {isCompleted ? (
+              <span className="lc-status-badge completed" title="Question Solved & Verified">
+                ✓ Completed
+              </span>
+            ) : isInProgress ? (
+              <span className="lc-status-badge in-progress" title="Question Attempt In Progress">
+                ◐ In Progress
+              </span>
+            ) : (
+              <span className="lc-status-badge not-started" title="Question Not Yet Attempted">
+                ○ Not Started
+              </span>
+            )}
           </div>
         </div>
 
         <div className="lc-nav-right">
+          {/* Telemetry metadata chips */}
+          <div className="lc-telemetry-row">
+            <span className="lc-telemetry-chip" title="Total submission attempts">
+              Attempts: <strong>{attemptCount}</strong>
+            </span>
+            {bestScore > 0 && (
+              <span className="lc-telemetry-chip" title="Best score achieved">
+                Best: <strong>{bestScore}%</strong>
+              </span>
+            )}
+            {timeSpentSecs > 0 && (
+              <span className="lc-telemetry-chip" title="Total time recorded">
+                ⏱ {formatDuration(timeSpentSecs)}
+              </span>
+            )}
+          </div>
+
+          {/* Run Code Button (separate from submit) */}
           <button
             type="button"
             className="lc-btn-run"
-            onClick={executeCode}
-            disabled={running}
-            title="Run Code (Ctrl + Enter)"
+            onClick={executeRunCode}
+            disabled={running || submitting}
+            title="Run Code on selected testcase (Ctrl + Enter)"
           >
             <span>▶</span> {running ? 'Running...' : 'Run Code'}
           </button>
+
+          {/* Submit Button (evaluates full suite, records submission) */}
           <button
             type="button"
             className="lc-btn-submit"
-            onClick={executeCode}
-            disabled={running}
-            title="Submit solution"
+            onClick={handleSubmitSolution}
+            disabled={running || submitting}
+            title="Submit solution for official evaluation"
           >
-            <span>✓</span> Submit
+            <span>✓</span> {submitting ? 'Evaluating...' : 'Submit'}
           </button>
+
           <button
             type="button"
             className="lc-nav-icon-btn"
@@ -321,6 +607,7 @@ export default function LeetCodeIde() {
           >
             {solved ? '✓ Solved' : '○ Mark Solved'}
           </button>
+
           <button
             type="button"
             className="lc-nav-icon-btn"
@@ -335,7 +622,7 @@ export default function LeetCodeIde() {
 
       {/* 2. SPLIT WORKSPACE BODY */}
       <div className="lc-workspace-body">
-        {/* LEFT PANE: DESCRIPTION & EDITORIAL */}
+        {/* LEFT PANE: DESCRIPTION & EDITORIAL & SUBMISSIONS */}
         <section className="lc-left-pane" style={{ width: '45%' }}>
           <div className="lc-pane-tabs-bar">
             <button
@@ -355,9 +642,12 @@ export default function LeetCodeIde() {
             <button
               type="button"
               className={`lc-tab-btn ${leftTab === 'submissions' ? 'active' : ''}`}
-              onClick={() => setLeftTab('submissions')}
+              onClick={() => {
+                setLeftTab('submissions')
+                void loadSubmissions(question.id)
+              }}
             >
-              <span>🕒</span> Submissions
+              <span>🕒</span> Submissions ({submissionsList.length})
             </button>
           </div>
 
@@ -368,26 +658,17 @@ export default function LeetCodeIde() {
                   {parsed.questionNumber}. {parsed.title}
                 </h2>
 
-                <div className="lc-meta-strip">
-                  <span className={`lc-diff-badge ${parsed.difficulty.toLowerCase()}`}>
-                    {parsed.difficulty}
-                  </span>
-                  <span className="lc-tag-chip">{parsed.category}</span>
-                  {parsed.pattern && (
-                    <span className="lc-tag-chip" style={{ color: '#ffc01e', borderColor: 'rgba(255, 192, 30, 0.3)' }}>
-                      ⚡ {parsed.pattern}
-                    </span>
-                  )}
-                  <span className="lc-tag-chip">{parsed.technology}</span>
-                </div>
-
-                <div className="lc-problem-markdown">
-                  {renderFormattedMarkdown(parsed.problemText)}
+                <div className="lc-description-markdown">
+                  {(parsed.problemText || '').split(/\n{2,}/).map((p: string, i: number) => (
+                    <p key={i} style={{ margin: '0 0 12px', lineHeight: 1.65 }}>
+                      {renderFormattedMarkdown(p)}
+                    </p>
+                  ))}
                 </div>
 
                 {parsed.examples.map((ex, idx) => (
-                  <div key={idx} className="lc-example-box">
-                    <div className="lc-example-title">{ex.title || `Example ${idx + 1}`}:</div>
+                  <div key={idx} className="lc-example-card">
+                    <div className="lc-example-title">Example {idx + 1}:</div>
                     {ex.input && (
                       <div className="lc-example-row">
                         <strong>Input:</strong>
@@ -486,12 +767,66 @@ export default function LeetCodeIde() {
             )}
 
             {leftTab === 'submissions' && (
-              <div style={{ color: '#eff2f699', textAlign: 'center', padding: '40px 20px' }}>
-                <div style={{ fontSize: '2rem', marginBottom: 10 }}>⚡</div>
-                <h3 style={{ color: '#eff2f6', margin: '0 0 6px' }}>Submissions &amp; Run History</h3>
-                <p style={{ fontSize: '0.85rem' }}>
-                  Your live executions and test runs are evaluated locally in the Node/V8 sandbox.
-                </p>
+              <div className="lc-submissions-container">
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+                  <h3 style={{ margin: 0, fontSize: '1.05rem', color: '#eff2f6' }}>Submission History</h3>
+                  <button
+                    type="button"
+                    className="lc-btn-editor-action"
+                    onClick={() => loadSubmissions(question.id)}
+                    disabled={loadingSubmissions}
+                  >
+                    {loadingSubmissions ? 'Refreshing...' : '↻ Refresh'}
+                  </button>
+                </div>
+
+                {submissionsList.length === 0 ? (
+                  <div style={{ textAlign: 'center', color: '#94a3b8', padding: '40px 20px' }}>
+                    <div style={{ fontSize: '2rem', marginBottom: 8 }}>⚡</div>
+                    <p style={{ margin: '0 0 6px', fontWeight: 600, color: '#eff2f6' }}>No Submissions Yet</p>
+                    <p style={{ margin: 0, fontSize: '0.85rem' }}>
+                      Click <strong>Submit</strong> to evaluate your solution against test suites and log submission history.
+                    </p>
+                  </div>
+                ) : (
+                  <table className="lc-submissions-table">
+                    <thead>
+                      <tr>
+                        <th>Status</th>
+                        <th>Runtime</th>
+                        <th>Score</th>
+                        <th>Date</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {submissionsList.map((sub, idx) => (
+                        <tr key={sub.id || idx}>
+                          <td>
+                            <span className={`lc-sub-badge ${sub.status}`}>
+                              {sub.status === 'accepted' ? '✓ Accepted' : sub.status === 'runtime_error' ? '⚡ Error' : '✗ Wrong'}
+                            </span>
+                          </td>
+                          <td>{sub.executionTime} ms</td>
+                          <td>{sub.score}%</td>
+                          <td style={{ color: '#94a3b8', fontSize: '0.78rem' }}>
+                            {new Date(sub.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} •{' '}
+                            {new Date(sub.createdAt).toLocaleDateString([], { month: 'short', day: 'numeric' })}
+                          </td>
+                          <td>
+                            <button
+                              type="button"
+                              className="lc-btn-view-code"
+                              onClick={() => setInspectingSub(sub)}
+                            >
+                              Code
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
               </div>
             )}
           </div>
@@ -503,6 +838,9 @@ export default function LeetCodeIde() {
           <div className="lc-editor-toolbar">
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <span className="lc-lang-select">JavaScript</span>
+              <span className={`lc-draft-indicator ${draftStatus === 'saving' ? 'saving' : ''}`}>
+                {draftStatus === 'saving' ? '○ Saving draft...' : draftStatus === 'saved' ? '● Draft saved' : ''}
+              </span>
             </div>
             <div className="lc-editor-actions">
               <button
@@ -585,19 +923,19 @@ export default function LeetCodeIde() {
 
               {consoleTab === 'testresult' && (
                 <div>
-                  {!runResult && !running && (
+                  {!runResult && !running && !submitting && (
                     <div style={{ color: '#eff2f680', padding: '10px 0' }}>
-                      Click <strong>▶ Run Code</strong> to execute your solution against test cases.
+                      Click <strong>▶ Run Code</strong> for instant test checks, or <strong>✓ Submit</strong> to evaluate all test cases.
                     </div>
                   )}
 
-                  {running && (
+                  {(running || submitting) && (
                     <div style={{ color: '#eff2f699', padding: '10px 0' }}>
-                      Executing solution in sandbox...
+                      {submitting ? 'Evaluating solution against all test cases...' : 'Executing code in sandbox...'}
                     </div>
                   )}
 
-                  {runResult && (
+                  {runResult && !running && !submitting && (
                     <div>
                       <div className="lc-status-row">
                         <span
@@ -610,6 +948,11 @@ export default function LeetCodeIde() {
                         <span className="lc-runtime-pill">
                           Runtime: {runResult.runtime} ms
                         </span>
+                        {runResult.totalCases && (
+                          <span className="lc-runtime-pill" style={{ color: '#38bdf8' }}>
+                            Cases Passed: {runResult.passedCases}/{runResult.totalCases}
+                          </span>
+                        )}
                       </div>
 
                       <div className="lc-diff-comparison">
@@ -631,6 +974,15 @@ export default function LeetCodeIde() {
                           </div>
                         )}
 
+                        {runResult.error && (
+                          <div className="lc-diff-block">
+                            <div className="lc-case-input-label" style={{ color: '#ef4743' }}>Error Output</div>
+                            <div className="lc-case-input-box" style={{ color: '#ef4743' }}>
+                              {runResult.error}
+                            </div>
+                          </div>
+                        )}
+
                         {runResult.logs.length > 0 && (
                           <div className="lc-diff-block">
                             <div className="lc-case-input-label">Stdout / Logs</div>
@@ -648,6 +1000,34 @@ export default function LeetCodeIde() {
           </div>
         </section>
       </div>
+
+      {/* Historical Submission Code Modal */}
+      {inspectingSub && (
+        <div className="lc-modal-overlay" onClick={() => setInspectingSub(null)}>
+          <div className="lc-modal-content" onClick={e => e.stopPropagation()}>
+            <div className="lc-modal-header">
+              <div>
+                <h3 className="lc-modal-title">
+                  Submission Code ({inspectingSub.status === 'accepted' ? 'Accepted' : inspectingSub.status})
+                </h3>
+                <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>
+                  Submitted on {new Date(inspectingSub.createdAt).toLocaleString()} • Runtime: {inspectingSub.executionTime}ms • Score: {inspectingSub.score}%
+                </span>
+              </div>
+              <button
+                type="button"
+                className="lc-modal-close"
+                onClick={() => setInspectingSub(null)}
+              >
+                ✕
+              </button>
+            </div>
+            <pre className="lc-modal-body">
+              {inspectingSub.code || inspectingSub.answer || '// No code recorded for this submission'}
+            </pre>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
