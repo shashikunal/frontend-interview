@@ -373,3 +373,104 @@ DROP TRIGGER IF EXISTS on_profile_updated ON public.profiles;
 CREATE TRIGGER on_profile_updated
   BEFORE UPDATE ON public.profiles
   FOR EACH ROW EXECUTE PROCEDURE public.handle_profile_updated();
+
+-- ==============================================================================
+-- 11. Question Attempts, Submissions, User Question Progress & Activity Logs
+-- ==============================================================================
+
+CREATE TABLE IF NOT EXISTS public.question_attempts (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  question_id TEXT NOT NULL,
+  started_at TIMESTAMPTZ DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
+  completed_at TIMESTAMPTZ,
+  status TEXT NOT NULL DEFAULT 'started',
+  attempt_count INTEGER DEFAULT 1,
+  time_spent INTEGER DEFAULT 0,
+  created_at TIMESTAMPTZ DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
+  updated_at TIMESTAMPTZ DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS public.submissions (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  question_id TEXT NOT NULL,
+  attempt_id UUID REFERENCES public.question_attempts(id) ON DELETE SET NULL,
+  answer TEXT,
+  code TEXT,
+  language TEXT NOT NULL DEFAULT 'javascript',
+  status TEXT NOT NULL DEFAULT 'pending',
+  score NUMERIC DEFAULT 0,
+  execution_time NUMERIC DEFAULT 0,
+  memory_used NUMERIC DEFAULT 0,
+  created_at TIMESTAMPTZ DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS public.user_question_progress (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  question_id TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'not_started',
+  best_score NUMERIC DEFAULT 0,
+  attempt_count INTEGER DEFAULT 0,
+  time_spent INTEGER DEFAULT 0,
+  first_attempt_at TIMESTAMPTZ DEFAULT TIMEZONE('utc'::text, NOW()),
+  completed_at TIMESTAMPTZ,
+  updated_at TIMESTAMPTZ DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
+  UNIQUE (user_id, question_id)
+);
+
+CREATE TABLE IF NOT EXISTS public.activity_logs (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+  action TEXT NOT NULL,
+  entity_type TEXT NOT NULL,
+  entity_id TEXT,
+  metadata JSONB DEFAULT '{}'::jsonb,
+  created_at TIMESTAMPTZ DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
+);
+
+-- Performance Indexes
+CREATE INDEX IF NOT EXISTS idx_question_attempts_user_id ON public.question_attempts(user_id);
+CREATE INDEX IF NOT EXISTS idx_question_attempts_question_id ON public.question_attempts(question_id);
+CREATE INDEX IF NOT EXISTS idx_question_attempts_status ON public.question_attempts(status);
+CREATE INDEX IF NOT EXISTS idx_question_attempts_created_at ON public.question_attempts(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_question_attempts_user_q ON public.question_attempts(user_id, question_id);
+
+CREATE INDEX IF NOT EXISTS idx_submissions_user_id ON public.submissions(user_id);
+CREATE INDEX IF NOT EXISTS idx_submissions_question_id ON public.submissions(question_id);
+CREATE INDEX IF NOT EXISTS idx_submissions_attempt_id ON public.submissions(attempt_id);
+CREATE INDEX IF NOT EXISTS idx_submissions_status ON public.submissions(status);
+CREATE INDEX IF NOT EXISTS idx_submissions_created_at ON public.submissions(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_submissions_user_q ON public.submissions(user_id, question_id);
+
+CREATE INDEX IF NOT EXISTS idx_user_q_progress_user ON public.user_question_progress(user_id);
+CREATE INDEX IF NOT EXISTS idx_user_q_progress_question ON public.user_question_progress(question_id);
+CREATE INDEX IF NOT EXISTS idx_user_q_progress_status ON public.user_question_progress(status);
+CREATE INDEX IF NOT EXISTS idx_user_q_progress_user_q ON public.user_question_progress(user_id, question_id);
+
+CREATE INDEX IF NOT EXISTS idx_activity_logs_user_id ON public.activity_logs(user_id);
+CREATE INDEX IF NOT EXISTS idx_activity_logs_action ON public.activity_logs(action);
+CREATE INDEX IF NOT EXISTS idx_activity_logs_entity ON public.activity_logs(entity_type, entity_id);
+CREATE INDEX IF NOT EXISTS idx_activity_logs_created_at ON public.activity_logs(created_at DESC);
+
+-- Enable RLS
+ALTER TABLE public.question_attempts ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.submissions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.user_question_progress ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.activity_logs ENABLE ROW LEVEL SECURITY;
+
+-- Policies
+CREATE POLICY "Users and admins can view attempts" ON public.question_attempts FOR SELECT TO authenticated USING (auth.uid() = user_id OR public.is_admin());
+CREATE POLICY "Users can insert attempts" ON public.question_attempts FOR INSERT TO authenticated WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Users and admins can update attempts" ON public.question_attempts FOR UPDATE TO authenticated USING (auth.uid() = user_id OR public.is_admin()) WITH CHECK (auth.uid() = user_id OR public.is_admin());
+
+CREATE POLICY "Users and admins can view submissions" ON public.submissions FOR SELECT TO authenticated USING (auth.uid() = user_id OR public.is_admin());
+CREATE POLICY "Users can insert submissions" ON public.submissions FOR INSERT TO authenticated WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users and admins can view question progress" ON public.user_question_progress FOR SELECT TO authenticated USING (auth.uid() = user_id OR public.is_admin());
+CREATE POLICY "Users and admins can manage question progress" ON public.user_question_progress FOR ALL TO authenticated USING (auth.uid() = user_id OR public.is_admin()) WITH CHECK (auth.uid() = user_id OR public.is_admin());
+
+CREATE POLICY "Users and admins can view activity logs" ON public.activity_logs FOR SELECT TO authenticated USING (auth.uid() = user_id OR public.is_admin());
+CREATE POLICY "Users can insert activity logs" ON public.activity_logs FOR INSERT TO authenticated WITH CHECK (auth.uid() = user_id OR user_id IS NULL);
+

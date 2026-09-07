@@ -1,7 +1,7 @@
 export interface MCQuestion {
   id: string
   title: string
-  category: 'State Management' | 'Interactive UI' | 'Custom Hooks' | 'Async & Performance' | 'Architecture'
+  category: 'JavaScript' | 'TypeScript' | 'ReactJS' | 'React Redux Toolkit' | 'React Query' | 'DOM' | 'LeetCode'
   difficulty: 'Easy' | 'Medium' | 'Hard' | 'Senior'
   timeEstimate: string
   summary: string
@@ -18,7 +18,7 @@ export const MACHINE_CODING_QUESTIONS: MCQuestion[] = [
 {
     id: 'Q001',
     title: 'Interactive Counter with Min/Max & Step',
-    category: 'State Management',
+    category: 'ReactJS',
     difficulty: 'Easy',
     timeEstimate: '10 mins',
     summary: 'Build a robust numeric counter with configurable boundaries, step increments, reset, and keyboard controls.',
@@ -223,7 +223,7 @@ export default function App() {
   {
     id: 'Q002',
     title: 'Accessible Toggle Switch & Theme Controller',
-    category: 'Interactive UI',
+    category: 'DOM',
     difficulty: 'Easy',
     timeEstimate: '10 mins',
     summary: 'Build an accessible toggle switch adhering to WAI-ARIA switch pattern with animated sliding thumb.',
@@ -369,7 +369,7 @@ export default function App() {
   {
     id: 'Q003',
     title: 'Character Counter & Auto-Resizing Textarea',
-    category: 'Interactive UI',
+    category: 'ReactJS',
     difficulty: 'Easy',
     timeEstimate: '12 mins',
     summary: 'Build a dynamic textarea that auto-grows with text and displays real-time character & word counts with warning thresholds.',
@@ -519,7 +519,7 @@ export default function App() {
   {
     id: 'Q004',
     title: 'Accordion with Single / Multi-Expand Modes',
-    category: 'Interactive UI',
+    category: 'DOM',
     difficulty: 'Medium',
     timeEstimate: '15 mins',
     summary: 'Build a production-grade collapsible accordion supporting single-open or multi-open configuration with ARIA attributes.',
@@ -692,7 +692,7 @@ export default function App() {
   {
     id: 'Q005',
     title: 'Password Strength Meter & Visibility Toggle',
-    category: 'Interactive UI',
+    category: 'ReactJS',
     difficulty: 'Easy',
     timeEstimate: '15 mins',
     summary: 'Build a secure password input with show/hide toggle, live entropy strength assessment, and rule checklists.',
@@ -858,7 +858,7 @@ export default function App() {
   {
     id: 'Q006',
     title: 'Interactive Star Rating Component',
-    category: 'Interactive UI',
+    category: 'ReactJS',
     difficulty: 'Easy',
     timeEstimate: '15 mins',
     summary: 'Implement a customizable star rating widget with hover previews, click selection, and keyboard navigation.',
@@ -998,7 +998,7 @@ export default function App() {
   {
     id: 'Q007',
     title: 'Accessible Tabs Navigation Component',
-    category: 'Interactive UI',
+    category: 'ReactJS',
     difficulty: 'Medium',
     timeEstimate: '15 mins',
     summary: 'Build a compliant tabbed interface with keyboard arrow switching, active indicator, and smooth content rendering.',
@@ -1173,7 +1173,7 @@ export default function App() {
   {
     id: 'Q008',
     title: 'Modal Dialog with ESC Key, Backdrop Click & Focus Trap',
-    category: 'Interactive UI',
+    category: 'DOM',
     difficulty: 'Medium',
     timeEstimate: '18 mins',
     summary: 'Build a production modal dialog with React Portals, backdrop dismissal, ESC key support, and focus management.',
@@ -1381,7 +1381,7 @@ export default function App() {
   {
     id: 'Q009',
     title: 'Toast Notification Queue System',
-    category: 'State Management',
+    category: 'LeetCode',
     difficulty: 'Medium',
     timeEstimate: '20 mins',
     summary: 'Build a toast notification queue with auto-dismiss timers, custom levels (success/error/info), and manual dismiss buttons.',
@@ -1545,7 +1545,7 @@ export default function App() {
   {
     id: 'Q010',
     title: 'Custom Tooltip with Delay & Smart Positioning',
-    category: 'Interactive UI',
+    category: 'DOM',
     difficulty: 'Medium',
     timeEstimate: '15 mins',
     summary: 'Build a hover tooltip with configurable delay timer, arrow indicator, and top/bottom/left/right positioning.',
@@ -1708,7 +1708,7 @@ export default function App() {
   {
     id: 'Q011',
     title: 'Image Carousel & Banner Slider',
-    category: 'Interactive UI',
+    category: 'DOM',
     difficulty: 'Medium',
     timeEstimate: '20 mins',
     summary: 'Build an automated image slider with Next/Prev controls, pagination dots, autoplay toggle, and pause-on-hover.',
@@ -1891,7 +1891,7 @@ export default function App() {
   {
     id: 'Q012',
     title: 'Search Filter with Real-Time Debounce',
-    category: 'Async & Performance',
+    category: 'React Query',
     difficulty: 'Medium',
     timeEstimate: '18 mins',
     summary: 'Build a performant filterable list that debounces search query execution to minimize costly re-renders or API roundtrips.',
@@ -1939,14 +1939,14 @@ export default function App() {
 
 export default function App() {
   const techCatalog = [
-    { name: 'React 19', category: 'Frontend', stars: '230k' },
-    { name: 'Next.js 15', category: 'Fullstack', stars: '125k' },
-    { name: 'TypeScript', category: 'Language', stars: '102k' },
-    { name: 'Tailwind CSS', category: 'Styling', stars: '82k' },
-    { name: 'Zustand', category: 'State Management', stars: '45k' },
-    { name: 'TanStack Query', category: 'Data Fetching', stars: '42k' },
-    { name: 'Vite', category: 'Build Tool', stars: '71k' },
-    { name: 'Redux Toolkit', category: 'State Management', stars: '60k' }
+    { name: 'React 19', category: 'ReactJS', stars: '230k' },
+    { name: 'Next.js 15', category: 'ReactJS', stars: '125k' },
+    { name: 'TypeScript', category: 'JavaScript', stars: '102k' },
+    { name: 'Tailwind CSS', category: 'DOM', stars: '82k' },
+    { name: 'Zustand', category: 'React Redux Toolkit', stars: '45k' },
+    { name: 'TanStack Query', category: 'React Query', stars: '42k' },
+    { name: 'Vite', category: 'JavaScript', stars: '71k' },
+    { name: 'Redux Toolkit', category: 'React Redux Toolkit', stars: '60k' }
   ];
 
   const [inputVal, setInputVal] = useState('');
@@ -2048,7 +2048,7 @@ export default function App() {
   {
     id: 'Q013',
     title: 'Full-Featured Todo List with Filter Tabs',
-    category: 'State Management',
+    category: 'ReactJS',
     difficulty: 'Medium',
     timeEstimate: '20 mins',
     summary: 'Build a complete Todo application with Add, Complete, Delete, Edit inline, and All/Active/Completed filters.',
@@ -2271,7 +2271,7 @@ export default function App() {
   {
     id: 'Q014',
     title: 'High-Precision Stopwatch & Lap Tracker',
-    category: 'Async & Performance',
+    category: 'JavaScript',
     difficulty: 'Medium',
     timeEstimate: '20 mins',
     summary: 'Build a sub-10ms stopwatch with Start, Pause, Resume, Reset, and recorded lap history with fastest/slowest lap tagging.',
@@ -2458,7 +2458,7 @@ export default function App() {
   {
     id: 'Q015',
     title: 'Autocomplete Search with Keyboard Arrow Navigation',
-    category: 'Interactive UI',
+    category: 'React Query',
     difficulty: 'Hard',
     timeEstimate: '25 mins',
     summary: 'Implement an autocomplete select box supporting query suggestions, ArrowUp/ArrowDown selection, and Enter submission.',
@@ -2639,7 +2639,7 @@ export default function App() {
   {
     id: 'Q016',
     title: 'HTML5 Drag & Drop Reorderable List',
-    category: 'Interactive UI',
+    category: 'DOM',
     difficulty: 'Hard',
     timeEstimate: '22 mins',
     summary: 'Build a reorderable list using native HTML5 Drag and Drop APIs with drag feedback styling.',
@@ -2770,7 +2770,7 @@ export default function App() {
   {
     id: 'Q017',
     title: 'Multi-Step Form Wizard with Field Validation',
-    category: 'State Management',
+    category: 'ReactJS',
     difficulty: 'Medium',
     timeEstimate: '22 mins',
     summary: 'Build a multi-step checkout/registration wizard with progress stepper, form validation per step, and final payload summary.',
@@ -2991,7 +2991,7 @@ export default function App() {
   {
     id: 'Q018',
     title: 'Data Pagination Component with Ellipsis',
-    category: 'Interactive UI',
+    category: 'React Query',
     difficulty: 'Hard',
     timeEstimate: '20 mins',
     summary: 'Build a production pagination control supporting total items, page size, next/prev buttons, and dynamic ellipsis truncation.',
@@ -3143,7 +3143,7 @@ export default function App() {
   {
     id: 'Q019',
     title: 'Custom Hook: useDebounce & useDebouncedCallback',
-    category: 'Custom Hooks',
+    category: 'LeetCode',
     difficulty: 'Medium',
     timeEstimate: '15 mins',
     summary: 'Implement custom useDebounce hook that defers value updates until specified idle duration has elapsed.',
@@ -3256,7 +3256,7 @@ export default function App() {
   {
     id: 'Q020',
     title: 'Custom Hook: useLocalStorage with Cross-Tab Sync',
-    category: 'Custom Hooks',
+    category: 'ReactJS',
     difficulty: 'Hard',
     timeEstimate: '25 mins',
     summary: 'Build a production useLocalStorage hook supporting JSON serialization, error handling, and cross-tab storage event synchronization.',
@@ -3418,7 +3418,7 @@ export default function App() {
 {
   "id": "Q021",
   "title": "Infinite Scroll with Observer",
-  "category": "State Management",
+  "category": "React Query",
   "difficulty": "Easy",
   "timeEstimate": "15 mins",
   "summary": "Master hands-on implementation of Infinite Scroll with Observer with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -3445,7 +3445,7 @@ export default function App() {
 {
   "id": "Q022",
   "title": "Throttled Scroll Hook useThrottle",
-  "category": "State Management",
+  "category": "DOM",
   "difficulty": "Easy",
   "timeEstimate": "15 mins",
   "summary": "Master hands-on implementation of Throttled Scroll Hook useThrottle with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -3472,7 +3472,7 @@ export default function App() {
 {
   "id": "Q023",
   "title": "Virtualized List with Fixed Height",
-  "category": "State Management",
+  "category": "JavaScript",
   "difficulty": "Easy",
   "timeEstimate": "15 mins",
   "summary": "Master hands-on implementation of Virtualized List with Fixed Height with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -3499,7 +3499,7 @@ export default function App() {
 {
   "id": "Q024",
   "title": "Tag Input with Autocomplete",
-  "category": "State Management",
+  "category": "JavaScript",
   "difficulty": "Easy",
   "timeEstimate": "15 mins",
   "summary": "Master hands-on implementation of Tag Input with Autocomplete with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -3526,7 +3526,7 @@ export default function App() {
 {
   "id": "Q025",
   "title": "Drag & Drop File Upload with Progress",
-  "category": "State Management",
+  "category": "DOM",
   "difficulty": "Easy",
   "timeEstimate": "15 mins",
   "summary": "Master hands-on implementation of Drag & Drop File Upload with Progress with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -3553,7 +3553,7 @@ export default function App() {
 {
   "id": "Q026",
   "title": "Circular Countdown Timer",
-  "category": "State Management",
+  "category": "JavaScript",
   "difficulty": "Easy",
   "timeEstimate": "15 mins",
   "summary": "Master hands-on implementation of Circular Countdown Timer with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -3580,7 +3580,7 @@ export default function App() {
 {
   "id": "Q027",
   "title": "Multi-Select Checkbox Dropdown",
-  "category": "State Management",
+  "category": "DOM",
   "difficulty": "Easy",
   "timeEstimate": "15 mins",
   "summary": "Master hands-on implementation of Multi-Select Checkbox Dropdown with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -3607,7 +3607,7 @@ export default function App() {
 {
   "id": "Q028",
   "title": "Transfer List Two-Column Selector",
-  "category": "State Management",
+  "category": "JavaScript",
   "difficulty": "Easy",
   "timeEstimate": "15 mins",
   "summary": "Master hands-on implementation of Transfer List Two-Column Selector with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -3634,7 +3634,7 @@ export default function App() {
 {
   "id": "Q029",
   "title": "Nested File Explorer Tree View",
-  "category": "State Management",
+  "category": "LeetCode",
   "difficulty": "Easy",
   "timeEstimate": "15 mins",
   "summary": "Master hands-on implementation of Nested File Explorer Tree View with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -3661,7 +3661,7 @@ export default function App() {
 {
   "id": "Q030",
   "title": "Memory Card Matching Game",
-  "category": "State Management",
+  "category": "ReactJS",
   "difficulty": "Easy",
   "timeEstimate": "15 mins",
   "summary": "Master hands-on implementation of Memory Card Matching Game with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -3688,7 +3688,7 @@ export default function App() {
 {
   "id": "Q031",
   "title": "OTP 6-Digit Auto-Focus Input",
-  "category": "State Management",
+  "category": "JavaScript",
   "difficulty": "Easy",
   "timeEstimate": "15 mins",
   "summary": "Master hands-on implementation of OTP 6-Digit Auto-Focus Input with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -3715,7 +3715,7 @@ export default function App() {
 {
   "id": "Q032",
   "title": "Color Picker with Hex & RGB",
-  "category": "State Management",
+  "category": "JavaScript",
   "difficulty": "Easy",
   "timeEstimate": "15 mins",
   "summary": "Master hands-on implementation of Color Picker with Hex & RGB with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -3742,7 +3742,7 @@ export default function App() {
 {
   "id": "Q033",
   "title": "Undo Redo History Hook useUndoRedo",
-  "category": "State Management",
+  "category": "React Redux Toolkit",
   "difficulty": "Easy",
   "timeEstimate": "15 mins",
   "summary": "Master hands-on implementation of Undo Redo History Hook useUndoRedo with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -3769,7 +3769,7 @@ export default function App() {
 {
   "id": "Q034",
   "title": "Bookmark Feed with Optimistic Update",
-  "category": "State Management",
+  "category": "React Query",
   "difficulty": "Easy",
   "timeEstimate": "15 mins",
   "summary": "Master hands-on implementation of Bookmark Feed with Optimistic Update with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -3796,7 +3796,7 @@ export default function App() {
 {
   "id": "Q035",
   "title": "Skeleton Content Placeholder",
-  "category": "State Management",
+  "category": "JavaScript",
   "difficulty": "Easy",
   "timeEstimate": "15 mins",
   "summary": "Master hands-on implementation of Skeleton Content Placeholder with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -3823,7 +3823,7 @@ export default function App() {
 {
   "id": "Q036",
   "title": "Responsive Navbar with Drawer",
-  "category": "State Management",
+  "category": "JavaScript",
   "difficulty": "Easy",
   "timeEstimate": "15 mins",
   "summary": "Master hands-on implementation of Responsive Navbar with Drawer with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -3850,7 +3850,7 @@ export default function App() {
 {
   "id": "Q037",
   "title": "Typeahead with Cache & Abort",
-  "category": "State Management",
+  "category": "React Query",
   "difficulty": "Easy",
   "timeEstimate": "15 mins",
   "summary": "Master hands-on implementation of Typeahead with Cache & Abort with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -3877,7 +3877,7 @@ export default function App() {
 {
   "id": "Q038",
   "title": "Theme Switcher with System Prefs",
-  "category": "State Management",
+  "category": "ReactJS",
   "difficulty": "Easy",
   "timeEstimate": "15 mins",
   "summary": "Master hands-on implementation of Theme Switcher with System Prefs with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -3904,7 +3904,7 @@ export default function App() {
 {
   "id": "Q039",
   "title": "Dual-Handle Price Range Slider",
-  "category": "State Management",
+  "category": "DOM",
   "difficulty": "Easy",
   "timeEstimate": "15 mins",
   "summary": "Master hands-on implementation of Dual-Handle Price Range Slider with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -3931,7 +3931,7 @@ export default function App() {
 {
   "id": "Q040",
   "title": "Copy to Clipboard with Feedback",
-  "category": "State Management",
+  "category": "JavaScript",
   "difficulty": "Easy",
   "timeEstimate": "15 mins",
   "summary": "Master hands-on implementation of Copy to Clipboard with Feedback with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -3958,7 +3958,7 @@ export default function App() {
 {
   "id": "Q041",
   "title": "Custom Hook usePrevious",
-  "category": "State Management",
+  "category": "ReactJS",
   "difficulty": "Easy",
   "timeEstimate": "15 mins",
   "summary": "Master hands-on implementation of Custom Hook usePrevious with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -3985,7 +3985,7 @@ export default function App() {
 {
   "id": "Q042",
   "title": "Custom Hook useOnClickOutside",
-  "category": "State Management",
+  "category": "ReactJS",
   "difficulty": "Easy",
   "timeEstimate": "15 mins",
   "summary": "Master hands-on implementation of Custom Hook useOnClickOutside with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -4012,7 +4012,7 @@ export default function App() {
 {
   "id": "Q043",
   "title": "Custom Hook useWindowSize",
-  "category": "State Management",
+  "category": "ReactJS",
   "difficulty": "Easy",
   "timeEstimate": "15 mins",
   "summary": "Master hands-on implementation of Custom Hook useWindowSize with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -4039,7 +4039,7 @@ export default function App() {
 {
   "id": "Q044",
   "title": "Custom Hook useMediaQuery",
-  "category": "State Management",
+  "category": "React Query",
   "difficulty": "Easy",
   "timeEstimate": "15 mins",
   "summary": "Master hands-on implementation of Custom Hook useMediaQuery with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -4066,7 +4066,7 @@ export default function App() {
 {
   "id": "Q045",
   "title": "Custom Hook useInterval with Pause",
-  "category": "State Management",
+  "category": "ReactJS",
   "difficulty": "Easy",
   "timeEstimate": "15 mins",
   "summary": "Master hands-on implementation of Custom Hook useInterval with Pause with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -4093,7 +4093,7 @@ export default function App() {
 {
   "id": "Q046",
   "title": "Live Markdown Text Previewer",
-  "category": "State Management",
+  "category": "JavaScript",
   "difficulty": "Easy",
   "timeEstimate": "15 mins",
   "summary": "Master hands-on implementation of Live Markdown Text Previewer with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -4120,7 +4120,7 @@ export default function App() {
 {
   "id": "Q047",
   "title": "Sortable Data Table with Headers",
-  "category": "State Management",
+  "category": "LeetCode",
   "difficulty": "Easy",
   "timeEstimate": "15 mins",
   "summary": "Master hands-on implementation of Sortable Data Table with Headers with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -4147,7 +4147,7 @@ export default function App() {
 {
   "id": "Q048",
   "title": "Progress Stepper with Animations",
-  "category": "State Management",
+  "category": "JavaScript",
   "difficulty": "Easy",
   "timeEstimate": "15 mins",
   "summary": "Master hands-on implementation of Progress Stepper with Animations with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -4174,7 +4174,7 @@ export default function App() {
 {
   "id": "Q049",
   "title": "Interactive Poll with Vote Bars",
-  "category": "State Management",
+  "category": "React Query",
   "difficulty": "Easy",
   "timeEstimate": "15 mins",
   "summary": "Master hands-on implementation of Interactive Poll with Vote Bars with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -4201,7 +4201,7 @@ export default function App() {
 {
   "id": "Q050",
   "title": "Notification Badge Counter with 99+",
-  "category": "State Management",
+  "category": "ReactJS",
   "difficulty": "Easy",
   "timeEstimate": "15 mins",
   "summary": "Master hands-on implementation of Notification Badge Counter with 99+ with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -4228,7 +4228,7 @@ export default function App() {
 {
   "id": "Q051",
   "title": "Nested Comments & Reply Thread",
-  "category": "Interactive UI",
+  "category": "JavaScript",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of Nested Comments & Reply Thread with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -4255,7 +4255,7 @@ export default function App() {
 {
   "id": "Q052",
   "title": "Draggable Modal Window",
-  "category": "Interactive UI",
+  "category": "DOM",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of Draggable Modal Window with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -4282,7 +4282,7 @@ export default function App() {
 {
   "id": "Q053",
   "title": "Side Drawer with Swipe Gestures",
-  "category": "Interactive UI",
+  "category": "JavaScript",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of Side Drawer with Swipe Gestures with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -4309,7 +4309,7 @@ export default function App() {
 {
   "id": "Q054",
   "title": "Breadcrumb Navigation with Overflow",
-  "category": "Interactive UI",
+  "category": "JavaScript",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of Breadcrumb Navigation with Overflow with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -4336,7 +4336,7 @@ export default function App() {
 {
   "id": "Q055",
   "title": "Dropdown Menu with Sub-menus",
-  "category": "Interactive UI",
+  "category": "DOM",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of Dropdown Menu with Sub-menus with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -4363,7 +4363,7 @@ export default function App() {
 {
   "id": "Q056",
   "title": "Notification Center with Mark All Read",
-  "category": "Interactive UI",
+  "category": "JavaScript",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of Notification Center with Mark All Read with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -4390,7 +4390,7 @@ export default function App() {
 {
   "id": "Q057",
   "title": "Interactive Star Feedback with Tags",
-  "category": "Interactive UI",
+  "category": "JavaScript",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of Interactive Star Feedback with Tags with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -4417,7 +4417,7 @@ export default function App() {
 {
   "id": "Q058",
   "title": "Rich Text Minimal Toolbar",
-  "category": "Interactive UI",
+  "category": "JavaScript",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of Rich Text Minimal Toolbar with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -4444,7 +4444,7 @@ export default function App() {
 {
   "id": "Q059",
   "title": "Audio Waveform Visualizer",
-  "category": "Interactive UI",
+  "category": "DOM",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of Audio Waveform Visualizer with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -4471,7 +4471,7 @@ export default function App() {
 {
   "id": "Q060",
   "title": "Video Player with Custom Controls",
-  "category": "Interactive UI",
+  "category": "DOM",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of Video Player with Custom Controls with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -4498,7 +4498,7 @@ export default function App() {
 {
   "id": "Q061",
   "title": "Picture-in-Picture Video Toggle",
-  "category": "Interactive UI",
+  "category": "ReactJS",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of Picture-in-Picture Video Toggle with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -4525,7 +4525,7 @@ export default function App() {
 {
   "id": "Q062",
   "title": "Lightbox Gallery with Zoom",
-  "category": "Interactive UI",
+  "category": "JavaScript",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of Lightbox Gallery with Zoom with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -4552,7 +4552,7 @@ export default function App() {
 {
   "id": "Q063",
   "title": "Split-Pane Resizable Layout",
-  "category": "Interactive UI",
+  "category": "JavaScript",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of Split-Pane Resizable Layout with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -4579,7 +4579,7 @@ export default function App() {
 {
   "id": "Q064",
   "title": "Floating Action Button Speed Dial",
-  "category": "Interactive UI",
+  "category": "JavaScript",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of Floating Action Button Speed Dial with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -4606,7 +4606,7 @@ export default function App() {
 {
   "id": "Q065",
   "title": "Scroll-to-Top with Progress Ring",
-  "category": "Interactive UI",
+  "category": "DOM",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of Scroll-to-Top with Progress Ring with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -4633,7 +4633,7 @@ export default function App() {
 {
   "id": "Q066",
   "title": "Sticky Table Headers & First Column",
-  "category": "Interactive UI",
+  "category": "JavaScript",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of Sticky Table Headers & First Column with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -4660,7 +4660,7 @@ export default function App() {
 {
   "id": "Q067",
   "title": "Multi-Column Filter Matrix",
-  "category": "Interactive UI",
+  "category": "LeetCode",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of Multi-Column Filter Matrix with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -4687,7 +4687,7 @@ export default function App() {
 {
   "id": "Q068",
   "title": "Inline Editable Text & Cell",
-  "category": "Interactive UI",
+  "category": "JavaScript",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of Inline Editable Text & Cell with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -4714,7 +4714,7 @@ export default function App() {
 {
   "id": "Q069",
   "title": "Timeline Feed with Date Markers",
-  "category": "Interactive UI",
+  "category": "JavaScript",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of Timeline Feed with Date Markers with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -4741,7 +4741,7 @@ export default function App() {
 {
   "id": "Q070",
   "title": "Interactive World Clock with Timezones",
-  "category": "Interactive UI",
+  "category": "JavaScript",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of Interactive World Clock with Timezones with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -4768,7 +4768,7 @@ export default function App() {
 {
   "id": "Q071",
   "title": "Stopwatch with Split Times",
-  "category": "Interactive UI",
+  "category": "JavaScript",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of Stopwatch with Split Times with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -4795,7 +4795,7 @@ export default function App() {
 {
   "id": "Q072",
   "title": "Calculator with Expression History",
-  "category": "Interactive UI",
+  "category": "JavaScript",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of Calculator with Expression History with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -4822,7 +4822,7 @@ export default function App() {
 {
   "id": "Q073",
   "title": "Currency Converter with Live Rates",
-  "category": "Interactive UI",
+  "category": "JavaScript",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of Currency Converter with Live Rates with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -4849,7 +4849,7 @@ export default function App() {
 {
   "id": "Q074",
   "title": "Weather Forecast Card with Icons",
-  "category": "Interactive UI",
+  "category": "JavaScript",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of Weather Forecast Card with Icons with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -4876,7 +4876,7 @@ export default function App() {
 {
   "id": "Q075",
   "title": "Habit Tracker with Daily Grid",
-  "category": "Interactive UI",
+  "category": "JavaScript",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of Habit Tracker with Daily Grid with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -4903,7 +4903,7 @@ export default function App() {
 {
   "id": "Q076",
   "title": "Pomodoro Timer with Break Cycles",
-  "category": "Interactive UI",
+  "category": "JavaScript",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of Pomodoro Timer with Break Cycles with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -4930,7 +4930,7 @@ export default function App() {
 {
   "id": "Q077",
   "title": "Expense Tracker with Category Slices",
-  "category": "Interactive UI",
+  "category": "React Redux Toolkit",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of Expense Tracker with Category Slices with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -4957,7 +4957,7 @@ export default function App() {
 {
   "id": "Q078",
   "title": "Flashcards Deck with Flip & Grade",
-  "category": "Interactive UI",
+  "category": "JavaScript",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of Flashcards Deck with Flip & Grade with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -4984,7 +4984,7 @@ export default function App() {
 {
   "id": "Q079",
   "title": "Trivia Quiz with Countdown Clock",
-  "category": "Interactive UI",
+  "category": "JavaScript",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of Trivia Quiz with Countdown Clock with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -5011,7 +5011,7 @@ export default function App() {
 {
   "id": "Q080",
   "title": "Custom Context Menu on Right Click",
-  "category": "Interactive UI",
+  "category": "ReactJS",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of Custom Context Menu on Right Click with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -5038,7 +5038,7 @@ export default function App() {
 {
   "id": "Q081",
   "title": "Interactive Roadmap with Milestones",
-  "category": "Interactive UI",
+  "category": "JavaScript",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of Interactive Roadmap with Milestones with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -5065,7 +5065,7 @@ export default function App() {
 {
   "id": "Q082",
   "title": "Code Snippet Card with Copy & Run",
-  "category": "Interactive UI",
+  "category": "JavaScript",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of Code Snippet Card with Copy & Run with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -5092,7 +5092,7 @@ export default function App() {
 {
   "id": "Q083",
   "title": "Avatar Group with Overlap & Popover",
-  "category": "Interactive UI",
+  "category": "JavaScript",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of Avatar Group with Overlap & Popover with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -5119,7 +5119,7 @@ export default function App() {
 {
   "id": "Q084",
   "title": "Status Indicator with Pulse Effect",
-  "category": "Interactive UI",
+  "category": "JavaScript",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of Status Indicator with Pulse Effect with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -5146,7 +5146,7 @@ export default function App() {
 {
   "id": "Q085",
   "title": "Badge Notification Bell with Feed",
-  "category": "Interactive UI",
+  "category": "JavaScript",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of Badge Notification Bell with Feed with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -5173,7 +5173,7 @@ export default function App() {
 {
   "id": "Q086",
   "title": "Filterable FAQ with Instant Highlights",
-  "category": "Interactive UI",
+  "category": "JavaScript",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of Filterable FAQ with Instant Highlights with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -5200,7 +5200,7 @@ export default function App() {
 {
   "id": "Q087",
   "title": "Interactive Pricing Tier Matrix",
-  "category": "Interactive UI",
+  "category": "LeetCode",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of Interactive Pricing Tier Matrix with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -5227,7 +5227,7 @@ export default function App() {
 {
   "id": "Q088",
   "title": "Comparison Slider Before/After",
-  "category": "Interactive UI",
+  "category": "DOM",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of Comparison Slider Before/After with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -5254,7 +5254,7 @@ export default function App() {
 {
   "id": "Q089",
   "title": "Masonry Grid Layout with CSS Columns",
-  "category": "Interactive UI",
+  "category": "DOM",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of Masonry Grid Layout with CSS Columns with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -5281,7 +5281,7 @@ export default function App() {
 {
   "id": "Q090",
   "title": "Infinite Carousel with Touch Drag",
-  "category": "Interactive UI",
+  "category": "DOM",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of Infinite Carousel with Touch Drag with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -5308,7 +5308,7 @@ export default function App() {
 {
   "id": "Q091",
   "title": "Progressive Image Loader with Blur",
-  "category": "Interactive UI",
+  "category": "JavaScript",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of Progressive Image Loader with Blur with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -5335,7 +5335,7 @@ export default function App() {
 {
   "id": "Q092",
   "title": "Lazy Loading Image with Fallback",
-  "category": "Interactive UI",
+  "category": "JavaScript",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of Lazy Loading Image with Fallback with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -5362,7 +5362,7 @@ export default function App() {
 {
   "id": "Q093",
   "title": "Password Reset Pin Flow",
-  "category": "Interactive UI",
+  "category": "JavaScript",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of Password Reset Pin Flow with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -5389,7 +5389,7 @@ export default function App() {
 {
   "id": "Q094",
   "title": "Captcha Slider Puzzle",
-  "category": "Interactive UI",
+  "category": "DOM",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of Captcha Slider Puzzle with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -5416,7 +5416,7 @@ export default function App() {
 {
   "id": "Q095",
   "title": "Signature Pad with HTML5 Canvas",
-  "category": "Interactive UI",
+  "category": "DOM",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of Signature Pad with HTML5 Canvas with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -5443,7 +5443,7 @@ export default function App() {
 {
   "id": "Q096",
   "title": "Voice Recorder with Visual Meter",
-  "category": "Interactive UI",
+  "category": "JavaScript",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of Voice Recorder with Visual Meter with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -5470,7 +5470,7 @@ export default function App() {
 {
   "id": "Q097",
   "title": "QR Code Generator & Preview",
-  "category": "Interactive UI",
+  "category": "JavaScript",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of QR Code Generator & Preview with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -5497,7 +5497,7 @@ export default function App() {
 {
   "id": "Q098",
   "title": "Barcode Scanner Simulator",
-  "category": "Interactive UI",
+  "category": "JavaScript",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of Barcode Scanner Simulator with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -5524,7 +5524,7 @@ export default function App() {
 {
   "id": "Q099",
   "title": "Confetti Cannon Celebration Trigger",
-  "category": "Interactive UI",
+  "category": "JavaScript",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of Confetti Cannon Celebration Trigger with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -5551,7 +5551,7 @@ export default function App() {
 {
   "id": "Q100",
   "title": "Cookie Consent Banner with Preferences",
-  "category": "Interactive UI",
+  "category": "ReactJS",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of Cookie Consent Banner with Preferences with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -5578,7 +5578,7 @@ export default function App() {
 {
   "id": "Q101",
   "title": "useFetch with Auto-Retry & Timeout",
-  "category": "Custom Hooks",
+  "category": "React Query",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of useFetch with Auto-Retry & Timeout with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -5605,7 +5605,7 @@ export default function App() {
 {
   "id": "Q102",
   "title": "useAsync with Loading, Error & Data",
-  "category": "Custom Hooks",
+  "category": "JavaScript",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of useAsync with Loading, Error & Data with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -5632,7 +5632,7 @@ export default function App() {
 {
   "id": "Q103",
   "title": "useEventListener with Cleanup",
-  "category": "Custom Hooks",
+  "category": "JavaScript",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of useEventListener with Cleanup with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -5659,7 +5659,7 @@ export default function App() {
 {
   "id": "Q104",
   "title": "useHover with Synthetic Events",
-  "category": "Custom Hooks",
+  "category": "JavaScript",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of useHover with Synthetic Events with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -5686,7 +5686,7 @@ export default function App() {
 {
   "id": "Q105",
   "title": "useIdleTimer with Auto Logout",
-  "category": "Custom Hooks",
+  "category": "JavaScript",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of useIdleTimer with Auto Logout with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -5713,7 +5713,7 @@ export default function App() {
 {
   "id": "Q106",
   "title": "useSessionStorage with Object Support",
-  "category": "Custom Hooks",
+  "category": "JavaScript",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of useSessionStorage with Object Support with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -5740,7 +5740,7 @@ export default function App() {
 {
   "id": "Q107",
   "title": "useCookie with TTL & Secure Flags",
-  "category": "Custom Hooks",
+  "category": "JavaScript",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of useCookie with TTL & Secure Flags with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -5767,7 +5767,7 @@ export default function App() {
 {
   "id": "Q108",
   "title": "useClipboard with Copied Duration",
-  "category": "Custom Hooks",
+  "category": "JavaScript",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of useClipboard with Copied Duration with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -5794,7 +5794,7 @@ export default function App() {
 {
   "id": "Q109",
   "title": "useDocumentTitle with Unmount Reset",
-  "category": "Custom Hooks",
+  "category": "JavaScript",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of useDocumentTitle with Unmount Reset with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -5821,7 +5821,7 @@ export default function App() {
 {
   "id": "Q110",
   "title": "useFavicon Dynamic Status Changer",
-  "category": "Custom Hooks",
+  "category": "JavaScript",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of useFavicon Dynamic Status Changer with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -5848,7 +5848,7 @@ export default function App() {
 {
   "id": "Q111",
   "title": "useOnlineStatus Network Observer",
-  "category": "Custom Hooks",
+  "category": "React Query",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of useOnlineStatus Network Observer with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -5875,7 +5875,7 @@ export default function App() {
 {
   "id": "Q112",
   "title": "useGeolocation with Watch Mode",
-  "category": "Custom Hooks",
+  "category": "JavaScript",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of useGeolocation with Watch Mode with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -5902,7 +5902,7 @@ export default function App() {
 {
   "id": "Q113",
   "title": "useBattery Status Hook",
-  "category": "Custom Hooks",
+  "category": "ReactJS",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of useBattery Status Hook with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -5929,7 +5929,7 @@ export default function App() {
 {
   "id": "Q114",
   "title": "useDeviceOrientation Gyroscope",
-  "category": "Custom Hooks",
+  "category": "JavaScript",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of useDeviceOrientation Gyroscope with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -5956,7 +5956,7 @@ export default function App() {
 {
   "id": "Q115",
   "title": "useVibrate Haptic Feedback Hook",
-  "category": "Custom Hooks",
+  "category": "ReactJS",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of useVibrate Haptic Feedback Hook with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -5983,7 +5983,7 @@ export default function App() {
 {
   "id": "Q116",
   "title": "usePageLeave Detection on Mouseout",
-  "category": "Custom Hooks",
+  "category": "JavaScript",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of usePageLeave Detection on Mouseout with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -6010,7 +6010,7 @@ export default function App() {
 {
   "id": "Q117",
   "title": "useDebouncedEffect Hook",
-  "category": "Custom Hooks",
+  "category": "LeetCode",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of useDebouncedEffect Hook with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -6037,7 +6037,7 @@ export default function App() {
 {
   "id": "Q118",
   "title": "useThrottledEffect Hook",
-  "category": "Custom Hooks",
+  "category": "LeetCode",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of useThrottledEffect Hook with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -6064,7 +6064,7 @@ export default function App() {
 {
   "id": "Q119",
   "title": "useLockBodyScroll with Padding Fix",
-  "category": "Custom Hooks",
+  "category": "DOM",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of useLockBodyScroll with Padding Fix with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -6091,7 +6091,7 @@ export default function App() {
 {
   "id": "Q120",
   "title": "useScrollPosition with Throttled Coords",
-  "category": "Custom Hooks",
+  "category": "DOM",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of useScrollPosition with Throttled Coords with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -6118,7 +6118,7 @@ export default function App() {
 {
   "id": "Q121",
   "title": "useIntersectionObserver for Elements",
-  "category": "Custom Hooks",
+  "category": "DOM",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of useIntersectionObserver for Elements with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -6145,7 +6145,7 @@ export default function App() {
 {
   "id": "Q122",
   "title": "useResizeObserver for Containers",
-  "category": "Custom Hooks",
+  "category": "DOM",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of useResizeObserver for Containers with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -6172,7 +6172,7 @@ export default function App() {
 {
   "id": "Q123",
   "title": "useMutationObserver for DOM Changes",
-  "category": "Custom Hooks",
+  "category": "DOM",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of useMutationObserver for DOM Changes with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -6199,7 +6199,7 @@ export default function App() {
 {
   "id": "Q124",
   "title": "useWhyDidYouUpdate Profiling Hook",
-  "category": "Custom Hooks",
+  "category": "ReactJS",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of useWhyDidYouUpdate Profiling Hook with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -6226,7 +6226,7 @@ export default function App() {
 {
   "id": "Q125",
   "title": "useRenderCount Diagnostic Hook",
-  "category": "Custom Hooks",
+  "category": "ReactJS",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of useRenderCount Diagnostic Hook with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -6253,7 +6253,7 @@ export default function App() {
 {
   "id": "Q126",
   "title": "useIsFirstRender Flag Hook",
-  "category": "Custom Hooks",
+  "category": "ReactJS",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of useIsFirstRender Flag Hook with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -6280,7 +6280,7 @@ export default function App() {
 {
   "id": "Q127",
   "title": "useMountedState Lifecycle Hook",
-  "category": "Custom Hooks",
+  "category": "ReactJS",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of useMountedState Lifecycle Hook with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -6307,7 +6307,7 @@ export default function App() {
 {
   "id": "Q128",
   "title": "useUnmount Cleanup Hook",
-  "category": "Custom Hooks",
+  "category": "ReactJS",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of useUnmount Cleanup Hook with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -6334,7 +6334,7 @@ export default function App() {
 {
   "id": "Q129",
   "title": "useForceUpdate Trigger Hook",
-  "category": "Custom Hooks",
+  "category": "ReactJS",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of useForceUpdate Trigger Hook with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -6361,7 +6361,7 @@ export default function App() {
 {
   "id": "Q130",
   "title": "useSafeSetState for Async Checks",
-  "category": "Custom Hooks",
+  "category": "ReactJS",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of useSafeSetState for Async Checks with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -6388,7 +6388,7 @@ export default function App() {
 {
   "id": "Q131",
   "title": "useToggle Boolean State Hook",
-  "category": "Custom Hooks",
+  "category": "ReactJS",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of useToggle Boolean State Hook with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -6415,7 +6415,7 @@ export default function App() {
 {
   "id": "Q132",
   "title": "useCounter with Increment & Decrement",
-  "category": "Custom Hooks",
+  "category": "ReactJS",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of useCounter with Increment & Decrement with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -6442,7 +6442,7 @@ export default function App() {
 {
   "id": "Q133",
   "title": "useList Array Helper Hook",
-  "category": "Custom Hooks",
+  "category": "ReactJS",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of useList Array Helper Hook with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -6469,7 +6469,7 @@ export default function App() {
 {
   "id": "Q134",
   "title": "useMap Reactive Map State Hook",
-  "category": "Custom Hooks",
+  "category": "ReactJS",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of useMap Reactive Map State Hook with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -6496,7 +6496,7 @@ export default function App() {
 {
   "id": "Q135",
   "title": "useSet Reactive Set State Hook",
-  "category": "Custom Hooks",
+  "category": "ReactJS",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of useSet Reactive Set State Hook with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -6523,7 +6523,7 @@ export default function App() {
 {
   "id": "Q136",
   "title": "useQueue FIFO State Hook",
-  "category": "Custom Hooks",
+  "category": "LeetCode",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of useQueue FIFO State Hook with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -6550,7 +6550,7 @@ export default function App() {
 {
   "id": "Q137",
   "title": "useStack LIFO State Hook",
-  "category": "Custom Hooks",
+  "category": "LeetCode",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of useStack LIFO State Hook with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -6577,7 +6577,7 @@ export default function App() {
 {
   "id": "Q138",
   "title": "useHistory Stack with Back & Forward",
-  "category": "Custom Hooks",
+  "category": "LeetCode",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of useHistory Stack with Back & Forward with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -6604,7 +6604,7 @@ export default function App() {
 {
   "id": "Q139",
   "title": "useSpeechSynthesis TTS Hook",
-  "category": "Custom Hooks",
+  "category": "ReactJS",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of useSpeechSynthesis TTS Hook with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -6631,7 +6631,7 @@ export default function App() {
 {
   "id": "Q140",
   "title": "useSpeechRecognition STT Hook",
-  "category": "Custom Hooks",
+  "category": "ReactJS",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of useSpeechRecognition STT Hook with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -6658,7 +6658,7 @@ export default function App() {
 {
   "id": "Q141",
   "title": "useDarkMode with OS MediaQuery Sync",
-  "category": "Custom Hooks",
+  "category": "React Query",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of useDarkMode with OS MediaQuery Sync with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -6685,7 +6685,7 @@ export default function App() {
 {
   "id": "Q142",
   "title": "useHoverDirty Primitive Hook",
-  "category": "Custom Hooks",
+  "category": "ReactJS",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of useHoverDirty Primitive Hook with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -6712,7 +6712,7 @@ export default function App() {
 {
   "id": "Q143",
   "title": "useMousePosition Coordinates Hook",
-  "category": "Custom Hooks",
+  "category": "ReactJS",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of useMousePosition Coordinates Hook with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -6739,7 +6739,7 @@ export default function App() {
 {
   "id": "Q144",
   "title": "useMeasure Element Bounding Box",
-  "category": "Custom Hooks",
+  "category": "JavaScript",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of useMeasure Element Bounding Box with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -6766,7 +6766,7 @@ export default function App() {
 {
   "id": "Q145",
   "title": "useKeypress Shortcut Hook",
-  "category": "Custom Hooks",
+  "category": "ReactJS",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of useKeypress Shortcut Hook with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -6793,7 +6793,7 @@ export default function App() {
 {
   "id": "Q146",
   "title": "useHotkeys Key Combo Matcher",
-  "category": "Custom Hooks",
+  "category": "JavaScript",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of useHotkeys Key Combo Matcher with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -6820,7 +6820,7 @@ export default function App() {
 {
   "id": "Q147",
   "title": "useFocusReturn Accessible Focus Hook",
-  "category": "Custom Hooks",
+  "category": "ReactJS",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of useFocusReturn Accessible Focus Hook with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -6847,7 +6847,7 @@ export default function App() {
 {
   "id": "Q148",
   "title": "useFocusTrap Modal Focus Loop",
-  "category": "Custom Hooks",
+  "category": "DOM",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of useFocusTrap Modal Focus Loop with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -6874,7 +6874,7 @@ export default function App() {
 {
   "id": "Q149",
   "title": "useDeepCompareEffect Value Memo",
-  "category": "Custom Hooks",
+  "category": "ReactJS",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of useDeepCompareEffect Value Memo with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -6901,7 +6901,7 @@ export default function App() {
 {
   "id": "Q150",
   "title": "useMemoCompare Deep Memo Hook",
-  "category": "Custom Hooks",
+  "category": "ReactJS",
   "difficulty": "Medium",
   "timeEstimate": "20 mins",
   "summary": "Master hands-on implementation of useMemoCompare Deep Memo Hook with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -6928,7 +6928,7 @@ export default function App() {
 {
   "id": "Q151",
   "title": "Dynamic Form Builder from JSON Schema",
-  "category": "State Management",
+  "category": "TypeScript",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Dynamic Form Builder from JSON Schema with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -6955,7 +6955,7 @@ export default function App() {
 {
   "id": "Q152",
   "title": "Credit Card Input with Luhn Check & Format",
-  "category": "State Management",
+  "category": "ReactJS",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Credit Card Input with Luhn Check & Format with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -6982,7 +6982,7 @@ export default function App() {
 {
   "id": "Q153",
   "title": "Address Autocomplete with Form Fields",
-  "category": "State Management",
+  "category": "ReactJS",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Address Autocomplete with Form Fields with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -7009,7 +7009,7 @@ export default function App() {
 {
   "id": "Q154",
   "title": "Password Policy Validator with Entropy",
-  "category": "State Management",
+  "category": "JavaScript",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Password Policy Validator with Entropy with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -7036,7 +7036,7 @@ export default function App() {
 {
   "id": "Q155",
   "title": "Phone Number Input with Country Dial Codes",
-  "category": "State Management",
+  "category": "JavaScript",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Phone Number Input with Country Dial Codes with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -7063,7 +7063,7 @@ export default function App() {
 {
   "id": "Q156",
   "title": "Date Range Picker with Calendar Popup",
-  "category": "State Management",
+  "category": "JavaScript",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Date Range Picker with Calendar Popup with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -7090,7 +7090,7 @@ export default function App() {
 {
   "id": "Q157",
   "title": "Time Slot Booking with Available Intervals",
-  "category": "State Management",
+  "category": "JavaScript",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Time Slot Booking with Available Intervals with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -7117,7 +7117,7 @@ export default function App() {
 {
   "id": "Q158",
   "title": "Multi-File Upload with File Type Filter",
-  "category": "State Management",
+  "category": "JavaScript",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Multi-File Upload with File Type Filter with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -7144,7 +7144,7 @@ export default function App() {
 {
   "id": "Q159",
   "title": "Image Cropper with Aspect Ratio Presets",
-  "category": "State Management",
+  "category": "JavaScript",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Image Cropper with Aspect Ratio Presets with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -7171,7 +7171,7 @@ export default function App() {
 {
   "id": "Q160",
   "title": "Dynamic Tag Input with Duplicate Rejection",
-  "category": "State Management",
+  "category": "JavaScript",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Dynamic Tag Input with Duplicate Rejection with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -7198,7 +7198,7 @@ export default function App() {
 {
   "id": "Q161",
   "title": "Multi-Step Checkout with Summary & Discount",
-  "category": "State Management",
+  "category": "JavaScript",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Multi-Step Checkout with Summary & Discount with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -7225,7 +7225,7 @@ export default function App() {
 {
   "id": "Q162",
   "title": "Survey Builder with Drag-and-Drop Questions",
-  "category": "State Management",
+  "category": "DOM",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Survey Builder with Drag-and-Drop Questions with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -7252,7 +7252,7 @@ export default function App() {
 {
   "id": "Q163",
   "title": "Inline Table Row Editing with Validation",
-  "category": "State Management",
+  "category": "JavaScript",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Inline Table Row Editing with Validation with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -7279,7 +7279,7 @@ export default function App() {
 {
   "id": "Q164",
   "title": "Form Auto-Save to LocalStorage with Debounce",
-  "category": "State Management",
+  "category": "LeetCode",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Form Auto-Save to LocalStorage with Debounce with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -7306,7 +7306,7 @@ export default function App() {
 {
   "id": "Q165",
   "title": "Dependent Dropdowns Country State City",
-  "category": "State Management",
+  "category": "DOM",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Dependent Dropdowns Country State City with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -7333,7 +7333,7 @@ export default function App() {
 {
   "id": "Q166",
   "title": "Currency Input with Formatted Thousands",
-  "category": "State Management",
+  "category": "ReactJS",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Currency Input with Formatted Thousands with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -7360,7 +7360,7 @@ export default function App() {
 {
   "id": "Q167",
   "title": "OTP SMS Code Input with Paste Parsing",
-  "category": "State Management",
+  "category": "JavaScript",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of OTP SMS Code Input with Paste Parsing with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -7387,7 +7387,7 @@ export default function App() {
 {
   "id": "Q168",
   "title": "Color Picker with RGBA Alpha Slider",
-  "category": "State Management",
+  "category": "DOM",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Color Picker with RGBA Alpha Slider with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -7414,7 +7414,7 @@ export default function App() {
 {
   "id": "Q169",
   "title": "Rich Markdown Form Editor with Toolbar",
-  "category": "State Management",
+  "category": "ReactJS",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Rich Markdown Form Editor with Toolbar with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -7441,7 +7441,7 @@ export default function App() {
 {
   "id": "Q170",
   "title": "Signature Pad Form Field with Clear",
-  "category": "State Management",
+  "category": "ReactJS",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Signature Pad Form Field with Clear with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -7468,7 +7468,7 @@ export default function App() {
 {
   "id": "Q171",
   "title": "Search with Filter Chips & Clear All",
-  "category": "State Management",
+  "category": "JavaScript",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Search with Filter Chips & Clear All with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -7495,7 +7495,7 @@ export default function App() {
 {
   "id": "Q172",
   "title": "Multi-Level Category Hierarchy Selector",
-  "category": "State Management",
+  "category": "JavaScript",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Multi-Level Category Hierarchy Selector with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -7522,7 +7522,7 @@ export default function App() {
 {
   "id": "Q173",
   "title": "User Invitation Form with Dynamic Rows",
-  "category": "State Management",
+  "category": "ReactJS",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of User Invitation Form with Dynamic Rows with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -7549,7 +7549,7 @@ export default function App() {
 {
   "id": "Q174",
   "title": "Profile Image Upload with Circular Preview",
-  "category": "State Management",
+  "category": "JavaScript",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Profile Image Upload with Circular Preview with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -7576,7 +7576,7 @@ export default function App() {
 {
   "id": "Q175",
   "title": "Newsletter Subscribe with Honeypot Anti-Spam",
-  "category": "State Management",
+  "category": "JavaScript",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Newsletter Subscribe with Honeypot Anti-Spam with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -7603,7 +7603,7 @@ export default function App() {
 {
   "id": "Q176",
   "title": "Two-Factor Auth 6-Digit Verify Screen",
-  "category": "State Management",
+  "category": "JavaScript",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Two-Factor Auth 6-Digit Verify Screen with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -7630,7 +7630,7 @@ export default function App() {
 {
   "id": "Q177",
   "title": "Complex Filter Sidebar with Range Sliders",
-  "category": "State Management",
+  "category": "DOM",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Complex Filter Sidebar with Range Sliders with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -7657,7 +7657,7 @@ export default function App() {
 {
   "id": "Q178",
   "title": "Shipping vs Billing Address Sync Checkbox",
-  "category": "State Management",
+  "category": "JavaScript",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Shipping vs Billing Address Sync Checkbox with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -7684,7 +7684,7 @@ export default function App() {
 {
   "id": "Q179",
   "title": "Promo Code Voucher with Discount Math",
-  "category": "State Management",
+  "category": "JavaScript",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Promo Code Voucher with Discount Math with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -7711,7 +7711,7 @@ export default function App() {
 {
   "id": "Q180",
   "title": "License Agreement with Scroll-to-Bottom Gate",
-  "category": "State Management",
+  "category": "DOM",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of License Agreement with Scroll-to-Bottom Gate with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -7738,7 +7738,7 @@ export default function App() {
 {
   "id": "Q181",
   "title": "Product Review Form with Photo Upload",
-  "category": "State Management",
+  "category": "ReactJS",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Product Review Form with Photo Upload with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -7765,7 +7765,7 @@ export default function App() {
 {
   "id": "Q182",
   "title": "Feedback Form with Sentiment Emoji Selection",
-  "category": "State Management",
+  "category": "ReactJS",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Feedback Form with Sentiment Emoji Selection with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -7792,7 +7792,7 @@ export default function App() {
 {
   "id": "Q183",
   "title": "Job Application Form with Resume Parser",
-  "category": "State Management",
+  "category": "ReactJS",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Job Application Form with Resume Parser with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -7819,7 +7819,7 @@ export default function App() {
 {
   "id": "Q184",
   "title": "Bug Report Form with Screenshot Attachment",
-  "category": "State Management",
+  "category": "ReactJS",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Bug Report Form with Screenshot Attachment with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -7846,7 +7846,7 @@ export default function App() {
 {
   "id": "Q185",
   "title": "Expense Submission with Receipt OCR Mock",
-  "category": "State Management",
+  "category": "JavaScript",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Expense Submission with Receipt OCR Mock with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -7873,7 +7873,7 @@ export default function App() {
 {
   "id": "Q186",
   "title": "Flight Booking Passenger Detail Form",
-  "category": "State Management",
+  "category": "ReactJS",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Flight Booking Passenger Detail Form with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -7900,7 +7900,7 @@ export default function App() {
 {
   "id": "Q187",
   "title": "Hotel Room Selector with Guest Counter",
-  "category": "State Management",
+  "category": "ReactJS",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Hotel Room Selector with Guest Counter with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -7927,7 +7927,7 @@ export default function App() {
 {
   "id": "Q188",
   "title": "Calendar Event Scheduler with Recurrence",
-  "category": "State Management",
+  "category": "JavaScript",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Calendar Event Scheduler with Recurrence with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -7954,7 +7954,7 @@ export default function App() {
 {
   "id": "Q189",
   "title": "Appointment Booking with Timezone Conversion",
-  "category": "State Management",
+  "category": "JavaScript",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Appointment Booking with Timezone Conversion with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -7981,7 +7981,7 @@ export default function App() {
 {
   "id": "Q190",
   "title": "Multi-Currency Tip Calculator Form",
-  "category": "State Management",
+  "category": "ReactJS",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Multi-Currency Tip Calculator Form with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -8008,7 +8008,7 @@ export default function App() {
 {
   "id": "Q191",
   "title": "Loan EMI Calculator with Amortization Chart",
-  "category": "State Management",
+  "category": "JavaScript",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Loan EMI Calculator with Amortization Chart with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -8035,7 +8035,7 @@ export default function App() {
 {
   "id": "Q192",
   "title": "Tax Calculator with Bracket Deductions",
-  "category": "State Management",
+  "category": "JavaScript",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Tax Calculator with Bracket Deductions with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -8062,7 +8062,7 @@ export default function App() {
 {
   "id": "Q193",
   "title": "Investment SIP Compound Interest Calculator",
-  "category": "State Management",
+  "category": "JavaScript",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Investment SIP Compound Interest Calculator with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -8089,7 +8089,7 @@ export default function App() {
 {
   "id": "Q194",
   "title": "Diet Macro Nutrients Daily Tracker Form",
-  "category": "State Management",
+  "category": "LeetCode",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Diet Macro Nutrients Daily Tracker Form with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -8116,7 +8116,7 @@ export default function App() {
 {
   "id": "Q195",
   "title": "Fitness Workout Log with Sets & Reps Form",
-  "category": "State Management",
+  "category": "ReactJS",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Fitness Workout Log with Sets & Reps Form with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -8143,7 +8143,7 @@ export default function App() {
 {
   "id": "Q196",
   "title": "Vehicle Inspection Checklist with Pass/Fail",
-  "category": "State Management",
+  "category": "JavaScript",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Vehicle Inspection Checklist with Pass/Fail with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -8170,7 +8170,7 @@ export default function App() {
 {
   "id": "Q197",
   "title": "Inventory Restock Order Form with Totals",
-  "category": "State Management",
+  "category": "ReactJS",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Inventory Restock Order Form with Totals with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -8197,7 +8197,7 @@ export default function App() {
 {
   "id": "Q198",
   "title": "Client Onboarding Form with KYC Verification",
-  "category": "State Management",
+  "category": "ReactJS",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Client Onboarding Form with KYC Verification with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -8224,7 +8224,7 @@ export default function App() {
 {
   "id": "Q199",
   "title": "Supplier Invoice Form with Line Items",
-  "category": "State Management",
+  "category": "ReactJS",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Supplier Invoice Form with Line Items with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -8251,7 +8251,7 @@ export default function App() {
 {
   "id": "Q200",
   "title": "Event RSVP Form with Meal Preference",
-  "category": "State Management",
+  "category": "ReactJS",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Event RSVP Form with Meal Preference with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -8278,7 +8278,7 @@ export default function App() {
 {
   "id": "Q201",
   "title": "Virtualized List with Variable Heights",
-  "category": "Async & Performance",
+  "category": "JavaScript",
   "difficulty": "Hard",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Virtualized List with Variable Heights with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -8305,7 +8305,7 @@ export default function App() {
 {
   "id": "Q202",
   "title": "Virtualized Grid 100k Cells with Scrolling",
-  "category": "Async & Performance",
+  "category": "DOM",
   "difficulty": "Hard",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Virtualized Grid 100k Cells with Scrolling with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -8332,7 +8332,7 @@ export default function App() {
 {
   "id": "Q203",
   "title": "Web Worker Data Parser Offloading",
-  "category": "Async & Performance",
+  "category": "JavaScript",
   "difficulty": "Hard",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Web Worker Data Parser Offloading with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -8359,7 +8359,7 @@ export default function App() {
 {
   "id": "Q204",
   "title": "Web Worker Image Filtering Canvas Processor",
-  "category": "Async & Performance",
+  "category": "DOM",
   "difficulty": "Hard",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Web Worker Image Filtering Canvas Processor with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -8386,7 +8386,7 @@ export default function App() {
 {
   "id": "Q205",
   "title": "Infinite Scroll with Bidirectional Loading",
-  "category": "Async & Performance",
+  "category": "React Query",
   "difficulty": "Hard",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Infinite Scroll with Bidirectional Loading with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -8413,7 +8413,7 @@ export default function App() {
 {
   "id": "Q206",
   "title": "Concurrent React useTransition Search Filter",
-  "category": "Async & Performance",
+  "category": "ReactJS",
   "difficulty": "Hard",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Concurrent React useTransition Search Filter with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -8440,7 +8440,7 @@ export default function App() {
 {
   "id": "Q207",
   "title": "useDeferredValue for Smooth Chart Rendering",
-  "category": "Async & Performance",
+  "category": "ReactJS",
   "difficulty": "Hard",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of useDeferredValue for Smooth Chart Rendering with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -8467,7 +8467,7 @@ export default function App() {
 {
   "id": "Q208",
   "title": "Virtual Tree View for Large Hierarchies",
-  "category": "Async & Performance",
+  "category": "LeetCode",
   "difficulty": "Hard",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Virtual Tree View for Large Hierarchies with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -8494,7 +8494,7 @@ export default function App() {
 {
   "id": "Q209",
   "title": "Canvas Particle Animation with RequestAnimationFrame",
-  "category": "Async & Performance",
+  "category": "DOM",
   "difficulty": "Hard",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Canvas Particle Animation with RequestAnimationFrame with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -8521,7 +8521,7 @@ export default function App() {
 {
   "id": "Q210",
   "title": "SVG Chart with Animated Transitions",
-  "category": "Async & Performance",
+  "category": "JavaScript",
   "difficulty": "Hard",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of SVG Chart with Animated Transitions with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -8548,7 +8548,7 @@ export default function App() {
 {
   "id": "Q211",
   "title": "DOM Recycling List Engine",
-  "category": "Async & Performance",
+  "category": "DOM",
   "difficulty": "Hard",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of DOM Recycling List Engine with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -8575,7 +8575,7 @@ export default function App() {
 {
   "id": "Q212",
   "title": "Memory Leak Detector in React Components",
-  "category": "Async & Performance",
+  "category": "ReactJS",
   "difficulty": "Hard",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Memory Leak Detector in React Components with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -8602,7 +8602,7 @@ export default function App() {
 {
   "id": "Q213",
   "title": "Optimistic Comment Posting with Rollback on Error",
-  "category": "Async & Performance",
+  "category": "React Query",
   "difficulty": "Hard",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Optimistic Comment Posting with Rollback on Error with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -8629,7 +8629,7 @@ export default function App() {
 {
   "id": "Q214",
   "title": "Chunked File Upload with Resume Support",
-  "category": "Async & Performance",
+  "category": "JavaScript",
   "difficulty": "Hard",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Chunked File Upload with Resume Support with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -8656,7 +8656,7 @@ export default function App() {
 {
   "id": "Q215",
   "title": "Network Throttling Simulator in Component",
-  "category": "Async & Performance",
+  "category": "React Query",
   "difficulty": "Hard",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Network Throttling Simulator in Component with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -8683,7 +8683,7 @@ export default function App() {
 {
   "id": "Q216",
   "title": "Offline Sync Queue with Background Sync",
-  "category": "Async & Performance",
+  "category": "LeetCode",
   "difficulty": "Hard",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Offline Sync Queue with Background Sync with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -8710,7 +8710,7 @@ export default function App() {
 {
   "id": "Q217",
   "title": "IndexedDB Storage Wrapper Hook",
-  "category": "Async & Performance",
+  "category": "ReactJS",
   "difficulty": "Hard",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of IndexedDB Storage Wrapper Hook with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -8737,7 +8737,7 @@ export default function App() {
 {
   "id": "Q218",
   "title": "Cache-Aside Query Layer with TTL Eviction",
-  "category": "Async & Performance",
+  "category": "React Query",
   "difficulty": "Hard",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Cache-Aside Query Layer with TTL Eviction with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -8764,7 +8764,7 @@ export default function App() {
 {
   "id": "Q219",
   "title": "LRU Cache Visualizer Component",
-  "category": "Async & Performance",
+  "category": "React Query",
   "difficulty": "Hard",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of LRU Cache Visualizer Component with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -8791,7 +8791,7 @@ export default function App() {
 {
   "id": "Q220",
   "title": "Component Render Benchmark Profiler",
-  "category": "Async & Performance",
+  "category": "ReactJS",
   "difficulty": "Hard",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Component Render Benchmark Profiler with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -8818,7 +8818,7 @@ export default function App() {
 {
   "id": "Q221",
   "title": "CSS Containment Layout Optimization Lab",
-  "category": "Async & Performance",
+  "category": "DOM",
   "difficulty": "Hard",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of CSS Containment Layout Optimization Lab with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -8845,7 +8845,7 @@ export default function App() {
 {
   "id": "Q222",
   "title": "Heavy Computation React Memo vs UseMemo Benchmark",
-  "category": "Async & Performance",
+  "category": "ReactJS",
   "difficulty": "Hard",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Heavy Computation React Memo vs UseMemo Benchmark with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -8872,7 +8872,7 @@ export default function App() {
 {
   "id": "Q223",
   "title": "Event Delegation Table with 10k Rows",
-  "category": "Async & Performance",
+  "category": "DOM",
   "difficulty": "Hard",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Event Delegation Table with 10k Rows with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -8899,7 +8899,7 @@ export default function App() {
 {
   "id": "Q224",
   "title": "Debounced Scrollspy for Article TOC",
-  "category": "Async & Performance",
+  "category": "DOM",
   "difficulty": "Hard",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Debounced Scrollspy for Article TOC with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -8926,7 +8926,7 @@ export default function App() {
 {
   "id": "Q225",
   "title": "Intersection Observer Lazy Video Player",
-  "category": "Async & Performance",
+  "category": "DOM",
   "difficulty": "Hard",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Intersection Observer Lazy Video Player with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -8953,7 +8953,7 @@ export default function App() {
 {
   "id": "Q226",
   "title": "Font Face Loading Observer with Skeleton Fallback",
-  "category": "Async & Performance",
+  "category": "DOM",
   "difficulty": "Hard",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Font Face Loading Observer with Skeleton Fallback with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -8980,7 +8980,7 @@ export default function App() {
 {
   "id": "Q227",
   "title": "CSS Sprite Sheet Animator Component",
-  "category": "Async & Performance",
+  "category": "DOM",
   "difficulty": "Hard",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of CSS Sprite Sheet Animator Component with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -9007,7 +9007,7 @@ export default function App() {
 {
   "id": "Q228",
   "title": "SVG Line Drawing Animation on Scroll",
-  "category": "Async & Performance",
+  "category": "DOM",
   "difficulty": "Hard",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of SVG Line Drawing Animation on Scroll with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -9034,7 +9034,7 @@ export default function App() {
 {
   "id": "Q229",
   "title": "3D Card Tilt on Mouse Move 60fps",
-  "category": "Async & Performance",
+  "category": "JavaScript",
   "difficulty": "Hard",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of 3D Card Tilt on Mouse Move 60fps with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -9061,7 +9061,7 @@ export default function App() {
 {
   "id": "Q230",
   "title": "Smooth Parallax Scroll Controller",
-  "category": "Async & Performance",
+  "category": "DOM",
   "difficulty": "Hard",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Smooth Parallax Scroll Controller with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -9088,7 +9088,7 @@ export default function App() {
 {
   "id": "Q231",
   "title": "Fast Search with WebAssembly Regex Engine",
-  "category": "Async & Performance",
+  "category": "JavaScript",
   "difficulty": "Hard",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Fast Search with WebAssembly Regex Engine with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -9115,7 +9115,7 @@ export default function App() {
 {
   "id": "Q232",
   "title": "JSON Tree Viewer with On-Demand Node Parsing",
-  "category": "Async & Performance",
+  "category": "LeetCode",
   "difficulty": "Hard",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of JSON Tree Viewer with On-Demand Node Parsing with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -9142,7 +9142,7 @@ export default function App() {
 {
   "id": "Q233",
   "title": "Infinite Canvas Pan & Zoom Engine",
-  "category": "Async & Performance",
+  "category": "DOM",
   "difficulty": "Hard",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Infinite Canvas Pan & Zoom Engine with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -9169,7 +9169,7 @@ export default function App() {
 {
   "id": "Q234",
   "title": "Interactive Minify & Beautify JSON Formatter",
-  "category": "Async & Performance",
+  "category": "ReactJS",
   "difficulty": "Hard",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Interactive Minify & Beautify JSON Formatter with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -9196,7 +9196,7 @@ export default function App() {
 {
   "id": "Q235",
   "title": "CSS Flexbox & Grid Live Playground",
-  "category": "Async & Performance",
+  "category": "DOM",
   "difficulty": "Hard",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of CSS Flexbox & Grid Live Playground with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -9223,7 +9223,7 @@ export default function App() {
 {
   "id": "Q236",
   "title": "Regex Live Tester with Highlighted Matches",
-  "category": "Async & Performance",
+  "category": "JavaScript",
   "difficulty": "Hard",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Regex Live Tester with Highlighted Matches with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -9250,7 +9250,7 @@ export default function App() {
 {
   "id": "Q237",
   "title": "Color Contrast Ratio Checker with WCAG Grading",
-  "category": "Async & Performance",
+  "category": "JavaScript",
   "difficulty": "Hard",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Color Contrast Ratio Checker with WCAG Grading with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -9277,7 +9277,7 @@ export default function App() {
 {
   "id": "Q238",
   "title": "CSS Box Shadow Visual Generator",
-  "category": "Async & Performance",
+  "category": "DOM",
   "difficulty": "Hard",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of CSS Box Shadow Visual Generator with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -9304,7 +9304,7 @@ export default function App() {
 {
   "id": "Q239",
   "title": "CSS Gradient Generator with Color Stops",
-  "category": "Async & Performance",
+  "category": "DOM",
   "difficulty": "Hard",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of CSS Gradient Generator with Color Stops with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -9331,7 +9331,7 @@ export default function App() {
 {
   "id": "Q240",
   "title": "CSS Transform Matrix 3D Interactive Tool",
-  "category": "Async & Performance",
+  "category": "DOM",
   "difficulty": "Hard",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of CSS Transform Matrix 3D Interactive Tool with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -9358,7 +9358,7 @@ export default function App() {
 {
   "id": "Q241",
   "title": "SVG Path Morphing Animation Controller",
-  "category": "Async & Performance",
+  "category": "JavaScript",
   "difficulty": "Hard",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of SVG Path Morphing Animation Controller with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -9385,7 +9385,7 @@ export default function App() {
 {
   "id": "Q242",
   "title": "Lottie Animation Interactive Player with Scrubbing",
-  "category": "Async & Performance",
+  "category": "JavaScript",
   "difficulty": "Hard",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Lottie Animation Interactive Player with Scrubbing with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -9412,7 +9412,7 @@ export default function App() {
 {
   "id": "Q243",
   "title": "WebGL Cube with Mouse Rotation Controller",
-  "category": "Async & Performance",
+  "category": "JavaScript",
   "difficulty": "Hard",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of WebGL Cube with Mouse Rotation Controller with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -9439,7 +9439,7 @@ export default function App() {
 {
   "id": "Q244",
   "title": "Audio Spectrum Visualizer with Web Audio API",
-  "category": "Async & Performance",
+  "category": "DOM",
   "difficulty": "Hard",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Audio Spectrum Visualizer with Web Audio API with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -9466,7 +9466,7 @@ export default function App() {
 {
   "id": "Q245",
   "title": "Microphone Decibel Sound Meter",
-  "category": "Async & Performance",
+  "category": "JavaScript",
   "difficulty": "Hard",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Microphone Decibel Sound Meter with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -9493,7 +9493,7 @@ export default function App() {
 {
   "id": "Q246",
   "title": "WebRTC Video Chat Peer Room Canvas",
-  "category": "Async & Performance",
+  "category": "DOM",
   "difficulty": "Hard",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of WebRTC Video Chat Peer Room Canvas with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -9520,7 +9520,7 @@ export default function App() {
 {
   "id": "Q247",
   "title": "Webcam Selfie Snap with Filter Effects",
-  "category": "Async & Performance",
+  "category": "JavaScript",
   "difficulty": "Hard",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Webcam Selfie Snap with Filter Effects with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -9547,7 +9547,7 @@ export default function App() {
 {
   "id": "Q248",
   "title": "Barcode Generator with Canvas 2D",
-  "category": "Async & Performance",
+  "category": "DOM",
   "difficulty": "Hard",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Barcode Generator with Canvas 2D with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -9574,7 +9574,7 @@ export default function App() {
 {
   "id": "Q249",
   "title": "Dynamic Sitemap Visualizer with Tree Layout",
-  "category": "Async & Performance",
+  "category": "LeetCode",
   "difficulty": "Hard",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Dynamic Sitemap Visualizer with Tree Layout with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -9601,7 +9601,7 @@ export default function App() {
 {
   "id": "Q250",
   "title": "Performance Metrics Dashboard FCP LCP CLS",
-  "category": "Async & Performance",
+  "category": "ReactJS",
   "difficulty": "Hard",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Performance Metrics Dashboard FCP LCP CLS with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -9628,7 +9628,7 @@ export default function App() {
 {
   "id": "Q251",
   "title": "Kanban Board with Drag & Drop Columns",
-  "category": "Interactive UI",
+  "category": "DOM",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Kanban Board with Drag & Drop Columns with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -9655,7 +9655,7 @@ export default function App() {
 {
   "id": "Q252",
   "title": "Interactive Whiteboard with Pen & Shapes",
-  "category": "Interactive UI",
+  "category": "JavaScript",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Interactive Whiteboard with Pen & Shapes with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -9682,7 +9682,7 @@ export default function App() {
 {
   "id": "Q253",
   "title": "Snake Game in React with Score & High Score",
-  "category": "Interactive UI",
+  "category": "ReactJS",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Snake Game in React with Score & High Score with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -9709,7 +9709,7 @@ export default function App() {
 {
   "id": "Q254",
   "title": "Tic-Tac-Toe with Minimax AI Opponent",
-  "category": "Interactive UI",
+  "category": "JavaScript",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Tic-Tac-Toe with Minimax AI Opponent with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -9736,7 +9736,7 @@ export default function App() {
 {
   "id": "Q255",
   "title": "2048 Number Tile Slide Puzzle Game",
-  "category": "Interactive UI",
+  "category": "JavaScript",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of 2048 Number Tile Slide Puzzle Game with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -9763,7 +9763,7 @@ export default function App() {
 {
   "id": "Q256",
   "title": "Wordle Word Guess Game with Keyboard",
-  "category": "Interactive UI",
+  "category": "JavaScript",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Wordle Word Guess Game with Keyboard with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -9790,7 +9790,7 @@ export default function App() {
 {
   "id": "Q257",
   "title": "Minesweeper Game with Flagging & Timer",
-  "category": "Interactive UI",
+  "category": "JavaScript",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Minesweeper Game with Flagging & Timer with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -9817,7 +9817,7 @@ export default function App() {
 {
   "id": "Q258",
   "title": "Connect Four Game with Drop Animations",
-  "category": "Interactive UI",
+  "category": "DOM",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Connect Four Game with Drop Animations with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -9844,7 +9844,7 @@ export default function App() {
 {
   "id": "Q259",
   "title": "Memory Matching Card Game with Multi-Levels",
-  "category": "Interactive UI",
+  "category": "ReactJS",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Memory Matching Card Game with Multi-Levels with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -9871,7 +9871,7 @@ export default function App() {
 {
   "id": "Q260",
   "title": "Simon Says Audio-Visual Sequence Game",
-  "category": "Interactive UI",
+  "category": "DOM",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Simon Says Audio-Visual Sequence Game with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -9898,7 +9898,7 @@ export default function App() {
 {
   "id": "Q261",
   "title": "Typing Speed Test WPM with Accuracy Score",
-  "category": "Interactive UI",
+  "category": "JavaScript",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Typing Speed Test WPM with Accuracy Score with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -9925,7 +9925,7 @@ export default function App() {
 {
   "id": "Q262",
   "title": "Rock Paper Scissors with Streak Counter",
-  "category": "Interactive UI",
+  "category": "ReactJS",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Rock Paper Scissors with Streak Counter with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -9952,7 +9952,7 @@ export default function App() {
 {
   "id": "Q263",
   "title": "Chess Board with Valid Move Highlighting",
-  "category": "Interactive UI",
+  "category": "JavaScript",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Chess Board with Valid Move Highlighting with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -9979,7 +9979,7 @@ export default function App() {
 {
   "id": "Q264",
   "title": "Checkers Board with Piece Jumping",
-  "category": "Interactive UI",
+  "category": "JavaScript",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Checkers Board with Piece Jumping with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -10006,7 +10006,7 @@ export default function App() {
 {
   "id": "Q265",
   "title": "Sudoku 9x9 Grid Solver & Game",
-  "category": "Interactive UI",
+  "category": "JavaScript",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Sudoku 9x9 Grid Solver & Game with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -10033,7 +10033,7 @@ export default function App() {
 {
   "id": "Q266",
   "title": "Crossword Puzzle Interactive Grid",
-  "category": "Interactive UI",
+  "category": "JavaScript",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Crossword Puzzle Interactive Grid with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -10060,7 +10060,7 @@ export default function App() {
 {
   "id": "Q267",
   "title": "Trivia Quiz with Lifelines 50-50 & Skip",
-  "category": "Interactive UI",
+  "category": "JavaScript",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Trivia Quiz with Lifelines 50-50 & Skip with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -10087,7 +10087,7 @@ export default function App() {
 {
   "id": "Q268",
   "title": "Roulette Wheel Spin with Betting Table",
-  "category": "Interactive UI",
+  "category": "JavaScript",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Roulette Wheel Spin with Betting Table with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -10114,7 +10114,7 @@ export default function App() {
 {
   "id": "Q269",
   "title": "Slot Machine Game with Spinning Reels",
-  "category": "Interactive UI",
+  "category": "JavaScript",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Slot Machine Game with Spinning Reels with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -10141,7 +10141,7 @@ export default function App() {
 {
   "id": "Q270",
   "title": "Flappy Bird Clone with Gravity & Pipes",
-  "category": "Interactive UI",
+  "category": "JavaScript",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Flappy Bird Clone with Gravity & Pipes with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -10168,7 +10168,7 @@ export default function App() {
 {
   "id": "Q271",
   "title": "Pong Game with 2-Player Paddle Controls",
-  "category": "Interactive UI",
+  "category": "JavaScript",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Pong Game with 2-Player Paddle Controls with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -10195,7 +10195,7 @@ export default function App() {
 {
   "id": "Q272",
   "title": "Breakout Brick Breaker with Bouncing Ball",
-  "category": "Interactive UI",
+  "category": "JavaScript",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Breakout Brick Breaker with Bouncing Ball with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -10222,7 +10222,7 @@ export default function App() {
 {
   "id": "Q273",
   "title": "Asteroids Ship Control with Inertia Canvas",
-  "category": "Interactive UI",
+  "category": "DOM",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Asteroids Ship Control with Inertia Canvas with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -10249,7 +10249,7 @@ export default function App() {
 {
   "id": "Q274",
   "title": "Tower of Hanoi Disk Transfer Puzzle",
-  "category": "Interactive UI",
+  "category": "JavaScript",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Tower of Hanoi Disk Transfer Puzzle with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -10276,7 +10276,7 @@ export default function App() {
 {
   "id": "Q275",
   "title": "Rubiks Cube 2D Net Unfolding Simulator",
-  "category": "Interactive UI",
+  "category": "JavaScript",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Rubiks Cube 2D Net Unfolding Simulator with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -10303,7 +10303,7 @@ export default function App() {
 {
   "id": "Q276",
   "title": "Maze Generator & Pathfinder with BFS",
-  "category": "Interactive UI",
+  "category": "JavaScript",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Maze Generator & Pathfinder with BFS with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -10330,7 +10330,7 @@ export default function App() {
 {
   "id": "Q277",
   "title": "Pixel Art Editor with Palette & Export PNG",
-  "category": "Interactive UI",
+  "category": "JavaScript",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Pixel Art Editor with Palette & Export PNG with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -10357,7 +10357,7 @@ export default function App() {
 {
   "id": "Q278",
   "title": "Ascii Art Generator from Text Input",
-  "category": "Interactive UI",
+  "category": "JavaScript",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Ascii Art Generator from Text Input with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -10384,7 +10384,7 @@ export default function App() {
 {
   "id": "Q279",
   "title": "Drum Machine Soundboard with Audio Samples",
-  "category": "Interactive UI",
+  "category": "DOM",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Drum Machine Soundboard with Audio Samples with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -10411,7 +10411,7 @@ export default function App() {
 {
   "id": "Q280",
   "title": "Piano Keyboard with Polyphonic Synthesizer",
-  "category": "Interactive UI",
+  "category": "JavaScript",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Piano Keyboard with Polyphonic Synthesizer with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -10438,7 +10438,7 @@ export default function App() {
 {
   "id": "Q281",
   "title": "Metronome with Configurable BPM & Beats",
-  "category": "Interactive UI",
+  "category": "JavaScript",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Metronome with Configurable BPM & Beats with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -10465,7 +10465,7 @@ export default function App() {
 {
   "id": "Q282",
   "title": "Tuner Frequency Pitch Detector",
-  "category": "Interactive UI",
+  "category": "JavaScript",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Tuner Frequency Pitch Detector with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -10492,7 +10492,7 @@ export default function App() {
 {
   "id": "Q283",
   "title": "Guitar Chord Visualizer & Tab Player",
-  "category": "Interactive UI",
+  "category": "JavaScript",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Guitar Chord Visualizer & Tab Player with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -10519,7 +10519,7 @@ export default function App() {
 {
   "id": "Q284",
   "title": "Music Sequencer with 16-Step Beat Grid",
-  "category": "Interactive UI",
+  "category": "JavaScript",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Music Sequencer with 16-Step Beat Grid with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -10546,7 +10546,7 @@ export default function App() {
 {
   "id": "Q285",
   "title": "DJ Turntable Audio Scratches Mock",
-  "category": "Interactive UI",
+  "category": "DOM",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of DJ Turntable Audio Scratches Mock with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -10573,7 +10573,7 @@ export default function App() {
 {
   "id": "Q286",
   "title": "Interactive Periodic Table of Elements",
-  "category": "Interactive UI",
+  "category": "JavaScript",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Interactive Periodic Table of Elements with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -10600,7 +10600,7 @@ export default function App() {
 {
   "id": "Q287",
   "title": "Solar System Planetary Orbit Simulator",
-  "category": "Interactive UI",
+  "category": "JavaScript",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Solar System Planetary Orbit Simulator with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -10627,7 +10627,7 @@ export default function App() {
 {
   "id": "Q288",
   "title": "Weather Radar Cloud Animation Map",
-  "category": "Interactive UI",
+  "category": "JavaScript",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Weather Radar Cloud Animation Map with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -10654,7 +10654,7 @@ export default function App() {
 {
   "id": "Q289",
   "title": "Stock Market Candlestick Chart with Zoom",
-  "category": "Interactive UI",
+  "category": "JavaScript",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Stock Market Candlestick Chart with Zoom with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -10681,7 +10681,7 @@ export default function App() {
 {
   "id": "Q290",
   "title": "Crypto Order Book with Bids & Asks",
-  "category": "Interactive UI",
+  "category": "JavaScript",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Crypto Order Book with Bids & Asks with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -10708,7 +10708,7 @@ export default function App() {
 {
   "id": "Q291",
   "title": "Currency FX Live Ticker with Price Alerts",
-  "category": "Interactive UI",
+  "category": "JavaScript",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Currency FX Live Ticker with Price Alerts with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -10735,7 +10735,7 @@ export default function App() {
 {
   "id": "Q292",
   "title": "Flight Radar Plane Tracking Canvas",
-  "category": "Interactive UI",
+  "category": "DOM",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Flight Radar Plane Tracking Canvas with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -10762,7 +10762,7 @@ export default function App() {
 {
   "id": "Q293",
   "title": "Traffic Light Controller with Pedestrian Button",
-  "category": "Interactive UI",
+  "category": "JavaScript",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Traffic Light Controller with Pedestrian Button with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -10789,7 +10789,7 @@ export default function App() {
 {
   "id": "Q294",
   "title": "Elevator Dispatch Simulator Multi-Floor",
-  "category": "Interactive UI",
+  "category": "React Redux Toolkit",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Elevator Dispatch Simulator Multi-Floor with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -10816,7 +10816,7 @@ export default function App() {
 {
   "id": "Q295",
   "title": "Vending Machine State Machine with Coin Slot",
-  "category": "Interactive UI",
+  "category": "React Redux Toolkit",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Vending Machine State Machine with Coin Slot with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -10843,7 +10843,7 @@ export default function App() {
 {
   "id": "Q296",
   "title": "ATM Cash Dispenser State Machine Flow",
-  "category": "Interactive UI",
+  "category": "React Redux Toolkit",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of ATM Cash Dispenser State Machine Flow with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -10870,7 +10870,7 @@ export default function App() {
 {
   "id": "Q297",
   "title": "Microwave Oven Controller with Timer & Defrost",
-  "category": "Interactive UI",
+  "category": "JavaScript",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Microwave Oven Controller with Timer & Defrost with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -10897,7 +10897,7 @@ export default function App() {
 {
   "id": "Q298",
   "title": "Washing Machine Cycle Controller",
-  "category": "Interactive UI",
+  "category": "JavaScript",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Washing Machine Cycle Controller with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -10924,7 +10924,7 @@ export default function App() {
 {
   "id": "Q299",
   "title": "Smart Thermostat HVAC Interactive Widget",
-  "category": "Interactive UI",
+  "category": "JavaScript",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Smart Thermostat HVAC Interactive Widget with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -10951,7 +10951,7 @@ export default function App() {
 {
   "id": "Q300",
   "title": "Smart Home Device Grid with Power Toggles",
-  "category": "Interactive UI",
+  "category": "ReactJS",
   "difficulty": "Hard",
   "timeEstimate": "25 mins",
   "summary": "Master hands-on implementation of Smart Home Device Grid with Power Toggles with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -10978,7 +10978,7 @@ export default function App() {
 {
   "id": "Q301",
   "title": "Real-Time Chat Stream with SSE",
-  "category": "Async & Performance",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Real-Time Chat Stream with SSE with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -11005,7 +11005,7 @@ export default function App() {
 {
   "id": "Q302",
   "title": "WebSocket Chat Room with Typing Indicators",
-  "category": "Async & Performance",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of WebSocket Chat Room with Typing Indicators with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -11032,7 +11032,7 @@ export default function App() {
 {
   "id": "Q303",
   "title": "Presence Indicator with User Avatars & Online Dots",
-  "category": "Async & Performance",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Presence Indicator with User Avatars & Online Dots with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -11059,7 +11059,7 @@ export default function App() {
 {
   "id": "Q304",
   "title": "Collaborative Text Area with Operational Transform",
-  "category": "Async & Performance",
+  "category": "ReactJS",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Collaborative Text Area with Operational Transform with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -11086,7 +11086,7 @@ export default function App() {
 {
   "id": "Q305",
   "title": "Live Poll with Real-Time Vote Updates",
-  "category": "Async & Performance",
+  "category": "React Query",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Live Poll with Real-Time Vote Updates with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -11113,7 +11113,7 @@ export default function App() {
 {
   "id": "Q306",
   "title": "Sports Scoreboard with Live Event Feed",
-  "category": "Async & Performance",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Sports Scoreboard with Live Event Feed with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -11140,7 +11140,7 @@ export default function App() {
 {
   "id": "Q307",
   "title": "Stock Ticker with Green/Red Flash Transitions",
-  "category": "Async & Performance",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Stock Ticker with Green/Red Flash Transitions with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -11167,7 +11167,7 @@ export default function App() {
 {
   "id": "Q308",
   "title": "Video Live Stream with Overlay Comments",
-  "category": "Async & Performance",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Video Live Stream with Overlay Comments with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -11194,7 +11194,7 @@ export default function App() {
 {
   "id": "Q309",
   "title": "Podcast Player with Chapter Marks & Playback Speed",
-  "category": "Async & Performance",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Podcast Player with Chapter Marks & Playback Speed with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -11221,7 +11221,7 @@ export default function App() {
 {
   "id": "Q310",
   "title": "Custom Audio Player with Playlist & Shuffle",
-  "category": "Async & Performance",
+  "category": "DOM",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Custom Audio Player with Playlist & Shuffle with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -11248,7 +11248,7 @@ export default function App() {
 {
   "id": "Q311",
   "title": "Screen Sharing Canvas with WebRTC Mock",
-  "category": "Async & Performance",
+  "category": "DOM",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Screen Sharing Canvas with WebRTC Mock with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -11275,7 +11275,7 @@ export default function App() {
 {
   "id": "Q312",
   "title": "Voice Message Recorder with Waveform Player",
-  "category": "Async & Performance",
+  "category": "ReactJS",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Voice Message Recorder with Waveform Player with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -11302,7 +11302,7 @@ export default function App() {
 {
   "id": "Q313",
   "title": "Live Code Sandbox with Output Stream",
-  "category": "Async & Performance",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Live Code Sandbox with Output Stream with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -11329,7 +11329,7 @@ export default function App() {
 {
   "id": "Q314",
   "title": "Terminal Emulator with Command History",
-  "category": "Async & Performance",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Terminal Emulator with Command History with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -11356,7 +11356,7 @@ export default function App() {
 {
   "id": "Q315",
   "title": "FTP File Manager with Upload/Download Queue",
-  "category": "Async & Performance",
+  "category": "LeetCode",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of FTP File Manager with Upload/Download Queue with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -11383,7 +11383,7 @@ export default function App() {
 {
   "id": "Q316",
   "title": "Log Stream Viewer with Filter & Pause",
-  "category": "Async & Performance",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Log Stream Viewer with Filter & Pause with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -11410,7 +11410,7 @@ export default function App() {
 {
   "id": "Q317",
   "title": "Notification Push Inbox with Badge Updates",
-  "category": "Async & Performance",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Notification Push Inbox with Badge Updates with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -11437,7 +11437,7 @@ export default function App() {
 {
   "id": "Q318",
   "title": "Multi-User Cursor Tracker with Canvas",
-  "category": "Async & Performance",
+  "category": "DOM",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Multi-User Cursor Tracker with Canvas with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -11464,7 +11464,7 @@ export default function App() {
 {
   "id": "Q319",
   "title": "Real-Time Whiteboard Broadcast with WebSockets",
-  "category": "Async & Performance",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Real-Time Whiteboard Broadcast with WebSockets with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -11491,7 +11491,7 @@ export default function App() {
 {
   "id": "Q320",
   "title": "Live Markdown Document Editor with Collab Locks",
-  "category": "Async & Performance",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Live Markdown Document Editor with Collab Locks with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -11518,7 +11518,7 @@ export default function App() {
 {
   "id": "Q321",
   "title": "Auction Bidding War with Countdown & Auto-Bid",
-  "category": "Async & Performance",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Auction Bidding War with Countdown & Auto-Bid with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -11545,7 +11545,7 @@ export default function App() {
 {
   "id": "Q322",
   "title": "Multiplayer Quiz Lobby with Player Avatars",
-  "category": "Async & Performance",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Multiplayer Quiz Lobby with Player Avatars with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -11572,7 +11572,7 @@ export default function App() {
 {
   "id": "Q323",
   "title": "Real-Time Leaderboard with Rank Transitions",
-  "category": "Async & Performance",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Real-Time Leaderboard with Rank Transitions with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -11599,7 +11599,7 @@ export default function App() {
 {
   "id": "Q324",
   "title": "Live Flight Tracker with Vector Heading",
-  "category": "Async & Performance",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Live Flight Tracker with Vector Heading with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -11626,7 +11626,7 @@ export default function App() {
 {
   "id": "Q325",
   "title": "Vehicle GPS Fleet Map with Route Replay",
-  "category": "Async & Performance",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Vehicle GPS Fleet Map with Route Replay with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -11653,7 +11653,7 @@ export default function App() {
 {
   "id": "Q326",
   "title": "Sensor Telemetry Dashboard with Gauge Meters",
-  "category": "Async & Performance",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Sensor Telemetry Dashboard with Gauge Meters with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -11680,7 +11680,7 @@ export default function App() {
 {
   "id": "Q327",
   "title": "IoT Device Remote Control with Status Ping",
-  "category": "Async & Performance",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of IoT Device Remote Control with Status Ping with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -11707,7 +11707,7 @@ export default function App() {
 {
   "id": "Q328",
   "title": "CCTV Multi-Camera Matrix View",
-  "category": "Async & Performance",
+  "category": "LeetCode",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of CCTV Multi-Camera Matrix View with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -11734,7 +11734,7 @@ export default function App() {
 {
   "id": "Q329",
   "title": "Audio Equalizer with 10-Band Sliders",
-  "category": "Async & Performance",
+  "category": "DOM",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Audio Equalizer with 10-Band Sliders with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -11761,7 +11761,7 @@ export default function App() {
 {
   "id": "Q330",
   "title": "Custom Video Subtitle Renderer with VTT",
-  "category": "Async & Performance",
+  "category": "ReactJS",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Custom Video Subtitle Renderer with VTT with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -11788,7 +11788,7 @@ export default function App() {
 {
   "id": "Q331",
   "title": "Video Thumbnail Preview on Scrub Bar Hover",
-  "category": "Async & Performance",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Video Thumbnail Preview on Scrub Bar Hover with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -11815,7 +11815,7 @@ export default function App() {
 {
   "id": "Q332",
   "title": "Voice Changer Audio Effects Filter",
-  "category": "Async & Performance",
+  "category": "DOM",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Voice Changer Audio Effects Filter with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -11842,7 +11842,7 @@ export default function App() {
 {
   "id": "Q333",
   "title": "Live Streaming Chat with Emote Reactions",
-  "category": "Async & Performance",
+  "category": "ReactJS",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Live Streaming Chat with Emote Reactions with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -11869,7 +11869,7 @@ export default function App() {
 {
   "id": "Q334",
   "title": "Social Feed with Real-Time Incoming Posts Banner",
-  "category": "Async & Performance",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Social Feed with Real-Time Incoming Posts Banner with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -11896,7 +11896,7 @@ export default function App() {
 {
   "id": "Q335",
   "title": "Crypto Portfolio Tracker with Pie Allocation",
-  "category": "Async & Performance",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Crypto Portfolio Tracker with Pie Allocation with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -11923,7 +11923,7 @@ export default function App() {
 {
   "id": "Q336",
   "title": "Payment Gateway Modal with 3D Secure Webview",
-  "category": "Async & Performance",
+  "category": "DOM",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Payment Gateway Modal with 3D Secure Webview with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -11950,7 +11950,7 @@ export default function App() {
 {
   "id": "Q337",
   "title": "Two-Party Contract Signing with Digital Signature",
-  "category": "Async & Performance",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Two-Party Contract Signing with Digital Signature with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -11977,7 +11977,7 @@ export default function App() {
 {
   "id": "Q338",
   "title": "DocuSign PDF Signature Placement Tool",
-  "category": "Async & Performance",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of DocuSign PDF Signature Placement Tool with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -12004,7 +12004,7 @@ export default function App() {
 {
   "id": "Q339",
   "title": "Invoice PDF Generator & Live Preview",
-  "category": "Async & Performance",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Invoice PDF Generator & Live Preview with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -12031,7 +12031,7 @@ export default function App() {
 {
   "id": "Q340",
   "title": "Receipt Scanner with OCR Bounding Boxes",
-  "category": "Async & Performance",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Receipt Scanner with OCR Bounding Boxes with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -12058,7 +12058,7 @@ export default function App() {
 {
   "id": "Q341",
   "title": "Barcode & QR Code Scanner with Video Stream",
-  "category": "Async & Performance",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Barcode & QR Code Scanner with Video Stream with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -12085,7 +12085,7 @@ export default function App() {
 {
   "id": "Q342",
   "title": "Face Filter Augmented Reality Canvas Mock",
-  "category": "Async & Performance",
+  "category": "DOM",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Face Filter Augmented Reality Canvas Mock with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -12112,7 +12112,7 @@ export default function App() {
 {
   "id": "Q343",
   "title": "Virtual Keyboard with Multi-Language Layouts",
-  "category": "Async & Performance",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Virtual Keyboard with Multi-Language Layouts with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -12139,7 +12139,7 @@ export default function App() {
 {
   "id": "Q344",
   "title": "Emoji Picker with Search & Categories",
-  "category": "Async & Performance",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Emoji Picker with Search & Categories with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -12166,7 +12166,7 @@ export default function App() {
 {
   "id": "Q345",
   "title": "GIF Search & Selector with Tenor Integration",
-  "category": "Async & Performance",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of GIF Search & Selector with Tenor Integration with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -12193,7 +12193,7 @@ export default function App() {
 {
   "id": "Q346",
   "title": "Sticker Placer on Canvas with Resize & Rotate",
-  "category": "Async & Performance",
+  "category": "DOM",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Sticker Placer on Canvas with Resize & Rotate with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -12220,7 +12220,7 @@ export default function App() {
 {
   "id": "Q347",
   "title": "Meme Generator with Top/Bottom Text Overlay",
-  "category": "Async & Performance",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Meme Generator with Top/Bottom Text Overlay with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -12247,7 +12247,7 @@ export default function App() {
 {
   "id": "Q348",
   "title": "Interactive Story Tree with Branching Choices",
-  "category": "Async & Performance",
+  "category": "LeetCode",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Interactive Story Tree with Branching Choices with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -12274,7 +12274,7 @@ export default function App() {
 {
   "id": "Q349",
   "title": "Music Sheet Music Renderer with Note Cursor",
-  "category": "Async & Performance",
+  "category": "ReactJS",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Music Sheet Music Renderer with Note Cursor with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -12301,7 +12301,7 @@ export default function App() {
 {
   "id": "Q350",
   "title": "Audio Visualizer with Bars, Wave & Circle Modes",
-  "category": "Async & Performance",
+  "category": "DOM",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Audio Visualizer with Bars, Wave & Circle Modes with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -12328,7 +12328,7 @@ export default function App() {
 {
   "id": "Q351",
   "title": "Compound Tabs Component Pattern with Context",
-  "category": "Architecture",
+  "category": "ReactJS",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Compound Tabs Component Pattern with Context with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -12355,7 +12355,7 @@ export default function App() {
 {
   "id": "Q352",
   "title": "Compound Select Component with Options & Trigger",
-  "category": "Architecture",
+  "category": "ReactJS",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Compound Select Component with Options & Trigger with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -12382,7 +12382,7 @@ export default function App() {
 {
   "id": "Q353",
   "title": "Compound Modal with Header, Body, Footer & Close",
-  "category": "Architecture",
+  "category": "DOM",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Compound Modal with Header, Body, Footer & Close with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -12409,7 +12409,7 @@ export default function App() {
 {
   "id": "Q354",
   "title": "Compound Accordion with Header & Panel Items",
-  "category": "Architecture",
+  "category": "DOM",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Compound Accordion with Header & Panel Items with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -12436,7 +12436,7 @@ export default function App() {
 {
   "id": "Q355",
   "title": "Headless Dropdown Hook & Primitive Components",
-  "category": "Architecture",
+  "category": "DOM",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Headless Dropdown Hook & Primitive Components with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -12463,7 +12463,7 @@ export default function App() {
 {
   "id": "Q356",
   "title": "Headless Popover with Floating UI Positioning",
-  "category": "Architecture",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Headless Popover with Floating UI Positioning with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -12490,7 +12490,7 @@ export default function App() {
 {
   "id": "Q357",
   "title": "Render Props Pattern Data Provider Component",
-  "category": "Architecture",
+  "category": "ReactJS",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Render Props Pattern Data Provider Component with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -12517,7 +12517,7 @@ export default function App() {
 {
   "id": "Q358",
   "title": "Higher-Order Component with Authorization Gate",
-  "category": "Architecture",
+  "category": "ReactJS",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Higher-Order Component with Authorization Gate with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -12544,7 +12544,7 @@ export default function App() {
 {
   "id": "Q359",
   "title": "Polymorphic Component As Prop with Types",
-  "category": "Architecture",
+  "category": "TypeScript",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Polymorphic Component As Prop with Types with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -12571,7 +12571,7 @@ export default function App() {
 {
   "id": "Q360",
   "title": "Slot Pattern Architecture for Pluggable Children",
-  "category": "Architecture",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Slot Pattern Architecture for Pluggable Children with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -12598,7 +12598,7 @@ export default function App() {
 {
   "id": "Q361",
   "title": "State Reducer Pattern for Inversion of Control",
-  "category": "Architecture",
+  "category": "React Redux Toolkit",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of State Reducer Pattern for Inversion of Control with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -12625,7 +12625,7 @@ export default function App() {
 {
   "id": "Q362",
   "title": "Finite State Machine Toggle with XState Mock",
-  "category": "Architecture",
+  "category": "React Redux Toolkit",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Finite State Machine Toggle with XState Mock with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -12652,7 +12652,7 @@ export default function App() {
 {
   "id": "Q363",
   "title": "Multi-Step Checkout State Machine with Guards",
-  "category": "Architecture",
+  "category": "React Redux Toolkit",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Multi-Step Checkout State Machine with Guards with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -12679,7 +12679,7 @@ export default function App() {
 {
   "id": "Q364",
   "title": "Form Validation Schema Engine with Zod Mock",
-  "category": "Architecture",
+  "category": "TypeScript",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Form Validation Schema Engine with Zod Mock with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -12706,7 +12706,7 @@ export default function App() {
 {
   "id": "Q365",
   "title": "Event Bus Pub-Sub Pattern in React",
-  "category": "Architecture",
+  "category": "React Redux Toolkit",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Event Bus Pub-Sub Pattern in React with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -12733,7 +12733,7 @@ export default function App() {
 {
   "id": "Q366",
   "title": "Clean Architecture Repository Pattern Data Hook",
-  "category": "Architecture",
+  "category": "ReactJS",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Clean Architecture Repository Pattern Data Hook with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -12760,7 +12760,7 @@ export default function App() {
 {
   "id": "Q367",
   "title": "Factory Pattern for Dynamic Chart Generators",
-  "category": "Architecture",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Factory Pattern for Dynamic Chart Generators with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -12787,7 +12787,7 @@ export default function App() {
 {
   "id": "Q368",
   "title": "Strategy Pattern for Pluggable Payment Gateways",
-  "category": "Architecture",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Strategy Pattern for Pluggable Payment Gateways with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -12814,7 +12814,7 @@ export default function App() {
 {
   "id": "Q369",
   "title": "Observer Pattern for Notification Subscriptions",
-  "category": "Architecture",
+  "category": "DOM",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Observer Pattern for Notification Subscriptions with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -12841,7 +12841,7 @@ export default function App() {
 {
   "id": "Q370",
   "title": "Command Pattern with Undoable Editor Actions",
-  "category": "Architecture",
+  "category": "React Redux Toolkit",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Command Pattern with Undoable Editor Actions with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -12868,7 +12868,7 @@ export default function App() {
 {
   "id": "Q371",
   "title": "Decorator Pattern for Component Props Enhancement",
-  "category": "Architecture",
+  "category": "ReactJS",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Decorator Pattern for Component Props Enhancement with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -12895,7 +12895,7 @@ export default function App() {
 {
   "id": "Q372",
   "title": "Adapter Pattern for Legacy API Normalization",
-  "category": "Architecture",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Adapter Pattern for Legacy API Normalization with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -12922,7 +12922,7 @@ export default function App() {
 {
   "id": "Q373",
   "title": "Facade Pattern for Multi-Service Analytics Tracking",
-  "category": "Architecture",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Facade Pattern for Multi-Service Analytics Tracking with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -12949,7 +12949,7 @@ export default function App() {
 {
   "id": "Q374",
   "title": "Proxy Pattern for Reactive Object State",
-  "category": "Architecture",
+  "category": "ReactJS",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Proxy Pattern for Reactive Object State with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -12976,7 +12976,7 @@ export default function App() {
 {
   "id": "Q375",
   "title": "Dependency Injection Container with React Context",
-  "category": "Architecture",
+  "category": "ReactJS",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Dependency Injection Container with React Context with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -13003,7 +13003,7 @@ export default function App() {
 {
   "id": "Q376",
   "title": "Scoped Context Provider for Nested Hierarchies",
-  "category": "Architecture",
+  "category": "ReactJS",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Scoped Context Provider for Nested Hierarchies with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -13030,7 +13030,7 @@ export default function App() {
 {
   "id": "Q377",
   "title": "Atomic Design Component Library Catalog",
-  "category": "Architecture",
+  "category": "ReactJS",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Atomic Design Component Library Catalog with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -13057,7 +13057,7 @@ export default function App() {
 {
   "id": "Q378",
   "title": "Design Token Engine with Theme Variables",
-  "category": "Architecture",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Design Token Engine with Theme Variables with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -13084,7 +13084,7 @@ export default function App() {
 {
   "id": "Q379",
   "title": "Accessible Dialog with React Portals & Inert",
-  "category": "Architecture",
+  "category": "DOM",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Accessible Dialog with React Portals & Inert with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -13111,7 +13111,7 @@ export default function App() {
 {
   "id": "Q380",
   "title": "Accessible Toast Notification with Live Regions",
-  "category": "Architecture",
+  "category": "ReactJS",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Accessible Toast Notification with Live Regions with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -13138,7 +13138,7 @@ export default function App() {
 {
   "id": "Q381",
   "title": "Accessible Menu with ARIA Keyboard Activedescendant",
-  "category": "Architecture",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Accessible Menu with ARIA Keyboard Activedescendant with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -13165,7 +13165,7 @@ export default function App() {
 {
   "id": "Q382",
   "title": "Accessible Slider with ARIA Valuenow & Min/Max",
-  "category": "Architecture",
+  "category": "DOM",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Accessible Slider with ARIA Valuenow & Min/Max with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -13192,7 +13192,7 @@ export default function App() {
 {
   "id": "Q383",
   "title": "Accessible Treeview with ARIA Level & Expanded",
-  "category": "Architecture",
+  "category": "LeetCode",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Accessible Treeview with ARIA Level & Expanded with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -13219,7 +13219,7 @@ export default function App() {
 {
   "id": "Q384",
   "title": "Accessible Combobox with ARIA Listbox Pattern",
-  "category": "Architecture",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Accessible Combobox with ARIA Listbox Pattern with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -13246,7 +13246,7 @@ export default function App() {
 {
   "id": "Q385",
   "title": "Accessible Breadcrumb with ARIA Current Page",
-  "category": "Architecture",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Accessible Breadcrumb with ARIA Current Page with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -13273,7 +13273,7 @@ export default function App() {
 {
   "id": "Q386",
   "title": "Accessible Stepper with ARIA Current Step",
-  "category": "Architecture",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Accessible Stepper with ARIA Current Step with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -13300,7 +13300,7 @@ export default function App() {
 {
   "id": "Q387",
   "title": "Accessible Tooltip with ARIA Describedby",
-  "category": "Architecture",
+  "category": "DOM",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Accessible Tooltip with ARIA Describedby with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -13327,7 +13327,7 @@ export default function App() {
 {
   "id": "Q388",
   "title": "Accessible Alert with ARIA Role Alert",
-  "category": "Architecture",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Accessible Alert with ARIA Role Alert with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -13354,7 +13354,7 @@ export default function App() {
 {
   "id": "Q389",
   "title": "Accessible Carousel with Live Region Announcements",
-  "category": "Architecture",
+  "category": "DOM",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Accessible Carousel with Live Region Announcements with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -13381,7 +13381,7 @@ export default function App() {
 {
   "id": "Q390",
   "title": "Accessible Form Error Summary with Focus Move",
-  "category": "Architecture",
+  "category": "ReactJS",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Accessible Form Error Summary with Focus Move with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -13408,7 +13408,7 @@ export default function App() {
 {
   "id": "Q391",
   "title": "Internationalization i18n Translation Hook",
-  "category": "Architecture",
+  "category": "ReactJS",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Internationalization i18n Translation Hook with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -13435,7 +13435,7 @@ export default function App() {
 {
   "id": "Q392",
   "title": "RTL Layout Mirroring Engine with BiDi Text",
-  "category": "Architecture",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of RTL Layout Mirroring Engine with BiDi Text with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -13462,7 +13462,7 @@ export default function App() {
 {
   "id": "Q393",
   "title": "Date & Currency Localizer with Intl APIs",
-  "category": "Architecture",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Date & Currency Localizer with Intl APIs with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -13489,7 +13489,7 @@ export default function App() {
 {
   "id": "Q394",
   "title": "Pluralization Rule Engine with Unicode CLDR",
-  "category": "Architecture",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Pluralization Rule Engine with Unicode CLDR with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -13516,7 +13516,7 @@ export default function App() {
 {
   "id": "Q395",
   "title": "Server-Driven UI Dynamic Page Renderer",
-  "category": "Architecture",
+  "category": "ReactJS",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Server-Driven UI Dynamic Page Renderer with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -13543,7 +13543,7 @@ export default function App() {
 {
   "id": "Q396",
   "title": "Server-Driven UI Form Component Engine",
-  "category": "Architecture",
+  "category": "ReactJS",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Server-Driven UI Form Component Engine with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -13570,7 +13570,7 @@ export default function App() {
 {
   "id": "Q397",
   "title": "Micro-Frontend Module Federation Shell Mock",
-  "category": "Architecture",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Micro-Frontend Module Federation Shell Mock with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -13597,7 +13597,7 @@ export default function App() {
 {
   "id": "Q398",
   "title": "Micro-Frontend Isolated Sub-App Container",
-  "category": "Architecture",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Micro-Frontend Isolated Sub-App Container with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -13624,7 +13624,7 @@ export default function App() {
 {
   "id": "Q399",
   "title": "Web Component React Bridge Wrapper",
-  "category": "Architecture",
+  "category": "ReactJS",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of Web Component React Bridge Wrapper with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -13651,7 +13651,7 @@ export default function App() {
 {
   "id": "Q400",
   "title": "React Component to Custom Element Exporter",
-  "category": "Architecture",
+  "category": "ReactJS",
   "difficulty": "Senior",
   "timeEstimate": "30 mins",
   "summary": "Master hands-on implementation of React Component to Custom Element Exporter with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -13678,7 +13678,7 @@ export default function App() {
 {
   "id": "Q401",
   "title": "Enterprise Grid with Resizable Columns",
-  "category": "Architecture",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of Enterprise Grid with Resizable Columns with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -13705,7 +13705,7 @@ export default function App() {
 {
   "id": "Q402",
   "title": "Enterprise Grid with Column Reordering",
-  "category": "Architecture",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of Enterprise Grid with Column Reordering with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -13732,7 +13732,7 @@ export default function App() {
 {
   "id": "Q403",
   "title": "Enterprise Grid with Column Pinning Left & Right",
-  "category": "Architecture",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of Enterprise Grid with Column Pinning Left & Right with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -13759,7 +13759,7 @@ export default function App() {
 {
   "id": "Q404",
   "title": "Enterprise Grid with Multi-Column Sorting",
-  "category": "Architecture",
+  "category": "LeetCode",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of Enterprise Grid with Multi-Column Sorting with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -13786,7 +13786,7 @@ export default function App() {
 {
   "id": "Q405",
   "title": "Enterprise Grid with Nested Row Grouping",
-  "category": "Architecture",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of Enterprise Grid with Nested Row Grouping with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -13813,7 +13813,7 @@ export default function App() {
 {
   "id": "Q406",
   "title": "Enterprise Grid with Summary & Total Footer",
-  "category": "Architecture",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of Enterprise Grid with Summary & Total Footer with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -13840,7 +13840,7 @@ export default function App() {
 {
   "id": "Q407",
   "title": "Enterprise Grid with Cell Selection & Range Copy",
-  "category": "Architecture",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of Enterprise Grid with Cell Selection & Range Copy with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -13867,7 +13867,7 @@ export default function App() {
 {
   "id": "Q408",
   "title": "Enterprise Grid with Inline Cell Validation",
-  "category": "Architecture",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of Enterprise Grid with Inline Cell Validation with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -13894,7 +13894,7 @@ export default function App() {
 {
   "id": "Q409",
   "title": "Enterprise Grid with Virtualized Scrolling 50k Rows",
-  "category": "Architecture",
+  "category": "DOM",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of Enterprise Grid with Virtualized Scrolling 50k Rows with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -13921,7 +13921,7 @@ export default function App() {
 {
   "id": "Q410",
   "title": "Enterprise Grid with CSV & Excel Export",
-  "category": "Architecture",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of Enterprise Grid with CSV & Excel Export with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -13948,7 +13948,7 @@ export default function App() {
 {
   "id": "Q411",
   "title": "Pivot Table Generator with Row/Column Aggregation",
-  "category": "Architecture",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of Pivot Table Generator with Row/Column Aggregation with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -13975,7 +13975,7 @@ export default function App() {
 {
   "id": "Q412",
   "title": "Interactive Pivot Heatmap Matrix",
-  "category": "Architecture",
+  "category": "LeetCode",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of Interactive Pivot Heatmap Matrix with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -14002,7 +14002,7 @@ export default function App() {
 {
   "id": "Q413",
   "title": "BI Dashboard with Draggable Grid Layout",
-  "category": "Architecture",
+  "category": "DOM",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of BI Dashboard with Draggable Grid Layout with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -14029,7 +14029,7 @@ export default function App() {
 {
   "id": "Q414",
   "title": "BI Dashboard with Resizable Widget Panels",
-  "category": "Architecture",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of BI Dashboard with Resizable Widget Panels with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -14056,7 +14056,7 @@ export default function App() {
 {
   "id": "Q415",
   "title": "BI Dashboard with Global Date Range Filter Sync",
-  "category": "Architecture",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of BI Dashboard with Global Date Range Filter Sync with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -14083,7 +14083,7 @@ export default function App() {
 {
   "id": "Q416",
   "title": "BI Dashboard with Cross-Widget Filtering",
-  "category": "Architecture",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of BI Dashboard with Cross-Widget Filtering with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -14110,7 +14110,7 @@ export default function App() {
 {
   "id": "Q417",
   "title": "Bar Chart Component with Tooltips & Hover Highlighting",
-  "category": "Architecture",
+  "category": "DOM",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of Bar Chart Component with Tooltips & Hover Highlighting with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -14137,7 +14137,7 @@ export default function App() {
 {
   "id": "Q418",
   "title": "Line Chart Component with Multi-Series & Dots",
-  "category": "Architecture",
+  "category": "ReactJS",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of Line Chart Component with Multi-Series & Dots with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -14164,7 +14164,7 @@ export default function App() {
 {
   "id": "Q419",
   "title": "Area Chart Component with Gradient Fill",
-  "category": "Architecture",
+  "category": "ReactJS",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of Area Chart Component with Gradient Fill with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -14191,7 +14191,7 @@ export default function App() {
 {
   "id": "Q420",
   "title": "Donut & Pie Chart with Slice Click Selection",
-  "category": "Architecture",
+  "category": "React Redux Toolkit",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of Donut & Pie Chart with Slice Click Selection with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -14218,7 +14218,7 @@ export default function App() {
 {
   "id": "Q421",
   "title": "Scatter Plot Chart with Trendline Calculation",
-  "category": "Architecture",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of Scatter Plot Chart with Trendline Calculation with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -14245,7 +14245,7 @@ export default function App() {
 {
   "id": "Q422",
   "title": "Bubble Chart with 3-Dimensional Metrics",
-  "category": "Architecture",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of Bubble Chart with 3-Dimensional Metrics with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -14272,7 +14272,7 @@ export default function App() {
 {
   "id": "Q423",
   "title": "Radar Spider Chart with Skill Metrics",
-  "category": "Architecture",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of Radar Spider Chart with Skill Metrics with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -14299,7 +14299,7 @@ export default function App() {
 {
   "id": "Q424",
   "title": "Waterfall Chart for Financial P&L Breakdown",
-  "category": "Architecture",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of Waterfall Chart for Financial P&L Breakdown with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -14326,7 +14326,7 @@ export default function App() {
 {
   "id": "Q425",
   "title": "Gantt Chart Project Timeline with Dependencies",
-  "category": "Architecture",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of Gantt Chart Project Timeline with Dependencies with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -14353,7 +14353,7 @@ export default function App() {
 {
   "id": "Q426",
   "title": "Kanban Board with WIP Limits & Swimlanes",
-  "category": "Architecture",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of Kanban Board with WIP Limits & Swimlanes with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -14380,7 +14380,7 @@ export default function App() {
 {
   "id": "Q427",
   "title": "Burndown Chart for Agile Sprint Tracking",
-  "category": "Architecture",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of Burndown Chart for Agile Sprint Tracking with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -14407,7 +14407,7 @@ export default function App() {
 {
   "id": "Q428",
   "title": "Velocity Chart for Engineering Team Capacity",
-  "category": "Architecture",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of Velocity Chart for Engineering Team Capacity with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -14434,7 +14434,7 @@ export default function App() {
 {
   "id": "Q429",
   "title": "Sankey Diagram for User Journey Funnels",
-  "category": "Architecture",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of Sankey Diagram for User Journey Funnels with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -14461,7 +14461,7 @@ export default function App() {
 {
   "id": "Q430",
   "title": "Treemap Diagram for Disk Space Visualization",
-  "category": "Architecture",
+  "category": "LeetCode",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of Treemap Diagram for Disk Space Visualization with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -14488,7 +14488,7 @@ export default function App() {
 {
   "id": "Q431",
   "title": "Network Graph Nodes with Force Layout Simulation",
-  "category": "Architecture",
+  "category": "React Query",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of Network Graph Nodes with Force Layout Simulation with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -14515,7 +14515,7 @@ export default function App() {
 {
   "id": "Q432",
   "title": "Heatmap Calendar like GitHub Contribution Graph",
-  "category": "Architecture",
+  "category": "LeetCode",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of Heatmap Calendar like GitHub Contribution Graph with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -14542,7 +14542,7 @@ export default function App() {
 {
   "id": "Q433",
   "title": "World Map Choropleth with Country Metrics",
-  "category": "Architecture",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of World Map Choropleth with Country Metrics with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -14569,7 +14569,7 @@ export default function App() {
 {
   "id": "Q434",
   "title": "Real-Time Server CPU & Memory Monitoring Dashboard",
-  "category": "Architecture",
+  "category": "ReactJS",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of Real-Time Server CPU & Memory Monitoring Dashboard with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -14596,7 +14596,7 @@ export default function App() {
 {
   "id": "Q435",
   "title": "API Health Status Dashboard with Uptime Bars",
-  "category": "Architecture",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of API Health Status Dashboard with Uptime Bars with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -14623,7 +14623,7 @@ export default function App() {
 {
   "id": "Q436",
   "title": "User Session Recording Player Canvas Replay",
-  "category": "Architecture",
+  "category": "DOM",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of User Session Recording Player Canvas Replay with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -14650,7 +14650,7 @@ export default function App() {
 {
   "id": "Q437",
   "title": "A/B Testing Experiment Results Comparison Matrix",
-  "category": "Architecture",
+  "category": "LeetCode",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of A/B Testing Experiment Results Comparison Matrix with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -14677,7 +14677,7 @@ export default function App() {
 {
   "id": "Q438",
   "title": "Customer Cohort Retention Analysis Table",
-  "category": "Architecture",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of Customer Cohort Retention Analysis Table with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -14704,7 +14704,7 @@ export default function App() {
 {
   "id": "Q439",
   "title": "E-Commerce Sales Funnel Drop-off Visualizer",
-  "category": "Architecture",
+  "category": "DOM",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of E-Commerce Sales Funnel Drop-off Visualizer with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -14731,7 +14731,7 @@ export default function App() {
 {
   "id": "Q440",
   "title": "Churn Prediction Scorecard with Risk Tags",
-  "category": "Architecture",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of Churn Prediction Scorecard with Risk Tags with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -14758,7 +14758,7 @@ export default function App() {
 {
   "id": "Q441",
   "title": "Feature Flag Management Studio with Kill Switches",
-  "category": "Architecture",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of Feature Flag Management Studio with Kill Switches with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -14785,7 +14785,7 @@ export default function App() {
 {
   "id": "Q442",
   "title": "User Permission Entitlement Matrix Studio",
-  "category": "Architecture",
+  "category": "LeetCode",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of User Permission Entitlement Matrix Studio with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -14812,7 +14812,7 @@ export default function App() {
 {
   "id": "Q443",
   "title": "Audit Trail Log Explorer with JSON Diff Viewer",
-  "category": "Architecture",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of Audit Trail Log Explorer with JSON Diff Viewer with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -14839,7 +14839,7 @@ export default function App() {
 {
   "id": "Q444",
   "title": "Database Schema Visualizer with Table Relationships",
-  "category": "Architecture",
+  "category": "TypeScript",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of Database Schema Visualizer with Table Relationships with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -14866,7 +14866,7 @@ export default function App() {
 {
   "id": "Q445",
   "title": "REST API Documentation Explorer with Try-It-Out",
-  "category": "Architecture",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of REST API Documentation Explorer with Try-It-Out with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -14893,7 +14893,7 @@ export default function App() {
 {
   "id": "Q446",
   "title": "GraphQL Query Builder with Schema Explorer",
-  "category": "Architecture",
+  "category": "React Query",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of GraphQL Query Builder with Schema Explorer with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -14920,7 +14920,7 @@ export default function App() {
 {
   "id": "Q447",
   "title": "Webhook Delivery Log with Payload Inspector",
-  "category": "Architecture",
+  "category": "ReactJS",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of Webhook Delivery Log with Payload Inspector with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -14947,7 +14947,7 @@ export default function App() {
 {
   "id": "Q448",
   "title": "Task Scheduler Cron Expression Visualizer",
-  "category": "Architecture",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of Task Scheduler Cron Expression Visualizer with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -14974,7 +14974,7 @@ export default function App() {
 {
   "id": "Q449",
   "title": "Alert Manager with Incident Severity Triage",
-  "category": "Architecture",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of Alert Manager with Incident Severity Triage with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -15001,7 +15001,7 @@ export default function App() {
 {
   "id": "Q450",
   "title": "Cloud Cost Infrastructure Optimization Dashboard",
-  "category": "Architecture",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of Cloud Cost Infrastructure Optimization Dashboard with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -15028,7 +15028,7 @@ export default function App() {
 {
   "id": "Q451",
   "title": "Offline Sync Queue with IndexedDB Storage",
-  "category": "Architecture",
+  "category": "LeetCode",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of Offline Sync Queue with IndexedDB Storage with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -15055,7 +15055,7 @@ export default function App() {
 {
   "id": "Q452",
   "title": "Optimistic Mutation with Exponential Backoff Retry",
-  "category": "Architecture",
+  "category": "React Query",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of Optimistic Mutation with Exponential Backoff Retry with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -15082,7 +15082,7 @@ export default function App() {
 {
   "id": "Q453",
   "title": "Circuit Breaker Pattern for Failing Network APIs",
-  "category": "Architecture",
+  "category": "React Query",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of Circuit Breaker Pattern for Failing Network APIs with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -15109,7 +15109,7 @@ export default function App() {
 {
   "id": "Q454",
   "title": "Client-Side Rate Limiter with Token Bucket",
-  "category": "Architecture",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of Client-Side Rate Limiter with Token Bucket with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -15136,7 +15136,7 @@ export default function App() {
 {
   "id": "Q455",
   "title": "Request Deduplication Layer for Concurrent Fetches",
-  "category": "Architecture",
+  "category": "React Query",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of Request Deduplication Layer for Concurrent Fetches with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -15163,7 +15163,7 @@ export default function App() {
 {
   "id": "Q456",
   "title": "Stale-While-Revalidate Caching Layer",
-  "category": "Architecture",
+  "category": "React Query",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of Stale-While-Revalidate Caching Layer with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -15190,7 +15190,7 @@ export default function App() {
 {
   "id": "Q457",
   "title": "Background Polling with Document Visibility Pause",
-  "category": "Architecture",
+  "category": "React Query",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of Background Polling with Document Visibility Pause with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -15217,7 +15217,7 @@ export default function App() {
 {
   "id": "Q458",
   "title": "Cross-Tab State Synchronization with BroadcastChannel",
-  "category": "Architecture",
+  "category": "ReactJS",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of Cross-Tab State Synchronization with BroadcastChannel with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -15244,7 +15244,7 @@ export default function App() {
 {
   "id": "Q459",
   "title": "Shared Worker Multi-Tab Data Coordination",
-  "category": "Architecture",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of Shared Worker Multi-Tab Data Coordination with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -15271,7 +15271,7 @@ export default function App() {
 {
   "id": "Q460",
   "title": "Service Worker Cache Strategy Demonstrator",
-  "category": "Architecture",
+  "category": "React Query",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of Service Worker Cache Strategy Demonstrator with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -15298,7 +15298,7 @@ export default function App() {
 {
   "id": "Q461",
   "title": "Error Boundary with Fallback UI & Sentry Mock",
-  "category": "Architecture",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of Error Boundary with Fallback UI & Sentry Mock with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -15325,7 +15325,7 @@ export default function App() {
 {
   "id": "Q462",
   "title": "Asynchronous Error Recovery with Retry Boundary",
-  "category": "Architecture",
+  "category": "React Query",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of Asynchronous Error Recovery with Retry Boundary with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -15352,7 +15352,7 @@ export default function App() {
 {
   "id": "Q463",
   "title": "Hydration Mismatch Detector & Auto-Healer",
-  "category": "Architecture",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of Hydration Mismatch Detector & Auto-Healer with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -15379,7 +15379,7 @@ export default function App() {
 {
   "id": "Q464",
   "title": "Asset Preloading & Prefetching Coordinator",
-  "category": "Architecture",
+  "category": "ReactJS",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of Asset Preloading & Prefetching Coordinator with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -15406,7 +15406,7 @@ export default function App() {
 {
   "id": "Q465",
   "title": "Dynamic Script Loader with Dependency Graph",
-  "category": "Architecture",
+  "category": "LeetCode",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of Dynamic Script Loader with Dependency Graph with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -15433,7 +15433,7 @@ export default function App() {
 {
   "id": "Q466",
   "title": "Lazy Component Loader with Preload on Hover",
-  "category": "Architecture",
+  "category": "ReactJS",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of Lazy Component Loader with Preload on Hover with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -15460,7 +15460,7 @@ export default function App() {
 {
   "id": "Q467",
   "title": "Progressive Web App Install Prompt Controller",
-  "category": "Architecture",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of Progressive Web App Install Prompt Controller with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -15487,7 +15487,7 @@ export default function App() {
 {
   "id": "Q468",
   "title": "Web Push Notification Permission Manager",
-  "category": "Architecture",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of Web Push Notification Permission Manager with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -15514,7 +15514,7 @@ export default function App() {
 {
   "id": "Q469",
   "title": "Biometric WebAuthn Fingerprint Mock Flow",
-  "category": "Architecture",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of Biometric WebAuthn Fingerprint Mock Flow with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -15541,7 +15541,7 @@ export default function App() {
 {
   "id": "Q470",
   "title": "Client-Side Encryption with Web Crypto API",
-  "category": "Architecture",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of Client-Side Encryption with Web Crypto API with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -15568,7 +15568,7 @@ export default function App() {
 {
   "id": "Q471",
   "title": "JWT Token Lifecycle with Auto-Refresh Timer",
-  "category": "Architecture",
+  "category": "ReactJS",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of JWT Token Lifecycle with Auto-Refresh Timer with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -15595,7 +15595,7 @@ export default function App() {
 {
   "id": "Q472",
   "title": "OAuth 2.0 PKCE Authorization Flow Simulator",
-  "category": "Architecture",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of OAuth 2.0 PKCE Authorization Flow Simulator with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -15622,7 +15622,7 @@ export default function App() {
 {
   "id": "Q473",
   "title": "Content Security Policy CSP Violation Reporter",
-  "category": "Architecture",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of Content Security Policy CSP Violation Reporter with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -15649,7 +15649,7 @@ export default function App() {
 {
   "id": "Q474",
   "title": "XSS Sanitizer Input Component with DOMPurify Mock",
-  "category": "Architecture",
+  "category": "DOM",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of XSS Sanitizer Input Component with DOMPurify Mock with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -15676,7 +15676,7 @@ export default function App() {
 {
   "id": "Q475",
   "title": "CSRF Token Header Injector for Fetch API",
-  "category": "Architecture",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of CSRF Token Header Injector for Fetch API with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -15703,7 +15703,7 @@ export default function App() {
 {
   "id": "Q476",
   "title": "User Inactivity Auto-Logout with Warning Modal",
-  "category": "Architecture",
+  "category": "DOM",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of User Inactivity Auto-Logout with Warning Modal with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -15730,7 +15730,7 @@ export default function App() {
 {
   "id": "Q477",
   "title": "Secure Clipboard Clear on Window Blur",
-  "category": "Architecture",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of Secure Clipboard Clear on Window Blur with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -15757,7 +15757,7 @@ export default function App() {
 {
   "id": "Q478",
   "title": "Sensitive Data Masking Component with Toggle",
-  "category": "Architecture",
+  "category": "ReactJS",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of Sensitive Data Masking Component with Toggle with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -15784,7 +15784,7 @@ export default function App() {
 {
   "id": "Q479",
   "title": "Audit Logging Telemetry Dispatcher with Batching",
-  "category": "Architecture",
+  "category": "React Redux Toolkit",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of Audit Logging Telemetry Dispatcher with Batching with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -15811,7 +15811,7 @@ export default function App() {
 {
   "id": "Q480",
   "title": "Client-Side Crash Reporter with Stack Trace",
-  "category": "Architecture",
+  "category": "LeetCode",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of Client-Side Crash Reporter with Stack Trace with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -15838,7 +15838,7 @@ export default function App() {
 {
   "id": "Q481",
   "title": "Feature Tour Onboarding Walkthrough Highlighter",
-  "category": "Architecture",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of Feature Tour Onboarding Walkthrough Highlighter with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -15865,7 +15865,7 @@ export default function App() {
 {
   "id": "Q482",
   "title": "Command Palette Quick Action Menu Cmd+K",
-  "category": "Architecture",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of Command Palette Quick Action Menu Cmd+K with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -15892,7 +15892,7 @@ export default function App() {
 {
   "id": "Q483",
   "title": "Keyboard Shortcut Manager with Scope Isolation",
-  "category": "Architecture",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of Keyboard Shortcut Manager with Scope Isolation with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -15919,7 +15919,7 @@ export default function App() {
 {
   "id": "Q484",
   "title": "Global Undo Redo Manager with Command Stack",
-  "category": "Architecture",
+  "category": "React Redux Toolkit",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of Global Undo Redo Manager with Command Stack with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -15946,7 +15946,7 @@ export default function App() {
 {
   "id": "Q485",
   "title": "Multi-Window Desktop Workspace Manager",
-  "category": "Architecture",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of Multi-Window Desktop Workspace Manager with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -15973,7 +15973,7 @@ export default function App() {
 {
   "id": "Q486",
   "title": "Dockable Window Panels with Snapping Guides",
-  "category": "Architecture",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of Dockable Window Panels with Snapping Guides with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -16000,7 +16000,7 @@ export default function App() {
 {
   "id": "Q487",
   "title": "Accessibility Focus Restorer across Routes",
-  "category": "Architecture",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of Accessibility Focus Restorer across Routes with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -16027,7 +16027,7 @@ export default function App() {
 {
   "id": "Q488",
   "title": "Screen Reader Live Announcement Stream",
-  "category": "Architecture",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of Screen Reader Live Announcement Stream with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -16054,7 +16054,7 @@ export default function App() {
 {
   "id": "Q489",
   "title": "High Contrast Mode Theme with SVG Inversion",
-  "category": "Architecture",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of High Contrast Mode Theme with SVG Inversion with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -16081,7 +16081,7 @@ export default function App() {
 {
   "id": "Q490",
   "title": "Reduced Motion Preference Animator Adapter",
-  "category": "Architecture",
+  "category": "ReactJS",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of Reduced Motion Preference Animator Adapter with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -16108,7 +16108,7 @@ export default function App() {
 {
   "id": "Q491",
   "title": "Print Stylesheet Previewer for Documents",
-  "category": "Architecture",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of Print Stylesheet Previewer for Documents with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -16135,7 +16135,7 @@ export default function App() {
 {
   "id": "Q492",
   "title": "PDF Generation Engine with HTML Canvas",
-  "category": "Architecture",
+  "category": "DOM",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of PDF Generation Engine with HTML Canvas with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -16162,7 +16162,7 @@ export default function App() {
 {
   "id": "Q493",
   "title": "Full-Screen Kiosk Mode Controller",
-  "category": "Architecture",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of Full-Screen Kiosk Mode Controller with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -16189,7 +16189,7 @@ export default function App() {
 {
   "id": "Q494",
   "title": "Multi-Monitor Screen Coordinate Detector",
-  "category": "Architecture",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of Multi-Monitor Screen Coordinate Detector with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -16216,7 +16216,7 @@ export default function App() {
 {
   "id": "Q495",
   "title": "Hardware Sensor Battery & Network Diagnostic",
-  "category": "Architecture",
+  "category": "React Query",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of Hardware Sensor Battery & Network Diagnostic with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -16243,7 +16243,7 @@ export default function App() {
 {
   "id": "Q496",
   "title": "Web Bluetooth Device Connection Simulator",
-  "category": "Architecture",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of Web Bluetooth Device Connection Simulator with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -16270,7 +16270,7 @@ export default function App() {
 {
   "id": "Q497",
   "title": "Web Serial Port Communication Terminal Mock",
-  "category": "Architecture",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of Web Serial Port Communication Terminal Mock with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -16297,7 +16297,7 @@ export default function App() {
 {
   "id": "Q498",
   "title": "Web MIDI Musical Instrument Connector",
-  "category": "Architecture",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of Web MIDI Musical Instrument Connector with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -16324,7 +16324,7 @@ export default function App() {
 {
   "id": "Q499",
   "title": "Game Controller Gamepad API Input Mapper",
-  "category": "Architecture",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of Game Controller Gamepad API Input Mapper with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",
@@ -16351,7 +16351,7 @@ export default function App() {
 {
   "id": "Q500",
   "title": "Full Production Machine Coding Master Evaluation",
-  "category": "Architecture",
+  "category": "JavaScript",
   "difficulty": "Senior",
   "timeEstimate": "35 mins",
   "summary": "Master hands-on implementation of Full Production Machine Coding Master Evaluation with complete state lifecycle, edge-case resilience, and interviewer follow-ups.",

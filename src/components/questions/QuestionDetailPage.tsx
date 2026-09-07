@@ -8,6 +8,7 @@ import { buildJsSrcDoc, buildReactSrcDoc, buildHtmlSrcDoc, isReactCode, isHtmlWo
 import TaskBasedPanel from './TaskBasedPanel'
 import SplitPane from '../common/SplitPane'
 import BrowserPreview from '../common/BrowserPreview'
+import StructuredQuestionRenderer from './templates/StructuredQuestionRenderer'
 import './QuestionDetailPage.css'
 
 export default function QuestionDetailPage() {
@@ -21,7 +22,6 @@ export default function QuestionDetailPage() {
 
 
   // const navigate = useNavigate() // Reserved for future navigation needs
-  const [showAnswer, setShowAnswer] = useState(true)
   const [code, setCode] = useState('')
   const [output, setOutput] = useState<string[]>([])
   const [previewDoc, setPreviewDoc] = useState('')
@@ -236,35 +236,13 @@ export default function QuestionDetailPage() {
 
   const overviewContent = (
     <div className="content-section">
-      <h2>Overview</h2>
-      <div className="question-meta">
-        <span className={`badge badge-category cat-${question.category.toLowerCase().replace(/[^a-z]+/g, '-')}`}>{question.category}</span>
-        <span className={`badge badge-${question.difficulty.toLowerCase()}`}>{question.difficulty}</span>
-        <span className="question-id">Question #{question.id}</span>
-      </div>
-      <div className="question-text">
-        <h3>Question</h3>
-        <p>{question.question}</p>
-      </div>
-      <div className="answer-section">
-        <h3>Explanation & Approach</h3>
-        <button
-          className="btn btn-secondary btn-sm toggle-answer"
-          onClick={() => setShowAnswer(!showAnswer)}
-        >
-          {showAnswer ? 'Hide Explanation' : 'Show Explanation'}
-        </button>
-        {showAnswer && (
-          <div className="answer-content">
-            {question.answer.split(/\n{2,}/).map((para, i) => (
-              <p key={i}>{para}</p>
-            ))}
-          </div>
-        )}
-      </div>
+      <StructuredQuestionRenderer
+        question={question}
+        showSolutionAccordion={false}
+      />
 
       {isCoding && (
-        <div className="overview-solution-block">
+        <div className="overview-solution-block" style={{ marginTop: '24px' }}>
           <h3>Solution & Runnable Code</h3>
           {solutionPlayground}
         </div>

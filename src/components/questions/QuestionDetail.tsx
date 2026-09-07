@@ -1,23 +1,27 @@
 import { useState, useMemo, useEffect, useRef } from 'react'
 import { useParams, Link } from 'react-router-dom'
+import Editor from '@monaco-editor/react'
 import { useBookmarks } from '../../context/BookmarkContext'
 import { useProgress } from '../../context/ProgressContext'
+import { useTheme } from '../../context/ThemeContext'
 import { getById } from '../../data/questionService'
 import { useQuestions } from '../../data/useQuestions'
 import { buildJsSrcDoc, buildReactSrcDoc, buildHtmlSrcDoc, isReactCode, isHtmlWorkspace } from '../../lib/runner'
 import SplitPane from '../common/SplitPane'
 import BrowserPreview from '../common/BrowserPreview'
+import StructuredQuestionRenderer from './templates/StructuredQuestionRenderer'
+import { trackingService } from '../../lib/trackingService'
 import './QuestionDetail.css'
 
 export default function QuestionDetail() {
   const { id } = useParams<{ id: string }>()
+  const { resolvedTheme } = useTheme()
   const { isBookmarked, toggleBookmark } = useBookmarks()
   const { isSolved, toggleSolved } = useProgress()
   const { questions: allQuestions, loading } = useQuestions()
   const question = useMemo(() => getById(allQuestions, Number(id)), [allQuestions, id])
   const bookmarked = question ? isBookmarked(question.id) : false
   const solved = question ? isSolved(question.id) : false
-  const [showAnswer, setShowAnswer] = useState(true)
 
   const [code, setCode] = useState('')
   const [output, setOutput] = useState<string[]>([])
@@ -38,13 +42,21 @@ export default function QuestionDetail() {
   }, [])
 
   useEffect(() => {
-    setCode(question?.code || '')
+    const starter = question?.code || question?.example || `// Machine Code Sandbox: ${question?.question || ''}\n// Test your implementation below:\n\nconsole.log("Interactive machine code playground ready.");\n`
+    setCode(starter)
     setOutput([])
     setPreviewDoc('')
     setHasDom(null)
     setHasLog(false)
     setExecTime(null)
-  }, [question?.code])
+
+    if (question?.id) {
+      trackingService.trackActivity('question_viewed', 'question', question.id, {
+        title: question.question || (question as any).title || `Question #${question.id}`,
+        category: question.category,
+      })
+    }
+  }, [question?.code, question?.example, question?.question, question?.id, question?.category])
 
   const runCode = async () => {
     const source = code || question?.code || ''
@@ -57,6 +69,13 @@ export default function QuestionDetail() {
     setHasLog(false)
     setExecTime(null)
 
+    const attemptPromise = question?.id ? trackingService.startQuestionAttempt(question.id) : null
+    if (question?.id) {
+      trackingService.trackActivity('code_run', 'question', question.id, {
+        language: isReactCode(source) ? 'react' : 'javascript',
+      })
+    }
+
     handlersRef.current = (e: MessageEvent) => {
       const m = e.data
       if (!m || m.runId !== currentRunId) return
@@ -66,12 +85,40 @@ export default function QuestionDetail() {
       } else if (m.t === 'dom') {
         setHasDom(m.hasDom ?? false)
       } else if (m.t === 'error') {
+        const duration = Math.round(performance.now() - startTime)
         setOutput(prev => [...prev, m.stack || m.message])
         setRunning(false)
-        setExecTime(Math.round(performance.now() - startTime))
+        setExecTime(duration)
+        if (question?.id && attemptPromise) {
+          attemptPromise.then(attId => {
+            trackingService.recordSubmission({
+              questionId: question.id,
+              attemptId: attId,
+              code: source,
+              language: isReactCode(source) ? 'react' : 'javascript',
+              status: 'runtime_error',
+              score: 0,
+              executionTime: duration,
+            })
+          }).catch(() => {})
+        }
       } else if (m.t === 'done') {
+        const duration = m.ms ?? Math.round(performance.now() - startTime)
         setRunning(false)
-        setExecTime(m.ms ?? Math.round(performance.now() - startTime))
+        setExecTime(duration)
+        if (question?.id && attemptPromise) {
+          attemptPromise.then(attId => {
+            trackingService.recordSubmission({
+              questionId: question.id,
+              attemptId: attId,
+              code: source,
+              language: isReactCode(source) ? 'react' : 'javascript',
+              status: 'accepted',
+              score: 100,
+              executionTime: duration,
+            })
+          }).catch(() => {})
+        }
       }
     }
 
@@ -91,12 +138,16 @@ export default function QuestionDetail() {
     }
   }
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-      e.preventDefault()
-      runCode()
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        e.preventDefault()
+        runCode()
+      }
     }
-  }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [code, question])
 
   const handleCopyCode = () => {
     const textToCopy = code || question?.code || ''
@@ -128,7 +179,7 @@ export default function QuestionDetail() {
   const currentIndex = allQuestions.findIndex(q => q.id === question.id)
   const prevQuestion = currentIndex > 0 ? allQuestions[currentIndex - 1] : null
   const nextQuestion = currentIndex < allQuestions.length - 1 ? allQuestions[currentIndex + 1] : null
-  const isCoding = !!question.code
+  const isCoding = true
 
   return (
     <div className="question-detail page-enter">
@@ -146,6 +197,20 @@ export default function QuestionDetail() {
               ← Prev
             </Link>
           )}
+          <Link
+            to={`/coding/${question.id}`}
+            className="nav-detail"
+            style={{
+              background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.18), rgba(168, 85, 247, 0.18))',
+              borderColor: '#818cf8',
+              color: 'var(--text-primary)',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+            }}
+          >
+            <span>⚡</span> Machine Code IDE ↗
+          </Link>
           <Link to={`/questions/${question.id}/detail`} className="nav-detail">
             Detailed Workspace ↗
           </Link>
@@ -158,14 +223,20 @@ export default function QuestionDetail() {
       </div>
 
       <div className="detail-card" key={question.id}>
-        <div className="detail-header">
-          <div className="detail-header-top">
-            <h2>{question.question}</h2>
-            <div className="detail-header-actions">
+        <StructuredQuestionRenderer
+          question={question}
+          showSolutionAccordion={true}
+          headerActions={
+            <>
               <button
                 type="button"
                 className={`detail-solved-btn ${solved ? 'solved' : ''}`}
-                onClick={() => toggleSolved(question.id)}
+                onClick={() => {
+                  toggleSolved(question.id)
+                  if (!solved) {
+                    trackingService.completeQuestionAttempt(question.id, 100)
+                  }
+                }}
                 aria-label={solved ? 'Mark as uncompleted' : 'Mark as solved'}
                 title={solved ? 'Mark as uncompleted' : 'Mark as solved'}
               >
@@ -175,7 +246,15 @@ export default function QuestionDetail() {
               <button
                 type="button"
                 className={`detail-bookmark-btn ${bookmarked ? 'bookmarked' : ''}`}
-                onClick={() => toggleBookmark(question.id)}
+                onClick={() => {
+                  toggleBookmark(question.id)
+                  trackingService.trackActivity(
+                    bookmarked ? 'question_unbookmarked' : 'question_bookmarked',
+                    'question',
+                    question.id,
+                    { title: question.question || (question as any).title }
+                  )
+                }}
                 aria-label={bookmarked ? 'Remove from saved questions' : 'Save question for revision'}
                 title={bookmarked ? 'Remove from saved questions' : 'Save question for revision'}
               >
@@ -183,76 +262,17 @@ export default function QuestionDetail() {
                 <span>{bookmarked ? 'Saved' : 'Save'}</span>
               </button>
               <span className="question-id-tag">#{question.id}</span>
-            </div>
-
-          </div>
-          <div className="detail-meta">
-            <span className={`badge badge-category cat-${question.category.toLowerCase().replace(/[^a-z]+/g, '-')}`}>
-              {question.category}
-            </span>
-            <span className={`badge badge-${question.difficulty.toLowerCase()}`}>
-              {question.difficulty}
-            </span>
-            {question.source && (
-              <span className="badge badge-source">
-                {question.source}
-              </span>
-            )}
-          </div>
-        </div>
-
-
-        <div className="detail-body">
-          <div className="section-toolbar">
-            <button
-              className={`toggle-answer-btn ${showAnswer ? 'active' : ''}`}
-              onClick={() => setShowAnswer(!showAnswer)}
-            >
-              {showAnswer ? 'Hide Explanation & Solution' : 'Show Explanation & Solution'}
-            </button>
-          </div>
-
-          {showAnswer && (
-            <div className="answer-section">
-              <div className="answer-header">
-                <span className="answer-label">Explanation & Approach</span>
-              </div>
-              <div className="answer-content">
-                {question.answer.split(/\n{2,}/).map((para, i) => (
-                  <p key={i}>{para}</p>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {showAnswer && !isCoding && question.example && (
-            <div className="code-section">
-              <div className="code-section-header">
-                <h3>Example Code</h3>
-              </div>
-              <div className="code-window">
-                <div className="code-window-bar">
-                  <div className="window-dots">
-                    <span className="code-dot dot-red" />
-                    <span className="code-dot dot-yellow" />
-                    <span className="code-dot dot-green" />
-                  </div>
-                  <span className="window-filename">example.js</span>
-                </div>
-                <textarea
-                  className="code-editor code-editor-readonly"
-                  value={question.example}
-                  readOnly
-                  spellCheck={false}
-                />
-              </div>
-            </div>
-          )}
+            </>
+          }
+        />
 
           {isCoding && (
             <div className="code-section">
               <div className="code-section-header">
-                <h3>Interactive Playground</h3>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <h3>Interactive Machine Code Playground</h3>
+                  <span className="badge badge-machine-code">⚡ Monaco Editor</span>
+                </div>
                 <span className="keyboard-hint">Press <kbd>Ctrl</kbd> + <kbd>Enter</kbd> to execute</span>
               </div>
 
@@ -280,27 +300,37 @@ export default function QuestionDetail() {
                           </button>
                           <button
                             className="window-btn"
-                            onClick={() => { setCode(question?.code || ''); setOutput([]); setExecTime(null); }}
+                            onClick={() => { setCode(question?.code || question?.example || ''); setOutput([]); setExecTime(null); }}
                             title="Reset code to original"
                           >
                             Reset
                           </button>
                         </div>
                       </div>
-                      <textarea
-                        className="code-editor"
-                        value={code || question.code || ''}
-                        onChange={e => setCode(e.target.value)}
-                        onKeyDown={handleKeyDown}
-                        spellCheck={false}
-                        placeholder="Type or edit your JavaScript / React code here..."
-                      />
+                      <div style={{ height: '340px' }}>
+                        <Editor
+                          height="100%"
+                          theme={resolvedTheme === 'dark' ? 'vs-dark' : 'light'}
+                          language={isReactCode(code || question.code || '') ? 'javascript' : 'javascript'}
+                          value={code || question.code || ''}
+                          onChange={val => setCode(val ?? '')}
+                          options={{
+                            minimap: { enabled: false },
+                            fontSize: 13,
+                            lineNumbers: 'on',
+                            scrollBeyondLastLine: false,
+                            automaticLayout: true,
+                            wordWrap: 'on',
+                            tabSize: 2,
+                          }}
+                        />
+                      </div>
                     </div>
 
                     <div className="code-actions-bar">
                       <button
                         className="btn btn-secondary btn-sm"
-                        onClick={() => { setCode(question?.code || ''); setOutput([]); setExecTime(null); }}
+                        onClick={() => { setCode(question?.code || question?.example || ''); setOutput([]); setExecTime(null); }}
                       >
                         Reset Code
                       </button>
@@ -317,6 +347,14 @@ export default function QuestionDetail() {
                           <>▶ Execute Code</>
                         )}
                       </button>
+                      <Link
+                        to={`/coding/${question.id}`}
+                        className="btn btn-secondary btn-sm"
+                        style={{ marginLeft: 'auto', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+                        title="Open multi-file project workspace with terminal and test runner"
+                      >
+                        <span>⚡</span> Full IDE Workspace ↗
+                      </Link>
                     </div>
                   </div>
                 }
@@ -374,7 +412,6 @@ export default function QuestionDetail() {
               />
             </div>
           )}
-        </div>
       </div>
     </div>
   )

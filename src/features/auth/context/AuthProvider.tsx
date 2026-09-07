@@ -6,6 +6,7 @@ import { profileService } from '../services/profile.service'
 import { auditService } from '../services/audit.service'
 import { rbacService } from '../services/rbac.service'
 import { progressSyncService } from '../services/progressSync.service'
+import { trackingService } from '../../../lib/trackingService'
 import type {
   AuthContextValue,
   AuthUserProfile,
@@ -202,11 +203,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           resource: 'auth.session',
           details: { email: newSession.user.email },
         })
+        trackingService.trackActivity('login', 'user', newSession.user.id, {
+          email: newSession.user.email,
+        })
       } else if (event === 'SIGNED_OUT') {
         auditService.logEvent({
           action: 'AUTH_SIGN_OUT',
           resource: 'auth.session',
         })
+        trackingService.trackActivity('logout', 'user', undefined)
       }
     })
 

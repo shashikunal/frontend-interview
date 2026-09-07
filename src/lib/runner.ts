@@ -523,3 +523,201 @@ function __finish(){ __post({ t: 'done', ms: Math.round(performance.now() - __t0
 </body>
 </html>`
 }
+
+/**
+ * Unified execution doc builder for Machine Coding Studio supporting:
+ * - ReactJS (App.tsx, styles.css)
+ * - Vanilla JavaScript (script.js, index.html, styles.css)
+ * - Vanilla DOM (index.html, script.js, styles.css)
+ * - TypeScript (script.ts, index.html, styles.css)
+ * - LeetCode / Algorithms (solution.js)
+ */
+export async function buildMachineCodingSrcDoc(
+  files: Files,
+  language: string,
+  runId: number
+): Promise<string> {
+  const isReact =
+    language === 'react' ||
+    files['App.tsx'] !== undefined ||
+    files['App.jsx'] !== undefined ||
+    isReactWorkspace(files);
+
+  if (isReact) {
+    return buildReactSrcDoc(files, 'App.tsx', runId);
+  }
+
+  // Vanilla JS / DOM / TypeScript / LeetCode runner
+  await loadBabel();
+
+  // 1. CSS
+  const cssContent = Object.entries(files)
+    .filter(([name]) => name.endsWith('.css'))
+    .map(([, content]) => content)
+    .join('\n');
+
+  // 2. HTML template
+  const rawHtml = files['index.html'] || '';
+  const isFullHtml = /^<!doctype html|<html[\s>]/i.test(rawHtml.trim());
+
+  // 3. Compile helper JS/TS files first, then primary script
+  const scriptEntries = Object.entries(files).filter(
+    ([name]) =>
+      !name.endsWith('.css') &&
+      !name.endsWith('.html') &&
+      !name.endsWith('.json') &&
+      !name.endsWith('.md')
+  );
+
+  const entryCandidate =
+    scriptEntries.find(([n]) => n === 'script.js' || n === 'script.ts' || n === 'index.js' || n === 'solution.js') ||
+    scriptEntries[0];
+
+  const helperScripts = scriptEntries
+    .filter(([n]) => (entryCandidate ? n !== entryCandidate[0] : true))
+    .map(([n, code]) => {
+      if (n.endsWith('.ts') || n.endsWith('.tsx')) {
+        return transformJsx(code, n);
+      }
+      return code;
+    })
+    .join('\n\n');
+
+  let entryCode = entryCandidate ? entryCandidate[1] : '';
+  if (entryCandidate && (entryCandidate[0].endsWith('.ts') || entryCandidate[0].endsWith('.tsx'))) {
+    entryCode = transformJsx(entryCode, entryCandidate[0]);
+  }
+
+  const combinedJs = [helperScripts, entryCode].filter(Boolean).join('\n\n');
+
+  // 4. Shim for console, test assertions, and DOM reporting
+  const testAndConsoleShim =
+    FMT_SRC +
+    `
+const __post = (msg) => parent.postMessage({ ...msg, runId: ${runId} }, '*');
+console.log = (...a) => __post({ t: 'log', level: 'log', parts: a.map(formatValue) });
+console.info = (...a) => __post({ t: 'log', level: 'info', parts: a.map(formatValue) });
+console.warn = (...a) => __post({ t: 'log', level: 'warn', parts: a.map(formatValue) });
+console.error = (...a) => __post({ t: 'log', level: 'error', parts: a.map(formatValue) });
+window.addEventListener('error', e => __post({ t: 'error', message: e.message, stack: e.error && e.error.stack }));
+window.addEventListener('unhandledrejection', e => __post({ t: 'error', message: String(e.reason) }));
+
+window.addEventListener('message', async (e) => {
+  if (e.data && e.data.t === 'run_tests') {
+    const testCases = e.data.testCases || [];
+    const root = document.getElementById('root') || document.getElementById('app') || document.body;
+    const results = [];
+
+    const helpers = {
+      root,
+      document,
+      window,
+      expect: (condition, msg) => {
+        if (!condition) throw new Error(msg || 'Assertion failed');
+      },
+      wait: (ms) => new Promise(res => setTimeout(res, ms)),
+      fireClick: (el) => {
+        if (!el) throw new Error('Target element not found for click');
+        el.click();
+        el.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+      },
+      fireInput: (el, val) => {
+        if (!el) throw new Error('Target element not found for input');
+        el.value = val;
+        el.dispatchEvent(new Event('input', { bubbles: true }));
+        el.dispatchEvent(new Event('change', { bubbles: true }));
+      },
+      getAll: (selector) => Array.from(document.querySelectorAll(selector)),
+      getByText: (text) => {
+        const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_ELEMENT);
+        let node;
+        while (node = walker.nextNode()) {
+          if (node.innerText && node.innerText.includes(text)) return node;
+        }
+        return null;
+      }
+    };
+
+    for (const tc of testCases) {
+      const t0 = performance.now();
+      try {
+        const AsyncFn = Object.getPrototypeOf(async function(){}).constructor;
+        const testFn = new AsyncFn('ctx', 'with(ctx) { ' + tc.assertion + ' }');
+        await testFn(helpers);
+        results.push({
+          id: tc.id,
+          name: tc.name,
+          description: tc.description,
+          status: 'passed',
+          durationMs: Math.max(1, Math.round(performance.now() - t0))
+        });
+      } catch (err) {
+        results.push({
+          id: tc.id,
+          name: tc.name,
+          description: tc.description,
+          status: 'failed',
+          durationMs: Math.max(1, Math.round(performance.now() - t0)),
+          error: err && (err as any).message ? (err as any).message : String(err)
+        });
+      }
+    }
+
+    __post({ t: 'test_results', results });
+  }
+});
+`;
+
+  const scriptRunner = `
+(async () => {
+  try {
+    const AsyncFunction = Object.getPrototypeOf(async function () {}).constructor;
+    const __src = ${JSON.stringify(combinedJs)};
+    const __fn = new AsyncFunction(__src);
+    await __fn();
+  } catch (__e) {
+    __post({ t: 'error', message: String(__e && __e.message || __e), stack: __e && __e.stack });
+  }
+})();
+`;
+
+  if (isFullHtml) {
+    let doc = rawHtml;
+    const styleTag = `<style>${cssContent}</style><script>${testAndConsoleShim}</script>`;
+    if (/<head>/i.test(doc)) {
+      doc = doc.replace(/<head>/i, `<head>\n${styleTag}`);
+    } else if (/<head\b[^>]*>/i.test(doc)) {
+      doc = doc.replace(/<head[^>]*>/i, m => `${m}\n${styleTag}`);
+    } else {
+      doc = `${styleTag}\n${doc}`;
+    }
+
+    const scriptTag = `<script>${scriptRunner}</script>`;
+    if (/<\/body>/i.test(doc)) {
+      doc = doc.replace(/<\/body>/i, `${scriptTag}\n</body>`);
+    } else {
+      doc = `${doc}\n${scriptTag}`;
+    }
+    return doc;
+  }
+
+  const bodyContent = rawHtml.trim() || `<div id="root" class="card"><div id="app"></div></div>`;
+
+  return `<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body { font-family: system-ui, -apple-system, sans-serif; margin: 0; padding: 16px; background: #fff; color: #0f172a; }
+  </style>
+  <style>${cssContent}</style>
+  <script>${testAndConsoleShim}</script>
+</head>
+<body>
+  ${bodyContent}
+  <script>${scriptRunner}</script>
+</body>
+</html>`;
+}
+

@@ -8,6 +8,23 @@ import { auditService, type AccessNotificationItem } from '../../features/auth/s
 import { progressSyncService, type UserTrackProgress, TRACK_DEFINITIONS } from '../../features/auth/services/progressSync.service'
 import { dbActivityService, type ActivityLogItem } from '../../lib/supabase'
 import type { AuthUserProfile } from '../../features/auth/types/auth.types'
+import AdminOverviewTab from './admin/AdminOverviewTab'
+import AdminQuestionsTab from './admin/AdminQuestionsTab'
+import AdminSubmissionsTab from './admin/AdminSubmissionsTab'
+import AdminAttemptsTab from './admin/AdminAttemptsTab'
+import AdminActivityTab from './admin/AdminActivityTab'
+import AdminAnalyticsTab from './admin/AdminAnalyticsTab'
+import AdminUserDetailModal from './admin/AdminUserDetailModal'
+import AdminSubmissionCodeModal from './admin/AdminSubmissionCodeModal'
+import {
+  adminAnalyticsService,
+  type OverviewStats,
+  type SubmissionRecord,
+  type AttemptRecord,
+  type FormattedActivityItem,
+  type QuestionStatItem,
+  type TimeframeFilter,
+} from '../../lib/adminAnalyticsService'
 import './AdminDashboard.css'
 
 interface TrackStat {
@@ -29,6 +46,18 @@ const PLATFORM_TRACKS: TrackStat[] = [
   { id: 't6', name: 'AI Video Mock Interview Simulator', icon: '🎥', totalModules: 24, activeCandidates: 780, avgScore: 81, difficulty: 'Staff' },
 ]
 
+export type AdminTab =
+  | 'overview'
+  | 'users'
+  | 'questions'
+  | 'submissions'
+  | 'attempts'
+  | 'activity'
+  | 'analytics'
+  | 'requests'
+  | 'tracks'
+  | 'audit'
+
 export default function AdminDashboard() {
   const { user } = useAuth()
 
@@ -44,7 +73,17 @@ export default function AdminDashboard() {
   const [trackFilter, setTrackFilter] = useState<string>('ALL')
   const [progressFilter, setProgressFilter] = useState<string>('ALL')
   const [statusToast, setStatusToast] = useState<string | null>(null)
-  const [activeTab, setActiveTab] = useState<'users' | 'requests' | 'tracks' | 'audit'>('users')
+  const [activeTab, setActiveTab] = useState<AdminTab>('overview')
+
+  // Telemetry Analytics State
+  const [overviewStats, setOverviewStats] = useState<OverviewStats | null>(null)
+  const [overviewTimeframe, setOverviewTimeframe] = useState<TimeframeFilter>('7days')
+  const [submissionsList, setSubmissionsList] = useState<SubmissionRecord[]>([])
+  const [attemptsList, setAttemptsList] = useState<AttemptRecord[]>([])
+  const [activityFeedList, setActivityFeedList] = useState<FormattedActivityItem[]>([])
+  const [questionsStatsList, setQuestionsStatsList] = useState<QuestionStatItem[]>([])
+  const [selectedUserForDeepDive, setSelectedUserForDeepDive] = useState<string | null>(null)
+  const [selectedSubmissionForCode, setSelectedSubmissionForCode] = useState<SubmissionRecord | null>(null)
 
   // Live Activities Stream State
   const [liveActivities, setLiveActivities] = useState<ActivityLogItem[]>([])
@@ -80,16 +119,37 @@ export default function AdminDashboard() {
   const loadData = useCallback(async () => {
     setIsLoading(true)
     try {
-      const [fetchedProfiles, fetchedNotifications, fetchedAuditLogs, fetchedProgress, fetchedActivities] = await Promise.all([
+      const [
+        fetchedProfiles,
+        fetchedNotifications,
+        fetchedAuditLogs,
+        fetchedProgress,
+        fetchedActivities,
+        fetchedOverview,
+        fetchedSubmissions,
+        fetchedAttempts,
+        fetchedFeed,
+        fetchedQuestionStats,
+      ] = await Promise.all([
         profileService.getAllProfiles(),
         auditService.getAccessNotifications(),
         auditService.getAuditLogs(15),
         progressSyncService.getAllUsersProgress(),
         dbActivityService.getAllActivities(50),
+        adminAnalyticsService.getOverviewStats(overviewTimeframe),
+        adminAnalyticsService.getSubmissionsList({ limit: 100 }),
+        adminAnalyticsService.getQuestionAttemptsList({ limit: 100 }),
+        adminAnalyticsService.getActivityFeed({ limit: 100 }),
+        adminAnalyticsService.getQuestionStatsList({ limit: 100 }),
       ])
 
       setProgressMap(fetchedProgress)
       setLiveActivities(fetchedActivities)
+      setOverviewStats(fetchedOverview)
+      setSubmissionsList(fetchedSubmissions)
+      setAttemptsList(fetchedAttempts)
+      setActivityFeedList(fetchedFeed)
+      setQuestionsStatsList(fetchedQuestionStats)
 
       // Real users from Supabase PostgreSQL + active admin account
       let mergedProfiles = [...fetchedProfiles]
@@ -105,7 +165,13 @@ export default function AdminDashboard() {
     } finally {
       setIsLoading(false)
     }
-  }, [user])
+  }, [user, overviewTimeframe])
+
+  const handleTimeframeChange = async (tf: TimeframeFilter) => {
+    setOverviewTimeframe(tf)
+    const updated = await adminAnalyticsService.getOverviewStats(tf)
+    setOverviewStats(updated)
+  }
 
   useEffect(() => {
     loadData()
@@ -617,33 +683,90 @@ export default function AdminDashboard() {
       <div className="admin-nav-tabs">
         <button
           type="button"
+          className={`ant-tab ${activeTab === 'overview' ? 'active' : ''}`}
+          onClick={() => setActiveTab('overview')}
+        >
+          📊 Overview
+        </button>
+        <button
+          type="button"
           className={`ant-tab ${activeTab === 'users' ? 'active' : ''}`}
           onClick={() => setActiveTab('users')}
         >
-          👥 1. User Directory &amp; Track Progress ({profiles.length})
+          👥 Candidates ({profiles.length})
+        </button>
+        <button
+          type="button"
+          className={`ant-tab ${activeTab === 'questions' ? 'active' : ''}`}
+          onClick={() => setActiveTab('questions')}
+        >
+          ❓ Questions Telemetry
+        </button>
+        <button
+          type="button"
+          className={`ant-tab ${activeTab === 'submissions' ? 'active' : ''}`}
+          onClick={() => setActiveTab('submissions')}
+        >
+          📝 Submissions
+        </button>
+        <button
+          type="button"
+          className={`ant-tab ${activeTab === 'attempts' ? 'active' : ''}`}
+          onClick={() => setActiveTab('attempts')}
+        >
+          🎯 Attempts
+        </button>
+        <button
+          type="button"
+          className={`ant-tab ${activeTab === 'activity' ? 'active' : ''}`}
+          onClick={() => setActiveTab('activity')}
+        >
+          ⚡ Activity Feed
+        </button>
+        <button
+          type="button"
+          className={`ant-tab ${activeTab === 'analytics' ? 'active' : ''}`}
+          onClick={() => setActiveTab('analytics')}
+        >
+          📈 Analytics
         </button>
         <button
           type="button"
           className={`ant-tab ${activeTab === 'requests' ? 'active' : ''}`}
           onClick={() => setActiveTab('requests')}
         >
-          📩 2. Access Requests &amp; Notifications {pendingRequestsCount > 0 && <span className="tab-bubble">{pendingRequestsCount}</span>}
+          📩 Requests {pendingRequestsCount > 0 && <span className="tab-bubble">{pendingRequestsCount}</span>}
         </button>
         <button
           type="button"
           className={`ant-tab ${activeTab === 'tracks' ? 'active' : ''}`}
           onClick={() => setActiveTab('tracks')}
         >
-          📚 3. Platform Learning Tracks
+          📚 Tracks
         </button>
         <button
           type="button"
           className={`ant-tab ${activeTab === 'audit' ? 'active' : ''}`}
           onClick={() => setActiveTab('audit')}
         >
-          ⚡ 4. Live Candidate Activity Stream {liveActivities.length > 0 && <span className="tab-bubble live">{liveActivities.length}</span>}
+          🛰️ Telemetry Stream {liveActivities.length > 0 && <span className="tab-bubble live">{liveActivities.length}</span>}
         </button>
       </div>
+
+      {/* ================================================================ */}
+      {/* TAB 0: OVERVIEW COMMAND CENTER */}
+      {/* ================================================================ */}
+      {activeTab === 'overview' && (
+        <div className="admin-tab-content">
+          <AdminOverviewTab
+            stats={overviewStats}
+            timeframe={overviewTimeframe}
+            onTimeframeChange={handleTimeframeChange}
+            onNavigateTab={tab => setActiveTab(tab as AdminTab)}
+            onInspectUser={(uId: string) => setSelectedUserForDeepDive(uId)}
+          />
+        </div>
+      )}
 
       {/* ================================================================ */}
       {/* TAB 1: USERS DIRECTORY, TRACKS & COMPLETION PROGRESS */}
@@ -913,6 +1036,16 @@ export default function AdminDashboard() {
                           <div className="table-actions-row">
                             <button
                               type="button"
+                              className="btn btn-sm btn-secondary"
+                              onClick={() => setSelectedUserForDeepDive(u.id)}
+                              title="Candidate Deep-Dive: Attempts, Submissions & Telemetry"
+                              style={{ background: 'rgba(59, 130, 246, 0.15)', borderColor: 'rgba(59, 130, 246, 0.4)', color: '#60a5fa', fontSize: '0.74rem', fontWeight: 700 }}
+                            >
+                              🔍 Deep Dive
+                            </button>
+
+                            <button
+                              type="button"
                               className="btn btn-sm btn-secondary btn-inspect"
                               onClick={() => handleOpenInspect(u)}
                               title="Inspect deep-dive progress, pillars & categories"
@@ -946,6 +1079,54 @@ export default function AdminDashboard() {
               </table>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* ================================================================ */}
+      {/* TAB: QUESTIONS TELEMETRY */}
+      {/* ================================================================ */}
+      {activeTab === 'questions' && (
+        <div className="admin-tab-content">
+          <AdminQuestionsTab initialStats={questionsStatsList} />
+        </div>
+      )}
+
+      {/* ================================================================ */}
+      {/* TAB: SUBMISSIONS & CODE VIEWER */}
+      {/* ================================================================ */}
+      {activeTab === 'submissions' && (
+        <div className="admin-tab-content">
+          <AdminSubmissionsTab
+            initialSubmissions={submissionsList}
+            onViewCode={sub => setSelectedSubmissionForCode(sub)}
+          />
+        </div>
+      )}
+
+      {/* ================================================================ */}
+      {/* TAB: QUESTION ATTEMPTS */}
+      {/* ================================================================ */}
+      {activeTab === 'attempts' && (
+        <div className="admin-tab-content">
+          <AdminAttemptsTab initialAttempts={attemptsList} />
+        </div>
+      )}
+
+      {/* ================================================================ */}
+      {/* TAB: LIVE ACTIVITY FEED */}
+      {/* ================================================================ */}
+      {activeTab === 'activity' && (
+        <div className="admin-tab-content">
+          <AdminActivityTab initialFeed={activityFeedList} />
+        </div>
+      )}
+
+      {/* ================================================================ */}
+      {/* TAB: PLATFORM ANALYTICS */}
+      {/* ================================================================ */}
+      {activeTab === 'analytics' && (
+        <div className="admin-tab-content">
+          <AdminAnalyticsTab overviewStats={overviewStats} />
         </div>
       )}
 
@@ -1764,6 +1945,22 @@ export default function AdminDashboard() {
             </form>
           </div>
         </div>
+      )}
+
+      {/* Candidate Deep-Dive Activity Modal */}
+      {selectedUserForDeepDive && (
+        <AdminUserDetailModal
+          userId={selectedUserForDeepDive}
+          onClose={() => setSelectedUserForDeepDive(null)}
+        />
+      )}
+
+      {/* Submission Code Inspector Modal */}
+      {selectedSubmissionForCode && (
+        <AdminSubmissionCodeModal
+          submission={selectedSubmissionForCode}
+          onClose={() => setSelectedSubmissionForCode(null)}
+        />
       )}
     </div>
   )

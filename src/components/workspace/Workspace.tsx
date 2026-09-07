@@ -18,6 +18,10 @@ import { generateChallenge } from '../../lib/challenges'
 import { buildStarters, isOutputTracing } from '../../lib/starter'
 import Terminal from './Terminal'
 import { makeLine, type TermLine } from './termLine'
+import StructuredQuestionRenderer from '../questions/templates/StructuredQuestionRenderer'
+import LeetCodeIde from '../leetcode/LeetCodeIde'
+import { detectTemplateType } from '../../lib/questionTemplate'
+import { trackingService } from '../../lib/trackingService'
 import './Workspace.css'
 
 interface CustomProblem {
@@ -122,6 +126,13 @@ export default function Workspace() {
       setExpected(null)
     }
 
+    if (question?.id) {
+      trackingService.trackActivity('question_viewed', 'question', question.id, {
+        title: question.question || (question as { title?: string }).title || `Question #${question.id}`,
+        category: question.category,
+      })
+    }
+
     setReady(true)
   }, [question])
 
@@ -153,9 +164,28 @@ export default function Workspace() {
     const matched = expected.every((line, i) => line === actual[i]) && actual.length === expected.length
     if (matched) {
       pushLine('system', `\u2705 Graded: output matches \u2014 all ${expected.length} line(s) correct!`)
+      if (question?.id) {
+        trackingService.completeQuestionAttempt(question.id, 100)
+        trackingService.recordSubmission({
+          questionId: question.id,
+          code: files[activeFile] || '',
+          language: 'javascript',
+          status: 'accepted',
+          score: 100,
+        })
+      }
       return
     }
     pushLine('system', `\u274C Graded: ${actual.length} line(s) logged vs ${expected.length} expected.`)
+    if (question?.id) {
+      trackingService.recordSubmission({
+        questionId: question.id,
+        code: files[activeFile] || '',
+        language: 'javascript',
+        status: 'wrong_answer',
+        score: 0,
+      })
+    }
     const first = expected.findIndex((line, i) => actual[i] !== line)
     if (first >= 0 && first < actual.length) {
       pushLine('system', `First difference at line ${first + 1}:`)
@@ -165,12 +195,20 @@ export default function Workspace() {
       pushLine('system', 'Your code logged fewer lines than the snippet should \u2014 did you remove any?')
     }
     pushLine('system', 'Adjust your prediction or logic and Run again.')
-  }, [custom, expected, pushLine])
+  }, [custom, expected, pushLine, question?.id, files, activeFile])
 
   const runJs = useCallback((codeOverride?: string, grade = false) => {
     setRunning(true)
     setPreviewDoc('')
     const collected: string[] = []
+
+    if (question?.id) {
+      trackingService.startQuestionAttempt(question.id)
+      trackingService.trackActivity('code_run', 'question', question.id, {
+        file: activeFile,
+      })
+    }
+
     runnerRef.current.run(files, codeOverride ?? files[activeFile] ?? '', {
       onLog: (level, parts) => {
         handleLog(level, parts)
@@ -190,7 +228,7 @@ export default function Workspace() {
         if (grade && !codeOverride) pushLine('system', 'Grading skipped \u2014 fix the runtime error first.')
       },
     })
-  }, [files, activeFile, handleLog, pushLine, gradeRun])
+  }, [files, activeFile, handleLog, pushLine, gradeRun, question?.id])
 
   const runReact = useCallback(async () => {
     setRunning(true)
@@ -377,6 +415,13 @@ try {
     )
   }
 
+  const isMachineCode = detectTemplateType(question) === 'machine-coding'
+
+  // Non-machine-coding questions use the authentic LeetCode Split-View IDE
+  if (!isMachineCode && !custom) {
+    return <LeetCodeIde />
+  }
+
   const reactMode = isReactWorkspace(files)
   const htmlMode = isHtmlWorkspace(question)
   const previewMode = reactMode || htmlMode
@@ -414,7 +459,9 @@ try {
                 <p className="problem-instructions">{custom.instructions}</p>
               </>
             ) : (
-              <p className="problem-text">{question.question}</p>
+              <div className="workspace-structured-problem">
+                <StructuredQuestionRenderer question={question} showSolutionAccordion={false} hideHeader={true} />
+              </div>
             )}
 
             {htmlMode && (

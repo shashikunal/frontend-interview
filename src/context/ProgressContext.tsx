@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState, useCallback, useMemo, type ReactNode } from 'react'
 import { dbActivityService } from '../lib/supabase'
 import { progressSyncService } from '../features/auth/services/progressSync.service'
+import { trackingService } from '../lib/trackingService'
 import { useAuth } from './AuthContext'
 
 const PROGRESS_STORAGE_KEY = 'interview-prep-progress'
@@ -222,6 +223,7 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
         next.delete(id)
       } else {
         next.add(id)
+        trackingService.completeQuestionAttempt(id, 100)
         const uid = authUser?.id || 'guest'
         if (authUser) {
           dbActivityService.logActivity({
@@ -254,7 +256,7 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
       }
       return next
     })
-  }, [recordActivity, streak])
+  }, [recordActivity, streak, authUser])
 
   const markSolved = useCallback((id: number) => {
     recordActivity()
@@ -262,6 +264,7 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
       if (prev.has(id)) return prev
       const next = new Set(prev)
       next.add(id)
+      trackingService.completeQuestionAttempt(id, 100)
       const uid = authUser?.id || 'guest'
       if (authUser) {
         dbActivityService.logActivity({

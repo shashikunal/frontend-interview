@@ -7,7 +7,9 @@ import { getCategories, getSources, getDifficultyBreakdown, search as searchQues
 import { useQuestions } from '../../data/useQuestions'
 import type { Question } from '../../models/question'
 import { DIFFICULTIES } from '../../models/question'
+import { detectTemplateType } from '../../lib/questionTemplate'
 import './QuestionList.css'
+import './templates/Templates.css'
 
 const PAGE_SIZE = 48
 
@@ -32,12 +34,20 @@ export default function QuestionList() {
   const [selectedSource, setSelectedSource] = useState(sourceFilter)
   const [selectedDifficulty, setSelectedDifficulty] = useState('')
   const [selectedStatus, setSelectedStatus] = useState(statusParam)
+  const [selectedTemplate, setSelectedTemplate] = useState(searchParams.get('template') || '')
   const [savedOnly, setSavedOnly] = useState(savedParam)
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE)
   const { questions: allQuestions, loading, error } = useQuestions()
 
   const categories = useMemo(() => getCategories(allQuestions), [allQuestions])
   const sources = useMemo(() => getSources(allQuestions), [allQuestions])
+  const categoryCounts = useMemo(() => {
+    const map: Record<string, number> = {}
+    for (const q of allQuestions) {
+      map[q.category] = (map[q.category] || 0) + 1
+    }
+    return map
+  }, [allQuestions])
 
   const filtered = useMemo(() => {
     let results: Question[] = searchTerm ? searchQuestions(allQuestions, searchTerm) : allQuestions
@@ -47,8 +57,9 @@ export default function QuestionList() {
     if (selectedCategory) results = results.filter(q => q.category === selectedCategory)
     if (selectedSource) results = results.filter(q => (q.source ?? '') === selectedSource)
     if (selectedDifficulty) results = results.filter(q => q.difficulty === selectedDifficulty)
+    if (selectedTemplate) results = results.filter(q => detectTemplateType(q) === selectedTemplate)
     return results
-  }, [searchTerm, savedOnly, selectedStatus, selectedCategory, selectedSource, selectedDifficulty, allQuestions, isBookmarked, isSolved])
+  }, [searchTerm, savedOnly, selectedStatus, selectedCategory, selectedSource, selectedDifficulty, selectedTemplate, allQuestions, isBookmarked, isSolved])
 
   const breakdown = useMemo(() => getDifficultyBreakdown(filtered), [filtered])
 
@@ -89,7 +100,7 @@ export default function QuestionList() {
     setSearchParams(newParams)
   }
 
-  const hasFilters = searchTerm || savedOnly || selectedStatus || selectedCategory || selectedSource || selectedDifficulty
+  const hasFilters = searchTerm || savedOnly || selectedStatus || selectedCategory || selectedSource || selectedDifficulty || selectedTemplate
 
 
   if (loading) {
@@ -143,6 +154,39 @@ export default function QuestionList() {
           </button>
         </div>
       )}
+
+      {/* 1-Click Standard Category Filter Pills */}
+      <div className="category-chips-row" role="tablist" aria-label="Standard category filters">
+        <button
+          type="button"
+          className={`category-pill ${!selectedCategory ? 'active' : ''}`}
+          onClick={() => {
+            setSelectedCategory('')
+            const newParams = new URLSearchParams(searchParams)
+            newParams.delete('category')
+            setSearchParams(newParams)
+          }}
+        >
+          All ({allQuestions.length.toLocaleString()})
+        </button>
+        {categories.map(cat => (
+          <button
+            key={cat}
+            type="button"
+            className={`category-pill cat-${cat.toLowerCase().replace(/[^a-z]+/g, '-')} ${selectedCategory === cat ? 'active' : ''}`}
+            onClick={() => {
+              const next = selectedCategory === cat ? '' : cat
+              setSelectedCategory(next)
+              const newParams = new URLSearchParams(searchParams)
+              if (next) newParams.set('category', next)
+              else newParams.delete('category')
+              setSearchParams(newParams)
+            }}
+          >
+            {cat} {categoryCounts[cat] ? `(${categoryCounts[cat].toLocaleString()})` : ''}
+          </button>
+        ))}
+      </div>
 
       <div className="filters">
         <input
@@ -199,6 +243,24 @@ export default function QuestionList() {
           ))}
         </select>
         <select
+          value={selectedTemplate}
+          onChange={e => {
+            setSelectedTemplate(e.target.value)
+            const newParams = new URLSearchParams(searchParams)
+            if (e.target.value) newParams.set('template', e.target.value)
+            else newParams.delete('template')
+            setSearchParams(newParams)
+          }}
+          className="category-select"
+          aria-label="Filter by format template"
+        >
+          <option value="">All Templates</option>
+          <option value="leetcode">⚡ LeetCode (Algorithm / Problem Solving)</option>
+          <option value="dom-browser">🌐 DOM / Browser APIs</option>
+          <option value="concept">🧠 Core Concepts</option>
+          <option value="machine-coding">🛠️ Machine Coding</option>
+        </select>
+        <select
           value={selectedStatus}
           onChange={e => setSelectedStatus(e.target.value)}
           className="category-select"
@@ -234,6 +296,7 @@ export default function QuestionList() {
               setSelectedSource('')
               setSelectedDifficulty('')
               setSelectedStatus('')
+              setSelectedTemplate('')
               setSavedOnly(false)
               setSearchParams({})
             }}
@@ -289,6 +352,7 @@ export default function QuestionList() {
             {visible.map(q => {
               const bookmarked = isBookmarked(q.id)
               const solved = isSolved(q.id)
+              const tType = detectTemplateType(q)
               return (
                 <div key={q.id} className={`question-card-wrapper ${catClass(q.category)}`}>
                   <Link to={`/questions/${q.id}`} className={`question-card ${catClass(q.category)} ${solved ? 'is-solved' : ''}`}>
@@ -297,10 +361,38 @@ export default function QuestionList() {
                       <span className={`badge badge-${q.difficulty.toLowerCase()}`}>{q.difficulty}</span>
                       {q.source && <span className="badge badge-source">{q.source}</span>}
                       {solved && <span className="badge badge-solved-pill">✓ Solved</span>}
+                      {tType === 'leetcode' && (
+                        <span className="template-type-badge leetcode" style={{ fontSize: '0.68rem', padding: '2px 8px' }}>
+                          ⚡ LeetCode
+                        </span>
+                      )}
+                      {tType === 'dom-browser' && (
+                        <span className="template-type-badge dom-browser" style={{ fontSize: '0.68rem', padding: '2px 8px' }}>
+                          🌐 DOM
+                        </span>
+                      )}
+                      {tType === 'concept' && (
+                        <span className="template-type-badge concept" style={{ fontSize: '0.68rem', padding: '2px 8px' }}>
+                          🧠 Concept
+                        </span>
+                      )}
+                      {tType === 'machine-coding' && (
+                        <span className="template-type-badge machine-coding" style={{ fontSize: '0.68rem', padding: '2px 8px' }}>
+                          🛠️ Machine Coding
+                        </span>
+                      )}
                     </div>
                     <p className="card-question">{q.question}</p>
                   </Link>
                   <div className="card-actions">
+                    <Link
+                      to={`/coding/${q.id}`}
+                      className="card-code-action-btn"
+                      title="Open in Machine Code Workspace"
+                      onClick={e => e.stopPropagation()}
+                    >
+                      ⚡ Code
+                    </Link>
                     <button
                       type="button"
                       className={`card-solved-btn ${solved ? 'solved' : ''}`}

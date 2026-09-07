@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState, useCallback, type ReactNode } from 'react'
+import { trackingService } from '../lib/trackingService'
 
 const BOOKMARK_STORAGE_KEY = 'interview-prep-bookmarks'
 
@@ -48,10 +49,13 @@ export function BookmarkProvider({ children }: { children: ReactNode }) {
   const toggleBookmark = useCallback((id: number) => {
     setBookmarkedIds(prev => {
       const next = new Set(prev)
-      if (next.has(id)) {
+      const isRemoving = next.has(id)
+      if (isRemoving) {
         next.delete(id)
+        trackingService.trackActivity('question_unbookmarked', 'question', id)
       } else {
         next.add(id)
+        trackingService.trackActivity('question_bookmarked', 'question', id)
       }
       return next
     })
@@ -62,6 +66,7 @@ export function BookmarkProvider({ children }: { children: ReactNode }) {
       if (prev.has(id)) return prev
       const next = new Set(prev)
       next.add(id)
+      trackingService.trackActivity('question_bookmarked', 'question', id)
       return next
     })
   }, [])
@@ -71,6 +76,7 @@ export function BookmarkProvider({ children }: { children: ReactNode }) {
       if (!prev.has(id)) return prev
       const next = new Set(prev)
       next.delete(id)
+      trackingService.trackActivity('question_unbookmarked', 'question', id)
       return next
     })
   }, [])

@@ -1,6 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { useBookmarks } from '../../context/BookmarkContext'
 import { useProgress } from '../../context/ProgressContext'
 import { useAuth } from '../../context/AuthContext'
 import ThemeToggle from './ThemeToggle'
@@ -15,7 +14,6 @@ export default function Header() {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState<boolean>(false)
   const headerRef = useRef<HTMLElement | null>(null)
 
-  const { bookmarkedCount } = useBookmarks()
   const { streak } = useProgress()
   const { user, isAuthenticated, hasFeature, openAuthModal, signOut } = useAuth()
 
@@ -25,17 +23,12 @@ export default function Header() {
   const hasVideoMock = hasFeature('video_mock')
   const hasCompilerStudios = hasFeature('compiler_studios')
 
-
-  const isSavedActive = location.pathname === '/questions' && location.search.includes('saved=true')
-
   const isActive = (path: string) => {
     if (path === '/questions') {
       return location.pathname === '/questions' && !location.search.includes('saved=true')
     }
     return location.pathname === path || location.pathname.startsWith(path + '/')
   }
-
-  const isPracticeActive = ['/flashcards', '/quiz', '/videos', '/code-review', '/accessibility', '/daily', '/coding'].some(p => isActive(p)) || isSavedActive
 
   const isArchitectureActive = ['/experience', '/pathways', '/system-design', '/case-studies', '/ast-explorer', '/security', '/user-management', '/state-machine', '/capacity-estimator', '/memory-profiler', '/module-federation', '/whiteboard', '/webrtc-lab', '/local-first', '/search-engine', '/design-system', '/i18n-lab', '/sdui-lab', '/web-components', '/protocols', '/css-pipeline', '/wasm-lab', '/visualizer', '/profiler', '/resume-optimizer', '/compensation'].some(p => isActive(p))
   const isMockActive = ['/mock-interview', '/video-mock', '/behavioral', '/peer-room'].some(p => isActive(p))
@@ -133,17 +126,11 @@ export default function Header() {
                 {!hasCodingSandbox && <span className="nav-lock-tag">🔒</span>}
               </Link>
 
-              {/* 3. Practice Labs Dropdown */}
-              <div className="nav-dropdown-wrap">
-                <button
-                  type="button"
-                  className={`nav-link nav-dropdown-btn ${isPracticeActive || activeDropdown === 'practice' ? 'active' : ''}`}
-                  onClick={() => toggleDropdown('practice')}
-                  aria-expanded={activeDropdown === 'practice'}
-                >
-                  Practice Labs {!hasQuestionsFull && <span className="nav-lock-tag">🔒</span>} <span className="dropdown-caret">▾</span>
-                </button>
-              </div>
+              {/* 3. Video Masterclass (Only practice lab preserved) */}
+              <Link to="/videos" className={`nav-link ${isActive('/videos') ? 'active' : ''}`}>
+                🎥 Video Masterclass
+                {!hasQuestionsFull && <span className="nav-lock-tag">🔒</span>}
+              </Link>
 
               {/* 4. Architecture & Career Dropdown */}
               <div className="nav-dropdown-wrap">
@@ -310,151 +297,6 @@ export default function Header() {
 
 
       {/* FULL-VIEWPORT-WIDTH HORIZONTAL MEGA-DROPDOWNS */}
-
-      {/* 1. PRACTICE MEGA-MENU */}
-      {activeDropdown === 'practice' && (
-        <div
-          className="mega-menu-overlay"
-          onClick={e => {
-            if (e.target === e.currentTarget) closeMenus()
-          }}
-        >
-          <div
-            className="mega-menu-content"
-            onClick={e => {
-              if ((e.target as HTMLElement).closest('a')) closeMenus()
-            }}
-          >
-            <div className="mega-menu-inner">
-
-              <div className="mega-column">
-                <span className="mega-col-title">📚 Question Bank &amp; Daily</span>
-                <div className="mega-items-group">
-                  <Link to="/questions" className={`mega-item ${isActive('/questions') ? 'active' : ''}`}>
-                    <span className="drop-icon">📚</span>
-                    <div>
-                      <span className="drop-title">
-                        Questions Bank
-                        {!hasQuestionsFull && <span className="drop-lock-tag">🔒 PRO</span>}
-                      </span>
-                      <span className="drop-desc">22,222 curated questions &amp; solutions</span>
-                    </div>
-                  </Link>
-
-                  <Link to="/daily" className={`mega-item ${isActive('/daily') ? 'active' : ''}`}>
-                    <span className="drop-icon">🔥</span>
-                    <div>
-                      <span className="drop-title">
-                        Daily Challenge &amp; Streak
-                        {!hasQuestionsFull && <span className="drop-lock-tag">🔒 PRO</span>}
-                      </span>
-                      <span className="drop-desc">365-day heatmap &amp; live sandbox</span>
-                    </div>
-                  </Link>
-
-                  <Link to="/coding" className={`mega-item ${isActive('/coding') ? 'active' : ''}`}>
-                    <span className="drop-icon">💻</span>
-                    <div>
-                      <span className="drop-title">
-                        Coding Challenges
-                        {!hasCodingSandbox && <span className="drop-lock-tag">🔒 PRO</span>}
-                      </span>
-                      <span className="drop-desc">Interactive live workspace &amp; test suites</span>
-                    </div>
-                  </Link>
-                </div>
-              </div>
-
-              <div className="mega-column">
-                <span className="mega-col-title">🧠 Active Recall &amp; Videos</span>
-                <div className="mega-items-group">
-                  <Link to="/flashcards" className={`mega-item ${isActive('/flashcards') ? 'active' : ''}`}>
-                    <span className="drop-icon">🧠</span>
-                    <div>
-                      <span className="drop-title">
-                        Active Recall Cards
-                        {!hasQuestionsFull && <span className="drop-lock-tag">🔒 PRO</span>}
-                      </span>
-                      <span className="drop-desc">SM-2 Spaced Repetition mastery decks</span>
-                    </div>
-                  </Link>
-
-                  <Link to="/quiz" className={`mega-item ${isActive('/quiz') ? 'active' : ''}`}>
-                    <span className="drop-icon">⚡</span>
-                    <div>
-                      <span className="drop-title">
-                        Practice Quiz
-                        {!hasQuestionsFull && <span className="drop-lock-tag">🔒 PRO</span>}
-                      </span>
-                      <span className="drop-desc">Time-boxed topic quiz assessments</span>
-                    </div>
-                  </Link>
-
-                  <Link to="/videos" className={`mega-item ${isActive('/videos') ? 'active' : ''}`}>
-                    <span className="drop-icon">🎥</span>
-                    <div>
-                      <span className="drop-title">
-                        Video Masterclasses
-                        {!hasQuestionsFull && <span className="drop-lock-tag">🔒 PRO</span>}
-                      </span>
-                      <span className="drop-desc">725 curated engineering walkthroughs</span>
-                    </div>
-                  </Link>
-                </div>
-              </div>
-
-              <div className="mega-column">
-                <span className="mega-col-title">🔍 Code Quality &amp; a11y Labs</span>
-                <div className="mega-items-group">
-                  <Link to="/code-review" className={`mega-item ${isActive('/code-review') ? 'active' : ''}`}>
-                    <span className="drop-icon">🔍</span>
-                    <div>
-                      <span className="drop-title">
-                        AI Static Code Reviewer
-                        {!hasCompilerStudios && <span className="drop-lock-tag">🔒 PRO</span>}
-                      </span>
-                      <span className="drop-desc">Memory leaks, AST linting &amp; 1-click fixes</span>
-                    </div>
-                  </Link>
-
-                  <Link to="/accessibility" className={`mega-item ${isActive('/accessibility') ? 'active' : ''}`}>
-                    <span className="drop-icon">♿</span>
-                    <div>
-                      <span className="drop-title">
-                        Accessibility (a11y) Lab
-                        {!hasCompilerStudios && <span className="drop-lock-tag">🔒 PRO</span>}
-                      </span>
-                      <span className="drop-desc">Screen reader simulator &amp; WCAG AAA tools</span>
-                    </div>
-                  </Link>
-
-                  <Link to="/coding" className={`mega-item ${isActive('/coding') ? 'active' : ''}`}>
-                    <span className="drop-icon">💻</span>
-                    <div>
-                      <span className="drop-title">
-                        Coding Sandbox &amp; Snippets
-                        {!hasCodingSandbox && <span className="drop-lock-tag">🔒 PRO</span>}
-                      </span>
-                      <span className="drop-desc">Interactive challenges &amp; code playground</span>
-                    </div>
-                  </Link>
-
-                  <Link to="/questions?saved=true" className={`mega-item highlight-saved ${isSavedActive ? 'active' : ''}`}>
-                    <span className="drop-icon saved-star">★</span>
-                    <div>
-                      <span className="drop-title">
-                        Saved Questions ({bookmarkedCount})
-                        {!hasQuestionsFull && <span className="drop-lock-tag">🔒 PRO</span>}
-                      </span>
-                      <span className="drop-desc">Your personal revision bookmark deck</span>
-                    </div>
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* 2. ARCHITECTURE MEGA-MENU */}
       {activeDropdown === 'architecture' && (

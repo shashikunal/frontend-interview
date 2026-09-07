@@ -1,3 +1,5 @@
+export type TemplateType = 'machine-coding' | 'leetcode' | 'dom-browser' | 'concept';
+
 export interface Question {
   id: number;
   category: string;
@@ -7,6 +9,7 @@ export interface Question {
   code?: string;
   example?: string;
   source?: string;
+  templateType?: TemplateType;
 }
 
 export const DIFFICULTIES = ['Easy', 'Medium', 'Hard'] as const;

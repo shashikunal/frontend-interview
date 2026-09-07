@@ -255,7 +255,7 @@ npm run build
   const zipBytes = createZipArchive(archiveFiles);
 
   // Trigger browser download
-  const blob = new Blob([zipBytes], { type: 'application/zip' });
+  const blob = new Blob([zipBytes as unknown as BlobPart], { type: 'application/zip' });
   const downloadUrl = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = downloadUrl;

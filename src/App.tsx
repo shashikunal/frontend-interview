@@ -9,24 +9,19 @@ import QuestionDetailPage from './components/questions/QuestionDetailPage'
 import CodingList from './components/coding/CodingList'
 import Workspace from './components/workspace/Workspace'
 import Videos from './components/videos/Videos'
-import Quiz from './components/quiz/Quiz'
 import Dashboard from './components/dashboard/Dashboard'
 import MockInterview from './components/mock/MockInterview'
 import VideoMockInterview from './components/mock/VideoMockInterview'
 import SystemDesignCanvas from './components/system-design/SystemDesignCanvas'
 import Visualizer from './components/visualizer/Visualizer'
 import Pathways from './components/pathways/Pathways'
-import Flashcards from './components/flashcards/Flashcards'
 import ExperienceTracks from './components/experience/ExperienceTracks'
 import Profiler from './components/profiler/Profiler'
 import Behavioral from './components/behavioral/Behavioral'
 import ResumeOptimizer from './components/resume/ResumeOptimizer'
 import PeerRoom from './components/peer/PeerRoom'
 import Compensation from './components/compensation/Compensation'
-import CodeReview from './components/codereview/CodeReview'
-import AccessibilityLab from './components/accessibility/AccessibilityLab'
 import CaseStudies from './components/casestudies/CaseStudies'
-import DailyChallenge from './components/daily/DailyChallenge'
 import AstExplorer from './components/astexplorer/AstExplorer'
 import SecuritySandbox from './components/security/SecuritySandbox'
 import StateMachine from './components/statemachine/StateMachine'
@@ -311,23 +306,7 @@ export default function App() {
             }
           />
 
-          {/* Practice Labs */}
-          <Route
-            path="/flashcards"
-            element={
-              <FeatureGuard feature="questions_full" featureName="Active Recall Flashcards Studio">
-                <Flashcards />
-              </FeatureGuard>
-            }
-          />
-          <Route
-            path="/quiz"
-            element={
-              <FeatureGuard feature="questions_full" featureName="Practice Quiz Assessments">
-                <Quiz />
-              </FeatureGuard>
-            }
-          />
+          {/* Practice Labs: Video Masterclass Preserved, others redirected */}
           <Route
             path="/videos"
             element={
@@ -336,27 +315,24 @@ export default function App() {
               </FeatureGuard>
             }
           />
+          <Route path="/flashcards" element={<Navigate to="/videos" replace />} />
+          <Route path="/quiz" element={<Navigate to="/videos" replace />} />
+          <Route path="/code-review" element={<Navigate to="/videos" replace />} />
+          <Route path="/accessibility" element={<Navigate to="/videos" replace />} />
+          <Route path="/daily" element={<Navigate to="/videos" replace />} />
           <Route
-            path="/code-review"
+            path="/coding"
             element={
-              <FeatureGuard feature="compiler_studios" featureName="AI Static Code Reviewer">
-                <CodeReview />
+              <FeatureGuard feature="coding_sandbox" featureName="Interactive Coding Challenges">
+                <CodingList />
               </FeatureGuard>
             }
           />
           <Route
-            path="/accessibility"
+            path="/coding/:id"
             element={
-              <FeatureGuard feature="compiler_studios" featureName="Accessibility (a11y) Lab">
-                <AccessibilityLab />
-              </FeatureGuard>
-            }
-          />
-          <Route
-            path="/daily"
-            element={
-              <FeatureGuard feature="questions_full" featureName="Daily Challenge & Streak">
-                <DailyChallenge />
+              <FeatureGuard feature="coding_sandbox" featureName="Interactive Coding Sandbox & Workspace">
+                <Workspace />
               </FeatureGuard>
             }
           />
@@ -395,7 +371,7 @@ export default function App() {
             }
           />
 
-          {/* Questions Bank */}
+          {/* Questions Bank (22,222+ Questions) */}
           <Route
             path="/questions"
             element={
@@ -421,23 +397,7 @@ export default function App() {
             }
           />
 
-          {/* Coding Challenges */}
-          <Route
-            path="/coding"
-            element={
-              <FeatureGuard feature="coding_sandbox" featureName="Interactive Coding Challenges">
-                <CodingList />
-              </FeatureGuard>
-            }
-          />
-          <Route
-            path="/coding/:id"
-            element={
-              <FeatureGuard feature="coding_sandbox" featureName="Interactive Coding Sandbox & Workspace">
-                <Workspace />
-              </FeatureGuard>
-            }
-          />
+          {/* Machine Coding Masterclass Studio */}
           <Route
             path="/machine-coding"
             element={

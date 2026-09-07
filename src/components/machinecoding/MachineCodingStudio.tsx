@@ -1,13 +1,22 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useParams, useNavigate } from 'react-router-dom';
 import Editor, { DiffEditor } from '@monaco-editor/react';
 import { useTheme } from '../../context/ThemeContext';
-import { buildReactSrcDoc } from '../../lib/runner';
+import { buildMachineCodingSrcDoc } from '../../lib/runner';
 import { exportMachineCodingZip } from '../../lib/zipExport';
-import { MACHINE_CODING_QUESTIONS } from './machineCodingQuestions';
+import { MACHINE_CODING_QUESTIONS, type MCQuestion } from './machineCodingQuestions';
 import { getQuestionTestCases, type MCTestCase, type MCTestResult } from './data/machineCodingTests';
+import {
+  type MCLanguage,
+  LANGUAGE_OPTIONS,
+  buildStarterFilesForLanguage,
+  getSolutionCodeForLanguage,
+  getSolutionCodeForFile,
+} from './lib/languageStarters';
 import InterviewScorecardModal, { type ScorecardData } from './InterviewScorecardModal';
 import AIInterviewPrompter from './AIInterviewPrompter';
+import { useQuestions } from '../../data/useQuestions';
+import { trackingService } from '../../lib/trackingService';
 import './MachineCodingStudio.css';
 
 interface ConsoleLog {
@@ -56,6 +65,18 @@ input:focus, select:focus, textarea:focus {
 `;
 
 const FILE_PRESETS = [
+  {
+    name: 'script.js',
+    icon: '🟨',
+    desc: 'Vanilla JavaScript entry script (DOM & logic)',
+    template: `// Vanilla JavaScript implementation\nconsole.log('Script loaded');\n`,
+  },
+  {
+    name: 'index.html',
+    icon: '🌐',
+    desc: 'HTML5 Semantic layout and markup skeleton',
+    template: `<div class="card" id="app">\n  <h2>Component Title</h2>\n  <div id="display">Ready</div>\n</div>\n`,
+  },
   {
     name: 'styles.css',
     icon: '🎨',
@@ -118,24 +139,30 @@ export function formatCurrency(val: number): string {
 const getEditorLanguage = (fileName: string): string => {
   if (fileName.endsWith('.css')) return 'css';
   if (fileName.endsWith('.json')) return 'json';
+  if (fileName.endsWith('.ts')) return 'typescript';
+  if (fileName.endsWith('.tsx')) return 'typescript';
+  if (fileName.endsWith('.js') || fileName.endsWith('.jsx')) return 'javascript';
   if (fileName.endsWith('.html')) return 'html';
-  if (fileName.endsWith('.ts') || fileName.endsWith('.tsx')) return 'typescript';
   return 'javascript';
 };
 
 const getFileIcon = (fileName: string): string => {
   if (fileName.endsWith('.css')) return '🎨';
-  if (fileName.endsWith('.json')) return '📋';
-  if (fileName.endsWith('.html')) return '🌐';
+  if (fileName.endsWith('.json')) return '📊';
   if (fileName.endsWith('.tsx') || fileName.endsWith('.jsx')) return '⚛️';
-  if (fileName.endsWith('.ts') || fileName.endsWith('.js')) return '📄';
+  if (fileName.endsWith('.ts')) return '🔷';
+  if (fileName.endsWith('.html')) return '🌐';
+  if (fileName.endsWith('.js')) return '🟨';
   return '📄';
 };
 
 export default function MachineCodingStudio() {
+  const { id: routeId } = useParams<{ id?: string }>();
   const [searchParams, setSearchParams] = useSearchParams();
-  const activeId = searchParams.get('id');
+  const navigate = useNavigate();
+  const activeId = searchParams.get('id') || routeId;
   const { resolvedTheme } = useTheme();
+  const { questions: allBankQuestions } = useQuestions();
 
   // Search & Filter State
   const [searchQuery, setSearchQuery] = useState('');
@@ -159,21 +186,74 @@ export default function MachineCodingStudio() {
     { id: 'b10', label: 'B10: Systems & Offline (451-500)', start: 451, end: 500 },
   ];
 
-  // Active question resolution
-  const activeQuestion = useMemo(() => {
+  // Active question resolution: supports MC Questions (Q001-Q500) and Bank Questions
+  const activeQuestion = useMemo<MCQuestion | null>(() => {
     if (!activeId) return null;
-    return MACHINE_CODING_QUESTIONS.find(q => q.id === activeId) || null;
-  }, [activeId]);
+    const direct = MACHINE_CODING_QUESTIONS.find(q => q.id.toLowerCase() === activeId.toLowerCase());
+    if (direct) return direct;
+
+    const padded = `Q${activeId.replace(/\D/g, '').padStart(3, '0')}`;
+    const directPadded = MACHINE_CODING_QUESTIONS.find(q => q.id === padded);
+    if (directPadded) return directPadded;
+
+    const rawNum = activeId.replace(/\D/g, '');
+    const bankQ = allBankQuestions.find(q => String(q.id) === activeId || (rawNum && String(q.id) === rawNum));
+    if (bankQ) {
+      return {
+        id: String(bankQ.id),
+        title: bankQ.question,
+        category: (bankQ.category as any) || 'JavaScript',
+        difficulty: (bankQ.difficulty as any) || 'Medium',
+        timeEstimate: '25 mins',
+        summary: bankQ.question,
+        description: `### Question\n${bankQ.question}\n\n### Explanation & Solution Approach\n${bankQ.answer || 'Build a production-grade component adhering to best practices, robust state modeling, and clean lifecycle management.'}`,
+        requirements: [
+          `Implement component and logic for: ${bankQ.question}`,
+          'Handle boundary conditions, empty states, and invalid parameters.',
+          'Provide clear state management and smooth reactive updates.',
+          'Verify execution in the live sandbox preview and inspect console logs.'
+        ],
+        interviewTips: [
+          'Communicate your architectural plan clearly before jumping into code.',
+          'Prioritize clean separation of concerns between state and UI.',
+          'Account for edge cases and optimal performance characteristics.'
+        ],
+        commonMistakes: [
+          'Failing to handle empty or undefined input variables.',
+          'Direct mutation of state structures instead of immutable patterns.',
+          'Omitting accessible controls and semantic element structuring.'
+        ],
+        starterCode: bankQ.code
+          ? `// Implement solution for: ${bankQ.question}\n\n${bankQ.code.includes('export default') || bankQ.code.includes('function App') ? bankQ.code : `import React, { useState } from 'react';\n\nexport default function App() {\n  return (\n    <div style={{ padding: '24px', fontFamily: 'system-ui' }}>\n      <h2>${bankQ.question}</h2>\n      <p>Write your solution here.</p>\n    </div>\n  );\n}\n`}`
+          : `import React, { useState } from 'react';\n\nexport default function App() {\n  const [val, setVal] = useState('');\n  return (\n    <div style={{ padding: '24px', fontFamily: 'system-ui, sans-serif' }}>\n      <h2 style={{ color: '#38bdf8' }}>${bankQ.question}</h2>\n      <p style={{ color: '#94a3b8' }}>Implement your component logic here.</p>\n    </div>\n  );\n}\n`,
+        solutionCode: bankQ.code || bankQ.example || `// Reference Solution for: ${bankQ.question}\n\n${bankQ.answer}\n`,
+      };
+    }
+
+    return null;
+  }, [activeId, allBankQuestions]);
 
   // Code editor state
   const [currentCode, setCurrentCode] = useState('');
-  const [userCodeMap, setUserCodeMap] = useState<Record<string, string>>(() => {
+  const [, setUserCodeMap] = useState<Record<string, string>>(() => {
     try {
       const saved = localStorage.getItem('mc_code_drafts_v1');
       return saved ? JSON.parse(saved) : {};
     } catch {
       return {};
     }
+  });
+
+  // Language Environment State
+  const [selectedLanguage, setSelectedLanguage] = useState<MCLanguage>(() => {
+    try {
+      const sp = new URLSearchParams(window.location.search);
+      const urlLang = sp.get('lang') as MCLanguage | null;
+      if (urlLang && LANGUAGE_OPTIONS.some(l => l.id === urlLang)) return urlLang;
+      const saved = localStorage.getItem('mc_active_language') as MCLanguage | null;
+      if (saved && LANGUAGE_OPTIONS.some(l => l.id === saved)) return saved;
+    } catch (_) {}
+    return 'react';
   });
 
   // Multi-file project workspace state
@@ -328,12 +408,15 @@ export default function MachineCodingStudio() {
   const [interviewDuration, setInterviewDuration] = useState(45 * 60); // default 45 mins
   const [interviewTimeLeft, setInterviewTimeLeft] = useState(45 * 60);
   const [, setInterviewStartedAt] = useState<number | null>(null);
-  const [interviewFinished, setInterviewFinished] = useState(false);
+  const [, setInterviewFinished] = useState(false);
   const [showScorecard, setShowScorecard] = useState(false);
   const [scorecardData, setScorecardData] = useState<ScorecardData | null>(null);
 
   const editorRef = useRef<any>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
+  const isSwitchingRef = useRef<boolean>(false);
+  const activeFileNameRef = useRef<string>('App.tsx');
+  const activeQuestionRef = useRef<MCQuestion | null>(null);
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
@@ -360,11 +443,15 @@ export default function MachineCodingStudio() {
 
   const toggleSolved = (id: string) => {
     setSolvedMap(prev => {
-      const next = { ...prev, [id]: !prev[id] };
+      const isNowSolved = !prev[id];
+      const next = { ...prev, [id]: isNowSolved };
       try {
         localStorage.setItem('mc_solved_v1', JSON.stringify(next));
       } catch (err) {
         console.error(err);
+      }
+      if (isNowSolved) {
+        trackingService.completeQuestionAttempt(id, 100);
       }
       return next;
     });
@@ -379,32 +466,106 @@ export default function MachineCodingStudio() {
   // Sync code when active question changes
   useEffect(() => {
     if (activeQuestion) {
+      activeQuestionRef.current = activeQuestion;
+      isSwitchingRef.current = true;
       setTestResults(null);
       setIsRunningTests(false);
 
+      const urlLang = searchParams.get('lang') as MCLanguage | null;
+      const globalLang = (localStorage.getItem('mc_active_language') as MCLanguage | null) || 'react';
+      const targetLang: MCLanguage = (urlLang && LANGUAGE_OPTIONS.some(l => l.id === urlLang)) ? urlLang : globalLang;
+      setSelectedLanguage(targetLang);
+
       let questionFiles = multiFilesMap[activeQuestion.id];
-      if (!questionFiles) {
-        const legacyCode = userCodeMap[activeQuestion.id] || activeQuestion.starterCode;
-        questionFiles = {
-          'App.tsx': legacyCode,
-          'styles.css': DEFAULT_STARTER_CSS,
-        };
+
+      // Check if files belong to another question (stale cache leak from previous navigation bug)
+      const belongsToAnotherQuestion =
+        questionFiles &&
+        (
+          (targetLang === 'javascript' && questionFiles['script.js'] && !questionFiles['script.js'].includes(`[${activeQuestion.id}]`)) ||
+          (targetLang === 'dom' && questionFiles['index.html'] && !questionFiles['index.html'].includes(activeQuestion.title))
+        );
+
+      // Check if current files match the target language
+      const isWrongLanguageForWorkspace =
+        questionFiles &&
+        (
+          (targetLang === 'react' && !questionFiles['App.tsx']) ||
+          (targetLang === 'javascript' && (!questionFiles['script.js'] || !questionFiles['index.html'])) ||
+          (targetLang === 'dom' && (!questionFiles['index.html'] || !questionFiles['script.js'])) ||
+          (targetLang === 'typescript' && !questionFiles['script.ts']) ||
+          (targetLang === 'leetcode' && !questionFiles['solution.js'])
+        );
+
+      // Detect if React workspace has stale fallback boilerplate
+      const isCorrupted =
+        questionFiles &&
+        targetLang === 'react' &&
+        (
+          questionFiles['index.html']?.includes('id="display-container"') ||
+          questionFiles['index.html']?.includes('id="primary-action-btn"') ||
+          questionFiles['App.tsx']?.includes("active ? 'Toggle Off' : 'Toggle On'")
+        );
+
+      if (!questionFiles || isWrongLanguageForWorkspace || belongsToAnotherQuestion || isCorrupted) {
+        questionFiles = buildStarterFilesForLanguage(activeQuestion, targetLang);
       } else {
+        if (targetLang === 'react' && (!questionFiles['App.tsx'] || !questionFiles['App.tsx'].trim())) {
+          questionFiles['App.tsx'] = activeQuestion.starterCode;
+        }
         questionFiles = { ...questionFiles };
       }
 
-      if (!questionFiles['App.tsx']) {
-        questionFiles['App.tsx'] = activeQuestion.starterCode;
+      // If in JavaScript or DOM mode, strictly remove any React files (App.tsx, App.ts, App.jsx)
+      if (targetLang === 'javascript' || targetLang === 'dom') {
+        delete questionFiles['App.tsx'];
+        delete questionFiles['App.ts'];
+        delete questionFiles['App.jsx'];
+      }
+      // If in React mode, strictly remove any Vanilla JS files
+      if (targetLang === 'react') {
+        delete questionFiles['script.js'];
+        delete questionFiles['index.html'];
       }
 
+      setMultiFilesMap(prev => {
+        const updated = { ...prev, [activeQuestion.id]: questionFiles };
+        try {
+          localStorage.setItem('mc_multi_files_v2', JSON.stringify(updated));
+        } catch (_) {}
+        return updated;
+      });
+
+      // Clean up legacy keys
+      try {
+        localStorage.removeItem(`mc_lang_${activeQuestion.id}`);
+      } catch (_) {}
+
+      const langOpt = LANGUAGE_OPTIONS.find(l => l.id === targetLang) || LANGUAGE_OPTIONS[0];
+      const primaryFile = questionFiles[langOpt.primaryFile] !== undefined ? langOpt.primaryFile : Object.keys(questionFiles)[0];
+
+      filesRef.current = questionFiles;
+      activeFileNameRef.current = primaryFile;
+
       setFiles(questionFiles);
-      setActiveFileName('App.tsx');
-      const initialCode = questionFiles['App.tsx'];
+      setActiveFileName(primaryFile);
+      const initialCode = questionFiles[primaryFile] || '';
       setCurrentCode(initialCode);
       if (editorRef.current) {
         editorRef.current.setValue(initialCode);
       }
-      executeCode(questionFiles);
+      executeCode(questionFiles, targetLang);
+
+      if (activeQuestion?.id) {
+        trackingService.trackActivity('question_viewed', 'question', activeQuestion.id, {
+          title: activeQuestion.title,
+          category: activeQuestion.category,
+        });
+      }
+
+      setTimeout(() => {
+        isSwitchingRef.current = false;
+      }, 50);
     }
   }, [activeQuestion?.id]);
 
@@ -428,7 +589,20 @@ export default function MachineCodingStudio() {
           testResultResolverRef.current = null;
         }
         const passedCount = res.filter(r => r.status === 'passed').length;
-        if (res.length > 0 && passedCount === res.length) {
+        const isAllPassed = res.length > 0 && passedCount === res.length;
+        const testScore = res.length > 0 ? Math.round((passedCount / res.length) * 100) : 0;
+
+        if (activeQuestion?.id) {
+          trackingService.recordSubmission({
+            questionId: activeQuestion.id,
+            code: currentCode || files[activeFileName] || '',
+            language: selectedLanguage,
+            status: isAllPassed ? 'accepted' : 'wrong_answer',
+            score: testScore,
+          });
+        }
+
+        if (isAllPassed) {
           showToast(`🎉 All ${res.length} test assertions passed!`);
           if (activeQuestion && !solvedMap[activeQuestion.id]) {
             toggleSolved(activeQuestion.id);
@@ -485,16 +659,24 @@ export default function MachineCodingStudio() {
     return () => clearInterval(timer);
   }, [isInterviewActive, interviewDuration, activeQuestion, currentCode]);
 
-  // Code Execution via buildReactSrcDoc with multi-file support
-  const executeCode = async (filesToRun?: Record<string, string>) => {
+  // Code Execution via buildMachineCodingSrcDoc with multi-file support
+  const executeCode = async (filesToRun?: Record<string, string>, langToRun?: MCLanguage) => {
     const targetFiles = filesToRun || files;
+    const activeLang = langToRun || selectedLanguage;
     setIsCompiling(true);
     setConsoleLogs([]);
     const nextRunId = runId + 1;
     setRunId(nextRunId);
 
+    if (activeQuestion?.id) {
+      trackingService.startQuestionAttempt(activeQuestion.id);
+      trackingService.trackActivity('code_run', 'question', activeQuestion.id, {
+        language: activeLang,
+      });
+    }
+
     try {
-      const srcDoc = await buildReactSrcDoc(targetFiles, 'App.tsx', nextRunId);
+      const srcDoc = await buildMachineCodingSrcDoc(targetFiles, activeLang, nextRunId);
       setPreviewSrcDoc(srcDoc);
     } catch (err: any) {
       console.error(err);
@@ -504,8 +686,61 @@ export default function MachineCodingStudio() {
     }
   };
 
+  const handleSwitchLanguage = (newLang: MCLanguage) => {
+    if (!activeQuestion || newLang === selectedLanguage) return;
+    isSwitchingRef.current = true;
+    setSelectedLanguage(newLang);
+    try {
+      localStorage.setItem('mc_active_language', newLang);
+      localStorage.removeItem(`mc_lang_${activeQuestion.id}`);
+    } catch (_) {}
+    setSearchParams(prev => {
+      const next = new URLSearchParams(prev);
+      if (newLang === 'react') {
+        next.delete('lang');
+      } else {
+        next.set('lang', newLang);
+      }
+      return next;
+    }, { replace: true });
+
+    const newFiles = buildStarterFilesForLanguage(activeQuestion, newLang);
+    if (newLang === 'javascript' || newLang === 'dom') {
+      delete newFiles['App.tsx'];
+      delete newFiles['App.ts'];
+      delete newFiles['App.jsx'];
+    }
+    const langOpt = LANGUAGE_OPTIONS.find(l => l.id === newLang) || LANGUAGE_OPTIONS[0];
+    const primaryFile = newFiles[langOpt.primaryFile] !== undefined ? langOpt.primaryFile : Object.keys(newFiles)[0];
+
+    filesRef.current = newFiles;
+    activeFileNameRef.current = primaryFile;
+
+    setFiles(newFiles);
+    setActiveFileName(primaryFile);
+    const content = newFiles[primaryFile] || '';
+    setCurrentCode(content);
+    if (editorRef.current) {
+      editorRef.current.setValue(content);
+    }
+    setMultiFilesMap(prev => {
+      const updated = { ...prev, [activeQuestion.id]: newFiles };
+      try {
+        localStorage.setItem('mc_multi_files_v2', JSON.stringify(updated));
+      } catch (_) {}
+      return updated;
+    });
+    showToast(`✓ Switched workspace environment to ${langOpt.label} (${langOpt.badge})`);
+    executeCode(newFiles, newLang);
+
+    setTimeout(() => {
+      isSwitchingRef.current = false;
+    }, 50);
+  };
+
   const handleSelectFile = (fileName: string) => {
     if (fileName === activeFileName) return;
+    activeFileNameRef.current = fileName;
     setActiveFileName(fileName);
     const content = files[fileName] ?? '';
     setCurrentCode(content);
@@ -542,19 +777,21 @@ export default function MachineCodingStudio() {
     setShowAddFileModal(false);
     setNewFileNameInput('');
     showToast(`✓ Created file "${trimmed}"!`);
-    executeCode(updatedFiles);
+    executeCode(updatedFiles, selectedLanguage);
   };
 
   const handleDeleteFile = (name: string) => {
-    if (name === 'App.tsx') {
-      showToast('⚠️ App.tsx is the primary entrypoint and cannot be deleted.');
+    const langOpt = LANGUAGE_OPTIONS.find(l => l.id === selectedLanguage) || LANGUAGE_OPTIONS[0];
+    if (name === langOpt.primaryFile || Object.keys(files).length <= 1) {
+      showToast(`⚠️ ${name} is the primary file and cannot be deleted.`);
       return;
     }
     const { [name]: _, ...rest } = files;
     setFiles(rest);
     if (activeFileName === name) {
-      setActiveFileName('App.tsx');
-      const fallbackCode = rest['App.tsx'] || '';
+      const fallbackName = Object.keys(rest)[0] || langOpt.primaryFile;
+      setActiveFileName(fallbackName);
+      const fallbackCode = rest[fallbackName] || '';
       setCurrentCode(fallbackCode);
       if (editorRef.current) {
         editorRef.current.setValue(fallbackCode);
@@ -570,7 +807,7 @@ export default function MachineCodingStudio() {
       });
     }
     showToast(`Deleted file "${name}"`);
-    executeCode(rest);
+    executeCode(rest, selectedLanguage);
   };
 
   const getAllQuestionTests = (q: any): MCTestCase[] => {
@@ -724,33 +961,45 @@ export default function MachineCodingStudio() {
       files: { ...files }
     });
     setShowScorecard(true);
+
+    if (activeQuestion?.id) {
+      const score = total > 0 ? Math.round((passed / total) * 100) : 0;
+      trackingService.completeQuestionAttempt(activeQuestion.id, score, timeSpent);
+    }
   };
 
   const handleCodeChange = (val?: string) => {
+    if (isSwitchingRef.current) return;
     const nextVal = val ?? '';
     setCurrentCode(nextVal);
-    const updatedFiles = { ...files, [activeFileName]: nextVal };
-    setFiles(updatedFiles);
+    const currentFile = activeFileNameRef.current;
+    const q = activeQuestionRef.current;
 
-    if (activeQuestion) {
-      setMultiFilesMap(prev => {
-        const updated = { ...prev, [activeQuestion.id]: updatedFiles };
-        try {
-          localStorage.setItem('mc_multi_files_v2', JSON.stringify(updated));
-        } catch (_) {}
-        return updated;
-      });
+    setFiles(prev => {
+      const updatedFiles = { ...prev, [currentFile]: nextVal };
+      filesRef.current = updatedFiles;
 
-      if (activeFileName === 'App.tsx') {
-        setUserCodeMap(prev => {
-          const updated = { ...prev, [activeQuestion.id]: nextVal };
+      if (q) {
+        setMultiFilesMap(mapPrev => {
+          const updatedMap = { ...mapPrev, [q.id]: updatedFiles };
           try {
-            localStorage.setItem('mc_code_drafts_v1', JSON.stringify(updated));
+            localStorage.setItem('mc_multi_files_v2', JSON.stringify(updatedMap));
           } catch (_) {}
-          return updated;
+          return updatedMap;
         });
+
+        if (currentFile === 'App.tsx') {
+          setUserCodeMap(uPrev => {
+            const updatedUserMap = { ...uPrev, [q.id]: nextVal };
+            try {
+              localStorage.setItem('mc_code_drafts_v1', JSON.stringify(updatedUserMap));
+            } catch (_) {}
+            return updatedUserMap;
+          });
+        }
       }
-    }
+      return updatedFiles;
+    });
   };
 
   const handleLoadSolution = () => {
@@ -759,47 +1008,89 @@ export default function MachineCodingStudio() {
       showToast('🔒 Solution is locked during an active interview round!');
       return;
     }
-    const sol = activeQuestion.solutionCode;
-    const updatedFiles = { ...files, 'App.tsx': sol };
-    setFiles(updatedFiles);
-    if (activeFileName === 'App.tsx') {
+
+    isSwitchingRef.current = true;
+
+    if (selectedLanguage === 'react') {
+      const sol = activeQuestion.solutionCode;
+      const updatedFiles = { ...files, 'App.tsx': sol };
+      filesRef.current = updatedFiles;
+      activeFileNameRef.current = 'App.tsx';
+
+      setFiles(updatedFiles);
+      setActiveFileName('App.tsx');
       setCurrentCode(sol);
       if (editorRef.current) {
         editorRef.current.setValue(sol);
       }
+      executeCode(updatedFiles, 'react');
+      setMultiFilesMap(prev => {
+        const updated = { ...prev, [activeQuestion.id]: updatedFiles };
+        try {
+          localStorage.setItem('mc_multi_files_v2', JSON.stringify(updated));
+        } catch (_) {}
+        return updated;
+      });
+      showToast('✓ React solution loaded into App.tsx & executed!');
+    } else {
+      const solFiles = buildStarterFilesForLanguage(activeQuestion, selectedLanguage);
+      if (selectedLanguage === 'javascript' || selectedLanguage === 'dom') {
+        delete solFiles['App.tsx'];
+        delete solFiles['App.ts'];
+        delete solFiles['App.jsx'];
+      }
+      const langOpt = LANGUAGE_OPTIONS.find(l => l.id === selectedLanguage) || LANGUAGE_OPTIONS[0];
+      const primaryFile = solFiles[langOpt.primaryFile] !== undefined ? langOpt.primaryFile : Object.keys(solFiles)[0];
+      const solCode = solFiles[primaryFile] || '';
+
+      filesRef.current = solFiles;
+      activeFileNameRef.current = primaryFile;
+
+      setFiles(solFiles);
+      setActiveFileName(primaryFile);
+      setCurrentCode(solCode);
+      if (editorRef.current) {
+        editorRef.current.setValue(solCode);
+      }
+      executeCode(solFiles, selectedLanguage);
+      setMultiFilesMap(prev => {
+        const updated = { ...prev, [activeQuestion.id]: solFiles };
+        try {
+          localStorage.setItem('mc_multi_files_v2', JSON.stringify(updated));
+        } catch (_) {}
+        return updated;
+      });
+      showToast(`✓ ${langOpt.label} solution loaded into ${primaryFile} & executed!`);
     }
-    executeCode(updatedFiles);
-    setMultiFilesMap(prev => {
-      const updated = { ...prev, [activeQuestion.id]: updatedFiles };
-      try {
-        localStorage.setItem('mc_multi_files_v2', JSON.stringify(updated));
-      } catch (_) {}
-      return updated;
-    });
-    setUserCodeMap(prev => {
-      const updated = { ...prev, [activeQuestion.id]: sol };
-      try {
-        localStorage.setItem('mc_code_drafts_v1', JSON.stringify(updated));
-      } catch (_) {}
-      return updated;
-    });
-    showToast('✓ Reference solution loaded into App.tsx & executed!');
+
+    setTimeout(() => {
+      isSwitchingRef.current = false;
+    }, 50);
   };
 
   const handleResetStarter = () => {
     if (!activeQuestion) return;
-    const starter = activeQuestion.starterCode;
-    const resetFiles: Record<string, string> = {
-      'App.tsx': starter,
-      'styles.css': DEFAULT_STARTER_CSS,
-    };
-    setFiles(resetFiles);
-    setActiveFileName('App.tsx');
-    setCurrentCode(starter);
-    if (editorRef.current) {
-      editorRef.current.setValue(starter);
+    isSwitchingRef.current = true;
+    const resetFiles = buildStarterFilesForLanguage(activeQuestion, selectedLanguage);
+    if (selectedLanguage === 'javascript' || selectedLanguage === 'dom') {
+      delete resetFiles['App.tsx'];
+      delete resetFiles['App.ts'];
+      delete resetFiles['App.jsx'];
     }
-    executeCode(resetFiles);
+    const langOpt = LANGUAGE_OPTIONS.find(l => l.id === selectedLanguage) || LANGUAGE_OPTIONS[0];
+    const primaryFile = resetFiles[langOpt.primaryFile] !== undefined ? langOpt.primaryFile : Object.keys(resetFiles)[0];
+
+    filesRef.current = resetFiles;
+    activeFileNameRef.current = primaryFile;
+
+    setFiles(resetFiles);
+    setActiveFileName(primaryFile);
+    const initialContent = resetFiles[primaryFile] || '';
+    setCurrentCode(initialContent);
+    if (editorRef.current) {
+      editorRef.current.setValue(initialContent);
+    }
+    executeCode(resetFiles, selectedLanguage);
     setMultiFilesMap(prev => {
       const updated = { ...prev, [activeQuestion.id]: resetFiles };
       try {
@@ -807,14 +1098,11 @@ export default function MachineCodingStudio() {
       } catch (_) {}
       return updated;
     });
-    setUserCodeMap(prev => {
-      const updated = { ...prev, [activeQuestion.id]: starter };
-      try {
-        localStorage.setItem('mc_code_drafts_v1', JSON.stringify(updated));
-      } catch (_) {}
-      return updated;
-    });
-    showToast('↺ Project files reset to initial challenge template!');
+    showToast(`↺ Project files reset to initial ${langOpt.label} template!`);
+
+    setTimeout(() => {
+      isSwitchingRef.current = false;
+    }, 50);
   };
 
   // Format Code Helper
@@ -1042,11 +1330,24 @@ export default function MachineCodingStudio() {
       if (!confirmExit) return;
       setIsInterviewActive(false);
     }
-    setSearchParams({ id });
+    const currentLang = selectedLanguage;
+    if (routeId) {
+      navigate(currentLang === 'react' ? `/questions/${id}` : `/questions/${id}?lang=${currentLang}`);
+    } else {
+      if (currentLang === 'react') {
+        setSearchParams({ id });
+      } else {
+        setSearchParams({ id, lang: currentLang });
+      }
+    }
   };
 
   const closeStudio = () => {
-    setSearchParams({});
+    if (routeId) {
+      navigate('/questions');
+    } else {
+      setSearchParams({});
+    }
   };
 
   const activeBatchObj = BATCHES.find(b => b.id === selectedBatch) || BATCHES[0];
@@ -1075,7 +1376,16 @@ export default function MachineCodingStudio() {
   }, [filteredQuestions, currentPage, pageSize]);
 
   const solvedCount = Object.values(solvedMap).filter(Boolean).length;
-  const categories = ['All', 'State Management', 'Interactive UI', 'Custom Hooks', 'Async & Performance', 'Architecture'];
+  const categories = [
+    'All',
+    'JavaScript',
+    'TypeScript',
+    'ReactJS',
+    'React Redux Toolkit',
+    'React Query',
+    'DOM',
+    'LeetCode',
+  ];
 
   // -------------------------------------------------------------
   // RENDER: WORKSPACE MODE (when question is active)
@@ -1139,6 +1449,22 @@ export default function MachineCodingStudio() {
                 </optgroup>
               ))}
             </select>
+
+            {/* Language Environment Selector */}
+            <div className="mc-topbar-lang-box" title="Select programming language & runtime environment">
+              <span className="mc-topbar-lang-label">Lang:</span>
+              <select
+                className="mc-topbar-lang-select"
+                value={selectedLanguage}
+                onChange={(e) => handleSwitchLanguage(e.target.value as MCLanguage)}
+              >
+                {LANGUAGE_OPTIONS.map(opt => (
+                  <option key={opt.id} value={opt.id}>
+                    {opt.icon} {opt.label}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
 
           <div className="mc-topbar-right">
@@ -1460,8 +1786,13 @@ export default function MachineCodingStudio() {
                   </div>
                 ) : (
                   <div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-                      <h3 style={{ margin: 0, fontSize: '15px', color: '#c084fc' }}>Reference Solution</h3>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', flexWrap: 'wrap', gap: '8px' }}>
+                      <div>
+                        <h3 style={{ margin: 0, fontSize: '15px', color: '#c084fc' }}>Reference Solution</h3>
+                        <span style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>
+                          Environment: {LANGUAGE_OPTIONS.find(l => l.id === selectedLanguage)?.label || 'ReactJS'}
+                        </span>
+                      </div>
                       <div style={{ display: 'flex', gap: '8px' }}>
                         <button
                           onClick={() => {
@@ -1509,7 +1840,7 @@ export default function MachineCodingStudio() {
                       color: '#e6edf3',
                       lineHeight: '1.5'
                     }}>
-                      {activeQuestion.solutionCode}
+                      {getSolutionCodeForLanguage(activeQuestion, selectedLanguage)}
                     </pre>
                   </div>
                 )
@@ -1713,30 +2044,34 @@ export default function MachineCodingStudio() {
               >
                 <div className="mc-panel-header">
                   <div className="mc-file-tabs-bar">
-                    {Object.keys(files).map(fileName => (
-                      <div
-                        key={fileName}
-                        className={`mc-file-tab ${fileName === activeFileName ? 'active' : ''}`}
-                        onClick={() => handleSelectFile(fileName)}
-                        title={`Switch to ${fileName}`}
-                      >
-                        <span className="mc-file-icon">{getFileIcon(fileName)}</span>
-                        <span className="mc-file-name">{fileName}</span>
-                        {fileName !== 'App.tsx' && (
-                          <button
-                            type="button"
-                            className="mc-file-close-btn"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleDeleteFile(fileName);
-                            }}
-                            title={`Delete ${fileName}`}
-                          >
-                            ×
-                          </button>
-                        )}
-                      </div>
-                    ))}
+                    {Object.keys(files).map(fileName => {
+                      const langOpt = LANGUAGE_OPTIONS.find(l => l.id === selectedLanguage);
+                      const isPrimary = fileName === (langOpt?.primaryFile || 'App.tsx');
+                      return (
+                        <div
+                          key={fileName}
+                          className={`mc-file-tab ${fileName === activeFileName ? 'active' : ''}`}
+                          onClick={() => handleSelectFile(fileName)}
+                          title={`Switch to ${fileName}`}
+                        >
+                          <span className="mc-file-icon">{getFileIcon(fileName)}</span>
+                          <span className="mc-file-name">{fileName}</span>
+                          {!isPrimary && Object.keys(files).length > 1 && (
+                            <button
+                              type="button"
+                              className="mc-file-close-btn"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDeleteFile(fileName);
+                              }}
+                              title={`Delete ${fileName}`}
+                            >
+                              ×
+                            </button>
+                          )}
+                        </div>
+                      );
+                    })}
                     <button
                       type="button"
                       className="mc-add-file-btn"
@@ -1942,7 +2277,13 @@ export default function MachineCodingStudio() {
                           language={getEditorLanguage(activeFileName)}
                           theme={resolvedTheme === 'light' ? 'light' : 'vs-dark'}
                           original={currentCode}
-                          modified={diffTarget === 'solution' ? (activeFileName === 'App.tsx' ? activeQuestion.solutionCode : '') : (activeFileName === 'App.tsx' ? activeQuestion.starterCode : '')}
+                          modified={
+                            diffTarget === 'solution'
+                              ? getSolutionCodeForFile(activeQuestion, selectedLanguage, activeFileName)
+                              : (selectedLanguage === 'react'
+                                  ? (activeFileName === 'App.tsx' ? activeQuestion.starterCode : '')
+                                  : (buildStarterFilesForLanguage(activeQuestion, selectedLanguage)[activeFileName] || ''))
+                          }
                           options={{
                             readOnly: true,
                             renderSideBySide: diffSideBySide,
@@ -1960,6 +2301,7 @@ export default function MachineCodingStudio() {
                   ) : (
                     <Editor
                       height="100%"
+                      path={`${activeQuestion?.id || 'mc'}/${activeFileName}`}
                       language={getEditorLanguage(activeFileName)}
                       theme={resolvedTheme === 'light' ? 'light' : 'vs-dark'}
                       value={currentCode}
@@ -2011,7 +2353,7 @@ export default function MachineCodingStudio() {
                         wordWrap: 'on',
                         renderValidationDecorations: 'off',
                         quickSuggestions: false,
-                        lightbulb: { enabled: false }
+                        lightbulb: { enabled: 'off' as any }
                       }}
                     />
                   )}
@@ -2469,11 +2811,11 @@ export default function MachineCodingStudio() {
           </div>
 
           <h1 className="mc-hero-title">
-            React.js Machine Coding Masterclass (500 Questions)
+            Engineering Questions &amp; Machine Coding Studio
           </h1>
 
           <p className="mc-hero-desc">
-            Complete 500-question React.js machine coding curriculum with real-time execution. Write code in Monaco Editor, compile with Babel standalone, inspect live DOM previews, and master FAANG-level state architectures across all 10 major interview tiers.
+            Complete question curriculum with real-time execution. Write code in Monaco Editor, compile with Babel standalone, inspect live DOM previews, and master FAANG-level state architectures across JavaScript, TypeScript, ReactJS, React Redux Toolkit, React Query, DOM, and LeetCode.
           </p>
 
           <div className="mc-stats-row">

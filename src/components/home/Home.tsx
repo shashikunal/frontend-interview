@@ -8,12 +8,13 @@ import { DIFFICULTIES } from '../../models/question'
 import './Home.css'
 
 const CATEGORY_SLUGS: Record<string, string> = {
-  'JavaScript & ES6': 'javascript-es6',
-  'ReactJS': 'reactjs',
+  'JavaScript': 'javascript',
   'TypeScript': 'typescript',
-  'CSS': 'css',
-  'Frontend Performance': 'frontend-performance',
-  'DOM & Web APIs': 'dom-web-apis',
+  'ReactJS': 'reactjs',
+  'React Redux Toolkit': 'react-redux-toolkit',
+  'React Query': 'react-query',
+  'DOM': 'dom',
+  'LeetCode': 'leetcode',
 }
 
 export default function Home() {
@@ -61,15 +62,16 @@ export default function Home() {
           <span className="hero-gradient">frontend interview</span>
         </h1>
         <p className="description">
-          A {stats.total.toLocaleString()}-question bank spanning LeetCode-style algorithms,
-          FrontendMasters-style interviews, and curated platform challenges — with full
+          A {stats.total.toLocaleString()}-question bank spanning JavaScript, TypeScript,
+          ReactJS, React Redux Toolkit, React Query, DOM, and LeetCode — with full
           explanations and hands-on coding snippets.
         </p>
         <div className="hero-actions">
-          <Link to="/questions" className="btn btn-primary">📚 Practice Questions (22,222)</Link>
+          <Link to="/questions" className="btn btn-primary">📚 Practice Questions ({stats.total.toLocaleString()})</Link>
+          <Link to="/machine-coding" className="btn btn-secondary">⚡ Machine Coding Studio</Link>
           <Link to="/coding" className="btn btn-secondary">💻 Coding Challenges</Link>
+          <Link to="/videos" className="btn btn-secondary">🎥 Video Masterclass</Link>
           <Link to="/system-design" className="btn btn-secondary">🏗️ System Design</Link>
-          <Link to="/quiz" className="btn btn-secondary">⚡ Timed Quiz</Link>
           <Link to="/dashboard" className="btn btn-secondary">
             {streak > 0 ? `🔥 ${streak} Day Streak · Tracker` : '📊 Study Tracker'}
           </Link>
@@ -212,17 +214,15 @@ export default function Home() {
         </div>
       </section>
 
-      {codingCount > 0 && (
-        <section className="coding-section">
-          <div className="coding-inner">
-            <div>
-              <h2>Coding Challenges</h2>
-              <p>Predict the output, trace the execution, sharpen your instincts — {codingCount.toLocaleString()} real snippets to work through.</p>
-            </div>
-            <Link to="/coding" className="btn btn-primary">Start Practicing</Link>
+      <section className="coding-section">
+        <div className="coding-inner">
+          <div>
+            <h2>Machine Coding Studio</h2>
+            <p>Write production-ready code in Monaco Editor, compile with Babel standalone, and inspect live sandbox execution.</p>
           </div>
-        </section>
-      )}
+          <Link to="/questions" className="btn btn-primary">Open Questions Studio</Link>
+        </div>
+      </section>
     </div>
   )
 }

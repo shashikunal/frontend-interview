@@ -151,8 +151,8 @@ function CandidateDashboard() {
           <Link to="/mock-interview" className="btn btn-primary btn-sm">
             ⏱️ Start Mock Interview
           </Link>
-          <Link to="/quiz" className="btn btn-secondary btn-sm">
-            ⚡ Practice Drill
+          <Link to="/machine-coding" className="btn btn-secondary btn-sm">
+            ⚡ Machine Coding Studio
           </Link>
           <button
             type="button"
