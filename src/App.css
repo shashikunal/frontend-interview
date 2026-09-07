@@ -44,8 +44,21 @@
   padding: 36px 24px 72px;
 }
 
-.main-content:has(.mc-studio-container) {
+.main-content:has(.mc-studio-container),
+.main-content.dashboard-main-content {
   padding: 0;
+  margin: 0;
+  max-width: none;
+  width: 100%;
+}
+
+.app.dashboard-layout-mode {
+  background: var(--h-bg, #0b1437) !important;
+}
+
+.app.dashboard-layout-mode::before,
+.app.dashboard-layout-mode::after {
+  display: none !important;
 }
 
 .app-route-loader {

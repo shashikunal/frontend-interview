@@ -5,15 +5,20 @@ interface AdminAttemptsTabProps {
   attempts?: AdminAttemptItem[]
   initialAttempts?: AdminAttemptItem[]
   onRefresh?: () => void
+  onViewCode?: (attempt: AdminAttemptItem) => void
+  onInspectUser?: (userId: string) => void
 }
 
 export default function AdminAttemptsTab({
   attempts,
   initialAttempts,
   onRefresh,
+  onViewCode,
+  onInspectUser,
 }: AdminAttemptsTabProps) {
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState('ALL')
+  const [langFilter, setLangFilter] = useState('ALL')
   const [currentPage, setCurrentPage] = useState(1)
   const [pageSize, setPageSize] = useState(25)
 
@@ -22,15 +27,19 @@ export default function AdminAttemptsTab({
   const filtered = useMemo(() => {
     return effectiveList.filter(a => {
       const matchStatus = statusFilter === 'ALL' || a.status === statusFilter
+      const matchLang = langFilter === 'ALL' || (a.language && a.language.toLowerCase().includes(langFilter.toLowerCase()))
+      const s = search.toLowerCase()
       const matchSearch =
         !search ||
-        a.questionId.toLowerCase().includes(search.toLowerCase()) ||
-        a.userId.toLowerCase().includes(search.toLowerCase()) ||
-        (a.userName && a.userName.toLowerCase().includes(search.toLowerCase())) ||
-        (a.userEmail && a.userEmail.toLowerCase().includes(search.toLowerCase()))
-      return matchStatus && matchSearch
+        a.questionId.toLowerCase().includes(s) ||
+        (a.questionTitle && a.questionTitle.toLowerCase().includes(s)) ||
+        a.userId.toLowerCase().includes(s) ||
+        (a.userName && a.userName.toLowerCase().includes(s)) ||
+        (a.userEmail && a.userEmail.toLowerCase().includes(s)) ||
+        (a.language && a.language.toLowerCase().includes(s))
+      return matchStatus && matchLang && matchSearch
     })
-  }, [effectiveList, statusFilter, search])
+  }, [effectiveList, statusFilter, langFilter, search])
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize))
   const paginated = useMemo(() => {
@@ -55,9 +64,9 @@ export default function AdminAttemptsTab({
       <div className="card-box aa-panel">
         <div className="aa-header">
           <div>
-            <h3>Question Problem Solving Attempts ({filtered.length})</h3>
+            <h3>Candidate Problem-Solving Attempts &amp; Code ({filtered.length})</h3>
             <p className="aa-desc">
-              Tracks when candidates open, start, spend active time, and finish each coding challenge.
+              Inspect what candidates wrote for each problem, including source code, execution runtime, test assertions, and active solving duration.
             </p>
           </div>
 
@@ -65,7 +74,7 @@ export default function AdminAttemptsTab({
             <input
               type="text"
               className="search-field"
-              placeholder="Search candidate name, email, or question ID..."
+              placeholder="Search challenge, candidate, or language..."
               value={search}
               onChange={e => handleFilterChange(setSearch, e.target.value)}
             />
@@ -76,10 +85,21 @@ export default function AdminAttemptsTab({
               onChange={e => handleFilterChange(setStatusFilter, e.target.value)}
             >
               <option value="ALL">All Statuses</option>
-              <option value="started">Started</option>
-              <option value="in_progress">In Progress</option>
               <option value="completed">Completed</option>
+              <option value="in_progress">In Progress</option>
+              <option value="started">Started</option>
               <option value="abandoned">Abandoned</option>
+            </select>
+
+            <select
+              className="role-dropdown"
+              value={langFilter}
+              onChange={e => handleFilterChange(setLangFilter, e.target.value)}
+            >
+              <option value="ALL">All Languages</option>
+              <option value="typescript">TypeScript</option>
+              <option value="react">React (TSX)</option>
+              <option value="javascript">JavaScript</option>
             </select>
 
             <button type="button" className="btn btn-secondary btn-sm" onClick={() => onRefresh?.()}>
@@ -93,66 +113,141 @@ export default function AdminAttemptsTab({
             <thead>
               <tr>
                 <th>Attempt ID</th>
-                <th>Candidate / User</th>
-                <th>Question ID</th>
+                <th>Candidate</th>
+                <th>Question &amp; Challenge</th>
+                <th>Candidate Code</th>
                 <th>Status</th>
                 <th>Time Spent</th>
-                <th>Attempt Count</th>
+                <th>Attempt #</th>
                 <th>Started At</th>
-                <th>Completed At</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
               {paginated.length === 0 ? (
                 <tr>
-                  <td colSpan={8} style={{ textAlign: 'center', padding: '36px', color: 'var(--text-muted)' }}>
-                    No attempt records found.
+                  <td colSpan={9} style={{ textAlign: 'center', padding: '40px 24px', color: 'var(--text-muted)' }}>
+                    <div style={{ fontSize: '1.8rem', marginBottom: '8px' }}>💻</div>
+                    <strong style={{ fontSize: '1rem', color: 'var(--text-primary)' }}>No problem attempts found.</strong>
+                    <p style={{ margin: '6px 0 0', fontSize: '0.84rem' }}>
+                      Try adjusting your search filters or click <strong>Refresh</strong>.
+                    </p>
                   </td>
                 </tr>
               ) : (
-                paginated.map(att => (
-                  <tr key={att.id}>
-                    <td>
-                      <code style={{ fontSize: '11px', color: '#94a3b8' }}>{att.id.slice(0, 12)}...</code>
-                    </td>
-                    <td>
-                      <div className="sub-user-cell">
-                        <span className="sub-user-name">{att.userName || 'Candidate'}</span>
-                        <span className="sub-user-email">
-                          {att.userEmail || (att.userId ? `${att.userId.slice(0, 8)}...` : '')}
+                paginated.map(att => {
+                  const lineCount = att.linesOfCode || (att.code ? att.code.split('\n').length : 0)
+
+                  return (
+                    <tr key={att.id}>
+                      <td>
+                        <code style={{ fontSize: '11px', color: '#94a3b8' }}>{att.id.slice(0, 11)}...</code>
+                      </td>
+                      <td>
+                        <button
+                          type="button"
+                          className="h-user-btn"
+                          onClick={() => att.userId && onInspectUser?.(att.userId)}
+                          title={`View candidate dossier for ${att.userName || 'Candidate'}`}
+                        >
+                          <div className="h-avatar-circle">
+                            {(att.userName || 'C').charAt(0).toUpperCase()}
+                          </div>
+                          <div className="sub-user-cell">
+                            <span className="sub-user-name">{att.userName || 'Candidate'}</span>
+                            <span className="sub-user-email">
+                              {att.userEmail || (att.userId ? `${att.userId.slice(0, 8)}...` : '')}
+                            </span>
+                          </div>
+                        </button>
+                      </td>
+                      <td>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            <span
+                              className="aq-qid-tag clickable"
+                              onClick={() => onViewCode?.(att)}
+                              title="Click to view candidate code"
+                              style={{ cursor: 'pointer' }}
+                            >
+                              #{att.questionId}
+                            </span>
+                            <span className="lang-tag" style={{ fontSize: '0.65rem' }}>
+                              {att.language || 'typescript'}
+                            </span>
+                          </div>
+                          <span
+                            style={{
+                              fontSize: '0.84rem',
+                              fontWeight: 700,
+                              color: 'var(--h-text-white, #2b3674)',
+                              cursor: 'pointer',
+                            }}
+                            onClick={() => onViewCode?.(att)}
+                            title="Click to inspect code"
+                          >
+                            {att.questionTitle || `Challenge #${att.questionId}`}
+                          </span>
+                        </div>
+                      </td>
+                      <td>
+                        {/* Interactive Code Button with line count */}
+                        <button
+                          type="button"
+                          className="btn btn-sm btn-secondary att-code-btn"
+                          onClick={() => onViewCode?.(att)}
+                          title="Click to view full candidate source code"
+                        >
+                          <span className="att-code-icon">💻</span>
+                          <span className="att-code-label">View Code</span>
+                          <span className="att-code-pill">
+                            {lineCount > 0 ? `${lineCount} lines` : 'View'}
+                          </span>
+                        </button>
+                      </td>
+                      <td>
+                        <span className={`submission-pill ${att.status === 'completed' ? 'accepted' : 'pending'}`}>
+                          {att.status}
                         </span>
-                      </div>
-                    </td>
-                    <td>
-                      <span className="aq-qid-tag">{att.questionId}</span>
-                    </td>
-                    <td>
-                      <span className={`submission-pill ${att.status === 'completed' ? 'accepted' : 'pending'}`}>
-                        {att.status}
-                      </span>
-                    </td>
-                    <td>
-                      <strong>{formatDuration(att.timeSpent)}</strong>
-                    </td>
-                    <td>
-                      {att.attemptCount}
-                    </td>
-                    <td>
-                      {new Date(att.startedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} •{' '}
-                      {new Date(att.startedAt).toLocaleDateString([], { month: 'short', day: 'numeric' })}
-                    </td>
-                    <td>
-                      {att.completedAt ? (
-                        <>
-                          {new Date(att.completedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} •{' '}
-                          {new Date(att.completedAt).toLocaleDateString([], { month: 'short', day: 'numeric' })}
-                        </>
-                      ) : (
-                        <span style={{ color: 'var(--text-muted)' }}>In progress</span>
-                      )}
-                    </td>
-                  </tr>
-                ))
+                      </td>
+                      <td>
+                        <strong>{formatDuration(att.timeSpent)}</strong>
+                      </td>
+                      <td>
+                        <span className="attempt-badge-pill">#{att.attemptCount}</span>
+                      </td>
+                      <td>
+                        <span style={{ fontSize: '0.8rem', color: 'var(--h-text-muted)' }}>
+                          {new Date(att.startedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} •{' '}
+                          {new Date(att.startedAt).toLocaleDateString([], { month: 'short', day: 'numeric' })}
+                        </span>
+                      </td>
+                      <td>
+                        <div className="table-actions-row">
+                          <button
+                            type="button"
+                            className="btn btn-sm btn-secondary att-action-inspect-btn"
+                            onClick={() => onViewCode?.(att)}
+                            title="Inspect what candidate wrote"
+                          >
+                            👁️ Code
+                          </button>
+                          {att.userId && onInspectUser && (
+                            <button
+                              type="button"
+                              className="btn btn-sm btn-secondary"
+                              onClick={() => onInspectUser(att.userId)}
+                              title="View full candidate profile"
+                              style={{ fontSize: '0.74rem' }}
+                            >
+                              👤
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  )
+                })
               )}
             </tbody>
           </table>

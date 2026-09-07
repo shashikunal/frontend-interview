@@ -1,0 +1,488 @@
+/* ==============================================================================
+   Horizon UI Style - Curriculum Learning Tracks Tab
+   Full Dark Navy (#0b1437) & Clean Light (#f4f7fe) Theme
+   ============================================================================== */
+
+.admin-tracks-tab {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+}
+
+/* ─── Top KPI Cards ──────────────────────────────────────────────────────── */
+.trk-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.trk-stat-card {
+  background: var(--h-card);
+  border: 1px solid var(--h-border);
+  border-radius: var(--h-radius);
+  padding: 18px 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: var(--h-shadow-sm);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+.trk-stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--h-shadow);
+  border-color: var(--h-brand-light);
+}
+
+.trk-stat-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  flex-shrink: 0;
+}
+.trk-stat-icon.purple { background: rgba(117,81,255,.15); border: 1px solid rgba(117,81,255,.25); }
+.trk-stat-icon.green  { background: rgba(1,181,116,.15);  border: 1px solid rgba(1,181,116,.25); }
+.trk-stat-icon.cyan   { background: rgba(56,189,248,.15); border: 1px solid rgba(56,189,248,.25); }
+.trk-stat-icon.amber  { background: rgba(255,181,71,.15); border: 1px solid rgba(255,181,71,.25); }
+
+.trk-stat-info { display: flex; flex-direction: column; }
+
+.trk-stat-label {
+  font-size: .78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .6px;
+  color: var(--h-text-muted);
+}
+.trk-stat-value {
+  font-size: 1.55rem;
+  font-weight: 800;
+  color: var(--h-text-white);
+  line-height: 1.2;
+  margin-top: 2px;
+}
+.trk-stat-sub {
+  font-size: .78rem;
+  color: var(--h-text-muted);
+  margin-top: 4px;
+}
+
+/* ─── Filters & Controls Bar ────────────────────────────────────────────── */
+.trk-controls-bar {
+  background: var(--h-card);
+  border: 1px solid var(--h-border);
+  border-radius: var(--h-radius);
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+  box-shadow: var(--h-shadow-sm);
+}
+
+.trk-pills {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.trk-pill {
+  background: var(--h-card);
+  border: 1px solid var(--h-border);
+  color: var(--h-text-muted);
+  padding: 7px 16px;
+  border-radius: 9999px;
+  font-size: .82rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  transition: all .2s ease;
+  white-space: nowrap;
+}
+.trk-pill:hover {
+  border-color: var(--h-brand-light);
+  color: var(--h-text-white);
+}
+.trk-pill.active {
+  background: var(--h-brand-primary, #7551ff);
+  border-color: var(--h-brand-primary, #7551ff);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(117,81,255,.35);
+}
+
+.trk-view-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.trk-view-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 9px;
+  border: 1px solid var(--h-border);
+  background: var(--h-card);
+  color: var(--h-text-muted);
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all .2s ease;
+}
+.trk-view-btn:hover {
+  border-color: var(--h-brand-light);
+  color: var(--h-text-white);
+}
+.trk-view-btn.active {
+  background: var(--h-brand-primary, #7551ff);
+  border-color: var(--h-brand-primary, #7551ff);
+  color: #ffffff;
+}
+
+/* ─── Tracks Grid (Card View) ───────────────────────────────────────────── */
+.trk-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 20px;
+}
+
+.trk-card {
+  background: var(--h-card);
+  border: 1px solid var(--h-border);
+  border-radius: var(--h-radius);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  box-shadow: var(--h-shadow-sm);
+  position: relative;
+  overflow: hidden;
+  transition: transform .25s cubic-bezier(.4,0,.2,1), box-shadow .25s ease, border-color .25s ease;
+  cursor: default;
+}
+.trk-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--h-shadow);
+  border-color: var(--h-brand-light);
+}
+
+/* Gradient glow top accent line */
+.trk-card::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  border-radius: var(--h-radius) var(--h-radius) 0 0;
+  opacity: 0;
+  transition: opacity .25s ease;
+}
+.trk-card:hover::after { opacity: 1; }
+.trk-card.diff-core::after    { background: linear-gradient(90deg, #01b574, #38bdf8); }
+.trk-card.diff-advanced::after { background: linear-gradient(90deg, #7551ff, #38bdf8); }
+.trk-card.diff-staff::after   { background: linear-gradient(90deg, #ee5d50, #f43f5e); }
+
+/* Card Top Row */
+.trk-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.trk-icon-circle {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  flex-shrink: 0;
+}
+.trk-icon-circle.core     { background: rgba(1,181,116,.15);  border: 1px solid rgba(1,181,116,.25); }
+.trk-icon-circle.advanced { background: rgba(117,81,255,.15); border: 1px solid rgba(117,81,255,.25); }
+.trk-icon-circle.staff    { background: rgba(238,93,80,.12);  border: 1px solid rgba(238,93,80,.2); }
+
+.trk-diff-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 11px;
+  border-radius: 6px;
+  font-size: .73rem;
+  font-weight: 700;
+  letter-spacing: .4px;
+  text-transform: uppercase;
+}
+.trk-diff-badge.core     { background: rgba(1,181,116,.15);  color: #01b574;  border: 1px solid rgba(1,181,116,.3); }
+.trk-diff-badge.advanced { background: rgba(117,81,255,.15); color: #7551ff;  border: 1px solid rgba(117,81,255,.3); }
+.trk-diff-badge.staff    { background: rgba(238,93,80,.12);  color: #ee5d50;  border: 1px solid rgba(238,93,80,.25); }
+
+/* Card Title */
+.trk-card-name {
+  font-size: 1.08rem;
+  font-weight: 800;
+  color: var(--h-text-white);
+  margin: 0;
+  line-height: 1.35;
+}
+
+/* Stats Row */
+.trk-card-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.trk-stat-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px 6px;
+  border-radius: 10px;
+  background: rgba(255,255,255,.04);
+  border: 1px solid var(--h-border);
+  text-align: center;
+}
+
+.trk-cell-val {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--h-text-white);
+  line-height: 1;
+}
+.trk-cell-lbl {
+  font-size: .72rem;
+  color: var(--h-text-muted);
+  font-weight: 500;
+  margin-top: 4px;
+  letter-spacing: .3px;
+}
+
+/* Progress Bar */
+.trk-progress-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.trk-progress-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: .78rem;
+  color: var(--h-text-muted);
+  font-weight: 600;
+}
+.trk-progress-track {
+  height: 8px;
+  border-radius: 9999px;
+  background: rgba(255,255,255,.08);
+  overflow: hidden;
+}
+.trk-progress-fill {
+  height: 100%;
+  border-radius: 9999px;
+  transition: width .8s cubic-bezier(.4,0,.2,1);
+}
+.trk-progress-fill.core     { background: linear-gradient(90deg, #01b574, #38bdf8); }
+.trk-progress-fill.advanced { background: linear-gradient(90deg, #7551ff, #c78fff); }
+.trk-progress-fill.staff    { background: linear-gradient(90deg, #ee5d50, #ff8c7a); }
+
+/* Action Footer */
+.trk-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding-top: 4px;
+  border-top: 1px solid var(--h-border);
+}
+.trk-footer-info {
+  font-size: .8rem;
+  color: var(--h-text-muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.trk-view-challenges-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 14px;
+  border-radius: 8px;
+  background: rgba(117,81,255,.12);
+  border: 1px solid rgba(117,81,255,.25);
+  color: var(--h-brand-light);
+  font-size: .8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all .2s ease;
+  text-decoration: none;
+}
+.trk-view-challenges-btn:hover {
+  background: var(--h-brand-primary, #7551ff);
+  color: #ffffff;
+  border-color: var(--h-brand-primary, #7551ff);
+  box-shadow: 0 4px 12px rgba(117,81,255,.35);
+}
+
+/* ─── List / Table View ──────────────────────────────────────────────────── */
+.trk-table-wrap {
+  background: var(--h-card);
+  border: 1px solid var(--h-border);
+  border-radius: var(--h-radius);
+  overflow: hidden;
+  box-shadow: var(--h-shadow-sm);
+}
+.trk-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.trk-table th {
+  padding: 12px 18px;
+  font-size: .75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  color: var(--h-text-muted);
+  background: rgba(255,255,255,.03);
+  border-bottom: 1px solid var(--h-border);
+  text-align: left;
+  white-space: nowrap;
+}
+.trk-table td {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--h-border);
+  color: var(--h-text-white);
+  font-size: .875rem;
+  vertical-align: middle;
+}
+.trk-table tr:last-child td { border-bottom: none; }
+.trk-table tbody tr {
+  transition: background .15s ease;
+}
+.trk-table tbody tr:hover {
+  background: rgba(117,81,255,.04);
+}
+
+.trk-table-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+}
+
+.trk-table-progress {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 160px;
+}
+.trk-table-bar {
+  flex: 1;
+  height: 6px;
+  border-radius: 9999px;
+  background: rgba(255,255,255,.08);
+  overflow: hidden;
+}
+.trk-table-bar-fill {
+  height: 100%;
+  border-radius: 9999px;
+}
+.trk-table-bar-fill.core     { background: linear-gradient(90deg, #01b574, #38bdf8); }
+.trk-table-bar-fill.advanced { background: linear-gradient(90deg, #7551ff, #c78fff); }
+.trk-table-bar-fill.staff    { background: linear-gradient(90deg, #ee5d50, #ff8c7a); }
+.trk-table-pct {
+  font-size: .82rem;
+  font-weight: 700;
+  min-width: 36px;
+  text-align: right;
+}
+
+/* ─── Summary Row at bottom ──────────────────────────────────────────────── */
+.trk-summary-card {
+  background: var(--h-card);
+  border: 1px solid var(--h-border);
+  border-radius: var(--h-radius);
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  box-shadow: var(--h-shadow-sm);
+  flex-wrap: wrap;
+}
+.trk-summary-left {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.trk-summary-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--h-text-white);
+  margin: 0;
+}
+.trk-summary-sub {
+  font-size: .82rem;
+  color: var(--h-text-muted);
+  margin: 0;
+}
+.trk-summary-metrics {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+.trk-summary-metric {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+.trk-sm-val {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--h-text-white);
+}
+.trk-sm-lbl {
+  font-size: .74rem;
+  color: var(--h-text-muted);
+  font-weight: 500;
+  text-align: center;
+}
+
+/* ─── Light Mode Overrides ───────────────────────────────────────────────── */
+.light-theme .trk-stat-cell {
+  background: rgba(0,0,0,.03);
+}
+.light-theme .trk-payload-drawer {
+  background: #1a1f36;
+}
+
+/* ─── Responsive ─────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .trk-grid {
+    grid-template-columns: 1fr;
+  }
+  .trk-controls-bar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .trk-table th:nth-child(4),
+  .trk-table td:nth-child(4),
+  .trk-table th:nth-child(5),
+  .trk-table td:nth-child(5) {
+    display: none;
+  }
+}

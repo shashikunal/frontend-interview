@@ -6,6 +6,7 @@ interface AdminSubmissionsTabProps {
   initialSubmissions?: AdminSubmissionItem[]
   onRefresh?: () => void
   onViewCode: (submission: AdminSubmissionItem) => void
+  onInspectUser?: (userId: string) => void
 }
 
 export default function AdminSubmissionsTab({
@@ -13,6 +14,7 @@ export default function AdminSubmissionsTab({
   initialSubmissions,
   onRefresh,
   onViewCode,
+  onInspectUser,
 }: AdminSubmissionsTabProps) {
   const [statusFilter, setStatusFilter] = useState('ALL')
   const [langFilter, setLangFilter] = useState('ALL')
@@ -144,10 +146,20 @@ export default function AdminSubmissionsTab({
                       </span>
                     </td>
                     <td>
-                      <div className="sub-user-cell">
-                        <span className="sub-user-name">{sub.userName || 'Candidate'}</span>
-                        <span className="sub-user-email">{sub.userEmail || ''}</span>
-                      </div>
+                      <button
+                        type="button"
+                        className="h-user-btn"
+                        onClick={() => sub.userId && onInspectUser?.(sub.userId)}
+                        title={`View candidate dossier for ${sub.userName || 'Candidate'}`}
+                      >
+                        <div className="h-avatar-circle">
+                          {(sub.userName || 'C').charAt(0).toUpperCase()}
+                        </div>
+                        <div className="sub-user-cell">
+                          <span className="sub-user-name">{sub.userName || 'Candidate'}</span>
+                          <span className="sub-user-email">{sub.userEmail || ''}</span>
+                        </div>
+                      </button>
                     </td>
                     <td>
                       <span className="aq-qid-tag">{sub.questionId}</span>

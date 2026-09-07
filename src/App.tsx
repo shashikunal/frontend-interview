@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react'
-import { Routes, Route, Navigate } from 'react-router-dom'
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import Header from './components/layout/Header'
 import Footer from './components/layout/Footer'
 import Home from './components/home/Home'
@@ -52,12 +52,15 @@ import ScrollToTop from './components/common/ScrollToTop'
 import './App.css'
 
 export default function App() {
+  const location = useLocation()
+  const isDashboardRoute = location.pathname.startsWith('/dashboard') || location.pathname.startsWith('/admin')
+
   return (
-    <div className="app">
+    <div className={`app ${isDashboardRoute ? 'dashboard-layout-mode' : ''}`}>
       <ScrollToTop />
-      <Header />
+      {!isDashboardRoute && <Header />}
       <AuthModal />
-      <main className="main-content">
+      <main className={`main-content ${isDashboardRoute ? 'dashboard-main-content' : ''}`}>
         <Suspense fallback={<div className="app-route-loader"><div className="app-route-spinner" /><p>Loading masterclass studio...</p></div>}>
           <Routes>
           <Route path="/" element={<Home />} />
@@ -93,7 +96,20 @@ export default function App() {
               </RoleGuard>
             }
           />
+          <Route
+            path="/admin/:tab"
+            element={
+              <RoleGuard
+                minRole="admin"
+                fallbackTitle="🔒 Administrator Access Required"
+                fallbackMessage="Enterprise Operations Command Center is restricted to Platform Administrators."
+              >
+                <AdminDashboard />
+              </RoleGuard>
+            }
+          />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/dashboard/:tab" element={<Dashboard />} />
           <Route path="/analytics" element={<AnalyticsDashboard />} />
 
 
@@ -417,7 +433,7 @@ export default function App() {
         </Routes>
         </Suspense>
       </main>
-      <Footer />
+      {!isDashboardRoute && <Footer />}
     </div>
   )
 }

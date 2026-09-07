@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate, useParams, useLocation, useSearchParams } from 'react-router-dom'
 import { useAuth, type UserRole, type FeatureEntitlements } from '../../context/AuthContext'
+import { useTheme } from '../../context/ThemeContext'
 import { DEFAULT_ENTITLEMENTS } from '../../features/auth/types/auth.types'
 import { profileService } from '../../features/auth/services/profile.service'
 import { rbacService } from '../../features/auth/services/rbac.service'
@@ -14,8 +15,12 @@ import AdminSubmissionsTab from './admin/AdminSubmissionsTab'
 import AdminAttemptsTab from './admin/AdminAttemptsTab'
 import AdminActivityTab from './admin/AdminActivityTab'
 import AdminAnalyticsTab from './admin/AdminAnalyticsTab'
+import AdminRequestsTab from './admin/AdminRequestsTab'
+import AdminTelemetryTab from './admin/AdminTelemetryTab'
+import AdminTracksTab from './admin/AdminTracksTab'
 import AdminUserDetailModal from './admin/AdminUserDetailModal'
 import AdminSubmissionCodeModal from './admin/AdminSubmissionCodeModal'
+import AdminAttemptCodeModal from './admin/AdminAttemptCodeModal'
 import {
   adminAnalyticsService,
   type OverviewStats,
@@ -57,9 +62,53 @@ export type AdminTab =
   | 'requests'
   | 'tracks'
   | 'audit'
+  | 'profile'
 
 export default function AdminDashboard() {
   const { user } = useAuth()
+  const [searchParams] = useSearchParams()
+  const { tab: urlTab } = useParams<{ tab?: string }>()
+  const navigate = useNavigate()
+  const location = useLocation()
+  const basePath = location.pathname.startsWith('/admin') ? '/admin' : '/dashboard'
+
+  // Map query string (?tab=questions) OR path param (/dashboard/questions) to valid AdminTab
+  const activeTab: AdminTab = useMemo(() => {
+    const rawTab = searchParams.get('tab') || urlTab
+    if (!rawTab) return 'overview'
+    const clean = rawTab.toLowerCase()
+    if (clean === 'overview') return 'overview'
+    if (clean === 'candidates' || clean === 'users') return 'users'
+    if (clean === 'submissions') return 'submissions'
+    if (clean === 'attempts') return 'attempts'
+    if (clean === 'questions') return 'questions'
+    if (clean === 'activity') return 'activity'
+    if (clean === 'analytics') return 'analytics'
+    if (clean === 'requests') return 'requests'
+    if (clean === 'tracks') return 'tracks'
+    if (clean === 'telemetry' || clean === 'audit') return 'audit'
+    if (clean === 'profile') return 'profile'
+    return 'overview'
+  }, [searchParams, urlTab])
+
+  // Proper query string routing mechanism
+  const setActiveTab = useCallback((t: AdminTab) => {
+    const tabName = t === 'users' ? 'candidates' : t === 'audit' ? 'telemetry' : t
+    navigate(`${basePath}?tab=${tabName}`)
+  }, [navigate, basePath])
+
+  // Horizon Light / Dark Theme State - synchronized with global ThemeContext
+  const { resolvedTheme, toggleTheme: toggleGlobalTheme } = useTheme()
+  const adminTheme = resolvedTheme
+
+  const toggleTheme = () => {
+    toggleGlobalTheme()
+    try {
+      localStorage.setItem('horizon_admin_theme', resolvedTheme === 'dark' ? 'light' : 'dark')
+    } catch {
+      // ignore
+    }
+  }
 
   // State
   const [profiles, setProfiles] = useState<AuthUserProfile[]>([])
@@ -73,7 +122,7 @@ export default function AdminDashboard() {
   const [trackFilter, setTrackFilter] = useState<string>('ALL')
   const [progressFilter, setProgressFilter] = useState<string>('ALL')
   const [statusToast, setStatusToast] = useState<string | null>(null)
-  const [activeTab, setActiveTab] = useState<AdminTab>('overview')
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState<boolean>(false)
 
   // Telemetry Analytics State
   const [overviewStats, setOverviewStats] = useState<OverviewStats | null>(null)
@@ -84,10 +133,10 @@ export default function AdminDashboard() {
   const [questionsStatsList, setQuestionsStatsList] = useState<QuestionStatItem[]>([])
   const [selectedUserForDeepDive, setSelectedUserForDeepDive] = useState<string | null>(null)
   const [selectedSubmissionForCode, setSelectedSubmissionForCode] = useState<SubmissionRecord | null>(null)
+  const [selectedAttemptForCode, setSelectedAttemptForCode] = useState<AttemptRecord | null>(null)
 
   // Live Activities Stream State
   const [liveActivities, setLiveActivities] = useState<ActivityLogItem[]>([])
-  const [activityFilter, setActivityFilter] = useState<string>('ALL')
   const [isAutoScrollPaused, setIsAutoScrollPaused] = useState<boolean>(false)
 
   // Bulk Selection
@@ -566,15 +615,9 @@ export default function AdminDashboard() {
     return list.slice().sort((a, b) => b.streak - a.streak)[0]
   }, [progressMap])
 
-  // Filtered Live Telemetry Activities
-  const filteredActivities = useMemo(() => {
-    if (activityFilter === 'ALL') return liveActivities
-    return liveActivities.filter(a => a.type === activityFilter)
-  }, [liveActivities, activityFilter])
-
   const handleExportActivitiesCSV = () => {
     const headers = ['ID', 'User', 'Email', 'Type', 'Title', 'Details', 'Timestamp']
-    const rows = filteredActivities.map(a => [
+    const rows = liveActivities.map(a => [
       a.id,
       `"${a.userName || 'Candidate'}"`,
       `"${a.userEmail || ''}"`,
@@ -592,166 +635,353 @@ export default function AdminDashboard() {
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)
-    showToast(`Exported ${filteredActivities.length} live telemetry events to CSV.`)
+    showToast(`Exported ${liveActivities.length} live telemetry events to CSV.`)
   }
 
   return (
-    <div className="admin-dashboard-page page-enter">
-      {/* Toast Notification */}
-      {statusToast && (
-        <div className="admin-toast-alert">
-          <span>🔔</span> {statusToast}
-        </div>
-      )}
+    <div className={`h-admin-layout ${adminTheme}-theme`}>
+      {/* Mobile Backdrop Overlay */}
+      <div
+        className={`h-sidebar-overlay ${isMobileSidebarOpen ? 'open' : ''}`}
+        onClick={() => setIsMobileSidebarOpen(false)}
+      />
 
-
-      {/* Admin Header */}
-      <div className="admin-header-hero">
-        <div className="ahh-left">
-          <div className="ahh-badge-row">
-            <span className="ahh-badge">🛡️ PLATFORM ADMINISTRATOR CONTROL</span>
-            <span className="ahh-live-pill">🟢 Real-Time Supabase WebSocket Sync</span>
+      {/* Horizon UI Left Sidebar */}
+      <aside className={`h-sidebar ${isMobileSidebarOpen ? 'open' : ''}`}>
+        <div className="h-brand-header">
+          <Link to="/dashboard" className="h-brand-title">
+            <span>⚡</span>
+            <span>INTERVIEW <span className="h-brand-accent">PREPARE</span></span>
+          </Link>
+          <div className="h-brand-sub">
+            <span>TECHNICAL PLATFORM</span>
+            <span className="h-brand-badge">LIVE</span>
           </div>
-          <h1>Candidate Tracks &amp; Progress Command Center</h1>
-          <p className="subtitle">
-            Live database sync of user curriculum tracks, exact completion percentages, study streaks, and 1-click feature access approval notifications.
-          </p>
         </div>
 
-        <div className="ahh-actions">
+        <nav className="h-nav-list">
+          <span className="h-nav-section-title">Main Dashboard</span>
           <button
             type="button"
-            className="btn btn-primary ahh-invite-btn"
-            onClick={() => setIsCreateModalOpen(true)}
+            className={`h-nav-item ${activeTab === 'overview' ? 'active' : ''}`}
+            onClick={() => { setActiveTab('overview'); setIsMobileSidebarOpen(false); }}
           >
-            ➕ Invite / Create User
+            <span className="h-nav-icon">📊</span>
+            <span>Overview</span>
           </button>
+
           <button
             type="button"
-            className="btn btn-secondary ahh-refresh-btn"
-            onClick={loadData}
-            disabled={isLoading}
+            className={`h-nav-item ${activeTab === 'users' ? 'active' : ''}`}
+            onClick={() => { setActiveTab('users'); setIsMobileSidebarOpen(false); }}
           >
-            {isLoading ? '⏳ Syncing...' : '🔄 Live Sync DB'}
+            <span className="h-nav-icon">👥</span>
+            <span>Candidates</span>
+            <span className="h-nav-badge">{profiles.length}</span>
           </button>
-          <Link to="/user-management" className="btn btn-secondary ahh-mgmt-btn">
-            ⚙️ RBAC Matrix
+
+          <button
+            type="button"
+            className={`h-nav-item ${activeTab === 'submissions' ? 'active' : ''}`}
+            onClick={() => { setActiveTab('submissions'); setIsMobileSidebarOpen(false); }}
+          >
+            <span className="h-nav-icon">📝</span>
+            <span>Submissions</span>
+            <span className="h-nav-badge">{submissionsList.length}</span>
+          </button>
+
+          <button
+            type="button"
+            className={`h-nav-item ${activeTab === 'attempts' ? 'active' : ''}`}
+            onClick={() => { setActiveTab('attempts'); setIsMobileSidebarOpen(false); }}
+          >
+            <span className="h-nav-icon">🎯</span>
+            <span>Attempts</span>
+            <span className="h-nav-badge">{attemptsList.length}</span>
+          </button>
+
+          <button
+            type="button"
+            className={`h-nav-item ${activeTab === 'questions' ? 'active' : ''}`}
+            onClick={() => { setActiveTab('questions'); setIsMobileSidebarOpen(false); }}
+          >
+            <span className="h-nav-icon">❓</span>
+            <span>Question Bank</span>
+            <span className="h-nav-badge">22K</span>
+          </button>
+
+          <span className="h-nav-section-title">Intelligence &amp; Stream</span>
+
+          <button
+            type="button"
+            className={`h-nav-item ${activeTab === 'activity' ? 'active' : ''}`}
+            onClick={() => { setActiveTab('activity'); setIsMobileSidebarOpen(false); }}
+          >
+            <span className="h-nav-icon">⚡</span>
+            <span>Activity Feed</span>
+            <span className="h-nav-badge">{activityFeedList.length}</span>
+          </button>
+
+          <button
+            type="button"
+            className={`h-nav-item ${activeTab === 'analytics' ? 'active' : ''}`}
+            onClick={() => { setActiveTab('analytics'); setIsMobileSidebarOpen(false); }}
+          >
+            <span className="h-nav-icon">📈</span>
+            <span>Analytics</span>
+          </button>
+
+          <button
+            type="button"
+            className={`h-nav-item ${activeTab === 'requests' ? 'active' : ''}`}
+            onClick={() => { setActiveTab('requests'); setIsMobileSidebarOpen(false); }}
+          >
+            <span className="h-nav-icon">📩</span>
+            <span>Access Requests</span>
+            {pendingRequestsCount > 0 && (
+              <span className="h-nav-badge alert">{pendingRequestsCount}</span>
+            )}
+          </button>
+
+          <button
+            type="button"
+            className={`h-nav-item ${activeTab === 'tracks' ? 'active' : ''}`}
+            onClick={() => { setActiveTab('tracks'); setIsMobileSidebarOpen(false); }}
+          >
+            <span className="h-nav-icon">📚</span>
+            <span>Curriculum Tracks</span>
+          </button>
+
+          <button
+            type="button"
+            className={`h-nav-item ${activeTab === 'audit' ? 'active' : ''}`}
+            onClick={() => { setActiveTab('audit'); setIsMobileSidebarOpen(false); }}
+          >
+            <span className="h-nav-icon">🛰️</span>
+            <span>Telemetry Stream</span>
+            {liveActivities.length > 0 && (
+              <span className="h-nav-badge alert">{liveActivities.length}</span>
+            )}
+          </button>
+
+          <button
+            type="button"
+            className={`h-nav-item ${activeTab === 'profile' ? 'active' : ''}`}
+            onClick={() => { setActiveTab('profile'); setIsMobileSidebarOpen(false); }}
+          >
+            <span className="h-nav-icon">👤</span>
+            <span>Profile</span>
+          </button>
+        </nav>
+
+        <div className="h-sidebar-footer">
+          <div
+            className="h-admin-card-mini"
+            onClick={() => { setActiveTab('profile'); setIsMobileSidebarOpen(false); }}
+            style={{ cursor: 'pointer' }}
+            title="View Profile & Settings"
+          >
+            <div className="h-admin-avatar-mini">
+              {user?.name?.slice(0, 2).toUpperCase() || 'AD'}
+            </div>
+            <div className="h-admin-info-mini">
+              <span className="h-admin-name-mini">{user?.name || 'Administrator'}</span>
+              <span className="h-admin-role-mini">{user?.role || 'Admin'}</span>
+            </div>
+          </div>
+
+          <Link to="/" className="h-sidebar-return-link">
+            <span>←</span>
+            <span>Return to App</span>
           </Link>
         </div>
-      </div>
+      </aside>
 
-      {/* Quick KPI Stat Cards */}
-      <div className="admin-stats-grid">
-        <div className="card-box stat-kpi-card">
-          <div className="kpi-icon">👥</div>
-          <div className="kpi-content">
-            <span className="kpi-num">{profiles.length}</span>
-            <span className="kpi-label">Candidates &amp; Users</span>
+      {/* Main Right Area */}
+      <main className="h-main-area">
+        {/* Floating Glass Top Navbar */}
+        <header className="h-topbar">
+          <div className="h-topbar-left">
+            <div className="h-breadcrumb">
+              <button
+                type="button"
+                className="h-mobile-toggle-btn"
+                onClick={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
+                aria-label="Toggle navigation"
+              >
+                ☰
+              </button>
+              <span>Pages</span>
+              <span>/</span>
+              <span>Dashboard</span>
+              <span>/</span>
+              <span className="h-breadcrumb-item active">
+                {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
+              </span>
+            </div>
+            <h1 className="h-page-title">
+              {activeTab === 'overview' && 'System Operations'}
+              {activeTab === 'users' && 'Candidate Directory'}
+              {activeTab === 'submissions' && 'Submissions Graded'}
+              {activeTab === 'attempts' && 'Problem Attempts'}
+              {activeTab === 'questions' && 'Question Performance'}
+              {activeTab === 'activity' && 'Real-Time Activity Feed'}
+              {activeTab === 'analytics' && 'Platform Analytics'}
+              {activeTab === 'requests' && 'Feature Access Requests'}
+              {activeTab === 'tracks' && 'Curriculum Tracks'}
+              {activeTab === 'audit' && 'Cloud Telemetry Stream'}
+              {activeTab === 'profile' && 'Administrator Profile & Settings'}
+            </h1>
           </div>
-          <span className="kpi-sub">Total database profiles</span>
-        </div>
 
-        <div className="card-box stat-kpi-card highlight-progress">
-          <div className="kpi-icon">📊</div>
-          <div className="kpi-content">
-            <span className="kpi-num">{avgCompletionPct}%</span>
-            <span className="kpi-label">Avg Track Completion</span>
+          <div className="h-topbar-right">
+            <div className="h-topbar-search">
+              <span>🔍</span>
+              <input
+                type="text"
+                placeholder="Search..."
+                value={searchTerm}
+                onChange={e => setSearchTerm(e.target.value)}
+              />
+            </div>
+
+            <button
+              type="button"
+              className="h-topbar-btn primary"
+              onClick={() => setIsCreateModalOpen(true)}
+              title="Invite or provision new candidate"
+            >
+              ➕ Invite User
+            </button>
+
+            <button
+              type="button"
+              className="h-topbar-btn secondary"
+              onClick={loadData}
+              disabled={isLoading}
+              title="Synchronize live state with Supabase"
+            >
+              {isLoading ? '⏳ Syncing' : '🔄 Live Sync'}
+            </button>
+
+            <button
+              type="button"
+              className="h-topbar-icon-btn"
+              onClick={() => setActiveTab('requests')}
+              title="Access notifications"
+            >
+              🔔
+              {pendingRequestsCount > 0 && (
+                <span style={{
+                  position: 'absolute',
+                  top: '-4px',
+                  right: '-4px',
+                  background: '#ffb547',
+                  color: '#0b1437',
+                  borderRadius: '50%',
+                  width: '18px',
+                  height: '18px',
+                  fontSize: '0.65rem',
+                  fontWeight: 800,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}>
+                  {pendingRequestsCount}
+                </span>
+              )}
+            </button>
+
+            <button
+              type="button"
+              className="h-topbar-icon-btn"
+              onClick={toggleTheme}
+              title={adminTheme === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode'}
+              aria-label="Toggle Theme"
+            >
+              {adminTheme === 'light' ? '🌙' : '☀️'}
+            </button>
+
+            <div
+              className="h-topbar-avatar-chip"
+              onClick={() => setActiveTab('profile')}
+              title="View Profile & Settings"
+            >
+              <div className="h-avatar-sm">
+                {user?.name?.slice(0, 1).toUpperCase() || 'A'}
+              </div>
+              <span className="h-avatar-chip-name">{user?.name?.split(' ')[0] || 'Admin'}</span>
+            </div>
           </div>
-          <span className="kpi-sub">Platform-wide curriculum mastery</span>
-        </div>
+        </header>
 
-        <div className="card-box stat-kpi-card">
-          <div className="kpi-icon">🔥</div>
-          <div className="kpi-content">
-            <span className="kpi-num">{topStreakCandidate.streak}d</span>
-            <span className="kpi-label">Top Streak ({topStreakCandidate.userName?.split(' ')[0] || 'Candidate'})</span>
-          </div>
-          <span className="kpi-sub">Consecutive daily problem solving</span>
-        </div>
+        {/* Content Area */}
+        <div className="h-content-area">
+          {/* Toast Notification */}
+          {statusToast && (
+            <div className="admin-toast-alert">
+              <span>🔔</span> {statusToast}
+            </div>
+          )}
 
-        <div className="card-box stat-kpi-card highlight-attention">
-          <div className="kpi-icon">📩</div>
-          <div className="kpi-content">
-            <span className="kpi-num">{pendingRequestsCount}</span>
-            <span className="kpi-label">Pending Requests</span>
-          </div>
-          <span className="kpi-sub">{pendingRequestsCount > 0 ? 'Action required in Notifications' : 'All requests approved'}</span>
-        </div>
-      </div>
+          {/* Quick Horizon Stat Widgets - ONLY displayed on Dashboard Overview */}
+          {activeTab === 'overview' && (
+            <div className="h-stat-grid">
+              <div className="h-stat-widget" onClick={() => setActiveTab('users')}>
+                <div className="h-stat-icon-circle purple">👥</div>
+                <div className="h-stat-info">
+                  <span className="h-stat-label">Total Candidates</span>
+                  <span className="h-stat-value">{profiles.length}</span>
+                  <span className="h-stat-sub">Registered profiles</span>
+                </div>
+              </div>
 
-      {/* Main Tabs Navigation */}
-      <div className="admin-nav-tabs">
-        <button
-          type="button"
-          className={`ant-tab ${activeTab === 'overview' ? 'active' : ''}`}
-          onClick={() => setActiveTab('overview')}
-        >
-          📊 Overview
-        </button>
-        <button
-          type="button"
-          className={`ant-tab ${activeTab === 'users' ? 'active' : ''}`}
-          onClick={() => setActiveTab('users')}
-        >
-          👥 Candidates ({profiles.length})
-        </button>
-        <button
-          type="button"
-          className={`ant-tab ${activeTab === 'questions' ? 'active' : ''}`}
-          onClick={() => setActiveTab('questions')}
-        >
-          ❓ Questions Telemetry
-        </button>
-        <button
-          type="button"
-          className={`ant-tab ${activeTab === 'submissions' ? 'active' : ''}`}
-          onClick={() => setActiveTab('submissions')}
-        >
-          📝 Submissions
-        </button>
-        <button
-          type="button"
-          className={`ant-tab ${activeTab === 'attempts' ? 'active' : ''}`}
-          onClick={() => setActiveTab('attempts')}
-        >
-          🎯 Attempts
-        </button>
-        <button
-          type="button"
-          className={`ant-tab ${activeTab === 'activity' ? 'active' : ''}`}
-          onClick={() => setActiveTab('activity')}
-        >
-          ⚡ Activity Feed
-        </button>
-        <button
-          type="button"
-          className={`ant-tab ${activeTab === 'analytics' ? 'active' : ''}`}
-          onClick={() => setActiveTab('analytics')}
-        >
-          📈 Analytics
-        </button>
-        <button
-          type="button"
-          className={`ant-tab ${activeTab === 'requests' ? 'active' : ''}`}
-          onClick={() => setActiveTab('requests')}
-        >
-          📩 Requests {pendingRequestsCount > 0 && <span className="tab-bubble">{pendingRequestsCount}</span>}
-        </button>
-        <button
-          type="button"
-          className={`ant-tab ${activeTab === 'tracks' ? 'active' : ''}`}
-          onClick={() => setActiveTab('tracks')}
-        >
-          📚 Tracks
-        </button>
-        <button
-          type="button"
-          className={`ant-tab ${activeTab === 'audit' ? 'active' : ''}`}
-          onClick={() => setActiveTab('audit')}
-        >
-          🛰️ Telemetry Stream {liveActivities.length > 0 && <span className="tab-bubble live">{liveActivities.length}</span>}
-        </button>
-      </div>
+              <div className="h-stat-widget" onClick={() => setActiveTab('tracks')}>
+                <div className="h-stat-icon-circle green">📊</div>
+                <div className="h-stat-info">
+                  <span className="h-stat-label">Avg Track Mastery</span>
+                  <span className="h-stat-value">{avgCompletionPct}%</span>
+                  <span className="h-stat-sub">Platform curriculum progress</span>
+                </div>
+              </div>
+
+              <div className="h-stat-widget" onClick={() => setActiveTab('submissions')}>
+                <div className="h-stat-icon-circle cyan">📝</div>
+                <div className="h-stat-info">
+                  <span className="h-stat-label">Graded Submissions</span>
+                  <span className="h-stat-value">{submissionsList.length}</span>
+                  <span className="h-stat-sub">Code executions evaluated</span>
+                </div>
+              </div>
+
+              <div className="h-stat-widget" onClick={() => setActiveTab('attempts')}>
+                <div className="h-stat-icon-circle amber">🎯</div>
+                <div className="h-stat-info">
+                  <span className="h-stat-label">Problem Attempts</span>
+                  <span className="h-stat-value">{attemptsList.length}</span>
+                  <span className="h-stat-sub">Total session attempts</span>
+                </div>
+              </div>
+
+              <div className="h-stat-widget" onClick={() => setActiveTab('requests')}>
+                <div className="h-stat-icon-circle red">📩</div>
+                <div className="h-stat-info">
+                  <span className="h-stat-label">Pending Requests</span>
+                  <span className="h-stat-value">{pendingRequestsCount}</span>
+                  <span className="h-stat-sub">{pendingRequestsCount > 0 ? 'Requires attention' : 'All approved'}</span>
+                </div>
+              </div>
+
+              <div className="h-stat-widget" onClick={() => setActiveTab('users')}>
+                <div className="h-stat-icon-circle amber">🔥</div>
+                <div className="h-stat-info">
+                  <span className="h-stat-label">Top Streak ({topStreakCandidate.userName?.split(' ')[0] || 'Candidate'})</span>
+                  <span className="h-stat-value">{topStreakCandidate.streak}d</span>
+                  <span className="h-stat-sub">Consecutive problem solving</span>
+                </div>
+              </div>
+            </div>
+          )}
 
       {/* ================================================================ */}
       {/* TAB 0: OVERVIEW COMMAND CENTER */}
@@ -914,7 +1144,7 @@ export default function AdminDashboard() {
                         streak: 0,
                         quizAccuracy: 0,
                         mockScore: 0,
-                        lastActive: 'Offline',
+                        lastActive: u.createdAt || 'Never active',
                         categoryBreakdown: {},
                       }
 
@@ -930,16 +1160,23 @@ export default function AdminDashboard() {
                         </td>
                         <td>
                           <div className="user-primary-cell">
-                            <div className="upc-avatar">
-                              {isSuspended ? '⛔' : u.role === 'admin' ? '🛡️' : u.role === 'pro_member' ? '⚡' : '👨‍💻'}
-                            </div>
-                            <div>
-                              <strong>{u.name}</strong>
-                              <span className="upc-email">{u.email}</span>
-                              <div className="target-micro-row">
-                                <span className="target-pill">{u.targetCompany || 'Google'}</span>
-                                <span className="level-pill">{u.experienceLevel || 'L5 Senior'}</span>
+                            <button
+                              type="button"
+                              className="h-user-btn"
+                              onClick={() => setSelectedUserForDeepDive(u.id)}
+                              title={`Inspect ${u.name}'s Full Dossier`}
+                            >
+                              <div className="h-avatar-circle">
+                                {isSuspended ? '⛔' : u.role === 'admin' ? '🛡️' : u.role === 'pro_member' ? '⚡' : '👨‍💻'}
                               </div>
+                              <div className="h-user-meta">
+                                <span className="h-user-name">{u.name}</span>
+                                <span className="h-user-sub">{u.email}</span>
+                              </div>
+                            </button>
+                            <div className="target-micro-row" style={{ marginTop: '2px', paddingLeft: '8px' }}>
+                              <span className="target-pill">{u.targetCompany || 'Google'}</span>
+                              <span className="level-pill">{u.experienceLevel || 'L5 Senior'}</span>
                             </div>
                           </div>
                         </td>
@@ -1100,6 +1337,7 @@ export default function AdminDashboard() {
             initialSubmissions={submissionsList}
             onRefresh={loadData}
             onViewCode={sub => setSelectedSubmissionForCode(sub)}
+            onInspectUser={(uId: string) => setSelectedUserForDeepDive(uId)}
           />
         </div>
       )}
@@ -1112,6 +1350,8 @@ export default function AdminDashboard() {
           <AdminAttemptsTab
             initialAttempts={attemptsList}
             onRefresh={loadData}
+            onViewCode={att => setSelectedAttemptForCode(att)}
+            onInspectUser={(uId: string) => setSelectedUserForDeepDive(uId)}
           />
         </div>
       )}
@@ -1121,7 +1361,11 @@ export default function AdminDashboard() {
       {/* ================================================================ */}
       {activeTab === 'activity' && (
         <div className="admin-tab-content">
-          <AdminActivityTab initialFeed={activityFeedList} />
+          <AdminActivityTab
+            initialFeed={activityFeedList}
+            onInspectUser={(uId: string) => setSelectedUserForDeepDive(uId)}
+            onRefresh={loadData}
+          />
         </div>
       )}
 
@@ -1130,117 +1374,32 @@ export default function AdminDashboard() {
       {/* ================================================================ */}
       {activeTab === 'analytics' && (
         <div className="admin-tab-content">
-          <AdminAnalyticsTab overviewStats={overviewStats} />
+          <AdminAnalyticsTab
+            overviewStats={overviewStats}
+            timeframe={overviewTimeframe}
+            onTimeframeChange={handleTimeframeChange}
+            submissionsList={submissionsList}
+            attemptsList={attemptsList}
+            questionsStatsList={questionsStatsList}
+            progressMap={progressMap}
+          />
         </div>
       )}
 
       {/* ================================================================ */}
-      {/* TAB 2: ACCESS REQUESTS & NOTIFICATIONS CENTER */}
+      {/* TAB: ACCESS REQUESTS & NOTIFICATIONS CENTER */}
       {/* ================================================================ */}
       {activeTab === 'requests' && (
         <div className="admin-tab-content">
-          <div className="card-box notifications-panel">
-            <div className="np-header">
-              <div>
-                <h3>Candidate Feature Access Requests ({notifications.length})</h3>
-                <p className="np-desc">
-                  When candidates navigate to restricted features (such as System Design Studio or the 22,222 Questions Bank), their access requests appear here. Click <strong>Approve &amp; Grant Access</strong> to immediately unlock that feature in Supabase.
-                </p>
-              </div>
-              <div className="np-badge-count" style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                <span>{pendingRequestsCount} Pending Approval</span>
-                {notifications.length > 0 && (
-                  <button
-                    type="button"
-                    className="btn btn-sm btn-secondary"
-                    onClick={handleClearAllRequests}
-                    style={{ fontSize: '0.74rem', padding: '4px 10px', fontWeight: 700 }}
-                  >
-                    🗑️ Clear All
-                  </button>
-                )}
-              </div>
-            </div>
-
-            {notifications.length === 0 ? (
-              <div style={{ textAlign: 'center', padding: '48px 24px', background: 'var(--surface-hover)', borderRadius: 'var(--radius-lg)', border: '1px dashed var(--border-subtle)' }}>
-                <span style={{ fontSize: '2.4rem', display: 'block', marginBottom: '10px' }}>🎉</span>
-                <strong style={{ fontSize: '1.05rem', color: 'var(--text-primary)' }}>No Pending Access Requests</strong>
-                <p style={{ margin: '6px 0 0', fontSize: '0.86rem', color: 'var(--text-muted)' }}>
-                  When candidates request access to locked platform features, their requests appear here for administrator approval.
-                </p>
-              </div>
-            ) : (
-              <div className="requests-cards-list">
-                {notifications.map(notif => {
-                  const isPending = notif.status === 'PENDING'
-                  const isApproved = notif.status === 'APPROVED'
-
-                  return (
-                    <div key={notif.id} className={`request-card ${notif.status.toLowerCase()}`}>
-                    <div className="rc-left">
-                      <div className="rc-avatar">👨‍💻</div>
-                      <div className="rc-details">
-                        <div className="rc-user-row">
-                          <strong>{notif.userName}</strong>
-                          <span className="rc-email">{notif.userEmail}</span>
-                          <span className={`rc-status-pill ${notif.status.toLowerCase()}`}>
-                            {notif.status}
-                          </span>
-                        </div>
-                        <div className="rc-feature-row">
-                          <span>Requested Entitlement:</span>
-                          <strong className="rc-feature-highlight">🔒 {notif.featureName}</strong>
-                          <span className="rc-time">
-                            🕒 {new Date(notif.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="rc-actions">
-                      {isPending ? (
-                        <>
-                          <button
-                            type="button"
-                            className="btn btn-primary btn-sm btn-approve"
-                            onClick={() => handleApproveRequest(notif)}
-                          >
-                            ✅ Approve &amp; Grant Access
-                          </button>
-                          <button
-                            type="button"
-                            className="btn btn-secondary btn-sm btn-decline"
-                            onClick={() => handleDeclineRequest(notif.id, notif.userEmail, notif.featureName)}
-                          >
-                            ❌ Decline
-                          </button>
-                        </>
-                      ) : isApproved ? (
-                        <span className="approved-indicator">
-                          ✅ Access Granted in Supabase
-                        </span>
-                      ) : (
-                        <span className="declined-indicator">
-                          ❌ Request Dismissed
-                        </span>
-                      )}
-                      <button
-                        type="button"
-                        className="btn btn-sm btn-ghost"
-                        onClick={() => handleDeleteRequest(notif.id)}
-                        title="Dismiss notification"
-                        style={{ padding: '6px 8px', fontSize: '0.8rem', opacity: 0.7 }}
-                      >
-                        🗑️
-                      </button>
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-          )}
-          </div>
+          <AdminRequestsTab
+            notifications={notifications}
+            pendingRequestsCount={pendingRequestsCount}
+            onApprove={handleApproveRequest}
+            onDecline={handleDeclineRequest}
+            onDelete={handleDeleteRequest}
+            onClearAll={handleClearAllRequests}
+            onInspectUser={(uId: string) => setSelectedUserForDeepDive(uId)}
+          />
         </div>
       )}
 
@@ -1249,145 +1408,223 @@ export default function AdminDashboard() {
       {/* ================================================================ */}
       {activeTab === 'tracks' && (
         <div className="admin-tab-content">
-          <div className="tracks-overview-grid">
-            {PLATFORM_TRACKS.map(tr => (
-              <div key={tr.id} className="card-box track-progress-card">
-                <div className="tpc-top">
-                  <span className="tpc-icon">{tr.icon}</span>
-                  <span className={`tpc-diff-tag ${tr.difficulty.toLowerCase()}`}>{tr.difficulty}</span>
-                </div>
-                <h4>{tr.name}</h4>
-                <div className="tpc-stats-row">
-                  <div>
-                    <span className="tpc-metric-val">{tr.totalModules}</span>
-                    <span className="tpc-metric-lbl">Challenges</span>
-                  </div>
-                  <div>
-                    <span className="tpc-metric-val">{tr.activeCandidates}</span>
-                    <span className="tpc-metric-lbl">Students Enrolled</span>
-                  </div>
-                  <div>
-                    <span className="tpc-metric-val">{tr.avgScore}%</span>
-                    <span className="tpc-metric-lbl">Avg Accuracy</span>
-                  </div>
-                </div>
-                <div className="tpc-bar-wrap">
-                  <div className="tpc-bar-fill" style={{ width: `${tr.avgScore}%` }} />
-                </div>
-              </div>
-            ))}
-          </div>
+          <AdminTracksTab
+            tracks={PLATFORM_TRACKS}
+            onNavigateToCandidates={(trackFilter?: string) => {
+              setTrackFilter(trackFilter || 'ALL')
+              setActiveTab('users')
+            }}
+          />
         </div>
       )}
 
       {/* ================================================================ */}
-      {/* TAB 4: REAL-TIME CANDIDATE ACTIVITY STREAM */}
+      {/* TAB 4: REAL-TIME CANDIDATE TELEMETRY STREAM */}
       {/* ================================================================ */}
       {activeTab === 'audit' && (
         <div className="admin-tab-content">
-          <div className="card-box telemetry-stream-panel">
-            <div className="tsp-top-bar">
-              <div>
-                <div className="tsp-live-indicator">
-                  <span className="alb-pulse">🟢</span>
-                  <span className="tsp-live-title">Real-Time Telemetry Stream Active</span>
-                  <span className="tsp-count-pill">{liveActivities.length} Events Logged</span>
-                </div>
-                <h3>Live Candidate Activity &amp; Telemetry Feed</h3>
-                <p className="tsp-desc">
-                  Live streaming events as candidates solve questions, complete mock interviews, take practice quizzes, or update tracks in real time.
-                </p>
+          <AdminTelemetryTab
+            liveActivities={liveActivities}
+            onClearStream={() => {
+              setLiveActivities([])
+              showToast('Cleared telemetry display feed.')
+            }}
+            onExportCSV={handleExportActivitiesCSV}
+            isAutoScrollPaused={isAutoScrollPaused}
+            onToggleAutoScroll={() => setIsAutoScrollPaused(prev => !prev)}
+            onInspectUser={(uId: string) => setSelectedUserForDeepDive(uId)}
+            onRefresh={loadData}
+          />
+        </div>
+      )}
+
+      {/* ================================================================ */}
+      {/* TAB: HORIZON UI PROFILE & ENTERPRISE SETTINGS SHOWCASE */}
+      {/* ================================================================ */}
+      {activeTab === 'profile' && (
+        <div className="admin-tab-content h-profile-tab-panel">
+          {/* Top 3-Card Grid */}
+          <div className="h-profile-top-grid">
+            {/* Card 1: Horizon Profile Hero Card */}
+            <div className="h-profile-hero-card">
+              <div className="h-profile-hero-cover">
+                <span className="h-profile-hero-badge">Enterprise Lead</span>
               </div>
-
-              <div className="tsp-controls">
-                <select
-                  className="role-dropdown"
-                  value={activityFilter}
-                  onChange={e => setActivityFilter(e.target.value)}
-                  title="Filter by Activity Type"
-                >
-                  <option value="ALL">All Event Types</option>
-                  <option value="QUESTION_SOLVED">✅ Questions Solved</option>
-                  <option value="QUIZ_SCORED">🎯 Quiz Drills</option>
-                  <option value="MOCK_COMPLETED">🎥 Mock Interviews</option>
-                  <option value="TRACK_SWITCHED">🚀 Track Changes</option>
-                  <option value="FEATURE_GRANTED">✨ Feature Approvals</option>
-                  <option value="AUTH_SIGN_IN">🔑 Logins &amp; Signups</option>
-                </select>
-
-                <button
-                  type="button"
-                  className="btn btn-sm btn-secondary"
-                  onClick={() => setIsAutoScrollPaused(prev => !prev)}
-                >
-                  {isAutoScrollPaused ? '▶️ Resume Feed' : '⏸️ Pause Stream'}
-                </button>
-
-                <button
-                  type="button"
-                  className="btn btn-sm btn-secondary"
-                  onClick={handleExportActivitiesCSV}
-                >
-                  📥 Export CSV
-                </button>
-
-                <button
-                  type="button"
-                  className="btn btn-sm btn-secondary btn-clear-stream"
-                  onClick={() => {
-                    setLiveActivities([])
-                    showToast('Cleared telemetry display feed.')
-                  }}
-                >
-                  🧹 Clear Feed
-                </button>
+              <div className="h-profile-hero-avatar-wrap">
+                <div className="h-profile-hero-avatar">
+                  {user?.name ? user.name.slice(0, 2).toUpperCase() : 'SK'}
+                </div>
+                <div className="h-profile-online-badge" title="Live Online" />
+              </div>
+              <div className="h-profile-hero-info">
+                <h2 className="h-profile-hero-name">{user?.name || 'Shashi Kunal'}</h2>
+                <p className="h-profile-hero-role">Lead Platform Architect &amp; SuperAdmin</p>
+                <span className="h-profile-hero-email">{user?.email || 'admin@frontend-interview.com'}</span>
+              </div>
+              <div className="h-profile-hero-stats">
+                <div className="h-phs-item">
+                  <span className="h-phs-num">17</span>
+                  <span className="h-phs-lbl">Active Tracks</span>
+                </div>
+                <div className="h-phs-item">
+                  <span className="h-phs-num">22.2K</span>
+                  <span className="h-phs-lbl">Questions Bank</span>
+                </div>
+                <div className="h-phs-item">
+                  <span className="h-phs-num">{profiles.length}</span>
+                  <span className="h-phs-lbl">Candidates</span>
+                </div>
               </div>
             </div>
 
-            {/* Activities List */}
-            {filteredActivities.length === 0 ? (
-              <div className="empty-telemetry-notice">
-                <span className="etn-icon">⚡</span>
-                <h4>Listening for Live Candidate Telemetry...</h4>
-                <p>When candidates practice questions, attempt quizzes, or complete mock interviews, live events stream here in real time.</p>
+            {/* Card 2: Cloud Storage & Quota (Horizon React style) */}
+            <div className="h-profile-card h-storage-card">
+              <div className="h-card-top-action">
+                <div className="h-circle-icon purple">☁️</div>
+                <span className="h-live-pill">Supabase Cloud</span>
               </div>
-            ) : (
-              <div className="telemetry-cards-list">
-                {filteredActivities.map(act => {
-                  return (
-                    <div key={act.id} className={`telemetry-card ${act.type.toLowerCase()}`}>
-                      <div className="tc-badge-col">
-                        <span className={`tc-type-badge ${act.type.toLowerCase()}`}>
-                          {act.type === 'QUESTION_SOLVED' ? '💡 Question Solved' :
-                           act.type === 'MOCK_COMPLETED' ? '🎥 Mock Interview' :
-                           act.type === 'QUIZ_SCORED' ? '🎯 Quiz Drill' :
-                           act.type === 'TRACK_SWITCHED' ? '🚀 Track Assigned' :
-                           act.type === 'FEATURE_GRANTED' ? '✨ Access Granted' :
-                           act.type === 'AUTH_SIGN_IN' ? '🔑 User Enrolled' : act.type}
-                        </span>
+              <div className="h-storage-body">
+                <h3 className="h-storage-title">Platform &amp; Realtime Quota</h3>
+                <p className="h-storage-desc">Continuous telemetry stream and Postgres allocation sync</p>
+                <div className="h-storage-progress-area">
+                  <div className="h-storage-labels">
+                    <span>24.8 GB Used</span>
+                    <span>50 GB Quota</span>
+                  </div>
+                  <div className="h-storage-bar-track">
+                    <div className="h-storage-bar-fill" style={{ width: '49.6%' }} />
+                  </div>
+                </div>
+                <div className="h-storage-specs">
+                  <div className="h-spec-item">
+                    <span>Active Channels</span>
+                    <strong>{liveActivities.length > 0 ? liveActivities.length : '12'} Stream Events</strong>
+                  </div>
+                  <div className="h-spec-item">
+                    <span>Postgres Pool</span>
+                    <strong>Healthy (99.98%)</strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Card 3: Platform Operations & Actions */}
+            <div className="h-profile-card h-actions-card">
+              <div className="h-card-top-action">
+                <div className="h-circle-icon green">⚡</div>
+                <span className="h-live-pill green">Ready</span>
+              </div>
+              <div className="h-action-body">
+                <h3 className="h-storage-title">Quick Operations</h3>
+                <p className="h-storage-desc">Instant cloud management &amp; data governance actions</p>
+                <div className="h-profile-quick-actions">
+                  <button type="button" className="btn btn-primary" onClick={loadData} disabled={isLoading}>
+                    {isLoading ? '⏳ Syncing...' : '🔄 Sync Live Supabase State'}
+                  </button>
+                  <button type="button" className="btn btn-secondary" onClick={handleExportCSV}>
+                    📥 Export All Candidates (CSV)
+                  </button>
+                  <button type="button" className="btn btn-secondary" onClick={handleExportActivitiesCSV}>
+                    📊 Export Telemetry Events (CSV)
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Middle 2-Column Grid */}
+          <div className="h-profile-mid-grid">
+            {/* Left: Active Projects & Curriculums */}
+            <div className="h-profile-card h-projects-card">
+              <div className="h-card-header">
+                <div>
+                  <h3 className="h-card-title">Active Curriculum Tracks</h3>
+                  <p className="h-card-sub">Core engineering tracks managed by the evaluation board</p>
+                </div>
+                <button type="button" className="btn btn-sm btn-secondary" onClick={() => setActiveTab('tracks')}>
+                  View All Tracks →
+                </button>
+              </div>
+
+              <div className="h-projects-list">
+                {PLATFORM_TRACKS.slice(0, 4).map(track => (
+                  <div key={track.id} className="h-project-row">
+                    <div className="h-project-icon">{track.icon}</div>
+                    <div className="h-project-info">
+                      <div className="h-project-title-row">
+                        <strong>{track.name}</strong>
+                        <span className={`h-diff-badge ${track.difficulty.toLowerCase()}`}>{track.difficulty}</span>
                       </div>
-
-                      <div className="tc-main">
-                        <div className="tc-header-row">
-                          <div className="tc-user-info">
-                            <strong>{act.userName || 'Candidate'}</strong>
-                            {act.userEmail && <span className="tc-email">{act.userEmail}</span>}
-                          </div>
-                          <span className="tc-timestamp">
-                            🕒 {new Date(act.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })} • {new Date(act.timestamp).toLocaleDateString([], { month: 'short', day: 'numeric' })}
-                          </span>
-                        </div>
-
-                        <div className="tc-title-row">
-                          <span className="tc-title">{act.title}</span>
-                          {act.details && <span className="tc-details">{act.details}</span>}
-                        </div>
+                      <div className="h-project-meta">
+                        <span>{track.totalModules} modules</span>
+                        <span>•</span>
+                        <span>{track.activeCandidates} active candidates</span>
+                        <span>•</span>
+                        <span style={{ color: 'var(--h-brand-green)' }}>{track.avgScore}% pass rate</span>
                       </div>
                     </div>
-                  )
-                })}
+                    <button
+                      type="button"
+                      className="btn btn-sm btn-secondary"
+                      onClick={() => setActiveTab('tracks')}
+                    >
+                      Manage
+                    </button>
+                  </div>
+                ))}
               </div>
-            )}
+            </div>
+
+            {/* Right: General Information & Security Overview */}
+            <div className="h-profile-card h-general-info-card">
+              <div className="h-card-header">
+                <div>
+                  <h3 className="h-card-title">General Information</h3>
+                  <p className="h-card-sub">Administrative identity &amp; governance credentials</p>
+                </div>
+              </div>
+
+              <div className="h-general-info-grid">
+                <div className="h-gi-item">
+                  <span className="h-gi-label">Organization</span>
+                  <strong className="h-gi-val">Frontend System Architecture Board</strong>
+                </div>
+                <div className="h-gi-item">
+                  <span className="h-gi-label">Role &amp; Permissions</span>
+                  <strong className="h-gi-val">Platform Administrator (All Entitlements)</strong>
+                </div>
+                <div className="h-gi-item">
+                  <span className="h-gi-label">Authentication Method</span>
+                  <strong className="h-gi-val">Supabase Auth + JWT Session Bearer</strong>
+                </div>
+                <div className="h-gi-item">
+                  <span className="h-gi-label">MFA Verification</span>
+                  <strong className="h-gi-val" style={{ color: 'var(--h-brand-green)' }}>🟢 Verified &amp; Active</strong>
+                </div>
+                <div className="h-gi-item">
+                  <span className="h-gi-label">Session Lifetime</span>
+                  <strong className="h-gi-val">8 Hours (Auto-Refresh Enabled)</strong>
+                </div>
+                <div className="h-gi-item">
+                  <span className="h-gi-label">Environment</span>
+                  <strong className="h-gi-val">Production / Multi-Tenant Cloud</strong>
+                </div>
+              </div>
+
+              <div className="h-theme-control-banner">
+                <div className="h-tcb-info">
+                  <strong>Appearance &amp; Dashboard Theme</strong>
+                  <span>Switch between Horizon Light and Horizon Dark themes instantly</span>
+                </div>
+                <button
+                  type="button"
+                  className="h-theme-switch-btn"
+                  onClick={toggleTheme}
+                >
+                  {adminTheme === 'light' ? '🌙 Switch to Dark' : '☀️ Switch to Light'}
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}
@@ -1422,8 +1659,8 @@ export default function AdminDashboard() {
                   totalQuestions: 75,
                   completionPct: 0,
                   streak: 0,
-                  quizAccuracy: 75,
-                  mockScore: 4.2,
+                  quizAccuracy: 0,
+                  mockScore: 0,
                   categoryBreakdown: {},
                 }
 
@@ -1772,6 +2009,122 @@ export default function AdminDashboard() {
       )}
 
       {/* ================================================================ */}
+      {/* TAB: HORIZON UI PROFILE SHOWCASE */}
+      {/* ================================================================ */}
+      {activeTab === 'profile' && (
+        <div className="admin-tab-content h-profile-page-grid">
+          {/* Profile Hero Card */}
+          <div className="card-box h-profile-hero-card">
+            <div className="h-profile-hero-cover">
+              <div className="h-profile-badge-pill">⚡ ADMINISTRATOR PROFILE</div>
+            </div>
+            <div className="h-profile-hero-content">
+              <div className="h-profile-hero-avatar">
+                {user?.name?.slice(0, 2).toUpperCase() || 'AD'}
+              </div>
+              <div className="h-profile-hero-details">
+                <h2>{user?.name || 'Administrator'}</h2>
+                <p>{user?.email || 'admin@faangprep.enterprise'}</p>
+                <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginTop: '6px' }}>
+                  <span className="h-role-badge">{user?.role || 'admin'}</span>
+                  <span className="status-pill-badge active">● Active Superuser</span>
+                </div>
+              </div>
+              <div className="h-profile-hero-stats">
+                <div className="h-phs-item">
+                  <span className="h-phs-num">{profiles.length}</span>
+                  <span className="h-phs-label">Candidates</span>
+                </div>
+                <div className="h-phs-item">
+                  <span className="h-phs-num">{submissionsList.length}</span>
+                  <span className="h-phs-label">Submissions</span>
+                </div>
+                <div className="h-phs-item">
+                  <span className="h-phs-num">22K</span>
+                  <span className="h-phs-label">Questions</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* 3 Grid Cards */}
+          <div className="h-profile-cards-grid">
+            {/* Cloud Capacity Card */}
+            <div className="card-box h-profile-card">
+              <div className="h-profile-card-header">
+                <h4>Cloud Infrastructure</h4>
+                <span className="submission-pill accepted">HEALTHY</span>
+              </div>
+              <p className="h-card-sub">Supabase PostgreSQL &amp; Real-Time Telemetry Stream</p>
+              <div className="h-storage-bar-wrap" style={{ marginTop: '16px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', marginBottom: '6px' }}>
+                  <span style={{ color: 'var(--h-text-muted)' }}>Database Capacity</span>
+                  <strong style={{ color: 'var(--h-text-white)' }}>32% Allocated</strong>
+                </div>
+                <div className="pcb-bar-wrap">
+                  <div className="pcb-bar-fill high" style={{ width: '32%' }} />
+                </div>
+              </div>
+              <div style={{ marginTop: '16px', display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.84rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: 'var(--h-text-muted)' }}>Status:</span><strong style={{ color: 'var(--h-text-white)' }}>🟢 Connected (Multi-Region)</strong></div>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: 'var(--h-text-muted)' }}>WebSocket:</span><strong style={{ color: 'var(--h-text-white)' }}>🟢 60fps Active Stream</strong></div>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: 'var(--h-text-muted)' }}>RLS Policies:</span><strong style={{ color: 'var(--h-text-white)' }}>🛡️ 14 Tables Enforced</strong></div>
+              </div>
+            </div>
+
+            {/* General Information Card */}
+            <div className="card-box h-profile-card">
+              <div className="h-profile-card-header">
+                <h4>General Information</h4>
+              </div>
+              <p className="h-card-sub">Platform credentials and identity details</p>
+              <div style={{ marginTop: '16px', display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '14px', fontSize: '0.84rem' }}>
+                <div><span style={{ display: 'block', fontSize: '0.74rem', color: 'var(--h-text-muted)' }}>Department</span><strong style={{ color: 'var(--h-text-white)' }}>Platform Engineering</strong></div>
+                <div><span style={{ display: 'block', fontSize: '0.74rem', color: 'var(--h-text-muted)' }}>Level</span><strong style={{ color: 'var(--h-text-white)' }}>Staff / Director</strong></div>
+                <div><span style={{ display: 'block', fontSize: '0.74rem', color: 'var(--h-text-muted)' }}>Location</span><strong style={{ color: 'var(--h-text-white)' }}>Global Multi-Tenant</strong></div>
+                <div><span style={{ display: 'block', fontSize: '0.74rem', color: 'var(--h-text-muted)' }}>Active Tracks</span><strong style={{ color: 'var(--h-text-white)' }}>6 Core FAANG Tracks</strong></div>
+                <div><span style={{ display: 'block', fontSize: '0.74rem', color: 'var(--h-text-muted)' }}>Access Level</span><strong style={{ color: 'var(--h-text-white)' }}>Full RBAC Superuser</strong></div>
+                <div><span style={{ display: 'block', fontSize: '0.74rem', color: 'var(--h-text-muted)' }}>Account Status</span><strong style={{ color: 'var(--h-text-white)' }}>✅ Verified</strong></div>
+              </div>
+            </div>
+
+            {/* System Preferences Card */}
+            <div className="card-box h-profile-card">
+              <div className="h-profile-card-header">
+                <h4>System Preferences</h4>
+              </div>
+              <p className="h-card-sub">Real-time alert notifications and theme settings</p>
+              <div style={{ marginTop: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div>
+                    <strong style={{ color: 'var(--h-text-white)', fontSize: '0.86rem' }}>Admin Visual Theme</strong>
+                    <p style={{ margin: '2px 0 0', fontSize: '0.76rem', color: 'var(--h-text-muted)' }}>Toggle between Light &amp; Dark Horizon aesthetic</p>
+                  </div>
+                  <button type="button" className="btn btn-sm btn-secondary" onClick={toggleTheme}>
+                    {adminTheme === 'light' ? '🌙 Dark Mode' : '☀️ Light Mode'}
+                  </button>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div>
+                    <strong style={{ color: 'var(--h-text-white)', fontSize: '0.86rem' }}>Access Request Alerts</strong>
+                    <p style={{ margin: '2px 0 0', fontSize: '0.76rem', color: 'var(--h-text-muted)' }}>Instant banner notifications for feature approvals</p>
+                  </div>
+                  <span className="submission-pill accepted">ON</span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div>
+                    <strong style={{ color: 'var(--h-text-white)', fontSize: '0.86rem' }}>Supabase CDC Sync</strong>
+                    <p style={{ margin: '2px 0 0', fontSize: '0.76rem', color: 'var(--h-text-muted)' }}>Live telemetry stream from Postgres tables</p>
+                  </div>
+                  <span className="submission-pill accepted">ON</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ================================================================ */}
       {/* MODAL: INVITE / CREATE NEW USER */}
       {/* ================================================================ */}
       {isCreateModalOpen && (
@@ -1956,6 +2309,8 @@ export default function AdminDashboard() {
         <AdminUserDetailModal
           userId={selectedUserForDeepDive}
           onClose={() => setSelectedUserForDeepDive(null)}
+          onViewCode={(sub) => setSelectedSubmissionForCode(sub)}
+          onViewAttemptCode={(att) => setSelectedAttemptForCode(att)}
         />
       )}
 
@@ -1966,6 +2321,20 @@ export default function AdminDashboard() {
           onClose={() => setSelectedSubmissionForCode(null)}
         />
       )}
+
+      {/* Candidate Attempt Code Inspector Modal */}
+      {selectedAttemptForCode && (
+        <AdminAttemptCodeModal
+          attempt={selectedAttemptForCode}
+          onClose={() => setSelectedAttemptForCode(null)}
+          onInspectUser={(uId: string) => {
+            setSelectedAttemptForCode(null)
+            setSelectedUserForDeepDive(uId)
+          }}
+        />
+      )}
+        </div>
+      </main>
     </div>
   )
 }

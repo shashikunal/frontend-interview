@@ -1,0 +1,455 @@
+/* ==============================================================================
+   Horizon UI Style - Platform Analytics & Aggregate Candidate Trends
+   Full Dark / Light Theme Responsive Styling
+   ============================================================================== */
+
+.admin-analytics-tab {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+}
+
+/* ─── Top KPI Stat Widgets Grid ─────────────────────────────────────────── */
+.analytics-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  width: 100%;
+}
+
+.astat-card {
+  background: var(--h-card);
+  border: 1px solid var(--h-border);
+  border-radius: var(--h-radius);
+  padding: 20px 22px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: var(--h-shadow-sm);
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.astat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--h-shadow);
+  border-color: var(--h-brand-light);
+}
+
+.astat-icon-wrap {
+  width: 50px;
+  height: 50px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.astat-icon-wrap.green {
+  background: rgba(1, 181, 116, 0.15);
+  color: var(--h-brand-green);
+  border: 1px solid rgba(1, 181, 116, 0.25);
+}
+
+.astat-icon-wrap.purple {
+  background: rgba(117, 81, 255, 0.15);
+  color: var(--h-brand-light);
+  border: 1px solid rgba(117, 81, 255, 0.25);
+}
+
+.astat-icon-wrap.blue {
+  background: rgba(56, 189, 248, 0.15);
+  color: var(--h-brand-blue);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+}
+
+.astat-icon-wrap.amber {
+  background: rgba(255, 181, 71, 0.15);
+  color: var(--h-brand-amber);
+  border: 1px solid rgba(255, 181, 71, 0.25);
+}
+
+.astat-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.astat-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--h-text-muted);
+}
+
+.astat-value {
+  font-size: 1.65rem;
+  font-weight: 800;
+  color: var(--h-text-white);
+  line-height: 1.2;
+  margin: 3px 0 2px;
+  letter-spacing: -0.5px;
+}
+
+.astat-sub {
+  font-size: 0.74rem;
+  color: var(--h-text-sub);
+}
+
+/* ─── Main Panel Card ───────────────────────────────────────────────────── */
+.aat-panel {
+  background: var(--h-card);
+  border: 1px solid var(--h-border);
+  border-radius: var(--h-radius);
+  padding: 24px;
+  box-shadow: var(--h-shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.aat-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 16px;
+  border-bottom: 1px solid var(--h-border);
+  padding-bottom: 20px;
+}
+
+.aat-title-box h3 {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--h-text-white);
+  margin: 0 0 6px;
+  letter-spacing: -0.4px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.aat-badge-live {
+  background: rgba(1, 181, 116, 0.15);
+  color: var(--h-brand-green);
+  border: 1px solid rgba(1, 181, 116, 0.3);
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 2px 10px;
+  border-radius: var(--h-radius-pill);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.aat-badge-live::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  background: var(--h-brand-green);
+  border-radius: 50%;
+  animation: aatPulse 1.6s infinite;
+}
+
+@keyframes aatPulse {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.6); opacity: 0.4; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.aat-desc {
+  font-size: 0.86rem;
+  color: var(--h-text-muted);
+  margin: 0;
+  line-height: 1.45;
+  max-width: 800px;
+}
+
+/* Timeframe Selector Pills */
+.aat-timeframe-pills {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--h-card-inner);
+  padding: 4px;
+  border-radius: var(--h-radius-sm);
+  border: 1px solid var(--h-border);
+}
+
+.aat-tf-btn {
+  background: transparent;
+  border: none;
+  color: var(--h-text-muted);
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 6px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.aat-tf-btn:hover {
+  color: var(--h-text-white);
+}
+
+.aat-tf-btn.active {
+  background: var(--h-brand-gradient);
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(67, 24, 255, 0.3);
+}
+
+/* ─── 2-Column Analytics Visual Grid ─────────────────────────────────────── */
+.analytics-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.acard {
+  background: var(--h-card-inner);
+  border: 1px solid var(--h-border);
+  border-radius: 18px;
+  padding: 22px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-shadow: var(--h-shadow-sm);
+  transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.acard:hover {
+  background: var(--h-card-hover);
+  border-color: rgba(117, 81, 255, 0.35);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+  transform: translateY(-1px);
+}
+
+.acard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.acard-title-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.acard-icon {
+  font-size: 1.25rem;
+}
+
+.acard-header h4 {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--h-text-white);
+  margin: 0;
+  letter-spacing: -0.2px;
+}
+
+.acard-badge {
+  font-size: 0.74rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: var(--h-radius-pill);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--h-text-muted);
+  border: 1px solid var(--h-border);
+}
+
+/* ─── Visual Segmented Progress Bar & Status Rows ────────────────────────── */
+.acard-segmented-bar {
+  height: 12px;
+  width: 100%;
+  border-radius: 6px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.06);
+  display: flex;
+  margin: 4px 0 8px;
+}
+
+.acard-segment {
+  height: 100%;
+  transition: width 0.5s ease-out;
+}
+
+.acard-metrics-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.acard-metric-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.86rem;
+}
+
+.amr-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--h-text-muted);
+}
+
+.amr-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.amr-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.amr-val {
+  font-weight: 800;
+  color: var(--h-text-white);
+  font-size: 0.92rem;
+}
+
+.amr-pct {
+  font-size: 0.76rem;
+  color: var(--h-text-sub);
+  min-width: 42px;
+  text-align: right;
+}
+
+/* ─── Progress Bar Rows (Tracks & Difficulty) ───────────────────────────── */
+.progress-list-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.pli-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.86rem;
+}
+
+.pli-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  color: var(--h-text-white);
+}
+
+.pli-stat {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--h-brand-light);
+}
+
+.pli-bar-wrap {
+  height: 8px;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.pli-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.4s ease;
+}
+
+/* ─── Full-Width Challenges Performance Table Card ──────────────────────── */
+.acard-full-width {
+  grid-column: span 2;
+}
+
+.acard-table-wrapper {
+  overflow-x: auto;
+}
+
+.aat-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.86rem;
+}
+
+.aat-table th {
+  background: var(--h-th-bg);
+  padding: 12px 16px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--h-text-muted);
+  border-bottom: 1px solid var(--h-border);
+}
+
+.aat-table td {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--h-border);
+  color: var(--h-text-white);
+}
+
+.aat-table tr:last-child td {
+  border-bottom: none;
+}
+
+.aat-table tr:hover td {
+  background: var(--h-tr-hover);
+}
+
+.aat-q-title {
+  font-weight: 700;
+  color: var(--h-text-white);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.aat-badge-cat {
+  background: rgba(117, 81, 255, 0.12);
+  color: var(--h-brand-light);
+  border: 1px solid rgba(117, 81, 255, 0.25);
+  padding: 2px 10px;
+  border-radius: var(--h-radius-pill);
+  font-size: 0.74rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.aat-rate-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.aat-rate-bar-wrap {
+  width: 60px;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.aat-rate-bar-fill {
+  height: 100%;
+  background: var(--h-brand-green);
+  border-radius: 3px;
+}
+
+/* ─── Responsive Adjustments ────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .analytics-cards-grid {
+    grid-template-columns: 1fr;
+  }
+  .acard-full-width {
+    grid-column: span 1;
+  }
+}
