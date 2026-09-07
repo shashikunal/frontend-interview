@@ -1283,8 +1283,10 @@ export default function MachineCodingStudio() {
         }
       }
 
-      // Question mark (?): open shortcuts modal if not typing in text fields
-      if (e.key === '?' && !['INPUT', 'TEXTAREA'].includes((e.target as HTMLElement)?.tagName || '')) {
+      // Shortcuts cheat sheet: Ctrl+/ or Cmd+/ (never bare '?' so ternary operator '?' and optional chaining '?.' work freely)
+      const isEditing = ['INPUT', 'TEXTAREA', 'SELECT'].includes((e.target as HTMLElement)?.tagName || '') ||
+        Boolean((e.target as HTMLElement)?.closest('.monaco-editor, [contenteditable="true"]'));
+      if (!isEditing && (e.ctrlKey || e.metaKey) && e.key === '/') {
         e.preventDefault();
         setShowShortcutsModal(prev => !prev);
         return;
@@ -1581,7 +1583,7 @@ export default function MachineCodingStudio() {
                 type="button"
                 className="mc-topbar-icon-btn"
                 onClick={() => setShowShortcutsModal(true)}
-                title="Keyboard Shortcuts Cheat Sheet (?)"
+                title="Keyboard Shortcuts Cheat Sheet (Ctrl+/)"
               >
                 ⌨️
               </button>
@@ -2651,7 +2653,9 @@ export default function MachineCodingStudio() {
                     <span className="mc-shortcut-desc">Opens this shortcuts reference dialog</span>
                   </div>
                   <div className="mc-shortcut-keys">
-                    <kbd className="mc-kbd">?</kbd>
+                    <kbd className="mc-kbd">Ctrl</kbd>
+                    <span style={{ color: '#64748b' }}>+</span>
+                    <kbd className="mc-kbd">/</kbd>
                   </div>
                 </div>
               </div>
