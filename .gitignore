@@ -40,3 +40,4 @@ scripts/.topbrains-token
 # Windows reserved device names
 nul
 /nul
+.env*.local

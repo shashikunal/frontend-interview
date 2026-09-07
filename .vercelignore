@@ -1,0 +1,11 @@
+.git
+.vercel
+node_modules
+dist
+dist-ssr
+scripts
+docs
+*.log
+.env
+.env.*
+!.env.example
