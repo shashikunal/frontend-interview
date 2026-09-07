@@ -1098,6 +1098,7 @@ export default function AdminDashboard() {
         <div className="admin-tab-content">
           <AdminSubmissionsTab
             initialSubmissions={submissionsList}
+            onRefresh={loadData}
             onViewCode={sub => setSelectedSubmissionForCode(sub)}
           />
         </div>
@@ -1108,7 +1109,10 @@ export default function AdminDashboard() {
       {/* ================================================================ */}
       {activeTab === 'attempts' && (
         <div className="admin-tab-content">
-          <AdminAttemptsTab initialAttempts={attemptsList} />
+          <AdminAttemptsTab
+            initialAttempts={attemptsList}
+            onRefresh={loadData}
+          />
         </div>
       )}
 

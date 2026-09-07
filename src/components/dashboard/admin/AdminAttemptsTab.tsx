@@ -1,9 +1,9 @@
 import { useState, useMemo } from 'react'
-import type { QuestionAttempt } from '../../../lib/trackingService'
+import type { AdminAttemptItem } from '../../../lib/adminAnalyticsService'
 
 interface AdminAttemptsTabProps {
-  attempts?: QuestionAttempt[]
-  initialAttempts?: QuestionAttempt[]
+  attempts?: AdminAttemptItem[]
+  initialAttempts?: AdminAttemptItem[]
   onRefresh?: () => void
 }
 
@@ -25,7 +25,9 @@ export default function AdminAttemptsTab({
       const matchSearch =
         !search ||
         a.questionId.toLowerCase().includes(search.toLowerCase()) ||
-        a.userId.toLowerCase().includes(search.toLowerCase())
+        a.userId.toLowerCase().includes(search.toLowerCase()) ||
+        (a.userName && a.userName.toLowerCase().includes(search.toLowerCase())) ||
+        (a.userEmail && a.userEmail.toLowerCase().includes(search.toLowerCase()))
       return matchStatus && matchSearch
     })
   }, [effectiveList, statusFilter, search])
@@ -63,7 +65,7 @@ export default function AdminAttemptsTab({
             <input
               type="text"
               className="search-field"
-              placeholder="Search by question ID or user ID..."
+              placeholder="Search candidate name, email, or question ID..."
               value={search}
               onChange={e => handleFilterChange(setSearch, e.target.value)}
             />
@@ -91,7 +93,7 @@ export default function AdminAttemptsTab({
             <thead>
               <tr>
                 <th>Attempt ID</th>
-                <th>User ID</th>
+                <th>Candidate / User</th>
                 <th>Question ID</th>
                 <th>Status</th>
                 <th>Time Spent</th>
@@ -114,7 +116,12 @@ export default function AdminAttemptsTab({
                       <code style={{ fontSize: '11px', color: '#94a3b8' }}>{att.id.slice(0, 12)}...</code>
                     </td>
                     <td>
-                      <code style={{ fontSize: '11px', color: '#60a5fa' }}>{att.userId.slice(0, 8)}...</code>
+                      <div className="sub-user-cell">
+                        <span className="sub-user-name">{att.userName || 'Candidate'}</span>
+                        <span className="sub-user-email">
+                          {att.userEmail || (att.userId ? `${att.userId.slice(0, 8)}...` : '')}
+                        </span>
+                      </div>
                     </td>
                     <td>
                       <span className="aq-qid-tag">{att.questionId}</span>

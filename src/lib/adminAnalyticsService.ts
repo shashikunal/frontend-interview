@@ -20,7 +20,12 @@ export interface AdminOverviewStats {
 }
 
 export type OverviewStats = AdminOverviewStats
-export type AttemptRecord = QuestionAttempt
+
+export interface AdminAttemptItem extends QuestionAttempt {
+  userName?: string
+  userEmail?: string
+}
+export type AttemptRecord = AdminAttemptItem
 
 export interface AdminSubmissionItem extends SubmissionRecord {
   userName?: string
@@ -272,7 +277,7 @@ export const adminAnalyticsService = {
     limit?: number
     offset?: number
     search?: string
-  }): Promise<QuestionAttempt[]> => {
+  }): Promise<AdminAttemptItem[]> => {
     const limit = params.limit || 50
     const offset = params.offset || 0
 
@@ -288,19 +293,33 @@ export const adminAnalyticsService = {
       }
 
       const { data, error } = await query
-      if (!error && Array.isArray(data)) {
-        return data.map(d => ({
-          id: String(d.id),
-          userId: String(d.user_id),
-          questionId: String(d.question_id),
-          startedAt: String(d.started_at),
-          completedAt: d.completed_at ? String(d.completed_at) : null,
-          status: d.status,
-          attemptCount: Number(d.attempt_count || 1),
-          timeSpent: Number(d.time_spent || 0),
-          createdAt: String(d.created_at),
-          updatedAt: String(d.updated_at),
-        }))
+      if (!error && Array.isArray(data) && data.length > 0) {
+        // Fetch profiles to enrich with candidate name and email
+        const userIds = Array.from(new Set(data.map(d => d.user_id).filter(Boolean)))
+        const { data: profiles } = await supabase
+          .from('profiles')
+          .select('id, email, full_name')
+          .in('id', userIds)
+
+        const profileMap = new Map((profiles || []).map(p => [p.id, p]))
+
+        return data.map(d => {
+          const prof = profileMap.get(d.user_id)
+          return {
+            id: String(d.id),
+            userId: String(d.user_id),
+            questionId: String(d.question_id),
+            startedAt: String(d.started_at),
+            completedAt: d.completed_at ? String(d.completed_at) : null,
+            status: d.status,
+            attemptCount: Number(d.attempt_count || 1),
+            timeSpent: Number(d.time_spent || d.time_spent_seconds || 0),
+            createdAt: String(d.created_at),
+            updatedAt: String(d.updated_at),
+            userName: prof?.full_name || 'Candidate',
+            userEmail: prof?.email || '',
+          }
+        })
       }
     } catch (err) {
       console.warn('[AdminAnalyticsService] getQuestionAttemptsList fallback:', err)
