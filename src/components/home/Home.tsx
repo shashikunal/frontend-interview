@@ -72,9 +72,19 @@ export default function Home() {
           <Link to="/coding" className="btn btn-secondary">💻 Coding Challenges</Link>
           <Link to="/videos" className="btn btn-secondary">🎥 Video Masterclass</Link>
           <Link to="/system-design" className="btn btn-secondary">🏗️ System Design</Link>
-          <Link to="/dashboard" className="btn btn-secondary">
-            {streak > 0 ? `🔥 ${streak} Day Streak · Tracker` : '📊 Study Tracker'}
-          </Link>
+          {isAuthenticated ? (
+            <Link to="/dashboard" className="btn btn-secondary">
+              {streak > 0 ? `🔥 ${streak} Day Streak · Tracker` : '📊 My Dashboard'}
+            </Link>
+          ) : (
+            <button
+              type="button"
+              className="btn btn-secondary"
+              onClick={() => openAuthModal('user')}
+            >
+              📊 Sign In for Study Tracker
+            </button>
+          )}
           {bookmarkedCount > 0 && (
             <Link to="/questions?saved=true" className="btn btn-saved-hero">
               ★ Saved for Revision ({bookmarkedCount})

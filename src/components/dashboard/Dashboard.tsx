@@ -8,6 +8,9 @@ import { getCategories } from '../../data/questionService'
 import { progressSyncService, type UserTrackProgress } from '../../features/auth/services/progressSync.service'
 import { trackingService } from '../../lib/trackingService'
 import { supabase } from '../../lib/supabase/client'
+import { leaderboardService, type CandidateMCSubmission } from '../../lib/leaderboardService'
+import { gradingService, type EvaluatorReview } from '../../lib/gradingService'
+import { CandidateSkillRadar } from './CandidateSkillRadar'
 import AdminDashboard from './AdminDashboard'
 import './Dashboard.css'
 
@@ -39,6 +42,14 @@ function CandidateDashboard() {
   const [showResetConfirm, setShowResetConfirm] = useState(false)
   const [assignedTrack, setAssignedTrack] = useState<UserTrackProgress | null>(null)
   const [trackAlert, setTrackAlert] = useState<string | null>(null)
+
+  // Machine Coding Submissions State
+  const [mcSubmissions, setMcSubmissions] = useState<CandidateMCSubmission[]>([])
+  const [reviewsMap, setReviewsMap] = useState<Record<string, EvaluatorReview>>({})
+  const [loadingMC, setLoadingMC] = useState<boolean>(true)
+  const [viewingMCSubmission, setViewingMCSubmission] = useState<CandidateMCSubmission | null>(null)
+  const [mcCopied, setMcCopied] = useState<boolean>(false)
+  const [mcSearch, setMcSearch] = useState<string>('')
 
   const [telemetry, setTelemetry] = useState<{
     startedCount: number
@@ -116,6 +127,60 @@ function CandidateDashboard() {
 
     void loadTelemetry()
   }, [user, totalSolved])
+
+  // Fetch real Machine Coding submissions from Supabase & local storage
+  useEffect(() => {
+    async function loadMC() {
+      setLoadingMC(true)
+      try {
+        const [list, reviews] = await Promise.all([
+          leaderboardService.getCandidateMachineCodingSubmissions(user?.id, user?.email),
+          gradingService.getAllEvaluatorReviews(),
+        ])
+        setMcSubmissions(list)
+        setReviewsMap(reviews)
+      } catch (err) {
+        console.warn('[CandidateDashboard] MC load error:', err)
+      } finally {
+        setLoadingMC(false)
+      }
+    }
+    void loadMC()
+  }, [user])
+
+  const mcStats = useMemo(() => {
+    const total = mcSubmissions.length
+    if (total === 0) return { total: 0, avgMarks: 0, perfectCount: 0, passedCount: 0, totalTime: 0 }
+    let sumMarks = 0
+    let perfect = 0
+    let passed = 0
+    let time = 0
+    mcSubmissions.forEach(s => {
+      const effScore = reviewsMap[s.id]?.score ?? s.score
+      sumMarks += effScore
+      time += s.executionTime
+      if (effScore >= 100) perfect++
+      if (effScore >= 70 || s.status === 'accepted') passed++
+    })
+    return {
+      total,
+      avgMarks: Math.round(sumMarks / total),
+      perfectCount: perfect,
+      passedCount: passed,
+      totalTime: time,
+    }
+  }, [mcSubmissions, reviewsMap])
+
+  const filteredMCSubmissions = useMemo(() => {
+    if (!mcSearch.trim()) return mcSubmissions
+    const term = mcSearch.toLowerCase()
+    return mcSubmissions.filter(
+      s =>
+        s.questionId.toLowerCase().includes(term) ||
+        s.questionTitle.toLowerCase().includes(term) ||
+        s.category.toLowerCase().includes(term)
+    )
+  }, [mcSubmissions, mcSearch])
 
   useEffect(() => {
     if (!user) return
@@ -227,26 +292,41 @@ function CandidateDashboard() {
 
   return (
     <div className="dashboard-page page-enter">
-      <div className="dashboard-header-row">
-        <div>
-          <h1>Study Dashboard &amp; Mastery Tracker</h1>
-          <p className="subtitle">
-            Track your interview readiness, daily practice streaks, and category mastery.
+      {/* Horizon Candidate Welcome Banner */}
+      <div className="candidate-hero-banner card-box">
+        <div className="candidate-hero-content">
+          <div className="candidate-hero-tags">
+            <span className="candidate-track-tag">
+              <span className="live-pulse-dot" /> {user?.targetCompany ? `Target: ${user.targetCompany}` : 'Frontend Master Track'}
+            </span>
+            {user?.experienceLevel && (
+              <span className="candidate-exp-tag">{user.experienceLevel}</span>
+            )}
+            <span className="candidate-streak-pill">
+              🔥 {streak} Day Streak
+            </span>
+          </div>
+          <h1 className="candidate-hero-title">
+            {user?.name ? `Welcome back, ${user.name}` : 'Welcome back, Candidate'} <span className="wave-hand">👋</span>
+          </h1>
+          <p className="candidate-hero-subtitle">
+            Track your interview readiness, solve technical challenges, and accelerate towards FAANG-grade mastery.
           </p>
         </div>
-        <div className="dashboard-header-actions">
-          <Link to="/analytics" className="btn btn-primary btn-sm">
-            📊 Analytics
+
+        <div className="candidate-hero-actions">
+          <Link to="/mock-interview" className="btn btn-primary candidate-btn-primary">
+            <span>⏱️</span> Start Mock Interview
           </Link>
-          <Link to="/mock-interview" className="btn btn-primary btn-sm">
-            ⏱️ Start Mock Interview
+          <Link to="/machine-coding" className="btn btn-secondary candidate-btn-secondary">
+            <span>⚡</span> Machine Coding Studio
           </Link>
-          <Link to="/machine-coding" className="btn btn-secondary btn-sm">
-            ⚡ Machine Coding Studio
+          <Link to="/analytics" className="btn btn-secondary candidate-btn-secondary">
+            <span>📊</span> Analytics
           </Link>
           <button
             type="button"
-            className="btn btn-secondary btn-sm"
+            className="btn btn-ghost-danger candidate-btn-reset"
             onClick={() => setShowResetConfirm(true)}
             title="Reset your study tracker progress"
           >
@@ -290,7 +370,10 @@ function CandidateDashboard() {
       {/* Hero Stats Row */}
       <div className="dashboard-stats-grid">
         <div className="dash-stat-card streak-card">
-          <div className="dash-stat-icon streak-icon" aria-hidden="true">🔥</div>
+          <div className="dash-stat-top">
+            <div className="dash-stat-icon streak-icon" aria-hidden="true">🔥</div>
+            <span className="dash-stat-badge streak-badge">Active</span>
+          </div>
           <div className="dash-stat-info">
             <span className="dash-stat-num">{streak} Day{streak !== 1 ? 's' : ''}</span>
             <span className="dash-stat-label">Daily Study Streak</span>
@@ -301,19 +384,22 @@ function CandidateDashboard() {
         </div>
 
         <div className="dash-stat-card progress-card">
-          <div className="dash-stat-icon progress-ring-icon" aria-hidden="true">
-            <svg viewBox="0 0 36 36" className="circular-chart">
-              <path
-                className="circle-bg"
-                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-              />
-              <path
-                className="circle-fill"
-                strokeDasharray={`${overallPercentage}, 100`}
-                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-              />
-            </svg>
-            <span className="ring-text">{overallPercentage}%</span>
+          <div className="dash-stat-top">
+            <div className="dash-stat-icon progress-ring-icon" aria-hidden="true">
+              <svg viewBox="0 0 36 36" className="circular-chart">
+                <path
+                  className="circle-bg"
+                  d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                />
+                <path
+                  className="circle-fill"
+                  strokeDasharray={`${overallPercentage}, 100`}
+                  d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                />
+              </svg>
+              <span className="ring-text">{overallPercentage}%</span>
+            </div>
+            <span className="dash-stat-badge progress-badge">{overallPercentage}% Complete</span>
           </div>
           <div className="dash-stat-info">
             <span className="dash-stat-num">{totalSolved.toLocaleString()} / {questions.length.toLocaleString()}</span>
@@ -325,7 +411,10 @@ function CandidateDashboard() {
         </div>
 
         <div className="dash-stat-card mock-stat-card">
-          <div className="dash-stat-icon mock-icon" aria-hidden="true">⏱️</div>
+          <div className="dash-stat-top">
+            <div className="dash-stat-icon mock-icon" aria-hidden="true">⏱️</div>
+            <span className="dash-stat-badge mock-badge">Timed Mode</span>
+          </div>
           <div className="dash-stat-info">
             <span className="dash-stat-num">{mockInterviews.length}</span>
             <span className="dash-stat-label">Mock Interviews</span>
@@ -341,7 +430,10 @@ function CandidateDashboard() {
         </div>
 
         <div className="dash-stat-card drill-card">
-          <div className="dash-stat-icon drill-icon" aria-hidden="true">🎯</div>
+          <div className="dash-stat-top">
+            <div className="dash-stat-icon drill-icon" aria-hidden="true">🎯</div>
+            <span className="dash-stat-badge drill-badge">Quiz Drill</span>
+          </div>
           <div className="dash-stat-info">
             <span className="dash-stat-num">{drillMetrics.accuracy}%</span>
             <span className="dash-stat-label">Drill Accuracy</span>
@@ -352,10 +444,16 @@ function CandidateDashboard() {
         </div>
 
         <div className="dash-stat-card saved-card">
-          <div className="dash-stat-icon saved-icon" aria-hidden="true">⭐</div>
+          <div className="dash-stat-top">
+            <div className="dash-stat-icon saved-icon" aria-hidden="true">⭐</div>
+            <span className="dash-stat-badge saved-badge">Revision</span>
+          </div>
           <div className="dash-stat-info">
             <span className="dash-stat-num">{bookmarkedCount}</span>
             <span className="dash-stat-label">Saved for Revision</span>
+          </div>
+          <div className="dash-stat-hint">
+            Bookmarked questions for quick revision
           </div>
           <Link to="/questions?saved=true" className="dash-stat-link">
             View saved list →
@@ -364,107 +462,418 @@ function CandidateDashboard() {
       </div>
 
       {/* Question Progress & Telemetry Overview */}
-      <section className="question-telemetry-overview-section card-box" style={{ padding: '20px 24px', marginBottom: '24px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
-          <div>
-            <h2 style={{ fontSize: '1.2rem', margin: '0 0 4px', display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-primary)' }}>
-              <span>📊</span> Question Progress &amp; Completion Telemetry
-            </h2>
-            <p style={{ margin: 0, fontSize: '0.84rem', color: 'var(--text-secondary)' }}>
-              Persistent tracking across attempts, evaluated submissions, and question readiness.
-            </p>
+      <section className="candidate-telemetry-section card-box">
+        <div className="telemetry-section-head">
+          <div className="telemetry-title-wrap">
+            <div className="telemetry-title-icon">📊</div>
+            <div>
+              <h2 className="telemetry-title">
+                Question Progress &amp; Completion Telemetry
+              </h2>
+              <p className="telemetry-subtitle">
+                Persistent performance metrics across coding attempts, sandbox runs, and verified test suites.
+              </p>
+            </div>
           </div>
-          <Link to="/questions" className="btn btn-secondary btn-sm">
-            Browse Questions →
+          <Link to="/questions" className="telemetry-browse-btn">
+            Browse Questions <span>→</span>
           </Link>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '12px' }}>
-          <div style={{ padding: '14px', background: 'var(--surface-hover)', borderRadius: '8px', border: '1px solid var(--border-subtle)' }}>
-            <span style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600 }}>Total Questions</span>
-            <div style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--text-primary)', marginTop: '4px' }}>22,222</div>
-            <span style={{ fontSize: '0.72rem', color: '#94a3b8' }}>Full Question Bank</span>
+        <div className="candidate-telemetry-grid">
+          <div className="telemetry-tile tile-bank">
+            <div className="telemetry-tile-header">
+              <span className="telemetry-tile-label">Question Bank</span>
+              <span className="telemetry-tile-icon">📚</span>
+            </div>
+            <div className="telemetry-tile-value">22,222</div>
+            <span className="telemetry-tile-sub">Curated Problems</span>
           </div>
 
-          <div style={{ padding: '14px', background: 'var(--surface-hover)', borderRadius: '8px', border: '1px solid var(--border-subtle)' }}>
-            <span style={{ fontSize: '0.72rem', color: '#f59e0b', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600 }}>Started</span>
-            <div style={{ fontSize: '1.5rem', fontWeight: 700, color: '#f59e0b', marginTop: '4px' }}>{telemetry.startedCount}</div>
-            <span style={{ fontSize: '0.72rem', color: '#94a3b8' }}>In Progress</span>
+          <div className="telemetry-tile tile-started">
+            <div className="telemetry-tile-header">
+              <span className="telemetry-tile-label">Started</span>
+              <span className="telemetry-tile-icon">⏳</span>
+            </div>
+            <div className="telemetry-tile-value">{telemetry.startedCount}</div>
+            <span className="telemetry-tile-sub">In Progress</span>
           </div>
 
-          <div style={{ padding: '14px', background: 'var(--surface-hover)', borderRadius: '8px', border: '1px solid var(--border-subtle)' }}>
-            <span style={{ fontSize: '0.72rem', color: '#2cbb5d', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600 }}>Completed</span>
-            <div style={{ fontSize: '1.5rem', fontWeight: 700, color: '#2cbb5d', marginTop: '4px' }}>{telemetry.completedCount}</div>
-            <span style={{ fontSize: '0.72rem', color: '#94a3b8' }}>Accepted &amp; Solved</span>
+          <div className="telemetry-tile tile-completed">
+            <div className="telemetry-tile-header">
+              <span className="telemetry-tile-label">Completed</span>
+              <span className="telemetry-tile-icon">✅</span>
+            </div>
+            <div className="telemetry-tile-value">{telemetry.completedCount}</div>
+            <span className="telemetry-tile-sub">Accepted &amp; Solved</span>
           </div>
 
-          <div style={{ padding: '14px', background: 'var(--surface-hover)', borderRadius: '8px', border: '1px solid var(--border-subtle)' }}>
-            <span style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600 }}>Remaining</span>
-            <div style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--text-primary)', marginTop: '4px' }}>{(22222 - telemetry.completedCount).toLocaleString()}</div>
-            <span style={{ fontSize: '0.72rem', color: '#94a3b8' }}>To Complete</span>
+          <div className="telemetry-tile tile-remaining">
+            <div className="telemetry-tile-header">
+              <span className="telemetry-tile-label">Remaining</span>
+              <span className="telemetry-tile-icon">🎯</span>
+            </div>
+            <div className="telemetry-tile-value">{(22222 - telemetry.completedCount).toLocaleString()}</div>
+            <span className="telemetry-tile-sub">To Complete</span>
           </div>
 
-          <div style={{ padding: '14px', background: 'var(--surface-hover)', borderRadius: '8px', border: '1px solid var(--border-subtle)' }}>
-            <span style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600 }}>Total Attempts</span>
-            <div style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--text-primary)', marginTop: '4px' }}>{telemetry.totalAttempts}</div>
-            <span style={{ fontSize: '0.72rem', color: '#94a3b8' }}>Across all sessions</span>
+          <div className="telemetry-tile tile-attempts">
+            <div className="telemetry-tile-header">
+              <span className="telemetry-tile-label">Total Attempts</span>
+              <span className="telemetry-tile-icon">🔁</span>
+            </div>
+            <div className="telemetry-tile-value">{telemetry.totalAttempts}</div>
+            <span className="telemetry-tile-sub">Across All Sessions</span>
           </div>
 
-          <div style={{ padding: '14px', background: 'var(--surface-hover)', borderRadius: '8px', border: '1px solid var(--border-subtle)' }}>
-            <span style={{ fontSize: '0.72rem', color: '#38bdf8', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600 }}>Accepted</span>
-            <div style={{ fontSize: '1.5rem', fontWeight: 700, color: '#38bdf8', marginTop: '4px' }}>{telemetry.acceptedSubmissions}</div>
-            <span style={{ fontSize: '0.72rem', color: '#94a3b8' }}>Passes Evaluated</span>
+          <div className="telemetry-tile tile-accepted">
+            <div className="telemetry-tile-header">
+              <span className="telemetry-tile-label">Accepted</span>
+              <span className="telemetry-tile-icon">🏆</span>
+            </div>
+            <div className="telemetry-tile-value">{telemetry.acceptedSubmissions}</div>
+            <span className="telemetry-tile-sub">Evaluated Passes</span>
           </div>
 
-          <div style={{ padding: '14px', background: 'var(--surface-hover)', borderRadius: '8px', border: '1px solid var(--border-subtle)' }}>
-            <span style={{ fontSize: '0.72rem', color: '#a855f7', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600 }}>Accuracy</span>
-            <div style={{ fontSize: '1.5rem', fontWeight: 700, color: '#a855f7', marginTop: '4px' }}>{telemetry.accuracyRate}%</div>
-            <span style={{ fontSize: '0.72rem', color: '#94a3b8' }}>Submission Success</span>
+          <div className="telemetry-tile tile-accuracy">
+            <div className="telemetry-tile-header">
+              <span className="telemetry-tile-label">Accuracy Rate</span>
+              <span className="telemetry-tile-icon">🎯</span>
+            </div>
+            <div className="telemetry-tile-value">{telemetry.accuracyRate}%</div>
+            <span className="telemetry-tile-sub">Submission Success</span>
           </div>
 
-          <div style={{ padding: '14px', background: 'var(--surface-hover)', borderRadius: '8px', border: '1px solid var(--border-subtle)' }}>
-            <span style={{ fontSize: '0.72rem', color: '#ec4899', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600 }}>Average Score</span>
-            <div style={{ fontSize: '1.5rem', fontWeight: 700, color: '#ec4899', marginTop: '4px' }}>{telemetry.avgScore}%</div>
-            <span style={{ fontSize: '0.72rem', color: '#94a3b8' }}>On Test Suites</span>
+          <div className="telemetry-tile tile-score">
+            <div className="telemetry-tile-header">
+              <span className="telemetry-tile-label">Average Score</span>
+              <span className="telemetry-tile-icon">📈</span>
+            </div>
+            <div className="telemetry-tile-value">{telemetry.avgScore}%</div>
+            <span className="telemetry-tile-sub">On Test Suites</span>
           </div>
 
-          <div style={{ padding: '14px', background: 'var(--surface-hover)', borderRadius: '8px', border: '1px solid var(--border-subtle)' }}>
-            <span style={{ fontSize: '0.72rem', color: '#06b6d4', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600 }}>Total Time</span>
-            <div style={{ fontSize: '1.5rem', fontWeight: 700, color: '#06b6d4', marginTop: '4px' }}>{formatDurationSec(telemetry.totalTimeSpent)}</div>
-            <span style={{ fontSize: '0.72rem', color: '#94a3b8' }}>In Coding Sandbox</span>
+          <div className="telemetry-tile tile-time">
+            <div className="telemetry-tile-header">
+              <span className="telemetry-tile-label">Coding Time</span>
+              <span className="telemetry-tile-icon">⚡</span>
+            </div>
+            <div className="telemetry-tile-value">{formatDurationSec(telemetry.totalTimeSpent)}</div>
+            <span className="telemetry-tile-sub">In Coding Sandbox</span>
           </div>
         </div>
       </section>
 
+      {/* Machine Coding Submissions & Marks Evaluation Ledger */}
+      <section className="candidate-mc-section card-box">
+        <div className="telemetry-section-head">
+          <div className="telemetry-title-wrap">
+            <div className="telemetry-title-icon" style={{ background: 'rgba(67, 24, 255, 0.12)', color: '#4318FF' }}>⚡</div>
+            <div>
+              <h2 className="telemetry-title" style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                <span>Machine Coding Submissions &amp; Marks</span>
+                <span className="live-status-pill" style={{ fontSize: '11px', padding: '2px 8px', background: 'rgba(16, 185, 129, 0.1)', color: '#10b981', borderRadius: '12px', display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
+                  <span className="live-pulse-dot" /> Supabase Synced
+                </span>
+              </h2>
+              <p className="telemetry-subtitle">
+                Real-time evaluation ledger of interactive React challenges, live unit test assertions, and official marks tracked with your Candidate ID.
+              </p>
+            </div>
+          </div>
+          <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+            <Link to="/machine-coding" className="btn btn-primary candidate-btn-primary" style={{ padding: '8px 16px', fontSize: '13px' }}>
+              <span>⚡</span> Studio Workspace
+            </Link>
+            <Link to="/leaderboard?category=machine-coding" className="btn btn-secondary candidate-btn-secondary" style={{ padding: '8px 14px', fontSize: '13px' }}>
+              <span>🏆</span> Rankings
+            </Link>
+          </div>
+        </div>
+
+        {/* MC Stats Summary Row */}
+        <div className="mc-stats-summary-grid">
+          <div className="mc-summary-tile">
+            <span className="mc-summary-icon">📝</span>
+            <div>
+              <span className="mc-summary-num">{mcSubmissions.length}</span>
+              <span className="mc-summary-label">Challenges Submitted</span>
+            </div>
+          </div>
+          <div className="mc-summary-tile">
+            <span className="mc-summary-icon">🎯</span>
+            <div>
+              <span className="mc-summary-num" style={{ color: mcStats.avgMarks >= 85 ? '#10b981' : '#4318FF' }}>
+                {mcStats.avgMarks}%
+              </span>
+              <span className="mc-summary-label">Average Marks</span>
+            </div>
+          </div>
+          <div className="mc-summary-tile">
+            <span className="mc-summary-icon">💎</span>
+            <div>
+              <span className="mc-summary-num" style={{ color: '#8b5cf6' }}>
+                {mcStats.perfectCount}
+              </span>
+              <span className="mc-summary-label">100% Full Marks</span>
+            </div>
+          </div>
+          <div className="mc-summary-tile">
+            <span className="mc-summary-icon">✅</span>
+            <div>
+              <span className="mc-summary-num" style={{ color: '#10b981' }}>
+                {mcStats.passedCount}
+              </span>
+              <span className="mc-summary-label">Evaluated Passes</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Candidate Skill Radar & Competency Scorecard */}
+        <CandidateSkillRadar
+          candidateName={user?.name || user?.email?.split('@')[0] || 'Candidate'}
+          candidateId={user?.id}
+          submissions={mcSubmissions.map(s => ({
+            id: s.id,
+            question_id: s.questionId,
+            title: s.questionTitle,
+            score: reviewsMap[s.id]?.score ?? s.score,
+            status: s.status,
+            created_at: s.createdAt,
+          }))}
+          reviews={reviewsMap}
+        />
+
+        {loadingMC ? (
+          <div style={{ padding: '40px', textAlign: 'center' }}>
+            <div className="app-route-spinner" />
+            <p style={{ marginTop: '12px', color: 'var(--text-secondary)' }}>Loading your machine coding submissions from Supabase...</p>
+          </div>
+        ) : mcSubmissions.length === 0 ? (
+          <div className="mc-empty-box">
+            <span style={{ fontSize: '2.4rem' }}>⚡</span>
+            <h3 style={{ marginTop: '10px', marginBottom: '6px' }}>No Machine Coding Submissions Yet</h3>
+            <p style={{ color: 'var(--text-secondary)', maxWidth: '540px', margin: '0 auto 18px', fontSize: '0.92rem' }}>
+              Step into the Machine Coding Studio to solve real-world React UI components, execute automated unit test assertions, and build your tracked portfolio.
+            </p>
+
+            <div className="mc-starter-grid">
+              <Link to="/machine-coding?id=Q001" className="mc-starter-card">
+                <div>
+                  <span className="candidate-track-tag">#Q001 • Easy</span>
+                  <h4 style={{ margin: '8px 0 4px', fontSize: '1rem' }}>Counter with Step &amp; Limits</h4>
+                  <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--text-secondary)' }}>State &amp; component logic with boundary constraints.</p>
+                </div>
+                <span style={{ color: '#4318FF', fontWeight: 600, fontSize: '0.82rem', marginTop: '12px' }}>Start Coding →</span>
+              </Link>
+              <Link to="/machine-coding?id=Q002" className="mc-starter-card">
+                <div>
+                  <span className="candidate-track-tag">#Q002 • Medium</span>
+                  <h4 style={{ margin: '8px 0 4px', fontSize: '1rem' }}>Accordion Component</h4>
+                  <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Multi-collapse animated accordion with keyboard support.</p>
+                </div>
+                <span style={{ color: '#4318FF', fontWeight: 600, fontSize: '0.82rem', marginTop: '12px' }}>Start Coding →</span>
+              </Link>
+              <Link to="/machine-coding?id=Q003" className="mc-starter-card">
+                <div>
+                  <span className="candidate-track-tag">#Q003 • Medium</span>
+                  <h4 style={{ margin: '8px 0 4px', fontSize: '1rem' }}>Star Rating Component</h4>
+                  <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Hover previews, half-star precision, and accessible states.</p>
+                </div>
+                <span style={{ color: '#4318FF', fontWeight: 600, fontSize: '0.82rem', marginTop: '12px' }}>Start Coding →</span>
+              </Link>
+            </div>
+
+            <Link to="/machine-coding" className="btn btn-primary candidate-btn-primary" style={{ display: 'inline-flex', padding: '10px 24px' }}>
+              <span>🚀</span> Launch Machine Coding Studio
+            </Link>
+          </div>
+        ) : (
+          <>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', margin: '18px 0 14px', gap: '12px', flexWrap: 'wrap' }}>
+              <input
+                type="text"
+                className="search-field"
+                placeholder="Filter your submitted machine coding questions..."
+                value={mcSearch}
+                onChange={e => setMcSearch(e.target.value)}
+                style={{ maxWidth: '340px', width: '100%' }}
+              />
+              <span style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>
+                Showing {filteredMCSubmissions.length} of {mcSubmissions.length} submissions
+              </span>
+            </div>
+
+            <div className="table-responsive">
+              <table className="admin-data-table">
+                <thead>
+                  <tr>
+                    <th>Timestamp</th>
+                    <th>Challenge</th>
+                    <th>Category</th>
+                    <th>Tech</th>
+                    <th>Status</th>
+                    <th>Marks / Score</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredMCSubmissions.length === 0 ? (
+                    <tr>
+                      <td colSpan={7} style={{ textAlign: 'center', padding: '28px', color: 'var(--text-muted)' }}>
+                        No submissions matching "{mcSearch}"
+                      </td>
+                    </tr>
+                  ) : (
+                    filteredMCSubmissions.map(sub => {
+                      const review = reviewsMap[sub.id]
+                      const effectiveScore = review?.score ?? sub.score
+                      return (
+                        <tr key={sub.id}>
+                          <td>
+                            <span className="sub-time">
+                              {new Date(sub.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                            </span>
+                            <span className="sub-date">
+                              {new Date(sub.createdAt).toLocaleDateString([], { month: 'short', day: 'numeric' })}
+                            </span>
+                          </td>
+                          <td>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                                <span className="aq-qid-tag" style={{ fontWeight: 700 }}>#{sub.questionId}</span>
+                                <span className={`badge badge-${(sub.difficulty || 'medium').toLowerCase()}`} style={{ fontSize: '10px', padding: '2px 6px' }}>
+                                  {sub.difficulty}
+                                </span>
+                                {review && (
+                                  <span className="submission-pill" style={{ background: 'rgba(139, 92, 246, 0.15)', color: '#8b5cf6', fontSize: '10px', padding: '1px 6px', fontWeight: 700 }}>
+                                    ⭐ Evaluator Graded
+                                  </span>
+                                )}
+                              </div>
+                              <strong style={{ fontSize: '13px', color: 'var(--text-primary)' }}>
+                                {sub.questionTitle}
+                              </strong>
+                            </div>
+                          </td>
+                          <td>
+                            <span className="badge badge-category" style={{ fontSize: '11px' }}>
+                              {sub.category}
+                            </span>
+                          </td>
+                          <td>
+                            <span className="lang-tag">{sub.language}</span>
+                          </td>
+                          <td>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
+                              <span className={`submission-pill ${effectiveScore >= 70 ? 'accepted' : 'wrong'}`}>
+                                {effectiveScore >= 70 ? '✓ Evaluated & Passed' : '⚠️ Needs Revision'}
+                              </span>
+                              {review && (
+                                <span style={{ fontSize: '10px', fontWeight: 700, color: review.decision === 'approved' ? '#10b981' : review.decision === 'needs_work' ? '#f59e0b' : '#ef4444' }}>
+                                  {review.decision === 'approved' ? '🟢 Hire Recommendation' : review.decision === 'needs_work' ? '🟡 Re-evaluate' : '🔴 Below Bar'}
+                                </span>
+                              )}
+                            </div>
+                          </td>
+                          <td>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                <strong style={{ fontSize: '14px', color: effectiveScore >= 100 ? '#10b981' : effectiveScore >= 70 ? '#3b82f6' : '#ef4444' }}>
+                                  {effectiveScore}%
+                                </strong>
+                                <span style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>
+                                  ({effectiveScore}/100)
+                                </span>
+                              </div>
+                              {review ? (
+                                <span style={{ fontSize: '10px', color: '#8b5cf6', fontWeight: 600 }}>
+                                  ⭐ Verified by {review.evaluatorName}
+                                </span>
+                              ) : (
+                                <span style={{ fontSize: '10px', color: effectiveScore >= 100 ? '#10b981' : 'var(--text-secondary)', fontWeight: 600 }}>
+                                  {sub.testsPassed}/{sub.testsTotal} test assertions passed
+                                </span>
+                              )}
+                            </div>
+                          </td>
+                          <td>
+                            <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                              <Link
+                                to={`/machine-coding?id=${sub.questionId}`}
+                                className="btn btn-sm btn-primary candidate-btn-primary"
+                                style={{ padding: '4px 10px', fontSize: '12px' }}
+                                title="Re-open in Machine Coding Studio"
+                              >
+                                ⚡ Studio
+                              </Link>
+                              <button
+                                type="button"
+                                className="btn btn-sm btn-secondary"
+                                onClick={() => setViewingMCSubmission(sub)}
+                                style={{ padding: '4px 8px', fontSize: '12px' }}
+                                title="View Submitted Code & Review"
+                              >
+                                👁️ Code
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      )
+                    })
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </>
+        )}
+      </section>
 
       {/* 30-Day Activity Heatmap */}
-      <section className="activity-heatmap-section">
+      <section className="activity-heatmap-section card-box">
         <div className="section-head-row">
-          <h2>Last 30 Days Activity</h2>
-          <span className="activity-count">
-            {studyDates.size} active day{studyDates.size !== 1 ? 's' : ''} recorded
+          <div>
+            <h2 className="dash-section-title">Last 30 Days Study Activity</h2>
+            <p className="dash-section-sub">Consistency is key to mastering technical interviews.</p>
+          </div>
+          <span className="activity-count-badge">
+            <span className="pulse-dot-green" /> {studyDates.size} active day{studyDates.size !== 1 ? 's' : ''} recorded
           </span>
         </div>
-        <div className="heatmap-grid" role="region" aria-label="30-day activity map">
-          {last30Days.map(d => (
-            <div
-              key={d.dateStr}
-              className={`heatmap-cell ${d.active ? 'active' : ''}`}
-              title={`${d.label}: ${d.active ? 'Active Study Session ✓' : 'No Activity'}`}
-            >
-              <span className="heatmap-cell-label">{d.label.split(' ')[1]}</span>
-            </div>
-          ))}
+        <div className="heatmap-container">
+          <div className="heatmap-grid" role="region" aria-label="30-day activity map">
+            {last30Days.map(d => (
+              <div
+                key={d.dateStr}
+                className={`heatmap-cell ${d.active ? 'active' : ''}`}
+                title={`${d.label}: ${d.active ? 'Active Study Session ✓' : 'No Activity'}`}
+              >
+                <span className="heatmap-cell-label">{d.label.split(' ')[1]}</span>
+              </div>
+            ))}
+          </div>
         </div>
         <div className="heatmap-legend">
-          <span className="legend-box inactive" /> <span>No activity</span>
-          <span className="legend-box active" /> <span>Active study session</span>
+          <div className="legend-item">
+            <span className="legend-box inactive" /> <span>No activity</span>
+          </div>
+          <div className="legend-item">
+            <span className="legend-box active" /> <span>Active study session</span>
+          </div>
         </div>
       </section>
 
       {/* Category Mastery Progress */}
       <section className="category-mastery-section">
-        <h2>Category Mastery</h2>
+        <div className="section-head-row">
+          <div>
+            <h2 className="dash-section-title">Category Mastery</h2>
+            <p className="dash-section-sub">Track syllabus completion and focus on weaker topics.</p>
+          </div>
+          <Link to="/questions" className="section-link-cta">
+            View All Categories →
+          </Link>
+        </div>
         <div className="category-mastery-grid">
           {categoryStats.map(cat => (
             <div key={cat.name} className={`mastery-card ${catClass(cat.name)}`}>
@@ -480,7 +889,7 @@ function CandidateDashboard() {
                   {cat.solved} of {cat.total} solved
                 </span>
                 <Link to={`/questions?category=${encodeURIComponent(cat.name)}`} className="mastery-link">
-                  Practice →
+                  Practice <span>→</span>
                 </Link>
               </div>
             </div>
@@ -491,8 +900,12 @@ function CandidateDashboard() {
       {/* Smart Recommendations */}
       {recommendations.length > 0 && (
         <section className="recommendations-section">
-          <h2>Recommended Next for You</h2>
-          <p className="section-subtext">Hand-picked questions from categories where you have the most room to grow:</p>
+          <div className="section-head-row">
+            <div>
+              <h2 className="dash-section-title">Recommended Next for You</h2>
+              <p className="dash-section-sub">Hand-picked questions from categories where you have the most room to grow:</p>
+            </div>
+          </div>
           <div className="recommendations-grid">
             {recommendations.map(q => (
               <Link key={q.id} to={`/questions/${q.id}`} className={`recommendation-card ${catClass(q.category)}`}>
@@ -501,7 +914,9 @@ function CandidateDashboard() {
                   <span className={`badge badge-${q.difficulty.toLowerCase()}`}>{q.difficulty}</span>
                 </div>
                 <h4 className="rec-title">{q.question}</h4>
-                <span className="rec-action-cta">Solve Question →</span>
+                <div className="rec-footer">
+                  <span className="rec-action-cta">Solve Question <span>→</span></span>
+                </div>
               </Link>
             ))}
           </div>
@@ -533,6 +948,122 @@ function CandidateDashboard() {
                 }}
               >
                 Yes, Reset All
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Candidate Machine Coding Solution Code Modal */}
+      {viewingMCSubmission && (
+        <div className="dash-modal-backdrop" onClick={() => setViewingMCSubmission(null)} style={{ zIndex: 1100 }}>
+          <div className="dash-modal-box mc-code-modal-box" onClick={e => e.stopPropagation()} style={{ maxWidth: '920px', width: '95%', maxHeight: '90vh', display: 'flex', flexDirection: 'column' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px', gap: '16px', flexWrap: 'wrap' }}>
+              <div>
+                <span className="candidate-track-tag" style={{ marginBottom: '6px' }}>
+                  ⚡ Machine Coding Solution • #{viewingMCSubmission.questionId}
+                </span>
+                <h3 style={{ margin: '4px 0 2px', fontSize: '1.25rem' }}>{viewingMCSubmission.questionTitle}</h3>
+                <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                  Marks: <strong style={{ color: viewingMCSubmission.score >= 100 ? '#10b981' : '#3b82f6' }}>{viewingMCSubmission.score}/100</strong> • 
+                  Status: <span className="submission-pill accepted" style={{ marginLeft: '4px', fontSize: '11px' }}>{viewingMCSubmission.status}</span> • 
+                  Submitted: {new Date(viewingMCSubmission.createdAt).toLocaleString()}
+                </p>
+              </div>
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <button
+                  type="button"
+                  className="btn btn-secondary btn-sm"
+                  onClick={() => {
+                    navigator.clipboard.writeText(viewingMCSubmission.code)
+                    setMcCopied(true)
+                    setTimeout(() => setMcCopied(false), 2000)
+                  }}
+                >
+                  {mcCopied ? '✓ Copied' : '📋 Copy Code'}
+                </button>
+                <Link
+                  to={`/machine-coding?id=${viewingMCSubmission.questionId}`}
+                  className="btn btn-primary btn-sm candidate-btn-primary"
+                >
+                  ⚡ Open in Studio
+                </Link>
+                <button
+                  type="button"
+                  className="h-modal-close-icon"
+                  onClick={() => setViewingMCSubmission(null)}
+                  style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontSize: '20px', color: 'var(--text-secondary)', padding: '4px 8px' }}
+                  aria-label="Close modal"
+                >
+                  ✕
+                </button>
+              </div>
+            </div>
+
+            <div className="acm-editor-frame" style={{ borderRadius: '12px', overflow: 'hidden', border: '1px solid var(--border)', flex: 1, display: 'flex', flexDirection: 'column' }}>
+              <div className="acm-editor-header" style={{ padding: '8px 16px', background: 'rgba(0,0,0,0.3)', display: 'flex', justifyContent: 'space-between', fontSize: '12px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span className="dot red" style={{ width: 10, height: 10, borderRadius: '50%', background: '#ef4444', display: 'inline-block' }} />
+                  <span className="dot yellow" style={{ width: 10, height: 10, borderRadius: '50%', background: '#f59e0b', display: 'inline-block' }} />
+                  <span className="dot green" style={{ width: 10, height: 10, borderRadius: '50%', background: '#10b981', display: 'inline-block' }} />
+                  <span style={{ marginLeft: '8px', fontWeight: 600 }}>submission.{viewingMCSubmission.language === 'react' ? 'tsx' : 'ts'}</span>
+                </div>
+                <span>{viewingMCSubmission.code.split('\n').length} lines</span>
+              </div>
+              <pre style={{ margin: 0, padding: '16px', maxHeight: '420px', overflowY: 'auto', background: '#0d1117', color: '#e6edf3', fontSize: '13px', lineHeight: '1.5', fontFamily: 'monospace' }}>
+                <code>{viewingMCSubmission.code || '// No source code recorded.'}</code>
+              </pre>
+            </div>
+
+            {/* Evaluator Review & Feedback Card */}
+            {reviewsMap[viewingMCSubmission.id] && (
+              <div style={{ marginTop: '16px', padding: '16px 20px', background: 'rgba(67, 24, 255, 0.06)', border: '1px solid rgba(67, 24, 255, 0.2)', borderRadius: '12px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', flexWrap: 'wrap', gap: '8px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{ fontSize: '1.2rem' }}>⭐</span>
+                    <strong style={{ fontSize: '0.95rem' }}>Official Evaluator Assessment &amp; Feedback</strong>
+                  </div>
+                  <span style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>
+                    Evaluated by <strong>{reviewsMap[viewingMCSubmission.id].evaluatorName}</strong> on {new Date(reviewsMap[viewingMCSubmission.id].evaluatedAt).toLocaleDateString()}
+                  </span>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '10px', marginBottom: '12px' }}>
+                  <div style={{ padding: '8px 12px', background: 'rgba(255,255,255,0.04)', borderRadius: '8px', border: '1px solid var(--border)' }}>
+                    <div style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>Clean Code</div>
+                    <strong style={{ fontSize: '14px', color: '#10b981' }}>{reviewsMap[viewingMCSubmission.id].cleanCodeRating} / 10</strong>
+                  </div>
+                  <div style={{ padding: '8px 12px', background: 'rgba(255,255,255,0.04)', borderRadius: '8px', border: '1px solid var(--border)' }}>
+                    <div style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>React Architecture</div>
+                    <strong style={{ fontSize: '14px', color: '#4318FF' }}>{reviewsMap[viewingMCSubmission.id].architectureRating} / 10</strong>
+                  </div>
+                  <div style={{ padding: '8px 12px', background: 'rgba(255,255,255,0.04)', borderRadius: '8px', border: '1px solid var(--border)' }}>
+                    <div style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>Edge Cases</div>
+                    <strong style={{ fontSize: '14px', color: '#f59e0b' }}>{reviewsMap[viewingMCSubmission.id].edgeCasesRating} / 10</strong>
+                  </div>
+                  <div style={{ padding: '8px 12px', background: 'rgba(255,255,255,0.04)', borderRadius: '8px', border: '1px solid var(--border)' }}>
+                    <div style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>Hiring Recommendation</div>
+                    <strong style={{ fontSize: '13px', color: reviewsMap[viewingMCSubmission.id].decision === 'approved' ? '#10b981' : '#f59e0b' }}>
+                      {reviewsMap[viewingMCSubmission.id].decision === 'approved' ? '🟢 Hire / Exceeds Bar' : '🟡 Needs Revision'}
+                    </strong>
+                  </div>
+                </div>
+
+                {reviewsMap[viewingMCSubmission.id].notes && (
+                  <div style={{ padding: '12px 14px', background: 'rgba(0,0,0,0.25)', borderRadius: '8px', borderLeft: '3px solid #8b5cf6', fontSize: '13px', fontStyle: 'italic', lineHeight: '1.5' }}>
+                    "{reviewsMap[viewingMCSubmission.id].notes}"
+                  </div>
+                )}
+              </div>
+            )}
+
+            <div className="dash-modal-actions" style={{ marginTop: '16px', display: 'flex', justifyContent: 'flex-end' }}>
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={() => setViewingMCSubmission(null)}
+              >
+                Close
               </button>
             </div>
           </div>

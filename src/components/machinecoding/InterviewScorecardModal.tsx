@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import type { MCQuestion } from './machineCodingQuestions';
 import type { MCTestResult } from './data/machineCodingTests';
 import './InterviewScorecardModal.css';
@@ -355,6 +356,24 @@ ${auditReport.findings.map(f => `- [${f.type.toUpperCase()}] ${f.title}: ${f.des
 
         {/* Actions */}
         <div className="mc-scorecard-actions">
+          <Link
+            to="/leaderboard?category=machine-coding"
+            className="mc-btn-scorecard-leaderboard"
+            style={{
+              textDecoration: 'none',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              padding: '8px 16px',
+              borderRadius: '8px',
+              background: 'linear-gradient(135deg, #4318FF 0%, #3b82f6 100%)',
+              color: '#ffffff',
+              fontWeight: 600,
+              fontSize: '13px',
+            }}
+          >
+            🏆 View Live Leaderboard
+          </Link>
           {onOpenDiff && (
             <button className="mc-btn-scorecard-diff" onClick={onOpenDiff}>
               🔀 Review Code Diff

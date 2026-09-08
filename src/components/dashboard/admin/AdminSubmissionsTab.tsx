@@ -1,5 +1,6 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import type { AdminSubmissionItem } from '../../../lib/adminAnalyticsService'
+import { gradingService, type EvaluatorReview } from '../../../lib/gradingService'
 
 interface AdminSubmissionsTabProps {
   submissions?: AdminSubmissionItem[]
@@ -18,24 +19,39 @@ export default function AdminSubmissionsTab({
 }: AdminSubmissionsTabProps) {
   const [statusFilter, setStatusFilter] = useState('ALL')
   const [langFilter, setLangFilter] = useState('ALL')
+  const [typeFilter, setTypeFilter] = useState<'ALL' | 'MACHINE_CODING' | 'THEORY'>('ALL')
   const [search, setSearch] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
   const [pageSize, setPageSize] = useState(25)
+  const [reviewsMap, setReviewsMap] = useState<Record<string, EvaluatorReview>>({})
+
+  useEffect(() => {
+    gradingService.getAllEvaluatorReviews().then(setReviewsMap)
+  }, [submissions])
 
   const effectiveList = submissions || initialSubmissions || []
+
+  const mcCount = useMemo(() => effectiveList.filter(s => s.isMachineCoding).length, [effectiveList])
+  const theoryCount = useMemo(() => effectiveList.filter(s => !s.isMachineCoding).length, [effectiveList])
 
   const filtered = useMemo(() => {
     return effectiveList.filter(s => {
       const matchStatus = statusFilter === 'ALL' || s.status === statusFilter
       const matchLang = langFilter === 'ALL' || s.language.toLowerCase().includes(langFilter.toLowerCase())
+      const matchType =
+        typeFilter === 'ALL' ||
+        (typeFilter === 'MACHINE_CODING' && s.isMachineCoding) ||
+        (typeFilter === 'THEORY' && !s.isMachineCoding)
+
       const matchSearch =
         !search ||
         s.questionId.toLowerCase().includes(search.toLowerCase()) ||
+        (s.questionTitle && s.questionTitle.toLowerCase().includes(search.toLowerCase())) ||
         (s.userName && s.userName.toLowerCase().includes(search.toLowerCase())) ||
         (s.userEmail && s.userEmail.toLowerCase().includes(search.toLowerCase()))
-      return matchStatus && matchLang && matchSearch
+      return matchStatus && matchLang && matchType && matchSearch
     })
-  }, [effectiveList, statusFilter, langFilter, search])
+  }, [effectiveList, statusFilter, langFilter, typeFilter, search])
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize))
   const paginated = useMemo(() => {
@@ -43,7 +59,7 @@ export default function AdminSubmissionsTab({
     return filtered.slice(start, start + pageSize)
   }, [filtered, currentPage, pageSize])
 
-  const handleFilterChange = (setter: (val: string) => void, val: string) => {
+  const handleFilterChange = (setter: (val: any) => void, val: any) => {
     setter(val)
     setCurrentPage(1)
   }
@@ -70,18 +86,55 @@ export default function AdminSubmissionsTab({
           <div>
             <h3>Candidate Submissions Ledger ({filtered.length})</h3>
             <p className="as-desc">
-              Full real-time audit trail of all code runs, assertion evaluations, and candidate submissions.
+              Real-time audit trail of machine coding problems, code sandbox evaluations, marks, and candidate submissions.
             </p>
+
+            {/* Quick Type Filter Pills */}
+            <div style={{ display: 'flex', gap: '8px', marginTop: '12px', flexWrap: 'wrap' }}>
+              <button
+                type="button"
+                className={`btn btn-sm ${typeFilter === 'ALL' ? 'btn-primary' : 'btn-secondary'}`}
+                onClick={() => handleFilterChange(setTypeFilter, 'ALL')}
+              >
+                All Submissions ({effectiveList.length})
+              </button>
+              <button
+                type="button"
+                className={`btn btn-sm ${typeFilter === 'MACHINE_CODING' ? 'btn-primary' : 'btn-secondary'}`}
+                onClick={() => handleFilterChange(setTypeFilter, 'MACHINE_CODING')}
+                style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+              >
+                <span>⚡</span>
+                <span>Machine Coding ({mcCount})</span>
+              </button>
+              <button
+                type="button"
+                className={`btn btn-sm ${typeFilter === 'THEORY' ? 'btn-primary' : 'btn-secondary'}`}
+                onClick={() => handleFilterChange(setTypeFilter, 'THEORY')}
+              >
+                Theory &amp; Algo ({theoryCount})
+              </button>
+            </div>
           </div>
 
           <div className="as-controls">
             <input
               type="text"
               className="search-field"
-              placeholder="Search user, email, question..."
+              placeholder="Search user, question, marks..."
               value={search}
               onChange={e => handleFilterChange(setSearch, e.target.value)}
             />
+
+            <select
+              className="role-dropdown"
+              value={typeFilter}
+              onChange={e => handleFilterChange(setTypeFilter, e.target.value)}
+            >
+              <option value="ALL">All Categories</option>
+              <option value="MACHINE_CODING">⚡ Machine Coding Only</option>
+              <option value="THEORY">Theory &amp; Algorithmic</option>
+            </select>
 
             <select
               className="role-dropdown"
@@ -101,8 +154,8 @@ export default function AdminSubmissionsTab({
               onChange={e => handleFilterChange(setLangFilter, e.target.value)}
             >
               <option value="ALL">All Languages</option>
-              <option value="javascript">JavaScript</option>
               <option value="react">ReactJS</option>
+              <option value="javascript">JavaScript</option>
               <option value="typescript">TypeScript</option>
               <option value="dom">Vanilla DOM</option>
             </select>
@@ -119,10 +172,10 @@ export default function AdminSubmissionsTab({
               <tr>
                 <th>Timestamp</th>
                 <th>Candidate / User</th>
-                <th>Question ID</th>
+                <th>Submitted Question</th>
                 <th>Language</th>
                 <th>Status</th>
-                <th>Score</th>
+                <th>Marks / Score</th>
                 <th>Exec Time</th>
                 <th>Actions</th>
               </tr>
@@ -135,59 +188,137 @@ export default function AdminSubmissionsTab({
                   </td>
                 </tr>
               ) : (
-                paginated.map(sub => (
-                  <tr key={sub.id}>
-                    <td>
-                      <span className="sub-time">
-                        {new Date(sub.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
-                      </span>
-                      <span className="sub-date">
-                        {new Date(sub.createdAt).toLocaleDateString([], { month: 'short', day: 'numeric' })}
-                      </span>
-                    </td>
-                    <td>
-                      <button
-                        type="button"
-                        className="h-user-btn"
-                        onClick={() => sub.userId && onInspectUser?.(sub.userId)}
-                        title={`View candidate dossier for ${sub.userName || 'Candidate'}`}
-                      >
-                        <div className="h-avatar-circle">
-                          {(sub.userName || 'C').charAt(0).toUpperCase()}
+                paginated.map(sub => {
+                  const review = reviewsMap[sub.id]
+                  const effectiveScore = review?.score ?? sub.score
+                  return (
+                    <tr key={sub.id}>
+                      <td>
+                        <span className="sub-time">
+                          {new Date(sub.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        </span>
+                        <span className="sub-date">
+                          {new Date(sub.createdAt).toLocaleDateString([], { month: 'short', day: 'numeric' })}
+                        </span>
+                      </td>
+                      <td>
+                        <button
+                          type="button"
+                          className="h-user-btn"
+                          onClick={() => sub.userId && onInspectUser?.(sub.userId)}
+                          title={`View candidate dossier for ${sub.userName || 'Candidate'}`}
+                        >
+                          <div className="h-avatar-circle">
+                            {(sub.userName || 'C').charAt(0).toUpperCase()}
+                          </div>
+                          <div className="sub-user-cell">
+                            <span className="sub-user-name">{sub.userName || 'Candidate'}</span>
+                            <span className="sub-user-email">{sub.userEmail || ''}</span>
+                          </div>
+                        </button>
+                      </td>
+                      <td>
+                        <div className="as-question-cell" style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                            <span className="aq-qid-tag" style={{ fontWeight: 700 }}>#{sub.questionId}</span>
+                            {sub.isMachineCoding && (
+                              <span className="submission-pill" style={{ background: 'rgba(67, 24, 255, 0.12)', color: '#4318FF', fontSize: '11px', padding: '2px 6px' }}>
+                                ⚡ Machine Coding
+                              </span>
+                            )}
+                            {review && (
+                              <span className="submission-pill" style={{ background: 'rgba(139, 92, 246, 0.15)', color: '#8b5cf6', fontSize: '10px', padding: '1px 6px', fontWeight: 700 }}>
+                                ⭐ Graded
+                              </span>
+                            )}
+                          </div>
+                          <span
+                            style={{
+                              fontSize: '12px',
+                              fontWeight: 600,
+                              color: 'var(--text-primary)',
+                              maxWidth: '240px',
+                              whiteSpace: 'nowrap',
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                            }}
+                            title={sub.questionTitle || sub.questionId}
+                          >
+                            {sub.questionTitle || `Question ${sub.questionId}`}
+                          </span>
                         </div>
-                        <div className="sub-user-cell">
-                          <span className="sub-user-name">{sub.userName || 'Candidate'}</span>
-                          <span className="sub-user-email">{sub.userEmail || ''}</span>
+                      </td>
+                      <td>
+                        <span className="lang-tag">{sub.language}</span>
+                      </td>
+                      <td>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
+                          {getStatusBadge(sub.status)}
+                          {review && (
+                            <span
+                              style={{
+                                fontSize: '10px',
+                                fontWeight: 700,
+                                color: review.decision === 'approved' ? '#10b981' : review.decision === 'needs_work' ? '#f59e0b' : '#ef4444',
+                              }}
+                            >
+                              {review.decision === 'approved' ? '🟢 Hire / Approved' : review.decision === 'needs_work' ? '🟡 Needs Revision' : '🔴 Below Bar'}
+                            </span>
+                          )}
                         </div>
-                      </button>
-                    </td>
-                    <td>
-                      <span className="aq-qid-tag">{sub.questionId}</span>
-                    </td>
-                    <td>
-                      <span className="lang-tag">{sub.language}</span>
-                    </td>
-                    <td>
-                      {getStatusBadge(sub.status)}
-                    </td>
-                    <td>
-                      <strong>{sub.score}%</strong>
-                    </td>
-                    <td>
-                      {sub.executionTime > 0 ? `${sub.executionTime}ms` : '0ms'}
-                    </td>
-                    <td>
-                      <button
-                        type="button"
-                        className="btn btn-sm btn-secondary as-view-code-btn"
-                        onClick={() => onViewCode(sub)}
-                        title="View Submitted Code"
-                      >
-                        👁️ View Code
-                      </button>
-                    </td>
-                  </tr>
-                ))
+                      </td>
+                      <td>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            <strong style={{ fontSize: '14px', color: effectiveScore >= 100 ? '#10b981' : effectiveScore >= 70 ? '#3b82f6' : '#ef4444' }}>
+                              {effectiveScore}%
+                            </strong>
+                            <span style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>
+                              ({effectiveScore}/100)
+                            </span>
+                          </div>
+                          {review ? (
+                            <span style={{ fontSize: '10px', color: '#8b5cf6', fontWeight: 600 }}>
+                              ✓ Verified by Evaluator
+                            </span>
+                          ) : effectiveScore >= 100 ? (
+                            <span style={{ fontSize: '10px', color: '#10b981', fontWeight: 600 }}>✓ Full Marks</span>
+                          ) : effectiveScore >= 70 ? (
+                            <span style={{ fontSize: '10px', color: '#3b82f6', fontWeight: 600 }}>Passed</span>
+                          ) : (
+                            <span style={{ fontSize: '10px', color: '#ef4444', fontWeight: 600 }}>Failed Assertions</span>
+                          )}
+                        </div>
+                      </td>
+                      <td>
+                        {sub.executionTime > 0 ? `${sub.executionTime}ms` : '0ms'}
+                      </td>
+                      <td>
+                        <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                          <button
+                            type="button"
+                            className={`btn btn-sm ${review ? 'btn-secondary' : 'btn-primary'}`}
+                            onClick={() => onViewCode(sub)}
+                            style={{ padding: '4px 10px', fontSize: '12px', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+                            title={review ? 'Edit Grade & Feedback' : 'Grade Candidate Submission'}
+                          >
+                            <span>⭐</span>
+                            <span>{review ? 'Edit Grade' : 'Grade'}</span>
+                          </button>
+                          <button
+                            type="button"
+                            className="btn btn-sm btn-secondary as-view-code-btn"
+                            onClick={() => onViewCode(sub)}
+                            title="View Submitted Code"
+                            style={{ padding: '4px 8px', fontSize: '12px' }}
+                          >
+                            👁️
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  )
+                })
               )}
             </tbody>
           </table>

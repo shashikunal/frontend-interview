@@ -1,0 +1,205 @@
+/* ─── Badge Showcase Styles ───────────────────────────────────────── */
+
+.badge-showcase {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+}
+
+/* Level & Summary Banner */
+.bs-level-banner {
+  background: linear-gradient(135deg, rgba(26, 32, 64, 0.75) 0%, rgba(15, 20, 42, 0.9) 100%);
+  border: 1px solid rgba(99, 102, 241, 0.25);
+  border-radius: 20px;
+  padding: 26px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  position: relative;
+  overflow: hidden;
+}
+
+.bs-level-banner::after {
+  content: '';
+  position: absolute;
+  top: -40px;
+  right: -40px;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.2) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.bs-level-left {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.bs-level-badge {
+  width: 58px;
+  height: 58px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 20px rgba(99, 102, 241, 0.45);
+  flex-shrink: 0;
+}
+
+.bs-lvl-num {
+  font-size: 1.35rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.bs-lvl-tag {
+  font-size: 0.6rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  opacity: 0.9;
+}
+
+.bs-level-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.bs-level-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #f1f5f9;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.bs-level-subtitle {
+  font-size: 0.84rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+/* XP Progress Bar on Right */
+.bs-level-right {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 240px;
+  flex: 1;
+  max-width: 380px;
+}
+
+.bs-xp-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.8rem;
+}
+
+.bs-xp-current {
+  font-weight: 700;
+  color: #a5b4fc;
+}
+
+.bs-xp-ratio {
+  color: var(--text-muted);
+}
+
+.bs-xp-track {
+  height: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.bs-xp-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #6366f1 0%, #38bdf8 100%);
+  border-radius: 999px;
+  transition: width 0.4s ease;
+}
+
+.bs-badges-ratio-tag {
+  font-size: 0.74rem;
+  color: var(--text-muted);
+  align-self: flex-end;
+}
+
+/* Filter Nav Bar */
+.bs-filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scrollbar-width: none;
+}
+
+.bs-filter-bar::-webkit-scrollbar {
+  display: none;
+}
+
+.bs-filter-btn {
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 40px;
+  color: var(--text-secondary);
+  font-size: 0.84rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+
+.bs-filter-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-primary);
+  border-color: rgba(255, 255, 255, 0.16);
+}
+
+.bs-filter-btn.active {
+  background: var(--grad-brand);
+  color: #fff;
+  border-color: rgba(129, 140, 248, 0.4);
+  box-shadow: 0 4px 16px rgba(99, 102, 241, 0.35);
+}
+
+/* Grid of Cards */
+.bs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 16px;
+}
+
+/* Empty filter state */
+.bs-empty {
+  text-align: center;
+  padding: 48px 20px;
+  color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px dashed var(--border);
+  border-radius: 16px;
+}
+
+@media (max-width: 640px) {
+  .bs-level-banner {
+    padding: 20px;
+  }
+  .bs-level-right {
+    min-width: 100%;
+  }
+  .bs-grid {
+    grid-template-columns: 1fr;
+  }
+}

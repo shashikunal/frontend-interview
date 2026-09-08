@@ -17,11 +17,84 @@ import InterviewScorecardModal, { type ScorecardData } from './InterviewScorecar
 import AIInterviewPrompter from './AIInterviewPrompter';
 import { useQuestions } from '../../data/useQuestions';
 import { trackingService } from '../../lib/trackingService';
+import { leaderboardService } from '../../lib/leaderboardService';
+import * as Y from 'yjs';
+import { useAuth } from '../../context/AuthContext';
+import { SupabaseYjsProvider } from '../../lib/yjs/supabaseYjsProvider';
+import { MonacoYjsBinding } from '../../lib/yjs/monacoYjsBinding';
+import {
+  interviewSessionService,
+  type InterviewSession,
+  type SessionParticipant,
+  type SessionMessage,
+  type SessionExecutionRecord,
+} from '../../lib/interviewSessionService';
+import LiveInterviewCollabDrawer from './LiveInterviewCollabDrawer';
+import { renderFormattedMarkdown } from '../../lib/questionTemplate';
 import './MachineCodingStudio.css';
 
 interface ConsoleLog {
   level: 'log' | 'info' | 'warn' | 'error';
   message: string;
+}
+
+function renderSpecDescription(desc: string) {
+  if (!desc) return null;
+  const lines = desc.split('\n');
+  const blocks: React.ReactNode[] = [];
+  let currentParagraphLines: string[] = [];
+
+  const flushParagraph = (key: string | number) => {
+    if (currentParagraphLines.length > 0) {
+      blocks.push(
+        <p key={key} className="mc-spec-text">
+          {currentParagraphLines.map((line, lIdx) => (
+            <span key={lIdx}>
+              {renderFormattedMarkdown(line)}
+              {lIdx < currentParagraphLines.length - 1 ? ' ' : ''}
+            </span>
+          ))}
+        </p>
+      );
+      currentParagraphLines = [];
+    }
+  };
+
+  lines.forEach((rawLine, idx) => {
+    const trimmed = rawLine.trim();
+    if (!trimmed) {
+      flushParagraph(`p-${idx}`);
+      return;
+    }
+
+    if (trimmed.startsWith('### ')) {
+      flushParagraph(`p-before-h-${idx}`);
+      const title = trimmed.replace(/^###\s+/, '');
+      blocks.push(
+        <h4 key={`h-${idx}`} className="mc-spec-heading">
+          {title}
+        </h4>
+      );
+      return;
+    }
+
+    if (/^\s*(\d+\.|\-|\*)\s+/.test(trimmed)) {
+      flushParagraph(`p-before-li-${idx}`);
+      const cleanText = trimmed.replace(/^\s*(\d+\.|\-|\*)\s+/, '');
+      blocks.push(
+        <div key={`li-${idx}`} className="mc-spec-list-item-single">
+          <span className="mc-spec-bullet">•</span>
+          <span className="mc-spec-list-text">{renderFormattedMarkdown(cleanText)}</span>
+        </div>
+      );
+      return;
+    }
+
+    currentParagraphLines.push(trimmed);
+  });
+
+  flushParagraph('p-final');
+  return <div className="mc-spec-description-rendered">{blocks}</div>;
 }
 
 const DEFAULT_STARTER_CSS = `/* Custom Stylesheet for Component */
@@ -169,6 +242,14 @@ export default function MachineCodingStudio() {
   const [selectedBatch, setSelectedBatch] = useState('all');
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>('All');
+  const [overviewViewMode, setOverviewViewMode] = useState<'grid' | 'list'>(() => {
+    try {
+      const saved = localStorage.getItem('mc_catalog_view_mode');
+      return saved === 'list' ? 'list' : 'grid';
+    } catch {
+      return 'grid';
+    }
+  });
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 24;
 
@@ -336,9 +417,13 @@ export default function MachineCodingStudio() {
   const [leftPanelWidth, setLeftPanelWidth] = useState<number>(() => {
     try {
       const saved = localStorage.getItem('mc_panel_left_w');
-      return saved ? Number(saved) : 420;
+      if (saved) {
+        const parsed = Number(saved);
+        if (parsed >= 240 && parsed <= 500) return parsed;
+      }
+      return typeof window !== 'undefined' && window.innerWidth < 1440 ? 340 : 380;
     } catch {
-      return 420;
+      return 360;
     }
   });
   const [editorWidthPct, setEditorWidthPct] = useState<number>(() => {
@@ -360,8 +445,8 @@ export default function MachineCodingStudio() {
 
     const handleMouseMove = (e: MouseEvent) => {
       if (isDraggingLeft) {
-        const minW = 240;
-        const maxW = Math.max(300, window.innerWidth - 420);
+        const minW = 260;
+        const maxW = Math.min(500, Math.max(320, Math.floor(window.innerWidth * 0.38)));
         const nextW = Math.max(minW, Math.min(maxW, e.clientX));
         setLeftPanelWidth(nextW);
         try {
@@ -411,6 +496,55 @@ export default function MachineCodingStudio() {
   const [, setInterviewFinished] = useState(false);
   const [showScorecard, setShowScorecard] = useState(false);
   const [scorecardData, setScorecardData] = useState<ScorecardData | null>(null);
+
+  // User & Live Collaborative Session State
+  const { user } = useAuth();
+  const urlRole = searchParams.get('role');
+  const userRole: 'candidate' | 'interviewer' | 'admin' | 'observer' = useMemo(() => {
+    if (urlRole === 'admin' || urlRole === 'interviewer' || urlRole === 'observer' || urlRole === 'candidate') {
+      return urlRole;
+    }
+    if ((user as any)?.role === 'admin') return 'admin';
+    if ((user as any)?.role === 'interviewer') return 'interviewer';
+    return 'candidate';
+  }, [urlRole, user]);
+
+  const currentUserId = useMemo(() => {
+    if (user?.id) return user.id;
+    const cached = localStorage.getItem('mc_collab_anon_id');
+    if (cached) return cached;
+    const generated = `usr_${Math.random().toString(36).substring(2, 9)}`;
+    localStorage.setItem('mc_collab_anon_id', generated);
+    return generated;
+  }, [user?.id]);
+
+  const currentUserName = useMemo(() => {
+    if (user?.name) return user.name;
+    if ((user as any)?.user_metadata?.name) return (user as any).user_metadata.name;
+    if (user?.email) return user.email.split('@')[0];
+    if (userRole === 'admin') return 'Admin Interviewer';
+    return 'Candidate';
+  }, [user, userRole]);
+
+  const [collabSession, setCollabSession] = useState<InterviewSession | null>(null);
+  const [isCollabActive, setIsCollabActive] = useState<boolean>(false);
+  const [isCollabDrawerOpen, setIsCollabDrawerOpen] = useState<boolean>(false);
+  const [sessionParticipants, setSessionParticipants] = useState<SessionParticipant[]>([]);
+  const [sessionMessages, setSessionMessages] = useState<SessionMessage[]>([]);
+  const [unreadMessageCount, setUnreadMessageCount] = useState<number>(0);
+  const [canAdminEdit, setCanAdminEdit] = useState<boolean>(false);
+  const [lastExecutionEvent, setLastExecutionEvent] = useState<SessionExecutionRecord | null>(null);
+
+  const yDocRef = useRef<Y.Doc>(new Y.Doc());
+  const yjsProviderRef = useRef<SupabaseYjsProvider | null>(null);
+  const monacoBindingRef = useRef<MonacoYjsBinding | null>(null);
+  const lastSnapshotRef = useRef<string>('');
+
+  useEffect(() => {
+    if (isCollabDrawerOpen) {
+      setUnreadMessageCount(0);
+    }
+  }, [isCollabDrawerOpen]);
 
   const editorRef = useRef<any>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
@@ -602,6 +736,32 @@ export default function MachineCodingStudio() {
           });
         }
 
+        if (collabSession && isCollabActive && activeQuestion) {
+          const duration = res.reduce((acc, r) => acc + (r.durationMs || 0), 0);
+          const execEvent: SessionExecutionRecord = {
+            session_id: collabSession.id,
+            candidate_id: collabSession.candidate_id,
+            question_id: activeQuestion.id,
+            language: selectedLanguage,
+            status: isAllPassed ? 'success' : 'failed',
+            stdout: `Test Suite: ${passedCount}/${res.length} assertions passed`,
+            stderr: isAllPassed ? '' : `${res.length - passedCount} assertion(s) failed`,
+            exit_code: isAllPassed ? 0 : 1,
+            execution_time: duration,
+            tests_passed: passedCount,
+            tests_total: res.length,
+          };
+          setLastExecutionEvent(execEvent);
+          interviewSessionService.recordExecution(execEvent);
+          yjsProviderRef.current?.broadcastExecution({
+            status: isAllPassed ? 'success' : 'failed',
+            testsPassed: passedCount,
+            testsTotal: res.length,
+            stdout: `Test Suite: ${passedCount}/${res.length} assertions passed`,
+            executionTime: duration,
+          });
+        }
+
         if (isAllPassed) {
           showToast(`🎉 All ${res.length} test assertions passed!`);
           if (activeQuestion && !solvedMap[activeQuestion.id]) {
@@ -639,6 +799,195 @@ export default function MachineCodingStudio() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  // -------------------------------------------------------------
+  // REAL-TIME COLLABORATION & INTERVIEW SESSION EFFECTS (Yjs + Supabase)
+  // -------------------------------------------------------------
+
+  // 1. Auto-connect or load session if ?session=... is in URL
+  useEffect(() => {
+    const sessionId = searchParams.get('session');
+    if (!sessionId || !activeQuestion) return;
+
+    let isMounted = true;
+    (async () => {
+      try {
+        const session = await interviewSessionService.getSessionById(sessionId);
+        if (!isMounted) return;
+        if (session) {
+          setCollabSession(session);
+          setIsCollabActive(true);
+
+          // If joining as admin or observer and session has files, sync into workspace
+          if (userRole === 'admin' || userRole === 'observer' || userRole === 'interviewer') {
+            if (session.files_snapshot && Object.keys(session.files_snapshot).length > 0) {
+              setFiles(session.files_snapshot);
+              filesRef.current = session.files_snapshot;
+              const primaryFile = Object.keys(session.files_snapshot)[0];
+              setActiveFileName(primaryFile);
+              activeFileNameRef.current = primaryFile;
+              setCurrentCode(session.files_snapshot[primaryFile] || '');
+              if (editorRef.current) {
+                editorRef.current.setValue(session.files_snapshot[primaryFile] || '');
+              }
+              executeCode(session.files_snapshot);
+            }
+          }
+
+          // Register participant in Supabase
+          await interviewSessionService.joinParticipant({
+            sessionId: session.id,
+            userId: currentUserId,
+            name: currentUserName,
+            role: userRole,
+            canEdit: userRole === 'candidate' || (userRole === 'admin' && canAdminEdit),
+          });
+
+          // Fetch initial chat messages
+          const msgs = await interviewSessionService.getMessages(session.id);
+          if (isMounted) setSessionMessages(msgs);
+
+          showToast(`🔴 Connected to Live Interview Room (${session.id.substring(0, 8)}...)`);
+        }
+      } catch (err) {
+        console.error('Failed to load session:', err);
+      }
+    })();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [searchParams.get('session'), activeQuestion?.id]);
+
+  // 2. Set up Yjs Realtime Provider when collab session is active
+  useEffect(() => {
+    if (!collabSession?.id || !isCollabActive) {
+      if (yjsProviderRef.current) {
+        yjsProviderRef.current.destroy();
+        yjsProviderRef.current = null;
+      }
+      return;
+    }
+
+    const provider = new SupabaseYjsProvider(
+      collabSession.id,
+      yDocRef.current,
+      {
+        id: currentUserId,
+        name: currentUserName,
+        role: userRole,
+        color: userRole === 'admin' ? '#a855f7' : '#38bdf8',
+      },
+      {
+        onCursorsChanged: (cursors) => {
+          monacoBindingRef.current?.updateRemoteCursors(cursors, activeFileNameRef.current);
+        },
+      }
+    );
+
+    const unsubscribe = provider.subscribe((event) => {
+      if (event.type === 'execution_started' || event.type === 'execution_completed') {
+        setLastExecutionEvent(event.payload);
+      } else if (event.type === 'peers_changed') {
+        interviewSessionService.getParticipants(collabSession.id).then((parts) => {
+          setSessionParticipants(parts);
+        });
+      }
+    });
+
+    yjsProviderRef.current = provider;
+
+    return () => {
+      unsubscribe();
+      provider.destroy();
+      if (yjsProviderRef.current === provider) {
+        yjsProviderRef.current = null;
+      }
+    };
+  }, [collabSession?.id, isCollabActive, currentUserId, currentUserName, userRole]);
+
+  // 3. Bind Monaco Editor with Yjs Text document for live real-time editing & cursor sync
+  useEffect(() => {
+    if (!editorRef.current || !yjsProviderRef.current || !isCollabActive) {
+      if (monacoBindingRef.current) {
+        monacoBindingRef.current.destroy();
+        monacoBindingRef.current = null;
+      }
+      return;
+    }
+
+    if (monacoBindingRef.current) {
+      monacoBindingRef.current.destroy();
+      monacoBindingRef.current = null;
+    }
+
+    const model = editorRef.current.getModel();
+    if (!model) return;
+
+    const yText = yDocRef.current.getText(activeFileName);
+
+    // If yText is currently empty, seed it with current file content
+    if (yText.length === 0 && files[activeFileName]) {
+      yText.insert(0, files[activeFileName]);
+    }
+
+    const binding = new MonacoYjsBinding(yText, model, editorRef.current);
+    monacoBindingRef.current = binding;
+
+    const isReadOnly = userRole === 'observer' || (userRole === 'admin' && !canAdminEdit);
+    editorRef.current.updateOptions({ readOnly: isReadOnly });
+
+    // Track cursor movement and broadcast to participants
+    const cursorDisp = editorRef.current.onDidChangeCursorPosition((e: any) => {
+      yjsProviderRef.current?.sendCursorPosition(
+        {
+          startLineNumber: e.position.lineNumber,
+          startColumn: e.position.column,
+          endLineNumber: e.position.lineNumber,
+          endColumn: e.position.column,
+        },
+        activeFileName
+      );
+    });
+
+    // Update local state when yText changes remotely
+    const observer = () => {
+      const updatedCode = yText.toString();
+      setCurrentCode(updatedCode);
+      setFiles((prev) => ({ ...prev, [activeFileName]: updatedCode }));
+      filesRef.current = { ...filesRef.current, [activeFileName]: updatedCode };
+    };
+    yText.observe(observer);
+
+    return () => {
+      cursorDisp.dispose();
+      yText.unobserve(observer);
+      binding.destroy();
+      if (monacoBindingRef.current === binding) {
+        monacoBindingRef.current = null;
+      }
+    };
+  }, [activeFileName, isCollabActive, canAdminEdit, userRole, !!editorRef.current, !!yjsProviderRef.current]);
+
+  // 4. Debounced snapshot persistence to Supabase (Every 20s if modified, never every keystroke)
+  useEffect(() => {
+    if (!collabSession?.id || !isCollabActive || !activeQuestion) return;
+
+    const timer = setTimeout(() => {
+      const filesJson = JSON.stringify(files);
+      if (filesJson !== lastSnapshotRef.current) {
+        lastSnapshotRef.current = filesJson;
+        interviewSessionService.saveSnapshot(
+          collabSession.id,
+          files,
+          'Periodic collaborative checkpoint'
+        );
+      }
+    }, 20000);
+
+    return () => clearTimeout(timer);
+  }, [files, collabSession?.id, isCollabActive, activeQuestion?.id]);
+
+
   // Interview Timer Countdown Effect
   useEffect(() => {
     if (!isInterviewActive) return;
@@ -675,14 +1024,43 @@ export default function MachineCodingStudio() {
       });
     }
 
+    if (collabSession && isCollabActive) {
+      yjsProviderRef.current?.broadcastExecution({
+        status: 'running',
+      });
+    }
+
+    let compileErr: any = null;
     try {
       const srcDoc = await buildMachineCodingSrcDoc(targetFiles, activeLang, nextRunId);
       setPreviewSrcDoc(srcDoc);
     } catch (err: any) {
+      compileErr = err;
       console.error(err);
       setConsoleLogs(prev => [...prev, { level: 'error', message: err?.message || 'Babel compilation error' }]);
     } finally {
       setIsCompiling(false);
+      if (collabSession && isCollabActive && activeQuestion) {
+        const execEvent: SessionExecutionRecord = {
+          session_id: collabSession.id,
+          candidate_id: collabSession.candidate_id,
+          question_id: activeQuestion.id,
+          language: activeLang,
+          status: compileErr ? 'compile_error' : 'success',
+          stdout: 'Compiled & updated live sandbox preview',
+          stderr: compileErr?.message || '',
+          exit_code: compileErr ? 1 : 0,
+          execution_time: 95,
+        };
+        setLastExecutionEvent(execEvent);
+        interviewSessionService.recordExecution(execEvent);
+        yjsProviderRef.current?.broadcastExecution({
+          status: compileErr ? 'compile_error' : 'success',
+          stdout: 'Compiled & updated live sandbox preview',
+          stderr: compileErr?.message || '',
+          executionTime: 95,
+        });
+      }
     }
   };
 
@@ -927,6 +1305,53 @@ export default function MachineCodingStudio() {
     });
   };
 
+  const handleStartLiveSession = async () => {
+    if (!activeQuestion) return;
+    try {
+      showToast('Creating Live Interview Room...');
+      const session = await interviewSessionService.getOrCreateSession({
+        candidateId: currentUserId,
+        candidateName: currentUserName,
+        candidateEmail: user?.email,
+        questionId: activeQuestion.id,
+        questionTitle: activeQuestion.title,
+        language: selectedLanguage,
+        initialFiles: files,
+      });
+
+      setCollabSession(session);
+      setIsCollabActive(true);
+      setIsCollabDrawerOpen(true);
+
+      setSearchParams(prev => {
+        const next = new URLSearchParams(prev);
+        next.set('session', session.id);
+        return next;
+      }, { replace: true });
+
+      showToast(`🔴 Live Interview Room Online! ID: ${session.id.substring(0, 8)}...`);
+    } catch (err: any) {
+      console.error(err);
+      showToast('⚠️ Failed to initiate live session room.');
+    }
+  };
+
+  const handleSendCollabMessage = async (msg: string) => {
+    if (!collabSession) return;
+    try {
+      const sent = await interviewSessionService.sendMessage({
+        sessionId: collabSession.id,
+        senderId: currentUserId,
+        senderName: currentUserName,
+        senderRole: userRole,
+        message: msg,
+      });
+      setSessionMessages(prev => [...prev, sent]);
+    } catch (err) {
+      console.error('Failed to send message:', err);
+    }
+  };
+
   const handleStartInterview = (durationSecs = 45 * 60) => {
     if (!activeQuestion) return;
     setInterviewDuration(durationSecs);
@@ -938,6 +1363,11 @@ export default function MachineCodingStudio() {
     setEditorViewMode('code');
     setActiveTab('specs');
     showToast(`⏱️ ${Math.round(durationSecs / 60)}-Minute Interview Round Started! Reference solution locked.`);
+
+    // If not already in a live session, auto-connect to session for monitoring
+    if (!collabSession) {
+      handleStartLiveSession();
+    }
   };
 
   const handleFinishInterview = async () => {
@@ -950,6 +1380,7 @@ export default function MachineCodingStudio() {
     const passed = results.filter(r => r.status === 'passed').length;
     const total = results.length;
     const timeSpent = Math.max(1, interviewDuration - Math.max(0, interviewTimeLeft));
+    const score = total > 0 ? Math.round((passed / total) * 100) : 0;
 
     setScorecardData({
       question: activeQuestion,
@@ -963,8 +1394,47 @@ export default function MachineCodingStudio() {
     setShowScorecard(true);
 
     if (activeQuestion?.id) {
-      const score = total > 0 ? Math.round((passed / total) * 100) : 0;
       trackingService.completeQuestionAttempt(activeQuestion.id, score, timeSpent);
+
+      // Track submission in Supabase with candidate ID and local offline backup
+      try {
+        const candidateId = user?.id || currentUserId || 'usr_candidate_demo';
+        const candidateName = user?.name || currentUserName || 'Candidate';
+        const candidateEmail = user?.email || undefined;
+        void leaderboardService.saveMachineCodingSubmission({
+          candidateId,
+          candidateName,
+          candidateEmail,
+          questionId: activeQuestion.id,
+          score,
+          testsPassed: passed,
+          testsTotal: total,
+          timeSpentSeconds: timeSpent,
+          code: files['App.tsx'] || Object.values(files)[0] || '',
+          files: { ...files },
+          language: selectedLanguage,
+        }).then(saved => {
+          if (saved?.syncedToSupabase) {
+            showToast(`✓ Submissions saved to Supabase (Candidate ID: ${candidateId.slice(0, 8)}...)`);
+          } else {
+            showToast(`✓ Submission tracked locally for Candidate ID: ${candidateId.slice(0, 8)}...`);
+          }
+        });
+      } catch (err) {
+        console.warn('[MachineCodingStudio] Submission save error:', err);
+      }
+    }
+
+    if (collabSession && isCollabActive) {
+      await interviewSessionService.submitSession({
+        sessionId: collabSession.id,
+        files,
+        score,
+        testsPassed: passed,
+        testsTotal: total,
+        timeSpentSeconds: timeSpent,
+      });
+      showToast('✓ Final submission saved to Supabase archive!');
     }
   };
 
@@ -1403,58 +1873,68 @@ export default function MachineCodingStudio() {
         {/* Top bar navigation */}
         <div className="mc-topbar">
           <div className="mc-topbar-left">
-            <button className="mc-back-btn" onClick={closeStudio} title="Back to All Questions">
-              ← Hub Directory
+            <button className="mc-back-btn" onClick={closeStudio} title="Back to Questions Hub">
+              <span className="mc-back-icon">←</span>
+              <span className="mc-back-label">Hub</span>
             </button>
 
             <button
               type="button"
               className="mc-btn-palette"
               onClick={() => setIsCommandPaletteOpen(true)}
-              title="Quick Search & Switch Challenge across all 500 questions (Ctrl+K)"
+              title="Quick Search & Switch Challenge (Ctrl+K)"
             >
-              <span>🔍 Quick Switch</span>
-              <span className="mc-btn-palette-kbd">Ctrl K</span>
+              <span className="mc-palette-icon">🔍</span>
+              <span className="mc-palette-label">Switch</span>
+              <span className="mc-btn-palette-kbd">⌘K</span>
             </button>
 
-            <div className="mc-nav-arrows">
-              <button
-                className="mc-nav-arrow"
-                disabled={!prevQuestion}
-                onClick={() => prevQuestion && selectQuestion(prevQuestion.id)}
-                title={prevQuestion ? `Prev: ${prevQuestion.id} ${prevQuestion.title}` : 'First challenge'}
-              >
-                ‹
-              </button>
-              <button
-                className="mc-nav-arrow"
-                disabled={!nextQuestion}
-                onClick={() => nextQuestion && selectQuestion(nextQuestion.id)}
-                title={nextQuestion ? `Next: ${nextQuestion.id} ${nextQuestion.title}` : 'Last challenge'}
-              >
-                ›
-              </button>
-            </div>
+            <div className="mc-challenge-pill">
+              <div className="mc-nav-arrows">
+                <button
+                  className="mc-nav-arrow"
+                  disabled={!prevQuestion}
+                  onClick={() => prevQuestion && selectQuestion(prevQuestion.id)}
+                  title={prevQuestion ? `Prev: ${prevQuestion.id} ${prevQuestion.title}` : 'First challenge'}
+                >
+                  ‹
+                </button>
+                <button
+                  className="mc-nav-arrow"
+                  disabled={!nextQuestion}
+                  onClick={() => nextQuestion && selectQuestion(nextQuestion.id)}
+                  title={nextQuestion ? `Next: ${nextQuestion.id} ${nextQuestion.title}` : 'Last challenge'}
+                >
+                  ›
+                </button>
+              </div>
 
-            <select
-              className="mc-question-select"
-              value={activeQuestion.id}
-              onChange={(e) => selectQuestion(e.target.value)}
-            >
-              {BATCHES.slice(1).map(b => (
-                <optgroup key={b.id} label={b.label}>
-                  {MACHINE_CODING_QUESTIONS.slice(b.start - 1, b.end).map(q => (
-                    <option key={q.id} value={q.id}>
-                      {q.id}: {q.title} ({q.difficulty}) {solvedMap[q.id] ? '✓' : ''}
-                    </option>
+              <div className="mc-question-select-wrapper">
+                <select
+                  className="mc-question-select"
+                  value={activeQuestion.id}
+                  onChange={(e) => selectQuestion(e.target.value)}
+                  title={`${activeQuestion.id}: ${activeQuestion.title}`}
+                >
+                  {BATCHES.slice(1).map(b => (
+                    <optgroup key={b.id} label={b.label}>
+                      {MACHINE_CODING_QUESTIONS.slice(b.start - 1, b.end).map(q => (
+                        <option key={q.id} value={q.id}>
+                          {q.id}: {q.title} ({q.difficulty}) {solvedMap[q.id] ? '✓' : ''}
+                        </option>
+                      ))}
+                    </optgroup>
                   ))}
-                </optgroup>
-              ))}
-            </select>
+                </select>
+              </div>
+
+              <span className={`mc-badge ${activeQuestion.difficulty.toLowerCase()}`}>
+                {activeQuestion.difficulty}
+              </span>
+            </div>
 
             {/* Language Environment Selector */}
             <div className="mc-topbar-lang-box" title="Select programming language & runtime environment">
-              <span className="mc-topbar-lang-label">Lang:</span>
               <select
                 className="mc-topbar-lang-select"
                 value={selectedLanguage}
@@ -1489,6 +1969,14 @@ export default function MachineCodingStudio() {
                 >
                   ⏱️ Start
                 </button>
+                <button
+                  className="mc-action-btn mc-btn-interview-finish"
+                  onClick={handleFinishInterview}
+                  title="Submit code & track score on live Leaderboard"
+                  style={{ background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', color: '#fff', border: 'none' }}
+                >
+                  🏁 Submit Solution
+                </button>
               </div>
             ) : (
               <div className="mc-active-interview-controls">
@@ -1509,6 +1997,32 @@ export default function MachineCodingStudio() {
                   🏁 Submit
                 </button>
               </div>
+            )}
+
+            {/* Live Collaborative Interview Room Pill */}
+            <button
+              type="button"
+              className={`mc-action-btn mc-btn-collab ${isCollabActive ? 'active' : ''}`}
+              onClick={() => {
+                if (!isCollabActive) {
+                  handleStartLiveSession();
+                } else {
+                  setIsCollabDrawerOpen(prev => !prev);
+                }
+              }}
+              title={isCollabActive ? 'Toggle Live Collab Room (Yjs Real-Time + Chat)' : 'Start Real-Time Collaborative Interview Room'}
+            >
+              <span className={`mc-collab-pulse-dot ${isCollabActive ? 'live' : ''}`} />
+              <span>{isCollabActive ? `🔴 Live (${sessionParticipants.length || 1})` : '👥 Live Collab'}</span>
+              {unreadMessageCount > 0 && !isCollabDrawerOpen && (
+                <span className="mc-collab-unread-badge">{unreadMessageCount}</span>
+              )}
+            </button>
+
+            {userRole === 'admin' && (
+              <span className="mc-admin-mode-pill" title="Administrator live monitoring mode">
+                🛡️ Admin View
+              </span>
             )}
 
             {/* Smart Utility Icon Toolbar */}
@@ -1691,22 +2205,22 @@ export default function MachineCodingStudio() {
                     <span className={`mc-badge ${activeQuestion.difficulty.toLowerCase()}`}>
                       {activeQuestion.difficulty}
                     </span>
-                    <span style={{ fontSize: '12px', color: '#94a3b8' }}>⏱️ {activeQuestion.timeEstimate}</span>
-                    <span style={{ fontSize: '12px', color: '#38bdf8' }}>🏷️ {activeQuestion.category}</span>
+                    <span className="mc-spec-tag-time">⏱️ {activeQuestion.timeEstimate}</span>
+                    <span className="mc-spec-tag-cat">🏷️ {activeQuestion.category}</span>
                   </div>
 
-                  <div className="mc-spec-body" style={{ whiteSpace: 'pre-line', marginBottom: '16px' }}>
-                    {activeQuestion.description}
+                  <div className="mc-spec-body">
+                    {renderSpecDescription(activeQuestion.description)}
                   </div>
 
-                  <h4 style={{ margin: '16px 0 8px', fontSize: '14px', color: '#f0f6fc' }}>
+                  <h4 className="mc-checklist-heading">
                     Candidate Checklist:
                   </h4>
                   <div className="mc-checklist">
                     {activeQuestion.requirements.map((req, idx) => {
                       const isChecked = !!checkedItems[activeQuestion.id]?.[idx];
                       return (
-                        <label key={idx} className="mc-checklist-item">
+                        <label key={idx} className={`mc-checklist-item ${isChecked ? 'checked' : ''}`}>
                           <input
                             type="checkbox"
                             checked={isChecked}
@@ -1720,7 +2234,7 @@ export default function MachineCodingStudio() {
                               });
                             }}
                           />
-                          <span style={{ textDecoration: isChecked ? 'line-through' : 'none', opacity: isChecked ? 0.6 : 1 }}>
+                          <span className="mc-checklist-text">
                             {req}
                           </span>
                         </label>
@@ -1732,24 +2246,24 @@ export default function MachineCodingStudio() {
 
               {activeTab === 'tips' && (
                 <div>
-                  <h3 style={{ margin: '0 0 12px', fontSize: '16px', color: '#58a6ff' }}>
+                  <h3 className="mc-rubric-heading">
                     Senior Staff Evaluation Rubric
                   </h3>
 
                   <div className="mc-interview-card">
                     <div className="mc-interview-title">🎯 What Interviewers Look For:</div>
-                    <ul style={{ margin: '6px 0 0', paddingLeft: '18px', fontSize: '13px', lineHeight: '1.6', color: '#c9d1d9' }}>
+                    <ul className="mc-interview-list">
                       {activeQuestion.interviewTips.map((tip, idx) => (
-                        <li key={idx} style={{ marginBottom: '6px' }}>{tip}</li>
+                        <li key={idx}>{renderFormattedMarkdown(tip)}</li>
                       ))}
                     </ul>
                   </div>
 
                   <div className="mc-pitfalls-card">
                     <div className="mc-pitfalls-title">⚠️ Common Candidate Traps:</div>
-                    <ul style={{ margin: '6px 0 0', paddingLeft: '18px', fontSize: '13px', lineHeight: '1.6', color: '#fca5a5' }}>
+                    <ul className="mc-pitfalls-list">
                       {activeQuestion.commonMistakes.map((mistake, idx) => (
-                        <li key={idx} style={{ marginBottom: '6px' }}>{mistake}</li>
+                        <li key={idx}>{renderFormattedMarkdown(mistake)}</li>
                       ))}
                     </ul>
                   </div>
@@ -2217,7 +2731,7 @@ export default function MachineCodingStudio() {
                 </div>
 
                 {editorViewMode === 'diff' && (
-                  <div className="mc-panel-header" style={{ borderTop: 'none', background: '#161b22', justifyContent: 'flex-end' }}>
+                  <div className="mc-panel-header mc-diff-header" style={{ borderTop: 'none', justifyContent: 'flex-end' }}>
                     <div className="mc-diff-header-controls">
                       <select
                         className="mc-diff-target-select"
@@ -2307,7 +2821,10 @@ export default function MachineCodingStudio() {
                       language={getEditorLanguage(activeFileName)}
                       theme={resolvedTheme === 'light' ? 'light' : 'vs-dark'}
                       value={currentCode}
-                      onChange={handleCodeChange}
+                      onChange={(val) => {
+                        if (userRole === 'observer' || (userRole === 'admin' && !canAdminEdit)) return;
+                        handleCodeChange(val);
+                      }}
                       onMount={(editor, monaco) => {
                         editorRef.current = editor;
                         if (monaco?.languages?.typescript) {
@@ -2348,6 +2865,7 @@ export default function MachineCodingStudio() {
                       }}
                       options={{
                         fontSize: 13,
+                        readOnly: userRole === 'observer' || (userRole === 'admin' && !canAdminEdit),
                         minimap: { enabled: false },
                         scrollBeyondLastLine: false,
                         automaticLayout: true,
@@ -2378,9 +2896,10 @@ export default function MachineCodingStudio() {
               <div
                 className="mc-preview-container"
                 style={{
-                  width: fullscreenPanel === 'preview' ? '100%' : `${100 - editorWidthPct}%`,
                   display: fullscreenPanel === 'editor' ? 'none' : 'flex',
-                  flex: fullscreenPanel === 'preview' ? 1 : undefined,
+                  flex: 1,
+                  width: fullscreenPanel === 'preview' ? '100%' : undefined,
+                  minWidth: 0,
                 }}
               >
                 <div className="mc-panel-header">
@@ -2423,25 +2942,25 @@ export default function MachineCodingStudio() {
                 display: fullscreenPanel === 'editor' ? 'none' : 'flex',
               }}
             >
-              <div className="mc-panel-header" style={{ borderTop: 'none', background: '#161b22' }}>
-                <span>Terminal Output / Logs ({consoleLogs.length})</span>
+              <div className="mc-panel-header mc-terminal-header" style={{ borderTop: 'none' }}>
+                <span className="mc-terminal-title">Terminal Output / Logs ({consoleLogs.length})</span>
                 <button
+                  className="mc-clear-console-btn"
                   onClick={() => setConsoleLogs([])}
-                  style={{ background: 'none', border: 'none', color: '#64748b', cursor: 'pointer', fontSize: '11px' }}
                 >
                   Clear Console
                 </button>
               </div>
               <div className="mc-console-logs">
                 {consoleLogs.length === 0 ? (
-                  <div style={{ color: '#484f58', fontStyle: 'italic' }}>
+                  <div className="mc-console-empty">
                     No console logs or errors. Press "Run Live" or interact with components above.
                   </div>
                 ) : (
                   consoleLogs.map((log, idx) => (
                     <div key={idx} className={`mc-log-entry ${log.level}`}>
-                      <span>[{log.level.toUpperCase()}]</span>
-                      <span>{log.message}</span>
+                      <span className="mc-log-level">[{log.level.toUpperCase()}]</span>
+                      <span className="mc-log-msg">{log.message}</span>
                     </div>
                   ))
                 )}
@@ -2796,6 +3315,32 @@ export default function MachineCodingStudio() {
             </div>
           </div>
         )}
+
+        {/* Collaborative Interview Live Drawer (Chat, Presence, Admin Control & Telemetry) */}
+        <LiveInterviewCollabDrawer
+          isOpen={isCollabDrawerOpen}
+          onClose={() => setIsCollabDrawerOpen(false)}
+          session={collabSession}
+          currentUser={{
+            id: currentUserId,
+            name: currentUserName,
+            role: userRole,
+          }}
+          participants={sessionParticipants}
+          messages={sessionMessages}
+          onSendMessage={handleSendCollabMessage}
+          canAdminEdit={canAdminEdit}
+          onToggleAdminEdit={() => {
+            const nextVal = !canAdminEdit;
+            setCanAdminEdit(nextVal);
+            if (editorRef.current) {
+              editorRef.current.updateOptions({ readOnly: userRole === 'admin' ? !nextVal : false });
+            }
+          }}
+          lastExecutionEvent={lastExecutionEvent}
+          onStartSession={handleStartLiveSession}
+          onSubmitSession={handleFinishInterview}
+        />
       </div>
     );
   }
@@ -2882,57 +3427,195 @@ export default function MachineCodingStudio() {
             ))}
           </div>
 
-          <div style={{ display: 'flex', gap: '6px' }}>
-            {['All', 'Easy', 'Medium', 'Hard', 'Senior'].map(diff => (
+          <div className="mc-controls-right">
+            <div className="mc-diff-filter-group" style={{ display: 'flex', gap: '6px' }}>
+              {['All', 'Easy', 'Medium', 'Hard', 'Senior'].map(diff => (
+                <button
+                  key={diff}
+                  className={`mc-filter-btn ${selectedDifficulty === diff ? 'active' : ''}`}
+                  onClick={() => { setSelectedDifficulty(diff); setCurrentPage(1); }}
+                >
+                  {diff}
+                </button>
+              ))}
+            </div>
+
+            {/* View Mode Switcher: Grid vs List */}
+            <div className="mc-view-switcher" role="group" aria-label="Layout view mode">
               <button
-                key={diff}
-                className={`mc-filter-btn ${selectedDifficulty === diff ? 'active' : ''}`}
-                onClick={() => { setSelectedDifficulty(diff); setCurrentPage(1); }}
+                type="button"
+                className={`mc-view-btn ${overviewViewMode === 'grid' ? 'active' : ''}`}
+                onClick={() => {
+                  setOverviewViewMode('grid');
+                  try { localStorage.setItem('mc_catalog_view_mode', 'grid'); } catch (_) {}
+                }}
+                title="Grid view"
+                aria-label="Grid view"
               >
-                {diff}
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3" y="3" width="7" height="7" rx="1.5" />
+                  <rect x="14" y="3" width="7" height="7" rx="1.5" />
+                  <rect x="14" y="14" width="7" height="7" rx="1.5" />
+                  <rect x="3" y="14" width="7" height="7" rx="1.5" />
+                </svg>
+                <span>Grid</span>
               </button>
-            ))}
+              <button
+                type="button"
+                className={`mc-view-btn ${overviewViewMode === 'list' ? 'active' : ''}`}
+                onClick={() => {
+                  setOverviewViewMode('list');
+                  try { localStorage.setItem('mc_catalog_view_mode', 'list'); } catch (_) {}
+                }}
+                title="List view"
+                aria-label="List view"
+              >
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="8" y1="6" x2="21" y2="6" />
+                  <line x1="8" y1="12" x2="21" y2="12" />
+                  <line x1="8" y1="18" x2="21" y2="18" />
+                  <line x1="3" y1="6" x2="3.01" y2="6" />
+                  <line x1="3" y1="12" x2="3.01" y2="12" />
+                  <line x1="3" y1="18" x2="3.01" y2="18" />
+                </svg>
+                <span>List</span>
+              </button>
+            </div>
           </div>
         </div>
 
-        {/* Cards Grid */}
-        <div className="mc-cards-grid">
-          {paginatedQuestions.map((q) => {
-            const isCompleted = !!solvedMap[q.id];
+        {/* Empty state */}
+        {paginatedQuestions.length === 0 ? (
+          <div className="mc-empty-state">
+            <div className="mc-empty-icon">🔍</div>
+            <h3 className="mc-empty-title">No challenges match your criteria</h3>
+            <p className="mc-empty-desc">Try clearing your search term or selecting a different batch/filter.</p>
+            <button
+              className="mc-btn-primary"
+              onClick={() => {
+                setSearchQuery('');
+                setSelectedCategory('All');
+                setSelectedDifficulty('All');
+                setSelectedBatch('all');
+                setCurrentPage(1);
+              }}
+              style={{ margin: '14px auto 0' }}
+            >
+              Reset All Filters
+            </button>
+          </div>
+        ) : overviewViewMode === 'grid' ? (
+          /* Cards Grid View */
+          <div className="mc-cards-grid">
+            {paginatedQuestions.map((q) => {
+              const isCompleted = !!solvedMap[q.id];
 
-            return (
-              <div key={q.id} className={`mc-card ${isCompleted ? 'completed' : ''}`}>
-                <div>
-                  <div className="mc-card-header">
+              return (
+                <div key={q.id} className={`mc-card ${isCompleted ? 'completed' : ''}`}>
+                  <div className="mc-card-body">
+                    <div className="mc-card-header">
+                      <span className="mc-card-id">{q.id}</span>
+                      <span className={`mc-badge ${q.difficulty.toLowerCase()}`}>
+                        {q.difficulty}
+                      </span>
+                    </div>
+
+                    <h3 className="mc-card-title">{q.title}</h3>
+                    <p className="mc-card-summary">{q.summary}</p>
+                  </div>
+
+                  <div className="mc-card-footer">
+                    <div className="mc-card-meta">
+                      <span className="mc-meta-time">⏱️ {q.timeEstimate}</span>
+                      <span className="mc-meta-sep">•</span>
+                      <span className="mc-meta-category">{q.category}</span>
+                      {isCompleted && (
+                        <span className="mc-meta-status solved">✓ Solved</span>
+                      )}
+                    </div>
+
+                    <button
+                      className="mc-btn-primary"
+                      onClick={() => selectQuestion(q.id)}
+                    >
+                      <span>{isCompleted ? 'Review' : 'Code'}</span>
+                      <span>▶</span>
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          /* Elegant List View */
+          <div className="mc-cards-list">
+            <div className="mc-list-header-row">
+              <span className="mc-th mc-th-id">ID</span>
+              <span className="mc-th mc-th-title">Challenge Title &amp; Concept</span>
+              <span className="mc-th mc-th-category">Category</span>
+              <span className="mc-th mc-th-diff">Difficulty</span>
+              <span className="mc-th mc-th-time">Time</span>
+              <span className="mc-th mc-th-status">Status</span>
+              <span className="mc-th mc-th-action">Action</span>
+            </div>
+
+            {paginatedQuestions.map((q) => {
+              const isCompleted = !!solvedMap[q.id];
+
+              return (
+                <div
+                  key={q.id}
+                  className={`mc-list-item ${isCompleted ? 'completed' : ''}`}
+                  onClick={() => selectQuestion(q.id)}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => { if (e.key === 'Enter') selectQuestion(q.id); }}
+                >
+                  <div className="mc-td mc-td-id">
                     <span className="mc-card-id">{q.id}</span>
+                  </div>
+
+                  <div className="mc-td mc-td-title">
+                    <div className="mc-list-title-text">{q.title}</div>
+                    <div className="mc-list-summary-text">{q.summary}</div>
+                  </div>
+
+                  <div className="mc-td mc-td-category">
+                    <span className="mc-cat-pill">{q.category}</span>
+                  </div>
+
+                  <div className="mc-td mc-td-diff">
                     <span className={`mc-badge ${q.difficulty.toLowerCase()}`}>
                       {q.difficulty}
                     </span>
                   </div>
 
-                  <h3 className="mc-card-title">{q.title}</h3>
-                  <p className="mc-card-summary">{q.summary}</p>
-                </div>
-
-                <div className="mc-card-footer">
-                  <div className="mc-card-meta">
-                    <span>⏱️ {q.timeEstimate}</span>
-                    <span>•</span>
-                    <span>{q.category}</span>
+                  <div className="mc-td mc-td-time">
+                    <span className="mc-list-time-val">⏱️ {q.timeEstimate}</span>
                   </div>
 
-                  <button
-                    className="mc-btn-primary"
-                    onClick={() => selectQuestion(q.id)}
-                  >
-                    <span>{isCompleted ? 'Review' : 'Code'}</span>
-                    <span>▶</span>
-                  </button>
+                  <div className="mc-td mc-td-status">
+                    {isCompleted ? (
+                      <span className="mc-status-pill completed">✓ Solved</span>
+                    ) : (
+                      <span className="mc-status-pill pending">○ Ready</span>
+                    )}
+                  </div>
+
+                  <div className="mc-td mc-td-action" onClick={(e) => e.stopPropagation()}>
+                    <button
+                      className="mc-btn-primary mc-btn-list-action"
+                      onClick={() => selectQuestion(q.id)}
+                    >
+                      <span>{isCompleted ? 'Review' : 'Code'}</span>
+                      <span>▶</span>
+                    </button>
+                  </div>
                 </div>
-              </div>
-            );
-          })}
-        </div>
+              );
+            })}
+          </div>
+        )}
 
         {/* Pagination Controls */}
         {totalPages > 1 && (

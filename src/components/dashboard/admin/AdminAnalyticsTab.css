@@ -453,3 +453,73 @@
     grid-column: span 1;
   }
 }
+
+/* ─── Recharts Chart Section ────────────────────────────────────── */
+.aat-recharts-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 8px;
+}
+
+.aat-chart-card {
+  background: var(--h-card, rgba(15,20,40,0.7));
+  border: 1px solid var(--h-border, rgba(255,255,255,0.07));
+  border-radius: 16px;
+  padding: 18px 20px 14px;
+  flex: 1;
+  min-width: 0;
+  transition: border-color 0.2s;
+}
+
+.aat-chart-card:hover {
+  border-color: rgba(99,102,241,0.25);
+}
+
+.aat-chart-full {
+  width: 100%;
+}
+
+.aat-chart-half-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+@media (max-width: 820px) {
+  .aat-chart-half-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.aat-chart-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.aat-chart-title {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--h-text, #e2e8f0);
+}
+
+.aat-chart-badge {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: #6366f1;
+  background: rgba(99,102,241,0.12);
+  border: 1px solid rgba(99,102,241,0.25);
+  border-radius: 20px;
+  padding: 2px 10px;
+}
+
+/* Recharts overrides for dark theme */
+.recharts-legend-item-text {
+  color: #64748b !important;
+  font-size: 0.72rem !important;
+}
+.recharts-tooltip-cursor {
+  fill: rgba(99,102,241,0.06) !important;
+}

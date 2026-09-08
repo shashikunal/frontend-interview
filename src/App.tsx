@@ -12,6 +12,7 @@ import Videos from './components/videos/Videos'
 import Dashboard from './components/dashboard/Dashboard'
 import MockInterview from './components/mock/MockInterview'
 import VideoMockInterview from './components/mock/VideoMockInterview'
+import MachineCodingMock from './components/mock/MachineCodingMock'
 import SystemDesignCanvas from './components/system-design/SystemDesignCanvas'
 import Visualizer from './components/visualizer/Visualizer'
 import Pathways from './components/pathways/Pathways'
@@ -44,25 +45,37 @@ import UserManagementStudio from './components/usermanagement/UserManagementStud
 import AdminDashboard from './components/dashboard/AdminDashboard'
 const MachineCodingStudio = lazy(() => import('./components/machinecoding/MachineCodingStudio'))
 const AnalyticsDashboard = lazy(() => import('./components/analytics/AnalyticsDashboard'))
+const Leaderboard = lazy(() => import('./components/leaderboard/Leaderboard'))
 import RoleGuard from './components/auth/RoleGuard'
+import { useAuth } from './context/AuthContext'
 import FeatureGuard from './components/auth/FeatureGuard'
 import { ProtectedRoute } from './features/auth'
 import AuthModal from './components/auth/AuthModal'
 import ScrollToTop from './components/common/ScrollToTop'
+import AchievementUnlockToast from './components/badges/AchievementUnlockToast'
+import { useBadgeEvaluator } from './hooks/useBadgeEvaluator'
 import './App.css'
 
 export default function App() {
   const location = useLocation()
-  const isDashboardRoute = location.pathname.startsWith('/dashboard') || location.pathname.startsWith('/admin')
+  const { user } = useAuth()
+  useBadgeEvaluator()
+
+  const isAdminDashboard = location.pathname.startsWith('/admin') || (location.pathname.startsWith('/dashboard') && user?.role === 'admin')
+  const isStudioWorkspace = location.pathname.startsWith('/machine-coding') && Boolean(new URLSearchParams(location.search).get('id'))
+  const hideHeader = isAdminDashboard
+  const hideFooter = isAdminDashboard || isStudioWorkspace
 
   return (
-    <div className={`app ${isDashboardRoute ? 'dashboard-layout-mode' : ''}`}>
+    <div className={`app ${isAdminDashboard ? 'dashboard-layout-mode' : ''} ${isStudioWorkspace ? 'studio-layout-mode' : ''}`}>
       <ScrollToTop />
-      {!isDashboardRoute && <Header />}
+      {!hideHeader && <Header />}
       <AuthModal />
-      <main className={`main-content ${isDashboardRoute ? 'dashboard-main-content' : ''}`}>
+      <AchievementUnlockToast />
+      <main className={`main-content ${isAdminDashboard ? 'dashboard-main-content' : ''} ${isStudioWorkspace ? 'studio-main-content' : ''}`}>
         <Suspense fallback={<div className="app-route-loader"><div className="app-route-spinner" /><p>Loading masterclass studio...</p></div>}>
-          <Routes>
+          <div key={location.pathname} className="app-page-transition">
+            <Routes>
           <Route path="/" element={<Home />} />
           <Route
             path="/profile"
@@ -108,9 +121,24 @@ export default function App() {
               </RoleGuard>
             }
           />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/dashboard/:tab" element={<Dashboard />} />
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard/:tab"
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
           <Route path="/analytics" element={<AnalyticsDashboard />} />
+          <Route path="/leaderboard" element={<Leaderboard />} />
 
 
 
@@ -355,6 +383,10 @@ export default function App() {
 
           {/* Mocks */}
           <Route
+            path="/mock-coding"
+            element={<MachineCodingMock />}
+          />
+          <Route
             path="/mock-interview"
             element={
               <FeatureGuard feature="video_mock" featureName="Timed Mock Interview Simulator">
@@ -431,9 +463,10 @@ export default function App() {
           <Route path="/practice/*" element={<Navigate to="/questions" replace />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
+        </div>
         </Suspense>
       </main>
-      {!isDashboardRoute && <Footer />}
+      {!hideFooter && <Footer />}
     </div>
   )
 }

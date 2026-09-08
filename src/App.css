@@ -5,6 +5,7 @@
   position: relative;
   background: var(--bg);
   color: var(--text-primary);
+  overflow-x: clip;
   transition: background-color 0.25s ease, color 0.25s ease;
 }
 
@@ -38,18 +39,41 @@
 
 .main-content {
   flex: 1;
-  max-width: none;
+  max-width: 1280px;
   width: 100%;
-  margin: 0;
-  padding: 36px 24px 72px;
+  margin: 0 auto;
+  padding: 36px 32px 72px;
+  box-sizing: border-box;
+}
+
+.main-content:has(.dashboard-page) {
+  max-width: 1400px;
+  padding: 24px 24px 64px;
 }
 
 .main-content:has(.mc-studio-container),
-.main-content.dashboard-main-content {
+.main-content.dashboard-main-content,
+.main-content.studio-main-content {
   padding: 0;
   margin: 0;
   max-width: none;
   width: 100%;
+}
+
+.main-content.studio-main-content {
+  height: calc(100vh - 64px);
+  overflow: hidden;
+}
+
+.app.studio-layout-mode {
+  height: 100vh;
+  max-height: 100vh;
+  overflow: hidden;
+}
+
+.app.studio-layout-mode .header-inner {
+  max-width: 100%;
+  padding: 0 20px;
 }
 
 .app.dashboard-layout-mode {
@@ -57,7 +81,9 @@
 }
 
 .app.dashboard-layout-mode::before,
-.app.dashboard-layout-mode::after {
+.app.dashboard-layout-mode::after,
+.app.studio-layout-mode::before,
+.app.studio-layout-mode::after {
   display: none !important;
 }
 
@@ -84,3 +110,26 @@
 @keyframes appSpin {
   to { transform: rotate(360deg); }
 }
+
+.app-page-transition {
+  width: 100%;
+  animation: pageFadeSlideIn 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.dashboard-main-content .app-page-transition,
+.studio-main-content .app-page-transition {
+  height: 100%;
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    padding: 20px 14px 48px;
+  }
+}
+
+@media (max-width: 480px) {
+  .main-content {
+    padding: 16px 12px 40px;
+  }
+}
+

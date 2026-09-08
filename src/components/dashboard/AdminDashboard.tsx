@@ -18,9 +18,11 @@ import AdminAnalyticsTab from './admin/AdminAnalyticsTab'
 import AdminRequestsTab from './admin/AdminRequestsTab'
 import AdminTelemetryTab from './admin/AdminTelemetryTab'
 import AdminTracksTab from './admin/AdminTracksTab'
+import AdminLiveSessionsTab from './admin/AdminLiveSessionsTab'
 import AdminUserDetailModal from './admin/AdminUserDetailModal'
 import AdminSubmissionCodeModal from './admin/AdminSubmissionCodeModal'
 import AdminAttemptCodeModal from './admin/AdminAttemptCodeModal'
+import Leaderboard from '../leaderboard/Leaderboard'
 import {
   adminAnalyticsService,
   type OverviewStats,
@@ -54,6 +56,8 @@ const PLATFORM_TRACKS: TrackStat[] = [
 export type AdminTab =
   | 'overview'
   | 'users'
+  | 'live'
+  | 'rankings'
   | 'questions'
   | 'submissions'
   | 'attempts'
@@ -79,6 +83,8 @@ export default function AdminDashboard() {
     const clean = rawTab.toLowerCase()
     if (clean === 'overview') return 'overview'
     if (clean === 'candidates' || clean === 'users') return 'users'
+    if (clean === 'live' || clean === 'live-sessions') return 'live'
+    if (clean === 'rankings' || clean === 'leaderboard') return 'rankings'
     if (clean === 'submissions') return 'submissions'
     if (clean === 'attempts') return 'attempts'
     if (clean === 'questions') return 'questions'
@@ -93,7 +99,7 @@ export default function AdminDashboard() {
 
   // Proper query string routing mechanism
   const setActiveTab = useCallback((t: AdminTab) => {
-    const tabName = t === 'users' ? 'candidates' : t === 'audit' ? 'telemetry' : t
+    const tabName = t === 'users' ? 'candidates' : t === 'audit' ? 'telemetry' : t === 'live' ? 'live-sessions' : t
     navigate(`${basePath}?tab=${tabName}`)
   }, [navigate, basePath])
 
@@ -682,6 +688,25 @@ export default function AdminDashboard() {
 
           <button
             type="button"
+            className={`h-nav-item ${activeTab === 'live' ? 'active' : ''}`}
+            onClick={() => { setActiveTab('live'); setIsMobileSidebarOpen(false); }}
+          >
+            <span className="h-nav-icon">🔴</span>
+            <span>Live Coding Sessions</span>
+            <span className="h-nav-badge alert" style={{ background: '#10b981', color: '#ffffff' }}>LIVE</span>
+          </button>
+
+          <button
+            type="button"
+            className={`h-nav-item ${activeTab === 'rankings' ? 'active' : ''}`}
+            onClick={() => { setActiveTab('rankings'); setIsMobileSidebarOpen(false); }}
+          >
+            <span className="h-nav-icon">🏆</span>
+            <span>Rankings</span>
+          </button>
+
+          <button
+            type="button"
             className={`h-nav-item ${activeTab === 'submissions' ? 'active' : ''}`}
             onClick={() => { setActiveTab('submissions'); setIsMobileSidebarOpen(false); }}
           >
@@ -822,6 +847,7 @@ export default function AdminDashboard() {
             <h1 className="h-page-title">
               {activeTab === 'overview' && 'System Operations'}
               {activeTab === 'users' && 'Candidate Directory'}
+              {activeTab === 'live' && 'Live Machine Coding Sessions & Interviews'}
               {activeTab === 'submissions' && 'Submissions Graded'}
               {activeTab === 'attempts' && 'Problem Attempts'}
               {activeTab === 'questions' && 'Question Performance'}
@@ -830,6 +856,7 @@ export default function AdminDashboard() {
               {activeTab === 'requests' && 'Feature Access Requests'}
               {activeTab === 'tracks' && 'Curriculum Tracks'}
               {activeTab === 'audit' && 'Cloud Telemetry Stream'}
+              {activeTab === 'rankings' && '🏆 Candidate Rankings'}
               {activeTab === 'profile' && 'Administrator Profile & Settings'}
             </h1>
           </div>
@@ -995,6 +1022,24 @@ export default function AdminDashboard() {
             onNavigateTab={tab => setActiveTab(tab as AdminTab)}
             onInspectUser={(uId: string) => setSelectedUserForDeepDive(uId)}
           />
+        </div>
+      )}
+
+      {/* ================================================================ */}
+      {/* TAB: LIVE SESSIONS & REAL-TIME INTERVIEW MONITORING */}
+      {/* ================================================================ */}
+      {activeTab === 'live' && (
+        <div className="admin-tab-content">
+          <AdminLiveSessionsTab />
+        </div>
+      )}
+
+      {/* ================================================================ */}
+      {/* TAB: RANKINGS — GLOBAL CANDIDATE LEADERBOARD */}
+      {/* ================================================================ */}
+      {activeTab === 'rankings' && (
+        <div className="admin-tab-content">
+          <Leaderboard compact={false} />
         </div>
       )}
 
@@ -1324,7 +1369,7 @@ export default function AdminDashboard() {
       {/* ================================================================ */}
       {activeTab === 'questions' && (
         <div className="admin-tab-content">
-          <AdminQuestionsTab initialStats={questionsStatsList} />
+          <AdminQuestionsTab />
         </div>
       )}
 
@@ -2319,6 +2364,13 @@ export default function AdminDashboard() {
         <AdminSubmissionCodeModal
           submission={selectedSubmissionForCode}
           onClose={() => setSelectedSubmissionForCode(null)}
+          onSaveReview={(rev) => {
+            setSubmissionsList(prev =>
+              prev.map(s => (s.id === rev.submissionId ? { ...s, score: rev.score } : s))
+            )
+            setStatusToast(`⭐ Evaluator Review saved! Candidate marks updated to ${rev.score}%.`)
+            setTimeout(() => setStatusToast(null), 4000)
+          }}
         />
       )}
 

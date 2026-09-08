@@ -7,6 +7,7 @@ import { BookmarkProvider } from './context/BookmarkContext'
 import { ProgressProvider } from './context/ProgressContext'
 import App from './App'
 import './index.css'
+import './horizon-candidate-theme.css'
 
 // Clean up any legacy demo mock data from previous sessions
 try {

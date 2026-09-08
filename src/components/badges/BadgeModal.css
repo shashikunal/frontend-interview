@@ -1,0 +1,174 @@
+/* ─── Badge Modal Styles ─────────────────────────────────────────── */
+
+.bm-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(4, 7, 16, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100000;
+  padding: 16px;
+  animation: bmFadeIn 0.2s ease;
+}
+
+@keyframes bmFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.bm-card {
+  position: relative;
+  width: 100%;
+  max-width: 440px;
+  background: var(--modal-bg);
+  border: 1px solid var(--border-strong);
+  border-radius: 24px;
+  padding: 32px 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  box-shadow: var(--shadow-lg);
+  animation: bmScaleUp 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+}
+
+@keyframes bmScaleUp {
+  from {
+    opacity: 0;
+    transform: scale(0.92) translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.bm-close-btn {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--surface-hover);
+  border: 1px solid var(--border-strong);
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+}
+
+.bm-close-btn:hover {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+}
+
+/* Big Badge Halo */
+.bm-halo {
+  width: 96px;
+  height: 96px;
+  border-radius: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  position: relative;
+  font-size: 3.5rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.bm-card.tier-bronze .bm-halo {
+  background: radial-gradient(circle, rgba(245, 158, 11, 0.25) 0%, transparent 80%);
+  border-color: #f59e0b;
+  box-shadow: 0 0 30px rgba(245, 158, 11, 0.3);
+}
+
+.bm-card.tier-silver .bm-halo {
+  background: radial-gradient(circle, rgba(203, 213, 225, 0.25) 0%, transparent 80%);
+  border-color: #cbd5e1;
+  box-shadow: 0 0 30px rgba(203, 213, 225, 0.3);
+}
+
+.bm-card.tier-gold .bm-halo {
+  background: radial-gradient(circle, rgba(251, 191, 36, 0.3) 0%, transparent 80%);
+  border-color: #fbbf24;
+  box-shadow: 0 0 34px rgba(251, 191, 36, 0.4);
+}
+
+.bm-card.tier-diamond .bm-halo {
+  background: radial-gradient(circle, rgba(56, 189, 248, 0.35) 0%, transparent 80%);
+  border-color: #38bdf8;
+  box-shadow: 0 0 40px rgba(56, 189, 248, 0.5);
+}
+
+.bm-title {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 0 0 6px;
+}
+
+.bm-tier-tag {
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 4px 12px;
+  border-radius: 999px;
+  margin-bottom: 16px;
+}
+
+.bm-card.tier-bronze .bm-tier-tag { background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); }
+.bm-card.tier-silver .bm-tier-tag { background: rgba(203, 213, 225, 0.15); color: #cbd5e1; border: 1px solid rgba(203, 213, 225, 0.3); }
+.bm-card.tier-gold .bm-tier-tag { background: rgba(251, 191, 36, 0.15); color: #fbbf24; border: 1px solid rgba(251, 191, 36, 0.3); }
+.bm-card.tier-diamond .bm-tier-tag { background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); }
+
+.bm-desc {
+  font-size: 0.92rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin: 0 0 24px;
+}
+
+/* Detail Box */
+.bm-details-box {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.bm-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.84rem;
+}
+
+.bm-row-label {
+  color: var(--text-muted);
+}
+
+.bm-row-val {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.bm-actions {
+  width: 100%;
+  display: flex;
+  gap: 12px;
+}

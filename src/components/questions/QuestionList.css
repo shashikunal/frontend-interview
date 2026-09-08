@@ -139,8 +139,8 @@
 .question-card {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  padding: 18px 78px 18px 18px;
+  gap: 12px;
+  padding: 18px;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
@@ -148,6 +148,17 @@
   position: relative;
   overflow: hidden;
   width: 100%;
+}
+
+[data-theme="light"] .question-card {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 8px rgba(27, 37, 75, 0.04);
+}
+
+[data-theme="light"] .question-card:hover {
+  border-color: rgba(117, 81, 255, 0.3);
+  box-shadow: 0 8px 24px rgba(27, 37, 75, 0.08);
 }
 
 .question-card.is-solved {
@@ -245,6 +256,9 @@
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
+  align-items: center;
+  padding-right: 145px;
+  min-height: 28px;
 }
 
 

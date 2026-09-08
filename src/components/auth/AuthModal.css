@@ -19,26 +19,26 @@
 
 .auth-modal-card {
   position: relative;
-  background: #0b0f19;
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: var(--modal-bg);
+  border: 1px solid var(--border-strong);
   border-radius: var(--radius-xl);
   padding: 36px;
   width: 100%;
   max-width: 500px;
-  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(99, 102, 241, 0.3);
+  box-shadow: var(--shadow-lg), 0 0 0 1px rgba(99, 102, 241, 0.25);
   display: flex;
   flex-direction: column;
   gap: 20px;
-  color: #f8fafc;
+  color: var(--text-primary);
 }
 
 .auth-close-btn {
   position: absolute;
   top: 18px;
   right: 18px;
-  background: #1e293b;
-  border: 1px solid #334155;
-  color: #cbd5e1;
+  background: var(--surface-hover);
+  border: 1px solid var(--border-strong);
+  color: var(--text-muted);
   width: 34px;
   height: 34px;
   border-radius: 50%;
@@ -78,13 +78,13 @@
 .auth-modal-header h2 {
   margin: 0;
   font-size: 1.4rem;
-  color: #ffffff;
+  color: var(--text-primary);
 }
 
 .auth-sub {
   margin: 0;
   font-size: 0.88rem;
-  color: #94a3b8;
+  color: var(--text-muted);
   line-height: 1.4;
 }
 
@@ -134,8 +134,8 @@
 /* Method Switcher Tabs (Password vs OTP) */
 .auth-method-tabs {
   display: flex;
-  background: #111827;
-  border: 1px solid #1f2937;
+  background: var(--surface-hover);
+  border: 1px solid var(--border-strong);
   border-radius: var(--radius-md);
   padding: 4px;
   gap: 4px;
@@ -147,7 +147,7 @@
   background: transparent;
   border: none;
   border-radius: var(--radius-sm);
-  color: #94a3b8;
+  color: var(--text-muted);
   font-size: 0.85rem;
   font-weight: 700;
   cursor: pointer;
@@ -163,8 +163,8 @@
 /* Password Mode Toggle (Sign In vs Sign Up) */
 .password-mode-toggle {
   display: flex;
-  background: #090d16;
-  border: 1px solid #1e293b;
+  background: var(--bg);
+  border: 1px solid var(--border-strong);
   border-radius: var(--radius-sm);
   padding: 3px;
   gap: 3px;
@@ -176,7 +176,7 @@
   background: transparent;
   border: none;
   border-radius: 4px;
-  color: #94a3b8;
+  color: var(--text-muted);
   font-size: 0.8rem;
   font-weight: 700;
   cursor: pointer;
@@ -184,9 +184,9 @@
 }
 
 .pmt-btn.active {
-  background: #1e293b;
-  color: #f8fafc;
-  border: 1px solid #334155;
+  background: var(--surface-hover);
+  color: var(--text-primary);
+  border: 1px solid var(--border-strong);
 }
 
 .label-with-hint {
@@ -238,25 +238,25 @@
 .input-group label {
   font-size: 0.86rem;
   font-weight: 700;
-  color: #e2e8f0;
+  color: var(--text-primary);
 }
 
 /* High Visibility Email Input Wrapper */
 .email-input-wrapper {
   display: flex;
   align-items: center;
-  background: #111827;
-  border: 2px solid #6366f1;
+  background: var(--surface-hover);
+  border: 2px solid var(--accent);
   border-radius: var(--radius-md);
   padding: 4px 14px;
-  box-shadow: 0 0 16px rgba(99, 102, 241, 0.15);
+  box-shadow: 0 0 16px rgba(99, 102, 241, 0.12);
   transition: all 0.2s;
 }
 
 .email-input-wrapper:focus-within {
   border-color: #818cf8;
-  box-shadow: 0 0 20px rgba(99, 102, 241, 0.35);
-  background: #1f2937;
+  box-shadow: 0 0 20px rgba(99, 102, 241, 0.30);
+  background: var(--bg);
 }
 
 .email-input-icon {
@@ -271,7 +271,7 @@
   border: none !important;
   padding: 12px 4px !important;
   font-size: 1rem !important;
-  color: #ffffff !important;
+  color: var(--text-primary) !important;
   outline: none !important;
   display: block !important;
   width: 100% !important;
@@ -281,7 +281,7 @@
 }
 
 .auth-input.visible-field::placeholder {
-  color: #94a3b8 !important;
+  color: var(--text-muted) !important;
 }
 
 .auth-submit-btn {
@@ -309,13 +309,13 @@
 .otp-digit-box {
   width: 50px;
   height: 58px;
-  background: #111827 !important;
-  border: 2px solid #334155;
+  background: var(--surface-hover) !important;
+  border: 2px solid var(--border-strong);
   border-radius: var(--radius-md);
   font-size: 1.5rem;
   font-weight: 800;
   font-family: var(--font-mono);
-  color: #ffffff !important;
+  color: var(--text-primary) !important;
   text-align: center;
   outline: none;
   transition: all 0.2s;
@@ -325,13 +325,13 @@
 
 .otp-digit-box:focus {
   border-color: #818cf8;
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.35);
-  background: #1f2937 !important;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.30);
+  background: var(--bg) !important;
 }
 
 .otp-digit-box.filled {
   border-color: #10b981;
-  background: rgba(16, 185, 129, 0.12) !important;
+  background: rgba(16, 185, 129, 0.10) !important;
 }
 
 /* Email Sent Notice in Step 2 */
@@ -353,14 +353,14 @@
 .email-sent-notice strong {
   display: block;
   font-size: 0.9rem;
-  color: #ffffff;
+  color: var(--text-primary);
   margin-bottom: 2px;
 }
 
 .email-sent-notice p {
   margin: 0;
   font-size: 0.82rem;
-  color: #cbd5e1;
+  color: var(--text-secondary);
 }
 
 .email-sent-notice code {
@@ -389,8 +389,8 @@
 
 /* Supabase Configuration Drawer */
 .supabase-config-drawer {
-  background: #090d16;
-  border: 1px solid #334155;
+  background: var(--bg);
+  border: 1px solid var(--border-strong);
   border-radius: var(--radius-md);
   padding: 16px;
   display: flex;
@@ -400,20 +400,14 @@
   animation: fadeIn 0.25s ease;
 }
 
-.scd-top {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
 .scd-top strong {
   font-size: 0.9rem;
-  color: #f8fafc;
+  color: var(--text-primary);
 }
 
 .scd-top span {
   font-size: 0.76rem;
-  color: #94a3b8;
+  color: var(--text-muted);
 }
 
 .scd-actions {

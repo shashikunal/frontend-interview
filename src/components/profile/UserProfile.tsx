@@ -4,6 +4,7 @@ import { useAuth } from '../../context/AuthContext'
 import { useProgress } from '../../context/ProgressContext'
 import { useBookmarks } from '../../context/BookmarkContext'
 import { dbActivityService, type ActivityLogItem } from '../../lib/supabase'
+import BadgeShowcase from '../badges/BadgeShowcase'
 import './UserProfile.css'
 
 const TARGET_COMPANIES = ['Google', 'Meta', 'Amazon', 'Apple', 'Netflix', 'Microsoft', 'Stripe', 'Airbnb', 'Uber', 'ByteDance']
@@ -188,6 +189,17 @@ export default function UserProfile() {
           </div>
         </div>
       </div>
+
+      {/* Candidate Badges & Achievement Showcase */}
+      <section className="profile-badges-section">
+        <div className="section-title-row">
+          <div>
+            <h2>🏅 Achievements &amp; Candidate Milestones</h2>
+            <p className="subtitle">Unlock badges, accumulate XP, and level up your frontend candidate status.</p>
+          </div>
+        </div>
+        <BadgeShowcase />
+      </section>
 
       {/* Question Completion Matrix & Category Mastery */}
       <div className="completion-matrix-grid">

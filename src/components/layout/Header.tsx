@@ -1,7 +1,10 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useMemo } from 'react'
+import { createPortal } from 'react-dom'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useProgress } from '../../context/ProgressContext'
+import { useBookmarks } from '../../context/BookmarkContext'
 import { useAuth } from '../../context/AuthContext'
+import { badgeService } from '../../lib/badgeService'
 import ThemeToggle from './ThemeToggle'
 import AdminNotificationBell from './AdminNotificationBell'
 import './Header.css'
@@ -12,10 +15,26 @@ export default function Header() {
   const [term, setTerm] = useState('')
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
   const [isUserMenuOpen, setIsUserMenuOpen] = useState<boolean>(false)
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false)
+  const [mobileExpandedSection, setMobileExpandedSection] = useState<string | null>(null)
   const headerRef = useRef<HTMLElement | null>(null)
 
-  const { streak } = useProgress()
+  const { streak, solvedIds, mockInterviews } = useProgress()
+  const { bookmarkedCount } = useBookmarks()
   const { user, isAuthenticated, hasFeature, openAuthModal, signOut } = useAuth()
+
+  const levelInfo = useMemo(() => {
+    const solvedCount = solvedIds.size
+    const strongHireCount = mockInterviews.filter(m => m.verdict === 'Strong Hire').length
+    const mockCount = mockInterviews.length
+    const machineCodingCount = Math.max(
+      mockInterviews.reduce((acc, m) => acc + ((m.testCasesPassed && m.testCasesPassed > 0) ? 1 : 0), 0),
+      solvedCount > 0 ? 1 : 0
+    )
+    const stats = { solvedCount, streakDays: streak, mockCount, strongHireCount, bookmarkedCount, machineCodingCount }
+    const badges = badgeService.evaluateBadges(stats)
+    return badgeService.calculateLevelInfo(badges)
+  }, [solvedIds.size, streak, mockInterviews, bookmarkedCount])
 
   const hasQuestionsFull = hasFeature('questions_full')
   const hasCodingSandbox = hasFeature('coding_sandbox')
@@ -34,15 +53,30 @@ export default function Header() {
   const isMockActive = ['/mock-interview', '/video-mock', '/behavioral', '/peer-room'].some(p => isActive(p))
   const isMachineCodingActive = isActive('/machine-coding') || isActive('/machine-level-coding')
 
-  // Close dropdown on navigation
+  // Close dropdown and mobile menu on navigation
   useEffect(() => {
     setActiveDropdown(null)
     setIsUserMenuOpen(false)
+    setIsMobileMenuOpen(false)
+    document.body.style.overflow = ''
   }, [location])
 
   const closeMenus = () => {
     setActiveDropdown(null)
     setIsUserMenuOpen(false)
+  }
+
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(prev => {
+      const next = !prev
+      document.body.style.overflow = next ? 'hidden' : ''
+      return next
+    })
+  }
+
+  const closeMobileMenu = () => {
+    setIsMobileMenuOpen(false)
+    document.body.style.overflow = ''
   }
 
   useEffect(() => {
@@ -57,6 +91,7 @@ export default function Header() {
       if (e.key === 'Escape') {
         setActiveDropdown(null)
         setIsUserMenuOpen(false)
+        closeMobileMenu()
       }
     }
 
@@ -65,6 +100,7 @@ export default function Header() {
     return () => {
       document.removeEventListener('mousedown', handleClickOutside)
       document.removeEventListener('keydown', handleKeyDown)
+      document.body.style.overflow = ''
     }
   }, [])
 
@@ -80,7 +116,8 @@ export default function Header() {
   }
 
   return (
-    <header className="header" ref={headerRef}>
+    <>
+      <header className="header" ref={headerRef}>
       <div className="header-inner">
         <Link to={isAuthenticated && user?.role === 'admin' ? '/dashboard' : '/'} className="logo">
           <span className="logo-mark" aria-hidden="true" />
@@ -93,15 +130,17 @@ export default function Header() {
         <nav className="nav" aria-label="Main navigation">
           {isAuthenticated && user?.role === 'admin' ? (
             /* Admin Only Navigation: Only Dashboard */
-            <Link
-              to="/dashboard"
-              className={`nav-link nav-link-dashboard ${isActive('/dashboard') ? 'active' : ''}`}
-            >
-              📊 Operations Dashboard
-            </Link>
+            <div className="desktop-nav-items">
+              <Link
+                to="/dashboard"
+                className={`nav-link nav-link-dashboard ${isActive('/dashboard') ? 'active' : ''}`}
+              >
+                📊 Operations Dashboard
+              </Link>
+            </div>
           ) : (
             /* Candidate / Standard Navigation */
-            <>
+            <div className="desktop-nav-items">
               <form className="header-search" onSubmit={onSearch} role="search">
                 <input
                   type="search"
@@ -120,15 +159,19 @@ export default function Header() {
               </Link>
 
               {/* 2. Direct Machine Coding Masterclass Link */}
-              <Link to="/machine-coding" className={`nav-link nav-link-mc ${isMachineCodingActive ? 'active' : ''}`}>
-                <span className="mc-nav-glow-dot"></span>
+              <Link to="/machine-coding" className={`nav-link ${isMachineCodingActive ? 'active' : ''}`}>
                 Machine Coding
                 {!hasCodingSandbox && <span className="nav-lock-tag">🔒</span>}
               </Link>
 
+              {/* 2b. Leaderboard */}
+              <Link to="/leaderboard" className={`nav-link ${isActive('/leaderboard') ? 'active' : ''}`}>
+                🏆 Leaderboard
+              </Link>
+
               {/* 3. Video Masterclass (Only practice lab preserved) */}
               <Link to="/videos" className={`nav-link ${isActive('/videos') ? 'active' : ''}`}>
-                🎥 Video Masterclass
+                🎥 Videos
                 {!hasQuestionsFull && <span className="nav-lock-tag">🔒</span>}
               </Link>
 
@@ -156,14 +199,19 @@ export default function Header() {
                 </button>
               </div>
 
-              {/* 6. Dashboard */}
-              <Link to="/dashboard" className={`nav-link nav-link-dashboard ${isActive('/dashboard') ? 'active' : ''}`}>
-                Dashboard
-                {streak > 0 && <span className="streak-badge" title={`${streak} day study streak`}>🔥 {streak}</span>}
-              </Link>
-            </>
+              {/* 6. Dashboard (Only when authenticated) */}
+              {isAuthenticated && (
+                <Link to="/dashboard" className={`nav-link nav-link-dashboard ${isActive('/dashboard') ? 'active' : ''}`}>
+                  Dashboard
+                  {streak > 0 && <span className="streak-badge" title={`${streak} day study streak`}>🔥 {streak}</span>}
+                </Link>
+              )}
+            </div>
           )}
+        </nav>
 
+        {/* Header Right Actions: Theme Toggle, Auth, Mobile Menu Toggle */}
+        <div className="header-right-actions">
           {/* 5. Theme Toggle */}
           <div className="header-toggle-wrap">
             <ThemeToggle />
@@ -171,6 +219,17 @@ export default function Header() {
 
           {/* 6. User Auth Button / Profile Menu */}
           <div className="header-auth-wrap">
+            {isAuthenticated && (
+              <Link
+                to="/profile"
+                className="header-level-pill"
+                title={`Candidate Level ${levelInfo.level}: ${levelInfo.title} (${levelInfo.currentXp} XP)`}
+              >
+                <span className="hlp-badge">L{levelInfo.level}</span>
+                <span className="hlp-xp">{levelInfo.currentXp} XP</span>
+              </Link>
+            )}
+
             {isAuthenticated && user?.role === 'admin' && (
               <AdminNotificationBell />
             )}
@@ -195,6 +254,26 @@ export default function Header() {
                       <strong>{user.name}</strong>
                       <span className="ud-email">{user.email}</span>
                       <span className={`ud-badge ${user.role}`}>{user.role.toUpperCase()}</span>
+                    </div>
+
+                    <div className="ud-level-card">
+                      <div className="ud-lvl-row">
+                        <span className="ud-lvl-tag">L{levelInfo.level}</span>
+                        <div className="ud-lvl-info">
+                          <span className="ud-lvl-name">{levelInfo.title}</span>
+                          <span className="ud-lvl-pts">{levelInfo.currentXp} / {levelInfo.xpForNextLevel} XP</span>
+                        </div>
+                      </div>
+                      <div className="ud-lvl-track">
+                        <div className="ud-lvl-bar" style={{ width: `${levelInfo.progressPercent}%` }} />
+                      </div>
+                      <Link
+                        to="/profile"
+                        className="ud-ach-link"
+                        onClick={() => setIsUserMenuOpen(false)}
+                      >
+                        🏅 {levelInfo.totalBadgesUnlocked} / {levelInfo.totalBadgesCount} Badges Unlocked →
+                      </Link>
                     </div>
 
                     <div className="ud-divider" />
@@ -268,7 +347,7 @@ export default function Header() {
               </div>
 
             ) : (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <div className="header-guest-auth-btns">
                 <button
                   type="button"
                   className="btn btn-secondary btn-sm"
@@ -279,7 +358,7 @@ export default function Header() {
                 </button>
                 <button
                   type="button"
-                  className="btn btn-primary btn-sm"
+                  className="btn btn-primary btn-sm header-admin-login-btn"
                   style={{
                     background: 'linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%)',
                     border: 'none',
@@ -292,7 +371,20 @@ export default function Header() {
               </div>
             )}
           </div>
-        </nav>
+
+          {/* Mobile Menu Hamburger Toggle */}
+          <button
+            type="button"
+            className={`mobile-menu-toggle ${isMobileMenuOpen ? 'open' : ''}`}
+            onClick={toggleMobileMenu}
+            aria-label={isMobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
+            aria-expanded={isMobileMenuOpen}
+          >
+            <span className="hamburger-bar top" />
+            <span className="hamburger-bar mid" />
+            <span className="hamburger-bar bot" />
+          </button>
+        </div>
       </div>
 
 
@@ -658,6 +750,16 @@ export default function Header() {
               <div className="mega-column">
                 <span className="mega-col-title">⏱️ Timed Simulations</span>
                 <div className="mega-items-group">
+                  <Link to="/mock-coding" className={`mega-item ${isActive('/mock-coding') ? 'active' : ''}`}>
+                    <span className="drop-icon">🎤</span>
+                    <div>
+                      <span className="drop-title">
+                        Machine Coding Mock
+                      </span>
+                      <span className="drop-desc">Timed component sandbox with auto-test harness</span>
+                    </div>
+                  </Link>
+
                   <Link to="/mock-interview" className={`mega-item ${isActive('/mock-interview') ? 'active' : ''}`}>
                     <span className="drop-icon">⏱️</span>
                     <div>
@@ -718,5 +820,277 @@ export default function Header() {
         </div>
       )}
     </header>
-  )
+
+    {typeof document !== 'undefined' && createPortal(
+      <>
+        {/* Mobile Navigation Backdrop & Drawer */}
+        <div
+          className={`mobile-nav-backdrop ${isMobileMenuOpen ? 'open' : ''}`}
+          onClick={closeMobileMenu}
+          aria-hidden={!isMobileMenuOpen}
+        />
+
+        <aside
+          className={`mobile-nav-drawer ${isMobileMenuOpen ? 'open' : ''}`}
+          aria-label="Mobile Navigation"
+          aria-hidden={!isMobileMenuOpen}
+        >
+        <div className="mobile-drawer-header">
+          <Link to={isAuthenticated && user?.role === 'admin' ? '/dashboard' : '/'} className="logo" onClick={closeMobileMenu}>
+            <span className="logo-mark" aria-hidden="true" />
+            <span className="logo-text">Interview<span className="logo-accent">Prep</span></span>
+          </Link>
+          <div className="mobile-drawer-header-actions">
+            <ThemeToggle />
+            <button
+              type="button"
+              className="mobile-drawer-close-btn"
+              onClick={closeMobileMenu}
+              aria-label="Close navigation"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+
+        <div className="mobile-drawer-body">
+          {!(isAuthenticated && user?.role === 'admin') && (
+            <form className="mobile-search-form" onSubmit={(e) => { onSearch(e); closeMobileMenu(); }} role="search">
+              <input
+                type="search"
+                className="mobile-search-input"
+                placeholder="Search questions & topics…"
+                value={term}
+                onChange={e => setTerm(e.target.value)}
+                aria-label="Search all questions"
+              />
+              <button type="submit" className="mobile-search-btn" aria-label="Search">🔍</button>
+            </form>
+          )}
+
+          {isAuthenticated && user?.role === 'admin' ? (
+            <div className="mobile-nav-group">
+              <span className="mobile-group-title">Admin Management</span>
+              <Link to="/dashboard" className={`mobile-nav-item ${isActive('/dashboard') ? 'active' : ''}`} onClick={closeMobileMenu}>
+                <span className="m-icon">📊</span>
+                <span className="m-label">Operations Dashboard</span>
+              </Link>
+              <Link to="/user-management" className={`mobile-nav-item ${isActive('/user-management') ? 'active' : ''}`} onClick={closeMobileMenu}>
+                <span className="m-icon">⚙️</span>
+                <span className="m-label">RBAC &amp; Permissions</span>
+              </Link>
+            </div>
+          ) : (
+            <>
+              <div className="mobile-nav-group">
+                <span className="mobile-group-title">Practice &amp; Learn</span>
+                <Link to="/questions" className={`mobile-nav-item ${isActive('/questions') ? 'active' : ''}`} onClick={closeMobileMenu}>
+                  <span className="m-icon">📚</span>
+                  <div className="m-text">
+                    <span className="m-label">Questions Bank</span>
+                    <span className="m-sub">22,222 questions</span>
+                  </div>
+                  {!hasQuestionsFull && <span className="nav-lock-tag">🔒</span>}
+                </Link>
+
+                <Link to="/machine-coding" className={`mobile-nav-item ${isMachineCodingActive ? 'active' : ''}`} onClick={closeMobileMenu}>
+                  <span className="m-icon">⚡</span>
+                  <div className="m-text">
+                    <span className="m-label">Machine Coding</span>
+                    <span className="m-sub">Live sandbox &amp; tests</span>
+                  </div>
+                  {!hasCodingSandbox && <span className="nav-lock-tag">🔒</span>}
+                </Link>
+
+                <Link to="/mock-coding" className={`mobile-nav-item ${isActive('/mock-coding') ? 'active' : ''}`} onClick={closeMobileMenu}>
+                  <span className="m-icon">🎤</span>
+                  <div className="m-text">
+                    <span className="m-label">Machine Coding Mock</span>
+                    <span className="m-sub">Full interview simulator</span>
+                  </div>
+                  <span className="m-badge-pill">NEW</span>
+                </Link>
+
+                <Link to="/leaderboard" className={`mobile-nav-item ${isActive('/leaderboard') ? 'active' : ''}`} onClick={closeMobileMenu}>
+                  <span className="m-icon">🏆</span>
+                  <div className="m-text">
+                    <span className="m-label">Leaderboard</span>
+                    <span className="m-sub">Rankings &amp; XP</span>
+                  </div>
+                </Link>
+
+                <Link to="/videos" className={`mobile-nav-item ${isActive('/videos') ? 'active' : ''}`} onClick={closeMobileMenu}>
+                  <span className="m-icon">🎥</span>
+                  <div className="m-text">
+                    <span className="m-label">Video Masterclass</span>
+                    <span className="m-sub">Curated breakdown labs</span>
+                  </div>
+                </Link>
+
+                {isAuthenticated ? (
+                  <Link to="/dashboard" className={`mobile-nav-item ${isActive('/dashboard') ? 'active' : ''}`} onClick={closeMobileMenu}>
+                    <span className="m-icon">📈</span>
+                    <div className="m-text">
+                      <span className="m-label">Dashboard &amp; Progress</span>
+                      <span className="m-sub">Personal analytics</span>
+                    </div>
+                    {streak > 0 && <span className="streak-badge">🔥 {streak}</span>}
+                  </Link>
+                ) : (
+                  <button
+                    type="button"
+                    className="mobile-nav-item"
+                    style={{ width: '100%', background: 'none', border: 'none', textAlign: 'left', cursor: 'pointer', fontFamily: 'inherit' }}
+                    onClick={() => {
+                      closeMobileMenu()
+                      openAuthModal('user')
+                    }}
+                  >
+                    <span className="m-icon">📈</span>
+                    <div className="m-text">
+                      <span className="m-label">Dashboard &amp; Progress</span>
+                      <span className="m-sub">Sign in to track personal stats</span>
+                    </div>
+                    <span className="nav-lock-tag">🔒</span>
+                  </button>
+                )}
+              </div>
+
+              {/* Collapsible Architecture Section */}
+              <div className="mobile-accordion">
+                <button
+                  type="button"
+                  className={`mobile-accordion-toggle ${mobileExpandedSection === 'architecture' ? 'open' : ''}`}
+                  onClick={() => setMobileExpandedSection(prev => prev === 'architecture' ? null : 'architecture')}
+                >
+                  <span className="m-accordion-label">
+                    <span className="m-icon">🏛️</span> Architecture &amp; System Design
+                  </span>
+                  <span className="m-accordion-caret">{mobileExpandedSection === 'architecture' ? '▲' : '▼'}</span>
+                </button>
+
+                {mobileExpandedSection === 'architecture' && (
+                  <div className="mobile-accordion-content">
+                    <Link to="/system-design" className="mobile-sublink" onClick={closeMobileMenu}>📐 System Design Canvas</Link>
+                    <Link to="/case-studies" className="mobile-sublink" onClick={closeMobileMenu}>🏢 Real-world Case Studies</Link>
+                    <Link to="/security" className="mobile-sublink" onClick={closeMobileMenu}>🛡️ Web Security Sandbox</Link>
+                    <Link to="/module-federation" className="mobile-sublink" onClick={closeMobileMenu}>🧩 Microfrontends (MFE)</Link>
+                    <Link to="/webrtc-lab" className="mobile-sublink" onClick={closeMobileMenu}>📹 WebRTC Lab</Link>
+                    <Link to="/local-first" className="mobile-sublink" onClick={closeMobileMenu}>💾 Local-First Architecture</Link>
+                    <Link to="/design-system" className="mobile-sublink" onClick={closeMobileMenu}>🎨 Enterprise Design System</Link>
+                    <Link to="/profiler" className="mobile-sublink" onClick={closeMobileMenu}>⚡ Performance Profiler</Link>
+                    <Link to="/resume-optimizer" className="mobile-sublink" onClick={closeMobileMenu}>📄 AI Resume Optimizer</Link>
+                    <Link to="/compensation" className="mobile-sublink" onClick={closeMobileMenu}>💰 Compensation &amp; Offers</Link>
+                  </div>
+                )}
+              </div>
+
+              {/* Collapsible Mocks Section */}
+              <div className="mobile-accordion">
+                <button
+                  type="button"
+                  className={`mobile-accordion-toggle ${mobileExpandedSection === 'mock' ? 'open' : ''}`}
+                  onClick={() => setMobileExpandedSection(prev => prev === 'mock' ? null : 'mock')}
+                >
+                  <span className="m-accordion-label">
+                    <span className="m-icon">🎙️</span> Mock Interviews
+                  </span>
+                  <span className="m-accordion-caret">{mobileExpandedSection === 'mock' ? '▲' : '▼'}</span>
+                </button>
+
+                {mobileExpandedSection === 'mock' && (
+                  <div className="mobile-accordion-content">
+                    <Link to="/mock-interview" className="mobile-sublink" onClick={closeMobileMenu}>⏱️ Timed Mock Simulator</Link>
+                    <Link to="/video-mock" className="mobile-sublink" onClick={closeMobileMenu}>🎥 AI Video Mock Interview</Link>
+                    <Link to="/behavioral" className="mobile-sublink" onClick={closeMobileMenu}>🤝 FAANG STAR Behavioral</Link>
+                    <Link to="/peer-room" className="mobile-sublink" onClick={closeMobileMenu}>👥 Peer-to-Peer Live Room</Link>
+                  </div>
+                )}
+              </div>
+            </>
+          )}
+
+          {/* Account & Profile Footer */}
+          <div className="mobile-drawer-footer">
+            {isAuthenticated && user ? (
+              <div className="mobile-user-box">
+                <div className="mobile-user-details">
+                  <span className="m-user-avatar">👨‍💻</span>
+                  <div className="m-user-text">
+                    <strong className="m-user-name">{user.name}</strong>
+                    <span className="m-user-email">{user.email}</span>
+                  </div>
+                  <span className={`ud-badge ${user.role}`}>{user.role.toUpperCase()}</span>
+                </div>
+
+                <div className="mobile-user-level-card">
+                  <div className="ud-lvl-row">
+                    <span className="ud-lvl-tag">L{levelInfo.level}</span>
+                    <div className="ud-lvl-info">
+                      <span className="ud-lvl-name">{levelInfo.title}</span>
+                      <span className="ud-lvl-pts">{levelInfo.currentXp} / {levelInfo.xpForNextLevel} XP</span>
+                    </div>
+                  </div>
+                  <div className="ud-lvl-track">
+                    <div className="ud-lvl-bar" style={{ width: `${levelInfo.progressPercent}%` }} />
+                  </div>
+                </div>
+
+                <div className="mobile-user-actions">
+                  {user.role === 'admin' ? (
+                    <Link to="/dashboard" className="btn btn-secondary btn-sm" style={{ width: '100%' }} onClick={closeMobileMenu}>
+                      🛡️ Admin Dashboard
+                    </Link>
+                  ) : (
+                    <Link to="/profile" className="btn btn-secondary btn-sm" style={{ width: '100%' }} onClick={closeMobileMenu}>
+                      👤 View Profile
+                    </Link>
+                  )}
+                  <button
+                    type="button"
+                    className="ud-logout-btn"
+                    style={{ width: '100%' }}
+                    onClick={() => {
+                      signOut()
+                      closeMobileMenu()
+                    }}
+                  >
+                    🚪 Sign Out
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="mobile-guest-actions">
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  style={{ width: '100%' }}
+                  onClick={() => {
+                    closeMobileMenu()
+                    openAuthModal('user')
+                  }}
+                >
+                  🔐 User Login
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  style={{ width: '100%' }}
+                  onClick={() => {
+                    closeMobileMenu()
+                    openAuthModal('admin')
+                  }}
+                >
+                  🛡️ Admin Login
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      </aside>
+    </>,
+    document.body
+  )}
+</>
+)
 }

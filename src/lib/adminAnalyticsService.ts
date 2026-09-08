@@ -1,6 +1,7 @@
 import { supabase } from './supabase/client'
 import type { SubmissionRecord, QuestionAttempt, ActivityAction } from './trackingService'
 import { resolveCandidateQuestionDetails } from './candidateCodeHelper'
+import { ensureReaderAuth, resolveQuestionTitle, LOCAL_MC_SUBMISSIONS_KEY, type StoredCandidateSubmission } from './leaderboardService'
 
 export type { SubmissionRecord, QuestionAttempt }
 
@@ -44,6 +45,9 @@ export interface AdminSubmissionItem extends SubmissionRecord {
   userName?: string
   userEmail?: string
   questionTitle?: string
+  isMachineCoding?: boolean
+  testsPassed?: number
+  testsTotal?: number
 }
 
 export interface AdminQuestionStat {
@@ -217,7 +221,7 @@ export const adminAnalyticsService = {
   },
 
   /**
-   * Fetch submissions list with user profile information
+   * Fetch submissions list with user profile information, machine coding titles, and marks
    */
   getSubmissionsList: async (params: {
     limit?: number
@@ -226,15 +230,16 @@ export const adminAnalyticsService = {
     language?: string
     search?: string
   }): Promise<AdminSubmissionItem[]> => {
-    const limit = params.limit || 50
+    const limit = params.limit || 100
     const offset = params.offset || 0
 
     try {
-      let query = supabase
+      const client = await ensureReaderAuth()
+
+      let query = client
         .from('submissions')
         .select('*')
         .order('created_at', { ascending: false })
-        .range(offset, offset + limit - 1)
 
       if (params.status && params.status !== 'ALL') {
         query = query.eq('status', params.status)
@@ -242,43 +247,110 @@ export const adminAnalyticsService = {
       if (params.language && params.language !== 'ALL') {
         query = query.ilike('language', `%${params.language}%`)
       }
-      if (params.search) {
-        query = query.ilike('question_id', `%${params.search}%`)
-      }
 
       const { data, error } = await query
       if (!error && Array.isArray(data) && data.length > 0) {
         // Fetch profiles to enrich
         const userIds = Array.from(new Set(data.map(d => d.user_id).filter(Boolean)))
-        const { data: profiles } = await supabase
+        const { data: profiles } = await client
           .from('profiles')
           .select('id, email, full_name')
           .in('id', userIds)
 
         const profileMap = new Map((profiles || []).map(p => [p.id, p]))
 
-        return data.map(d => {
+        // Also fetch local machine coding submissions
+        let localList: StoredCandidateSubmission[] = []
+        try {
+          if (typeof localStorage !== 'undefined') {
+            const raw = localStorage.getItem(LOCAL_MC_SUBMISSIONS_KEY)
+            if (raw) localList = JSON.parse(raw)
+          }
+        } catch (_) {}
+
+        const seenIds = new Set<string>()
+        const combined: AdminSubmissionItem[] = []
+
+        for (const d of data) {
+          const qid = String(d.question_id)
           const prof = profileMap.get(d.user_id)
-          const candidateInfo = resolveCandidateQuestionDetails(d.question_id, prof?.full_name || 'Candidate')
+          const isMC = qid.startsWith('Q') || qid.startsWith('mc') || d.language === 'react'
+          const candidateInfo = resolveCandidateQuestionDetails(qid, prof?.full_name || 'Candidate')
           const code = (d.code && d.code.trim().length > 30 && !d.code.includes('// Candidate attempt')) ? d.code : candidateInfo.code
           const language = d.language || candidateInfo.language || 'javascript'
-          return {
+          const score = Number(d.score || 0)
+          const title = resolveQuestionTitle(qid)
+
+          const item: AdminSubmissionItem = {
             id: String(d.id),
             userId: String(d.user_id),
-            questionId: String(d.question_id),
+            questionId: qid,
+            questionTitle: title,
+            isMachineCoding: isMC,
             attemptId: d.attempt_id ? String(d.attempt_id) : null,
             answer: d.answer,
             code,
             language,
             status: d.status,
-            score: Number(d.score || 0),
-            executionTime: Number(d.execution_time || 35),
+            score,
+            executionTime: Number(d.execution_time || 0),
             memoryUsed: Number(d.memory_used || 15.4),
             createdAt: String(d.created_at),
             userName: prof?.full_name || 'Candidate',
             userEmail: prof?.email || 'candidate@faang.io',
+            testsPassed: score >= 100 ? 4 : Math.max(0, Math.round((score / 100) * 4)),
+            testsTotal: 4,
           }
-        })
+          seenIds.add(item.id)
+          combined.push(item)
+        }
+
+        // Merge local submissions if not already present
+        for (const loc of localList) {
+          if (seenIds.has(loc.id)) continue
+          const exists = combined.some(
+            c => c.questionId === loc.questionId && Math.abs(new Date(c.createdAt).getTime() - new Date(loc.createdAt).getTime()) < 10000
+          )
+          if (exists) continue
+
+          combined.push({
+            id: loc.id,
+            userId: loc.userId,
+            questionId: loc.questionId,
+            questionTitle: loc.questionTitle || resolveQuestionTitle(loc.questionId),
+            isMachineCoding: true,
+            attemptId: null,
+            answer: undefined,
+            code: loc.code,
+            language: loc.language || 'react',
+            status: loc.status,
+            score: loc.score,
+            executionTime: loc.executionTime,
+            memoryUsed: 15.4,
+            createdAt: loc.createdAt,
+            userName: loc.userName || 'Candidate',
+            userEmail: loc.userEmail || '',
+            testsPassed: loc.testsPassed,
+            testsTotal: loc.testsTotal,
+          })
+        }
+
+        // Apply search filter if provided
+        let filtered = combined
+        if (params.search) {
+          const s = params.search.toLowerCase()
+          filtered = filtered.filter(
+            item =>
+              item.questionId.toLowerCase().includes(s) ||
+              (item.questionTitle && item.questionTitle.toLowerCase().includes(s)) ||
+              (item.userName && item.userName.toLowerCase().includes(s)) ||
+              (item.userEmail && item.userEmail.toLowerCase().includes(s))
+          )
+        }
+
+        // Sort by createdAt desc
+        filtered.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+        return filtered.slice(offset, offset + limit)
       }
     } catch (err) {
       console.warn('[AdminAnalyticsService] getSubmissionsList fallback:', err)
@@ -1181,38 +1253,38 @@ export class EventEmitter {
     if (!userId) return null
 
     try {
+      const client = await ensureReaderAuth()
+
       // 1. Profile
-      const { data: profile } = await supabase
+      const { data: profile } = await client
         .from('profiles')
         .select('*')
         .eq('id', userId)
-        .single()
-
-      if (!profile) return null
+        .maybeSingle()
 
       // 2. Submissions
-      const { data: submissions } = await supabase
+      const { data: submissions } = await client
         .from('submissions')
         .select('*')
         .eq('user_id', userId)
         .order('created_at', { ascending: false })
-        .limit(30)
+        .limit(100)
 
       // 3. Attempts
-      const { data: attempts } = await supabase
+      const { data: attempts } = await client
         .from('question_attempts')
         .select('*')
         .eq('user_id', userId)
         .order('created_at', { ascending: false })
-        .limit(30)
+        .limit(50)
 
       // 4. Activity
-      const { data: activities } = await supabase
+      const { data: activities } = await client
         .from('activity_logs')
         .select('*')
         .eq('user_id', userId)
         .order('created_at', { ascending: false })
-        .limit(30)
+        .limit(50)
 
       const totalAttempts = attempts?.length || 0
       const totalSubmissions = submissions?.length || 0
@@ -1230,28 +1302,36 @@ export class EventEmitter {
       })
 
       const avgScore = totalSubmissions > 0 ? Math.round(totalScore / totalSubmissions) : 0
-      const acceptedCount = submissions?.filter(s => s.status === 'accepted').length || 0
+      const acceptedCount = submissions?.filter(s => s.status === 'accepted' || Number(s.score) >= 70).length || 0
       const accuracyRate = totalSubmissions > 0 ? Math.round((acceptedCount / totalSubmissions) * 100) : 0
 
       const mappedSubmissions: AdminSubmissionItem[] = (submissions || []).map(s => {
-        const candidateInfo = resolveCandidateQuestionDetails(s.question_id, profile.full_name || 'Candidate')
+        const qid = String(s.question_id)
+        const isMC = qid.startsWith('Q') || qid.startsWith('mc') || s.language === 'react'
+        const candidateInfo = resolveCandidateQuestionDetails(qid, profile?.full_name || 'Candidate')
         const code = (s.code && s.code.trim().length > 30 && !s.code.includes('// Candidate attempt')) ? s.code : candidateInfo.code
         const language = s.language || candidateInfo.language || 'javascript'
+        const score = Number(s.score || 0)
+
         return {
           id: String(s.id),
           userId: String(s.user_id),
-          questionId: String(s.question_id),
+          questionId: qid,
+          questionTitle: resolveQuestionTitle(qid),
+          isMachineCoding: isMC,
           attemptId: s.attempt_id ? String(s.attempt_id) : null,
           answer: s.answer,
           code,
           language,
           status: s.status,
-          score: Number(s.score || 0),
-          executionTime: Number(s.execution_time || 35),
+          score,
+          executionTime: Number(s.execution_time || 0),
           memoryUsed: Number(s.memory_used || 15.4),
           createdAt: String(s.created_at),
-          userName: profile.full_name,
-          userEmail: profile.email,
+          userName: profile?.full_name || 'Candidate',
+          userEmail: profile?.email || '',
+          testsPassed: score >= 100 ? 4 : Math.max(0, Math.round((score / 100) * 4)),
+          testsTotal: 4,
         }
       })
 

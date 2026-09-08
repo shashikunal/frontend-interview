@@ -513,3 +513,25 @@
   flex-wrap: wrap;
   gap: 12px;
 }
+
+/* ─── Profile Badges & Milestones Section ────────────────────────── */
+.profile-badges-section {
+  margin: 40px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.profile-badges-section .section-title-row h2 {
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 0 0 4px;
+}
+
+.profile-badges-section .section-title-row .subtitle {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin: 0;
+}
+

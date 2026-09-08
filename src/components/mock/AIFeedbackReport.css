@@ -1,0 +1,377 @@
+/* ================================================================
+   AI Feedback Report — Premium Dark Glassmorphism
+   ================================================================ */
+
+.aifr-wrap {
+  margin-top: 32px;
+  animation: aifrSlideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes aifrSlideIn {
+  from { opacity: 0; transform: translateY(28px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ---- Header ---- */
+.aifr-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.aifr-ai-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(135deg, rgba(99,102,241,0.2), rgba(139,92,246,0.2));
+  border: 1px solid rgba(99,102,241,0.4);
+  color: #a5b4fc;
+  border-radius: 40px;
+  padding: 4px 14px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.aifr-fallback-badge {
+  background: rgba(245,158,11,0.12);
+  border: 1px solid rgba(245,158,11,0.3);
+  color: #fbbf24;
+  border-radius: 40px;
+  padding: 3px 10px;
+  font-size: 0.68rem;
+  font-weight: 600;
+}
+
+.aifr-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #f1f5f9;
+  margin: 0;
+  flex: 1;
+}
+
+/* ---- Grade + Summary row ---- */
+.aifr-top-row {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 20px;
+  align-items: start;
+  margin-bottom: 24px;
+}
+
+@media (max-width: 600px) {
+  .aifr-top-row { grid-template-columns: 1fr; }
+}
+
+.aifr-grade-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(15,20,40,0.7);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  padding: 18px 24px;
+  min-width: 110px;
+}
+
+.aifr-grade-letter {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 2.8rem;
+  font-weight: 800;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.aifr-grade-label {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: #374151;
+  font-weight: 600;
+}
+
+.aifr-summary-block {
+  background: rgba(15,20,40,0.6);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 16px;
+  padding: 18px 20px;
+}
+
+.aifr-summary-text {
+  font-size: 0.9rem;
+  color: #94a3b8;
+  line-height: 1.7;
+  margin: 0 0 14px;
+}
+
+.aifr-interviewer-note {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  background: rgba(99,102,241,0.07);
+  border-left: 3px solid rgba(99,102,241,0.5);
+  border-radius: 0 10px 10px 0;
+  padding: 10px 14px;
+}
+
+.aifr-interviewer-avatar {
+  font-size: 1.4rem;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.aifr-interviewer-quote {
+  font-size: 0.83rem;
+  color: #94a3b8;
+  line-height: 1.6;
+  font-style: italic;
+  margin: 0;
+}
+
+/* ---- Strengths + Improvements grid ---- */
+.aifr-two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+@media (max-width: 680px) {
+  .aifr-two-col { grid-template-columns: 1fr; }
+}
+
+.aifr-card {
+  background: rgba(15,20,40,0.6);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 16px;
+  padding: 18px 20px;
+}
+
+.aifr-card-title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  margin-bottom: 12px;
+}
+
+.aifr-card-title.green { color: #10b981; }
+.aifr-card-title.amber { color: #f59e0b; }
+
+.aifr-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.aifr-list-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  font-size: 0.84rem;
+  color: #94a3b8;
+  line-height: 1.5;
+}
+
+.aifr-list-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 6px;
+}
+
+.aifr-list-dot.green  { background: #10b981; }
+.aifr-list-dot.amber  { background: #f59e0b; }
+
+/* ---- Code Smells ---- */
+.aifr-smells-section {
+  margin-bottom: 20px;
+}
+
+.aifr-smells-title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: #4b5563;
+  margin-bottom: 10px;
+}
+
+.aifr-smell-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.aifr-smell-card {
+  background: rgba(15,20,40,0.5);
+  border-radius: 10px;
+  padding: 12px 14px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  border-left: 3px solid;
+}
+
+.aifr-smell-card.critical { border-color: #ef4444; }
+.aifr-smell-card.warning  { border-color: #f59e0b; }
+.aifr-smell-card.info     { border-color: #6366f1; }
+
+.aifr-smell-severity {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  padding: 2px 7px;
+  border-radius: 4px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.aifr-smell-severity.critical { background: rgba(239,68,68,0.15); color: #f87171; }
+.aifr-smell-severity.warning  { background: rgba(245,158,11,0.15); color: #fbbf24; }
+.aifr-smell-severity.info     { background: rgba(99,102,241,0.15); color: #a5b4fc; }
+
+.aifr-smell-content { flex: 1; }
+.aifr-smell-title { font-size: 0.85rem; font-weight: 600; color: #e2e8f0; margin: 0 0 3px; }
+.aifr-smell-desc  { font-size: 0.78rem; color: #64748b; margin: 0; line-height: 1.5; }
+
+/* ---- Next Steps ---- */
+.aifr-next-section {
+  background: linear-gradient(135deg, rgba(99,102,241,0.08), rgba(139,92,246,0.06));
+  border: 1px solid rgba(99,102,241,0.18);
+  border-radius: 16px;
+  padding: 18px 20px;
+}
+
+.aifr-next-title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: #6366f1;
+  margin-bottom: 12px;
+}
+
+.aifr-next-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  counter-reset: steps;
+}
+
+.aifr-next-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 0.85rem;
+  color: #94a3b8;
+  line-height: 1.5;
+  counter-increment: steps;
+}
+
+.aifr-next-num {
+  background: rgba(99,102,241,0.2);
+  color: #818cf8;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  font-size: 0.7rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+/* ── Skeleton loader ── */
+.aifr-skeleton {
+  background: rgba(15,20,40,0.6);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 16px;
+  padding: 28px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: center;
+  text-align: center;
+}
+
+.aifr-spinner {
+  width: 44px;
+  height: 44px;
+  border: 3px solid rgba(99,102,241,0.2);
+  border-top-color: #6366f1;
+  border-radius: 50%;
+  animation: spin 0.9s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.aifr-skeleton-msg {
+  font-size: 0.9rem;
+  color: #64748b;
+}
+
+.aifr-skeleton-sub {
+  font-size: 0.78rem;
+  color: #374151;
+}
+
+/* ── Trigger button ── */
+.aifr-trigger-btn {
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 12px 26px;
+  font-weight: 700;
+  font-size: 0.92rem;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(99,102,241,0.35);
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.aifr-trigger-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(99,102,241,0.45); }
+.aifr-trigger-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+/* ── Error state ── */
+.aifr-error {
+  background: rgba(239,68,68,0.08);
+  border: 1px solid rgba(239,68,68,0.25);
+  border-radius: 12px;
+  padding: 14px 18px;
+  font-size: 0.85rem;
+  color: #fca5a5;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* ── Print ── */
+@media print {
+  .aifr-trigger-btn { display: none; }
+  .aifr-wrap { margin-top: 16px; }
+  .aifr-card, .aifr-grade-block, .aifr-summary-block, .aifr-next-section {
+    border: 1px solid #ccc;
+    background: #fff;
+  }
+  .aifr-grade-letter, .aifr-title, .aifr-summary-text { color: #000; }
+  .aifr-list-item, .aifr-next-item, .aifr-smell-desc, .aifr-interviewer-quote { color: #333; }
+}

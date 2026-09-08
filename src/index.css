@@ -149,10 +149,12 @@
 
 html {
   scroll-behavior: smooth;
+  scrollbar-gutter: stable;
 }
 
 body {
   margin: 0;
+  overflow-x: clip;
   font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
   font-size: 16px;
   line-height: 1.6;
@@ -189,6 +191,11 @@ h3 { font-size: 1.1rem; font-weight: 600; }
   outline: 2px solid var(--accent-bright);
   outline-offset: 2px;
   border-radius: 4px;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
 }
 
 ::-webkit-scrollbar { width: 10px; height: 10px; }
@@ -323,11 +330,99 @@ h3 { font-size: 1.1rem; font-weight: 600; }
 .skeleton-line { height: 14px; margin-bottom: 10px; }
 .skeleton-card { height: 96px; }
 
-.page-enter { animation: pageIn 0.35s cubic-bezier(0.22, 1, 0.36, 1); }
+.page-enter {
+  animation: pageFadeSlideIn 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
 
-@keyframes pageIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+@keyframes pageFadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Micro-animations & Interactive Lift */
+.interactive-card {
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.22s ease;
+}
+
+.interactive-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+  border-color: var(--border-strong);
+}
+
+/* ---------- card-box global component ---------- */
+.card-box {
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  box-shadow: var(--shadow-md);
+  transition: background-color 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+[data-theme="light"] .card-box {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 20px rgba(27, 37, 75, 0.06);
+}
+
+/* Global Markdown Inline Code */
+code:not(pre code) {
+  font-family: var(--font-mono);
+  background: var(--code-bg, rgba(99, 102, 241, 0.1));
+  color: var(--accent-bright, #6366f1);
+  padding: 2px 7px;
+  border-radius: 6px;
+  font-size: 0.88em;
+  border: 1px solid var(--border);
+}
+
+[data-theme="light"] code:not(pre code) {
+  background: #eef2ff;
+  color: #4f46e5;
+  border-color: rgba(79, 70, 229, 0.18);
+}
+
+.btn:active,
+button.btn:active {
+  transform: scale(0.97) !important;
+}
+
+/* Smooth pulse for live badges */
+@keyframes livePulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.65;
+    transform: scale(1.15);
+  }
+}
+
+.live-indicator-dot {
+  animation: livePulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Responsive Touch Scrolling Polish */
+@media (max-width: 768px) {
+  html, body {
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Touch-friendly target minimums for buttons & links */
+  .btn, .nav-link, button {
+    touch-action: manipulation;
+  }
 }
 
 .loading-note, .error-note {
@@ -335,3 +430,4 @@ h3 { font-size: 1.1rem; font-weight: 600; }
   color: var(--text-secondary);
   padding: 80px 20px;
 }
+

@@ -1,0 +1,200 @@
+/* ─── Badge Card Glassmorphic Styles ─────────────────────────────── */
+
+.badge-card {
+  position: relative;
+  background: rgba(17, 24, 48, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+}
+
+.badge-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
+  border-color: rgba(255, 255, 255, 0.18);
+}
+
+/* Tier-specific ambient glow & borders */
+.badge-card.tier-bronze {
+  --tier-color: #f59e0b;
+  --tier-gradient: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+  --tier-glow: rgba(245, 158, 11, 0.2);
+}
+
+.badge-card.tier-silver {
+  --tier-color: #94a3b8;
+  --tier-gradient: linear-gradient(135deg, #cbd5e1 0%, #64748b 100%);
+  --tier-glow: rgba(203, 213, 225, 0.25);
+}
+
+.badge-card.tier-gold {
+  --tier-color: #fbbf24;
+  --tier-gradient: linear-gradient(135deg, #fef08a 0%, #eab308 100%);
+  --tier-glow: rgba(251, 191, 36, 0.35);
+}
+
+.badge-card.tier-diamond {
+  --tier-color: #38bdf8;
+  --tier-gradient: linear-gradient(135deg, #a5f3fc 0%, #0284c7 100%);
+  --tier-glow: rgba(56, 189, 248, 0.4);
+}
+
+.badge-card.unlocked {
+  border-color: var(--tier-color);
+  box-shadow: 0 4px 20px var(--tier-glow);
+}
+
+.badge-card.locked {
+  opacity: 0.62;
+  filter: grayscale(0.4);
+}
+
+.badge-card.locked:hover {
+  opacity: 0.88;
+  filter: grayscale(0.1);
+}
+
+/* Card Header */
+.bc-top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.bc-tier-pill {
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--tier-color);
+  border: 1px solid var(--tier-color);
+}
+
+.bc-xp-pill {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #a5b4fc;
+  background: rgba(99, 102, 241, 0.15);
+  padding: 3px 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(99, 102, 241, 0.3);
+}
+
+/* Badge Icon Halo */
+.bc-icon-wrap {
+  position: relative;
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  margin-top: 4px;
+}
+
+.badge-card.unlocked .bc-icon-wrap {
+  background: radial-gradient(circle, var(--tier-glow) 0%, transparent 80%);
+  border-color: var(--tier-color);
+  box-shadow: 0 0 16px var(--tier-glow);
+}
+
+.bc-icon {
+  font-size: 2rem;
+  user-select: none;
+}
+
+.bc-unlocked-badge-mark {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 18px;
+  height: 18px;
+  background: #10b981;
+  color: #fff;
+  border-radius: 50%;
+  font-size: 0.65rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  border: 2px solid #09090f;
+}
+
+/* Text Content */
+.bc-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.bc-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+  line-height: 1.3;
+}
+
+.bc-desc {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  line-height: 1.45;
+  margin: 0;
+}
+
+/* Progress track */
+.bc-progress-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: auto;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.bc-progress-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+.bc-progress-track {
+  height: 5px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.bc-progress-fill {
+  height: 100%;
+  background: var(--tier-gradient);
+  border-radius: 999px;
+  transition: width 0.4s ease;
+}
+
+.bc-unlocked-hint {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #10b981;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: auto;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}

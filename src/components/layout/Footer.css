@@ -1,18 +1,20 @@
 .footer {
   border-top: 1px solid var(--border);
-  padding: 26px 24px;
+  padding: 28px 0;
   background: rgba(255, 255, 255, 0.015);
 }
 
 .footer-inner {
-  max-width: none;
+  max-width: 1280px;
   width: 100%;
-  margin: 0;
+  margin: 0 auto;
+  padding: 0 32px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: 16px;
   flex-wrap: wrap;
+  box-sizing: border-box;
 }
 
 .footer-brand {
@@ -34,4 +36,14 @@
 .footer-note {
   color: var(--text-muted);
   font-size: 0.82rem;
+}
+
+@media (max-width: 768px) {
+  .footer {
+    padding: 22px 0;
+  }
+  .footer-inner {
+    padding: 0 16px;
+    gap: 10px;
+  }
 }
