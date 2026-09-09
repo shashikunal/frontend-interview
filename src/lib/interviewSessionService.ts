@@ -472,4 +472,47 @@ export const interviewSessionService = {
       saveLocalSessions(localMap);
     }
   },
+
+  /**
+   * Subscribe to real-time postgres_changes on interview_sessions.
+   * Returns an unsubscribe function — call it on component unmount.
+   * Used exclusively by the admin Live Sessions dashboard.
+   */
+  subscribeToSessions(callbacks: {
+    onInsert?: (session: InterviewSession) => void;
+    onUpdate?: (session: InterviewSession) => void;
+    onDelete?: (id: string) => void;
+    onConnectionChange?: (connected: boolean) => void;
+  }): () => void {
+    const channel = supabase
+      .channel('admin_sessions_rt_' + Date.now())
+      .on(
+        'postgres_changes' as any,
+        { event: 'INSERT', schema: 'public', table: 'interview_sessions' },
+        (payload: any) => {
+          try { callbacks.onInsert?.(payload.new as InterviewSession); } catch (_) {}
+        }
+      )
+      .on(
+        'postgres_changes' as any,
+        { event: 'UPDATE', schema: 'public', table: 'interview_sessions' },
+        (payload: any) => {
+          try { callbacks.onUpdate?.(payload.new as InterviewSession); } catch (_) {}
+        }
+      )
+      .on(
+        'postgres_changes' as any,
+        { event: 'DELETE', schema: 'public', table: 'interview_sessions' },
+        (payload: any) => {
+          try { callbacks.onDelete?.((payload.old as any)?.id); } catch (_) {}
+        }
+      )
+      .subscribe((status: string) => {
+        callbacks.onConnectionChange?.(status === 'SUBSCRIBED');
+      });
+
+    return () => {
+      try { supabase.removeChannel(channel); } catch (_) {}
+    };
+  },
 };

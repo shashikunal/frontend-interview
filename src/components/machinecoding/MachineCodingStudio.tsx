@@ -1035,6 +1035,12 @@ export default function MachineCodingStudio() {
     return () => clearTimeout(timer);
   }, [files, collabSession?.id, isCollabActive, activeQuestion?.id]);
 
+  // 5. Broadcast active file switch to admin monitor whenever candidate switches files
+  useEffect(() => {
+    if (!collabSession?.id || !yjsProviderRef.current) return;
+    yjsProviderRef.current.broadcastFileSwitch(activeFileName);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeFileName, collabSession?.id]);
 
   // Interview Timer Countdown Effect
   useEffect(() => {
