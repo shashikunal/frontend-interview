@@ -703,6 +703,54 @@ export default function MachineCodingStudio() {
     }
   }, [activeQuestion?.id]);
 
+  // ── AUTO-SESSION REGISTRATION ─────────────────────────────────────────────
+  // Silently register a session in Supabase as soon as a candidate opens a
+  // question (no button click required). Admins can then see them in the
+  // Live Sessions dashboard immediately.
+  const autoSessionRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (!activeQuestion) return;
+    // Only auto-register for candidates; admins/observers don't need tracking
+    if (userRole === 'admin' || userRole === 'observer' || userRole === 'interviewer') return;
+    // If there's already an explicit collab session, skip (it's already registered)
+    if (collabSession) return;
+    // Avoid duplicate registration for the same question
+    if (autoSessionRef.current === activeQuestion.id) return;
+    autoSessionRef.current = activeQuestion.id;
+
+    interviewSessionService.getOrCreateSession({
+      candidateId: currentUserId,
+      candidateName: currentUserName,
+      candidateEmail: user?.email,
+      questionId: activeQuestion.id,
+      questionTitle: activeQuestion.title,
+      language: selectedLanguage,
+      initialFiles: files,
+    }).then(session => {
+      // Store it so the heartbeat can keep it alive, but don't activate collab UI
+      setCollabSession(prev => prev ?? session);
+    }).catch(err => {
+      console.warn('[AutoSession] Could not register session:', err);
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeQuestion?.id, userRole]);
+
+  // ── SESSION HEARTBEAT ────────────────────────────────────────────────────
+  // Every 30 seconds, update last_activity_at + active_file on Supabase so
+  // the admin dashboard shows accurate "last seen" times.
+  useEffect(() => {
+    if (!collabSession?.id) return;
+
+    const heartbeat = setInterval(() => {
+      interviewSessionService.updateSessionActivity(
+        collabSession.id,
+        activeFileNameRef.current
+      );
+    }, 30000);
+
+    return () => clearInterval(heartbeat);
+  }, [collabSession?.id]);
+
   // Handle iframe messages (console logs, runtime errors, and test results)
   useEffect(() => {
     const handleMessage = (e: MessageEvent) => {

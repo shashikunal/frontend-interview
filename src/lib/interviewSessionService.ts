@@ -226,15 +226,41 @@ export const interviewSessionService = {
         .order('last_activity_at', { ascending: false })
         .limit(limit);
 
-      if (!error && data && data.length > 0) {
-        return data as InterviewSession[];
+      // Only fall back to local cache on actual errors — not on empty Supabase result
+      if (!error) {
+        return (data as InterviewSession[]) || [];
       }
     } catch (_) {}
 
+    // True offline fallback: only used when Supabase is unreachable
     const localMap = getLocalSessions();
     return Object.values(localMap).sort(
       (a, b) => new Date(b.last_activity_at).getTime() - new Date(a.last_activity_at).getTime()
     );
+  },
+
+  /**
+   * Update last_activity_at and optionally active_file (used by heartbeat)
+   */
+  async updateSessionActivity(sessionId: string, activeFile?: string): Promise<void> {
+    const now = new Date().toISOString();
+    try {
+      await supabase
+        .from('interview_sessions')
+        .update({
+          last_activity_at: now,
+          ...(activeFile ? { active_file: activeFile } : {}),
+        })
+        .eq('id', sessionId);
+    } catch (_) {}
+
+    // Also update local cache if exists
+    const localMap = getLocalSessions();
+    if (localMap[sessionId]) {
+      localMap[sessionId].last_activity_at = now;
+      if (activeFile) localMap[sessionId].active_file = activeFile;
+      saveLocalSessions(localMap);
+    }
   },
 
   /**
