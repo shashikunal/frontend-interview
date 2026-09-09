@@ -52,6 +52,7 @@ export default function Header() {
   const isArchitectureActive = ['/experience', '/pathways', '/system-design', '/case-studies', '/ast-explorer', '/security', '/user-management', '/state-machine', '/capacity-estimator', '/memory-profiler', '/module-federation', '/whiteboard', '/webrtc-lab', '/local-first', '/search-engine', '/design-system', '/i18n-lab', '/sdui-lab', '/web-components', '/protocols', '/css-pipeline', '/wasm-lab', '/visualizer', '/profiler', '/resume-optimizer', '/compensation'].some(p => isActive(p))
   const isMockActive = ['/mock-interview', '/video-mock', '/behavioral', '/peer-room'].some(p => isActive(p))
   const isMachineCodingActive = isActive('/machine-coding') || isActive('/machine-level-coding')
+  const isDsaActive = isActive('/dsa')
 
   // Close dropdown and mobile menu on navigation
   useEffect(() => {
@@ -161,6 +162,12 @@ export default function Header() {
               {/* 2. Direct Machine Coding Masterclass Link */}
               <Link to="/machine-coding" className={`nav-link ${isMachineCodingActive ? 'active' : ''}`}>
                 Machine Coding
+                {!hasCodingSandbox && <span className="nav-lock-tag">🔒</span>}
+              </Link>
+
+              {/* 2a. DSA 1,000 Questions Link */}
+              <Link to="/dsa" className={`nav-link ${isDsaActive ? 'active' : ''}`}>
+                DSA
                 {!hasCodingSandbox && <span className="nav-lock-tag">🔒</span>}
               </Link>
 
@@ -898,6 +905,15 @@ export default function Header() {
                   <div className="m-text">
                     <span className="m-label">Machine Coding</span>
                     <span className="m-sub">Live sandbox &amp; tests</span>
+                  </div>
+                  {!hasCodingSandbox && <span className="nav-lock-tag">🔒</span>}
+                </Link>
+
+                <Link to="/dsa" className={`mobile-nav-item ${isDsaActive ? 'active' : ''}`} onClick={closeMobileMenu}>
+                  <span className="m-icon">🧠</span>
+                  <div className="m-text">
+                    <span className="m-label">DSA Masterclass</span>
+                    <span className="m-sub">1,000 algorithmic questions</span>
                   </div>
                   {!hasCodingSandbox && <span className="nav-lock-tag">🔒</span>}
                 </Link>

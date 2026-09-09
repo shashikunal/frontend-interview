@@ -44,6 +44,7 @@ import UserProfile from './components/profile/UserProfile'
 import UserManagementStudio from './components/usermanagement/UserManagementStudio'
 import AdminDashboard from './components/dashboard/AdminDashboard'
 const MachineCodingStudio = lazy(() => import('./components/machinecoding/MachineCodingStudio'))
+const DSAStudio = lazy(() => import('./components/dsa/DSAStudio'))
 const AnalyticsDashboard = lazy(() => import('./components/analytics/AnalyticsDashboard'))
 const Leaderboard = lazy(() => import('./components/leaderboard/Leaderboard'))
 import RoleGuard from './components/auth/RoleGuard'
@@ -62,7 +63,9 @@ export default function App() {
   useBadgeEvaluator()
 
   const isAdminDashboard = location.pathname.startsWith('/admin') || (location.pathname.startsWith('/dashboard') && user?.role === 'admin')
-  const isStudioWorkspace = location.pathname.startsWith('/machine-coding') && Boolean(new URLSearchParams(location.search).get('id'))
+  const isStudioWorkspace =
+    (location.pathname.startsWith('/machine-coding') || location.pathname.startsWith('/dsa')) &&
+    (Boolean(new URLSearchParams(location.search).get('id')) || location.pathname.startsWith('/dsa/DSA') || location.pathname.startsWith('/dsa/question/'))
   const hideHeader = isAdminDashboard
   const hideFooter = isAdminDashboard || isStudioWorkspace
 
@@ -457,6 +460,56 @@ export default function App() {
           <Route
             path="/machine-level-coding"
             element={<Navigate to="/machine-coding" replace />}
+          />
+
+          {/* DSA System Independent Routes */}
+          <Route
+            path="/dsa"
+            element={
+              <FeatureGuard feature="coding_sandbox" featureName="DSA Masterclass">
+                <DSAStudio />
+              </FeatureGuard>
+            }
+          />
+          <Route
+            path="/dsa/questions"
+            element={
+              <FeatureGuard feature="coding_sandbox" featureName="DSA Question Catalog">
+                <DSAStudio />
+              </FeatureGuard>
+            }
+          />
+          <Route
+            path="/dsa/question/:id"
+            element={
+              <FeatureGuard feature="coding_sandbox" featureName="DSA Problem Studio">
+                <DSAStudio />
+              </FeatureGuard>
+            }
+          />
+          <Route
+            path="/dsa/progress"
+            element={
+              <FeatureGuard feature="coding_sandbox" featureName="DSA Candidate Progress">
+                <DSAStudio />
+              </FeatureGuard>
+            }
+          />
+          <Route
+            path="/dsa/bookmarks"
+            element={
+              <FeatureGuard feature="coding_sandbox" featureName="DSA Bookmarks">
+                <DSAStudio />
+              </FeatureGuard>
+            }
+          />
+          <Route
+            path="/dsa/:id"
+            element={
+              <FeatureGuard feature="coding_sandbox" featureName="DSA Problem Studio">
+                <DSAStudio />
+              </FeatureGuard>
+            }
           />
 
           <Route path="/practice" element={<Navigate to="/questions" replace />} />

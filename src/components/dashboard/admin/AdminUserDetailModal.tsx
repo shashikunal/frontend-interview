@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import {
   adminAnalyticsService,
   type AdminUserDetail,
@@ -100,6 +100,16 @@ export default function AdminUserDetailModal({
     setSelectedAttemptForCode(fullAttempt)
   }
 
+  const [subFilter, setSubFilter] = useState<'all' | 'mc'>('all')
+
+  const displayedSubmissions = useMemo(() => {
+    if (!userDetail) return []
+    if (subFilter === 'mc') {
+      return userDetail.mcSubmissions || userDetail.recentSubmissions.filter(s => s.isMachineCoding || s.questionId.startsWith('Q') || s.questionId.startsWith('mc'))
+    }
+    return userDetail.recentSubmissions
+  }, [userDetail, subFilter])
+
   if (!userDetail && !isLoading) return null
 
   return (
@@ -135,15 +145,69 @@ export default function AdminUserDetailModal({
             </div>
           ) : userDetail ? (
             <div className="am-body">
+              {/* Dedicated 500 Machine Coding Isolated Progression Card */}
+              <div style={{
+                background: 'linear-gradient(135deg, rgba(79,70,229,0.12) 0%, rgba(99,102,241,0.06) 100%)',
+                border: '1px solid rgba(99,102,241,0.3)',
+                borderRadius: '14px',
+                padding: '16px 20px',
+                marginBottom: '16px',
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px', marginBottom: '12px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{ fontSize: '1.2rem' }}>⚡</span>
+                    <strong style={{ fontSize: '0.95rem', color: '#f1f5f9' }}>Machine Coding Progress (500 Questions Curriculum)</strong>
+                  </div>
+                  <span style={{
+                    fontSize: '0.75rem',
+                    background: 'rgba(16,185,129,0.15)',
+                    color: '#34d399',
+                    border: '1px solid rgba(16,185,129,0.3)',
+                    padding: '2px 8px',
+                    borderRadius: '6px',
+                    fontWeight: 600,
+                  }}>
+                    DSA Isolated ({userDetail.dsaQuestionsSolved || 0} Solved)
+                  </span>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(110px, 1fr))', gap: '12px' }}>
+                  <div style={{ background: 'rgba(255,255,255,0.03)', padding: '10px 12px', borderRadius: '10px', textAlign: 'center', border: '1px solid rgba(255,255,255,0.05)' }}>
+                    <span style={{ display: 'block', fontSize: '1.3rem', fontWeight: 800, color: '#38bdf8' }}>{userDetail.mcQuestionsAttempted ?? 0}</span>
+                    <span style={{ fontSize: '0.72rem', color: 'var(--text-muted, #94a3b8)' }}>MC Attempted</span>
+                  </div>
+
+                  <div style={{ background: 'rgba(255,255,255,0.03)', padding: '10px 12px', borderRadius: '10px', textAlign: 'center', border: '1px solid rgba(255,255,255,0.05)' }}>
+                    <span style={{ display: 'block', fontSize: '1.3rem', fontWeight: 800, color: '#22c55e' }}>{userDetail.mcQuestionsSolved ?? 0}</span>
+                    <span style={{ fontSize: '0.72rem', color: 'var(--text-muted, #94a3b8)' }}>MC Solved / 500</span>
+                  </div>
+
+                  <div style={{ background: 'rgba(255,255,255,0.03)', padding: '10px 12px', borderRadius: '10px', textAlign: 'center', border: '1px solid rgba(255,255,255,0.05)' }}>
+                    <span style={{ display: 'block', fontSize: '1.3rem', fontWeight: 800, color: '#f59e0b' }}>{userDetail.mcQuestionsRemaining ?? (500 - (userDetail.mcQuestionsSolved || 0))}</span>
+                    <span style={{ fontSize: '0.72rem', color: 'var(--text-muted, #94a3b8)' }}>MC Remaining</span>
+                  </div>
+
+                  <div style={{ background: 'rgba(255,255,255,0.03)', padding: '10px 12px', borderRadius: '10px', textAlign: 'center', border: '1px solid rgba(255,255,255,0.05)' }}>
+                    <span style={{ display: 'block', fontSize: '1.3rem', fontWeight: 800, color: '#a855f7' }}>{userDetail.mcCompletionPct ?? 0}%</span>
+                    <span style={{ fontSize: '0.72rem', color: 'var(--text-muted, #94a3b8)' }}>MC Completion</span>
+                  </div>
+
+                  <div style={{ background: 'rgba(255,255,255,0.03)', padding: '10px 12px', borderRadius: '10px', textAlign: 'center', border: '1px solid rgba(255,255,255,0.05)' }}>
+                    <span style={{ display: 'block', fontSize: '1.3rem', fontWeight: 800, color: '#ec4899' }}>{userDetail.mcBookmarksCount ?? 0}</span>
+                    <span style={{ fontSize: '0.72rem', color: 'var(--text-muted, #94a3b8)' }}>Bookmarks</span>
+                  </div>
+                </div>
+              </div>
+
               {/* 5 Metric Badges */}
               <div className="aud-stats-grid">
                 <div className="aud-stat-box">
                   <span className="aud-num" style={{ color: '#22c55e' }}>{userDetail.completedCount}</span>
-                  <span className="aud-label">Questions Completed</span>
+                  <span className="aud-label">Total Completed</span>
                 </div>
                 <div className="aud-stat-box">
                   <span className="aud-num" style={{ color: '#38bdf8' }}>{userDetail.totalAttempts}</span>
-                  <span className="aud-label">Questions Attempted</span>
+                  <span className="aud-label">Total Attempts</span>
                 </div>
                 <div className="aud-stat-box">
                   <span className="aud-num" style={{ color: '#a855f7' }}>{userDetail.accuracyRate}%</span>
@@ -203,8 +267,25 @@ export default function AdminUserDetailModal({
               {/* Sub-tab 1: Recent Submissions Table */}
               {activeSubTab === 'submissions' && (
                 <div className="aud-tab-body">
-                  {userDetail.recentSubmissions.length === 0 ? (
-                    <p className="empty-subtab-msg">No submissions recorded for this user yet.</p>
+                  <div style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
+                    <button
+                      type="button"
+                      className={`btn btn-xs ${subFilter === 'all' ? 'btn-primary' : 'btn-secondary'}`}
+                      onClick={() => setSubFilter('all')}
+                    >
+                      All Submissions ({userDetail.recentSubmissions.length})
+                    </button>
+                    <button
+                      type="button"
+                      className={`btn btn-xs ${subFilter === 'mc' ? 'btn-primary' : 'btn-secondary'}`}
+                      onClick={() => setSubFilter('mc')}
+                    >
+                      ⚡ Machine Coding ({userDetail.mcSubmissions?.length || 0})
+                    </button>
+                  </div>
+
+                  {displayedSubmissions.length === 0 ? (
+                    <p className="empty-subtab-msg">No {subFilter === 'mc' ? 'Machine Coding' : ''} submissions recorded for this user yet.</p>
                   ) : (
                     <table className="admin-data-table">
                       <thead>
@@ -218,7 +299,7 @@ export default function AdminUserDetailModal({
                         </tr>
                       </thead>
                       <tbody>
-                        {userDetail.recentSubmissions.map(sub => (
+                        {displayedSubmissions.map((sub: AdminSubmissionItem) => (
                           <tr key={sub.id}>
                             <td>{new Date(sub.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</td>
                             <td>

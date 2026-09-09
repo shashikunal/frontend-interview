@@ -25,7 +25,7 @@ export interface ResolvedCandidateDetails {
  */
 function normalizeId(id: string | number): string {
   const s = String(id).trim().replace(/^#/, '')
-  const qMatch = s.match(/^q0*(\d+)$/i)
+  const qMatch = s.match(/^(?:q|mc)?-?0*(\d+)$/i)
   if (qMatch) {
     const num = parseInt(qMatch[1], 10)
     return `Q${num.toString().padStart(3, '0')}`

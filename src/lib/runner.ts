@@ -342,7 +342,10 @@ window.addEventListener('message', async (e) => {
       try {
         const AsyncFn = Object.getPrototypeOf(async function(){}).constructor;
         const testFn = new AsyncFn('ctx', 'with(ctx) { ' + tc.assertion + ' }');
-        await testFn(helpers);
+        const timeoutPromise = new Promise((_, reject) => {
+          setTimeout(() => reject(new Error('Time Limit Exceeded: Assertion execution exceeded 2,000ms limit')), 2000);
+        });
+        await Promise.race([testFn(helpers), timeoutPromise]);
         results.push({
           id: tc.id,
           name: tc.name,
@@ -388,7 +391,7 @@ try {
 <head>
 <meta charset="utf-8" />
 <style>
-  body { font-family: system-ui, -apple-system, sans-serif; margin: 0; padding: 16px; background: #fff; color: #171717; }
+  body { font-family: system-ui, -apple-system, sans-serif; margin: 0; padding: 16px; background: transparent; }
 </style>
 <style>${cssFiles}</style>
 <script>${shim}</script>
@@ -643,7 +646,10 @@ window.addEventListener('message', async (e) => {
       try {
         const AsyncFn = Object.getPrototypeOf(async function(){}).constructor;
         const testFn = new AsyncFn('ctx', 'with(ctx) { ' + tc.assertion + ' }');
-        await testFn(helpers);
+        const timeoutPromise = new Promise((_, reject) => {
+          setTimeout(() => reject(new Error('Time Limit Exceeded: Assertion execution exceeded 2,000ms limit')), 2000);
+        });
+        await Promise.race([testFn(helpers), timeoutPromise]);
         results.push({
           id: tc.id,
           name: tc.name,
@@ -709,7 +715,7 @@ window.addEventListener('message', async (e) => {
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
-    body { font-family: system-ui, -apple-system, sans-serif; margin: 0; padding: 16px; background: #fff; color: #0f172a; }
+    body { font-family: system-ui, -apple-system, sans-serif; margin: 0; padding: 16px; background: transparent; }
   </style>
   <style>${cssContent}</style>
   <script>${testAndConsoleShim}</script>

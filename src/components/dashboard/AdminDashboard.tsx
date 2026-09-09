@@ -22,7 +22,9 @@ import AdminLiveSessionsTab from './admin/AdminLiveSessionsTab'
 import AdminUserDetailModal from './admin/AdminUserDetailModal'
 import AdminSubmissionCodeModal from './admin/AdminSubmissionCodeModal'
 import AdminAttemptCodeModal from './admin/AdminAttemptCodeModal'
+import RoleGuard from '../auth/RoleGuard'
 import Leaderboard from '../leaderboard/Leaderboard'
+import { MACHINE_CODING_CATALOG } from '../machinecoding/data/machineCodingCatalog'
 import {
   adminAnalyticsService,
   type OverviewStats,
@@ -69,7 +71,21 @@ export type AdminTab =
   | 'profile'
 
 export default function AdminDashboard() {
-  const { user } = useAuth()
+  const { user, isAuthenticated, hasPermission } = useAuth()
+
+  // Strict defense-in-depth authorization check for administrators
+  if (!isAuthenticated || !hasPermission('admin')) {
+    return (
+      <RoleGuard
+        minRole="admin"
+        fallbackTitle="🔒 Administrator Access Required"
+        fallbackMessage="Enterprise Operations Command Center is restricted to Platform Administrators."
+      >
+        <div />
+      </RoleGuard>
+    )
+  }
+
   const [searchParams] = useSearchParams()
   const { tab: urlTab } = useParams<{ tab?: string }>()
   const navigate = useNavigate()
@@ -732,7 +748,7 @@ export default function AdminDashboard() {
           >
             <span className="h-nav-icon">❓</span>
             <span>Question Bank</span>
-            <span className="h-nav-badge">22K</span>
+            <span className="h-nav-badge">{MACHINE_CODING_CATALOG.length}</span>
           </button>
 
           <span className="h-nav-section-title">Intelligence &amp; Stream</span>
@@ -1512,7 +1528,7 @@ export default function AdminDashboard() {
                   <span className="h-phs-lbl">Active Tracks</span>
                 </div>
                 <div className="h-phs-item">
-                  <span className="h-phs-num">22.2K</span>
+                  <span className="h-phs-num">{MACHINE_CODING_CATALOG.length}</span>
                   <span className="h-phs-lbl">Questions Bank</span>
                 </div>
                 <div className="h-phs-item">

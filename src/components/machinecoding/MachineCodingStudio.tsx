@@ -5,6 +5,8 @@ import { useTheme } from '../../context/ThemeContext';
 import { buildMachineCodingSrcDoc } from '../../lib/runner';
 import { exportMachineCodingZip } from '../../lib/zipExport';
 import { MACHINE_CODING_QUESTIONS, type MCQuestion } from './machineCodingQuestions';
+import { getEnrichedQuestionSpec, type EnrichedMCQuestion } from './lib/mcQuestionSpecService';
+import { MACHINE_CODING_CATALOG, getQuestionDetailById } from './lib/mcCatalogService';
 import { getQuestionTestCases, type MCTestCase, type MCTestResult } from './data/machineCodingTests';
 import {
   type MCLanguage,
@@ -13,11 +15,11 @@ import {
   getSolutionCodeForLanguage,
   getSolutionCodeForFile,
 } from './lib/languageStarters';
+import { isGenericBoilerplateStarter, generateDynamicCss, buildStarterMetadata, GENERATOR_VERSION, type StarterMetadata } from './lib/mcStarterGenerator';
 import InterviewScorecardModal, { type ScorecardData } from './InterviewScorecardModal';
 import AIInterviewPrompter from './AIInterviewPrompter';
 import { useQuestions } from '../../data/useQuestions';
 import { trackingService } from '../../lib/trackingService';
-import { leaderboardService } from '../../lib/leaderboardService';
 import * as Y from 'yjs';
 import { useAuth } from '../../context/AuthContext';
 import { SupabaseYjsProvider } from '../../lib/yjs/supabaseYjsProvider';
@@ -31,6 +33,7 @@ import {
 } from '../../lib/interviewSessionService';
 import LiveInterviewCollabDrawer from './LiveInterviewCollabDrawer';
 import { renderFormattedMarkdown } from '../../lib/questionTemplate';
+import { mcProgressService } from './lib/mcProgressService';
 import './MachineCodingStudio.css';
 
 interface ConsoleLog {
@@ -242,6 +245,8 @@ export default function MachineCodingStudio() {
   const [selectedBatch, setSelectedBatch] = useState('all');
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>('All');
+  const [selectedStatus, setSelectedStatus] = useState<'All' | 'Solved' | 'Unsolved' | 'Attempted' | 'Bookmarked'>('All');
+  const [sortBy, setSortBy] = useState<'id-asc' | 'id-desc' | 'difficulty' | 'category' | 'recent-attempted' | 'recent-solved'>('id-asc');
   const [overviewViewMode, setOverviewViewMode] = useState<'grid' | 'list'>(() => {
     try {
       const saved = localStorage.getItem('mc_catalog_view_mode');
@@ -267,27 +272,23 @@ export default function MachineCodingStudio() {
     { id: 'b10', label: 'B10: Systems & Offline (451-500)', start: 451, end: 500 },
   ];
 
-  // Active question resolution: supports MC Questions (Q001-Q500) and Bank Questions
-  const activeQuestion = useMemo<MCQuestion | null>(() => {
+  // Active question resolution: supports MC Questions (Q001-Q500) and Bank Questions via O(1) fast Map lookup
+  const activeQuestion = useMemo<EnrichedMCQuestion | null>(() => {
     if (!activeId) return null;
-    const direct = MACHINE_CODING_QUESTIONS.find(q => q.id.toLowerCase() === activeId.toLowerCase());
+    const direct = getQuestionDetailById(activeId);
     if (direct) return direct;
-
-    const padded = `Q${activeId.replace(/\D/g, '').padStart(3, '0')}`;
-    const directPadded = MACHINE_CODING_QUESTIONS.find(q => q.id === padded);
-    if (directPadded) return directPadded;
 
     const rawNum = activeId.replace(/\D/g, '');
     const bankQ = allBankQuestions.find(q => String(q.id) === activeId || (rawNum && String(q.id) === rawNum));
     if (bankQ) {
-      return {
+      return getEnrichedQuestionSpec({
         id: String(bankQ.id),
         title: bankQ.question,
         category: (bankQ.category as any) || 'JavaScript',
         difficulty: (bankQ.difficulty as any) || 'Medium',
         timeEstimate: '25 mins',
         summary: bankQ.question,
-        description: `### Question\n${bankQ.question}\n\n### Explanation & Solution Approach\n${bankQ.answer || 'Build a production-grade component adhering to best practices, robust state modeling, and clean lifecycle management.'}`,
+        description: `### Problem Description\n${bankQ.question}\n\n### Explanation & Solution Approach\n${bankQ.answer || 'Build a production-grade component adhering to best practices, robust state modeling, and clean lifecycle management.'}`,
         requirements: [
           `Implement component and logic for: ${bankQ.question}`,
           'Handle boundary conditions, empty states, and invalid parameters.',
@@ -308,7 +309,7 @@ export default function MachineCodingStudio() {
           ? `// Implement solution for: ${bankQ.question}\n\n${bankQ.code.includes('export default') || bankQ.code.includes('function App') ? bankQ.code : `import React, { useState } from 'react';\n\nexport default function App() {\n  return (\n    <div style={{ padding: '24px', fontFamily: 'system-ui' }}>\n      <h2>${bankQ.question}</h2>\n      <p>Write your solution here.</p>\n    </div>\n  );\n}\n`}`
           : `import React, { useState } from 'react';\n\nexport default function App() {\n  const [val, setVal] = useState('');\n  return (\n    <div style={{ padding: '24px', fontFamily: 'system-ui, sans-serif' }}>\n      <h2 style={{ color: '#38bdf8' }}>${bankQ.question}</h2>\n      <p style={{ color: '#94a3b8' }}>Implement your component logic here.</p>\n    </div>\n  );\n}\n`,
         solutionCode: bankQ.code || bankQ.example || `// Reference Solution for: ${bankQ.question}\n\n${bankQ.answer}\n`,
-      };
+      });
     }
 
     return null;
@@ -348,6 +349,16 @@ export default function MachineCodingStudio() {
       return {};
     }
   });
+
+  // Starter-code metadata tracking: { [questionId]: { [language]: StarterMetadata } }
+  const [starterMetaMap, setStarterMetaMap] = useState<Record<string, Record<string, StarterMetadata>>>(() => {
+    try {
+      const saved = localStorage.getItem('mc_starter_meta_v2');
+      return saved ? JSON.parse(saved) : {};
+    } catch {
+      return {};
+    }
+  });
   const [showAddFileModal, setShowAddFileModal] = useState(false);
   const [newFileNameInput, setNewFileNameInput] = useState('');
 
@@ -362,8 +373,17 @@ export default function MachineCodingStudio() {
   // Runner state
   const [isCompiling, setIsCompiling] = useState(false);
   const [previewSrcDoc, setPreviewSrcDoc] = useState('');
+  const [livePreviewError, setLivePreviewError] = useState<string | null>(null);
+  const livePreviewDebounceTimerRef = useRef<any>(null);
+  const previewExecutionCountRef = useRef(0);
+  // Auto-refresh toggle — persisted in localStorage
+  const [autoRefreshEnabled, setAutoRefreshEnabled] = useState<boolean>(() => {
+    try { return localStorage.getItem('mc_auto_refresh') !== 'false'; } catch { return true; }
+  });
+  const [isPreviewRefreshing, setIsPreviewRefreshing] = useState(false);
   const [consoleLogs, setConsoleLogs] = useState<ConsoleLog[]>([]);
-  const [runId, setRunId] = useState(1);
+  // Use a ref instead of state so executeCode always reads the latest ID without stale closures
+  const runIdRef = useRef(1);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   // Test Runner State
@@ -498,16 +518,29 @@ export default function MachineCodingStudio() {
   const [scorecardData, setScorecardData] = useState<ScorecardData | null>(null);
 
   // User & Live Collaborative Session State
-  const { user } = useAuth();
+  const { user, role, hasFeature, hasPermission } = useAuth();
+  const lastSubmitTimeRef = useRef<number>(0);
   const urlRole = searchParams.get('role');
   const userRole: 'candidate' | 'interviewer' | 'admin' | 'observer' = useMemo(() => {
-    if (urlRole === 'admin' || urlRole === 'interviewer' || urlRole === 'observer' || urlRole === 'candidate') {
-      return urlRole;
+    const effectiveRole = role || user?.role || 'candidate';
+    if (urlRole === 'observer') {
+      return 'observer';
     }
-    if ((user as any)?.role === 'admin') return 'admin';
-    if ((user as any)?.role === 'interviewer') return 'interviewer';
+    // Defense-in-depth: Never trust client URL role override unless user has authoritative permissions
+    if (urlRole === 'admin' && (hasPermission?.('admin') || effectiveRole === 'admin')) {
+      return 'admin';
+    }
+    if (urlRole === 'interviewer' && (hasPermission?.('interviewer') || effectiveRole === 'admin' || effectiveRole === 'interviewer')) {
+      return 'interviewer';
+    }
+    if (effectiveRole === 'admin') return 'admin';
+    if (effectiveRole === 'interviewer') return 'interviewer';
     return 'candidate';
-  }, [urlRole, user]);
+  }, [urlRole, role, user, hasPermission]);
+
+  const canViewSolution = useMemo(() => {
+    return Boolean(hasFeature?.('questions_full') || userRole === 'admin' || role === 'admin' || user?.role === 'admin' || userRole === 'interviewer');
+  }, [hasFeature, userRole, role, user?.role]);
 
   const currentUserId = useMemo(() => {
     if (user?.id) return user.id;
@@ -565,34 +598,80 @@ export default function MachineCodingStudio() {
     return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
   };
 
-  // Solved state
+  // Solved, Attempted, Bookmarked & Notes state
   const [solvedMap, setSolvedMap] = useState<Record<string, boolean>>(() => {
-    try {
-      const saved = localStorage.getItem('mc_solved_v1');
-      return saved ? JSON.parse(saved) : {};
-    } catch {
-      return {};
-    }
+    const ids = mcProgressService.getSolvedIds();
+    const map: Record<string, boolean> = {};
+    ids.forEach(id => { map[id] = true; });
+    return map;
   });
+  const [bookmarkedSet, setBookmarkedSet] = useState<Set<string>>(() => mcProgressService.getBookmarkedIds());
+  const [attemptedSet, setAttemptedSet] = useState<Set<string>>(() => mcProgressService.getAttemptedIds());
+  const [candidateNote, setCandidateNote] = useState<string>('');
+  const [noteSavedAt, setNoteSavedAt] = useState<string | null>(null);
+
+  // Synchronize progress and candidate isolation whenever user changes
+  useEffect(() => {
+    mcProgressService.setUserId(user?.id);
+    const syncState = () => {
+      const ids = mcProgressService.getSolvedIds();
+      const map: Record<string, boolean> = {};
+      ids.forEach(id => { map[id] = true; });
+      setSolvedMap(map);
+      setBookmarkedSet(mcProgressService.getBookmarkedIds());
+      setAttemptedSet(mcProgressService.getAttemptedIds());
+    };
+    syncState();
+    return mcProgressService.subscribe(syncState);
+  }, [user?.id]);
+
+  // Load candidate note when active question changes
+  useEffect(() => {
+    if (activeQuestion) {
+      const existing = mcProgressService.getNote(activeQuestion.id);
+      setCandidateNote(existing);
+      setNoteSavedAt(existing ? 'Saved' : null);
+    }
+  }, [activeQuestion?.id]);
+
+  const handleSaveNote = () => {
+    if (!activeQuestion) return;
+    mcProgressService.saveNote(activeQuestion.id, candidateNote);
+    setNoteSavedAt(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
+    showToast(`📝 Note saved for challenge ${activeQuestion.id}`);
+  };
+
+  const handleDeleteNote = () => {
+    if (!activeQuestion) return;
+    mcProgressService.deleteNote(activeQuestion.id);
+    setCandidateNote('');
+    setNoteSavedAt(null);
+    showToast(`🗑️ Note removed for challenge ${activeQuestion.id}`);
+  };
+
+  const toggleBookmark = (id: string) => {
+    const isNowBookmarked = mcProgressService.toggleBookmark(id);
+    showToast(isNowBookmarked ? `★ Challenge ${id} bookmarked for revision` : `Challenge ${id} removed from bookmarks`);
+  };
 
   const toggleSolved = (id: string) => {
     setSolvedMap(prev => {
       const isNowSolved = !prev[id];
       const next = { ...prev, [id]: isNowSolved };
-      try {
-        localStorage.setItem('mc_solved_v1', JSON.stringify(next));
-      } catch (err) {
-        console.error(err);
-      }
       if (isNowSolved) {
+        mcProgressService.markSolved(id);
         trackingService.completeQuestionAttempt(id, 100);
+        showToast(`✓ Challenge ${id} marked as Solved`);
+      } else {
+        mcProgressService.unmarkSolved(id);
+        showToast(`Challenge ${id} marked as Unsolved`);
       }
       return next;
     });
   };
 
   // Spec tab
-  const [activeTab, setActiveTab] = useState<'specs' | 'solution' | 'tips' | 'tests'>('specs');
+  const [activeTab, setActiveTab] = useState<'specs' | 'solution' | 'tips' | 'tests' | 'notes'>('specs');
 
   // Checklists per question
   const [checkedItems, setCheckedItems] = useState<Record<string, Record<number, boolean>>>({});
@@ -616,8 +695,11 @@ export default function MachineCodingStudio() {
       const belongsToAnotherQuestion =
         questionFiles &&
         (
-          (targetLang === 'javascript' && questionFiles['script.js'] && !questionFiles['script.js'].includes(`[${activeQuestion.id}]`)) ||
-          (targetLang === 'dom' && questionFiles['index.html'] && !questionFiles['index.html'].includes(activeQuestion.title))
+          (targetLang === 'react' && questionFiles['App.tsx'] && questionFiles['App.tsx'].includes('[Q') && !questionFiles['App.tsx'].includes(`[${activeQuestion.id}]`)) ||
+          (targetLang === 'javascript' && questionFiles['script.js'] && questionFiles['script.js'].includes('[Q') && !questionFiles['script.js'].includes(`[${activeQuestion.id}]`)) ||
+          (targetLang === 'dom' && questionFiles['index.html'] && !questionFiles['index.html'].includes(activeQuestion.title)) ||
+          (targetLang === 'typescript' && questionFiles['script.ts'] && questionFiles['script.ts'].includes('[Q') && !questionFiles['script.ts'].includes(`[${activeQuestion.id}]`)) ||
+          (targetLang === 'leetcode' && questionFiles['solution.js'] && questionFiles['solution.js'].includes('[Q') && !questionFiles['solution.js'].includes(`[${activeQuestion.id}]`))
         );
 
       // Check if current files match the target language
@@ -631,23 +713,49 @@ export default function MachineCodingStudio() {
           (targetLang === 'leetcode' && !questionFiles['solution.js'])
         );
 
-      // Detect if React workspace has stale fallback boilerplate
+      // Detect if workspace has stale fallback or generic boilerplate
       const isCorrupted =
         questionFiles &&
-        targetLang === 'react' &&
         (
-          questionFiles['index.html']?.includes('id="display-container"') ||
-          questionFiles['index.html']?.includes('id="primary-action-btn"') ||
-          questionFiles['App.tsx']?.includes("active ? 'Toggle Off' : 'Toggle On'")
+          (targetLang === 'react' && (
+            questionFiles['index.html']?.includes('id="display-container"') ||
+            questionFiles['index.html']?.includes('id="primary-action-btn"') ||
+            questionFiles['App.tsx']?.includes("active ? 'Toggle Off' : 'Toggle On'") ||
+            isGenericBoilerplateStarter(questionFiles['App.tsx'])
+          )) ||
+          (targetLang === 'typescript' && (
+            questionFiles['script.ts']?.includes("interface State {\n  status: 'idle'") ||
+            isGenericBoilerplateStarter(questionFiles['script.ts'])
+          )) ||
+          (targetLang === 'javascript' && (
+            questionFiles['script.js']?.includes('const state = {\n  active: false,\n  counter: 0') ||
+            isGenericBoilerplateStarter(questionFiles['script.js'])
+          ))
         );
 
-      if (!questionFiles || isWrongLanguageForWorkspace || belongsToAnotherQuestion || isCorrupted) {
+      const isCustomModified = starterMetaMap[activeQuestion.id]?.[targetLang]?.isCustomModified ?? false;
+
+      if (!questionFiles || isWrongLanguageForWorkspace || belongsToAnotherQuestion || (isCorrupted && !isCustomModified)) {
         questionFiles = buildStarterFilesForLanguage(activeQuestion, targetLang);
       } else {
-        if (targetLang === 'react' && (!questionFiles['App.tsx'] || !questionFiles['App.tsx'].trim())) {
-          questionFiles['App.tsx'] = activeQuestion.starterCode;
+        if (targetLang === 'react' && (!questionFiles['App.tsx'] || !questionFiles['App.tsx'].trim() || (!isCustomModified && (isGenericBoilerplateStarter(questionFiles['App.tsx']) || questionFiles['App.tsx'].includes('#1e222d'))))) {
+          questionFiles['App.tsx'] = buildStarterFilesForLanguage(activeQuestion, 'react')['App.tsx'];
         }
         questionFiles = { ...questionFiles };
+      }
+
+      // Dynamically upgrade old static CSS if candidate hasn't customized it
+      if (questionFiles['styles.css'] && !isCustomModified) {
+        const css = questionFiles['styles.css'];
+        const isOutdatedCss =
+          css.includes('/* Modern UI Stylesheet */') ||
+          css.includes('--bg-surface: #1e222d') ||
+          css.includes('#1e222d') ||
+          !css.includes('--glow:') ||
+          !css.includes(`[${activeQuestion.id}]`);
+        if (isOutdatedCss) {
+          questionFiles['styles.css'] = generateDynamicCss(activeQuestion);
+        }
       }
 
       // If in JavaScript or DOM mode, strictly remove any React files (App.tsx, App.ts, App.jsx)
@@ -688,7 +796,40 @@ export default function MachineCodingStudio() {
       if (editorRef.current) {
         editorRef.current.setValue(initialCode);
       }
-      executeCode(questionFiles, targetLang);
+      if (livePreviewDebounceTimerRef.current) {
+        clearTimeout(livePreviewDebounceTimerRef.current);
+      }
+      setLivePreviewError(null);
+
+      // Track starter-code metadata and candidate edit status
+      const currentMeta = buildStarterMetadata(activeQuestion, targetLang, initialCode, isCustomModified);
+      setStarterMetaMap(prev => {
+        const updated = {
+          ...prev,
+          [activeQuestion.id]: {
+            ...(prev[activeQuestion.id] || {}),
+            [targetLang]: currentMeta,
+          }
+        };
+        try {
+          localStorage.setItem('mc_starter_meta_v2', JSON.stringify(updated));
+        } catch (_) {}
+        return updated;
+      });
+
+      // BUG 4 FIX: Use try/finally to guarantee isSwitchingRef is always unlocked
+      // even if executeCode throws synchronously or the promise rejects.
+      const switchTimer = setTimeout(() => {
+        isSwitchingRef.current = false;
+      }, 50);
+
+      executeCode(questionFiles, targetLang).finally(() => {
+        // Belt-and-suspenders: clear the lock even if executeCode rejects before timer fires
+        clearTimeout(switchTimer);
+        setTimeout(() => {
+          isSwitchingRef.current = false;
+        }, 0);
+      });
 
       if (activeQuestion?.id) {
         trackingService.trackActivity('question_viewed', 'question', activeQuestion.id, {
@@ -696,10 +837,6 @@ export default function MachineCodingStudio() {
           category: activeQuestion.category,
         });
       }
-
-      setTimeout(() => {
-        isSwitchingRef.current = false;
-      }, 50);
     }
   }, [activeQuestion?.id]);
 
@@ -754,14 +891,16 @@ export default function MachineCodingStudio() {
   // Handle iframe messages (console logs, runtime errors, and test results)
   useEffect(() => {
     const handleMessage = (e: MessageEvent) => {
+      // Production Hardening: Verify event source is strictly the runner iframe
+      if (iframeRef.current && e.source !== iframeRef.current.contentWindow) return;
       if (!e.data || typeof e.data !== 'object') return;
       const { t, level, parts, message, results } = e.data;
 
       if (t === 'log') {
         const text = parts ? parts.join(' ') : '';
-        setConsoleLogs(prev => [...prev, { level: level || 'log', message: text }]);
+        setConsoleLogs(prev => [...prev.slice(-249), { level: level || 'log', message: text }]);
       } else if (t === 'error') {
-        setConsoleLogs(prev => [...prev, { level: 'error', message: message || 'Execution error' }]);
+        setConsoleLogs(prev => [...prev.slice(-249), { level: 'error', message: message || 'Execution error' }]);
       } else if (t === 'test_results') {
         const res: MCTestResult[] = results || [];
         setTestResults(res);
@@ -775,9 +914,11 @@ export default function MachineCodingStudio() {
         const testScore = res.length > 0 ? Math.round((passedCount / res.length) * 100) : 0;
 
         if (activeQuestion?.id) {
+          // Use refs for always-current code — avoids stale closure in this long-lived effect
+          const submittedCode = filesRef.current[activeFileNameRef.current] || Object.values(filesRef.current)[0] || '';
           trackingService.recordSubmission({
             questionId: activeQuestion.id,
-            code: currentCode || files[activeFileName] || '',
+            code: submittedCode,
             language: selectedLanguage,
             status: isAllPassed ? 'accepted' : 'wrong_answer',
             score: testScore,
@@ -811,10 +952,7 @@ export default function MachineCodingStudio() {
         }
 
         if (isAllPassed) {
-          showToast(`🎉 All ${res.length} test assertions passed!`);
-          if (activeQuestion && !solvedMap[activeQuestion.id]) {
-            toggleSolved(activeQuestion.id);
-          }
+          showToast(`🎉 All ${res.length} test assertions passed! Click "🏁 Submit" to record your accepted solution.`);
         } else {
           showToast(`🧪 Test run complete: ${passedCount}/${res.length} passed.`);
         }
@@ -824,6 +962,15 @@ export default function MachineCodingStudio() {
     window.addEventListener('message', handleMessage);
     return () => window.removeEventListener('message', handleMessage);
   }, [activeQuestion, solvedMap]);
+
+  // Cleanup timers on component unmount
+  useEffect(() => {
+    return () => {
+      if (livePreviewDebounceTimerRef.current) {
+        clearTimeout(livePreviewDebounceTimerRef.current);
+      }
+    };
+  }, []);
 
   // Sync snapshots from localStorage on question change
   useEffect(() => {
@@ -1064,12 +1211,12 @@ export default function MachineCodingStudio() {
 
   // Code Execution via buildMachineCodingSrcDoc with multi-file support
   const executeCode = async (filesToRun?: Record<string, string>, langToRun?: MCLanguage) => {
-    const targetFiles = filesToRun || files;
+    const targetFiles = filesToRun || filesRef.current;
     const activeLang = langToRun || selectedLanguage;
     setIsCompiling(true);
     setConsoleLogs([]);
-    const nextRunId = runId + 1;
-    setRunId(nextRunId);
+    // Increment via ref — always synchronous and never stale (fixes BUG 1 race condition)
+    const nextRunId = ++runIdRef.current;
 
     if (activeQuestion?.id) {
       trackingService.startQuestionAttempt(activeQuestion.id);
@@ -1087,13 +1234,20 @@ export default function MachineCodingStudio() {
     let compileErr: any = null;
     try {
       const srcDoc = await buildMachineCodingSrcDoc(targetFiles, activeLang, nextRunId);
-      setPreviewSrcDoc(srcDoc);
+      if (nextRunId === runIdRef.current) {
+        setPreviewSrcDoc(srcDoc);
+        setLivePreviewError(null);
+      }
     } catch (err: any) {
       compileErr = err;
       console.error(err);
-      setConsoleLogs(prev => [...prev, { level: 'error', message: err?.message || 'Babel compilation error' }]);
+      if (nextRunId === runIdRef.current) {
+        setConsoleLogs(prev => [...prev.slice(-249), { level: 'error', message: err?.message || 'Babel compilation error' }]);
+      }
     } finally {
-      setIsCompiling(false);
+      if (nextRunId === runIdRef.current) {
+        setIsCompiling(false);
+      }
       if (collabSession && isCollabActive && activeQuestion) {
         const execEvent: SessionExecutionRecord = {
           session_id: collabSession.id,
@@ -1162,6 +1316,23 @@ export default function MachineCodingStudio() {
       } catch (_) {}
       return updated;
     });
+
+    // Track metadata for the new language environment
+    const langMeta = buildStarterMetadata(activeQuestion, newLang, content, false);
+    setStarterMetaMap(prev => {
+      const updated = {
+        ...prev,
+        [activeQuestion.id]: {
+          ...(prev[activeQuestion.id] || {}),
+          [newLang]: langMeta,
+        }
+      };
+      try {
+        localStorage.setItem('mc_starter_meta_v2', JSON.stringify(updated));
+      } catch (_) {}
+      return updated;
+    });
+
     showToast(`✓ Switched workspace environment to ${langOpt.label} (${langOpt.badge})`);
     executeCode(newFiles, newLang);
 
@@ -1258,6 +1429,14 @@ export default function MachineCodingStudio() {
       showToast('⚠️ Please provide both a test name and assertion code.');
       return;
     }
+    if (name.length > 80) {
+      showToast('⚠️ Test name exceeds 80 characters limit.');
+      return;
+    }
+    if (assertion.length > 2000) {
+      showToast('⚠️ Test assertion exceeds 2,000 characters limit.');
+      return;
+    }
 
     const newTest: MCTestCase = {
       id: `custom-${Date.now()}`,
@@ -1316,6 +1495,7 @@ export default function MachineCodingStudio() {
 
   const handleRunTests = async () => {
     if (!activeQuestion) return;
+    mcProgressService.markAttempted(activeQuestion.id);
     setIsRunningTests(true);
     setActiveTab('tests');
     const tests = getAllQuestionTests(activeQuestion);
@@ -1329,6 +1509,54 @@ export default function MachineCodingStudio() {
         iframeRef.current.contentWindow.postMessage({ t: 'run_tests', testCases: tests }, '*');
       }
     }, 250);
+  };
+
+  const handleSubmitSolution = async () => {
+    if (!activeQuestion || !/^Q\d{3}$/i.test(activeQuestion.id)) {
+      showToast('⚠️ Question identity validation failed.');
+      return;
+    }
+
+    const now = Date.now();
+    if (now - lastSubmitTimeRef.current < 1500) {
+      showToast('⏳ Submission rate limit: please wait 1.5s between evaluations.');
+      return;
+    }
+    lastSubmitTimeRef.current = now;
+
+    setIsRunningTests(true);
+    setActiveTab('tests');
+    showToast('🏁 Evaluating solution across full test suite...');
+
+    const curFiles = filesRef.current || files;
+    const results = await runTestsAsync(curFiles);
+    const passed = results.filter(r => r.status === 'passed').length;
+    const total = results.length;
+    const score = total > 0 ? Math.round((passed / total) * 100) : 0;
+    const isAccepted = total > 0 && passed === total;
+    const qId = activeQuestion.id;
+
+    if (isAccepted) {
+      mcProgressService.markSolved(qId);
+      setSolvedMap(prev => ({ ...prev, [qId]: true }));
+      trackingService.completeQuestionAttempt(qId, 100);
+      showToast(`🎉 Accepted! All ${total} assertions passed. Solved!`);
+    } else {
+      mcProgressService.markAttempted(qId);
+      trackingService.completeQuestionAttempt(qId, score);
+      showToast(`❌ Wrong Answer: ${passed}/${total} test cases passed. Status: Attempted.`);
+    }
+
+    setScorecardData({
+      question: activeQuestion,
+      timeSpentSeconds: isInterviewActive ? Math.max(1, interviewDuration - Math.max(0, interviewTimeLeft)) : 180,
+      totalDurationSeconds: isInterviewActive ? interviewDuration : 1800,
+      testResults: results,
+      passedTests: passed,
+      totalTests: total,
+      files: { ...curFiles }
+    });
+    setShowScorecard(true);
   };
 
   const runTestsAsync = async (filesToTest?: Record<string, string>): Promise<MCTestResult[]> => {
@@ -1424,13 +1652,60 @@ export default function MachineCodingStudio() {
     }
   };
 
+  const handleExitInterview = () => {
+    if (!activeQuestion) return;
+
+    // Auto-save candidate work
+    const qId = activeQuestion.id;
+    const curFiles = filesRef.current || files;
+    setMultiFilesMap(mapPrev => {
+      const updatedMap = { ...mapPrev, [qId]: curFiles };
+      try {
+        localStorage.setItem('mc_multi_files_v2', JSON.stringify(updatedMap));
+      } catch (_) {}
+      return updatedMap;
+    });
+
+    const mainCode = curFiles['App.tsx'] || Object.values(curFiles)[0] || '';
+    setUserCodeMap(uPrev => {
+      const updatedUserMap = { ...uPrev, [qId]: mainCode };
+      try {
+        localStorage.setItem('mc_code_drafts_v1', JSON.stringify(updatedUserMap));
+      } catch (_) {}
+      return updatedUserMap;
+    });
+
+    setIsInterviewActive(false);
+    showToast('🚪 Exited interview round. Candidate work has been auto-saved.');
+  };
+
   const handleFinishInterview = async () => {
     if (!activeQuestion) return;
     setIsInterviewActive(false);
     setInterviewFinished(true);
-    showToast('🏁 Round submitted! Generating candidate evaluation scorecard...');
+    showToast('🏁 Submitting candidate work and evaluating test cases...');
 
-    const results = await runTestsAsync(files);
+    // Auto-save candidate work
+    const qId = activeQuestion.id;
+    const curFiles = filesRef.current || files;
+    setMultiFilesMap(mapPrev => {
+      const updatedMap = { ...mapPrev, [qId]: curFiles };
+      try {
+        localStorage.setItem('mc_multi_files_v2', JSON.stringify(updatedMap));
+      } catch (_) {}
+      return updatedMap;
+    });
+
+    const mainCode = curFiles['App.tsx'] || Object.values(curFiles)[0] || '';
+    setUserCodeMap(uPrev => {
+      const updatedUserMap = { ...uPrev, [qId]: mainCode };
+      try {
+        localStorage.setItem('mc_code_drafts_v1', JSON.stringify(updatedUserMap));
+      } catch (_) {}
+      return updatedUserMap;
+    });
+
+    const results = await runTestsAsync(curFiles);
     const passed = results.filter(r => r.status === 'passed').length;
     const total = results.length;
     const timeSpent = Math.max(1, interviewDuration - Math.max(0, interviewTimeLeft));
@@ -1443,53 +1718,69 @@ export default function MachineCodingStudio() {
       testResults: results,
       passedTests: passed,
       totalTests: total,
-      files: { ...files }
+      files: { ...curFiles }
     });
     setShowScorecard(true);
 
     if (activeQuestion?.id) {
       trackingService.completeQuestionAttempt(activeQuestion.id, score, timeSpent);
-
-      // Track submission in Supabase with candidate ID and local offline backup
-      try {
-        const candidateId = user?.id || currentUserId || 'usr_candidate_demo';
-        const candidateName = user?.name || currentUserName || 'Candidate';
-        const candidateEmail = user?.email || undefined;
-        void leaderboardService.saveMachineCodingSubmission({
-          candidateId,
-          candidateName,
-          candidateEmail,
-          questionId: activeQuestion.id,
-          score,
-          testsPassed: passed,
-          testsTotal: total,
-          timeSpentSeconds: timeSpent,
-          code: files['App.tsx'] || Object.values(files)[0] || '',
-          files: { ...files },
-          language: selectedLanguage,
-        }).then(saved => {
-          if (saved?.syncedToSupabase) {
-            showToast(`✓ Submissions saved to Supabase (Candidate ID: ${candidateId.slice(0, 8)}...)`);
-          } else {
-            showToast(`✓ Submission tracked locally for Candidate ID: ${candidateId.slice(0, 8)}...`);
-          }
-        });
-      } catch (err) {
-        console.warn('[MachineCodingStudio] Submission save error:', err);
+      if (total > 0 && passed === total) {
+        mcProgressService.markSolved(activeQuestion.id);
+        setSolvedMap(prev => ({ ...prev, [activeQuestion.id]: true }));
+        showToast(`🎉 Accepted! All ${total} tests passed. Challenge solved!`);
+      } else {
+        mcProgressService.markAttempted(activeQuestion.id);
+        showToast(`✓ Candidate work submitted! Passed ${passed}/${total} tests. Status: Attempted.`);
       }
     }
+  };
 
-    if (collabSession && isCollabActive) {
-      await interviewSessionService.submitSession({
-        sessionId: collabSession.id,
-        files,
-        score,
-        testsPassed: passed,
-        testsTotal: total,
-        timeSpentSeconds: timeSpent,
-      });
-      showToast('✓ Final submission saved to Supabase archive!');
+  // Automatic debounced live preview updater
+  const triggerLivePreview = (updatedFiles: Record<string, string>, targetLang?: MCLanguage, instant = false) => {
+    if (isSwitchingRef.current) return;
+    if (livePreviewDebounceTimerRef.current) {
+      clearTimeout(livePreviewDebounceTimerRef.current);
     }
+
+    const delay = instant ? 0 : 350;
+    livePreviewDebounceTimerRef.current = setTimeout(async () => {
+      const execId = ++previewExecutionCountRef.current;
+      const currentFiles = updatedFiles || filesRef.current;
+      const lang = targetLang || selectedLanguage;
+
+      setIsPreviewRefreshing(true);
+      try {
+        const srcDoc = await buildMachineCodingSrcDoc(currentFiles, lang, execId);
+        // Ensure stale executions cannot overwrite newer preview results
+        if (execId === previewExecutionCountRef.current) {
+          setPreviewSrcDoc(srcDoc);
+          setLivePreviewError(null);
+        }
+      } catch (err: any) {
+        if (execId === previewExecutionCountRef.current) {
+          const errMsg = err?.message || String(err) || 'Compilation syntax error';
+          setLivePreviewError(errMsg);
+        }
+      } finally {
+        if (execId === previewExecutionCountRef.current) {
+          setTimeout(() => setIsPreviewRefreshing(false), 400);
+        }
+      }
+    }, delay);
+  };
+
+  // Manual refresh — always fires regardless of auto-refresh toggle
+  const handleManualRefresh = () => {
+    triggerLivePreview(filesRef.current, selectedLanguage, true);
+  };
+
+  // Toggle auto-refresh and persist preference
+  const handleToggleAutoRefresh = () => {
+    setAutoRefreshEnabled(prev => {
+      const next = !prev;
+      try { localStorage.setItem('mc_auto_refresh', String(next)); } catch (_) {}
+      return next;
+    });
   };
 
   const handleCodeChange = (val?: string) => {
@@ -1499,31 +1790,64 @@ export default function MachineCodingStudio() {
     const currentFile = activeFileNameRef.current;
     const q = activeQuestionRef.current;
 
-    setFiles(prev => {
-      const updatedFiles = { ...prev, [currentFile]: nextVal };
-      filesRef.current = updatedFiles;
+    const updatedFiles = { ...filesRef.current, [currentFile]: nextVal };
+    filesRef.current = updatedFiles;
+    setFiles(updatedFiles);
 
-      if (q) {
-        setMultiFilesMap(mapPrev => {
-          const updatedMap = { ...mapPrev, [q.id]: updatedFiles };
+    if (q) {
+      setMultiFilesMap(mapPrev => {
+        const updatedMap = { ...mapPrev, [q.id]: updatedFiles };
+        try {
+          localStorage.setItem('mc_multi_files_v2', JSON.stringify(updatedMap));
+        } catch (_) {}
+        return updatedMap;
+      });
+
+      if (currentFile === 'App.tsx') {
+        setUserCodeMap(uPrev => {
+          const updatedUserMap = { ...uPrev, [q.id]: nextVal };
           try {
-            localStorage.setItem('mc_multi_files_v2', JSON.stringify(updatedMap));
+            localStorage.setItem('mc_code_drafts_v1', JSON.stringify(updatedUserMap));
           } catch (_) {}
-          return updatedMap;
+          return updatedUserMap;
         });
-
-        if (currentFile === 'App.tsx') {
-          setUserCodeMap(uPrev => {
-            const updatedUserMap = { ...uPrev, [q.id]: nextVal };
-            try {
-              localStorage.setItem('mc_code_drafts_v1', JSON.stringify(updatedUserMap));
-            } catch (_) {}
-            return updatedUserMap;
-          });
-        }
       }
-      return updatedFiles;
-    });
+
+      // Mark candidate edit in starterMetaMap
+      setStarterMetaMap(prev => {
+        const qMeta = prev[q.id] || {};
+        const currentLangMeta = qMeta[selectedLanguage];
+        if (!currentLangMeta || !currentLangMeta.isCustomModified) {
+          const updated: Record<string, Record<string, StarterMetadata>> = {
+            ...prev,
+            [q.id]: {
+              ...qMeta,
+              [selectedLanguage]: {
+                questionId: q.id,
+                language: selectedLanguage,
+                generatorVersion: GENERATOR_VERSION,
+                generatedAt: currentLangMeta?.generatedAt || Date.now(),
+                starterHash: currentLangMeta?.starterHash || '',
+                domainType: currentLangMeta?.domainType || 'widget',
+                difficulty: q.difficulty || 'Medium',
+                isCustomModified: true,
+              }
+            }
+          };
+          try {
+            localStorage.setItem('mc_starter_meta_v2', JSON.stringify(updated));
+          } catch (_) {}
+          return updated;
+        }
+        return prev;
+      });
+    }
+
+    // BUG 5 FIX: Pass selectedLanguage explicitly so triggerLivePreview never falls back
+    // to a stale closure value if language changed in the same render cycle.
+    if (autoRefreshEnabled) {
+      triggerLivePreview(updatedFiles, selectedLanguage);
+    }
   };
 
   const handleLoadSolution = () => {
@@ -1622,6 +1946,23 @@ export default function MachineCodingStudio() {
       } catch (_) {}
       return updated;
     });
+
+    // Reset starter metadata to freshly generated state
+    const resetMeta = buildStarterMetadata(activeQuestion, selectedLanguage, initialContent, false);
+    setStarterMetaMap(prev => {
+      const updated = {
+        ...prev,
+        [activeQuestion.id]: {
+          ...(prev[activeQuestion.id] || {}),
+          [selectedLanguage]: resetMeta,
+        }
+      };
+      try {
+        localStorage.setItem('mc_starter_meta_v2', JSON.stringify(updated));
+      } catch (_) {}
+      return updated;
+    });
+
     showToast(`↺ Project files reset to initial ${langOpt.label} template!`);
 
     setTimeout(() => {
@@ -1643,25 +1984,29 @@ export default function MachineCodingStudio() {
   };
 
   // Save Draft & Auto-Format Helper
+  // BUG 7 FIX: Use filesRef.current and activeFileNameRef.current so the save always
+  // captures the latest typed code, not a potentially stale closure value.
   const handleSaveAndFormat = () => {
     handleFormatCode();
     if (activeQuestion) {
+      const latestFiles = filesRef.current;
+      const latestCode = latestFiles[activeFileNameRef.current] || Object.values(latestFiles)[0] || '';
       setUserCodeMap(prev => {
-        const updated = { ...prev, [activeQuestion.id]: currentCode };
+        const updated = { ...prev, [activeQuestion.id]: latestCode };
         try {
           localStorage.setItem('mc_code_drafts_v1', JSON.stringify(updated));
         } catch (_) {}
         return updated;
       });
       setMultiFilesMap(prev => {
-        const updated = { ...prev, [activeQuestion.id]: files };
+        const updated = { ...prev, [activeQuestion.id]: latestFiles };
         try {
           localStorage.setItem('mc_multi_files_v2', JSON.stringify(updated));
         } catch (_) {}
         return updated;
       });
     }
-    executeCode(files);
+    executeCode(filesRef.current);
     showToast('💾 Draft saved & compiled!');
   };
 
@@ -1716,7 +2061,7 @@ export default function MachineCodingStudio() {
 
   // Filtered Questions for Command Palette Spotlight
   const filteredPaletteQuestions = useMemo(() => {
-    return MACHINE_CODING_QUESTIONS.filter(q => {
+    return MACHINE_CODING_CATALOG.filter(q => {
       const matchesCat = paletteCategoryFilter === 'All' || q.category === paletteCategoryFilter;
       const matchesDiff = paletteDifficultyFilter === 'All' || q.difficulty === paletteDifficultyFilter;
       const query = paletteSearchQuery.trim().toLowerCase();
@@ -1817,9 +2162,10 @@ export default function MachineCodingStudio() {
       }
 
       // Ctrl+Enter or Cmd+Enter: Run Live
+      // BUG 3 FIX: Use filesRef.current (always fresh) instead of closed-over `files` state.
       if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
         e.preventDefault();
-        executeCode(files);
+        executeCode(filesRef.current);
         showToast('⚡ Executing sandbox (Ctrl+Enter)');
         return;
       }
@@ -1879,21 +2225,66 @@ export default function MachineCodingStudio() {
   const activeBatchObj = BATCHES.find(b => b.id === selectedBatch) || BATCHES[0];
 
   const filteredQuestions = useMemo(() => {
-    return MACHINE_CODING_QUESTIONS.filter(q => {
+    let list = MACHINE_CODING_CATALOG.filter(q => {
       const qNum = parseInt(q.id.replace(/\D/g, ''), 10) || 0;
-      const inBatch = qNum >= activeBatchObj.start && qNum <= activeBatchObj.end;
+      const inBatch = activeBatchObj.id === 'all' || (qNum >= activeBatchObj.start && qNum <= activeBatchObj.end);
 
       const matchesSearch =
+        !searchQuery.trim() ||
         q.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         q.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        q.summary.toLowerCase().includes(searchQuery.toLowerCase());
+        q.summary.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (Array.isArray((q as any).tags) && (q as any).tags.some((t: string) => t.toLowerCase().includes(searchQuery.toLowerCase())));
 
       const matchesCat = selectedCategory === 'All' || q.category === selectedCategory;
       const matchesDiff = selectedDifficulty === 'All' || q.difficulty === selectedDifficulty;
 
-      return inBatch && matchesSearch && matchesCat && matchesDiff;
+      const isSolvedQ = !!solvedMap[q.id];
+      const isAttemptedQ = attemptedSet.has(q.id);
+      const isBookmarkedQ = bookmarkedSet.has(q.id);
+
+      let matchesStatus = true;
+      if (selectedStatus === 'Solved') matchesStatus = isSolvedQ;
+      else if (selectedStatus === 'Unsolved') matchesStatus = !isSolvedQ;
+      else if (selectedStatus === 'Attempted') matchesStatus = isAttemptedQ && !isSolvedQ;
+      else if (selectedStatus === 'Bookmarked') matchesStatus = isBookmarkedQ;
+
+      return inBatch && matchesSearch && matchesCat && matchesDiff && matchesStatus;
     });
-  }, [searchQuery, selectedBatch, selectedCategory, selectedDifficulty, activeBatchObj]);
+
+    const diffWeights: Record<string, number> = { Easy: 1, Medium: 2, Hard: 3, Senior: 4 };
+    const recentActivity = mcProgressService.getRecentActivity();
+    const recentAttemptOrder = new Map(recentActivity.filter(a => a.type === 'attempt').map((a, i) => [a.id, i]));
+    const recentSolveOrder = new Map(recentActivity.filter(a => a.type === 'solve').map((a, i) => [a.id, i]));
+
+    return list.sort((a, b) => {
+      const numA = parseInt(a.id.replace(/\D/g, ''), 10) || 0;
+      const numB = parseInt(b.id.replace(/\D/g, ''), 10) || 0;
+
+      if (sortBy === 'id-asc') return numA - numB;
+      if (sortBy === 'id-desc') return numB - numA;
+      if (sortBy === 'difficulty') {
+        const wA = diffWeights[a.difficulty] || 0;
+        const wB = diffWeights[b.difficulty] || 0;
+        return wA !== wB ? wA - wB : numA - numB;
+      }
+      if (sortBy === 'category') {
+        const cComp = a.category.localeCompare(b.category);
+        return cComp !== 0 ? cComp : numA - numB;
+      }
+      if (sortBy === 'recent-attempted') {
+        const orderA = recentAttemptOrder.has(a.id) ? recentAttemptOrder.get(a.id)! : 999999;
+        const orderB = recentAttemptOrder.has(b.id) ? recentAttemptOrder.get(b.id)! : 999999;
+        return orderA !== orderB ? orderA - orderB : numA - numB;
+      }
+      if (sortBy === 'recent-solved') {
+        const orderA = recentSolveOrder.has(a.id) ? recentSolveOrder.get(a.id)! : 999999;
+        const orderB = recentSolveOrder.has(b.id) ? recentSolveOrder.get(b.id)! : 999999;
+        return orderA !== orderB ? orderA - orderB : numA - numB;
+      }
+      return numA - numB;
+    });
+  }, [searchQuery, selectedBatch, selectedCategory, selectedDifficulty, selectedStatus, sortBy, activeBatchObj, solvedMap, bookmarkedSet, attemptedSet]);
 
   const totalPages = Math.ceil(filteredQuestions.length / pageSize) || 1;
   const paginatedQuestions = useMemo(() => {
@@ -1947,17 +2338,17 @@ export default function MachineCodingStudio() {
               <div className="mc-nav-arrows">
                 <button
                   className="mc-nav-arrow"
-                  disabled={!prevQuestion}
-                  onClick={() => prevQuestion && selectQuestion(prevQuestion.id)}
-                  title={prevQuestion ? `Prev: ${prevQuestion.id} ${prevQuestion.title}` : 'First challenge'}
+                  disabled={!prevQuestion || isInterviewActive}
+                  onClick={() => !isInterviewActive && prevQuestion && selectQuestion(prevQuestion.id)}
+                  title={isInterviewActive ? 'Navigation disabled during active interview round' : prevQuestion ? `Prev: ${prevQuestion.id} ${prevQuestion.title}` : 'First challenge'}
                 >
                   ‹
                 </button>
                 <button
                   className="mc-nav-arrow"
-                  disabled={!nextQuestion}
-                  onClick={() => nextQuestion && selectQuestion(nextQuestion.id)}
-                  title={nextQuestion ? `Next: ${nextQuestion.id} ${nextQuestion.title}` : 'Last challenge'}
+                  disabled={!nextQuestion || isInterviewActive}
+                  onClick={() => !isInterviewActive && nextQuestion && selectQuestion(nextQuestion.id)}
+                  title={isInterviewActive ? 'Navigation disabled during active interview round' : nextQuestion ? `Next: ${nextQuestion.id} ${nextQuestion.title}` : 'Last challenge'}
                 >
                   ›
                 </button>
@@ -1966,9 +2357,10 @@ export default function MachineCodingStudio() {
               <div className="mc-question-select-wrapper">
                 <select
                   className="mc-question-select"
+                  disabled={isInterviewActive}
                   value={activeQuestion.id}
-                  onChange={(e) => selectQuestion(e.target.value)}
-                  title={`${activeQuestion.id}: ${activeQuestion.title}`}
+                  onChange={(e) => !isInterviewActive && selectQuestion(e.target.value)}
+                  title={isInterviewActive ? 'Locked during active interview round' : `${activeQuestion.id}: ${activeQuestion.title}`}
                 >
                   {BATCHES.slice(1).map(b => (
                     <optgroup key={b.id} label={b.label}>
@@ -1984,6 +2376,20 @@ export default function MachineCodingStudio() {
 
               <span className={`mc-badge ${activeQuestion.difficulty.toLowerCase()}`}>
                 {activeQuestion.difficulty}
+              </span>
+
+              <button
+                type="button"
+                className={`mc-btn-bookmark ${bookmarkedSet.has(activeQuestion.id) ? 'bookmarked' : ''}`}
+                onClick={() => toggleBookmark(activeQuestion.id)}
+                title={bookmarkedSet.has(activeQuestion.id) ? 'Bookmarked (Click to remove)' : 'Bookmark challenge for revision'}
+                aria-label="Bookmark challenge"
+              >
+                {bookmarkedSet.has(activeQuestion.id) ? '★' : '☆'}
+              </button>
+
+              <span className={`mc-status-indicator ${solvedMap[activeQuestion.id] ? 'solved' : attemptedSet.has(activeQuestion.id) ? 'attempted' : 'not-started'}`}>
+                {solvedMap[activeQuestion.id] ? '✓ Solved' : attemptedSet.has(activeQuestion.id) ? '● Attempted' : '○ Ready'}
               </span>
             </div>
 
@@ -2023,14 +2429,6 @@ export default function MachineCodingStudio() {
                 >
                   ⏱️ Start
                 </button>
-                <button
-                  className="mc-action-btn mc-btn-interview-finish"
-                  onClick={handleFinishInterview}
-                  title="Submit code & track score on live Leaderboard"
-                  style={{ background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', color: '#fff', border: 'none' }}
-                >
-                  🏁 Submit Solution
-                </button>
               </div>
             ) : (
               <div className="mc-active-interview-controls">
@@ -2046,9 +2444,17 @@ export default function MachineCodingStudio() {
                 <button
                   className="mc-action-btn mc-btn-interview-finish"
                   onClick={handleFinishInterview}
-                  title="Submit code & generate evaluation report"
+                  title="Submit candidate work & generate evaluation report"
                 >
                   🏁 Submit
+                </button>
+                <button
+                  className="mc-action-btn mc-btn-interview-exit"
+                  onClick={handleExitInterview}
+                  title="Exit interview round and auto-save candidate work"
+                  style={{ background: '#374151', color: '#f3f4f6', border: '1px solid #4b5563' }}
+                >
+                  🚪 Exit
                 </button>
               </div>
             )}
@@ -2184,6 +2590,15 @@ export default function MachineCodingStudio() {
             >
               {isCompiling ? 'Compiling...' : '▶ Run Live'}
             </button>
+
+            <button
+              className="mc-action-btn mc-btn-submit-action"
+              onClick={handleSubmitSolution}
+              disabled={isRunningTests || isCompiling}
+              title="Submit solution for automated scoring & evaluation"
+            >
+              🏁 Submit
+            </button>
           </div>
         </div>
         {toastMessage && (
@@ -2240,6 +2655,12 @@ export default function MachineCodingStudio() {
                 >
                   🧪 Tests {testResults ? `(${testResults.filter(r => r.status === 'passed').length}/${testResults.length})` : ''}
                 </button>
+                <button
+                  className={`mc-spec-tab ${activeTab === 'notes' ? 'active' : ''}`}
+                  onClick={() => setActiveTab('notes')}
+                >
+                  📝 Notes {candidateNote.trim() ? '●' : ''}
+                </button>
               </div>
               <button
                 type="button"
@@ -2263,12 +2684,17 @@ export default function MachineCodingStudio() {
                     <span className="mc-spec-tag-cat">🏷️ {activeQuestion.category}</span>
                   </div>
 
-                  <div className="mc-spec-body">
-                    {renderSpecDescription(activeQuestion.description)}
+                  {/* Problem Statement */}
+                  <div className="mc-spec-section-heading">
+                    <span>📋</span> Problem Statement
+                  </div>
+                  <div className="mc-spec-problem-box">
+                    {activeQuestion.problemStatement || renderSpecDescription(activeQuestion.description)}
                   </div>
 
+                  {/* Requirements & Candidate Checklist */}
                   <h4 className="mc-checklist-heading">
-                    Candidate Checklist:
+                    Candidate Checklist ({activeQuestion.requirements.filter((_, idx) => !!checkedItems[activeQuestion.id]?.[idx]).length}/{activeQuestion.requirements.length}):
                   </h4>
                   <div className="mc-checklist">
                     {activeQuestion.requirements.map((req, idx) => {
@@ -2295,6 +2721,76 @@ export default function MachineCodingStudio() {
                       );
                     })}
                   </div>
+
+                  {/* Examples & Test Scenarios */}
+                  {activeQuestion.examples && activeQuestion.examples.length > 0 && (
+                    <>
+                      <div className="mc-spec-section-heading">
+                        <span>🧪</span> Examples &amp; Expected Outputs
+                      </div>
+                      <div className="mc-spec-examples-list">
+                        {activeQuestion.examples.map((ex, exIdx) => (
+                          <div key={exIdx} className="mc-spec-example-card">
+                            <div className="mc-spec-example-title">{ex.title}</div>
+                            {ex.input && (
+                              <div className="mc-spec-example-row">
+                                <span className="mc-spec-example-label">Input:</span>
+                                <code>{ex.input}</code>
+                              </div>
+                            )}
+                            {ex.output && (
+                              <div className="mc-spec-example-row">
+                                <span className="mc-spec-example-label">Output:</span>
+                                <code>{ex.output}</code>
+                              </div>
+                            )}
+                            {ex.explanation && (
+                              <div className="mc-spec-example-row">
+                                <span className="mc-spec-example-label">Explanation:</span>
+                                <span>{ex.explanation}</span>
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </>
+                  )}
+
+                  {/* Technical Constraints */}
+                  {activeQuestion.constraints && activeQuestion.constraints.length > 0 && (
+                    <>
+                      <div className="mc-spec-section-heading">
+                        <span>⚡</span> Technical Constraints
+                      </div>
+                      <ul className="mc-spec-constraints-list">
+                        {activeQuestion.constraints.map((c, cIdx) => (
+                          <li key={cIdx} className="mc-spec-constraint-item">
+                            <span className="mc-spec-constraint-bullet">▸</span>
+                            <span>{c}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </>
+                  )}
+
+                  {/* Preview & Behavior Guide */}
+                  {activeQuestion.previewInfo && (
+                    <>
+                      <div className="mc-spec-section-heading">
+                        <span>👁️</span> Live Preview Information
+                      </div>
+                      <div className="mc-spec-preview-guide">
+                        <div>{activeQuestion.previewInfo.summary}</div>
+                        {activeQuestion.previewInfo.interactiveControls && activeQuestion.previewInfo.interactiveControls.length > 0 && (
+                          <div className="mc-spec-controls-tags">
+                            {activeQuestion.previewInfo.interactiveControls.map((ctrl, ctrlIdx) => (
+                              <span key={ctrlIdx} className="mc-spec-control-tag">{ctrl}</span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </>
+                  )}
                 </div>
               )}
 
@@ -2353,6 +2849,24 @@ export default function MachineCodingStudio() {
                     >
                       🏁 Finish & Submit Round Now
                     </button>
+                  </div>
+                ) : !canViewSolution ? (
+                  <div className="mc-solution-locked-card">
+                    <div className="mc-locked-icon">🔒</div>
+                    <h3 className="mc-locked-title">Reference Solution Locked</h3>
+                    <p className="mc-locked-desc">
+                      Official reference solutions require verified Pro Candidate or Platform Administrator entitlements.
+                    </p>
+                    <div className="mc-locked-rules">
+                      <div className="mc-locked-rule-item">
+                        <span>🛡️</span>
+                        <span>Role: <strong>{userRole.toUpperCase()}</strong></span>
+                      </div>
+                      <div className="mc-locked-rule-item">
+                        <span>💡</span>
+                        <span>Upgrade your account or request administrator privileges to inspect production reference solutions.</span>
+                      </div>
+                    </div>
                   </div>
                 ) : (
                   <div>
@@ -2574,6 +3088,59 @@ export default function MachineCodingStudio() {
                         )}
                       </div>
                     ))}
+                  </div>
+                </div>
+              )}
+
+              {activeTab === 'notes' && (
+                <div className="mc-spec-notes-panel">
+                  <div className="mc-notes-head">
+                    <div>
+                      <h3 className="mc-notes-title">Candidate Notes — {activeQuestion.id}</h3>
+                      <p className="mc-notes-subtitle">
+                        Private notes scoped to your account and this challenge. Saved locally and synced.
+                      </p>
+                    </div>
+                    {noteSavedAt && (
+                      <span className="mc-notes-saved-badge">
+                        ✓ Last saved {noteSavedAt}
+                      </span>
+                    )}
+                  </div>
+
+                  <textarea
+                    className="mc-notes-textarea"
+                    value={candidateNote}
+                    onChange={(e) => setCandidateNote(e.target.value)}
+                    placeholder="Document your architecture decisions, edge cases, interviewer discussions, time/space complexity, or revision notes for this challenge..."
+                    rows={12}
+                  />
+
+                  <div className="mc-notes-actions">
+                    <div className="mc-notes-stats">
+                      <span>{candidateNote.length} characters</span>
+                      <span>•</span>
+                      <span>{candidateNote.trim() ? candidateNote.trim().split(/\s+/).length : 0} words</span>
+                    </div>
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      {candidateNote.trim() && (
+                        <button
+                          type="button"
+                          className="btn btn-ghost-danger btn-sm"
+                          onClick={handleDeleteNote}
+                          title="Clear notes for this challenge"
+                        >
+                          🗑️ Clear
+                        </button>
+                      )}
+                      <button
+                        type="button"
+                        className="btn btn-primary btn-sm"
+                        onClick={handleSaveNote}
+                      >
+                        💾 Save Note
+                      </button>
+                    </div>
                   </div>
                 </div>
               )}
@@ -2876,7 +3443,7 @@ export default function MachineCodingStudio() {
                       theme={resolvedTheme === 'light' ? 'light' : 'vs-dark'}
                       value={currentCode}
                       onChange={(val) => {
-                        if (userRole === 'observer' || (userRole === 'admin' && !canAdminEdit)) return;
+                        if (isCollabActive && (userRole === 'observer' || (userRole === 'admin' && !canAdminEdit))) return;
                         handleCodeChange(val);
                       }}
                       onMount={(editor, monaco) => {
@@ -2919,7 +3486,7 @@ export default function MachineCodingStudio() {
                       }}
                       options={{
                         fontSize: 13,
-                        readOnly: userRole === 'observer' || (userRole === 'admin' && !canAdminEdit),
+                        readOnly: isCollabActive ? (userRole === 'observer' || (userRole === 'admin' && !canAdminEdit)) : false,
                         minimap: { enabled: false },
                         scrollBeyondLastLine: false,
                         automaticLayout: true,
@@ -2959,15 +3526,38 @@ export default function MachineCodingStudio() {
                 <div className="mc-panel-header">
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <span>⚡ Live Preview</span>
+                    {/* Auto-refresh pulse indicator */}
+                    {autoRefreshEnabled && (
+                      <span
+                        className="mc-preview-live-dot"
+                        title="Auto-refresh is ON — preview updates as you type"
+                      />
+                    )}
+                    {isPreviewRefreshing && (
+                      <span className="mc-preview-refreshing-badge">Refreshing…</span>
+                    )}
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    {/* Auto-refresh toggle */}
                     <button
                       type="button"
-                      className="mc-icon-tool-btn"
-                      onClick={() => executeCode(files)}
-                      title="Refresh Live Sandbox (Ctrl+Enter)"
+                      id="mc-auto-refresh-toggle"
+                      className={`mc-preview-toggle-btn ${autoRefreshEnabled ? 'active' : ''}`}
+                      onClick={handleToggleAutoRefresh}
+                      title={autoRefreshEnabled ? 'Auto-refresh ON — click to disable' : 'Auto-refresh OFF — click to enable'}
                     >
-                      ⟳
+                      <span className="mc-preview-toggle-icon">{autoRefreshEnabled ? '⚡' : '⚡'}</span>
+                      <span className="mc-preview-toggle-label">{autoRefreshEnabled ? 'Auto' : 'Manual'}</span>
+                    </button>
+                    {/* Manual refresh button */}
+                    <button
+                      type="button"
+                      id="mc-manual-refresh-btn"
+                      className={`mc-icon-tool-btn mc-refresh-btn ${isPreviewRefreshing ? 'spinning' : ''}`}
+                      onClick={handleManualRefresh}
+                      title="Manual Refresh — Force update preview now (Ctrl+Enter)"
+                    >
+                      ↺
                     </button>
                     <button
                       type="button"
@@ -2984,8 +3574,22 @@ export default function MachineCodingStudio() {
                   className="mc-iframe-runner"
                   title="React Preview Sandbox"
                   srcDoc={previewSrcDoc}
-                  sandbox="allow-scripts allow-modals allow-same-origin"
+                  sandbox="allow-scripts allow-modals"
                 />
+
+                {/* Live Preview Error Overlay with Auto-Recovery */}
+                {livePreviewError && (
+                  <div className="mc-preview-error-overlay">
+                    <div className="mc-preview-error-header">
+                      <span className="mc-preview-error-badge">⚠️ Compilation Error</span>
+                      <span className="mc-preview-error-title">Syntax / Transpiler Failure</span>
+                    </div>
+                    <pre className="mc-preview-error-msg">{livePreviewError}</pre>
+                    <div className="mc-preview-error-hint">
+                      💡 Editor is still fully active. Once you correct the code syntax, Live Preview will recover automatically.
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -3481,7 +4085,35 @@ export default function MachineCodingStudio() {
             ))}
           </div>
 
+          <div className="mc-status-filter-pills">
+            {(['All', 'Solved', 'Unsolved', 'Attempted', 'Bookmarked'] as const).map(st => (
+              <button
+                key={st}
+                type="button"
+                className={`mc-filter-btn ${selectedStatus === st ? 'active' : ''}`}
+                onClick={() => { setSelectedStatus(st); setCurrentPage(1); }}
+              >
+                {st === 'Bookmarked' ? '★ Bookmarked' : st === 'Solved' ? '✓ Solved' : st === 'Attempted' ? '● Attempted' : st}
+                {st === 'Bookmarked' && bookmarkedSet.size > 0 ? ` (${bookmarkedSet.size})` : ''}
+              </button>
+            ))}
+          </div>
+
           <div className="mc-controls-right">
+            <select
+              className="mc-sort-select"
+              value={sortBy}
+              onChange={(e) => { setSortBy(e.target.value as any); setCurrentPage(1); }}
+              title="Sort challenges list"
+            >
+              <option value="id-asc">🔢 Question # (1 → 500)</option>
+              <option value="id-desc">🔢 Question # (500 → 1)</option>
+              <option value="difficulty">⚡ Difficulty (Easy → Senior)</option>
+              <option value="category">🏷️ Category (A → Z)</option>
+              <option value="recent-attempted">⏱️ Recently Attempted</option>
+              <option value="recent-solved">🏆 Recently Solved</option>
+            </select>
+
             <div className="mc-diff-filter-group" style={{ display: 'flex', gap: '6px' }}>
               {['All', 'Easy', 'Medium', 'Hard', 'Senior'].map(diff => (
                 <button
@@ -3563,15 +4195,31 @@ export default function MachineCodingStudio() {
           <div className="mc-cards-grid">
             {paginatedQuestions.map((q) => {
               const isCompleted = !!solvedMap[q.id];
+              const isAttempted = attemptedSet.has(q.id);
+              const isBookmarked = bookmarkedSet.has(q.id);
 
               return (
-                <div key={q.id} className={`mc-card ${isCompleted ? 'completed' : ''}`}>
+                <div key={q.id} className={`mc-card ${isCompleted ? 'completed' : isAttempted ? 'attempted' : ''}`}>
                   <div className="mc-card-body">
                     <div className="mc-card-header">
                       <span className="mc-card-id">{q.id}</span>
-                      <span className={`mc-badge ${q.difficulty.toLowerCase()}`}>
-                        {q.difficulty}
-                      </span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <button
+                          type="button"
+                          className={`mc-card-bookmark-btn ${isBookmarked ? 'bookmarked' : ''}`}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleBookmark(q.id);
+                          }}
+                          title={isBookmarked ? 'Remove bookmark' : 'Bookmark challenge'}
+                          aria-label="Bookmark"
+                        >
+                          {isBookmarked ? '★' : '☆'}
+                        </button>
+                        <span className={`mc-badge ${q.difficulty.toLowerCase()}`}>
+                          {q.difficulty}
+                        </span>
+                      </div>
                     </div>
 
                     <h3 className="mc-card-title">{q.title}</h3>
@@ -3583,9 +4231,11 @@ export default function MachineCodingStudio() {
                       <span className="mc-meta-time">⏱️ {q.timeEstimate}</span>
                       <span className="mc-meta-sep">•</span>
                       <span className="mc-meta-category">{q.category}</span>
-                      {isCompleted && (
+                      {isCompleted ? (
                         <span className="mc-meta-status solved">✓ Solved</span>
-                      )}
+                      ) : isAttempted ? (
+                        <span className="mc-meta-status attempted" style={{ color: '#eab308' }}>● Attempted</span>
+                      ) : null}
                     </div>
 
                     <button
@@ -3615,17 +4265,31 @@ export default function MachineCodingStudio() {
 
             {paginatedQuestions.map((q) => {
               const isCompleted = !!solvedMap[q.id];
+              const isAttempted = attemptedSet.has(q.id);
+              const isBookmarked = bookmarkedSet.has(q.id);
 
               return (
                 <div
                   key={q.id}
-                  className={`mc-list-item ${isCompleted ? 'completed' : ''}`}
+                  className={`mc-list-item ${isCompleted ? 'completed' : isAttempted ? 'attempted' : ''}`}
                   onClick={() => selectQuestion(q.id)}
                   role="button"
                   tabIndex={0}
                   onKeyDown={(e) => { if (e.key === 'Enter') selectQuestion(q.id); }}
                 >
-                  <div className="mc-td mc-td-id">
+                  <div className="mc-td mc-td-id" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <button
+                      type="button"
+                      className={`mc-card-bookmark-btn ${isBookmarked ? 'bookmarked' : ''}`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleBookmark(q.id);
+                      }}
+                      title={isBookmarked ? 'Remove bookmark' : 'Bookmark challenge'}
+                      aria-label="Bookmark"
+                    >
+                      {isBookmarked ? '★' : '☆'}
+                    </button>
                     <span className="mc-card-id">{q.id}</span>
                   </div>
 
@@ -3651,6 +4315,8 @@ export default function MachineCodingStudio() {
                   <div className="mc-td mc-td-status">
                     {isCompleted ? (
                       <span className="mc-status-pill completed">✓ Solved</span>
+                    ) : isAttempted ? (
+                      <span className="mc-status-pill attempted">● Attempted</span>
                     ) : (
                       <span className="mc-status-pill pending">○ Ready</span>
                     )}

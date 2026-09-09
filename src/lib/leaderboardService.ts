@@ -1,6 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
 import { supabase, supabaseUrl, supabaseAnonKey } from './supabase/client'
-import { MACHINE_CODING_QUESTIONS } from '../components/machinecoding/machineCodingQuestions'
+import { MACHINE_CODING_CATALOG } from '../components/machinecoding/data/machineCodingCatalog'
 
 export type TierName = 'diamond' | 'platinum' | 'gold' | 'silver' | 'bronze'
 export type LeaderboardTimeframe = 'today' | '7days' | '30days' | 'all'
@@ -101,9 +101,21 @@ export const LOCAL_MC_SUBMISSIONS_KEY = 'mc_candidate_submissions_real_v2'
 
 // Lookup title from question ID
 export function resolveQuestionTitle(questionId: string): string {
-  if (!questionId) return 'Machine Coding Problem'
-  const mc = MACHINE_CODING_QUESTIONS.find(q => q.id.toLowerCase() === questionId.toLowerCase())
+  if (!questionId) return 'Problem'
+  const clean = questionId.trim().toLowerCase()
+  const mc = MACHINE_CODING_CATALOG.find(q => {
+    const qLower = q.id.toLowerCase()
+    if (qLower === clean) return true
+    const numClean = clean.replace(/\D/g, '')
+    const numQ = qLower.replace(/\D/g, '')
+    return numClean && numQ && parseInt(numClean, 10) === parseInt(numQ, 10)
+  })
   if (mc) return mc.title
+
+  if (questionId.startsWith('DSA')) {
+    const num = questionId.replace(/^DSA0*/, '')
+    return `DSA #${num || questionId}`
+  }
 
   if (questionId.startsWith('1000')) {
     return `Algo #${questionId.replace(/^10+/, '') || questionId}`
@@ -423,7 +435,7 @@ export const leaderboardService = {
       const filteredSubs = filteredByTime.filter(s => {
         if (category === 'all') return true
         if (category === 'machine-coding') return isMachineCodingId(s.questionId) || s.language === 'react'
-        if (category === 'algorithms') return s.questionId.startsWith('100') || s.language === 'javascript'
+        if (category === 'algorithms') return s.questionId.startsWith('DSA') || s.questionId.startsWith('100') || s.language === 'javascript' || s.language === 'typescript'
         if (category === 'javascript') return s.language === 'javascript' || s.language === 'typescript'
         return true
       })
@@ -640,9 +652,9 @@ export const leaderboardService = {
         const qid = String(s.question_id || '')
         if (!isMC(qid, s.language)) continue
 
-        const mcMeta = MACHINE_CODING_QUESTIONS.find(q => q.id.toLowerCase() === qid.toLowerCase())
+        const mcMeta = MACHINE_CODING_CATALOG.find(q => q.id.toLowerCase() === qid.toLowerCase())
         const score = Number(s.score ?? 0)
-        const testsTotal = mcMeta?.testCases?.length || 4
+        const testsTotal = 4
         const testsPassed = score >= 100 ? testsTotal : Math.max(0, Math.round((score / 100) * testsTotal))
 
         const rec: CandidateMCSubmission = {
@@ -676,7 +688,7 @@ export const leaderboardService = {
         )
         if (exists) continue
 
-        const mcMeta = MACHINE_CODING_QUESTIONS.find(q => q.id.toLowerCase() === loc.questionId.toLowerCase())
+        const mcMeta = MACHINE_CODING_CATALOG.find(q => q.id.toLowerCase() === loc.questionId.toLowerCase())
         combined.push({
           id: loc.id,
           userId: loc.userId,
@@ -740,9 +752,9 @@ export const leaderboardService = {
         if (!isMC(qid, s.language)) continue
 
         const prof = profileMap.get(s.user_id)
-        const mcMeta = MACHINE_CODING_QUESTIONS.find(q => q.id.toLowerCase() === qid.toLowerCase())
+        const mcMeta = MACHINE_CODING_CATALOG.find(q => q.id.toLowerCase() === qid.toLowerCase())
         const score = Number(s.score ?? 0)
-        const testsTotal = mcMeta?.testCases?.length || 4
+        const testsTotal = 4
         const testsPassed = score >= 100 ? testsTotal : Math.max(0, Math.round((score / 100) * testsTotal))
 
         result.push({

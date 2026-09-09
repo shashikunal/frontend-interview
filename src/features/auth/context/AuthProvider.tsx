@@ -51,6 +51,8 @@ function buildFallbackProfile(user: User | null): AuthUserProfile | null {
   }
 }
 
+import { mcProgressService } from '../../../components/machinecoding/lib/mcProgressService'
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null)
   const [rawUser, setRawUser] = useState<User | null>(null)
@@ -60,6 +62,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [authModalMode, setAuthModalMode] = useState<'user' | 'admin'>('user')
   // Track manual role overrides so TOKEN_REFRESHED doesn't wipe them
   const roleOverrideRef = React.useRef<UserRole | null>(null)
+
+  // Synchronize candidate isolation across Machine Coding progress
+  useEffect(() => {
+    const effectiveUserId = userProfile?.id || session?.user?.id || null
+    mcProgressService.setUserId(effectiveUserId)
+  }, [userProfile?.id, session?.user?.id])
 
   // Load user profile from Supabase PostgreSQL database
   const syncProfile = useCallback(async (user: User | null) => {

@@ -1,7 +1,9 @@
 import { createContext, useContext, useEffect, useState, useCallback, type ReactNode } from 'react'
 import { trackingService } from '../lib/trackingService'
 
-const BOOKMARK_STORAGE_KEY = 'interview-prep-bookmarks'
+import { useAuth } from '../features/auth/hooks/useAuth'
+
+const BOOKMARK_STORAGE_PREFIX = 'interview-prep-bookmarks'
 
 interface BookmarkContextType {
   bookmarkedIds: Set<number>
@@ -16,10 +18,15 @@ interface BookmarkContextType {
 const BookmarkContext = createContext<BookmarkContextType | undefined>(undefined)
 
 export function BookmarkProvider({ children }: { children: ReactNode }) {
-  const [bookmarkedIds, setBookmarkedIds] = useState<Set<number>>(() => {
+  const { user } = useAuth()
+  const userId = user?.id || 'guest'
+  const storageKey = `${BOOKMARK_STORAGE_PREFIX}_${userId}`
+
+  const loadBookmarksForUser = useCallback((uId: string): Set<number> => {
     if (typeof window !== 'undefined') {
       try {
-        const saved = localStorage.getItem(BOOKMARK_STORAGE_KEY)
+        const key = `${BOOKMARK_STORAGE_PREFIX}_${uId}`
+        const saved = localStorage.getItem(key)
         if (saved) {
           const parsed = JSON.parse(saved)
           if (Array.isArray(parsed)) {
@@ -31,16 +38,23 @@ export function BookmarkProvider({ children }: { children: ReactNode }) {
       }
     }
     return new Set<number>()
-  })
+  }, [])
 
-  // Synchronize state changes to localStorage
+  const [bookmarkedIds, setBookmarkedIds] = useState<Set<number>>(() => loadBookmarksForUser(userId))
+
+  // Synchronize when authenticated user changes
+  useEffect(() => {
+    setBookmarkedIds(loadBookmarksForUser(userId))
+  }, [userId, loadBookmarksForUser])
+
+  // Synchronize state changes to user-scoped localStorage
   useEffect(() => {
     try {
-      localStorage.setItem(BOOKMARK_STORAGE_KEY, JSON.stringify(Array.from(bookmarkedIds)))
+      localStorage.setItem(storageKey, JSON.stringify(Array.from(bookmarkedIds)))
     } catch {
       // Ignore quota errors
     }
-  }, [bookmarkedIds])
+  }, [bookmarkedIds, storageKey])
 
   const isBookmarked = useCallback((id: number): boolean => {
     return bookmarkedIds.has(id)

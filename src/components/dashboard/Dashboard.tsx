@@ -12,6 +12,12 @@ import { leaderboardService, type CandidateMCSubmission } from '../../lib/leader
 import { gradingService, type EvaluatorReview } from '../../lib/gradingService'
 import { CandidateSkillRadar } from './CandidateSkillRadar'
 import AdminDashboard from './AdminDashboard'
+import { dsaSubmissionService } from '../dsa/lib/dsaSubmissionService'
+import { dsaProgressService } from '../dsa/lib/dsaProgressService'
+import type { DSASubmission } from '../dsa/data/dsaTypes'
+import { DSA_QUESTIONS } from '../dsa/data/dsaQuestions'
+import { mcProgressService } from '../machinecoding/lib/mcProgressService'
+import { MACHINE_CODING_CATALOG } from '../machinecoding/data/machineCodingCatalog'
 import './Dashboard.css'
 
 function catClass(name: string): string {
@@ -50,6 +56,12 @@ function CandidateDashboard() {
   const [viewingMCSubmission, setViewingMCSubmission] = useState<CandidateMCSubmission | null>(null)
   const [mcCopied, setMcCopied] = useState<boolean>(false)
   const [mcSearch, setMcSearch] = useState<string>('')
+
+  // DSA Submissions State
+  const [dsaSubmissions, setDsaSubmissions] = useState<DSASubmission[]>([])
+  const [dsaSolvedCount, setDsaSolvedCount] = useState<number>(0)
+  const [activeSubmissionsTab, setActiveSubmissionsTab] = useState<'mc' | 'dsa'>('mc')
+  const [dsaSearch, setDsaSearch] = useState<string>('')
 
   const [telemetry, setTelemetry] = useState<{
     startedCount: number
@@ -140,13 +152,38 @@ function CandidateDashboard() {
         setMcSubmissions(list)
         setReviewsMap(reviews)
       } catch (err) {
-        console.warn('[CandidateDashboard] MC load error:', err)
+        console.warn('Failed loading MC submissions:', err)
       } finally {
         setLoadingMC(false)
       }
     }
     void loadMC()
+
+    // Load DSA Submissions and Solved Count
+    dsaSubmissionService.fetchUserSubmissions(user?.id).then(setDsaSubmissions)
+    setDsaSolvedCount(dsaProgressService.getSolvedIds().size)
   }, [user])
+
+  // Machine Coding Curriculum Progress (Isolated from DSA)
+  const [mcSolvedIds, setMcSolvedIds] = useState<Set<string>>(() => mcProgressService.getSolvedIds())
+  const [mcAttemptedIds, setMcAttemptedIds] = useState<Set<string>>(() => mcProgressService.getAttemptedIds())
+  const [mcBookmarkedIds, setMcBookmarkedIds] = useState<Set<string>>(() => mcProgressService.getBookmarkedIds())
+
+  useEffect(() => {
+    mcProgressService.setUserId(user?.id)
+    const syncMC = () => {
+      setMcSolvedIds(mcProgressService.getSolvedIds())
+      setMcAttemptedIds(mcProgressService.getAttemptedIds())
+      setMcBookmarkedIds(mcProgressService.getBookmarkedIds())
+    }
+    syncMC()
+    return mcProgressService.subscribe(syncMC)
+  }, [user?.id])
+
+  const nextMCQuestion = useMemo(() => {
+    const found = MACHINE_CODING_CATALOG.find(q => !mcSolvedIds.has(q.id))
+    return found || MACHINE_CODING_CATALOG[0]
+  }, [mcSolvedIds])
 
   const mcStats = useMemo(() => {
     const total = mcSubmissions.length
@@ -181,6 +218,19 @@ function CandidateDashboard() {
         s.category.toLowerCase().includes(term)
     )
   }, [mcSubmissions, mcSearch])
+
+  const filteredDSASubmissions = useMemo(() => {
+    if (!dsaSearch.trim()) return dsaSubmissions
+    const term = dsaSearch.toLowerCase()
+    return dsaSubmissions.filter(s => {
+      const q = DSA_QUESTIONS.find(item => item.id === s.questionId)
+      return (
+        s.questionId.toLowerCase().includes(term) ||
+        (q && q.title.toLowerCase().includes(term)) ||
+        s.language.toLowerCase().includes(term)
+      )
+    })
+  }, [dsaSubmissions, dsaSearch])
 
   useEffect(() => {
     if (!user) return
@@ -459,6 +509,24 @@ function CandidateDashboard() {
             View saved list →
           </Link>
         </div>
+
+        {/* DSA 1,000 Questions Solved Card */}
+        <div className="dash-stat-card" style={{ borderLeft: '4px solid #10b981' }}>
+          <div className="dash-stat-top">
+            <div className="dash-stat-icon" style={{ background: 'rgba(16, 185, 129, 0.15)', color: '#10b981' }}>🧠</div>
+            <span className="dash-stat-badge" style={{ background: 'rgba(16, 185, 129, 0.15)', color: '#10b981' }}>DSA Masterclass</span>
+          </div>
+          <div className="dash-stat-info">
+            <span className="dash-stat-num">{dsaSolvedCount} / 1,000</span>
+            <span className="dash-stat-label">Algorithmic Problems Solved</span>
+          </div>
+          <div className="dash-stat-hint">
+            {1000 - dsaSolvedCount} LeetCode challenges remaining
+          </div>
+          <Link to="/dsa" className="dash-stat-link" style={{ color: '#10b981' }}>
+            Open DSA Studio →
+          </Link>
+        </div>
       </div>
 
       {/* Question Progress & Telemetry Overview */}
@@ -591,7 +659,88 @@ function CandidateDashboard() {
           </div>
         </div>
 
-        {/* MC Stats Summary Row */}
+        {/* MC Curriculum Progress Summary (Isolated 500-question tracking) */}
+        <div className="mc-stats-summary-grid" style={{ marginBottom: '14px' }}>
+          <div className="mc-summary-tile">
+            <span className="mc-summary-icon">⚡</span>
+            <div>
+              <span className="mc-summary-num">500</span>
+              <span className="mc-summary-label">Total Curriculum</span>
+            </div>
+          </div>
+          <div className="mc-summary-tile">
+            <span className="mc-summary-icon">✅</span>
+            <div>
+              <span className="mc-summary-num" style={{ color: '#10b981' }}>{mcSolvedIds.size}</span>
+              <span className="mc-summary-label">Solved Challenges</span>
+            </div>
+          </div>
+          <div className="mc-summary-tile">
+            <span className="mc-summary-icon">⏳</span>
+            <div>
+              <span className="mc-summary-num" style={{ color: '#eab308' }}>{mcAttemptedIds.size}</span>
+              <span className="mc-summary-label">Attempted</span>
+            </div>
+          </div>
+          <div className="mc-summary-tile">
+            <span className="mc-summary-icon">🎯</span>
+            <div>
+              <span className="mc-summary-num" style={{ color: '#38bdf8' }}>{Math.max(0, 500 - mcSolvedIds.size)}</span>
+              <span className="mc-summary-label">Remaining</span>
+            </div>
+          </div>
+          <div className="mc-summary-tile">
+            <span className="mc-summary-icon">★</span>
+            <div>
+              <span className="mc-summary-num" style={{ color: '#fbbf24' }}>{mcBookmarkedIds.size}</span>
+              <span className="mc-summary-label">Bookmarked</span>
+            </div>
+          </div>
+          <div className="mc-summary-tile">
+            <span className="mc-summary-icon">📈</span>
+            <div>
+              <span className="mc-summary-num" style={{ color: '#8b5cf6' }}>{Math.round((mcSolvedIds.size / 500) * 100)}%</span>
+              <span className="mc-summary-label">Progress Rate</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Continue Practice Hero Card */}
+        {nextMCQuestion && (
+          <div style={{
+            background: 'linear-gradient(135deg, rgba(67, 24, 255, 0.08), rgba(56, 189, 248, 0.06))',
+            border: '1px solid rgba(67, 24, 255, 0.2)',
+            borderRadius: '12px',
+            padding: '16px 20px',
+            marginBottom: '20px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+            gap: '12px'
+          }}>
+            <div>
+              <div style={{ fontSize: '11.5px', fontWeight: 700, color: '#4318FF', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px' }}>
+                🚀 Continue Practice • Up Next
+              </div>
+              <div style={{ fontSize: '15px', fontWeight: 700, color: 'var(--text-primary)' }}>
+                {nextMCQuestion.id}: {nextMCQuestion.title}
+              </div>
+              <div style={{ fontSize: '12.5px', color: 'var(--text-secondary)', marginTop: '2px' }}>
+                {nextMCQuestion.category} • {nextMCQuestion.difficulty} • ⏱️ {nextMCQuestion.timeEstimate}
+              </div>
+            </div>
+            <Link
+              to={`/machine-coding?id=${nextMCQuestion.id}`}
+              className="btn btn-primary candidate-btn-primary"
+              style={{ padding: '8px 18px', fontSize: '13px' }}
+            >
+              Resume Challenge →
+            </Link>
+          </div>
+        )}
+
+        {/* MC Submissions Ledger Stats Row */}
         <div className="mc-stats-summary-grid">
           <div className="mc-summary-tile">
             <span className="mc-summary-icon">📝</span>
@@ -644,7 +793,127 @@ function CandidateDashboard() {
           reviews={reviewsMap}
         />
 
-        {loadingMC ? (
+        {/* Submissions Category Toggle Tabs */}
+        <div style={{ display: 'flex', gap: '8px', margin: '24px 0 16px', borderBottom: '1px solid var(--border)', paddingBottom: '12px' }}>
+          <button
+            type="button"
+            className={`btn btn-sm ${activeSubmissionsTab === 'mc' ? 'btn-primary' : 'btn-secondary'}`}
+            onClick={() => setActiveSubmissionsTab('mc')}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+          >
+            <span>⚡</span>
+            <span>Machine Coding Challenges ({mcSubmissions.length})</span>
+          </button>
+          <button
+            type="button"
+            className={`btn btn-sm ${activeSubmissionsTab === 'dsa' ? 'btn-primary' : 'btn-secondary'}`}
+            onClick={() => setActiveSubmissionsTab('dsa')}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+          >
+            <span>🧠</span>
+            <span>DSA Algorithmic Challenges ({dsaSubmissions.length})</span>
+          </button>
+        </div>
+
+        {activeSubmissionsTab === 'dsa' ? (
+          dsaSubmissions.length === 0 ? (
+            <div className="mc-empty-box">
+              <span style={{ fontSize: '2.4rem' }}>🧠</span>
+              <h3 style={{ marginTop: '10px', marginBottom: '6px' }}>No DSA Submissions Yet</h3>
+              <p style={{ color: 'var(--text-secondary)', maxWidth: '540px', margin: '0 auto 18px', fontSize: '0.92rem' }}>
+                Start solving from our 1,000 algorithmic questions covering Two Pointers, Dynamic Programming, Trees, and Graphs.
+              </p>
+              <Link to="/dsa" className="btn btn-primary candidate-btn-primary" style={{ display: 'inline-flex', padding: '10px 24px' }}>
+                <span>🚀</span> Launch DSA Studio
+              </Link>
+            </div>
+          ) : (
+            <>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', margin: '18px 0 14px', gap: '12px', flexWrap: 'wrap' }}>
+                <input
+                  type="text"
+                  className="search-field"
+                  placeholder="Filter your DSA submissions..."
+                  value={dsaSearch}
+                  onChange={e => setDsaSearch(e.target.value)}
+                  style={{ maxWidth: '340px', width: '100%' }}
+                />
+                <span style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>
+                  Showing {filteredDSASubmissions.length} of {dsaSubmissions.length} submissions
+                </span>
+              </div>
+
+              <div className="table-responsive">
+                <table className="admin-data-table">
+                  <thead>
+                    <tr>
+                      <th>Timestamp</th>
+                      <th>Problem</th>
+                      <th>Difficulty</th>
+                      <th>Language</th>
+                      <th>Status</th>
+                      <th>Test Cases</th>
+                      <th>Runtime</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredDSASubmissions.map(sub => {
+                      const q = DSA_QUESTIONS.find(item => item.id === sub.questionId)
+                      const isAcc = sub.status === 'Accepted'
+                      return (
+                        <tr key={sub.id}>
+                          <td>
+                            <span className="sub-time">
+                              {new Date(sub.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                            </span>
+                            <span className="sub-date">
+                              {new Date(sub.timestamp).toLocaleDateString([], { month: 'short', day: 'numeric' })}
+                            </span>
+                          </td>
+                          <td>
+                            <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>
+                              #{sub.questionId} {q ? q.title : 'Algorithmic Problem'}
+                            </div>
+                            <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{q?.topic || 'Algorithms'}</span>
+                          </td>
+                          <td>
+                            <span className={`badge badge-${(q?.difficulty || 'medium').toLowerCase()}`}>
+                              {q?.difficulty || 'Medium'}
+                            </span>
+                          </td>
+                          <td>
+                            <span className="tech-badge">{sub.language}</span>
+                          </td>
+                          <td>
+                            <span className={`status-pill ${isAcc ? 'status-pill-passed' : 'status-pill-failed'}`}>
+                              {isAcc ? '✓ Accepted' : '✗ ' + sub.status}
+                            </span>
+                          </td>
+                          <td style={{ fontWeight: 600 }}>
+                            {sub.testsPassed} / {sub.testsTotal}
+                          </td>
+                          <td style={{ color: 'var(--text-muted)' }}>
+                            {sub.runtimeMs} ms
+                          </td>
+                          <td>
+                            <Link
+                              to={`/dsa?id=${sub.questionId}`}
+                              className="btn btn-sm btn-primary"
+                              style={{ padding: '4px 10px', fontSize: '12px' }}
+                            >
+                              Open Studio →
+                            </Link>
+                          </td>
+                        </tr>
+                      )
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </>
+          )
+        ) : loadingMC ? (
           <div style={{ padding: '40px', textAlign: 'center' }}>
             <div className="app-route-spinner" />
             <p style={{ marginTop: '12px', color: 'var(--text-secondary)' }}>Loading your machine coding submissions from Supabase...</p>

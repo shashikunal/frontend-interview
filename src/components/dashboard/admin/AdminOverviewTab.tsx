@@ -1,4 +1,5 @@
 import type { AdminOverviewStats, TimeframeFilter } from '../../../lib/adminAnalyticsService'
+import { MACHINE_CODING_CATALOG } from '../../machinecoding/data/machineCodingCatalog'
 
 interface AdminOverviewTabProps {
   stats: AdminOverviewStats | null
@@ -14,10 +15,12 @@ export default function AdminOverviewTab({
   onTimeframeChange,
   onNavigateTab,
 }: AdminOverviewTabProps) {
+  const mcTotalQuestions = MACHINE_CODING_CATALOG.length
+
   const s = stats || {
     totalUsers: 1,
     activeUsers: 1,
-    totalQuestions: 22222,
+    totalQuestions: mcTotalQuestions,
     totalAttempts: 0,
     totalSubmissions: 0,
     completedQuestions: 0,
@@ -28,6 +31,14 @@ export default function AdminOverviewTab({
     successRate: 0,
     avgAttemptsPerQuestion: 1.2,
     avgTimeSpentMinutes: 15,
+    mcTotalQuestions,
+    mcSubmissionsCount: 0,
+    mcAcceptedCount: 0,
+    mcAttemptsCount: 0,
+    mcCompletedCount: 0,
+    dsaTotalQuestions: 1000,
+    dsaSubmissionsCount: 0,
+    dsaAcceptedCount: 0,
   }
 
   return (
@@ -37,7 +48,7 @@ export default function AdminOverviewTab({
         <div>
           <h2>System Operations &amp; Candidate Activity Overview</h2>
           <p className="overview-desc">
-            Aggregated real-time metrics across 22,222 questions, active candidate submissions, problem attempts, and cloud audit logs.
+            Aggregated real-time metrics across {mcTotalQuestions} Machine Coding questions (Q001–Q500), active candidate submissions, problem attempts, and cloud audit logs.
           </p>
         </div>
 
@@ -98,12 +109,12 @@ export default function AdminOverviewTab({
 
         <div className="overview-card" onClick={() => onNavigateTab('questions')}>
           <div className="oc-header">
-            <span className="oc-icon">📚</span>
-            <span className="oc-badge purple">Catalog</span>
+            <span className="oc-icon">⚡</span>
+            <span className="oc-badge purple">MC 500</span>
           </div>
-          <div className="oc-value">{s.totalQuestions.toLocaleString()}</div>
-          <div className="oc-label">Total Questions Bank</div>
-          <div className="oc-sub">Frontend, LeetCode, SDUI &amp; System Design</div>
+          <div className="oc-value">{mcTotalQuestions.toLocaleString()}</div>
+          <div className="oc-label">Machine Coding Questions</div>
+          <div className="oc-sub">500 Challenges · Q001–Q500 (DSA isolated)</div>
         </div>
 
         <div className="overview-card" onClick={() => onNavigateTab('attempts')}>

@@ -71,7 +71,15 @@ export default async function handler(req, res) {
     sessionDurationSeconds = 0,
   } = req.body || {}
 
-  if (!questions.length) return res.status(400).json({ error: 'No questions provided' })
+  if (!Array.isArray(questions) || !questions.length) return res.status(400).json({ error: 'No questions provided' })
+  if (questions.length > 20) return res.status(400).json({ error: 'Payload exceeds maximum limit of 20 questions' })
+
+  // Bound code length to prevent memory exhaustion
+  for (const q of questions) {
+    if (typeof q.code === 'string' && q.code.length > 50000) {
+      q.code = q.code.slice(0, 50000)
+    }
+  }
 
   const apiKey = process.env.OPENAI_API_KEY
 

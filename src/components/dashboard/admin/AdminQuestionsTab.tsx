@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo, useCallback } from 'react'
 import { createPortal } from 'react-dom'
-import { MACHINE_CODING_QUESTIONS, type MCQuestion } from '../../machinecoding/machineCodingQuestions'
+import type { MCQuestion } from '../../machinecoding/machineCodingQuestions'
+import { MACHINE_CODING_CATALOG, getQuestionDetailById } from '../../machinecoding/lib/mcCatalogService'
 import {
   questionManagementService,
   type CustomMCQuestion,
@@ -105,11 +106,25 @@ export default function AdminQuestionsTab() {
 
   /* ---- Filtering for built-in catalog ---- */
   const filteredBuiltin = useMemo(() => {
-    return MACHINE_CODING_QUESTIONS.filter(q => {
-      const matchesSearch =
-        !search ||
-        q.id.toLowerCase().includes(search.toLowerCase()) ||
-        q.title.toLowerCase().includes(search.toLowerCase())
+    return MACHINE_CODING_CATALOG.filter(q => {
+      const s = search.trim().toLowerCase()
+      let matchesSearch = !s
+      if (s) {
+        const idMatches = q.id.toLowerCase().includes(s)
+        const titleMatches = q.title.toLowerCase().includes(s)
+        const catMatches = q.category.toLowerCase().includes(s)
+        const summaryMatches = q.summary ? q.summary.toLowerCase().includes(s) : false
+        const descMatches = (q as any).description ? (q as any).description.toLowerCase().includes(s) : false
+        const reqMatches = Array.isArray((q as any).requirements) && (q as any).requirements.some((r: string) => r.toLowerCase().includes(s))
+        const tipMatches = Array.isArray((q as any).interviewTips) && (q as any).interviewTips.some((t: string) => t.toLowerCase().includes(s))
+
+        // Numeric normalized match: e.g. "1", "001", "q1", "q001", "q-10", "100"
+        const numMatch = s.match(/^(?:q|mc)?-?0*(\d+)$/i)
+        const qNum = parseInt(q.id.replace(/\D/g, ''), 10)
+        const numericMatches = Boolean(numMatch && parseInt(numMatch[1], 10) === qNum)
+
+        matchesSearch = idMatches || titleMatches || catMatches || summaryMatches || descMatches || reqMatches || tipMatches || numericMatches
+      }
       const matchesCat = categoryFilter === 'ALL' || q.category === categoryFilter
       const matchesDiff = difficultyFilter === 'ALL' || q.difficulty === difficultyFilter
       return matchesSearch && matchesCat && matchesDiff
@@ -119,10 +134,21 @@ export default function AdminQuestionsTab() {
   /* ---- Filtering for custom questions ---- */
   const filteredCustom = useMemo(() => {
     return customList.filter(q => {
-      const matchesSearch =
-        !search ||
-        q.id.toLowerCase().includes(search.toLowerCase()) ||
-        q.title.toLowerCase().includes(search.toLowerCase())
+      const s = search.trim().toLowerCase()
+      let matchesSearch = !s
+      if (s) {
+        const idMatches = q.id.toLowerCase().includes(s)
+        const titleMatches = q.title.toLowerCase().includes(s)
+        const catMatches = q.category.toLowerCase().includes(s)
+        const descMatches = q.description ? q.description.toLowerCase().includes(s) : false
+        const tagMatches = 'tags' in q && Array.isArray((q as any).tags) && (q as any).tags.some((t: string) => t.toLowerCase().includes(s))
+
+        const numMatch = s.match(/^(?:q|mc)?-?0*(\d+)$/i)
+        const qNum = parseInt(q.id.replace(/\D/g, ''), 10)
+        const numericMatches = Boolean(numMatch && !isNaN(qNum) && parseInt(numMatch[1], 10) === qNum)
+
+        matchesSearch = idMatches || titleMatches || catMatches || descMatches || tagMatches || numericMatches
+      }
       const matchesCat = categoryFilter === 'ALL' || q.category === categoryFilter
       const matchesDiff = difficultyFilter === 'ALL' || q.difficulty === difficultyFilter
       return matchesSearch && matchesCat && matchesDiff
@@ -157,7 +183,7 @@ export default function AdminQuestionsTab() {
   /* ---- Category options from built-in + custom ---- */
   const categoryOptions = useMemo(() => {
     const cats = new Set<string>()
-    MACHINE_CODING_QUESTIONS.forEach(q => cats.add(q.category))
+    MACHINE_CODING_CATALOG.forEach(q => cats.add(q.category))
     customList.forEach(q => cats.add(q.category))
     return Array.from(cats).sort()
   }, [customList])
@@ -200,7 +226,7 @@ export default function AdminQuestionsTab() {
               Question Management
             </h3>
             <p style={{ margin: 0, fontSize: '0.82rem', color: 'var(--h-text-muted)' }}>
-              Browse the built-in catalog of {MACHINE_CODING_QUESTIONS.length.toLocaleString()} questions · Manage {customList.length} custom questions
+              Browse the built-in catalog of {MACHINE_CODING_CATALOG.length.toLocaleString()} questions · Manage {customList.length} custom questions
             </p>
           </div>
           {viewTab === 'custom' && (
@@ -242,7 +268,7 @@ export default function AdminQuestionsTab() {
                 letterSpacing: '0.3px',
               }}
             >
-              {t === 'builtin' ? `📚 Built-in Catalog (${MACHINE_CODING_QUESTIONS.length.toLocaleString()})` : `✏️ Custom Questions (${customList.length})`}
+              {t === 'builtin' ? `📚 Built-in Catalog (${MACHINE_CODING_CATALOG.length.toLocaleString()})` : `✏️ Custom Questions (${customList.length})`}
             </button>
           ))}
         </div>
@@ -295,13 +321,15 @@ export default function AdminQuestionsTab() {
                   <th>Category</th>
                   <th style={{ width: 90 }}>Difficulty</th>
                   <th style={{ width: 90 }}>Est. Time</th>
+                  <th style={{ width: 85 }}>Status</th>
+                  <th style={{ width: 95 }}>Metadata</th>
                   <th style={{ width: 80, textAlign: 'center' }}>Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredBuiltin.length === 0 ? (
                   <tr>
-                    <td colSpan={6} style={{ textAlign: 'center', padding: '40px', color: 'var(--h-text-muted)' }}>
+                    <td colSpan={8} style={{ textAlign: 'center', padding: '40px', color: 'var(--h-text-muted)' }}>
                       🔍 No questions match the current filters.
                     </td>
                   </tr>
@@ -321,11 +349,37 @@ export default function AdminQuestionsTab() {
                       <td><CatBadge cat={q.category} /></td>
                       <td><DiffBadge diff={q.difficulty} /></td>
                       <td style={{ color: 'var(--h-text-muted)', fontSize: '0.82rem' }}>{q.timeEstimate}</td>
+                      <td>
+                        <span style={{
+                          background: 'rgba(16,185,129,0.12)',
+                          color: '#34d399',
+                          border: '1px solid rgba(16,185,129,0.3)',
+                          borderRadius: 6,
+                          padding: '2px 8px',
+                          fontSize: '0.72rem',
+                          fontWeight: 700,
+                        }}>
+                          ● Active
+                        </span>
+                      </td>
+                      <td>
+                        <span style={{
+                          background: 'rgba(56,189,248,0.12)',
+                          color: '#38bdf8',
+                          border: '1px solid rgba(56,189,248,0.25)',
+                          borderRadius: 6,
+                          padding: '2px 7px',
+                          fontSize: '0.72rem',
+                          fontWeight: 600,
+                        }}>
+                          {(q as any).testCases?.length || 4} Tests
+                        </span>
+                      </td>
                       <td style={{ textAlign: 'center' }}>
                         <IconBtn
                           title="Preview question"
                           emoji="👁️"
-                          onClick={() => setPreviewTarget(q)}
+                          onClick={() => setPreviewTarget(getQuestionDetailById(q.id) || (q as any))}
                         />
                       </td>
                     </tr>

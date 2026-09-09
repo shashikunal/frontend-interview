@@ -13,6 +13,7 @@ import type {
   TimeframeFilter,
 } from '../../../lib/adminAnalyticsService'
 import { TRACK_DEFINITIONS, type UserTrackProgress } from '../../../features/auth/services/progressSync.service'
+import { MACHINE_CODING_CATALOG } from '../../machinecoding/data/machineCodingCatalog'
 import './AdminAnalyticsTab.css'
 
 // ── Custom dark tooltip for all Recharts charts ───────────────────
@@ -133,7 +134,7 @@ export default function AdminAnalyticsTab({
   const s = stats || overviewStats || {
     totalUsers: 1,
     activeUsers: 1,
-    totalQuestions: 22222,
+    totalQuestions: MACHINE_CODING_CATALOG.length,
     totalAttempts: 0,
     totalSubmissions: 0,
     completedQuestions: 0,
@@ -144,6 +145,14 @@ export default function AdminAnalyticsTab({
     successRate: 0,
     avgAttemptsPerQuestion: 1.2,
     avgTimeSpentMinutes: 15,
+    mcTotalQuestions: MACHINE_CODING_CATALOG.length,
+    mcSubmissionsCount: 0,
+    mcAcceptedCount: 0,
+    mcAttemptsCount: 0,
+    mcCompletedCount: 0,
+    dsaTotalQuestions: 1000,
+    dsaSubmissionsCount: 0,
+    dsaAcceptedCount: 0,
   }
 
   const handleTfClick = (tf: TimeframeFilter) => {
@@ -162,7 +171,11 @@ export default function AdminAnalyticsTab({
       counts[lang].totalScore += sub.score || 0
     })
 
-    const total = submissionsList.length || 1
+    const total = submissionsList.length
+    if (total === 0) {
+      return []
+    }
+
     const entries = Object.entries(counts).map(([lang, val]) => ({
       lang: lang === 'typescript' ? 'TypeScript' : lang === 'javascript' ? 'JavaScript' : lang.toUpperCase(),
       count: val.count,
@@ -170,14 +183,6 @@ export default function AdminAnalyticsTab({
       avgTime: Math.round(val.totalTime / val.count),
       avgScore: Math.round(val.totalScore / val.count),
     }))
-
-    if (entries.length === 0) {
-      return [
-        { lang: 'TypeScript', count: 64, pct: 66, avgTime: 34, avgScore: 92 },
-        { lang: 'JavaScript', count: 28, pct: 29, avgTime: 28, avgScore: 88 },
-        { lang: 'Python', count: 5, pct: 5, avgTime: 42, avgScore: 84 },
-      ]
-    }
 
     return entries.sort((a, b) => b.count - a.count)
   }, [submissionsList])
@@ -187,7 +192,19 @@ export default function AdminAnalyticsTab({
     let accepted = s.acceptedSubmissions
     let wrong = s.failedSubmissions
     let runtimeErr = 0
-    let total = s.totalSubmissions || 1
+    const total = s.totalSubmissions
+
+    if (total === 0) {
+      return {
+        accepted: 0,
+        acceptedPct: 0,
+        wrong: 0,
+        wrongPct: 0,
+        runtimeErr: 0,
+        runtimeErrPct: 0,
+        total: 0,
+      }
+    }
 
     submissionsList.forEach(sub => {
       if (sub.status === 'runtime_error' || sub.status === 'compile_error') runtimeErr++
@@ -209,7 +226,7 @@ export default function AdminAnalyticsTab({
       wrongPct,
       runtimeErr,
       runtimeErrPct,
-      total: s.totalSubmissions,
+      total,
     }
   }, [s, submissionsList])
 
@@ -278,14 +295,14 @@ export default function AdminAnalyticsTab({
   // 5. Top Challenges
   const topChallenges = useMemo(() => {
     if (questionsStatsList.length > 0) {
-      return questionsStatsList.slice(0, 5)
+      return [...questionsStatsList].sort((a, b) => b.attemptsCount - a.attemptsCount).slice(0, 5)
     }
     return [
-      { id: '1', title: 'Two Sum & State Mapping', category: 'React 19 & Architecture', attemptsCount: 38, submissionsCount: 32, successRate: 94, avgTimeSpentSeconds: 780 },
-      { id: '4', title: 'Custom Promise.all Polyfill', category: 'JavaScript & DOM Performance', attemptsCount: 29, submissionsCount: 24, successRate: 82, avgTimeSpentSeconds: 1140 },
-      { id: '19', title: 'Wildcard EventEmitter Architecture', category: 'Frontend System Design', attemptsCount: 26, submissionsCount: 19, successRate: 71, avgTimeSpentSeconds: 1320 },
-      { id: '85', title: 'Virtual List with Dynamic Window', category: 'React 19 & Architecture', attemptsCount: 22, submissionsCount: 16, successRate: 68, avgTimeSpentSeconds: 1560 },
-      { id: '204', title: 'Build useDebounce with Immediate Exec', category: 'React 19 & Architecture', attemptsCount: 19, submissionsCount: 17, successRate: 89, avgTimeSpentSeconds: 840 },
+      { id: 'Q001', title: 'Interactive Counter with Min/Max & Step', category: 'ReactJS', attemptsCount: 38, submissionsCount: 32, successRate: 94, avgTimeSpentSeconds: 780, completionRate: 85, avgAttempts: 1.2, acceptedCount: 30 },
+      { id: 'Q002', title: 'Dynamic Form Builder with Schema Validation', category: 'ReactJS', attemptsCount: 29, submissionsCount: 24, successRate: 82, avgTimeSpentSeconds: 1140, completionRate: 75, avgAttempts: 1.3, acceptedCount: 20 },
+      { id: 'Q010', title: 'File Explorer Tree with Lazy Expansion', category: 'ReactJS', attemptsCount: 26, submissionsCount: 19, successRate: 71, avgTimeSpentSeconds: 1320, completionRate: 68, avgAttempts: 1.4, acceptedCount: 14 },
+      { id: 'Q050', title: 'Real-Time Markdown Previewer with Live AST', category: 'ReactJS', attemptsCount: 22, submissionsCount: 16, successRate: 68, avgTimeSpentSeconds: 1560, completionRate: 64, avgAttempts: 1.5, acceptedCount: 11 },
+      { id: 'Q100', title: '60 FPS Virtualized Infinite Scroll List', category: 'ReactJS', attemptsCount: 19, submissionsCount: 17, successRate: 89, avgTimeSpentSeconds: 840, completionRate: 80, avgAttempts: 1.2, acceptedCount: 15 },
     ]
   }, [questionsStatsList])
 

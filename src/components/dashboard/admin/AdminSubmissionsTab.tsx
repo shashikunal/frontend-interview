@@ -19,7 +19,7 @@ export default function AdminSubmissionsTab({
 }: AdminSubmissionsTabProps) {
   const [statusFilter, setStatusFilter] = useState('ALL')
   const [langFilter, setLangFilter] = useState('ALL')
-  const [typeFilter, setTypeFilter] = useState<'ALL' | 'MACHINE_CODING' | 'THEORY'>('ALL')
+  const [typeFilter, setTypeFilter] = useState<'ALL' | 'MACHINE_CODING' | 'DSA' | 'THEORY'>('ALL')
   const [search, setSearch] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
   const [pageSize, setPageSize] = useState(25)
@@ -32,16 +32,19 @@ export default function AdminSubmissionsTab({
   const effectiveList = submissions || initialSubmissions || []
 
   const mcCount = useMemo(() => effectiveList.filter(s => s.isMachineCoding).length, [effectiveList])
-  const theoryCount = useMemo(() => effectiveList.filter(s => !s.isMachineCoding).length, [effectiveList])
+  const dsaCount = useMemo(() => effectiveList.filter(s => s.isDSA || s.questionId.startsWith('DSA')).length, [effectiveList])
+  const theoryCount = useMemo(() => effectiveList.filter(s => !s.isMachineCoding && !s.isDSA && !s.questionId.startsWith('DSA')).length, [effectiveList])
 
   const filtered = useMemo(() => {
     return effectiveList.filter(s => {
       const matchStatus = statusFilter === 'ALL' || s.status === statusFilter
       const matchLang = langFilter === 'ALL' || s.language.toLowerCase().includes(langFilter.toLowerCase())
+      const isDSAItem = s.isDSA || s.questionId.startsWith('DSA')
       const matchType =
         typeFilter === 'ALL' ||
         (typeFilter === 'MACHINE_CODING' && s.isMachineCoding) ||
-        (typeFilter === 'THEORY' && !s.isMachineCoding)
+        (typeFilter === 'DSA' && isDSAItem) ||
+        (typeFilter === 'THEORY' && !s.isMachineCoding && !isDSAItem)
 
       const matchSearch =
         !search ||
@@ -109,6 +112,15 @@ export default function AdminSubmissionsTab({
               </button>
               <button
                 type="button"
+                className={`btn btn-sm ${typeFilter === 'DSA' ? 'btn-primary' : 'btn-secondary'}`}
+                onClick={() => handleFilterChange(setTypeFilter, 'DSA')}
+                style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+              >
+                <span>🧠</span>
+                <span>DSA Masterclass ({dsaCount})</span>
+              </button>
+              <button
+                type="button"
                 className={`btn btn-sm ${typeFilter === 'THEORY' ? 'btn-primary' : 'btn-secondary'}`}
                 onClick={() => handleFilterChange(setTypeFilter, 'THEORY')}
               >
@@ -133,6 +145,7 @@ export default function AdminSubmissionsTab({
             >
               <option value="ALL">All Categories</option>
               <option value="MACHINE_CODING">⚡ Machine Coding Only</option>
+              <option value="DSA">🧠 DSA Masterclass</option>
               <option value="THEORY">Theory &amp; Algorithmic</option>
             </select>
 
@@ -224,6 +237,11 @@ export default function AdminSubmissionsTab({
                             {sub.isMachineCoding && (
                               <span className="submission-pill" style={{ background: 'rgba(67, 24, 255, 0.12)', color: '#4318FF', fontSize: '11px', padding: '2px 6px' }}>
                                 ⚡ Machine Coding
+                              </span>
+                            )}
+                            {(sub.isDSA || sub.questionId.startsWith('DSA')) && (
+                              <span className="submission-pill" style={{ background: 'rgba(16, 185, 129, 0.15)', color: '#10b981', fontSize: '11px', padding: '2px 6px' }}>
+                                🧠 DSA Masterclass
                               </span>
                             )}
                             {review && (
