@@ -19,7 +19,7 @@ export default function AdminSubmissionsTab({
 }: AdminSubmissionsTabProps) {
   const [statusFilter, setStatusFilter] = useState('ALL')
   const [langFilter, setLangFilter] = useState('ALL')
-  const [typeFilter, setTypeFilter] = useState<'ALL' | 'MACHINE_CODING' | 'DSA' | 'THEORY'>('ALL')
+  const [typeFilter, setTypeFilter] = useState<'ALL' | 'MACHINE_CODING' | 'DSA' | 'CORE_PROGRAMMING' | 'FRONTEND_JS' | 'THEORY'>('ALL')
   const [search, setSearch] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
   const [pageSize, setPageSize] = useState(25)
@@ -33,18 +33,24 @@ export default function AdminSubmissionsTab({
 
   const mcCount = useMemo(() => effectiveList.filter(s => s.isMachineCoding).length, [effectiveList])
   const dsaCount = useMemo(() => effectiveList.filter(s => s.isDSA || s.questionId.startsWith('DSA')).length, [effectiveList])
-  const theoryCount = useMemo(() => effectiveList.filter(s => !s.isMachineCoding && !s.isDSA && !s.questionId.startsWith('DSA')).length, [effectiveList])
+  const cpCount = useMemo(() => effectiveList.filter(s => s.questionId.startsWith('JS-P') || s.questionId.startsWith('JS-p')).length, [effectiveList])
+  const fjsCount = useMemo(() => effectiveList.filter(s => s.questionId.startsWith('FJP-') || s.questionId.startsWith('fjp-')).length, [effectiveList])
+  const theoryCount = useMemo(() => effectiveList.filter(s => !s.isMachineCoding && !s.isDSA && !s.questionId.startsWith('DSA') && !s.questionId.startsWith('JS-P') && !s.questionId.startsWith('FJP-')).length, [effectiveList])
 
   const filtered = useMemo(() => {
     return effectiveList.filter(s => {
       const matchStatus = statusFilter === 'ALL' || s.status === statusFilter
       const matchLang = langFilter === 'ALL' || s.language.toLowerCase().includes(langFilter.toLowerCase())
       const isDSAItem = s.isDSA || s.questionId.startsWith('DSA')
+      const isCPItem = s.questionId.startsWith('JS-P') || s.questionId.startsWith('JS-p')
+      const isFJSItem = s.questionId.startsWith('FJP-') || s.questionId.startsWith('fjp-')
       const matchType =
         typeFilter === 'ALL' ||
         (typeFilter === 'MACHINE_CODING' && s.isMachineCoding) ||
         (typeFilter === 'DSA' && isDSAItem) ||
-        (typeFilter === 'THEORY' && !s.isMachineCoding && !isDSAItem)
+        (typeFilter === 'CORE_PROGRAMMING' && isCPItem) ||
+        (typeFilter === 'FRONTEND_JS' && isFJSItem) ||
+        (typeFilter === 'THEORY' && !s.isMachineCoding && !isDSAItem && !isCPItem && !isFJSItem)
 
       const matchSearch =
         !search ||
@@ -121,6 +127,24 @@ export default function AdminSubmissionsTab({
               </button>
               <button
                 type="button"
+                className={`btn btn-sm ${typeFilter === 'CORE_PROGRAMMING' ? 'btn-primary' : 'btn-secondary'}`}
+                onClick={() => handleFilterChange(setTypeFilter, 'CORE_PROGRAMMING')}
+                style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+              >
+                <span>💻</span>
+                <span>Core Programming ({cpCount})</span>
+              </button>
+              <button
+                type="button"
+                className={`btn btn-sm ${typeFilter === 'FRONTEND_JS' ? 'btn-primary' : 'btn-secondary'}`}
+                onClick={() => handleFilterChange(setTypeFilter, 'FRONTEND_JS')}
+                style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+              >
+                <span>🌐</span>
+                <span>Frontend JS ({fjsCount})</span>
+              </button>
+              <button
+                type="button"
                 className={`btn btn-sm ${typeFilter === 'THEORY' ? 'btn-primary' : 'btn-secondary'}`}
                 onClick={() => handleFilterChange(setTypeFilter, 'THEORY')}
               >
@@ -146,6 +170,8 @@ export default function AdminSubmissionsTab({
               <option value="ALL">All Categories</option>
               <option value="MACHINE_CODING">⚡ Machine Coding Only</option>
               <option value="DSA">🧠 DSA Masterclass</option>
+              <option value="CORE_PROGRAMMING">💻 Core Programming</option>
+              <option value="FRONTEND_JS">🌐 Frontend JavaScript</option>
               <option value="THEORY">Theory &amp; Algorithmic</option>
             </select>
 

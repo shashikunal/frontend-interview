@@ -53,6 +53,9 @@ export default function Header() {
   const isMockActive = ['/mock-interview', '/video-mock', '/behavioral', '/peer-room'].some(p => isActive(p))
   const isMachineCodingActive = isActive('/machine-coding') || isActive('/machine-level-coding')
   const isDsaActive = isActive('/dsa')
+  const isCoreProgActive = isActive('/core-programming') || isActive('/frontend-programming')
+  const isFrontendJsActive = isActive('/frontend-javascript') || isActive('/frontend-js')
+  const isCodingActive = isMachineCodingActive || isDsaActive || isCoreProgActive || isFrontendJsActive
 
   // Close dropdown and mobile menu on navigation
   useEffect(() => {
@@ -159,17 +162,17 @@ export default function Header() {
                 {!hasQuestionsFull && <span className="nav-lock-tag">🔒</span>}
               </Link>
 
-              {/* 2. Direct Machine Coding Masterclass Link */}
-              <Link to="/machine-coding" className={`nav-link ${isMachineCodingActive ? 'active' : ''}`}>
-                Machine Coding
-                {!hasCodingSandbox && <span className="nav-lock-tag">🔒</span>}
-              </Link>
-
-              {/* 2a. DSA 1,000 Questions Link */}
-              <Link to="/dsa" className={`nav-link ${isDsaActive ? 'active' : ''}`}>
-                DSA
-                {!hasCodingSandbox && <span className="nav-lock-tag">🔒</span>}
-              </Link>
+              {/* 2. Coding Dropdown */}
+              <div className="nav-dropdown-wrap">
+                <button
+                  type="button"
+                  className={`nav-link nav-dropdown-btn ${isCodingActive || activeDropdown === 'coding' ? 'active' : ''}`}
+                  onClick={() => toggleDropdown('coding')}
+                  aria-expanded={activeDropdown === 'coding'}
+                >
+                  Coding {!hasCodingSandbox && <span className="nav-lock-tag">🔒</span>} <span className="dropdown-caret">▾</span>
+                </button>
+              </div>
 
               {/* 2b. Leaderboard */}
               <Link to="/leaderboard" className={`nav-link ${isActive('/leaderboard') ? 'active' : ''}`}>
@@ -396,6 +399,89 @@ export default function Header() {
 
 
       {/* FULL-VIEWPORT-WIDTH HORIZONTAL MEGA-DROPDOWNS */}
+
+      {/* 1. CODING MEGA-MENU */}
+      {activeDropdown === 'coding' && (
+        <div
+          className="mega-menu-overlay"
+          onClick={e => {
+            if (e.target === e.currentTarget) closeMenus()
+          }}
+        >
+          <div
+            className="mega-menu-content"
+            onClick={e => {
+              if ((e.target as HTMLElement).closest('a')) closeMenus()
+            }}
+          >
+            <div className="mega-menu-inner four-cols">
+              <div className="mega-column">
+                <span className="mega-col-title">⚡ Interactive Studios</span>
+                <div className="mega-items-group">
+                  <Link to="/machine-coding" className={`mega-item ${isMachineCodingActive ? 'active' : ''}`}>
+                    <span className="drop-icon">⚡</span>
+                    <div>
+                      <span className="drop-title">
+                        Machine-Level Coding
+                        {!hasCodingSandbox && <span className="drop-lock-tag">🔒 PRO</span>}
+                      </span>
+                      <span className="drop-desc">Component build sandbox with auto-test harness</span>
+                    </div>
+                  </Link>
+                </div>
+              </div>
+
+              <div className="mega-column">
+                <span className="mega-col-title">🧠 Algorithmic Mastery</span>
+                <div className="mega-items-group">
+                  <Link to="/dsa" className={`mega-item ${isDsaActive ? 'active' : ''}`}>
+                    <span className="drop-icon">🧠</span>
+                    <div>
+                      <span className="drop-title">
+                        LeetCode / DSA
+                        {!hasCodingSandbox && <span className="drop-lock-tag">🔒 PRO</span>}
+                      </span>
+                      <span className="drop-desc">1,000 curated data structures &amp; algorithm problems</span>
+                    </div>
+                  </Link>
+                </div>
+              </div>
+
+              <div className="mega-column">
+                <span className="mega-col-title">🎯 Core JavaScript</span>
+                <div className="mega-items-group">
+                  <Link to="/core-programming" className={`mega-item ${isCoreProgActive ? 'active' : ''}`}>
+                    <span className="drop-icon">🎯</span>
+                    <div>
+                      <span className="drop-title">
+                        Core Programming
+                        {!hasCodingSandbox && <span className="drop-lock-tag">🔒 PRO</span>}
+                      </span>
+                      <span className="drop-desc">500 curated JavaScript problems across 13 domains</span>
+                    </div>
+                  </Link>
+                </div>
+              </div>
+
+              <div className="mega-column">
+                <span className="mega-col-title">💻 Pure JavaScript Engineering</span>
+                <div className="mega-items-group">
+                  <Link to="/frontend-javascript" className={`mega-item ${isFrontendJsActive ? 'active' : ''}`}>
+                    <span className="drop-icon">💻</span>
+                    <div>
+                      <span className="drop-title">
+                        Frontend JavaScript Programming
+                        {!hasCodingSandbox && <span className="drop-lock-tag">🔒 PRO</span>}
+                      </span>
+                      <span className="drop-desc">1,000 unique frontend JS challenges &amp; mock simulator</span>
+                    </div>
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* 2. ARCHITECTURE MEGA-MENU */}
       {activeDropdown === 'architecture' && (
@@ -914,6 +1000,24 @@ export default function Header() {
                   <div className="m-text">
                     <span className="m-label">DSA Masterclass</span>
                     <span className="m-sub">1,000 algorithmic questions</span>
+                  </div>
+                  {!hasCodingSandbox && <span className="nav-lock-tag">🔒</span>}
+                </Link>
+
+                <Link to="/core-programming" className={`mobile-nav-item ${isCoreProgActive ? 'active' : ''}`} onClick={closeMobileMenu}>
+                  <span className="m-icon">🎯</span>
+                  <div className="m-text">
+                    <span className="m-label">Core Programming</span>
+                    <span className="m-sub">500 core JavaScript challenges</span>
+                  </div>
+                  {!hasCodingSandbox && <span className="nav-lock-tag">🔒</span>}
+                </Link>
+
+                <Link to="/frontend-javascript" className={`mobile-nav-item ${isFrontendJsActive ? 'active' : ''}`} onClick={closeMobileMenu}>
+                  <span className="m-icon">💻</span>
+                  <div className="m-text">
+                    <span className="m-label">Frontend JavaScript Programming</span>
+                    <span className="m-sub">1,000 production JS questions</span>
                   </div>
                   {!hasCodingSandbox && <span className="nav-lock-tag">🔒</span>}
                 </Link>

@@ -6,12 +6,16 @@ interface Props {
   question: DSAQuestion
   submissions: DSASubmission[]
   onSelectSubmission?: (sub: DSASubmission) => void
+  fullscreenPanel?: 'none' | 'specs' | 'editor' | 'test'
+  onToggleFullscreen?: () => void
 }
 
 export const DSAQuestionDetail: React.FC<Props> = ({
   question,
   submissions,
   onSelectSubmission,
+  fullscreenPanel = 'none',
+  onToggleFullscreen,
 }) => {
   const [activeTab, setActiveTab] = useState<'description' | 'editorial' | 'hints' | 'submissions' | 'notes'>('description')
   const [isBookmarked, setIsBookmarked] = useState<boolean>(false)
@@ -56,36 +60,64 @@ export const DSAQuestionDetail: React.FC<Props> = ({
     <div className="dsa-detail-wrapper">
       {/* Top Detail Navigation Tabs */}
       <div className="dsa-detail-tabs">
-        <button
-          className={`dsa-tab-btn ${activeTab === 'description' ? 'active' : ''}`}
-          onClick={() => setActiveTab('description')}
-        >
-          📄 Description
-        </button>
-        <button
-          className={`dsa-tab-btn ${activeTab === 'editorial' ? 'active' : ''}`}
-          onClick={() => setActiveTab('editorial')}
-        >
-          💡 Editorial
-        </button>
-        <button
-          className={`dsa-tab-btn ${activeTab === 'hints' ? 'active' : ''}`}
-          onClick={() => setActiveTab('hints')}
-        >
-          🧩 Hints ({question.hints.length})
-        </button>
-        <button
-          className={`dsa-tab-btn ${activeTab === 'submissions' ? 'active' : ''}`}
-          onClick={() => setActiveTab('submissions')}
-        >
-          🕒 Submissions ({submissions.length})
-        </button>
-        <button
-          className={`dsa-tab-btn ${activeTab === 'notes' ? 'active' : ''}`}
-          onClick={() => setActiveTab('notes')}
-        >
-          📝 Notes {noteContent.trim() ? '•' : ''}
-        </button>
+        <div className="dsa-detail-tabs-list">
+          <button
+            className={`dsa-tab-btn ${activeTab === 'description' ? 'active' : ''}`}
+            onClick={() => setActiveTab('description')}
+          >
+            📄 Description
+          </button>
+          <button
+            className={`dsa-tab-btn ${activeTab === 'editorial' ? 'active' : ''}`}
+            onClick={() => setActiveTab('editorial')}
+          >
+            💡 Editorial
+          </button>
+          <button
+            className={`dsa-tab-btn ${activeTab === 'hints' ? 'active' : ''}`}
+            onClick={() => setActiveTab('hints')}
+          >
+            🧩 Hints ({question.hints.length})
+          </button>
+          <button
+            className={`dsa-tab-btn ${activeTab === 'submissions' ? 'active' : ''}`}
+            onClick={() => setActiveTab('submissions')}
+          >
+            🕒 Submissions ({submissions.length})
+          </button>
+          <button
+            className={`dsa-tab-btn ${activeTab === 'notes' ? 'active' : ''}`}
+            onClick={() => setActiveTab('notes')}
+          >
+            📝 Notes {noteContent.trim() ? '•' : ''}
+          </button>
+        </div>
+
+        {onToggleFullscreen && (
+          <button
+            type="button"
+            className={`dsa-fullscreen-btn ${fullscreenPanel === 'specs' ? 'active' : ''}`}
+            onClick={onToggleFullscreen}
+            title={fullscreenPanel === 'specs' ? 'Restore Specs Size (Esc)' : 'Maximize Specs (Fullscreen)'}
+            aria-label={fullscreenPanel === 'specs' ? 'Restore Specs Size' : 'Maximize Specs'}
+          >
+            {fullscreenPanel === 'specs' ? (
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="4 14 10 14 10 20" />
+                <polyline points="20 10 14 10 14 4" />
+                <line x1="14" y1="10" x2="21" y2="3" />
+                <line x1="3" y1="21" x2="10" y2="14" />
+              </svg>
+            ) : (
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="15 3 21 3 21 9" />
+                <polyline points="9 21 3 21 3 15" />
+                <line x1="21" y1="3" x2="14" y2="10" />
+                <line x1="3" y1="21" x2="10" y2="14" />
+              </svg>
+            )}
+          </button>
+        )}
       </div>
 
       <div className="dsa-detail-body">

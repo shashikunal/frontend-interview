@@ -315,9 +315,15 @@
 .dsa-detail-tabs {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   background: var(--surface);
   border-bottom: 1px solid var(--border);
-  padding: 0 8px;
+  padding: 0 8px 0 0;
+}
+
+.dsa-detail-tabs-list {
+  display: flex;
+  align-items: center;
   gap: 4px;
   overflow-x: auto;
 }
@@ -880,10 +886,46 @@
 
 .dsa-testpanel-nav {
   display: flex;
+  align-items: center;
+  justify-content: space-between;
   background: var(--bg);
   border-bottom: 1px solid var(--border);
-  padding: 0 8px;
+  padding: 0 8px 0 0;
+}
+
+.dsa-testpanel-nav-left {
+  display: flex;
+  align-items: center;
   gap: 4px;
+  overflow-x: auto;
+}
+
+.dsa-fullscreen-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border-radius: 5px;
+  color: var(--text-secondary, #94a3b8);
+  background: transparent;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.dsa-fullscreen-btn:hover {
+  color: var(--text-primary, #f8fafc);
+  background: var(--surface-hover, rgba(255, 255, 255, 0.08));
+  border-color: var(--border, rgba(255, 255, 255, 0.15));
+}
+
+.dsa-fullscreen-btn.active {
+  color: var(--accent, #6366f1);
+  background: rgba(99, 102, 241, 0.15);
+  border-color: rgba(99, 102, 241, 0.4);
 }
 
 .dsa-tp-nav-btn {

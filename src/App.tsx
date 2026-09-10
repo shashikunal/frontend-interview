@@ -45,6 +45,8 @@ import UserManagementStudio from './components/usermanagement/UserManagementStud
 import AdminDashboard from './components/dashboard/AdminDashboard'
 const MachineCodingStudio = lazy(() => import('./components/machinecoding/MachineCodingStudio'))
 const DSAStudio = lazy(() => import('./components/dsa/DSAStudio'))
+const CoreProgrammingStudio = lazy(() => import('./components/coreprogramming/CoreProgrammingStudio'))
+const FrontendJsStudio = lazy(() => import('./components/frontendjs/FrontendJsStudio'))
 const AnalyticsDashboard = lazy(() => import('./components/analytics/AnalyticsDashboard'))
 const Leaderboard = lazy(() => import('./components/leaderboard/Leaderboard'))
 import RoleGuard from './components/auth/RoleGuard'
@@ -64,8 +66,8 @@ export default function App() {
 
   const isAdminDashboard = location.pathname.startsWith('/admin') || (location.pathname.startsWith('/dashboard') && user?.role === 'admin')
   const isStudioWorkspace =
-    (location.pathname.startsWith('/machine-coding') || location.pathname.startsWith('/dsa')) &&
-    (Boolean(new URLSearchParams(location.search).get('id')) || location.pathname.startsWith('/dsa/DSA') || location.pathname.startsWith('/dsa/question/'))
+    (location.pathname.startsWith('/machine-coding') || location.pathname.startsWith('/dsa') || location.pathname.startsWith('/frontend-javascript') || location.pathname.startsWith('/frontend-js') || location.pathname.startsWith('/core-programming') || location.pathname.startsWith('/frontend-programming')) &&
+    (Boolean(new URLSearchParams(location.search).get('id')) || location.pathname.startsWith('/dsa/DSA') || location.pathname.startsWith('/dsa/question/') || location.pathname.startsWith('/frontend-javascript/question/') || location.pathname.startsWith('/frontend-javascript/FJP') || location.pathname.startsWith('/frontend-js/question/') || location.pathname.startsWith('/frontend-js/FJP') || location.pathname.startsWith('/core-programming/question/') || location.pathname.startsWith('/core-programming/JS-P') || location.pathname.startsWith('/frontend-programming/question/') || location.pathname.startsWith('/frontend-programming/JS-P'))
   const hideHeader = isAdminDashboard
   const hideFooter = isAdminDashboard || isStudioWorkspace
 
@@ -511,6 +513,110 @@ export default function App() {
               </FeatureGuard>
             }
           />
+
+          {/* Frontend JavaScript Programming Isolated Routes */}
+          <Route
+            path="/frontend-javascript"
+            element={
+              <FeatureGuard feature="coding_sandbox" featureName="Frontend JavaScript Programming">
+                <FrontendJsStudio />
+              </FeatureGuard>
+            }
+          />
+          <Route
+            path="/frontend-javascript/questions"
+            element={
+              <FeatureGuard feature="coding_sandbox" featureName="Frontend JavaScript Catalog">
+                <FrontendJsStudio />
+              </FeatureGuard>
+            }
+          />
+          <Route
+            path="/frontend-javascript/question/:id"
+            element={
+              <FeatureGuard feature="coding_sandbox" featureName="Frontend JavaScript Studio">
+                <FrontendJsStudio />
+              </FeatureGuard>
+            }
+          />
+          <Route
+            path="/frontend-javascript/progress"
+            element={
+              <FeatureGuard feature="coding_sandbox" featureName="Frontend JavaScript Progress">
+                <FrontendJsStudio />
+              </FeatureGuard>
+            }
+          />
+          <Route
+            path="/frontend-javascript/leaderboard"
+            element={
+              <FeatureGuard feature="coding_sandbox" featureName="Frontend JavaScript Leaderboard">
+                <FrontendJsStudio />
+              </FeatureGuard>
+            }
+          />
+          <Route
+            path="/frontend-javascript/interview"
+            element={
+              <FeatureGuard feature="coding_sandbox" featureName="Frontend JavaScript Interview Mode">
+                <FrontendJsStudio />
+              </FeatureGuard>
+            }
+          />
+          <Route
+            path="/frontend-javascript/admin"
+            element={
+              <RoleGuard minRole="admin">
+                <FrontendJsStudio />
+              </RoleGuard>
+            }
+          />
+          <Route
+            path="/frontend-javascript/:id"
+            element={
+              <FeatureGuard feature="coding_sandbox" featureName="Frontend JavaScript Studio">
+                <FrontendJsStudio />
+              </FeatureGuard>
+            }
+          />
+          <Route path="/frontend-js" element={<Navigate to="/frontend-javascript" replace />} />
+          <Route path="/frontend-js/*" element={<Navigate to="/frontend-javascript" replace />} />
+
+          {/* Core Programming Isolated Routes */}
+          <Route
+            path="/core-programming"
+            element={
+              <FeatureGuard feature="coding_sandbox" featureName="Core JavaScript Programming">
+                <CoreProgrammingStudio />
+              </FeatureGuard>
+            }
+          />
+          <Route
+            path="/core-programming/questions"
+            element={
+              <FeatureGuard feature="coding_sandbox" featureName="Core JavaScript Catalog">
+                <CoreProgrammingStudio />
+              </FeatureGuard>
+            }
+          />
+          <Route
+            path="/core-programming/question/:id"
+            element={
+              <FeatureGuard feature="coding_sandbox" featureName="Core JavaScript Problem Studio">
+                <CoreProgrammingStudio />
+              </FeatureGuard>
+            }
+          />
+          <Route
+            path="/core-programming/:id"
+            element={
+              <FeatureGuard feature="coding_sandbox" featureName="Core JavaScript Problem Studio">
+                <CoreProgrammingStudio />
+              </FeatureGuard>
+            }
+          />
+          <Route path="/frontend-programming" element={<Navigate to="/core-programming" replace />} />
+          <Route path="/frontend-programming/*" element={<Navigate to="/core-programming" replace />} />
 
           <Route path="/practice" element={<Navigate to="/questions" replace />} />
           <Route path="/practice/*" element={<Navigate to="/questions" replace />} />

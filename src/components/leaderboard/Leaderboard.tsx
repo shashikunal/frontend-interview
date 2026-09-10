@@ -159,8 +159,110 @@ function SkeletonRows() {
   )
 }
 
+export const CATEGORY_CONFIG: Record<
+  LeaderboardCategory,
+  {
+    name: string
+    shortName: string
+    icon: string
+    eyebrow: string
+    title: string
+    subtitle: string
+    studioTitle: string
+    studioPath: string
+    emptyTitle: string
+    emptyDesc: string
+  }
+> = {
+  all: {
+    name: 'All Categories',
+    shortName: 'All Tracks',
+    icon: '🏆',
+    eyebrow: 'GLOBAL CANDIDATE RANKINGS',
+    title: 'Global Engineering Leaderboard',
+    subtitle: 'Real-time candidate submissions and rankings verified across all engineering tracks',
+    studioTitle: 'All Coding Studios',
+    studioPath: '/core-programming',
+    emptyTitle: 'No verified submissions found',
+    emptyDesc: 'Be the first candidate to solve a challenge and claim the #1 spot on the leaderboard!',
+  },
+  'machine-coding': {
+    name: 'Machine Coding Submissions',
+    shortName: 'Machine Coding',
+    icon: '⚡',
+    eyebrow: 'MACHINE CODING TRACK',
+    title: 'Machine Coding Leaderboard',
+    subtitle: 'Rankings across 500 interactive components, React systems, and production frontend scenarios',
+    studioTitle: 'Machine Coding Studio',
+    studioPath: '/machine-coding',
+    emptyTitle: 'No Machine Coding submissions found',
+    emptyDesc: 'Be the first candidate to solve a machine-level coding question and rank on the leaderboard!',
+  },
+  'core-programming': {
+    name: 'Core Programming (JS-P)',
+    shortName: 'Core Programming',
+    icon: '💻',
+    eyebrow: 'CORE JAVASCRIPT TRACK',
+    title: 'Core Programming Leaderboard',
+    subtitle: 'Rankings across 500 Core JavaScript challenges, runtime polyfills, algorithmic logic, and language fundamentals',
+    studioTitle: 'Core Programming Studio',
+    studioPath: '/core-programming',
+    emptyTitle: 'No Core Programming submissions found',
+    emptyDesc: 'Be the first candidate to solve a Core JavaScript challenge and rank on the leaderboard!',
+  },
+  'frontend-js': {
+    name: 'Frontend JavaScript (FJP)',
+    shortName: 'Frontend JS',
+    icon: '🌐',
+    eyebrow: 'FRONTEND JAVASCRIPT TRACK',
+    title: 'Frontend JavaScript Leaderboard',
+    subtitle: 'Rankings across 1,000 DOM, Web API, async patterns, event handling, and browser engineering questions',
+    studioTitle: 'Frontend JS Studio',
+    studioPath: '/frontend-js',
+    emptyTitle: 'No Frontend JavaScript submissions found',
+    emptyDesc: 'Be the first candidate to solve a Frontend JavaScript question and rank on the leaderboard!',
+  },
+  algorithms: {
+    name: 'Algorithms & Logic',
+    shortName: 'DSA Masterclass',
+    icon: '🧠',
+    eyebrow: 'DATA STRUCTURES & ALGORITHMS',
+    title: 'Algorithms & DSA Leaderboard',
+    subtitle: 'Rankings across 1,000 algorithmic challenges covering Two Pointers, Trees, Graphs, and Dynamic Programming',
+    studioTitle: 'DSA Studio',
+    studioPath: '/dsa',
+    emptyTitle: 'No DSA submissions found',
+    emptyDesc: 'Be the first candidate to solve an algorithmic problem and rank on the leaderboard!',
+  },
+  javascript: {
+    name: 'JavaScript & DOM',
+    shortName: 'JS & DOM',
+    icon: '📜',
+    eyebrow: 'JAVASCRIPT & DOM TRACK',
+    title: 'JavaScript & DOM Leaderboard',
+    subtitle: 'Rankings across JavaScript language mechanics, closures, prototypes, and browser DOM interactions',
+    studioTitle: 'JavaScript Studio',
+    studioPath: '/core-programming',
+    emptyTitle: 'No JavaScript submissions found',
+    emptyDesc: 'Be the first candidate to solve a JavaScript challenge and rank on the leaderboard!',
+  },
+  'system-design': {
+    name: 'System Design',
+    shortName: 'System Design',
+    icon: '📐',
+    eyebrow: 'SYSTEM DESIGN TRACK',
+    title: 'Frontend System Design Leaderboard',
+    subtitle: 'Rankings across large-scale frontend architecture, state management, caching, and distributed UI systems',
+    studioTitle: 'System Design Studio',
+    studioPath: '/machine-coding',
+    emptyTitle: 'No System Design submissions found',
+    emptyDesc: 'Be the first candidate to complete a system design assessment and rank on the leaderboard!',
+  },
+}
+
 export default function Leaderboard({ compact = false }: LeaderboardProps) {
-  const { user } = useAuth()
+  const { user, role, hasPermission } = useAuth()
+  const isAdmin = role === 'admin' || user?.role === 'admin' || (typeof hasPermission === 'function' && hasPermission('admin'))
   const [searchParams, setSearchParams] = useSearchParams()
   const [entries, setEntries] = useState<LeaderboardEntry[]>([])
   const [loading, setLoading] = useState(true)
@@ -216,24 +318,27 @@ export default function Leaderboard({ compact = false }: LeaderboardProps) {
 
   const topThree = filteredEntries.slice(0, 3)
 
+  const catConfig = CATEGORY_CONFIG[category] || CATEGORY_CONFIG.all
+
   return (
     <div className={`leaderboard-page ${compact ? 'compact-mode' : ''}`}>
       {/* ---- Header ---- */}
       <div className="lb-header">
         <div className="lb-header-left">
+          <div className="lb-eyebrow">{catConfig.eyebrow}</div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
-            <h1 style={{ margin: 0 }}>🏆 Global Leaderboard</h1>
+            <h1 style={{ margin: 0 }}>{catConfig.icon} {catConfig.title}</h1>
             <span className="lb-live-status-pill">
-              <span className="lb-live-pulse-dot" /> Live Supabase Synced
+              <span className="lb-live-pulse-dot" /> Live Verified
             </span>
           </div>
-          <p>Real-time candidate submissions and rankings verified from Supabase</p>
+          <p>{catConfig.subtitle}</p>
         </div>
 
         <div className="lb-header-right">
-          {/* Quick Solve Link */}
-          <Link to="/machine-coding" className="lb-cta-solve-btn">
-            ⚡ Machine Coding Studio
+          {/* Dynamic Studio Link */}
+          <Link to={catConfig.studioPath} className="lb-cta-solve-btn">
+            {catConfig.icon} {catConfig.studioTitle}
           </Link>
 
           {/* Timeframe filter */}
@@ -251,20 +356,36 @@ export default function Leaderboard({ compact = false }: LeaderboardProps) {
             ))}
           </div>
 
-          {/* Category filter */}
+          {/* Category filter dropdown */}
           <select
             id="lb-category-select"
             className="lb-filter-select"
             value={category}
             onChange={e => handleCategoryChange(e.target.value as LeaderboardCategory)}
           >
-            <option value="all">All Categories</option>
-            <option value="machine-coding">⚡ Machine Coding Submissions</option>
-            <option value="algorithms">Algorithms & Logic</option>
-            <option value="javascript">JavaScript & DOM</option>
-            <option value="system-design">System Design</option>
+            {Object.entries(CATEGORY_CONFIG).map(([cKey, cMeta]) => (
+              <option key={cKey} value={cKey}>
+                {cMeta.icon} {cMeta.name}
+              </option>
+            ))}
           </select>
         </div>
+      </div>
+
+      {/* Category Pills Bar */}
+      <div className="lb-category-pills" style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', margin: '0 0 20px' }}>
+        {Object.entries(CATEGORY_CONFIG).map(([cKey, cMeta]) => (
+          <button
+            key={cKey}
+            type="button"
+            className={`lb-filter-btn ${category === cKey ? 'active' : ''}`}
+            onClick={() => handleCategoryChange(cKey as LeaderboardCategory)}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+          >
+            <span>{cMeta.icon}</span>
+            <span>{cMeta.shortName}</span>
+          </button>
+        ))}
       </div>
 
       {/* ---- Search Bar ---- */}
@@ -311,22 +432,22 @@ export default function Leaderboard({ compact = false }: LeaderboardProps) {
       {/* ---- Ranked Table ---- */}
       <div className="lb-table-wrap">
         <div className="lb-section-title" style={{ marginTop: 24, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span>
-            {category === 'machine-coding' ? '⚡ Machine Coding Leaderboard' : 'Full Rankings'} — {filteredEntries.length} verified candidates
+          <span style={{ fontWeight: 600 }}>
+            {catConfig.icon} {catConfig.title} - {filteredEntries.length} verified candidates
           </span>
           <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: 400 }}>
-            Source: Supabase PostgreSQL
+            Source: Supabase PostgreSQL &amp; Verified Sandboxes
           </span>
         </div>
 
         <table className="lb-table" role="table" aria-label="Candidate leaderboard rankings">
           <thead>
             <tr>
-              <th style={{ width: 60, textAlign: 'center' }}>#</th>
-              <th>Candidate &amp; ID</th>
+              <th>Rank</th>
+              <th>Candidate</th>
               <th>Tier</th>
               <th>Score</th>
-              <th className="lb-hide-mobile">Solved</th>
+              <th className="lb-hide-mobile">Completed</th>
               <th className="lb-hide-mobile">Accuracy</th>
               <th className="lb-hide-mobile">Recent Challenges</th>
             </tr>
@@ -338,18 +459,25 @@ export default function Leaderboard({ compact = false }: LeaderboardProps) {
               <tr>
                 <td colSpan={7}>
                   <div className="lb-empty">
-                    <span className="lb-empty-icon">⚡</span>
-                    <h3>No machine coding submissions found</h3>
-                    <p>Be the first candidate to solve a machine-level coding question and rank on the leaderboard!</p>
-                    <Link to="/machine-coding" className="lb-cta-solve-btn" style={{ marginTop: 12, display: 'inline-flex' }}>
-                      Start Machine Coding →
+                    <span className="lb-empty-icon">{catConfig.icon}</span>
+                    <h3>{catConfig.emptyTitle}</h3>
+                    <p>{catConfig.emptyDesc}</p>
+                    <Link to={catConfig.studioPath} className="lb-cta-solve-btn" style={{ marginTop: 12, display: 'inline-flex' }}>
+                      Start {catConfig.shortName} →
                     </Link>
                   </div>
                 </td>
               </tr>
             ) : (
               filteredEntries.map(entry => {
-                const isMe = user?.id === entry.userId || (user?.email && entry.userId.toLowerCase().includes(user.email.toLowerCase()))
+                const isMe = Boolean(
+                  user && (
+                    user.id === entry.userId ||
+                    (user.email && entry.userId.toLowerCase().includes(user.email.toLowerCase())) ||
+                    (user.name && entry.name.toLowerCase() === user.name.toLowerCase())
+                  )
+                )
+                const canAccessCode = isMe || isAdmin
                 return (
                   <tr
                     key={entry.userId}
@@ -429,16 +557,39 @@ export default function Leaderboard({ compact = false }: LeaderboardProps) {
                     <td className="lb-hide-mobile">
                       {entry.recentQuestions && entry.recentQuestions.length > 0 ? (
                         <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-                          {entry.recentQuestions.slice(0, 2).map(q => (
-                            <Link
-                              key={q.id}
-                              to={`/machine-coding?id=${q.id}`}
-                              className="lb-recent-q-pill"
-                              title={`${q.id}: ${q.title} (${q.score}%)`}
-                            >
-                              ⚡ {q.id} ({q.score}%)
-                            </Link>
-                          ))}
+                          {entry.recentQuestions.slice(0, 2).map(q => {
+                            const up = q.id.toUpperCase()
+                            const icon = (up.startsWith('JS-P') || up.startsWith('JSP')) ? '💻' : (up.startsWith('FJP-') || up.startsWith('FJP')) ? '🌐' : up.startsWith('DSA') ? '🧠' : '⚡'
+                            const link = (up.startsWith('JS-P') || up.startsWith('JSP')) ? `/core-programming/${q.id.toLowerCase()}` : (up.startsWith('FJP-') || up.startsWith('FJP')) ? `/frontend-js/${q.id.toLowerCase()}` : up.startsWith('DSA') ? `/dsa/${q.id.toLowerCase()}` : `/machine-coding?id=${q.id}`
+                            
+                            if (canAccessCode) {
+                              return (
+                                <Link
+                                  key={q.id}
+                                  to={link}
+                                  className="lb-recent-q-pill lb-recent-q-pill-active"
+                                  title={
+                                    isAdmin && !isMe
+                                      ? `[Admin Access] Inspect candidate workspace: ${q.id} (${q.score}%)`
+                                      : `Open your workspace: ${q.id} (${q.score}%)`
+                                  }
+                                >
+                                  {icon} {q.id} ({q.score}%)
+                                </Link>
+                              )
+                            }
+
+                            return (
+                              <span
+                                key={q.id}
+                                className="lb-recent-q-pill lb-recent-q-pill-locked"
+                                title="Submission code is confidential. Accessible only to the submission author and platform administrators."
+                                aria-label={`${q.id}: Private submission (${q.score}%)`}
+                              >
+                                {icon} {q.id} ({q.score}%) <span className="lb-recent-q-pill-lock-icon" aria-hidden="true">🔒</span>
+                              </span>
+                            )
+                          })}
                         </div>
                       ) : (
                         <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>—</span>

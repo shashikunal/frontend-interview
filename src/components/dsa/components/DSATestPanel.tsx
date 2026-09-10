@@ -11,6 +11,8 @@ interface Props {
   onToggleCustomInput: (enabled: boolean) => void
   activeTab: 'testcase' | 'result'
   onTabChange: (tab: 'testcase' | 'result') => void
+  fullscreenPanel?: 'none' | 'specs' | 'editor' | 'test'
+  onToggleFullscreen?: () => void
 }
 
 export const DSATestPanel: React.FC<Props> = ({
@@ -23,6 +25,8 @@ export const DSATestPanel: React.FC<Props> = ({
   onToggleCustomInput,
   activeTab,
   onTabChange,
+  fullscreenPanel = 'none',
+  onToggleFullscreen,
 }) => {
   const [selectedCaseIdx, setSelectedCaseIdx] = useState<number>(0)
   const [activeResultIdx, setActiveResultIdx] = useState<number>(0)
@@ -35,18 +39,46 @@ export const DSATestPanel: React.FC<Props> = ({
     <div className="dsa-testpanel-wrap">
       {/* Test Panel Header Tabs */}
       <div className="dsa-testpanel-nav">
-        <button
-          className={`dsa-tp-nav-btn ${activeTab === 'testcase' ? 'active' : ''}`}
-          onClick={() => onTabChange('testcase')}
-        >
-          🧪 Testcases
-        </button>
-        <button
-          className={`dsa-tp-nav-btn ${activeTab === 'result' ? 'active' : ''}`}
-          onClick={() => onTabChange('result')}
-        >
-          📊 Test Result {runResult ? (runResult.success ? '✓' : '✗') : ''}
-        </button>
+        <div className="dsa-testpanel-nav-left">
+          <button
+            className={`dsa-tp-nav-btn ${activeTab === 'testcase' ? 'active' : ''}`}
+            onClick={() => onTabChange('testcase')}
+          >
+            🧪 Testcases
+          </button>
+          <button
+            className={`dsa-tp-nav-btn ${activeTab === 'result' ? 'active' : ''}`}
+            onClick={() => onTabChange('result')}
+          >
+            📊 Test Result {runResult ? (runResult.success ? '✓' : '✗') : ''}
+          </button>
+        </div>
+
+        {onToggleFullscreen && (
+          <button
+            type="button"
+            className={`dsa-fullscreen-btn ${fullscreenPanel === 'test' ? 'active' : ''}`}
+            onClick={onToggleFullscreen}
+            title={fullscreenPanel === 'test' ? 'Restore Test Panel Size (Esc)' : 'Maximize Test Console (Fullscreen)'}
+            aria-label={fullscreenPanel === 'test' ? 'Restore Test Panel Size' : 'Maximize Test Console'}
+          >
+            {fullscreenPanel === 'test' ? (
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="4 14 10 14 10 20" />
+                <polyline points="20 10 14 10 14 4" />
+                <line x1="14" y1="10" x2="21" y2="3" />
+                <line x1="3" y1="21" x2="10" y2="14" />
+              </svg>
+            ) : (
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="15 3 21 3 21 9" />
+                <polyline points="9 21 3 21 3 15" />
+                <line x1="21" y1="3" x2="14" y2="10" />
+                <line x1="3" y1="21" x2="10" y2="14" />
+              </svg>
+            )}
+          </button>
+        )}
       </div>
 
       <div className="dsa-testpanel-body">

@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { useProgress } from '../../context/ProgressContext'
 import { useBookmarks } from '../../context/BookmarkContext'
+import { useQuestions } from '../../data/useQuestions'
 import { dbActivityService, type ActivityLogItem } from '../../lib/supabase'
 import BadgeShowcase from '../badges/BadgeShowcase'
 import './UserProfile.css'
@@ -18,7 +19,8 @@ const EXPERIENCE_LEVELS = [
 
 export default function UserProfile() {
   const { user, isAuthenticated, openAuthModal } = useAuth()
-  const { solvedIds, streak, mockInterviews } = useProgress()
+  const { solvedIds, streak, studyDates, mockInterviews } = useProgress()
+  const { questions } = useQuestions()
   const { bookmarkedCount } = useBookmarks()
 
   const [targetCompany, setTargetCompany] = useState<string>(user?.targetCompany || 'Google')
@@ -29,8 +31,16 @@ export default function UserProfile() {
   const [activityFilter, setActivityFilter] = useState<'ALL' | 'QUESTION' | 'MOCK' | 'QUIZ'>('ALL')
 
   const totalSolved = solvedIds.size
-  const progressPercent = Math.min(100, Math.round((totalSolved / 250) * 100))
+  const totalQuestionsBank = questions.length || 1
+  const progressPercent = Math.min(100, Math.round((totalSolved / totalQuestionsBank) * 100))
 
+  const easyQuestions = useMemo(() => questions.filter(q => q.difficulty === 'Easy'), [questions])
+  const mediumQuestions = useMemo(() => questions.filter(q => q.difficulty === 'Medium'), [questions])
+  const hardQuestions = useMemo(() => questions.filter(q => q.difficulty === 'Hard'), [questions])
+
+  const easySolved = useMemo(() => easyQuestions.filter(q => solvedIds.has(q.id)).length, [easyQuestions, solvedIds])
+  const mediumSolved = useMemo(() => mediumQuestions.filter(q => solvedIds.has(q.id)).length, [mediumQuestions, solvedIds])
+  const hardSolved = useMemo(() => hardQuestions.filter(q => solvedIds.has(q.id)).length, [hardQuestions, solvedIds])
 
   // Load activities
   useEffect(() => {
@@ -56,12 +66,27 @@ export default function UserProfile() {
     return true
   })
 
-  // Heatmap sample generator (last 30 days)
-  const heatmapDays = Array.from({ length: 28 }).map((_, i) => {
-    const isStudyDay = i % 2 === 0 || i % 3 === 0 || i >= 20
-    const count = isStudyDay ? (i % 4) + 1 : 0
-    return { day: i + 1, count }
-  })
+  // Real Heatmap calculation for the last 28 days based on real activity and studyDates
+  const heatmapDays = useMemo(() => {
+    const days: Array<{ date: string; day: number; count: number }> = []
+    const now = new Date()
+    for (let i = 27; i >= 0; i--) {
+      const d = new Date()
+      d.setDate(now.getDate() - i)
+      const dateKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+
+      const actCount = activities.filter(a => a.timestamp && a.timestamp.startsWith(dateKey)).length
+      const hasStudy = studyDates.has(dateKey)
+      const count = actCount > 0 ? actCount : (hasStudy ? 1 : 0)
+
+      days.push({
+        date: dateKey,
+        day: d.getDate(),
+        count,
+      })
+    }
+    return days
+  }, [activities, studyDates])
 
   return (
     <div className="profile-page page-enter">
@@ -217,25 +242,25 @@ export default function UserProfile() {
             <div className="diff-item">
               <div className="diff-header">
                 <span className="diff-name easy">🟢 Easy (Foundations)</span>
-                <strong>{Math.min(totalSolved, 120)} / 5,000</strong>
+                <strong>{easySolved} / {easyQuestions.length}</strong>
               </div>
-              <div className="diff-bar"><div className="diff-fill easy" style={{ width: `${Math.min(100, (totalSolved / 50) * 100)}%` }} /></div>
+              <div className="diff-bar"><div className="diff-fill easy" style={{ width: `${easyQuestions.length > 0 ? Math.min(100, Math.round((easySolved / easyQuestions.length) * 100)) : 0}%` }} /></div>
             </div>
 
             <div className="diff-item">
               <div className="diff-header">
                 <span className="diff-name medium">🟡 Medium (Core FAANG)</span>
-                <strong>{Math.max(0, totalSolved - 50)} / 12,000</strong>
+                <strong>{mediumSolved} / {mediumQuestions.length}</strong>
               </div>
-              <div className="diff-bar"><div className="diff-fill medium" style={{ width: `${Math.min(100, (Math.max(0, totalSolved - 50) / 100) * 100)}%` }} /></div>
+              <div className="diff-bar"><div className="diff-fill medium" style={{ width: `${mediumQuestions.length > 0 ? Math.min(100, Math.round((mediumSolved / mediumQuestions.length) * 100)) : 0}%` }} /></div>
             </div>
 
             <div className="diff-item">
               <div className="diff-header">
                 <span className="diff-name hard">🔴 Hard (Staff &amp; Principal)</span>
-                <strong>{Math.max(0, totalSolved - 150)} / 5,222</strong>
+                <strong>{hardSolved} / {hardQuestions.length}</strong>
               </div>
-              <div className="diff-bar"><div className="diff-fill hard" style={{ width: `${Math.min(100, (Math.max(0, totalSolved - 150) / 50) * 100)}%` }} /></div>
+              <div className="diff-bar"><div className="diff-fill hard" style={{ width: `${hardQuestions.length > 0 ? Math.min(100, Math.round((hardSolved / hardQuestions.length) * 100)) : 0}%` }} /></div>
             </div>
           </div>
         </div>

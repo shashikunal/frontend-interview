@@ -18,6 +18,13 @@ import type { DSASubmission } from '../dsa/data/dsaTypes'
 import { DSA_QUESTIONS } from '../dsa/data/dsaQuestions'
 import { mcProgressService } from '../machinecoding/lib/mcProgressService'
 import { MACHINE_CODING_CATALOG } from '../machinecoding/data/machineCodingCatalog'
+import { coreProgrammingProgressService } from '../coreprogramming/lib/coreProgrammingProgressService'
+import { coreProgrammingSubmissionService } from '../coreprogramming/lib/coreProgrammingSubmissionService'
+import type { CoreProgrammingSubmission } from '../coreprogramming/data/coreProgrammingTypes'
+import { CORE_PROGRAMMING_QUESTIONS } from '../coreprogramming/data/coreProgrammingQuestions'
+import { frontendJsProgressService } from '../frontendjs/lib/frontendJsProgressService'
+import { frontendJsSubmissionService } from '../frontendjs/lib/frontendJsSubmissionService'
+import type { FrontendJsSubmission } from '../frontendjs/data/frontendJsTypes'
 import './Dashboard.css'
 
 function catClass(name: string): string {
@@ -60,8 +67,18 @@ function CandidateDashboard() {
   // DSA Submissions State
   const [dsaSubmissions, setDsaSubmissions] = useState<DSASubmission[]>([])
   const [dsaSolvedCount, setDsaSolvedCount] = useState<number>(0)
-  const [activeSubmissionsTab, setActiveSubmissionsTab] = useState<'mc' | 'dsa'>('mc')
+  const [activeSubmissionsTab, setActiveSubmissionsTab] = useState<'mc' | 'dsa' | 'cp' | 'fjs'>('mc')
   const [dsaSearch, setDsaSearch] = useState<string>('')
+
+  // Core Programming Submissions State
+  const [cpSubmissions, setCpSubmissions] = useState<CoreProgrammingSubmission[]>([])
+  const [cpSolvedCount, setCpSolvedCount] = useState<number>(0)
+  const [cpSearch, setCpSearch] = useState<string>('')
+
+  // Frontend JS Submissions State
+  const [fjsSubmissions, setFjsSubmissions] = useState<FrontendJsSubmission[]>([])
+  const [fjsSolvedCount, setFjsSolvedCount] = useState<number>(0)
+  const [fjsSearch, setFjsSearch] = useState<string>('')
 
   const [telemetry, setTelemetry] = useState<{
     startedCount: number
@@ -107,32 +124,74 @@ function CandidateDashboard() {
       let totalScore = 0
 
       const userId = user?.id
+      const userSubmissions: Array<{ status: string; score: number }> = []
+
       if (userId) {
         try {
-          const { data: subs } = await supabase
-            .from('submissions')
-            .select('status, score')
-            .eq('user_id', userId)
+          const [subsRes, cpRes, fjsRes, dsaRes] = await Promise.allSettled([
+            supabase.from('submissions').select('status, score').eq('user_id', userId),
+            supabase.from('core_programming_submissions').select('status, score').eq('user_id', userId),
+            supabase.from('frontend_js_submissions').select('status, score').eq('user_id', userId),
+            supabase.from('dsa_submissions').select('status, score').eq('user_id', userId),
+          ])
 
-          if (Array.isArray(subs)) {
-            totalSubs = subs.length
-            subs.forEach(s => {
-              if (s.status === 'accepted') accepted++
-              totalScore += Number(s.score || 0)
-            })
+          if (subsRes.status === 'fulfilled' && Array.isArray(subsRes.value.data)) {
+            subsRes.value.data.forEach(s => userSubmissions.push({ status: s.status, score: Number(s.score || 0) }))
+          }
+          if (cpRes.status === 'fulfilled' && Array.isArray(cpRes.value.data)) {
+            cpRes.value.data.forEach(s => userSubmissions.push({ status: s.status, score: Number(s.score || 0) }))
+          }
+          if (fjsRes.status === 'fulfilled' && Array.isArray(fjsRes.value.data)) {
+            fjsRes.value.data.forEach(s => userSubmissions.push({ status: s.status, score: Number(s.score || 0) }))
+          }
+          if (dsaRes.status === 'fulfilled' && Array.isArray(dsaRes.value.data)) {
+            dsaRes.value.data.forEach(s => userSubmissions.push({ status: s.status, score: Number(s.score || 0) }))
           }
         } catch {
           // ignore
         }
       }
 
+      // Merge verified client-side local submissions for offline / current session attempts
+      try {
+        if (typeof localStorage !== 'undefined') {
+          const rawMC = localStorage.getItem('mc_candidate_submissions_real_v2')
+          if (rawMC) {
+            const list = JSON.parse(rawMC)
+            list.forEach((s: any) => userSubmissions.push({ status: s.status, score: Number(s.score || 0) }))
+          }
+          const rawCP = localStorage.getItem('cp_candidate_submissions_v1')
+          if (rawCP) {
+            const list = JSON.parse(rawCP)
+            list.forEach((s: any) => userSubmissions.push({ status: s.status, score: Number(s.score || 0) }))
+          }
+          const rawFJS = localStorage.getItem('fjp_submissions_v1')
+          if (rawFJS) {
+            const list = JSON.parse(rawFJS)
+            list.forEach((s: any) => userSubmissions.push({ status: s.status, score: Number(s.score || 0) }))
+          }
+          const rawDSA = localStorage.getItem('dsa_submissions_v1')
+          if (rawDSA) {
+            const list = JSON.parse(rawDSA)
+            list.forEach((s: any) => userSubmissions.push({ status: s.status, score: Number(s.score || 0) }))
+          }
+        }
+      } catch (_) {}
+
+      totalSubs = userSubmissions.length
+      userSubmissions.forEach(s => {
+        const isAcc = s.status === 'accepted' || s.status === 'Accepted' || s.score >= 70
+        if (isAcc) accepted++
+        totalScore += s.score
+      })
+
       setTelemetry({
         startedCount: started,
         completedCount: completed,
-        totalAttempts: Math.max(attempts, completed),
+        totalAttempts: Math.max(attempts, completed, totalSubs),
         acceptedSubmissions: accepted,
-        accuracyRate: totalSubs > 0 ? Math.round((accepted / totalSubs) * 100) : (completed > 0 ? 92 : 0),
-        avgScore: totalSubs > 0 ? Math.round(totalScore / totalSubs) : (completed > 0 ? 88 : 0),
+        accuracyRate: totalSubs > 0 ? Math.round((accepted / totalSubs) * 100) : 0,
+        avgScore: totalSubs > 0 ? Math.round(totalScore / totalSubs) : 0,
         totalTimeSpent: timeSec,
       })
     }
@@ -162,7 +221,33 @@ function CandidateDashboard() {
     // Load DSA Submissions and Solved Count
     dsaSubmissionService.fetchUserSubmissions(user?.id).then(setDsaSubmissions)
     setDsaSolvedCount(dsaProgressService.getSolvedIds().size)
+
+    // Load Core Programming Submissions and Solved Count
+    coreProgrammingSubmissionService.fetchUserSubmissions(user?.id).then(setCpSubmissions)
+    setCpSolvedCount(coreProgrammingProgressService.getSolvedIds().size)
+
+    // Load Frontend JS Submissions and Solved Count
+    frontendJsSubmissionService.fetchUserSubmissions(user?.id).then(setFjsSubmissions)
+    setFjsSolvedCount(frontendJsProgressService.getSolvedIds().size)
   }, [user])
+
+  // Live sync Core Programming progress
+  useEffect(() => {
+    const syncCP = () => {
+      setCpSolvedCount(coreProgrammingProgressService.getSolvedIds().size)
+      setCpSubmissions(coreProgrammingProgressService.getSubmissions())
+    }
+    return coreProgrammingProgressService.subscribe(syncCP)
+  }, [])
+
+  // Live sync Frontend JS progress
+  useEffect(() => {
+    const syncFJS = () => {
+      setFjsSolvedCount(frontendJsProgressService.getSolvedIds().size)
+      setFjsSubmissions(frontendJsProgressService.getSubmissions())
+    }
+    return frontendJsProgressService.subscribe(syncFJS)
+  }, [])
 
   // Machine Coding Curriculum Progress (Isolated from DSA)
   const [mcSolvedIds, setMcSolvedIds] = useState<Set<string>>(() => mcProgressService.getSolvedIds())
@@ -231,6 +316,30 @@ function CandidateDashboard() {
       )
     })
   }, [dsaSubmissions, dsaSearch])
+
+  const filteredCPSubmissions = useMemo(() => {
+    if (!cpSearch.trim()) return cpSubmissions
+    const term = cpSearch.toLowerCase()
+    return cpSubmissions.filter(s => {
+      const q = CORE_PROGRAMMING_QUESTIONS.find(item => item.id === s.questionId)
+      return (
+        s.questionId.toLowerCase().includes(term) ||
+        (q && q.title.toLowerCase().includes(term)) ||
+        s.status.toLowerCase().includes(term)
+      )
+    })
+  }, [cpSubmissions, cpSearch])
+
+  const filteredFJSSubmissions = useMemo(() => {
+    if (!fjsSearch.trim()) return fjsSubmissions
+    const term = fjsSearch.toLowerCase()
+    return fjsSubmissions.filter(s => {
+      return (
+        s.questionId.toLowerCase().includes(term) ||
+        s.status.toLowerCase().includes(term)
+      )
+    })
+  }, [fjsSubmissions, fjsSearch])
 
   useEffect(() => {
     if (!user) return
@@ -527,6 +636,42 @@ function CandidateDashboard() {
             Open DSA Studio →
           </Link>
         </div>
+
+        {/* Core Programming 500 Questions Solved Card */}
+        <div className="dash-stat-card" style={{ borderLeft: '4px solid #6366f1' }}>
+          <div className="dash-stat-top">
+            <div className="dash-stat-icon" style={{ background: 'rgba(99, 102, 241, 0.15)', color: '#6366f1' }}>💻</div>
+            <span className="dash-stat-badge" style={{ background: 'rgba(99, 102, 241, 0.15)', color: '#6366f1' }}>Core Programming</span>
+          </div>
+          <div className="dash-stat-info">
+            <span className="dash-stat-num">{cpSolvedCount} / 500</span>
+            <span className="dash-stat-label">Core JS Problems Solved</span>
+          </div>
+          <div className="dash-stat-hint">
+            {500 - cpSolvedCount} JavaScript challenges remaining
+          </div>
+          <Link to="/core-programming" className="dash-stat-link" style={{ color: '#6366f1' }}>
+            Open Core Studio →
+          </Link>
+        </div>
+
+        {/* Frontend JS 1,000 Questions Solved Card */}
+        <div className="dash-stat-card" style={{ borderLeft: '4px solid #0ea5e9' }}>
+          <div className="dash-stat-top">
+            <div className="dash-stat-icon" style={{ background: 'rgba(14, 165, 233, 0.15)', color: '#0ea5e9' }}>🌐</div>
+            <span className="dash-stat-badge" style={{ background: 'rgba(14, 165, 233, 0.15)', color: '#0ea5e9' }}>Frontend JavaScript</span>
+          </div>
+          <div className="dash-stat-info">
+            <span className="dash-stat-num">{fjsSolvedCount} / 1,000</span>
+            <span className="dash-stat-label">Frontend JS Problems Solved</span>
+          </div>
+          <div className="dash-stat-hint">
+            {1000 - fjsSolvedCount} DOM &amp; Web API challenges remaining
+          </div>
+          <Link to="/frontend-js" className="dash-stat-link" style={{ color: '#0ea5e9' }}>
+            Open Frontend JS Studio →
+          </Link>
+        </div>
       </div>
 
       {/* Question Progress & Telemetry Overview */}
@@ -794,7 +939,7 @@ function CandidateDashboard() {
         />
 
         {/* Submissions Category Toggle Tabs */}
-        <div style={{ display: 'flex', gap: '8px', margin: '24px 0 16px', borderBottom: '1px solid var(--border)', paddingBottom: '12px' }}>
+        <div style={{ display: 'flex', gap: '8px', margin: '24px 0 16px', borderBottom: '1px solid var(--border)', paddingBottom: '12px', flexWrap: 'wrap' }}>
           <button
             type="button"
             className={`btn btn-sm ${activeSubmissionsTab === 'mc' ? 'btn-primary' : 'btn-secondary'}`}
@@ -802,7 +947,7 @@ function CandidateDashboard() {
             style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
           >
             <span>⚡</span>
-            <span>Machine Coding Challenges ({mcSubmissions.length})</span>
+            <span>Machine Coding ({mcSubmissions.length})</span>
           </button>
           <button
             type="button"
@@ -811,7 +956,25 @@ function CandidateDashboard() {
             style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
           >
             <span>🧠</span>
-            <span>DSA Algorithmic Challenges ({dsaSubmissions.length})</span>
+            <span>DSA Challenges ({dsaSubmissions.length})</span>
+          </button>
+          <button
+            type="button"
+            className={`btn btn-sm ${activeSubmissionsTab === 'cp' ? 'btn-primary' : 'btn-secondary'}`}
+            onClick={() => setActiveSubmissionsTab('cp')}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+          >
+            <span>💻</span>
+            <span>Core Programming ({cpSubmissions.length})</span>
+          </button>
+          <button
+            type="button"
+            className={`btn btn-sm ${activeSubmissionsTab === 'fjs' ? 'btn-primary' : 'btn-secondary'}`}
+            onClick={() => setActiveSubmissionsTab('fjs')}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+          >
+            <span>🌐</span>
+            <span>Frontend JS ({fjsSubmissions.length})</span>
           </button>
         </div>
 
@@ -1095,6 +1258,199 @@ function CandidateDashboard() {
               </table>
             </div>
           </>
+        )}
+
+        {/* ============ Core Programming Panel ============ */}
+        {activeSubmissionsTab === 'cp' && (
+          cpSubmissions.length === 0 ? (
+            <div className="mc-empty-box">
+              <span style={{ fontSize: '2.4rem' }}>💻</span>
+              <h3 style={{ marginTop: '10px', marginBottom: '6px' }}>No Core Programming Submissions Yet</h3>
+              <p style={{ color: 'var(--text-secondary)', maxWidth: '540px', margin: '0 auto 18px', fontSize: '0.92rem' }}>
+                Start working through our 500 Core JavaScript Programming challenges to build your skills and grow your submission history.
+              </p>
+              <Link to="/core-programming" className="btn btn-primary candidate-btn-primary" style={{ display: 'inline-flex', padding: '10px 24px' }}>
+                <span>🚀</span> Launch Core Programming Studio
+              </Link>
+            </div>
+          ) : (
+            <>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', margin: '18px 0 14px', gap: '12px', flexWrap: 'wrap' }}>
+                <input
+                  type="text"
+                  className="search-field"
+                  placeholder="Filter Core Programming submissions..."
+                  value={cpSearch}
+                  onChange={e => setCpSearch(e.target.value)}
+                  style={{ maxWidth: '340px', width: '100%' }}
+                />
+                <span style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>
+                  Showing {filteredCPSubmissions.length} of {cpSubmissions.length} submissions · {cpSolvedCount} solved
+                </span>
+              </div>
+              <div className="table-responsive">
+                <table className="admin-data-table">
+                  <thead>
+                    <tr>
+                      <th>Timestamp</th>
+                      <th>Problem</th>
+                      <th>Difficulty</th>
+                      <th>Status</th>
+                      <th>Test Cases</th>
+                      <th>Score</th>
+                      <th>Runtime</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredCPSubmissions.map(sub => {
+                      const q = CORE_PROGRAMMING_QUESTIONS.find(item => item.id === sub.questionId)
+                      const isAcc = sub.status === 'Accepted'
+                      return (
+                        <tr key={sub.id}>
+                          <td>
+                            <span className="sub-time">
+                              {new Date(sub.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                            </span>
+                            <span className="sub-date">
+                              {new Date(sub.timestamp).toLocaleDateString([], { month: 'short', day: 'numeric' })}
+                            </span>
+                          </td>
+                          <td>
+                            <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>
+                              {sub.questionId} {q ? q.title : 'Core JS Problem'}
+                            </div>
+                            <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{q?.category || 'JavaScript'}</span>
+                          </td>
+                          <td>
+                            <span className={`badge badge-${(q?.difficulty || 'easy').toLowerCase()}`}>
+                              {q?.difficulty || 'Easy'}
+                            </span>
+                          </td>
+                          <td>
+                            <span className={`status-pill ${isAcc ? 'status-pill-passed' : 'status-pill-failed'}`}>
+                              {isAcc ? '✓ Accepted' : '✗ ' + sub.status}
+                            </span>
+                          </td>
+                          <td style={{ fontWeight: 600 }}>
+                            {sub.testsPassed} / {sub.testsTotal}
+                          </td>
+                          <td style={{ fontWeight: 600, color: sub.score >= 100 ? '#10b981' : sub.score >= 70 ? '#3b82f6' : '#ef4444' }}>
+                            {sub.score}%
+                          </td>
+                          <td style={{ color: 'var(--text-muted)' }}>
+                            {sub.runtimeMs} ms
+                          </td>
+                          <td>
+                            <Link
+                              to={`/core-programming/${sub.questionId.toLowerCase()}`}
+                              className="btn btn-sm btn-primary"
+                              style={{ padding: '4px 10px', fontSize: '12px' }}
+                            >
+                              Open Studio →
+                            </Link>
+                          </td>
+                        </tr>
+                      )
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </>
+          )
+        )}
+
+        {/* ============ Frontend JS Panel ============ */}
+        {activeSubmissionsTab === 'fjs' && (
+          fjsSubmissions.length === 0 ? (
+            <div className="mc-empty-box">
+              <span style={{ fontSize: '2.4rem' }}>🌐</span>
+              <h3 style={{ marginTop: '10px', marginBottom: '6px' }}>No Frontend JS Submissions Yet</h3>
+              <p style={{ color: 'var(--text-secondary)', maxWidth: '540px', margin: '0 auto 18px', fontSize: '0.92rem' }}>
+                Tackle our Frontend JavaScript interview question bank — covering DOM, async patterns, closures, and real-world browser scenarios.
+              </p>
+              <Link to="/frontend-js" className="btn btn-primary candidate-btn-primary" style={{ display: 'inline-flex', padding: '10px 24px' }}>
+                <span>🚀</span> Launch Frontend JS Studio
+              </Link>
+            </div>
+          ) : (
+            <>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', margin: '18px 0 14px', gap: '12px', flexWrap: 'wrap' }}>
+                <input
+                  type="text"
+                  className="search-field"
+                  placeholder="Filter Frontend JS submissions..."
+                  value={fjsSearch}
+                  onChange={e => setFjsSearch(e.target.value)}
+                  style={{ maxWidth: '340px', width: '100%' }}
+                />
+                <span style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>
+                  Showing {filteredFJSSubmissions.length} of {fjsSubmissions.length} submissions · {fjsSolvedCount} solved
+                </span>
+              </div>
+              <div className="table-responsive">
+                <table className="admin-data-table">
+                  <thead>
+                    <tr>
+                      <th>Timestamp</th>
+                      <th>Problem</th>
+                      <th>Status</th>
+                      <th>Test Cases</th>
+                      <th>Score</th>
+                      <th>Runtime</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredFJSSubmissions.map(sub => {
+                      const isAcc = sub.status === 'Accepted'
+                      return (
+                        <tr key={sub.id}>
+                          <td>
+                            <span className="sub-time">
+                              {new Date(sub.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                            </span>
+                            <span className="sub-date">
+                              {new Date(sub.timestamp).toLocaleDateString([], { month: 'short', day: 'numeric' })}
+                            </span>
+                          </td>
+                          <td>
+                            <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>
+                              {sub.questionId}
+                            </div>
+                            <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Frontend JavaScript</span>
+                          </td>
+                          <td>
+                            <span className={`status-pill ${isAcc ? 'status-pill-passed' : 'status-pill-failed'}`}>
+                              {isAcc ? '✓ Accepted' : '✗ ' + sub.status}
+                            </span>
+                          </td>
+                          <td style={{ fontWeight: 600 }}>
+                            {sub.testsPassed} / {sub.testsTotal}
+                          </td>
+                          <td style={{ fontWeight: 600, color: sub.score >= 100 ? '#10b981' : sub.score >= 70 ? '#3b82f6' : '#ef4444' }}>
+                            {sub.score}%
+                          </td>
+                          <td style={{ color: 'var(--text-muted)' }}>
+                            {sub.runtimeMs} ms
+                          </td>
+                          <td>
+                            <Link
+                              to={`/frontend-js/${sub.questionId.toLowerCase()}`}
+                              className="btn btn-sm btn-primary"
+                              style={{ padding: '4px 10px', fontSize: '12px' }}
+                            >
+                              Open Studio →
+                            </Link>
+                          </td>
+                        </tr>
+                      )
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </>
+          )
         )}
       </section>
 

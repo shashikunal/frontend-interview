@@ -4,7 +4,7 @@ import { MACHINE_CODING_CATALOG } from '../components/machinecoding/data/machine
 
 export type TierName = 'diamond' | 'platinum' | 'gold' | 'silver' | 'bronze'
 export type LeaderboardTimeframe = 'today' | '7days' | '30days' | 'all'
-export type LeaderboardCategory = 'all' | 'machine-coding' | 'algorithms' | 'system-design' | 'javascript'
+export type LeaderboardCategory = 'all' | 'machine-coding' | 'algorithms' | 'system-design' | 'javascript' | 'core-programming' | 'frontend-js'
 
 export interface LeaderboardBadge {
   id: string
@@ -98,6 +98,8 @@ export interface CandidateMCSubmission {
 }
 
 export const LOCAL_MC_SUBMISSIONS_KEY = 'mc_candidate_submissions_real_v2'
+export const LOCAL_CP_SUBMISSIONS_KEY = 'cp_candidate_submissions_v1'
+export const LOCAL_FJS_SUBMISSIONS_KEY = 'fjp_submissions_v1'
 
 // Lookup title from question ID
 export function resolveQuestionTitle(questionId: string): string {
@@ -115,6 +117,14 @@ export function resolveQuestionTitle(questionId: string): string {
   if (questionId.startsWith('DSA')) {
     const num = questionId.replace(/^DSA0*/, '')
     return `DSA #${num || questionId}`
+  }
+
+  if (questionId.toUpperCase().startsWith('JS-P') || questionId.toUpperCase().startsWith('JSP')) {
+    return `Core Prog ${questionId.toUpperCase()}`
+  }
+
+  if (questionId.toUpperCase().startsWith('FJP-') || questionId.toUpperCase().startsWith('FJP')) {
+    return `Frontend JS ${questionId.toUpperCase()}`
   }
 
   if (questionId.startsWith('1000')) {
@@ -329,7 +339,7 @@ export const leaderboardService = {
 
   /**
    * Get real globally ranked leaderboard entries directly from Supabase
-   * Aggregates real candidate submissions, accuracy, and machine coding challenges.
+   * Aggregates real candidate submissions, accuracy, and machine coding.
    */
   getGlobalLeaderboard: async (
     timeframe: LeaderboardTimeframe = 'all',
@@ -339,33 +349,42 @@ export const leaderboardService = {
     try {
       const client = await ensureReaderAuth()
 
-      // 1. Fetch real submissions from Supabase
-      const { data: rawSubmissions, error: subError } = await client
-        .from('submissions')
-        .select('id, user_id, question_id, score, status, language, code, execution_time, created_at')
-        .order('created_at', { ascending: false })
-        .limit(2000)
+      // 1. Fetch real submissions & profiles across all studios from Supabase in parallel
+      const [subsRes, cpRes, fjsRes, dsaRes, profRes] = await Promise.allSettled([
+        client
+          .from('submissions')
+          .select('id, user_id, question_id, score, status, language, code, execution_time, created_at')
+          .order('created_at', { ascending: false })
+          .limit(2000),
+        client
+          .from('core_programming_submissions')
+          .select('id, user_id, question_id, score, status, execution_time_ms, created_at')
+          .order('created_at', { ascending: false })
+          .limit(2000),
+        client
+          .from('frontend_js_submissions')
+          .select('id, user_id, question_id, score, status, execution_time_ms, created_at')
+          .order('created_at', { ascending: false })
+          .limit(2000),
+        client
+          .from('dsa_submissions')
+          .select('id, user_id, question_id, score, status, language, runtime_ms, created_at')
+          .order('created_at', { ascending: false })
+          .limit(2000),
+        client
+          .from('profiles')
+          .select('id, full_name, email, target_company, experience_level, avatar_url, role')
+          .limit(1000),
+      ])
 
-      if (subError) throw subError
-
-      // 2. Fetch real profiles from Supabase
-      const { data: rawProfiles } = await client
-        .from('profiles')
-        .select('id, full_name, email, target_company, experience_level, avatar_url, role')
-        .limit(500)
+      const rawSubmissions = subsRes.status === 'fulfilled' && !subsRes.value.error ? subsRes.value.data || [] : []
+      const rawCPRemote = cpRes.status === 'fulfilled' && !cpRes.value.error ? cpRes.value.data || [] : []
+      const rawFJSRemote = fjsRes.status === 'fulfilled' && !fjsRes.value.error ? fjsRes.value.data || [] : []
+      const rawDSARemote = dsaRes.status === 'fulfilled' && !dsaRes.value.error ? dsaRes.value.data || [] : []
+      const rawProfiles = profRes.status === 'fulfilled' && !profRes.value.error ? profRes.value.data || [] : []
 
       const profileMap = new Map((rawProfiles || []).map(p => [p.id, p]))
 
-      // 3. Read locally saved submissions to merge any fresh client-side machine coding submissions
-      let localSubmissions: StoredCandidateSubmission[] = []
-      try {
-        if (typeof localStorage !== 'undefined') {
-          const raw = localStorage.getItem(LOCAL_MC_SUBMISSIONS_KEY)
-          if (raw) localSubmissions = JSON.parse(raw)
-        }
-      } catch (_) {}
-
-      // Combine Supabase submissions + local submissions
       type UnifiedSub = {
         id: string
         userId: string
@@ -381,10 +400,17 @@ export const leaderboardService = {
         createdAt: string
       }
 
-      const allSubs: UnifiedSub[] = (rawSubmissions || []).map(s => {
+      const allSubs: UnifiedSub[] = []
+      const seenSubIds = new Set<string>()
+
+      // Add Supabase Machine Coding & standard submissions
+      for (const s of rawSubmissions) {
+        const id = String(s.id)
+        if (seenSubIds.has(id)) continue
+        seenSubIds.add(id)
         const prof = profileMap.get(s.user_id)
-        return {
-          id: String(s.id),
+        allSubs.push({
+          id,
           userId: String(s.user_id),
           userName: prof?.full_name || undefined,
           userEmail: prof?.email || undefined,
@@ -392,55 +418,214 @@ export const leaderboardService = {
           level: prof?.experience_level || undefined,
           questionId: String(s.question_id),
           score: Number(s.score || 0),
-          status: String(s.status || 'accepted'),
+          status: String(s.status || (Number(s.score || 0) >= 70 ? 'accepted' : 'wrong_answer')),
           language: String(s.language || 'react'),
           executionTime: Number(s.execution_time || 0),
           createdAt: String(s.created_at),
-        }
-      })
-
-      // Add local submissions if not already present in Supabase
-      for (const loc of localSubmissions) {
-        if (!allSubs.some(s => s.id === loc.id || (s.userId === loc.userId && s.questionId === loc.questionId && Math.abs(new Date(s.createdAt).getTime() - new Date(loc.createdAt).getTime()) < 5000))) {
-          allSubs.unshift({
-            id: loc.id,
-            userId: loc.userId,
-            userName: loc.userName,
-            userEmail: loc.userEmail,
-            company: 'Google & Meta Track',
-            level: 'Candidate',
-            questionId: loc.questionId,
-            score: loc.score,
-            status: loc.status,
-            language: loc.language,
-            executionTime: loc.executionTime,
-            createdAt: loc.createdAt,
-          })
-        }
+        })
       }
 
-      // 4. Apply Timeframe filter
+      // Add Supabase Core Programming submissions
+      for (const cp of rawCPRemote) {
+        const id = String(cp.id)
+        if (seenSubIds.has(id)) continue
+        seenSubIds.add(id)
+        const prof = profileMap.get(cp.user_id)
+        const score = Number(cp.score || (cp.status === 'accepted' || cp.status === 'Accepted' ? 100 : 0))
+        allSubs.push({
+          id,
+          userId: String(cp.user_id),
+          userName: prof?.full_name || undefined,
+          userEmail: prof?.email || undefined,
+          company: prof?.target_company || undefined,
+          level: prof?.experience_level || undefined,
+          questionId: String(cp.question_id),
+          score,
+          status: cp.status === 'accepted' || cp.status === 'Accepted' || score >= 70 ? 'accepted' : 'wrong_answer',
+          language: 'javascript',
+          executionTime: Number(cp.execution_time_ms || 0) / 1000,
+          createdAt: String(cp.created_at),
+        })
+      }
+
+      // Add Supabase Frontend JS submissions
+      for (const fjs of rawFJSRemote) {
+        const id = String(fjs.id)
+        if (seenSubIds.has(id)) continue
+        seenSubIds.add(id)
+        const prof = profileMap.get(fjs.user_id)
+        const score = Number(fjs.score || (fjs.status === 'accepted' || fjs.status === 'Accepted' ? 100 : 0))
+        allSubs.push({
+          id,
+          userId: String(fjs.user_id),
+          userName: prof?.full_name || undefined,
+          userEmail: prof?.email || undefined,
+          company: prof?.target_company || undefined,
+          level: prof?.experience_level || undefined,
+          questionId: String(fjs.question_id),
+          score,
+          status: fjs.status === 'accepted' || fjs.status === 'Accepted' || score >= 70 ? 'accepted' : 'wrong_answer',
+          language: 'javascript',
+          executionTime: Number(fjs.execution_time_ms || 0) / 1000,
+          createdAt: String(fjs.created_at),
+        })
+      }
+
+      // Add Supabase DSA submissions
+      for (const dsa of rawDSARemote) {
+        const id = String(dsa.id)
+        if (seenSubIds.has(id)) continue
+        seenSubIds.add(id)
+        const prof = profileMap.get(dsa.user_id)
+        const score = Number(dsa.score || (dsa.status === 'accepted' || dsa.status === 'Accepted' ? 100 : 0))
+        allSubs.push({
+          id,
+          userId: String(dsa.user_id),
+          userName: prof?.full_name || undefined,
+          userEmail: prof?.email || undefined,
+          company: prof?.target_company || undefined,
+          level: prof?.experience_level || undefined,
+          questionId: String(dsa.question_id),
+          score,
+          status: dsa.status === 'accepted' || dsa.status === 'Accepted' || score >= 70 ? 'accepted' : 'wrong_answer',
+          language: String(dsa.language || 'javascript'),
+          executionTime: Number(dsa.runtime_ms || 0) / 1000,
+          createdAt: String(dsa.created_at),
+        })
+      }
+
+      // Merge verified client-side local submissions for offline / current session practice
+      try {
+        if (typeof localStorage !== 'undefined') {
+          // Local MC
+          const rawMC = localStorage.getItem(LOCAL_MC_SUBMISSIONS_KEY)
+          if (rawMC) {
+            const locList: StoredCandidateSubmission[] = JSON.parse(rawMC)
+            for (const loc of locList) {
+              if (!seenSubIds.has(loc.id)) {
+                seenSubIds.add(loc.id)
+                allSubs.push({
+                  id: loc.id,
+                  userId: loc.userId || 'anon',
+                  userName: loc.userName,
+                  userEmail: loc.userEmail,
+                  company: 'Engineering Track',
+                  level: 'Candidate',
+                  questionId: loc.questionId,
+                  score: loc.score,
+                  status: loc.status === 'accepted' || loc.score >= 70 ? 'accepted' : 'wrong_answer',
+                  language: loc.language || 'react',
+                  executionTime: loc.executionTime || 0,
+                  createdAt: loc.createdAt,
+                })
+              }
+            }
+          }
+
+          // Local CP
+          const rawCP = localStorage.getItem(LOCAL_CP_SUBMISSIONS_KEY)
+          if (rawCP) {
+            const cpList: Array<{
+              id: string; candidateId?: string; questionId: string;
+              score: number; status: string; runtimeMs?: number; timestamp: string;
+            }> = JSON.parse(rawCP)
+            for (const cp of cpList) {
+              if (!seenSubIds.has(cp.id)) {
+                seenSubIds.add(cp.id)
+                allSubs.push({
+                  id: cp.id,
+                  userId: cp.candidateId || 'anon',
+                  questionId: cp.questionId,
+                  score: cp.score,
+                  status: cp.status === 'Accepted' || cp.score >= 70 ? 'accepted' : 'wrong_answer',
+                  language: 'javascript',
+                  executionTime: (cp.runtimeMs || 0) / 1000,
+                  createdAt: cp.timestamp,
+                })
+              }
+            }
+          }
+
+          // Local Frontend JS
+          const rawFJS = localStorage.getItem(LOCAL_FJS_SUBMISSIONS_KEY)
+          if (rawFJS) {
+            const fjsList: Array<{
+              id: string; candidateId?: string; questionId: string;
+              score: number; status: string; runtimeMs?: number; timestamp: string;
+            }> = JSON.parse(rawFJS)
+            for (const fjs of fjsList) {
+              if (!seenSubIds.has(fjs.id)) {
+                seenSubIds.add(fjs.id)
+                allSubs.push({
+                  id: fjs.id,
+                  userId: fjs.candidateId || 'anon',
+                  questionId: fjs.questionId,
+                  score: fjs.score,
+                  status: fjs.status === 'Accepted' || fjs.score >= 70 ? 'accepted' : 'wrong_answer',
+                  language: 'javascript',
+                  executionTime: (fjs.runtimeMs || 0) / 1000,
+                  createdAt: fjs.timestamp,
+                })
+              }
+            }
+          }
+
+          // Local DSA
+          const rawDSA = localStorage.getItem('dsa_submissions_v1')
+          if (rawDSA) {
+            const dsaList: Array<{
+              id: string; userId?: string; questionId: string;
+              score?: number; status: string; runtimeMs?: number; timestamp: string;
+            }> = JSON.parse(rawDSA)
+            for (const dsa of dsaList) {
+              if (!seenSubIds.has(dsa.id)) {
+                seenSubIds.add(dsa.id)
+                allSubs.push({
+                  id: dsa.id,
+                  userId: dsa.userId || 'anon',
+                  questionId: dsa.questionId,
+                  score: dsa.score ?? (dsa.status === 'Accepted' ? 100 : 0),
+                  status: dsa.status === 'Accepted' ? 'accepted' : 'wrong_answer',
+                  language: 'javascript',
+                  executionTime: (dsa.runtimeMs || 0) / 1000,
+                  createdAt: dsa.timestamp,
+                })
+              }
+            }
+          }
+        }
+      } catch (_) {}
+
+      // Apply Timeframe filter
       const nowMs = Date.now()
       const filteredByTime = allSubs.filter(s => {
         if (timeframe === 'all') return true
         const subMs = new Date(s.createdAt).getTime()
+        if (Number.isNaN(subMs)) return true
         if (timeframe === 'today') return nowMs - subMs <= 24 * 60 * 60 * 1000
         if (timeframe === '7days') return nowMs - subMs <= 7 * 24 * 60 * 60 * 1000
         if (timeframe === '30days') return nowMs - subMs <= 30 * 24 * 60 * 60 * 1000
         return true
       })
 
-      // 5. Apply Category filter
-      const isMachineCodingId = (qid: string) => qid.startsWith('Q') || qid.startsWith('mc') || qid.toLowerCase().includes('counter') || qid.toLowerCase().includes('toggle')
+      // Apply Category filter
+      const isCPId = (qid: string) => qid.startsWith('JS-P') || qid.startsWith('JS-p') || qid.startsWith('jsp') || qid.startsWith('JSP')
+      const isFJSId = (qid: string) => qid.startsWith('FJP-') || qid.startsWith('fjp-') || qid.startsWith('fjp') || qid.startsWith('FJP')
+      const isDSAId = (qid: string) => qid.startsWith('DSA') || qid.startsWith('dsa') || qid.startsWith('100')
+      const isMCId = (qid: string) => qid.startsWith('Q') || qid.startsWith('mc') || qid.toLowerCase().includes('counter') || qid.toLowerCase().includes('toggle')
+
       const filteredSubs = filteredByTime.filter(s => {
         if (category === 'all') return true
-        if (category === 'machine-coding') return isMachineCodingId(s.questionId) || s.language === 'react'
-        if (category === 'algorithms') return s.questionId.startsWith('DSA') || s.questionId.startsWith('100') || s.language === 'javascript' || s.language === 'typescript'
-        if (category === 'javascript') return s.language === 'javascript' || s.language === 'typescript'
+        if (category === 'machine-coding') return isMCId(s.questionId) || s.language === 'react'
+        if (category === 'algorithms') return isDSAId(s.questionId)
+        if (category === 'javascript') return isCPId(s.questionId) || isFJSId(s.questionId) || s.language === 'javascript' || s.language === 'typescript'
+        if (category === 'core-programming') return isCPId(s.questionId)
+        if (category === 'frontend-js') return isFJSId(s.questionId)
+        if (category === 'system-design') return s.questionId.toLowerCase().includes('design') || s.questionId.toLowerCase().includes('arch')
         return true
       })
 
-      // 6. Aggregate by candidate (userId)
+      // Aggregate by candidate (userId)
       type CandidateAgg = {
         userId: string
         name: string
@@ -464,18 +649,12 @@ export const leaderboardService = {
         if (!uid) return
 
         if (!candidateMap.has(uid)) {
-          const prof = profileMap.get(uid)
-          const name = s.userName || prof?.full_name || (prof?.email ? prof.email.split('@')[0] : `Candidate ${uid.slice(0, 5)}`)
-          const email = s.userEmail || prof?.email || ''
-          const company = s.company || prof?.target_company || 'FAANG Candidate'
-          const level = s.level || prof?.experience_level || 'L5 Senior Track'
-
           candidateMap.set(uid, {
             userId: uid,
-            name,
-            email,
-            company,
-            level,
+            name: s.userName || `Candidate ${uid.slice(0, 5)}`,
+            email: s.userEmail || '',
+            company: s.company || 'FAANG Candidate',
+            level: s.level || 'L5 Senior Track',
             totalScoreSum: 0,
             scoreCount: 0,
             totalSubmissions: 0,
@@ -487,24 +666,23 @@ export const leaderboardService = {
           })
         }
 
-        const cand = candidateMap.get(uid)!
-        cand.totalSubmissions++
-        cand.totalScoreSum += s.score
-        cand.scoreCount++
+        const agg = candidateMap.get(uid)!
+        agg.totalSubmissions++
+        agg.totalScoreSum += s.score
+        agg.scoreCount++
 
         if (s.status === 'accepted' || s.score >= 70) {
-          cand.acceptedCount++
-          cand.solvedQuestions.add(s.questionId)
+          agg.acceptedCount++
+          agg.solvedQuestions.add(s.questionId)
         }
 
         if (s.executionTime > 0) {
-          cand.totalTimeSec += s.executionTime
-          cand.timeCount++
+          agg.totalTimeSec += s.executionTime
+          agg.timeCount++
         }
 
-        // Add to recent questions (max 3 per candidate)
-        if (cand.recentQuestions.length < 3 && !cand.recentQuestions.some(r => r.id === s.questionId)) {
-          cand.recentQuestions.push({
+        if (agg.recentQuestions.length < 3 && !agg.recentQuestions.some(q => q.id === s.questionId)) {
+          agg.recentQuestions.push({
             id: s.questionId,
             title: resolveQuestionTitle(s.questionId),
             score: s.score,
@@ -514,28 +692,28 @@ export const leaderboardService = {
         }
       })
 
-      // 7. Calculate scores and rankings
+      // Calculate real candidate scores and rankings
       const ranked: LeaderboardEntry[] = Array.from(candidateMap.values()).map(cand => {
         const avgScore = cand.scoreCount > 0 ? Math.round(cand.totalScoreSum / cand.scoreCount) : 0
         const accuracyRate = cand.totalSubmissions > 0 ? Math.round((cand.acceptedCount / cand.totalSubmissions) * 100) : 0
-        const avgTimeMinutes = cand.timeCount > 0 ? Math.max(1, Math.round(cand.totalTimeSec / cand.timeCount / 60)) : 12
+        const avgTimeMinutes = cand.timeCount > 0 ? Math.max(1, Math.round(cand.totalTimeSec / cand.timeCount / 60)) : 10
         const questionsCompleted = cand.solvedQuestions.size
 
-        // FAANG composite score weighted by solved count, accuracy, and average score
+        // Composite score strictly from solved count, accuracy, and score
         const totalScore = Math.min(
           100,
           Math.max(
-            15,
+            0,
             Math.round(
-              avgScore * 0.55 +
-              Math.min(questionsCompleted * 4, 30) +
+              avgScore * 0.5 +
+              Math.min(questionsCompleted * 5, 35) +
               (accuracyRate * 0.15)
             )
           )
         )
 
-        // Estimated streak from consistent activity
-        const streak = Math.min(28, Math.max(1, Math.round(cand.acceptedCount * 1.5)))
+        // Real streak approximation from accepted submissions
+        const streak = Math.min(30, Math.max(1, Math.round(cand.acceptedCount * 1.2)))
 
         return {
           rank: 0,
@@ -556,30 +734,30 @@ export const leaderboardService = {
             avgTimeMinutes,
           }),
           recentQuestions: cand.recentQuestions,
-          rankChange: Math.floor(Math.random() * 3),
+          rankChange: 0,
           tier: getTier(totalScore),
           company: cand.company,
           level: cand.level,
         }
       })
-      .sort((a, b) => {
-        // Sort by totalScore desc, tiebreaker: questionsCompleted, accuracyRate
+
+      // Sort strictly by real performance
+      ranked.sort((a, b) => {
         if (b.totalScore !== a.totalScore) return b.totalScore - a.totalScore
         if (b.questionsCompleted !== a.questionsCompleted) return b.questionsCompleted - a.questionsCompleted
         return b.accuracyRate - a.accuracyRate
       })
-      .slice(0, limit)
-      .map((entry, idx) => ({ ...entry, rank: idx + 1 }))
 
-      if (ranked.length > 0) {
-        return ranked
-      }
+      const finalRanked = ranked.slice(0, limit).map((e, idx) => ({
+        ...e,
+        rank: idx + 1,
+      }))
+
+      return finalRanked
     } catch (err) {
       console.warn('[LeaderboardService] Error querying Supabase data:', err)
+      return []
     }
-
-    // If no submissions exist matching the category, return empty list (not hardcoded fake data)
-    return []
   },
 
   /**

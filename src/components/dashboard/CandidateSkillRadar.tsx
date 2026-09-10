@@ -19,7 +19,7 @@ export interface CompetencyPillar {
   icon: string
   score: number // 0 to 10
   benchmark: number // 0 to 10
-  level: 'Novice' | 'Developing' | 'Proficient' | 'Advanced' | 'Mastery'
+  level: 'Novice' | 'Developing' | 'Proficient' | 'Advanced' | 'Mastery' | 'Not Evaluated'
   description: string
   recommendation: string
   accentColor: string
@@ -135,18 +135,22 @@ export const CandidateSkillRadar: React.FC<CandidateSkillRadarProps> = ({
       const normalizedScore10 = (sumScore / count) / 10
       avgPerf = Math.min(10, Math.max(5, (normalizedScore10 * 0.6 + avgArch * 0.4)))
       avgA11y = Math.min(10, Math.max(5, (avgClean * 0.5 + avgEdge * 0.5 + 0.3)))
-    } else {
-      // If no evaluator reviews yet, derive from overall submission pass rates
-      const avgSubScore = activeSubmissions.length > 0
-        ? activeSubmissions.reduce((acc, s) => acc + (s.score || 75), 0) / activeSubmissions.length
-        : 82
-
+    } else if (activeSubmissions.length > 0) {
+      // Derive strictly from candidate's real submission pass rates and scores
+      const avgSubScore = activeSubmissions.reduce((acc, s) => acc + (s.score || 0), 0) / activeSubmissions.length
       const base10 = avgSubScore / 10
-      avgClean = Math.min(10, Math.max(6, base10 - 0.2))
-      avgArch = Math.min(10, Math.max(6, base10 + 0.4))
-      avgEdge = Math.min(10, Math.max(5.5, base10 - 0.6))
-      avgPerf = Math.min(10, Math.max(6, base10 + 0.1))
-      avgA11y = Math.min(10, Math.max(6, base10 - 0.3))
+      avgClean = Math.min(10, Math.max(0, base10 - 0.2))
+      avgArch = Math.min(10, Math.max(0, base10 + 0.4))
+      avgEdge = Math.min(10, Math.max(0, base10 - 0.6))
+      avgPerf = Math.min(10, Math.max(0, base10 + 0.1))
+      avgA11y = Math.min(10, Math.max(0, base10 - 0.3))
+    } else {
+      // Zero submissions / reviews
+      avgClean = 0
+      avgArch = 0
+      avgEdge = 0
+      avgPerf = 0
+      avgA11y = 0
     }
 
     // Level helper
@@ -155,7 +159,8 @@ export const CandidateSkillRadar: React.FC<CandidateSkillRadarProps> = ({
       if (score >= 8.0) return 'Advanced'
       if (score >= 7.0) return 'Proficient'
       if (score >= 5.5) return 'Developing'
-      return 'Novice'
+      if (score > 0) return 'Novice'
+      return 'Not Evaluated'
     }
 
     return [
@@ -251,6 +256,34 @@ export const CandidateSkillRadar: React.FC<CandidateSkillRadarProps> = ({
       fullMark: 10,
     }))
   }, [competencies])
+
+  if (submissions.length === 0 && Object.keys(reviews).length === 0) {
+    return (
+      <div className={`candidate-skill-radar-container ${compact ? 'csr-compact' : ''}`}>
+        <div className="csr-header">
+          <div className="csr-header-left">
+            <div className="csr-badge-pill">
+              <span className="csr-pulse-dot" />
+              <span>Multi-Pillar Competency Radar</span>
+            </div>
+            <h3 className="csr-title">
+              <span>🎯</span> {candidateName}&apos;s Frontend Competency Profile
+            </h3>
+            <p className="csr-subtitle">
+              Evaluated against the FAANG Senior Frontend Engineering standard across 5 core competencies.
+            </p>
+          </div>
+        </div>
+        <div style={{ textAlign: 'center', padding: '40px 24px', background: 'rgba(255,255,255,0.02)', borderRadius: 12, border: '1px dashed var(--border)', margin: '16px 0' }}>
+          <span style={{ fontSize: '2.5rem', display: 'block', marginBottom: 12 }}>📊</span>
+          <h4 style={{ margin: '0 0 8px', fontSize: '1.1rem', color: 'var(--text-primary)' }}>No Evaluated Submissions Yet</h4>
+          <p style={{ margin: '0 0 16px', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+            Submit challenges in Machine Coding, Core Programming, Frontend JS, or DSA to unlock your live multi-pillar competency radar.
+          </p>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className={`candidate-skill-radar-container ${compact ? 'csr-compact' : ''}`}>

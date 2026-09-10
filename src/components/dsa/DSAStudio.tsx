@@ -79,8 +79,19 @@ function DSAStudioWorkspace({ questionId }: WorkspaceProps) {
   const [isListDrawerOpen, setIsListDrawerOpen] = useState<boolean>(false)
   const [leftPanelWidth, setLeftPanelWidth] = useState<number>(460)
   const [bottomPanelHeight, setBottomPanelHeight] = useState<number>(260)
+  const [fullscreenPanel, setFullscreenPanel] = useState<'none' | 'specs' | 'editor' | 'test'>('none')
   const isDraggingLeft = useRef<boolean>(false)
   const isDraggingBottom = useRef<boolean>(false)
+
+  // Auto-resize Monaco editor when fullscreenPanel toggles
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (editorRef.current && typeof editorRef.current.layout === 'function') {
+        editorRef.current.layout()
+      }
+    }, 50)
+    return () => clearTimeout(timer)
+  }, [fullscreenPanel])
 
   // Timer state
   const [timerSeconds, setTimerSeconds] = useState<number>(0)
@@ -332,11 +343,15 @@ function DSAStudioWorkspace({ questionId }: WorkspaceProps) {
       if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
         e.preventDefault()
         handleRunCode()
+      } else if (e.key === 'Escape') {
+        if (fullscreenPanel !== 'none') {
+          setFullscreenPanel('none')
+        }
       }
     }
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [code, language, question, useCustomInput, customInput])
+  }, [code, language, question, useCustomInput, customInput, fullscreenPanel])
 
   // Format timer
   const formatTimer = (totalSeconds: number) => {
@@ -466,7 +481,15 @@ function DSAStudioWorkspace({ questionId }: WorkspaceProps) {
       {/* ================= WORKSPACE PANELS ================= */}
       <div className="dsa-workspace">
         {/* LEFT PANEL: Problem Statement, Editorial, Hints, Submissions */}
-        <div className="dsa-left-panel" style={{ width: leftPanelWidth }}>
+        <div
+          className="dsa-left-panel"
+          style={{
+            width: fullscreenPanel === 'specs' ? '100%' : leftPanelWidth,
+            display: (fullscreenPanel === 'editor' || fullscreenPanel === 'test') ? 'none' : 'flex',
+            flex: fullscreenPanel === 'specs' ? 1 : undefined,
+            borderRight: fullscreenPanel === 'specs' ? 'none' : undefined,
+          }}
+        >
           <DSAQuestionDetail
             question={question}
             submissions={submissions}
@@ -476,16 +499,27 @@ function DSAStudioWorkspace({ questionId }: WorkspaceProps) {
                 setLanguage(sub.language)
               }
             }}
+            fullscreenPanel={fullscreenPanel}
+            onToggleFullscreen={() => setFullscreenPanel(prev => prev === 'specs' ? 'none' : 'specs')}
           />
         </div>
 
         {/* RESIZABLE SPLITTER (Vertical) */}
-        <div className="dsa-splitter" onMouseDown={startLeftDrag} />
+        {fullscreenPanel === 'none' && (
+          <div className="dsa-splitter" onMouseDown={startLeftDrag} />
+        )}
 
         {/* RIGHT PANEL: Monaco Editor + Test Execution Panel */}
-        <div className="dsa-right-panel">
-          {/* Editor Header Bar (Theme & Font Size) */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#181818', padding: '4px 12px', borderBottom: '1px solid var(--border)', fontSize: '11px', color: 'var(--text-muted)' }}>
+        <div
+          className="dsa-right-panel"
+          style={{
+            display: fullscreenPanel === 'specs' ? 'none' : 'flex',
+            flex: 1,
+            width: fullscreenPanel !== 'none' ? '100%' : undefined,
+          }}
+        >
+          {/* Editor Header Bar (Theme, Font Size, Fullscreen) */}
+          <div style={{ display: fullscreenPanel === 'test' ? 'none' : 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#181818', padding: '4px 12px', borderBottom: '1px solid var(--border)', fontSize: '11px', color: 'var(--text-muted)' }}>
             <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
               <span>Code Editor</span>
               <span style={{ color: 'var(--border-strong)' }}>|</span>
@@ -497,31 +531,64 @@ function DSAStudioWorkspace({ questionId }: WorkspaceProps) {
                 {editorTheme === 'vs-dark' ? '🌙 Dark' : '☀️ Light'}
               </button>
             </div>
-            <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
-              <span>Font:</span>
-              {[12, 14, 16].map(sz => (
-                <button
-                  key={sz}
-                  type="button"
-                  onClick={() => setFontSize(sz)}
-                  style={{
-                    background: fontSize === sz ? 'var(--surface-hover)' : 'transparent',
-                    border: '1px solid ' + (fontSize === sz ? 'var(--border-strong)' : 'transparent'),
-                    borderRadius: '4px',
-                    color: fontSize === sz ? 'var(--text-primary)' : 'var(--text-muted)',
-                    cursor: 'pointer',
-                    fontSize: '11px',
-                    padding: '1px 5px',
-                  }}
-                >
-                  {sz}px
-                </button>
-              ))}
+            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+              <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                <span>Font:</span>
+                {[12, 14, 16].map(sz => (
+                  <button
+                    key={sz}
+                    type="button"
+                    onClick={() => setFontSize(sz)}
+                    style={{
+                      background: fontSize === sz ? 'var(--surface-hover)' : 'transparent',
+                      border: '1px solid ' + (fontSize === sz ? 'var(--border-strong)' : 'transparent'),
+                      borderRadius: '4px',
+                      color: fontSize === sz ? 'var(--text-primary)' : 'var(--text-muted)',
+                      cursor: 'pointer',
+                      fontSize: '11px',
+                      padding: '1px 5px',
+                    }}
+                  >
+                    {sz}px
+                  </button>
+                ))}
+              </div>
+
+              <button
+                type="button"
+                className={`dsa-fullscreen-btn ${fullscreenPanel === 'editor' ? 'active' : ''}`}
+                onClick={() => setFullscreenPanel(prev => prev === 'editor' ? 'none' : 'editor')}
+                title={fullscreenPanel === 'editor' ? 'Restore Editor Size (Esc)' : 'Maximize Code Editor (Fullscreen)'}
+                aria-label={fullscreenPanel === 'editor' ? 'Restore Editor Size' : 'Maximize Code Editor'}
+              >
+                {fullscreenPanel === 'editor' ? (
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="4 14 10 14 10 20" />
+                    <polyline points="20 10 14 10 14 4" />
+                    <line x1="14" y1="10" x2="21" y2="3" />
+                    <line x1="3" y1="21" x2="10" y2="14" />
+                  </svg>
+                ) : (
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="15 3 21 3 21 9" />
+                    <polyline points="9 21 3 21 3 15" />
+                    <line x1="21" y1="3" x2="14" y2="10" />
+                    <line x1="3" y1="21" x2="10" y2="14" />
+                  </svg>
+                )}
+              </button>
             </div>
           </div>
 
           {/* Editor Area */}
-          <div className="dsa-editor-wrapper">
+          <div
+            className="dsa-editor-wrapper"
+            style={{
+              display: fullscreenPanel === 'test' ? 'none' : 'flex',
+              flex: 1,
+              height: fullscreenPanel === 'editor' ? '100%' : undefined,
+            }}
+          >
             <Editor
               height="100%"
               language={language === 'typescript' ? 'typescript' : 'javascript'}
@@ -549,10 +616,20 @@ function DSAStudioWorkspace({ questionId }: WorkspaceProps) {
           </div>
 
           {/* RESIZABLE SPLITTER (Horizontal) */}
-          <div className="dsa-horizontal-splitter" onMouseDown={startBottomDrag} />
+          {fullscreenPanel === 'none' && (
+            <div className="dsa-horizontal-splitter" onMouseDown={startBottomDrag} />
+          )}
 
           {/* BOTTOM PANEL: Test Cases and Test Results */}
-          <div className="dsa-bottom-panel" style={{ height: bottomPanelHeight }}>
+          <div
+            className="dsa-bottom-panel"
+            style={{
+              display: fullscreenPanel === 'editor' ? 'none' : 'flex',
+              height: fullscreenPanel === 'test' ? '100%' : bottomPanelHeight,
+              flex: fullscreenPanel === 'test' ? 1 : undefined,
+              borderTop: fullscreenPanel === 'test' ? 'none' : undefined,
+            }}
+          >
             <DSATestPanel
               testCases={question.testCases}
               runResult={runResult}
@@ -563,6 +640,8 @@ function DSAStudioWorkspace({ questionId }: WorkspaceProps) {
               onToggleCustomInput={setUseCustomInput}
               activeTab={activeTestTab}
               onTabChange={setActiveTestTab}
+              fullscreenPanel={fullscreenPanel}
+              onToggleFullscreen={() => setFullscreenPanel(prev => prev === 'test' ? 'none' : 'test')}
             />
           </div>
         </div>

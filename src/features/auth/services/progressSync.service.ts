@@ -92,6 +92,9 @@ export const progressSyncService = {
         { data: sbAttempts },
         { data: userProgressRows },
         { data: userQuestionProgressRows },
+        { data: sbCPSubs },
+        { data: sbFJSSubs },
+        { data: sbDSASubs },
       ] = await Promise.all([
         supabase.from('profiles').select('*').order('created_at', { ascending: false }),
         profileService.getAllProfiles().catch(() => []),
@@ -99,6 +102,9 @@ export const progressSyncService = {
         supabase.from('question_attempts').select('user_id, question_id, status, time_spent, created_at'),
         supabase.from('user_progress').select('*'),
         supabase.from('user_question_progress').select('user_id, question_id, status, best_score'),
+        supabase.from('core_programming_submissions').select('user_id, question_id, status, score, created_at').then(res => res, () => ({ data: [] })),
+        supabase.from('frontend_js_submissions').select('user_id, question_id, status, score, created_at').then(res => res, () => ({ data: [] })),
+        supabase.from('dsa_submissions').select('user_id, question_id, status, score, created_at').then(res => res, () => ({ data: [] })),
       ])
 
       // 3. Read local storage tracking submissions and attempts (offline-first real data)
@@ -107,7 +113,24 @@ export const progressSyncService = {
       try {
         if (typeof localStorage !== 'undefined') {
           const rawSubs = localStorage.getItem('faang_tracking_submissions_v1')
-          if (rawSubs) localSubs = JSON.parse(rawSubs)
+          if (rawSubs) localSubs.push(...JSON.parse(rawSubs))
+          const rawMC = localStorage.getItem('mc_candidate_submissions_real_v2')
+          if (rawMC) localSubs.push(...JSON.parse(rawMC))
+          const rawCP = localStorage.getItem('cp_candidate_submissions_v1')
+          if (rawCP) {
+            const cpList = JSON.parse(rawCP)
+            cpList.forEach((c: any) => localSubs.push({ userId: c.candidateId || c.userId, questionId: c.questionId, status: c.status, score: c.score, createdAt: c.timestamp }))
+          }
+          const rawFJS = localStorage.getItem('fjp_submissions_v1')
+          if (rawFJS) {
+            const fjsList = JSON.parse(rawFJS)
+            fjsList.forEach((f: any) => localSubs.push({ userId: f.candidateId || f.userId, questionId: f.questionId, status: f.status, score: f.score, createdAt: f.timestamp }))
+          }
+          const rawDSA = localStorage.getItem('dsa_submissions_v1')
+          if (rawDSA) {
+            const dsaList = JSON.parse(rawDSA)
+            dsaList.forEach((d: any) => localSubs.push({ userId: d.userId, questionId: d.questionId, status: d.status, score: d.score, createdAt: d.timestamp }))
+          }
           const rawAttempts = localStorage.getItem('faang_tracking_attempts_v1')
           if (rawAttempts) localAttempts = JSON.parse(rawAttempts)
         }
@@ -178,6 +201,29 @@ export const progressSyncService = {
             if (s.score !== undefined && s.score !== null) {
               candidateScores.push(Number(s.score))
             }
+          }
+        })
+
+        // 1b. Supabase Core Programming, Frontend JS & DSA submissions
+        ;(sbCPSubs || []).forEach((s: any) => {
+          if (isUserRecord(s.user_id)) {
+            const isSolved = s.status === 'accepted' || s.status === 'Accepted' || (s.score !== undefined && Number(s.score) >= 70)
+            if (isSolved && s.question_id) solvedQuestionIds.add(String(s.question_id))
+            if (s.score !== undefined && s.score !== null) candidateScores.push(Number(s.score))
+          }
+        })
+        ;(sbFJSSubs || []).forEach((s: any) => {
+          if (isUserRecord(s.user_id)) {
+            const isSolved = s.status === 'accepted' || s.status === 'Accepted' || (s.score !== undefined && Number(s.score) >= 70)
+            if (isSolved && s.question_id) solvedQuestionIds.add(String(s.question_id))
+            if (s.score !== undefined && s.score !== null) candidateScores.push(Number(s.score))
+          }
+        })
+        ;(sbDSASubs || []).forEach((s: any) => {
+          if (isUserRecord(s.user_id)) {
+            const isSolved = s.status === 'accepted' || s.status === 'Accepted' || (s.score !== undefined && Number(s.score) >= 70)
+            if (isSolved && s.question_id) solvedQuestionIds.add(String(s.question_id))
+            if (s.score !== undefined && s.score !== null) candidateScores.push(Number(s.score))
           }
         })
 

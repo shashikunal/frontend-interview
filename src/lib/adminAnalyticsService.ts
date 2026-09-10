@@ -1,7 +1,14 @@
 import { supabase } from './supabase/client'
 import type { SubmissionRecord, QuestionAttempt, ActivityAction } from './trackingService'
 import { resolveCandidateQuestionDetails } from './candidateCodeHelper'
-import { ensureReaderAuth, resolveQuestionTitle, LOCAL_MC_SUBMISSIONS_KEY, type StoredCandidateSubmission } from './leaderboardService'
+import {
+  ensureReaderAuth,
+  resolveQuestionTitle,
+  LOCAL_MC_SUBMISSIONS_KEY,
+  LOCAL_CP_SUBMISSIONS_KEY,
+  LOCAL_FJS_SUBMISSIONS_KEY,
+  type StoredCandidateSubmission,
+} from './leaderboardService'
 import { MACHINE_CODING_CATALOG } from '../components/machinecoding/data/machineCodingCatalog'
 import { DSA_QUESTIONS } from '../components/dsa/data/dsaQuestions'
 
@@ -31,6 +38,14 @@ export interface AdminOverviewStats {
   dsaTotalQuestions: number
   dsaSubmissionsCount: number
   dsaAcceptedCount: number
+  // Core Programming specific metrics (500 questions)
+  cpTotalQuestions?: number
+  cpSubmissionsCount?: number
+  cpAcceptedCount?: number
+  // Frontend JS specific metrics (1000 questions)
+  fjsTotalQuestions?: number
+  fjsSubmissionsCount?: number
+  fjsAcceptedCount?: number
 }
 
 export type OverviewStats = AdminOverviewStats
@@ -170,39 +185,98 @@ export const adminAnalyticsService = {
     let dsaSubmissionsCount = 0
     let dsaAcceptedCount = 0
 
+    // Core Programming Counters (500 Questions)
+    const cpTotalQuestions = 500
+    let cpSubmissionsCount = 0
+    let cpAcceptedCount = 0
+
+    // Frontend JS Counters (1000 Questions)
+    const fjsTotalQuestions = 1000
+    let fjsSubmissionsCount = 0
+    let fjsAcceptedCount = 0
+
     try {
       // 1. Users
       const { count: usersCount } = await supabase
         .from('profiles')
         .select('*', { count: 'exact', head: true })
-      totalUsers = usersCount || 1
+      totalUsers = usersCount ?? 0
 
-      // 2. Submissions
+      // 2. Submissions across all studios (Remote Supabase)
       let subQuery = supabase.from('submissions').select('id, question_id, status, execution_time, created_at, language')
+      let cpQuery = supabase.from('core_programming_submissions').select('id, question_id, status, execution_time_ms, created_at')
+      let fjsQuery = supabase.from('frontend_js_submissions').select('id, question_id, status, execution_time_ms, created_at')
+      let dsaQuery = supabase.from('dsa_submissions').select('id, question_id, status, runtime_ms, created_at, language')
+
       if (thresholdIso) {
         subQuery = subQuery.gte('created_at', thresholdIso)
+        cpQuery = cpQuery.gte('created_at', thresholdIso)
+        fjsQuery = fjsQuery.gte('created_at', thresholdIso)
+        dsaQuery = dsaQuery.gte('created_at', thresholdIso)
       }
-      const { data: subsData } = await subQuery
 
-      if (Array.isArray(subsData)) {
-        totalSubmissions = subsData.length
-        subsData.forEach(s => {
-          const qid = String(s.question_id || '')
-          const isMC = qid.startsWith('Q') || qid.startsWith('mc') || s.language === 'react'
-          const isDSA = qid.startsWith('DSA') || (!isMC && Boolean(s.language && s.language !== 'react'))
+      const [subsRes, cpRes, fjsRes, dsaRes] = await Promise.allSettled([
+        subQuery,
+        cpQuery,
+        fjsQuery,
+        dsaQuery,
+      ])
 
-          if (s.status === 'accepted') {
-            acceptedSubmissions++
-            if (isMC) mcAcceptedCount++
-            if (isDSA) dsaAcceptedCount++
-          } else if (['wrong_answer', 'runtime_error', 'compile_error', 'failed'].includes(s.status)) {
-            failedSubmissions++
-          }
+      const subsData = subsRes.status === 'fulfilled' && Array.isArray(subsRes.value.data) ? subsRes.value.data : []
+      const cpData = cpRes.status === 'fulfilled' && Array.isArray(cpRes.value.data) ? cpRes.value.data : []
+      const fjsData = fjsRes.status === 'fulfilled' && Array.isArray(fjsRes.value.data) ? fjsRes.value.data : []
+      const dsaData = dsaRes.status === 'fulfilled' && Array.isArray(dsaRes.value.data) ? dsaRes.value.data : []
 
-          if (isMC) mcSubmissionsCount++
-          if (isDSA) dsaSubmissionsCount++
-        })
-      }
+      subsData.forEach(s => {
+        totalSubmissions++
+        const qid = String(s.question_id || '')
+        const isMC = qid.startsWith('Q') || qid.startsWith('mc') || s.language === 'react'
+        const isDSA = qid.startsWith('DSA') || (!isMC && Boolean(s.language && s.language !== 'react'))
+
+        if (s.status === 'accepted') {
+          acceptedSubmissions++
+          if (isMC) mcAcceptedCount++
+          if (isDSA) dsaAcceptedCount++
+        } else if (['wrong_answer', 'runtime_error', 'compile_error', 'failed'].includes(s.status)) {
+          failedSubmissions++
+        }
+
+        if (isMC) mcSubmissionsCount++
+        if (isDSA) dsaSubmissionsCount++
+      })
+
+      cpData.forEach((s: any) => {
+        totalSubmissions++
+        cpSubmissionsCount++
+        if (s.status === 'accepted' || s.status === 'Accepted') {
+          acceptedSubmissions++
+          cpAcceptedCount++
+        } else {
+          failedSubmissions++
+        }
+      })
+
+      fjsData.forEach((s: any) => {
+        totalSubmissions++
+        fjsSubmissionsCount++
+        if (s.status === 'accepted' || s.status === 'Accepted') {
+          acceptedSubmissions++
+          fjsAcceptedCount++
+        } else {
+          failedSubmissions++
+        }
+      })
+
+      dsaData.forEach((s: any) => {
+        totalSubmissions++
+        dsaSubmissionsCount++
+        if (s.status === 'accepted' || s.status === 'Accepted') {
+          acceptedSubmissions++
+          dsaAcceptedCount++
+        } else {
+          failedSubmissions++
+        }
+      })
 
       // Also merge local machine coding submissions from browser practice
       try {
@@ -218,6 +292,54 @@ export const adminAnalyticsService = {
                 if (loc.status === 'accepted') {
                   acceptedSubmissions++
                   mcAcceptedCount++
+                } else {
+                  failedSubmissions++
+                }
+              })
+            }
+          }
+        }
+      } catch {}
+
+      // Also merge local Core Programming submissions
+      try {
+        if (typeof localStorage !== 'undefined') {
+          const rawCP = localStorage.getItem(LOCAL_CP_SUBMISSIONS_KEY)
+          if (rawCP) {
+            const cpList = JSON.parse(rawCP)
+            if (Array.isArray(cpList)) {
+              cpList.forEach((loc: any) => {
+                const ts = loc.timestamp || loc.createdAt
+                if (thresholdIso && ts && ts < thresholdIso) return
+                totalSubmissions++
+                cpSubmissionsCount++
+                if (loc.status === 'Accepted' || loc.status === 'accepted') {
+                  acceptedSubmissions++
+                  cpAcceptedCount++
+                } else {
+                  failedSubmissions++
+                }
+              })
+            }
+          }
+        }
+      } catch {}
+
+      // Also merge local Frontend JS submissions
+      try {
+        if (typeof localStorage !== 'undefined') {
+          const rawFJS = localStorage.getItem(LOCAL_FJS_SUBMISSIONS_KEY)
+          if (rawFJS) {
+            const fjsList = JSON.parse(rawFJS)
+            if (Array.isArray(fjsList)) {
+              fjsList.forEach((loc: any) => {
+                const ts = loc.timestamp || loc.createdAt
+                if (thresholdIso && ts && ts < thresholdIso) return
+                totalSubmissions++
+                fjsSubmissionsCount++
+                if (loc.status === 'Accepted' || loc.status === 'accepted') {
+                  acceptedSubmissions++
+                  fjsAcceptedCount++
                 } else {
                   failedSubmissions++
                 }
@@ -303,6 +425,14 @@ export const adminAnalyticsService = {
       dsaTotalQuestions,
       dsaSubmissionsCount,
       dsaAcceptedCount,
+      // Core Programming specific metrics
+      cpTotalQuestions,
+      cpSubmissionsCount,
+      cpAcceptedCount,
+      // Frontend JS specific metrics
+      fjsTotalQuestions,
+      fjsSubmissionsCount,
+      fjsAcceptedCount,
     }
   },
 
@@ -386,7 +516,7 @@ export const adminAnalyticsService = {
             memoryUsed: Number(d.memory_used || 15.4),
             createdAt: String(d.created_at),
             userName: prof?.full_name || 'Candidate',
-            userEmail: prof?.email || 'candidate@faang.io',
+            userEmail: prof?.email || '',
             testsPassed: score >= 100 ? 4 : Math.max(0, Math.round((score / 100) * 4)),
             testsTotal: 4,
           }
@@ -454,7 +584,7 @@ export const adminAnalyticsService = {
                 memoryUsed: 14.2,
                 createdAt: String(d.created_at),
                 userName: prof?.full_name || 'Candidate',
-                userEmail: prof?.email || 'candidate@faang.io',
+                userEmail: prof?.email || '',
                 testsPassed: d.tests_passed || 0,
                 testsTotal: d.tests_total || 0,
               })
@@ -490,7 +620,155 @@ export const adminAnalyticsService = {
                   memoryUsed: 14.2,
                   createdAt: loc.timestamp,
                   userName: 'Candidate',
-                  userEmail: 'candidate@faang.io',
+                  userEmail: '',
+                  testsPassed: loc.testsPassed || 0,
+                  testsTotal: loc.testsTotal || 0,
+                })
+                seenIds.add(loc.id)
+              }
+            }
+          }
+        } catch {}
+
+        // Merge Core Programming Submissions (Remote Supabase + Local Storage)
+        try {
+          const { data: cpRemote } = await client
+            .from('core_programming_submissions')
+            .select('*')
+            .order('created_at', { ascending: false })
+            .limit(100)
+
+          if (Array.isArray(cpRemote)) {
+            for (const d of cpRemote) {
+              if (seenIds.has(d.id)) continue
+              const prof = profileMap.get(d.user_id)
+              const qid = String(d.question_id)
+              const score = d.score != null ? Number(d.score) : (d.status === 'accepted' ? 100 : Math.round(((d.tests_passed || 0) / Math.max(1, d.tests_total || 1)) * 80))
+              combined.push({
+                id: String(d.id),
+                userId: String(d.user_id),
+                questionId: qid,
+                questionTitle: resolveQuestionTitle(qid),
+                isMachineCoding: false,
+                isDSA: false,
+                attemptId: null,
+                code: d.code,
+                language: 'javascript',
+                status: d.status,
+                score,
+                executionTime: Number(d.execution_time_ms || 0),
+                memoryUsed: 12.8,
+                createdAt: String(d.created_at),
+                userName: prof?.full_name || 'Candidate',
+                userEmail: prof?.email || '',
+                testsPassed: d.tests_passed || 0,
+                testsTotal: d.tests_total || 0,
+              })
+              seenIds.add(d.id)
+            }
+          }
+        } catch {}
+
+        try {
+          if (typeof localStorage !== 'undefined') {
+            const rawCP = localStorage.getItem(LOCAL_CP_SUBMISSIONS_KEY)
+            if (rawCP) {
+              const cpList = JSON.parse(rawCP)
+              for (const loc of cpList) {
+                if (seenIds.has(loc.id)) continue
+                const qid = String(loc.questionId)
+                const score = loc.score != null ? Number(loc.score) : (loc.status === 'Accepted' ? 100 : Math.round(((loc.testsPassed || 0) / Math.max(1, loc.testsTotal || 1)) * 80))
+                combined.push({
+                  id: loc.id,
+                  userId: loc.candidateId || 'local-candidate',
+                  questionId: qid,
+                  questionTitle: resolveQuestionTitle(qid),
+                  isMachineCoding: false,
+                  isDSA: false,
+                  attemptId: null,
+                  code: loc.code,
+                  language: 'javascript',
+                  status: loc.status === 'Accepted' ? 'accepted' : 'failed',
+                  score,
+                  executionTime: loc.runtimeMs || 0,
+                  memoryUsed: 12.8,
+                  createdAt: loc.timestamp,
+                  userName: 'Candidate',
+                  userEmail: '',
+                  testsPassed: loc.testsPassed || 0,
+                  testsTotal: loc.testsTotal || 0,
+                })
+                seenIds.add(loc.id)
+              }
+            }
+          }
+        } catch {}
+
+        // Merge Frontend JS Submissions (Remote Supabase + Local Storage)
+        try {
+          const { data: fjsRemote } = await client
+            .from('frontend_js_submissions')
+            .select('*')
+            .order('created_at', { ascending: false })
+            .limit(100)
+
+          if (Array.isArray(fjsRemote)) {
+            for (const d of fjsRemote) {
+              if (seenIds.has(d.id)) continue
+              const prof = profileMap.get(d.user_id)
+              const qid = String(d.question_id)
+              const score = d.score != null ? Number(d.score) : (d.status === 'accepted' ? 100 : Math.round(((d.tests_passed || 0) / Math.max(1, d.tests_total || 1)) * 80))
+              combined.push({
+                id: String(d.id),
+                userId: String(d.user_id),
+                questionId: qid,
+                questionTitle: resolveQuestionTitle(qid),
+                isMachineCoding: false,
+                isDSA: false,
+                attemptId: null,
+                code: d.code,
+                language: 'javascript',
+                status: d.status,
+                score,
+                executionTime: Number(d.execution_time_ms || 0),
+                memoryUsed: 16.4,
+                createdAt: String(d.created_at),
+                userName: prof?.full_name || 'Candidate',
+                userEmail: prof?.email || '',
+                testsPassed: d.tests_passed || 0,
+                testsTotal: d.tests_total || 0,
+              })
+              seenIds.add(d.id)
+            }
+          }
+        } catch {}
+
+        try {
+          if (typeof localStorage !== 'undefined') {
+            const rawFJS = localStorage.getItem(LOCAL_FJS_SUBMISSIONS_KEY)
+            if (rawFJS) {
+              const fjsList = JSON.parse(rawFJS)
+              for (const loc of fjsList) {
+                if (seenIds.has(loc.id)) continue
+                const qid = String(loc.questionId)
+                const score = loc.score != null ? Number(loc.score) : (loc.status === 'Accepted' ? 100 : Math.round(((loc.testsPassed || 0) / Math.max(1, loc.testsTotal || 1)) * 80))
+                combined.push({
+                  id: loc.id,
+                  userId: loc.candidateId || 'local-candidate',
+                  questionId: qid,
+                  questionTitle: resolveQuestionTitle(qid),
+                  isMachineCoding: false,
+                  isDSA: false,
+                  attemptId: null,
+                  code: loc.code,
+                  language: 'javascript',
+                  status: loc.status === 'Accepted' ? 'accepted' : 'failed',
+                  score,
+                  executionTime: loc.runtimeMs || 0,
+                  memoryUsed: 16.4,
+                  createdAt: loc.timestamp,
+                  userName: 'Candidate',
+                  userEmail: '',
                   testsPassed: loc.testsPassed || 0,
                   testsTotal: loc.testsTotal || 0,
                 })

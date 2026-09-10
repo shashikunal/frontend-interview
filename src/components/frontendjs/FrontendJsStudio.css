@@ -1,0 +1,207 @@
+/* src/components/frontendjs/FrontendJsStudio.css */
+/* Visual source-of-truth: Inherit and share all Machine-Level Coding styling */
+@import '../machinecoding/MachineCodingStudio.css';
+
+/* ---------------------------------------------------- */
+/* ADMIN OPERATIONS MODAL                               */
+/* ---------------------------------------------------- */
+.fjs-admin-overlay,
+.fjs-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(8px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.fjs-admin-modal,
+.fjs-modal-card {
+  width: 900px;
+  max-width: 95vw;
+  max-height: 90vh;
+  background: var(--bg-card, #111827);
+  border: 1px solid var(--border-color, rgba(148, 163, 184, 0.2));
+  border-radius: 20px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  color: var(--text-primary, #f8fafc);
+}
+
+.fjs-admin-header,
+.fjs-modal-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border-color, rgba(148, 163, 184, 0.15));
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.fjs-admin-pill {
+  font-size: 11px;
+  font-weight: 700;
+  color: #818cf8;
+  background: rgba(99, 102, 241, 0.15);
+  padding: 2px 8px;
+  border-radius: 4px;
+  display: inline-block;
+  margin-bottom: 4px;
+}
+
+.fjs-admin-close,
+.fjs-modal-close {
+  background: none;
+  border: none;
+  color: #94a3b8;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.fjs-admin-tabs-bar {
+  display: flex;
+  background: rgba(0, 0, 0, 0.3);
+  border-bottom: 1px solid rgba(148, 163, 184, 0.15);
+  padding: 0 20px;
+}
+
+.fjs-atab-btn {
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: #94a3b8;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 12px 16px;
+  cursor: pointer;
+}
+
+.fjs-atab-btn.active {
+  color: #f8fafc;
+  border-bottom-color: #6366f1;
+}
+
+.fjs-btn-csv-export {
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  color: #34d399;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-right: 12px;
+}
+
+.fjs-admin-body {
+  padding: 24px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.fjs-admin-kpi-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.fjs-kpi-card {
+  background: rgba(30, 41, 59, 0.5);
+  border: 1px solid rgba(148, 163, 184, 0.15);
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
+}
+
+.fjs-kpi-val {
+  font-size: 28px;
+  font-weight: 800;
+  color: #818cf8;
+}
+
+.fjs-kpi-lbl {
+  font-size: 11px;
+  color: #94a3b8;
+  margin-top: 4px;
+}
+
+.fjs-admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.fjs-admin-table th, .fjs-admin-table td {
+  padding: 10px 14px;
+  text-align: left;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.15);
+}
+
+.fjs-health-tag {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.fjs-health-tag.healthy { background: rgba(16, 185, 129, 0.15); color: #34d399; }
+.fjs-health-tag.high-failure { background: rgba(239, 68, 68, 0.15); color: #f87171; }
+.fjs-health-tag.slow-completion { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
+
+.fjs-report-item {
+  background: rgba(30, 41, 59, 0.5);
+  border: 1px solid rgba(148, 163, 184, 0.15);
+  border-radius: 10px;
+  padding: 14px 18px;
+  margin-bottom: 12px;
+}
+
+.fjs-ri-top {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  font-size: 12px;
+  margin-bottom: 8px;
+}
+
+.fjs-ri-type {
+  font-weight: 700;
+  color: #f87171;
+}
+
+.fjs-ri-desc {
+  font-size: 13px;
+  color: #e2e8f0;
+  margin: 0 0 12px 0;
+}
+
+.fjs-ri-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.fjs-btn-inspect-q {
+  background: #6366f1;
+  color: #ffffff;
+  border: none;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.fjs-btn-dismiss-rep {
+  background: none;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  color: #94a3b8;
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
