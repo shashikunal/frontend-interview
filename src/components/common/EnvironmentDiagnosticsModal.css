@@ -1,0 +1,252 @@
+.diag-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 15, 29, 0.78);
+  backdrop-filter: blur(8px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  animation: diagFadeIn 0.2s ease-out;
+}
+
+@keyframes diagFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.diag-modal-card {
+  background: var(--surface, #131b2e);
+  border: 1px solid var(--border-strong, rgba(255, 255, 255, 0.12));
+  border-radius: 16px;
+  width: 100%;
+  max-width: 680px;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.45);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  color: var(--text-primary, #f8fafc);
+  font-family: inherit;
+}
+
+.diag-modal-header {
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.08));
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.diag-modal-close {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary, #94a3b8);
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 8px;
+  transition: all 0.15s;
+}
+
+.diag-modal-close:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+.diag-modal-body {
+  padding: 24px;
+  max-height: 75vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.diag-grid-badges {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 12px;
+}
+
+.diag-stat-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.diag-stat-label {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted, #64748b);
+  font-weight: 600;
+}
+
+.diag-pill-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 6px;
+  width: fit-content;
+}
+
+.diag-pill-badge.env-development {
+  background: rgba(59, 130, 246, 0.15);
+  color: #60a5fa;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.diag-pill-badge.env-production {
+  background: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.diag-pill-badge.status-connected {
+  background: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.diag-pill-badge.status-checking {
+  background: rgba(245, 158, 11, 0.15);
+  color: #fbbf24;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.diag-pill-badge.status-error {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.diag-pill-badge.status-idle {
+  background: rgba(148, 163, 184, 0.15);
+  color: #94a3b8;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+}
+
+.diag-table-container {
+  background: rgba(0, 0, 0, 0.15);
+  border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.08));
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.diag-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.diag-table tr {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.diag-table tr:last-child {
+  border-bottom: none;
+}
+
+.diag-table td {
+  padding: 10px 16px;
+}
+
+.diag-table td:first-child {
+  width: 35%;
+  color: var(--text-secondary, #94a3b8);
+  font-weight: 500;
+}
+
+.diag-code-highlight {
+  background: rgba(99, 102, 241, 0.15);
+  color: #a5b4fc;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.diag-role-pill {
+  display: inline-block;
+  background: rgba(168, 85, 247, 0.15);
+  color: #c084fc;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.diag-error-box {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #fca5a5;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 0.82rem;
+}
+
+.diag-security-note {
+  font-size: 0.78rem;
+  color: var(--text-secondary, #94a3b8);
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 10px 14px;
+  border-radius: 8px;
+  line-height: 1.45;
+}
+
+.diag-security-note span {
+  color: #34d399;
+  font-weight: 600;
+}
+
+.diag-modal-footer {
+  padding: 16px 24px;
+  border-top: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.08));
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.diag-btn-primary {
+  background: #6366f1;
+  color: #fff;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.diag-btn-primary:hover {
+  background: #4f46e5;
+}
+
+.diag-btn-secondary {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-primary, #f8fafc);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.diag-btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
