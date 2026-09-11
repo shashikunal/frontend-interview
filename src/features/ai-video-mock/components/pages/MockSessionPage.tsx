@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import type { MockInterviewSession, InterviewAnswer } from '../../types/mock.types';
 import { mockSessionService } from '../../services/mockSessionService';
+import { mockPersistenceService, type PersistenceStatus } from '../../services/mockPersistenceService';
 import { answerEvaluationService } from '../../services/answerEvaluationService';
 import { finalReportService } from '../../services/finalReportService';
 import { sandboxProvider } from '../../services/providers/sandboxProvider';
@@ -27,6 +28,20 @@ export default function MockSessionPage() {
   const [evaluatedAnswer, setEvaluatedAnswer] = useState<InterviewAnswer | null>(null);
   const [questionSeconds, setQuestionSeconds] = useState(0);
 
+  // Persistence status: Cloud Saved ✓ / Local Backup ⚠ (never silent)
+  const [persistStatus, setPersistStatus] = useState<PersistenceStatus>('idle');
+  const [persistError, setPersistError] = useState<string | null>(null);
+
+  const markPersisted = (ok: boolean, provider: 'cloud' | 'local', error?: string) => {
+    if (ok && provider === 'cloud') {
+      setPersistStatus('cloud');
+      setPersistError(null);
+    } else {
+      setPersistStatus('local');
+      setPersistError(error || null);
+    }
+  };
+
   // Sandbox Quick Test State
   const [isRunningSandboxTest, setIsRunningSandboxTest] = useState(false);
   const [sandboxQuickResult, setSandboxQuickResult] = useState<any>(null);
@@ -49,22 +64,29 @@ export default function MockSessionPage() {
     ? PERSONAS.find(p => p.id === session.config.interviewerPersonaId) || PERSONAS[0]
     : PERSONAS[0];
 
-  // Load Session
+  // Load Session: local first, Supabase fallback (refresh-proof)
   useEffect(() => {
     if (!sessionId) return;
-    const s = mockSessionService.getSession(sessionId);
-    if (!s) {
-      navigate('/ai-video-mock/setup');
-      return;
-    }
-    setSession(s);
+    let cancelled = false;
+    (async () => {
+      const s = await mockSessionService.getSessionWithRemote(sessionId);
+      if (cancelled) return;
+      if (!s) {
+        navigate('/ai-video-mock/setup');
+        return;
+      }
+      setSession(s);
 
-    const currentIdx = s.currentQuestionIndex || 0;
-    const ans = s.answers[currentIdx] || s.answers[0];
-    setCurrentAnswer(ans);
-    if (ans.question.programmingSpec?.starterCode) {
-      setCodeContent(ans.question.programmingSpec.starterCode);
-    }
+      const currentIdx = s.currentQuestionIndex || 0;
+      const ans = s.answers[currentIdx] || s.answers[0];
+      setCurrentAnswer(ans);
+      if (ans.question.programmingSpec?.starterCode) {
+        setCodeContent(ans.question.programmingSpec.starterCode);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
   }, [sessionId, navigate]);
 
   // Camera & Mic setup
@@ -362,6 +384,26 @@ export default function MockSessionPage() {
     mockSessionService.saveAnswer(session.id, updatedAns);
     setEvaluatedAnswer(updatedAns);
     setIsSubmitting(false);
+
+    // Persist answer (+transcript/video inline) and evaluation to Supabase;
+    // localStorage remains the fallback and the outcome is shown, never hidden.
+    try {
+      setPersistStatus('saving');
+      const aRes = await mockPersistenceService.saveAnswer(session, updatedAns);
+      if (updatedAns.evaluation) {
+        const eRes = await mockPersistenceService.saveEvaluation(
+          session.id,
+          session.userId,
+          updatedAns,
+          updatedAns.evaluation
+        );
+        markPersisted(aRes.ok && eRes.ok, aRes.ok && eRes.ok ? 'cloud' : 'local', eRes.error || aRes.error);
+      } else {
+        markPersisted(aRes.ok, aRes.provider, aRes.error);
+      }
+    } catch (e) {
+      markPersisted(false, 'local', e instanceof Error ? e.message : 'persistence failed');
+    }
   };
 
   // Move to next question with Adaptive Progression
@@ -375,7 +417,16 @@ export default function MockSessionPage() {
       session.scorecard = scorecard;
       session.state = 'COMPLETED';
       mockSessionService.saveSessionLocally(session);
-      mockSessionService.syncSessionRemote(session);
+      try {
+        setPersistStatus('saving');
+        const [sRes, scRes] = await Promise.all([
+          mockSessionService.syncSessionRemote(session),
+          mockPersistenceService.saveScorecard(session, scorecard),
+        ]);
+        markPersisted(sRes.ok && scRes.ok, sRes.ok && scRes.ok ? 'cloud' : 'local', scRes.error || sRes.error);
+      } catch (e) {
+        markPersisted(false, 'local', e instanceof Error ? e.message : 'persistence failed');
+      }
       navigate(`/ai-video-mock/result/${session.id}`);
     } else {
       // Dynamic Adaptive Selection for next question
@@ -453,6 +504,22 @@ export default function MockSessionPage() {
             <span>{currentPersona.avatar}</span>
             <span style={{ fontSize: '0.8rem', fontWeight: 600 }}>{currentPersona.name}</span>
             <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>({currentPersona.company})</span>
+          </div>
+
+          {/* Persistence status: Cloud Saved ✓ / Local Backup ⚠ */}
+          <div
+            title={persistError || (persistStatus === 'cloud' ? 'Session, answers and evaluations saved to Supabase' : 'Saving locally; will sync when Supabase is reachable')}
+            style={{
+              fontSize: '0.72rem',
+              fontWeight: 700,
+              padding: '4px 12px',
+              borderRadius: 20,
+              border: '1px solid var(--border)',
+              background: persistStatus === 'cloud' ? 'rgba(16,185,129,0.12)' : 'rgba(245,158,11,0.12)',
+              color: persistStatus === 'cloud' ? '#10b981' : '#f59e0b',
+            }}
+          >
+            {persistStatus === 'cloud' ? 'Cloud Saved ✓' : persistStatus === 'saving' ? 'Saving…' : persistStatus === 'local' ? 'Local Backup ⚠' : persistStatus === 'error' ? 'Save Issue ⚠' : 'Not Saved Yet'}
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.85rem', color: 'var(--text-secondary)' }}>

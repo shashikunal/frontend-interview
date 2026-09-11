@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import AIVideoMockNavbar from './components/AIVideoMockNavbar';
 import AIVideoMockHome from './components/pages/AIVideoMockHome';
@@ -15,8 +16,14 @@ import MockSkillsPage from './components/pages/MockSkillsPage';
 import MockAnswerImprovementPage from './components/pages/MockAnswerImprovementPage';
 import MockAdminAuditPage from './components/pages/MockAdminAuditPage';
 import './styles/AIVideoMock.css';
+import { mockPersistenceService } from './services/mockPersistenceService';
 
 export default function AIVideoMockApp() {
+  // Flush locally-queued writes when Supabase becomes reachable (no duplicates: stable UUIDs/upserts).
+  useEffect(() => {
+    mockPersistenceService.syncPending().then(() => {});
+  }, []);
+
   return (
     <div className="ai-vm-root">
       <AIVideoMockNavbar />

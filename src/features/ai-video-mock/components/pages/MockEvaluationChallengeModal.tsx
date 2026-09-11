@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import type { InterviewAnswer } from '../../types/mock.types';
+import { mockSessionService } from '../../services/mockSessionService';
+import { mockPersistenceService } from '../../services/mockPersistenceService';
 
 interface MockEvaluationChallengeModalProps {
   answer: InterviewAnswer;
@@ -34,8 +36,9 @@ export default function MockEvaluationChallengeModal({
   const [suggestedScore, setSuggestedScore] = useState<number>(Math.min(10, (answer.evaluation?.numericScore || 5) + 2));
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDone, setIsDone] = useState(false);
+  const [cloudNote, setCloudNote] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!reason.trim()) return;
 
@@ -63,6 +66,25 @@ export default function MockEvaluationChallengeModal({
       localStorage.setItem(LOCAL_CHALLENGES_KEY, JSON.stringify(list));
     } catch (err) {
       console.warn('Failed to save challenge locally:', err);
+    }
+
+    // Persist to Supabase against the persisted evaluation row (FK-safe lookup).
+    try {
+      const persistedEvalId = await mockPersistenceService.findEvaluationId(answer.sessionId, answer.questionId);
+      if (persistedEvalId) {
+        const sess = mockSessionService.getSession(answer.sessionId);
+        const res = await mockPersistenceService.saveChallenge({
+          evaluation_id: persistedEvalId,
+          session_id: answer.sessionId,
+          user_id: sess?.userId,
+          reason: `[${category}] ${reason.trim()} (suggested: ${suggestedScore})`,
+        });
+        setCloudNote(res.ok ? 'Cloud Saved ✓' : `Local Backup ⚠ — ${res.error || 'will sync later'}`);
+      } else {
+        setCloudNote('Local Backup ⚠ — no cloud evaluation yet; kept on this device');
+      }
+    } catch (err) {
+      setCloudNote(`Local Backup ⚠ — ${err instanceof Error ? err.message : 'kept on this device'}`);
     }
 
     setIsSubmitting(false);
@@ -94,6 +116,11 @@ export default function MockEvaluationChallengeModal({
             <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', margin: 0 }}>
               Your challenge and reasoning have been preserved. Original AI score remains intact until reviewed by staff.
             </p>
+            {cloudNote ? (
+              <p style={{ fontSize: '0.78rem', fontWeight: 700, margin: '10px 0 0', color: cloudNote.startsWith('Cloud') ? '#10b981' : '#f59e0b' }}>
+                {cloudNote}
+              </p>
+            ) : null}
           </div>
         ) : (
           <form onSubmit={handleSubmit}>

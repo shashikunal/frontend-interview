@@ -14,8 +14,15 @@ export default function MockFinalResultPage() {
 
   useEffect(() => {
     if (!sessionId) return;
-    const s = mockSessionService.getSession(sessionId);
-    if (s) setSession(s);
+    let cancelled = false;
+    (async () => {
+      // Supabase-first (refresh-proof), localStorage fallback.
+      const remote = await mockSessionService.getSessionWithRemote(sessionId);
+      if (!cancelled && remote) setSession(remote);
+    })();
+    return () => {
+      cancelled = true;
+    };
   }, [sessionId]);
 
   if (!session || !session.scorecard) {

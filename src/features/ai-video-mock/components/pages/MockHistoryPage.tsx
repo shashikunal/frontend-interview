@@ -2,13 +2,42 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import type { MockInterviewSession } from '../../types/mock.types';
 import { mockSessionService } from '../../services/mockSessionService';
+import { useAuth } from '../../../../context/AuthContext';
 
 export default function MockHistoryPage() {
+  const { user } = useAuth() as { user: any };
   const [sessions, setSessions] = useState<MockInterviewSession[]>([]);
+  const [sourceNote, setSourceNote] = useState<string>('');
 
   useEffect(() => {
-    setSessions(mockSessionService.getAllLocalSessions());
-  }, []);
+    let cancelled = false;
+    (async () => {
+      // Cloud-first merge: Supabase sessions overlaid on local ones (dedupe by id).
+      const local = mockSessionService.getAllLocalSessions();
+      let merged = local;
+      let cloudCount = 0;
+      try {
+        if (user?.id) {
+          const remote = await mockSessionService.listSessionsMerged(user.id);
+          const byId = new Map<string, MockInterviewSession>();
+          for (const s of local) byId.set(s.id, s);
+          for (const s of remote) {
+            const prev = byId.get(s.id);
+            if (!prev || String(s.updatedAt || '') >= String(prev.updatedAt || '')) byId.set(s.id, s);
+          }
+          merged = [...byId.values()].sort((a, b) => String(b.updatedAt || '').localeCompare(String(a.updatedAt || '')));
+          cloudCount = remote.length;
+        }
+      } catch {}
+      if (!cancelled) {
+        setSessions(merged);
+        setSourceNote(cloudCount > 0 ? `Cloud synced (${cloudCount}) + this device` : '');
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [user?.id]);
 
   return (
     <div style={{ maxWidth: 960, margin: '32px auto', padding: '0 20px' }}>
@@ -17,6 +46,7 @@ export default function MockHistoryPage() {
           <h1 style={{ fontSize: '1.8rem', fontWeight: 800, margin: '0 0 6px' }}>Interview History</h1>
           <p style={{ color: 'var(--text-secondary)', margin: 0 }}>
             Review past interview sessions, executive scorecards, and historical evaluation trends.
+            {sourceNote ? <span style={{ color: '#10b981', fontWeight: 600 }}> · {sourceNote}</span> : null}
           </p>
         </div>
 

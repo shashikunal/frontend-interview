@@ -6,21 +6,22 @@ import type {
 } from '../types/mock.types';
 import { blueprintService } from './blueprintService';
 import { getMockQuestionById } from '../data/questionBankRegistry';
-import { supabase } from '../../../lib/supabase/client';
+import { mockPersistenceService, newUuid, type PersistResult } from './mockPersistenceService';
 
 const LOCAL_SESSION_PREFIX = 'ai_video_mock_session_';
 const LOCAL_ACTIVE_SESSION_ID = 'ai_video_mock_active_id';
 
 export const mockSessionService = {
   createSession(userId: string, config: CandidateSetupConfig): MockInterviewSession {
-    const sessionId = `session_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+    // UUID session ids: required by mock_interview_sessions.id (UUID PK).
+    const sessionId = newUuid();
     const blueprint = blueprintService.generateBlueprint(sessionId, config);
 
     // Prepare answer placeholders for all reserved questions
     const answers: InterviewAnswer[] = blueprint.reservedQuestionIds.map((qId, index) => {
       const q = getMockQuestionById(qId)!;
       return {
-        id: `ans_${sessionId}_q${index + 1}`,
+        id: newUuid(),
         sessionId,
         questionId: qId,
         questionNumber: index + 1,
@@ -124,7 +125,7 @@ export const mockSessionService = {
 
     const nextIndex = s.answers.length;
     const nextAns: InterviewAnswer = {
-      id: `ans_${sessionId}_q${nextIndex + 1}`,
+      id: newUuid(),
       sessionId,
       questionId: nextQuestion.id,
       questionNumber: nextIndex + 1,
@@ -154,27 +155,49 @@ export const mockSessionService = {
     this.saveSessionLocally(s);
   },
 
-  async syncSessionRemote(session: MockInterviewSession) {
+  async syncSessionRemote(session: MockInterviewSession): Promise<PersistResult> {
+    // Supabase-first; structured result (never silently swallowed by callers that check it).
+    // Local copy is always written separately via saveSessionLocally.
+    return mockPersistenceService.saveSession(session);
+  },
+
+  /** Local-first read with Supabase fallback (refresh-proof). Caches remote locally. */
+  async getSessionWithRemote(sessionId: string): Promise<MockInterviewSession | null> {
+    const local = this.getSession(sessionId);
+    if (local) return local;
+    const remote = await mockPersistenceService.fetchSessionFull(sessionId);
+    if (remote) this.saveSessionLocally(remote);
+    return remote;
+  },
+
+  /** History: cloud sessions merged over local ones (dedupe by id, cloud wins ties). */
+  async listSessionsMerged(userId: string): Promise<MockInterviewSession[]> {
+    const local = this.getAllLocalSessions();
+    let remote: MockInterviewSession[] = [];
     try {
-      if (!supabase) return;
-      await supabase.from('mock_interview_sessions').upsert({
-        id: session.id,
-        user_id: session.userId !== 'anonymous_candidate' ? session.userId : null,
-        state: session.state,
-        config: session.config,
-        blueprint: session.blueprint,
-        current_question_index: session.currentQuestionIndex,
-        total_questions: session.totalQuestions,
-        integrity_signals: session.integritySignals,
-        total_paused_seconds: session.totalPausedSeconds,
-        started_at: session.startedAt,
-        paused_at: session.pausedAt,
-        completed_at: session.completedAt,
-        updated_at: session.updatedAt,
-      });
-    } catch {
-      // Graceful offline fallback
+      const partials = await mockPersistenceService.listUserSessions(userId);
+      const full = await Promise.all(
+        partials.map(async p => {
+          if (p.answers && p.answers.length > 0 && (p as MockInterviewSession).config) {
+            return p as MockInterviewSession;
+          }
+          return (await mockPersistenceService.fetchSessionFull(p.id)) || (p as MockInterviewSession);
+        })
+      );
+      remote = full;
+    } catch {}
+    const merged = new Map<string, MockInterviewSession>();
+    for (const s of local) merged.set(s.id, s);
+    for (const s of remote) {
+      const prev = merged.get(s.id);
+      if (!prev || String(s.updatedAt || '') >= String(prev.updatedAt || '')) {
+        merged.set(s.id, s);
+        try {
+          this.saveSessionLocally(s);
+        } catch {}
+      }
     }
+    return [...merged.values()].sort((a, b) => String(b.updatedAt || '').localeCompare(String(a.updatedAt || '')));
   },
 
   getAllLocalSessions(): MockInterviewSession[] {
