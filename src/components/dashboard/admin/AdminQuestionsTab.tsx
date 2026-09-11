@@ -1,7 +1,10 @@
 import { useState, useEffect, useMemo, useCallback } from 'react'
-import { createPortal } from 'react-dom'
+import { Link } from 'react-router-dom'
 import type { MCQuestion } from '../../machinecoding/machineCodingQuestions'
 import { MACHINE_CODING_CATALOG, getQuestionDetailById } from '../../machinecoding/lib/mcCatalogService'
+import { DSA_QUESTIONS } from '../../dsa/data/dsaQuestions'
+import { CORE_PROGRAMMING_QUESTIONS } from '../../coreprogramming/data/coreProgrammingQuestions'
+import { FRONTEND_JS_QUESTIONS } from '../../frontendjs/data/frontendJsQuestions'
 import {
   questionManagementService,
   type CustomMCQuestion,
@@ -10,36 +13,42 @@ import {
 import AdminQuestionFormModal from './AdminQuestionFormModal'
 import AdminQuestionPreviewModal from './AdminQuestionPreviewModal'
 
-type ViewTab = 'builtin' | 'custom'
+export type TrackViewTab = 'mc' | 'dsa' | 'cp' | 'fjs' | 'custom'
 
 const DIFF_COLOR: Record<string, string> = {
-  Easy: '#10b981', Medium: '#f59e0b', Hard: '#ef4444', Senior: '#a855f7',
+  Easy: '#10b981', Medium: '#f59e0b', Hard: '#ef4444', Difficult: '#ef4444', Senior: '#a855f7', Expert: '#a855f7',
 }
 
 const CAT_COLOR: Record<string, string> = {
   ReactJS: '#38bdf8', JavaScript: '#fbbf24', TypeScript: '#818cf8',
   'React Redux Toolkit': '#ec4899', 'React Query': '#34d399', DOM: '#fb923c', LeetCode: '#22c55e',
+  Arrays: '#38bdf8', Strings: '#fbbf24', 'Two Pointers': '#818cf8', Trees: '#ec4899',
+  Graphs: '#34d399', 'Dynamic Programming': '#fb923c', 'Binary Search': '#22c55e',
 }
 
 function DiffBadge({ diff }: { diff: string }) {
+  const norm = diff || 'Medium'
+  const color = DIFF_COLOR[norm] ?? '#94a3b8'
   return (
     <span style={{
-      background: `${DIFF_COLOR[diff] ?? '#94a3b8'}18`,
-      color: DIFF_COLOR[diff] ?? '#94a3b8',
-      border: `1px solid ${DIFF_COLOR[diff] ?? '#94a3b8'}40`,
+      background: `${color}18`,
+      color: color,
+      border: `1px solid ${color}40`,
       borderRadius: 6, padding: '2px 9px', fontSize: '0.72rem', fontWeight: 700,
-    }}>{diff}</span>
+    }}>{norm}</span>
   )
 }
 
 function CatBadge({ cat }: { cat: string }) {
+  const norm = cat || 'General'
+  const color = CAT_COLOR[norm] ?? '#94a3b8'
   return (
     <span style={{
-      background: `${CAT_COLOR[cat] ?? '#94a3b8'}18`,
-      color: CAT_COLOR[cat] ?? '#94a3b8',
-      border: `1px solid ${CAT_COLOR[cat] ?? '#94a3b8'}35`,
+      background: `${color}18`,
+      color: color,
+      border: `1px solid ${color}35`,
       borderRadius: 6, padding: '2px 9px', fontSize: '0.72rem', fontWeight: 600,
-    }}>{cat}</span>
+    }}>{norm}</span>
   )
 }
 
@@ -62,30 +71,40 @@ function IconBtn({
   )
 }
 
+interface UnifiedQuestionRow {
+  id: string
+  title: string
+  category: string
+  difficulty: string
+  timeEstimate: string
+  studioUrl: string
+  testCount: number
+  trackTag: string
+  raw: any
+}
+
 export default function AdminQuestionsTab() {
-  const [viewTab, setViewTab] = useState<ViewTab>('builtin')
+  const [viewTab, setViewTab] = useState<TrackViewTab>('mc')
   const [search, setSearch] = useState('')
   const [categoryFilter, setCategoryFilter] = useState('ALL')
   const [difficultyFilter, setDifficultyFilter] = useState('ALL')
 
   // Pagination
   const [currentPage, setCurrentPage] = useState(1)
-  const [pageSize, setPageSize] = useState(25)
-
-  // Reset page when filters change
-  useEffect(() => {
-    setCurrentPage(1)
-  }, [search, categoryFilter, difficultyFilter, viewTab])
+  const pageSize = 25
 
   // Custom questions state
   const [customList, setCustomList] = useState<CustomMCQuestion[]>([])
-  const [loadingCustom, setLoadingCustom] = useState(false)
   const [toast, setToast] = useState<string | null>(null)
 
   // Modal state
   const [formTarget, setFormTarget] = useState<CustomMCQuestion | null | 'new'>(null)
   const [previewTarget, setPreviewTarget] = useState<MCQuestion | CustomMCQuestion | null>(null)
-  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null)
+
+  // Reset page when filters change
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [search, categoryFilter, difficultyFilter, viewTab])
 
   const showToast = (msg: string) => {
     setToast(msg)
@@ -93,114 +112,120 @@ export default function AdminQuestionsTab() {
   }
 
   const loadCustom = useCallback(async () => {
-    setLoadingCustom(true)
     try {
       const list = await questionManagementService.list()
       setCustomList(list)
-    } finally {
-      setLoadingCustom(false)
+    } catch {
+      // ignore
     }
   }, [])
 
   useEffect(() => { void loadCustom() }, [loadCustom])
 
-  /* ---- Filtering for built-in catalog ---- */
-  const filteredBuiltin = useMemo(() => {
-    return MACHINE_CODING_CATALOG.filter(q => {
-      const s = search.trim().toLowerCase()
-      let matchesSearch = !s
-      if (s) {
-        const idMatches = q.id.toLowerCase().includes(s)
-        const titleMatches = q.title.toLowerCase().includes(s)
-        const catMatches = q.category.toLowerCase().includes(s)
-        const summaryMatches = q.summary ? q.summary.toLowerCase().includes(s) : false
-        const descMatches = (q as any).description ? (q as any).description.toLowerCase().includes(s) : false
-        const reqMatches = Array.isArray((q as any).requirements) && (q as any).requirements.some((r: string) => r.toLowerCase().includes(s))
-        const tipMatches = Array.isArray((q as any).interviewTips) && (q as any).interviewTips.some((t: string) => t.toLowerCase().includes(s))
-
-        // Numeric normalized match: e.g. "1", "001", "q1", "q001", "q-10", "100"
-        const numMatch = s.match(/^(?:q|mc)?-?0*(\d+)$/i)
-        const qNum = parseInt(q.id.replace(/\D/g, ''), 10)
-        const numericMatches = Boolean(numMatch && parseInt(numMatch[1], 10) === qNum)
-
-        matchesSearch = idMatches || titleMatches || catMatches || summaryMatches || descMatches || reqMatches || tipMatches || numericMatches
-      }
-      const matchesCat = categoryFilter === 'ALL' || q.category === categoryFilter
-      const matchesDiff = difficultyFilter === 'ALL' || q.difficulty === difficultyFilter
-      return matchesSearch && matchesCat && matchesDiff
-    })
-  }, [search, categoryFilter, difficultyFilter])
-
-  /* ---- Filtering for custom questions ---- */
-  const filteredCustom = useMemo(() => {
-    return customList.filter(q => {
-      const s = search.trim().toLowerCase()
-      let matchesSearch = !s
-      if (s) {
-        const idMatches = q.id.toLowerCase().includes(s)
-        const titleMatches = q.title.toLowerCase().includes(s)
-        const catMatches = q.category.toLowerCase().includes(s)
-        const descMatches = q.description ? q.description.toLowerCase().includes(s) : false
-        const tagMatches = 'tags' in q && Array.isArray((q as any).tags) && (q as any).tags.some((t: string) => t.toLowerCase().includes(s))
-
-        const numMatch = s.match(/^(?:q|mc)?-?0*(\d+)$/i)
-        const qNum = parseInt(q.id.replace(/\D/g, ''), 10)
-        const numericMatches = Boolean(numMatch && !isNaN(qNum) && parseInt(numMatch[1], 10) === qNum)
-
-        matchesSearch = idMatches || titleMatches || catMatches || descMatches || tagMatches || numericMatches
-      }
-      const matchesCat = categoryFilter === 'ALL' || q.category === categoryFilter
-      const matchesDiff = difficultyFilter === 'ALL' || q.difficulty === difficultyFilter
-      return matchesSearch && matchesCat && matchesDiff
-    })
-  }, [customList, search, categoryFilter, difficultyFilter])
-
-  /* ---- CRUD handlers ---- */
-  const handleSave = async (draft: CustomMCQuestionDraft) => {
-    if (formTarget === 'new') {
-      const created = await questionManagementService.create(draft)
-      setCustomList(prev => [created, ...prev])
-      showToast(`✅ Created question "${created.title}"`)
-    } else if (formTarget) {
-      const updated = await questionManagementService.update(formTarget.id, draft)
-      if (updated) {
-        setCustomList(prev => prev.map(q => q.id === updated.id ? updated : q))
-        showToast(`✅ Updated "${updated.title}"`)
-      }
+  // Map each track into unified items
+  const activeDataset = useMemo<UnifiedQuestionRow[]>(() => {
+    if (viewTab === 'mc') {
+      return MACHINE_CODING_CATALOG.map(q => ({
+        id: q.id,
+        title: q.title,
+        category: q.category,
+        difficulty: q.difficulty,
+        timeEstimate: q.timeEstimate || '45 mins',
+        studioUrl: `/machine-coding?id=${q.id}`,
+        testCount: (q as any).testCases?.length || 4,
+        trackTag: 'Machine Coding',
+        raw: q,
+      }))
     }
-    setFormTarget(null)
-  }
-
-  const handleDelete = async (id: string) => {
-    const ok = await questionManagementService.delete(id)
-    if (ok) {
-      setCustomList(prev => prev.filter(q => q.id !== id))
-      showToast(`🗑️ Question deleted.`)
+    if (viewTab === 'dsa') {
+      return DSA_QUESTIONS.map(q => ({
+        id: q.id,
+        title: q.title,
+        category: q.topic || (q.tags && q.tags[0]) || 'Algorithms',
+        difficulty: q.difficulty === 'Difficult' ? 'Hard' : q.difficulty,
+        timeEstimate: '30 mins',
+        studioUrl: `/dsa/question/${q.id}`,
+        testCount: q.examples?.length || 3,
+        trackTag: 'DSA Masterclass',
+        raw: q,
+      }))
     }
-    setDeleteConfirmId(null)
-  }
+    if (viewTab === 'cp') {
+      return CORE_PROGRAMMING_QUESTIONS.map(q => ({
+        id: q.id,
+        title: q.title,
+        category: q.category || 'JavaScript Core',
+        difficulty: q.difficulty === 'Expert' ? 'Hard' : q.difficulty,
+        timeEstimate: '25 mins',
+        studioUrl: `/core-programming/question/${q.id}`,
+        testCount: q.testCases?.length || 3,
+        trackTag: 'Core Programming',
+        raw: q,
+      }))
+    }
+    if (viewTab === 'fjs') {
+      return FRONTEND_JS_QUESTIONS.map(q => ({
+        id: q.id,
+        title: q.title,
+        category: q.category || 'Web APIs & DOM',
+        difficulty: q.difficulty,
+        timeEstimate: '20 mins',
+        studioUrl: `/frontend-javascript/question/${q.id}`,
+        testCount: q.testCases?.length || 4,
+        trackTag: 'Frontend JS',
+        raw: q,
+      }))
+    }
+    // Custom questions
+    return customList.map(q => ({
+      id: q.id,
+      title: q.title,
+      category: q.category,
+      difficulty: q.difficulty,
+      timeEstimate: q.timeEstimate || '45 mins',
+      studioUrl: `/machine-coding?id=${q.id}`,
+      testCount: (q as any).testCases?.length || 2,
+      trackTag: 'Custom',
+      raw: q,
+    }))
+  }, [viewTab, customList])
 
-  /* ---- Category options from built-in + custom ---- */
+  // Derive categories from active dataset
   const categoryOptions = useMemo(() => {
-    const cats = new Set<string>()
-    MACHINE_CODING_CATALOG.forEach(q => cats.add(q.category))
-    customList.forEach(q => cats.add(q.category))
-    return Array.from(cats).sort()
-  }, [customList])
+    return Array.from(new Set(activeDataset.map(q => q.category))).filter(Boolean).sort()
+  }, [activeDataset])
 
-  /* ---- Pagination calculations ---- */
-  const activeFilteredCount = viewTab === 'builtin' ? filteredBuiltin.length : filteredCustom.length
-  const totalPages = Math.max(1, Math.ceil(activeFilteredCount / pageSize))
+  // Filter active dataset
+  const filteredDataset = useMemo(() => {
+    const s = search.trim().toLowerCase()
+    return activeDataset.filter(q => {
+      let matchesSearch = true
+      if (s) {
+        matchesSearch = q.id.toLowerCase().includes(s) || q.title.toLowerCase().includes(s) || q.category.toLowerCase().includes(s)
+      }
+      const matchesCat = categoryFilter === 'ALL' || q.category === categoryFilter
+      const matchesDiff = difficultyFilter === 'ALL' || q.difficulty === difficultyFilter
+      return matchesSearch && matchesCat && matchesDiff
+    })
+  }, [activeDataset, search, categoryFilter, difficultyFilter])
 
-  const paginatedBuiltin = useMemo(() => {
+  // Pagination
+  const totalItems = filteredDataset.length
+  const totalPages = Math.max(1, Math.ceil(totalItems / pageSize))
+  const paginatedItems = useMemo(() => {
     const start = (currentPage - 1) * pageSize
-    return filteredBuiltin.slice(start, start + pageSize)
-  }, [filteredBuiltin, currentPage, pageSize])
+    return filteredDataset.slice(start, start + pageSize)
+  }, [filteredDataset, currentPage, pageSize])
 
-  const paginatedCustom = useMemo(() => {
-    const start = (currentPage - 1) * pageSize
-    return filteredCustom.slice(start, start + pageSize)
-  }, [filteredCustom, currentPage, pageSize])
+  const handleOpenPreview = (item: UnifiedQuestionRow) => {
+    if (viewTab === 'mc') {
+      setPreviewTarget(getQuestionDetailById(item.id) || item.raw)
+    } else if (viewTab === 'custom') {
+      setPreviewTarget(item.raw)
+    } else {
+      window.open(item.studioUrl, '_blank')
+    }
+  }
 
   return (
     <div style={{ position: 'relative' }}>
@@ -212,7 +237,6 @@ export default function AdminQuestionsTab() {
           borderRadius: 12, padding: '12px 20px', color: '#e2e8f0',
           fontSize: '0.88rem', fontWeight: 500,
           boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
-          animation: 'aqfmFadeIn 0.2s ease',
         }}>
           {toast}
         </div>
@@ -223,10 +247,10 @@ export default function AdminQuestionsTab() {
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap', marginBottom: 20 }}>
           <div>
             <h3 style={{ margin: '0 0 4px', color: 'var(--h-text-white)', fontSize: '1.05rem', fontWeight: 700 }}>
-              Question Management
+              Question Bank &amp; Curriculum Management
             </h3>
             <p style={{ margin: 0, fontSize: '0.82rem', color: 'var(--h-text-muted)' }}>
-              Browse the built-in catalog of {MACHINE_CODING_CATALOG.length.toLocaleString()} questions · Manage {customList.length} custom questions
+              Explore and manage challenges across all 4 programming tracks (3,000 total challenge modules)
             </p>
           </div>
           {viewTab === 'custom' && (
@@ -247,28 +271,34 @@ export default function AdminQuestionsTab() {
           )}
         </div>
 
-        {/* Sub-tabs */}
-        <div style={{ display: 'flex', gap: 4, borderBottom: '1px solid rgba(255,255,255,0.07)', marginBottom: 0 }}>
-          {(['builtin', 'custom'] as ViewTab[]).map(t => (
+        {/* 5 Track Sub-tabs */}
+        <div style={{ display: 'flex', gap: 4, borderBottom: '1px solid rgba(255,255,255,0.07)', overflowX: 'auto' }}>
+          {[
+            { id: 'mc' as const, label: `⚡ Machine Coding (${MACHINE_CODING_CATALOG.length})` },
+            { id: 'dsa' as const, label: `📐 DSA Masterclass (${DSA_QUESTIONS.length})` },
+            { id: 'cp' as const, label: `💻 Core Programming (${CORE_PROGRAMMING_QUESTIONS.length})` },
+            { id: 'fjs' as const, label: `🌐 Frontend JS (${FRONTEND_JS_QUESTIONS.length})` },
+            { id: 'custom' as const, label: `✏️ Custom Questions (${customList.length})` },
+          ].map(t => (
             <button
-              key={t}
+              key={t.id}
               type="button"
-              id={`aqm-tab-${t}`}
-              onClick={() => setViewTab(t)}
+              id={`aqm-tab-${t.id}`}
+              onClick={() => setViewTab(t.id)}
               style={{
                 background: 'none',
                 border: 'none',
-                borderBottom: viewTab === t ? '2px solid #6366f1' : '2px solid transparent',
-                color: viewTab === t ? '#a5b4fc' : '#4b5563',
-                padding: '10px 18px',
+                borderBottom: viewTab === t.id ? '2px solid #6366f1' : '2px solid transparent',
+                color: viewTab === t.id ? '#a5b4fc' : '#94a3b8',
+                padding: '10px 16px',
                 fontSize: '0.85rem',
-                fontWeight: viewTab === t ? 700 : 500,
+                fontWeight: viewTab === t.id ? 700 : 500,
                 cursor: 'pointer',
+                whiteSpace: 'nowrap',
                 transition: 'all 0.15s',
-                letterSpacing: '0.3px',
               }}
             >
-              {t === 'builtin' ? `📚 Built-in Catalog (${MACHINE_CODING_CATALOG.length.toLocaleString()})` : `✏️ Custom Questions (${customList.length})`}
+              {t.label}
             </button>
           ))}
         </div>
@@ -290,7 +320,7 @@ export default function AdminQuestionsTab() {
             value={categoryFilter}
             onChange={e => setCategoryFilter(e.target.value)}
           >
-            <option value="ALL">All Categories</option>
+            <option value="ALL">All Categories ({categoryOptions.length})</option>
             {categoryOptions.map(c => <option key={c} value={c}>{c}</option>)}
           </select>
           <select
@@ -299,7 +329,7 @@ export default function AdminQuestionsTab() {
             onChange={e => setDifficultyFilter(e.target.value)}
           >
             <option value="ALL">All Difficulties</option>
-            {['Easy', 'Medium', 'Hard', 'Senior'].map(d => <option key={d} value={d}>{d}</option>)}
+            {['Easy', 'Medium', 'Hard'].map(d => <option key={d} value={d}>{d}</option>)}
           </select>
           {(search || categoryFilter !== 'ALL' || difficultyFilter !== 'ALL') && (
             <button
@@ -310,294 +340,140 @@ export default function AdminQuestionsTab() {
           )}
         </div>
 
-        {/* ---- BUILT-IN TAB ---- */}
-        {viewTab === 'builtin' && (
-          <div className="table-responsive">
-            <table className="admin-data-table">
-              <thead>
+        {/* Question Table */}
+        <div className="table-responsive">
+          <table className="admin-data-table">
+            <thead>
+              <tr>
+                <th style={{ width: 90 }}>ID</th>
+                <th>Title</th>
+                <th>Category</th>
+                <th style={{ width: 90 }}>Difficulty</th>
+                <th style={{ width: 90 }}>Est. Time</th>
+                <th style={{ width: 95 }}>Tests / Specs</th>
+                <th style={{ width: 110, textAlign: 'center' }}>Studio Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredDataset.length === 0 ? (
                 <tr>
-                  <th style={{ width: 80 }}>ID</th>
-                  <th>Title</th>
-                  <th>Category</th>
-                  <th style={{ width: 90 }}>Difficulty</th>
-                  <th style={{ width: 90 }}>Est. Time</th>
-                  <th style={{ width: 85 }}>Status</th>
-                  <th style={{ width: 95 }}>Metadata</th>
-                  <th style={{ width: 80, textAlign: 'center' }}>Actions</th>
+                  <td colSpan={7} style={{ textAlign: 'center', padding: '40px', color: 'var(--h-text-muted)' }}>
+                    🔍 No questions match the current filters.
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                {filteredBuiltin.length === 0 ? (
-                  <tr>
-                    <td colSpan={8} style={{ textAlign: 'center', padding: '40px', color: 'var(--h-text-muted)' }}>
-                      🔍 No questions match the current filters.
+              ) : (
+                paginatedItems.map(q => (
+                  <tr key={q.id}>
+                    <td>
+                      <span style={{
+                        background: 'rgba(99,102,241,0.15)',
+                        color: '#818cf8',
+                        border: '1px solid rgba(99,102,241,0.3)',
+                        borderRadius: 6, padding: '2px 8px',
+                        fontSize: '0.75rem', fontWeight: 700,
+                      }}>{q.id}</span>
+                    </td>
+                    <td style={{ color: 'var(--h-text-white)', fontWeight: 500, fontSize: '0.88rem' }}>{q.title}</td>
+                    <td><CatBadge cat={q.category} /></td>
+                    <td><DiffBadge diff={q.difficulty} /></td>
+                    <td style={{ color: 'var(--h-text-muted)', fontSize: '0.82rem' }}>{q.timeEstimate}</td>
+                    <td>
+                      <span style={{
+                        background: 'rgba(56,189,248,0.12)',
+                        color: '#38bdf8',
+                        border: '1px solid rgba(56,189,248,0.25)',
+                        borderRadius: 6,
+                        padding: '2px 7px',
+                        fontSize: '0.72rem',
+                        fontWeight: 600,
+                      }}>
+                        {q.testCount} Tests
+                      </span>
+                    </td>
+                    <td style={{ textAlign: 'center', whiteSpace: 'nowrap' }}>
+                      <Link
+                        to={q.studioUrl}
+                        className="btn btn-secondary btn-sm"
+                        style={{ padding: '4px 8px', fontSize: '0.75rem', textDecoration: 'none', marginRight: 4 }}
+                        target="_blank"
+                      >
+                        🚀 Open
+                      </Link>
+                      {(viewTab === 'mc' || viewTab === 'custom') && (
+                        <IconBtn
+                          title="Preview question spec"
+                          emoji="👁️"
+                          onClick={() => handleOpenPreview(q)}
+                        />
+                      )}
                     </td>
                   </tr>
-                ) : (
-                  paginatedBuiltin.map(q => (
-                    <tr key={q.id}>
-                      <td>
-                        <span style={{
-                          background: 'rgba(99,102,241,0.15)',
-                          color: '#818cf8',
-                          border: '1px solid rgba(99,102,241,0.3)',
-                          borderRadius: 6, padding: '2px 8px',
-                          fontSize: '0.75rem', fontWeight: 700,
-                        }}>{q.id}</span>
-                      </td>
-                      <td style={{ color: 'var(--h-text-white)', fontWeight: 500, fontSize: '0.88rem' }}>{q.title}</td>
-                      <td><CatBadge cat={q.category} /></td>
-                      <td><DiffBadge diff={q.difficulty} /></td>
-                      <td style={{ color: 'var(--h-text-muted)', fontSize: '0.82rem' }}>{q.timeEstimate}</td>
-                      <td>
-                        <span style={{
-                          background: 'rgba(16,185,129,0.12)',
-                          color: '#34d399',
-                          border: '1px solid rgba(16,185,129,0.3)',
-                          borderRadius: 6,
-                          padding: '2px 8px',
-                          fontSize: '0.72rem',
-                          fontWeight: 700,
-                        }}>
-                          ● Active
-                        </span>
-                      </td>
-                      <td>
-                        <span style={{
-                          background: 'rgba(56,189,248,0.12)',
-                          color: '#38bdf8',
-                          border: '1px solid rgba(56,189,248,0.25)',
-                          borderRadius: 6,
-                          padding: '2px 7px',
-                          fontSize: '0.72rem',
-                          fontWeight: 600,
-                        }}>
-                          {(q as any).testCases?.length || 4} Tests
-                        </span>
-                      </td>
-                      <td style={{ textAlign: 'center' }}>
-                        <IconBtn
-                          title="Preview question"
-                          emoji="👁️"
-                          onClick={() => setPreviewTarget(getQuestionDetailById(q.id) || (q as any))}
-                        />
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
-        )}
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
 
-        {/* ---- CUSTOM TAB ---- */}
-        {viewTab === 'custom' && (
-          <>
-            {loadingCustom ? (
-              <div style={{ textAlign: 'center', padding: '40px', color: 'var(--h-text-muted)' }}>
-                ⏳ Loading custom questions…
-              </div>
-            ) : filteredCustom.length === 0 ? (
-              <div style={{ textAlign: 'center', padding: '60px 20px' }}>
-                <div style={{ fontSize: '2.5rem', marginBottom: 12 }}>📝</div>
-                <div style={{ color: 'var(--h-text-white)', fontWeight: 600, marginBottom: 6 }}>
-                  {customList.length === 0 ? 'No custom questions yet' : 'No questions match the current filters'}
-                </div>
-                <div style={{ color: 'var(--h-text-muted)', fontSize: '0.85rem', marginBottom: 20 }}>
-                  {customList.length === 0
-                    ? 'Create your first custom machine coding question to supplement the built-in catalog.'
-                    : 'Try adjusting your search or filter criteria.'}
-                </div>
-                {customList.length === 0 && (
-                  <button
-                    type="button"
-                    onClick={() => setFormTarget('new')}
-                    style={{
-                      background: 'linear-gradient(135deg,#4f46e5,#6366f1)',
-                      color: '#fff', border: 'none', borderRadius: 10,
-                      padding: '10px 22px', fontWeight: 700, fontSize: '0.9rem',
-                      cursor: 'pointer',
-                    }}
-                  >➕ Create First Question</button>
-                )}
-              </div>
-            ) : (
-              <div className="table-responsive">
-                <table className="admin-data-table">
-                  <thead>
-                    <tr>
-                      <th style={{ width: 90 }}>ID</th>
-                      <th>Title</th>
-                      <th>Category</th>
-                      <th style={{ width: 90 }}>Difficulty</th>
-                      <th style={{ width: 90 }}>Est. Time</th>
-                      <th style={{ width: 120, textAlign: 'center' }}>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {paginatedCustom.map(q => (
-                      <tr key={q.id}>
-                        <td>
-                          <span style={{
-                            background: 'rgba(16,185,129,0.12)',
-                            color: '#34d399',
-                            border: '1px solid rgba(16,185,129,0.25)',
-                            borderRadius: 6, padding: '2px 8px',
-                            fontSize: '0.75rem', fontWeight: 700,
-                          }}>{q.id}</span>
-                        </td>
-                        <td style={{ color: 'var(--h-text-white)', fontWeight: 500, fontSize: '0.88rem' }}>{q.title}</td>
-                        <td><CatBadge cat={q.category} /></td>
-                        <td><DiffBadge diff={q.difficulty} /></td>
-                        <td style={{ color: 'var(--h-text-muted)', fontSize: '0.82rem' }}>{q.timeEstimate}</td>
-                        <td>
-                          <div style={{ display: 'flex', gap: 6, justifyContent: 'center' }}>
-                            <IconBtn title="Preview" emoji="👁️" onClick={() => setPreviewTarget(q)} />
-                            <IconBtn title="Edit" emoji="✏️" onClick={() => setFormTarget(q)} />
-                            <IconBtn title="Delete" emoji="🗑️" danger onClick={() => setDeleteConfirmId(q.id)} />
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </>
-        )}
-
-        {/* ---- Pagination Toolbar ---- */}
-        {activeFilteredCount > 0 && (
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            padding: '16px 20px',
-            borderTop: '1px solid var(--border-color, rgba(255,255,255,0.08))',
-            flexWrap: 'wrap',
-            gap: '12px',
-          }}>
-            <div style={{ fontSize: '13px', color: 'var(--text-muted)' }}>
-              Showing {Math.min((currentPage - 1) * pageSize + 1, activeFilteredCount)}–{Math.min(currentPage * pageSize, activeFilteredCount)} of {activeFilteredCount} questions
-            </div>
-
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        {/* Pagination Bar */}
+        {totalPages > 1 && (
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 16, padding: '12px 0', borderTop: '1px solid var(--h-border)' }}>
+            <span style={{ fontSize: '0.8rem', color: 'var(--h-text-muted)' }}>
+              Showing {((currentPage - 1) * pageSize) + 1}–{Math.min(currentPage * pageSize, totalItems)} of {totalItems.toLocaleString()} questions
+            </span>
+            <div style={{ display: 'flex', gap: 6 }}>
               <button
                 type="button"
-                className="btn btn-sm btn-secondary"
-                disabled={currentPage <= 1}
+                className="btn btn-secondary btn-sm"
+                disabled={currentPage === 1}
                 onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
               >
-                ← Prev
+                ◀ Prev
               </button>
-
-              <span style={{ fontSize: '13px', padding: '0 8px', color: 'var(--text-primary)' }}>
+              <span style={{ padding: '4px 10px', fontSize: '0.8rem', color: 'var(--h-text-white)', alignSelf: 'center' }}>
                 Page {currentPage} of {totalPages}
               </span>
-
               <button
                 type="button"
-                className="btn btn-sm btn-secondary"
-                disabled={currentPage >= totalPages}
+                className="btn btn-secondary btn-sm"
+                disabled={currentPage === totalPages}
                 onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
               >
-                Next →
+                Next ▶
               </button>
-
-              <select
-                className="role-dropdown"
-                style={{ marginLeft: '12px', padding: '4px 8px', fontSize: '12px' }}
-                value={pageSize}
-                onChange={e => {
-                  setPageSize(Number(e.target.value))
-                  setCurrentPage(1)
-                }}
-              >
-                <option value={10}>10 / page</option>
-                <option value={25}>25 / page</option>
-                <option value={50}>50 / page</option>
-                <option value={100}>100 / page</option>
-              </select>
             </div>
           </div>
         )}
       </div>
 
-      {/* ---- Delete Confirm Dialog ---- */}
-      {deleteConfirmId && typeof document !== 'undefined' && createPortal(
-        <div
-          style={{
-            position: 'fixed', inset: 0,
-            background: 'rgba(5,8,20,0.85)',
-            backdropFilter: 'blur(8px)',
-            zIndex: 9999,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            padding: '16px',
-            boxSizing: 'border-box',
-          }}
-          onClick={e => { if (e.target === e.currentTarget) setDeleteConfirmId(null) }}
-          role="dialog"
-          aria-modal="true"
-        >
-          <div style={{
-            background: '#0f1629',
-            border: '1px solid rgba(239,68,68,0.3)',
-            borderRadius: 16,
-            padding: '28px 32px',
-            maxWidth: 400, width: '100%',
-            boxShadow: '0 20px 60px rgba(0,0,0,0.6)',
-            textAlign: 'center',
-          }}>
-            <div style={{ fontSize: '2.5rem', marginBottom: 12 }}>🗑️</div>
-            <h3 style={{ color: '#f1f5f9', margin: '0 0 8px', fontSize: '1.05rem' }}>Delete Question?</h3>
-            <p style={{ color: '#64748b', fontSize: '0.85rem', margin: '0 0 24px' }}>
-              This will permanently remove question <strong style={{ color: '#94a3b8' }}>{deleteConfirmId}</strong> from the custom bank. This action cannot be undone.
-            </p>
-            <div style={{ display: 'flex', gap: 10, justifyContent: 'center' }}>
-              <button
-                type="button"
-                onClick={() => setDeleteConfirmId(null)}
-                style={{
-                  background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)',
-                  color: '#94a3b8', borderRadius: 10, padding: '9px 20px',
-                  fontWeight: 600, fontSize: '0.88rem', cursor: 'pointer',
-                }}
-              >Cancel</button>
-              <button
-                type="button"
-                id="aqm-confirm-delete-btn"
-                onClick={() => void handleDelete(deleteConfirmId)}
-                style={{
-                  background: 'linear-gradient(135deg,#dc2626,#ef4444)',
-                  color: '#fff', border: 'none', borderRadius: 10,
-                  padding: '9px 20px', fontWeight: 700, fontSize: '0.88rem',
-                  cursor: 'pointer',
-                }}
-              >🗑️ Yes, Delete</button>
-            </div>
-          </div>
-        </div>,
-        document.body
-      )}
-
-      {/* ---- Form Modal (Create / Edit) ---- */}
-      {formTarget !== null && (
-        <AdminQuestionFormModal
-          initial={formTarget === 'new' ? null : formTarget}
-          onSave={handleSave}
-          onClose={() => setFormTarget(null)}
-        />
-      )}
-
-      {/* ---- Preview Modal ---- */}
-      {previewTarget !== null && (
+      {/* Preview Modal */}
+      {previewTarget && (
         <AdminQuestionPreviewModal
           question={previewTarget}
           onClose={() => setPreviewTarget(null)}
-          onEdit={'isCustom' in previewTarget ? () => {
-            setFormTarget(previewTarget as CustomMCQuestion)
+          onEdit={viewTab === 'custom' ? () => {
+            const current = previewTarget as CustomMCQuestion
             setPreviewTarget(null)
+            setFormTarget(current)
           } : undefined}
+        />
+      )}
+
+      {/* Form Modal */}
+      {formTarget && (
+        <AdminQuestionFormModal
+          initial={formTarget === 'new' ? null : formTarget}
+          onClose={() => setFormTarget(null)}
+          onSave={async (draft: CustomMCQuestionDraft) => {
+            if (formTarget === 'new') {
+              await questionManagementService.create(draft)
+              showToast('New question created successfully.')
+            } else {
+              await questionManagementService.update(formTarget.id, draft)
+              showToast(`Question ${formTarget.id} updated successfully.`)
+            }
+            setFormTarget(null)
+            void loadCustom()
+          }}
         />
       )}
     </div>

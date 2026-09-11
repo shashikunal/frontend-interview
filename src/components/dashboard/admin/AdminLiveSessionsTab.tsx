@@ -50,6 +50,17 @@ function uid() {
   return Math.random().toString(36).slice(2, 9);
 }
 
+/* ─── Track-aware monitor link (platform-wide sessions) ─────────────────── */
+function monitorPath(session: InterviewSession): string {
+  const qid = String(session.question_id || '');
+  const u = qid.toUpperCase();
+  const suffix = `?session=${session.id}&role=admin`;
+  if (u.startsWith('JS-P') || u.startsWith('JSP') || u.startsWith('CP')) return `/core-programming/question/${qid}${suffix}`;
+  if (u.startsWith('DSA')) return `/dsa/question/${qid}${suffix}`;
+  if (u.startsWith('FJP')) return `/frontend-javascript/question/${qid}${suffix}`;
+  return `/machine-coding?id=${qid}&session=${session.id}&role=admin`;
+}
+
 /* ─── Code Preview Panel ──────────────────────────────────────────────────── */
 
 function CodePreviewPanel({ session, activity }: { session: InterviewSession; activity: ActivityEvent[] }) {
@@ -76,7 +87,7 @@ function CodePreviewPanel({ session, activity }: { session: InterviewSession; ac
           <code className="rt-meta-val">{session.language || 'react'}</code>
         </span>
         <Link
-          to={`/machine-coding?id=${session.question_id}&session=${session.id}&role=admin`}
+          to={monitorPath(session)}
           className="btn btn-primary btn-sm rt-join-btn"
           target="_blank"
           rel="noopener noreferrer"

@@ -192,7 +192,7 @@ export const CATEGORY_CONFIG: Record<
     icon: '⚡',
     eyebrow: 'MACHINE CODING TRACK',
     title: 'Machine Coding Leaderboard',
-    subtitle: 'Rankings across 500 interactive components, React systems, and production frontend scenarios',
+    subtitle: 'Rankings across 500 machine-level questions (Q/MC IDs only — Core Programming JS-P excluded)',
     studioTitle: 'Machine Coding Studio',
     studioPath: '/machine-coding',
     emptyTitle: 'No Machine Coding submissions found',
@@ -204,11 +204,23 @@ export const CATEGORY_CONFIG: Record<
     icon: '💻',
     eyebrow: 'CORE JAVASCRIPT TRACK',
     title: 'Core Programming Leaderboard',
-    subtitle: 'Rankings across 500 Core JavaScript challenges, runtime polyfills, algorithmic logic, and language fundamentals',
+    subtitle: 'Rankings across 500 Core JavaScript challenges (JS-P IDs only — Machine Coding Q/MC excluded)',
     studioTitle: 'Core Programming Studio',
     studioPath: '/core-programming',
     emptyTitle: 'No Core Programming submissions found',
     emptyDesc: 'Be the first candidate to solve a Core JavaScript challenge and rank on the leaderboard!',
+  },
+  'all-coding': {
+    name: 'All Coding (MC + CP)',
+    shortName: 'MC + CP',
+    icon: '🧩',
+    eyebrow: 'BIFURCATED CODING VIEW',
+    title: 'Machine Coding + Core Programming',
+    subtitle: 'Combined view over 500 Machine Coding (Q/MC) + 500 Core Programming (JS-P) — strictly bifurcated, no double counting, no data moved',
+    studioTitle: 'All Coding Studios',
+    studioPath: '/core-programming',
+    emptyTitle: 'No Machine Coding or Core Programming submissions found',
+    emptyDesc: 'Solve a Machine Coding (Q) or Core Programming (JS-P) challenge to appear here!',
   },
   'frontend-js': {
     name: 'Frontend JavaScript (FJP)',
@@ -272,6 +284,17 @@ export default function Leaderboard({ compact = false }: LeaderboardProps) {
   const [timeframe, setTimeframe] = useState<LeaderboardTimeframe>('all')
   const [category, setCategory] = useState<LeaderboardCategory>(initialCat)
   const [myEntry, setMyEntry] = useState<LeaderboardEntry | null>(null)
+
+  // Sync category when ?category= changes (deep links, back/forward, tab nav)
+  useEffect(() => {
+    const urlCat = searchParams.get('category') as LeaderboardCategory | null
+    if (urlCat && urlCat !== category && urlCat in CATEGORY_CONFIG) {
+      setCategory(urlCat)
+    } else if (!urlCat && category !== 'all') {
+      setCategory('all')
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams])
 
   const handleCategoryChange = (newCat: LeaderboardCategory) => {
     setCategory(newCat)
@@ -420,12 +443,32 @@ export default function Leaderboard({ compact = false }: LeaderboardProps) {
       )}
 
       {/* ---- Podium ---- */}
-      {!loading && topThree.length >= 3 && !searchQuery && (
-        <div className="lb-podium">
-          {/* Reorder: 2nd, 1st, 3rd */}
-          <PodiumCard entry={topThree[1]} position={2} />
-          <PodiumCard entry={topThree[0]} position={1} />
-          <PodiumCard entry={topThree[2]} position={3} />
+      {!loading && topThree.length > 0 && !searchQuery && (
+        <div
+          className="lb-podium"
+          style={
+            topThree.length === 1
+              ? { display: 'flex', justifyContent: 'center', maxWidth: 420, margin: '0 auto' }
+              : topThree.length === 2
+              ? { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', maxWidth: 640, margin: '0 auto' }
+              : undefined
+          }
+        >
+          {topThree.length === 1 ? (
+            <PodiumCard entry={topThree[0]} position={1} />
+          ) : topThree.length === 2 ? (
+            <>
+              <PodiumCard entry={topThree[0]} position={1} />
+              <PodiumCard entry={topThree[1]} position={2} />
+            </>
+          ) : (
+            <>
+              {/* Standard podium order: 2nd, 1st, 3rd */}
+              <PodiumCard entry={topThree[1]} position={2} />
+              <PodiumCard entry={topThree[0]} position={1} />
+              <PodiumCard entry={topThree[2]} position={3} />
+            </>
+          )}
         </div>
       )}
 

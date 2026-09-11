@@ -1,5 +1,6 @@
 // src/components/frontendjs/lib/frontendJsLeaderboardService.ts
 import { supabase } from '../../../lib/supabase/client'
+import { resolveDisplayName } from '../../../lib/leaderboardService'
 import { frontendJsProgressService } from './frontendJsProgressService'
 
 export interface FrontendJsLeaderboardEntry {
@@ -38,7 +39,7 @@ class FrontendJsLeaderboardService {
 
           return progressRows.map((row, index) => {
             const profile = profileMap.get(row.user_id)
-            const name = profile?.full_name || `Candidate ${row.user_id.slice(0, 5)}`
+            const name = resolveDisplayName(profile?.full_name, profile?.email, row.user_id)
             const solved = row.solved_question_ids?.length || 0
             const score = row.total_score || solved * 100
 

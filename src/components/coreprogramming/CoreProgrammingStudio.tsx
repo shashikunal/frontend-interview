@@ -7,6 +7,8 @@ import type { CoreProgrammingQuestion, CoreProgrammingRunResult, CoreProgramming
 import { runCoreProgrammingCode } from './lib/coreProgrammingRunner';
 import { coreProgrammingProgressService } from './lib/coreProgrammingProgressService';
 import { coreProgrammingSubmissionService } from './lib/coreProgrammingSubmissionService';
+import { trackingService } from '../../lib/trackingService';
+import { interviewSessionService } from '../../lib/interviewSessionService';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { CoreProgrammingDetail } from './components/CoreProgrammingDetail';
@@ -91,8 +93,13 @@ function CoreProgrammingWorkspace({
   onBackToCatalog,
   onSelectQuestion,
 }: WorkspaceProps) {
-  const { user } = useAuth();
+  const { user, role } = useAuth() as { user: any; role?: string };
   const { resolvedTheme } = useTheme();
+
+  // Live-session presence for Admin live-sessions monitoring (MC parity).
+  // Registers one interview_sessions row per candidate+question; best-effort.
+  const [liveSessionId, setLiveSessionId] = useState<string | null>(null);
+  const autoSessionRef = useRef<string | null>(null);
 
   // Code state
   const [currentCode, setCurrentCode] = useState<string>('');
@@ -176,12 +183,47 @@ function CoreProgrammingWorkspace({
     setIsTimerRunning(true);
 
     setSubmissions(coreProgrammingProgressService.getSubmissions(question.id));
+    coreProgrammingSubmissionService.fetchUserSubmissions(user?.id, question.id).then(setSubmissions);
+    void trackingService.startOrResumeQuestionAttempt(question.id, 'CORE_PROGRAMMING', 'javascript');
     setRunResult(null);
     setActiveTestTab('testcase');
     setCustomInput(question.testCases[0]?.input || '[]');
     setUseCustomInput(false);
     coreProgrammingProgressService.setLastVisitedQuestion(question.id);
-  }, [question.id, question.starterCode]);
+  }, [question.id, question.starterCode, user?.id]);
+
+  // ── LIVE SESSION REGISTRATION (Admin live-sessions parity with MC) ──
+  // Candidates only; one row per candidate+question via getOrCreateSession.
+  useEffect(() => {
+    if (!user?.id) return;
+    if (role === 'admin' || role === 'observer' || role === 'interviewer') return;
+    if (autoSessionRef.current === `${user.id}:${question.id}`) return;
+    autoSessionRef.current = `${user.id}:${question.id}`;
+    setLiveSessionId(null);
+
+    interviewSessionService.getOrCreateSession({
+      candidateId: user.id,
+      candidateName: user.name || user.email?.split('@')[0] || 'Candidate',
+      candidateEmail: user.email,
+      questionId: question.id,
+      questionTitle: question.title,
+      language: 'javascript',
+      initialFiles: { 'solution.js': question.starterCode },
+    }).then(session => {
+      setLiveSessionId(session?.id || null);
+    }).catch(err => {
+      console.warn('[CPLiveSession] Could not register session:', err);
+    });
+  }, [question.id, question.title, question.starterCode, user?.id, role]);
+
+  // ── SESSION HEARTBEAT (every 30s, MC parity) ──
+  useEffect(() => {
+    if (!liveSessionId) return;
+    const heartbeat = window.setInterval(() => {
+      interviewSessionService.updateSessionActivity(liveSessionId, 'solution.js');
+    }, 30000);
+    return () => window.clearInterval(heartbeat);
+  }, [liveSessionId]);
 
   // Sync editor theme with application theme
   useEffect(() => {
@@ -281,6 +323,20 @@ function CoreProgrammingWorkspace({
       const res = await runCoreProgrammingCode(currentCode, question.functionName, allTests, 5000);
       setRunResult(res);
 
+      // Live-session execution feed (best-effort, never blocks submit)
+      if (liveSessionId) {
+        void interviewSessionService.recordExecution({
+          session_id: liveSessionId,
+          candidate_id: user?.id,
+          question_id: question.id,
+          language: 'javascript',
+          status: res.success ? 'success' : 'failed',
+          execution_time: res.totalRuntimeMs || 0,
+          tests_passed: res.passedCount,
+          tests_total: res.totalCount,
+        });
+      }
+
       const submissionScore = res.success
         ? 100
         : Math.round((res.passedCount / Math.max(1, res.totalCount)) * 80);
@@ -299,7 +355,8 @@ function CoreProgrammingWorkspace({
 
       // Persist locally + sync to Supabase + mirror for leaderboard/dashboard
       await coreProgrammingSubmissionService.submit(newSub, user)
-      setSubmissions(coreProgrammingProgressService.getSubmissions(question.id));
+      const updatedList = await coreProgrammingSubmissionService.fetchUserSubmissions(user?.id, question.id)
+      setSubmissions(updatedList.length > 0 ? updatedList : coreProgrammingProgressService.getSubmissions(question.id));
 
       if (res.success) {
         setIsSolved(true);

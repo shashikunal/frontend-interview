@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react'
 import './AdminTracksTab.css'
 
-interface TrackStat {
+export interface TrackStat {
   id: string
   name: string
   icon: string

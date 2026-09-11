@@ -131,6 +131,16 @@ function DSAStudioWorkspace({ questionId }: WorkspaceProps) {
     }
   }, [question.id, language, user])
 
+  // Heartbeat keeps admin "last seen" fresh (MC/CP parity)
+  useEffect(() => {
+    const heartbeat = window.setInterval(() => {
+      if (sessionIdRef.current) {
+        interviewSessionService.updateSessionActivity(sessionIdRef.current)
+      }
+    }, 30000)
+    return () => window.clearInterval(heartbeat)
+  }, [])
+
   // Load code from localStorage on question / language change
   useEffect(() => {
     const saved = dsaProgressService.getCode(question.id, language)

@@ -19,6 +19,18 @@ export type ActivityAction =
   | 'mock_interview_completed'
   | 'profile_updated'
 
+/**
+ * Canonical track category — persisted in question_attempts and submissions.
+ * MUST match the CHECK constraint in the database migration.
+ */
+export type TrackCategory =
+  | 'MACHINE_CODING'
+  | 'DSA'
+  | 'CORE_PROGRAMMING'
+  | 'FRONTEND_JS'
+  | 'THEORY'
+  | 'AI_MOCK'
+
 export type SubmissionStatus =
   | 'pending'
   | 'running'
@@ -33,6 +45,9 @@ export interface QuestionAttempt {
   id: string
   userId: string
   questionId: string
+  /** Canonical track category — stored in DB */
+  category?: TrackCategory
+  language?: string
   startedAt: string
   lastActivityAt?: string
   completedAt?: string | null
@@ -71,14 +86,21 @@ export interface SubmissionRecord {
   id: string
   userId: string
   questionId: string
+  /** Canonical track category — stored in DB */
+  category?: TrackCategory
   attemptId?: string | null
   answer?: string
   code?: string
   language: string
   status: SubmissionStatus
   score: number
+  passedTests?: number
+  totalTests?: number
   executionTime: number // ms
   memoryUsed: number
+  compilerOutput?: string
+  errorMessage?: string
+  idempotencyKey?: string
   createdAt: string
 }
 
@@ -217,8 +239,15 @@ export const trackingService = {
   /**
    * Starts a question attempt or retrieves existing unfinished attempt
    * (Resumes attempt on page reload or re-open)
+   * @param questionId - The question identifier
+   * @param category   - Canonical track category (persisted in DB)
+   * @param language   - Programming language for this attempt
    */
-  startOrResumeQuestionAttempt: async (questionId: string | number): Promise<string> => {
+  startOrResumeQuestionAttempt: async (
+    questionId: string | number,
+    category: TrackCategory = 'MACHINE_CODING',
+    language?: string
+  ): Promise<string> => {
     const strQId = String(questionId)
     const userId = await getAuthUserId()
     const now = new Date().toISOString()
@@ -236,7 +265,7 @@ export const trackingService = {
       }
     }
 
-    // 2. Query Supabase for unfinished attempt
+    // 2. Query Supabase for unfinished attempt (same question)
     if (userId) {
       try {
         const { data: existingActive } = await supabase
@@ -292,6 +321,8 @@ export const trackingService = {
       id: attemptId,
       userId: userId || 'guest',
       questionId: strQId,
+      category,
+      language,
       startedAt: now,
       lastActivityAt: now,
       status: 'started',
@@ -311,22 +342,25 @@ export const trackingService = {
     await trackingService.trackActivity('question_started', 'question', strQId, {
       attemptId,
       attemptNumber,
+      category,
       startedAt: now,
     })
 
-    // Upsert into Supabase
+    // Upsert into Supabase (only use columns that exist in the live schema)
     if (userId) {
       try {
+        const payload: Record<string, unknown> = {
+          user_id: userId,
+          question_id: strQId,
+          status: 'started',
+          attempt_count: attemptNumber,
+          started_at: now,
+          last_activity_at: now,
+        }
+
         const { data, error } = await supabase
           .from('question_attempts')
-          .insert({
-            user_id: userId,
-            question_id: strQId,
-            status: 'started',
-            attempt_count: attemptNumber,
-            started_at: now,
-            last_activity_at: now,
-          })
+          .insert(payload)
           .select('id')
           .single()
 
@@ -346,10 +380,14 @@ export const trackingService = {
   },
 
   /**
-   * Alias for backward compatibility
+   * Alias for backward compatibility — defaults to MACHINE_CODING
    */
-  startQuestionAttempt: async (questionId: string | number): Promise<string> => {
-    return trackingService.startOrResumeQuestionAttempt(questionId)
+  startQuestionAttempt: async (
+    questionId: string | number,
+    category?: TrackCategory,
+    language?: string
+  ): Promise<string> => {
+    return trackingService.startOrResumeQuestionAttempt(questionId, category, language)
   },
 
   /**
@@ -592,24 +630,68 @@ export const trackingService = {
   },
 
   /**
-   * Record an evaluated submission with status, score, runtime, and update progress
-   * Preserves full history without overwriting past submissions
+   * Record an evaluated submission with status, score, runtime, and update progress.
+   * Preserves full history without overwriting past submissions.
+   * Idempotency: if idempotencyKey is provided and a submission already exists with
+   * that key, the existing submission is returned without creating a duplicate.
    */
   recordSubmission: async (params: {
     questionId: string | number
+    category?: TrackCategory
     attemptId?: string | null
     code?: string
     answer?: string
     language?: string
     status: SubmissionStatus
     score?: number
+    passedTests?: number
+    totalTests?: number
     executionTime?: number
     memoryUsed?: number
+    compilerOutput?: string
+    errorMessage?: string
+    /** Explicit user ID (e.g. from AuthContext) when available */
+    userId?: string | null
+    /** Unique client key to prevent duplicate submissions on retry/double-click */
+    idempotencyKey?: string
   }): Promise<SubmissionRecord> => {
     const strQId = String(params.questionId)
-    const userId = await getAuthUserId()
+    const userId = params.userId || await getAuthUserId()
     const now = new Date().toISOString()
     const score = params.score ?? (params.status === 'accepted' ? 100 : 0)
+    const category: TrackCategory = params.category ?? 'MACHINE_CODING'
+
+    // --- Idempotency check ---
+    if (params.idempotencyKey && userId) {
+      try {
+        const { data: existing } = await supabase
+          .from('submissions')
+          .select('*')
+          .eq('idempotency_key', params.idempotencyKey)
+          .maybeSingle()
+        if (existing?.id) {
+          return {
+            id: String(existing.id),
+            userId: String(existing.user_id),
+            questionId: String(existing.question_id),
+            category,
+            attemptId: existing.attempt_id ? String(existing.attempt_id) : null,
+            code: existing.code,
+            language: existing.language || 'javascript',
+            status: existing.status as SubmissionStatus,
+            score: Number(existing.score || 0),
+            passedTests: Number(existing.passed_tests || 0),
+            totalTests: Number(existing.total_tests || 0),
+            executionTime: Number(existing.execution_time || 0),
+            memoryUsed: Number(existing.memory_used || 0),
+            idempotencyKey: params.idempotencyKey,
+            createdAt: String(existing.created_at),
+          }
+        }
+      } catch {
+        // Proceed with normal insert on error
+      }
+    }
 
     const subId = `sub_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`
     const submission: SubmissionRecord = {
@@ -656,7 +738,7 @@ export const trackingService = {
     // 3. Insert into Supabase submissions table
     if (userId) {
       try {
-        await supabase.from('submissions').insert({
+        const payload: Record<string, unknown> = {
           user_id: userId,
           question_id: strQId,
           attempt_id: params.attemptId && !params.attemptId.startsWith('att_') ? params.attemptId : null,
@@ -667,7 +749,28 @@ export const trackingService = {
           score,
           execution_time: params.executionTime || 0,
           memory_used: params.memoryUsed || 0,
-        })
+        }
+        if (params.category) payload.category = params.category
+        if (params.passedTests !== undefined) payload.passed_tests = params.passedTests
+        if (params.totalTests !== undefined) payload.total_tests = params.totalTests
+        if (params.idempotencyKey) payload.idempotency_key = params.idempotencyKey
+
+        const { error } = await supabase.from('submissions').insert(payload)
+        // Fallback: if category or audit columns are not yet in live schema, retry with base columns
+        if (error && (error.message.includes('column') || error.message.includes('schema cache'))) {
+          await supabase.from('submissions').insert({
+            user_id: userId,
+            question_id: strQId,
+            attempt_id: params.attemptId && !params.attemptId.startsWith('att_') ? params.attemptId : null,
+            code: params.code,
+            answer: params.answer,
+            language: params.language || 'javascript',
+            status: params.status,
+            score,
+            execution_time: params.executionTime || 0,
+            memory_used: params.memoryUsed || 0,
+          })
+        }
       } catch (err) {
         console.warn('[TrackingService] Failed writing submission to Supabase:', err)
       }

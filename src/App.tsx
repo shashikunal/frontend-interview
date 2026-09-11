@@ -49,6 +49,7 @@ const CoreProgrammingStudio = lazy(() => import('./components/coreprogramming/Co
 const FrontendJsStudio = lazy(() => import('./components/frontendjs/FrontendJsStudio'))
 const AnalyticsDashboard = lazy(() => import('./components/analytics/AnalyticsDashboard'))
 const Leaderboard = lazy(() => import('./components/leaderboard/Leaderboard'))
+const AIVideoMockApp = lazy(() => import('./features/ai-video-mock/AIVideoMockApp'))
 import RoleGuard from './components/auth/RoleGuard'
 import { useAuth } from './context/AuthContext'
 import FeatureGuard from './components/auth/FeatureGuard'
@@ -68,8 +69,9 @@ export default function App() {
   const isStudioWorkspace =
     (location.pathname.startsWith('/machine-coding') || location.pathname.startsWith('/dsa') || location.pathname.startsWith('/frontend-javascript') || location.pathname.startsWith('/frontend-js') || location.pathname.startsWith('/core-programming') || location.pathname.startsWith('/frontend-programming')) &&
     (Boolean(new URLSearchParams(location.search).get('id')) || location.pathname.startsWith('/dsa/DSA') || location.pathname.startsWith('/dsa/question/') || location.pathname.startsWith('/frontend-javascript/question/') || location.pathname.startsWith('/frontend-javascript/FJP') || location.pathname.startsWith('/frontend-js/question/') || location.pathname.startsWith('/frontend-js/FJP') || location.pathname.startsWith('/core-programming/question/') || location.pathname.startsWith('/core-programming/JS-P') || location.pathname.startsWith('/frontend-programming/question/') || location.pathname.startsWith('/frontend-programming/JS-P'))
+  const isAIVideoMockLiveSession = location.pathname.startsWith('/ai-video-mock/session')
   const hideHeader = isAdminDashboard
-  const hideFooter = isAdminDashboard || isStudioWorkspace
+  const hideFooter = isAdminDashboard || isStudioWorkspace || isAIVideoMockLiveSession
 
   return (
     <div className={`app ${isAdminDashboard ? 'dashboard-layout-mode' : ''} ${isStudioWorkspace ? 'studio-layout-mode' : ''}`}>
@@ -617,6 +619,12 @@ export default function App() {
           />
           <Route path="/frontend-programming" element={<Navigate to="/core-programming" replace />} />
           <Route path="/frontend-programming/*" element={<Navigate to="/core-programming" replace />} />
+
+          {/* AI Video Mock Interview Platform Isolated Module */}
+          <Route
+            path="/ai-video-mock/*"
+            element={<AIVideoMockApp />}
+          />
 
           <Route path="/practice" element={<Navigate to="/questions" replace />} />
           <Route path="/practice/*" element={<Navigate to="/questions" replace />} />

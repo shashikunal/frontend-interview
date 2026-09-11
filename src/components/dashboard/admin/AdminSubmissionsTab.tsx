@@ -31,26 +31,47 @@ export default function AdminSubmissionsTab({
 
   const effectiveList = submissions || initialSubmissions || []
 
-  const mcCount = useMemo(() => effectiveList.filter(s => s.isMachineCoding).length, [effectiveList])
-  const dsaCount = useMemo(() => effectiveList.filter(s => s.isDSA || s.questionId.startsWith('DSA')).length, [effectiveList])
-  const cpCount = useMemo(() => effectiveList.filter(s => s.questionId.startsWith('JS-P') || s.questionId.startsWith('JS-p')).length, [effectiveList])
-  const fjsCount = useMemo(() => effectiveList.filter(s => s.questionId.startsWith('FJP-') || s.questionId.startsWith('fjp-')).length, [effectiveList])
-  const theoryCount = useMemo(() => effectiveList.filter(s => !s.isMachineCoding && !s.isDSA && !s.questionId.startsWith('DSA') && !s.questionId.startsWith('JS-P') && !s.questionId.startsWith('FJP-')).length, [effectiveList])
+  const isItemCP = (s: AdminSubmissionItem) => {
+    const qUpper = s.questionId.toUpperCase()
+    if (qUpper.startsWith('Q') || qUpper.startsWith('MC')) return false
+    return (
+      s.track === 'CORE_PROGRAMMING' ||
+      s.isCoreProgramming ||
+      qUpper.startsWith('JS-P') ||
+      qUpper.startsWith('JSP') ||
+      qUpper.startsWith('CP')
+    )
+  }
+  const isItemDSA = (s: AdminSubmissionItem) =>
+    !isItemCP(s) &&
+    (s.track === 'DSA' || s.isDSA || s.questionId.toUpperCase().startsWith('DSA') || (!s.questionId.toUpperCase().startsWith('Q') && !s.questionId.toUpperCase().startsWith('MC') && !s.questionId.toUpperCase().startsWith('FJP') && /^\d+$/.test(s.questionId)))
+  const isItemMC = (s: AdminSubmissionItem) =>
+    !isItemCP(s) && !isItemDSA(s) && (s.track === 'MACHINE_CODING' || s.isMachineCoding || s.questionId.startsWith('Q') || s.questionId.startsWith('mc'))
+  const isItemFJS = (s: AdminSubmissionItem) =>
+    s.track === 'FRONTEND_JS' || s.isFrontendJs || s.questionId.toUpperCase().startsWith('FJP')
+
+  const mcCount = useMemo(() => effectiveList.filter(isItemMC).length, [effectiveList])
+  const dsaCount = useMemo(() => effectiveList.filter(isItemDSA).length, [effectiveList])
+  const cpCount = useMemo(() => effectiveList.filter(isItemCP).length, [effectiveList])
+  const fjsCount = useMemo(() => effectiveList.filter(isItemFJS).length, [effectiveList])
+  const theoryCount = useMemo(() => effectiveList.filter(s => !isItemMC(s) && !isItemDSA(s) && !isItemCP(s) && !isItemFJS(s)).length, [effectiveList])
 
   const filtered = useMemo(() => {
     return effectiveList.filter(s => {
       const matchStatus = statusFilter === 'ALL' || s.status === statusFilter
       const matchLang = langFilter === 'ALL' || s.language.toLowerCase().includes(langFilter.toLowerCase())
-      const isDSAItem = s.isDSA || s.questionId.startsWith('DSA')
-      const isCPItem = s.questionId.startsWith('JS-P') || s.questionId.startsWith('JS-p')
-      const isFJSItem = s.questionId.startsWith('FJP-') || s.questionId.startsWith('fjp-')
+      const isMCAssert = isItemMC(s)
+      const isDSAAssert = isItemDSA(s)
+      const isCPAssert = isItemCP(s)
+      const isFJSAssert = isItemFJS(s)
+
       const matchType =
         typeFilter === 'ALL' ||
-        (typeFilter === 'MACHINE_CODING' && s.isMachineCoding) ||
-        (typeFilter === 'DSA' && isDSAItem) ||
-        (typeFilter === 'CORE_PROGRAMMING' && isCPItem) ||
-        (typeFilter === 'FRONTEND_JS' && isFJSItem) ||
-        (typeFilter === 'THEORY' && !s.isMachineCoding && !isDSAItem && !isCPItem && !isFJSItem)
+        (typeFilter === 'MACHINE_CODING' && isMCAssert) ||
+        (typeFilter === 'DSA' && isDSAAssert) ||
+        (typeFilter === 'CORE_PROGRAMMING' && isCPAssert) ||
+        (typeFilter === 'FRONTEND_JS' && isFJSAssert) ||
+        (typeFilter === 'THEORY' && !isMCAssert && !isDSAAssert && !isCPAssert && !isFJSAssert)
 
       const matchSearch =
         !search ||
@@ -265,9 +286,19 @@ export default function AdminSubmissionsTab({
                                 ⚡ Machine Coding
                               </span>
                             )}
-                            {(sub.isDSA || sub.questionId.startsWith('DSA')) && (
+                            {(sub.isDSA || sub.questionId.toUpperCase().startsWith('DSA')) && (
                               <span className="submission-pill" style={{ background: 'rgba(16, 185, 129, 0.15)', color: '#10b981', fontSize: '11px', padding: '2px 6px' }}>
                                 🧠 DSA Masterclass
+                              </span>
+                            )}
+                            {(sub.isCoreProgramming || sub.questionId.toUpperCase().startsWith('JS-P') || sub.questionId.toUpperCase().startsWith('JSP')) && (
+                              <span className="submission-pill" style={{ background: 'rgba(99, 102, 241, 0.15)', color: '#6366f1', fontSize: '11px', padding: '2px 6px' }}>
+                                💻 Core Programming
+                              </span>
+                            )}
+                            {(sub.isFrontendJs || sub.questionId.toUpperCase().startsWith('FJP')) && (
+                              <span className="submission-pill" style={{ background: 'rgba(14, 165, 233, 0.15)', color: '#0ea5e9', fontSize: '11px', padding: '2px 6px' }}>
+                                🌐 Frontend JS
                               </span>
                             )}
                             {review && (

@@ -7,6 +7,7 @@ import type { FrontendJsQuestion, FrontendJsRunResult, FrontendJsSubmission } fr
 import { runFrontendJsCode } from './lib/frontendJsRunner'
 import { frontendJsProgressService } from './lib/frontendJsProgressService'
 import { frontendJsSubmissionService } from './lib/frontendJsSubmissionService'
+import { interviewSessionService } from '../../lib/interviewSessionService'
 import { useAuth } from '../../context/AuthContext'
 import { useTheme } from '../../context/ThemeContext'
 import { FrontendJsQuestionDetail } from './components/FrontendJsQuestionDetail'
@@ -130,8 +131,13 @@ function FrontendJsWorkspace({
   onBackToCatalog,
   onSelectQuestion,
 }: WorkspaceProps) {
-  const { user } = useAuth()
+  const { user, role } = useAuth() as { user: any; role?: string }
   const { resolvedTheme } = useTheme()
+
+  // Live-session presence for Admin live-sessions monitoring (MC/CP/DSA parity).
+  // Registers one interview_sessions row per candidate+question; best-effort.
+  const [liveSessionId, setLiveSessionId] = useState<string | null>(null)
+  const autoSessionRef = useRef<string | null>(null)
 
   // Code state
   const [currentCode, setCurrentCode] = useState<string>('')
@@ -209,6 +215,39 @@ function FrontendJsWorkspace({
     setActiveTestTab('testcase')
     frontendJsProgressService.setLastVisitedQuestion(question.id)
   }, [question.id, question.starterCode])
+
+  // ── LIVE SESSION REGISTRATION (Admin live-sessions parity) ──
+  // Candidates only; one row per candidate+question via getOrCreateSession.
+  useEffect(() => {
+    if (!user?.id) return
+    if (role === 'admin' || role === 'observer' || role === 'interviewer') return
+    if (autoSessionRef.current === `${user.id}:${question.id}`) return
+    autoSessionRef.current = `${user.id}:${question.id}`
+    setLiveSessionId(null)
+
+    interviewSessionService.getOrCreateSession({
+      candidateId: user.id,
+      candidateName: user.name || user.email?.split('@')[0] || 'Candidate',
+      candidateEmail: user.email,
+      questionId: question.id,
+      questionTitle: question.title,
+      language: 'javascript',
+      initialFiles: { 'solution.js': question.starterCode },
+    }).then(session => {
+      setLiveSessionId(session?.id || null)
+    }).catch(err => {
+      console.warn('[FJSLiveSession] Could not register session:', err)
+    })
+  }, [question.id, question.title, question.starterCode, user?.id, role])
+
+  // ── SESSION HEARTBEAT (every 30s, MC/CP/DSA parity) ──
+  useEffect(() => {
+    if (!liveSessionId) return
+    const heartbeat = window.setInterval(() => {
+      interviewSessionService.updateSessionActivity(liveSessionId, 'solution.js')
+    }, 30000)
+    return () => window.clearInterval(heartbeat)
+  }, [liveSessionId])
 
   // Timer interval for standard practice
   useEffect(() => {
@@ -313,6 +352,20 @@ function FrontendJsWorkspace({
       const allTests = [...question.testCases, ...(question.hiddenTestCases || [])]
       const res = await runFrontendJsCode(currentCode, question.functionName, allTests, 4000)
       setRunResult(res)
+
+      // Live-session execution feed (best-effort, never blocks submit)
+      if (liveSessionId) {
+        void interviewSessionService.recordExecution({
+          session_id: liveSessionId,
+          candidate_id: user?.id,
+          question_id: question.id,
+          language: 'javascript',
+          status: res.success ? 'success' : 'failed',
+          execution_time: res.totalRuntimeMs || 0,
+          tests_passed: res.passedCount,
+          tests_total: res.totalCount,
+        })
+      }
 
       if (res.consoleLogs && res.consoleLogs.length > 0) {
         setConsoleLogs(res.consoleLogs.map(l => ({ level: l.level as any, message: l.message })))

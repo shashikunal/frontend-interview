@@ -20,6 +20,7 @@ import InterviewScorecardModal, { type ScorecardData } from './InterviewScorecar
 import AIInterviewPrompter from './AIInterviewPrompter';
 import { useQuestions } from '../../data/useQuestions';
 import { trackingService } from '../../lib/trackingService';
+import { leaderboardService } from '../../lib/leaderboardService';
 import * as Y from 'yjs';
 import { useAuth } from '../../context/AuthContext';
 import { SupabaseYjsProvider } from '../../lib/yjs/supabaseYjsProvider';
@@ -911,18 +912,15 @@ export default function MachineCodingStudio() {
         }
         const passedCount = res.filter(r => r.status === 'passed').length;
         const isAllPassed = res.length > 0 && passedCount === res.length;
-        const testScore = res.length > 0 ? Math.round((passedCount / res.length) * 100) : 0;
 
         if (activeQuestion?.id) {
-          // Use refs for always-current code — avoids stale closure in this long-lived effect
-          const submittedCode = filesRef.current[activeFileNameRef.current] || Object.values(filesRef.current)[0] || '';
-          trackingService.recordSubmission({
+          // Log code execution event only (Run != Submit)
+          trackingService.recordCodeExecution({
             questionId: activeQuestion.id,
-            code: submittedCode,
             language: selectedLanguage,
-            status: isAllPassed ? 'accepted' : 'wrong_answer',
-            score: testScore,
-          });
+            executionStatus: isAllPassed ? 'success' : 'runtime_error',
+            executionTime: res.reduce((acc, r) => acc + (r.durationMs || 0), 0),
+          }).catch(() => {});
         }
 
         if (collabSession && isCollabActive && activeQuestion) {
@@ -1546,6 +1544,35 @@ export default function MachineCodingStudio() {
       trackingService.completeQuestionAttempt(qId, score);
       showToast(`❌ Wrong Answer: ${passed}/${total} test cases passed. Status: Attempted.`);
     }
+
+    // Persist official submission to Supabase & tracking ledger
+    const submittedCode = curFiles[activeFileNameRef.current] || Object.values(curFiles)[0] || '';
+    const executionDuration = isInterviewActive ? Math.max(1, interviewDuration - Math.max(0, interviewTimeLeft)) : 180;
+    trackingService.recordSubmission({
+      questionId: qId,
+      category: 'MACHINE_CODING',
+      userId: user?.id,
+      code: submittedCode,
+      language: selectedLanguage,
+      status: isAccepted ? 'accepted' : 'wrong_answer',
+      score,
+      passedTests: passed,
+      totalTests: total,
+      executionTime: executionDuration,
+    }).catch(err => console.debug('MC tracking submission notice:', err));
+
+    leaderboardService.saveMachineCodingSubmission({
+      candidateId: user?.id || 'anon',
+      candidateName: user?.name || 'Candidate',
+      candidateEmail: user?.email || '',
+      questionId: qId,
+      score,
+      testsPassed: passed,
+      testsTotal: total,
+      code: submittedCode,
+      language: selectedLanguage,
+      timeSpentSeconds: executionDuration,
+    }).catch(err => console.debug('MC leaderboard submission notice:', err));
 
     setScorecardData({
       question: activeQuestion,

@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react'
 import type { AdminAttemptItem } from '../../../lib/adminAnalyticsService'
+import { MACHINE_CODING_CATALOG } from '../../machinecoding/data/machineCodingCatalog'
 
 interface AdminAttemptsTabProps {
   attempts?: AdminAttemptItem[]
@@ -19,15 +20,31 @@ export default function AdminAttemptsTab({
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState('ALL')
   const [langFilter, setLangFilter] = useState('ALL')
+  const [trackFilter, setTrackFilter] = useState('ALL')
   const [currentPage, setCurrentPage] = useState(1)
   const [pageSize, setPageSize] = useState(25)
 
   const effectiveList = attempts || initialAttempts || []
 
+  const isItemCPAttempt = (a: AdminAttemptItem) =>
+    a.category === 'CORE_PROGRAMMING' ||
+    a.track === 'CORE_PROGRAMMING' ||
+    a.questionId.toUpperCase().startsWith('JS-P') ||
+    a.questionId.toUpperCase().startsWith('JSP') ||
+    a.questionId.toUpperCase().startsWith('CP') ||
+    MACHINE_CODING_CATALOG.find(q => q.id.toLowerCase() === a.questionId.toLowerCase())?.category === 'JavaScript'
+
   const filtered = useMemo(() => {
     return effectiveList.filter(a => {
       const matchStatus = statusFilter === 'ALL' || a.status === statusFilter
       const matchLang = langFilter === 'ALL' || (a.language && a.language.toLowerCase().includes(langFilter.toLowerCase()))
+      const cat = a.category || a.track
+      const isCP = isItemCPAttempt(a)
+      const matchTrack = trackFilter === 'ALL' ||
+        (trackFilter === 'CORE_PROGRAMMING' && isCP) ||
+        (trackFilter === 'DSA' && !isCP && a.questionId.toUpperCase().startsWith('DSA')) ||
+        (trackFilter === 'FRONTEND_JS' && !isCP && (cat === 'FRONTEND_JS' || a.questionId.toUpperCase().startsWith('FJP'))) ||
+        (trackFilter === 'MACHINE_CODING' && !isCP && (!cat || cat === 'MACHINE_CODING'))
       const s = search.toLowerCase()
       const matchSearch =
         !search ||
@@ -37,9 +54,9 @@ export default function AdminAttemptsTab({
         (a.userName && a.userName.toLowerCase().includes(s)) ||
         (a.userEmail && a.userEmail.toLowerCase().includes(s)) ||
         (a.language && a.language.toLowerCase().includes(s))
-      return matchStatus && matchLang && matchSearch
+      return matchStatus && matchLang && matchTrack && matchSearch
     })
-  }, [effectiveList, statusFilter, langFilter, search])
+  }, [effectiveList, statusFilter, langFilter, trackFilter, search])
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize))
   const paginated = useMemo(() => {
@@ -89,6 +106,19 @@ export default function AdminAttemptsTab({
               <option value="in_progress">In Progress</option>
               <option value="started">Started</option>
               <option value="abandoned">Abandoned</option>
+            </select>
+
+            <select
+              className="role-dropdown"
+              value={trackFilter}
+              onChange={e => handleFilterChange(setTrackFilter, e.target.value)}
+            >
+              <option value="ALL">All Tracks</option>
+              <option value="MACHINE_CODING">⚡ Machine Coding</option>
+              <option value="DSA">🧠 DSA Masterclass</option>
+              <option value="CORE_PROGRAMMING">💻 Core Programming</option>
+              <option value="FRONTEND_JS">🌐 Frontend JS</option>
+              <option value="AI_MOCK">🎥 AI Video Mock</option>
             </select>
 
             <select
@@ -162,8 +192,8 @@ export default function AdminAttemptsTab({
                         </button>
                       </td>
                       <td>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
                             <span
                               className="aq-qid-tag clickable"
                               onClick={() => onViewCode?.(att)}
@@ -172,6 +202,42 @@ export default function AdminAttemptsTab({
                             >
                               #{att.questionId}
                             </span>
+                            {(() => {
+                              const cat = att.category || att.track
+                              if (cat === 'DSA' || att.questionId.toUpperCase().startsWith('DSA')) {
+                                return (
+                                  <span className="submission-pill" style={{ background: 'rgba(16, 185, 129, 0.15)', color: '#10b981', fontSize: '10px', padding: '2px 6px', fontWeight: 600 }}>
+                                    🧠 DSA
+                                  </span>
+                                )
+                              }
+                              if (cat === 'CORE_PROGRAMMING' || att.questionId.toUpperCase().startsWith('JS-P') || att.questionId.toUpperCase().startsWith('JSP')) {
+                                return (
+                                  <span className="submission-pill" style={{ background: 'rgba(99, 102, 241, 0.15)', color: '#6366f1', fontSize: '10px', padding: '2px 6px', fontWeight: 600 }}>
+                                    💻 Core
+                                  </span>
+                                )
+                              }
+                              if (cat === 'FRONTEND_JS' || att.questionId.toUpperCase().startsWith('FJP')) {
+                                return (
+                                  <span className="submission-pill" style={{ background: 'rgba(14, 165, 233, 0.15)', color: '#0ea5e9', fontSize: '10px', padding: '2px 6px', fontWeight: 600 }}>
+                                    🌐 Frontend JS
+                                  </span>
+                                )
+                              }
+                              if (cat === 'AI_MOCK') {
+                                return (
+                                  <span className="submission-pill" style={{ background: 'rgba(236, 72, 153, 0.15)', color: '#ec4899', fontSize: '10px', padding: '2px 6px', fontWeight: 600 }}>
+                                    🎥 AI Mock
+                                  </span>
+                                )
+                              }
+                              return (
+                                <span className="submission-pill" style={{ background: 'rgba(67, 24, 255, 0.12)', color: '#4318FF', fontSize: '10px', padding: '2px 6px', fontWeight: 600 }}>
+                                  ⚡ Machine Coding
+                                </span>
+                              )
+                            })()}
                             <span className="lang-tag" style={{ fontSize: '0.65rem' }}>
                               {att.language || 'typescript'}
                             </span>

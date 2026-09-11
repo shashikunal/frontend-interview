@@ -50,7 +50,7 @@ export default function Header() {
   }
 
   const isArchitectureActive = ['/experience', '/pathways', '/system-design', '/case-studies', '/ast-explorer', '/security', '/user-management', '/state-machine', '/capacity-estimator', '/memory-profiler', '/module-federation', '/whiteboard', '/webrtc-lab', '/local-first', '/search-engine', '/design-system', '/i18n-lab', '/sdui-lab', '/web-components', '/protocols', '/css-pipeline', '/wasm-lab', '/visualizer', '/profiler', '/resume-optimizer', '/compensation'].some(p => isActive(p))
-  const isMockActive = ['/mock-interview', '/video-mock', '/behavioral', '/peer-room'].some(p => isActive(p))
+  const isMockActive = ['/mock-interview', '/video-mock', '/ai-video-mock', '/behavioral', '/peer-room'].some(p => isActive(p))
   const isMachineCodingActive = isActive('/machine-coding') || isActive('/machine-level-coding')
   const isDsaActive = isActive('/dsa')
   const isCoreProgActive = isActive('/core-programming') || isActive('/frontend-programming')
@@ -869,11 +869,22 @@ export default function Header() {
               <div className="mega-column">
                 <span className="mega-col-title">🎥 AI &amp; Behavioral</span>
                 <div className="mega-items-group">
-                  <Link to="/video-mock" className={`mega-item highlight-ai ${isActive('/video-mock') ? 'active' : ''}`}>
+                  <Link to="/ai-video-mock" className={`mega-item highlight-ai ${isActive('/ai-video-mock') ? 'active' : ''}`}>
+                    <span className="drop-icon">🎙️</span>
+                    <div>
+                      <span className="drop-title" style={{ color: '#818cf8', fontWeight: 700 }}>
+                        AI Video Mock Studio 2.0
+                        <span className="drop-lock-tag" style={{ background: 'rgba(99, 102, 241, 0.2)', color: '#a5b4fc' }}>NEW</span>
+                      </span>
+                      <span className="drop-desc">16 tracks, 5,120+ questions, senior comparison &amp; sandbox</span>
+                    </div>
+                  </Link>
+
+                  <Link to="/video-mock" className={`mega-item ${isActive('/video-mock') ? 'active' : ''}`}>
                     <span className="drop-icon">🎥</span>
                     <div>
                       <span className="drop-title">
-                        AI Video Mock Interview
+                        AI Video Mock (Legacy)
                         {!hasVideoMock && <span className="drop-lock-tag">🔒 PRO</span>}
                       </span>
                       <span className="drop-desc">Live webcam, speech audio transcription &amp; grading</span>
@@ -1120,6 +1131,7 @@ export default function Header() {
 
                 {mobileExpandedSection === 'mock' && (
                   <div className="mobile-accordion-content">
+                    <Link to="/ai-video-mock" className="mobile-sublink" style={{ color: '#818cf8', fontWeight: 700 }} onClick={closeMobileMenu}>🎙️ AI Video Mock Studio 2.0 (NEW)</Link>
                     <Link to="/mock-interview" className="mobile-sublink" onClick={closeMobileMenu}>⏱️ Timed Mock Simulator</Link>
                     <Link to="/video-mock" className="mobile-sublink" onClick={closeMobileMenu}>🎥 AI Video Mock Interview</Link>
                     <Link to="/behavioral" className="mobile-sublink" onClick={closeMobileMenu}>🤝 FAANG STAR Behavioral</Link>

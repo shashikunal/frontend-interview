@@ -117,7 +117,22 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
--- RLS Policies: interview_sessions
+-- RLS Policies: interview_sessions (DROPs first so re-runs never fail)
+DROP POLICY IF EXISTS "Candidates and Admins view sessions" ON public.interview_sessions;
+DROP POLICY IF EXISTS "Candidates and Admins insert sessions" ON public.interview_sessions;
+DROP POLICY IF EXISTS "Candidates and Admins update sessions" ON public.interview_sessions;
+DROP POLICY IF EXISTS "Session participants viewable by session members or admins" ON public.session_participants;
+DROP POLICY IF EXISTS "Session participants insertable" ON public.session_participants;
+DROP POLICY IF EXISTS "Session participants updatable" ON public.session_participants;
+DROP POLICY IF EXISTS "Session messages viewable by all in session" ON public.session_messages;
+DROP POLICY IF EXISTS "Session messages insertable by participants" ON public.session_messages;
+DROP POLICY IF EXISTS "Snapshots viewable by participants" ON public.session_code_snapshots;
+DROP POLICY IF EXISTS "Snapshots insertable by participants" ON public.session_code_snapshots;
+DROP POLICY IF EXISTS "Executions viewable by session members" ON public.session_executions;
+DROP POLICY IF EXISTS "Executions insertable" ON public.session_executions;
+DROP POLICY IF EXISTS "Activity viewable by session members" ON public.session_activity;
+DROP POLICY IF EXISTS "Activity insertable" ON public.session_activity;
+
 CREATE POLICY "Candidates and Admins view sessions"
   ON public.interview_sessions FOR SELECT
   USING (

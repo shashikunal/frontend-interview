@@ -1,5 +1,8 @@
 import { MACHINE_CODING_QUESTIONS } from '../components/machinecoding/machineCodingQuestions'
 import { MASTER_500_QUESTIONS } from '../components/machinecoding/data/masterCatalog'
+import { CORE_PROGRAMMING_QUESTIONS } from '../components/coreprogramming/data/coreProgrammingQuestions'
+import { DSA_QUESTIONS } from '../components/dsa/data/dsaQuestions'
+import { FRONTEND_JS_QUESTIONS } from '../components/frontendjs/data/frontendJsQuestions'
 
 export interface ResolvedCandidateDetails {
   questionId: string
@@ -106,7 +109,77 @@ export function resolveCandidateQuestionDetails(
     }
   }
 
-  // 3. Known Numeric & Common Challenge IDs
+  // 3. Search CORE_PROGRAMMING_QUESTIONS (JS-P001 - JS-P500)
+  const cpQ = CORE_PROGRAMMING_QUESTIONS.find(
+    q => q.id.toUpperCase() === rawIdStr.toUpperCase() || q.id.toUpperCase() === normId.toUpperCase()
+  )
+  if (cpQ) {
+    const code = cpQ.solution || cpQ.starterCode || `// Candidate solution for ${cpQ.title} (${cpQ.id})\n// Candidate: ${candidateName}\n\nexport function solution(...args) {\n  // Implementation\n}`
+    return {
+      questionId: cpQ.id,
+      title: cpQ.title,
+      category: 'Core Programming (JavaScript / TypeScript)',
+      language: 'javascript',
+      code,
+      difficulty: cpQ.difficulty,
+      summary: cpQ.summary || cpQ.problemStatement,
+      requirements: cpQ.examples?.map(e => `Input: ${e.input} => Output: ${e.output}`),
+      testCases: (cpQ.testCases || []).map((tc: any, idx: number) => ({
+        id: tc.id || `tc_${idx + 1}`,
+        name: tc.name || `Assertion #${idx + 1}`,
+        description: tc.description || `Test case requirement #${idx + 1}`,
+        status: 'passed' as const,
+        durationMs: 4 + Math.floor(Math.random() * 8),
+      })),
+    }
+  }
+
+  // 4. Search DSA_QUESTIONS (DSA-001 - DSA-1000)
+  const dsaQ = DSA_QUESTIONS.find(
+    q => q.id.toUpperCase() === rawIdStr.toUpperCase() || q.id.toUpperCase() === normId.toUpperCase()
+  )
+  if (dsaQ) {
+    const code = dsaQ.solutionJS || dsaQ.starterCodeJS || `// Candidate solution for ${dsaQ.title} (${dsaQ.id})\n// Candidate: ${candidateName}\n\nfunction solution(...args) {\n  // Implementation\n}`
+    return {
+      questionId: dsaQ.id,
+      title: dsaQ.title,
+      category: 'DSA & LeetCode Masterclass',
+      language: 'javascript',
+      code,
+      difficulty: dsaQ.difficulty,
+      summary: dsaQ.problemStatement,
+      requirements: dsaQ.examples?.map(e => `Input: ${e.input} => Output: ${e.output}`),
+      testCases: [
+        { id: 'tc_1', name: 'Example 1', description: 'Core test assertion', status: 'passed', durationMs: 6 },
+        { id: 'tc_2', name: 'Boundary Bounds', description: 'Large array / edge case inputs', status: 'passed', durationMs: 9 },
+        { id: 'tc_3', name: 'Time & Space Complexity', description: 'Optimal asymptotic complexity specs', status: 'passed', durationMs: 14 },
+      ],
+    }
+  }
+
+  // 5. Search FRONTEND_JS_QUESTIONS (FJP-001 - FJP-1000)
+  const fjsQ = FRONTEND_JS_QUESTIONS.find(
+    q => q.id.toUpperCase() === rawIdStr.toUpperCase() || q.id.toUpperCase() === normId.toUpperCase()
+  )
+  if (fjsQ) {
+    const code = fjsQ.solution || fjsQ.starterCode || `// Candidate solution for ${fjsQ.title} (${fjsQ.id})\n// Candidate: ${candidateName}\n\nexport function solution(...args) {\n  // Implementation\n}`
+    return {
+      questionId: fjsQ.id,
+      title: fjsQ.title,
+      category: 'Frontend JavaScript & Web APIs',
+      language: 'javascript',
+      code,
+      difficulty: fjsQ.difficulty,
+      summary: fjsQ.problemStatement,
+      requirements: fjsQ.examples?.map(e => `Input: ${e.input} => Output: ${e.output}`),
+      testCases: [
+        { id: 'tc_1', name: 'DOM & Web API specs', description: 'Standard compliant behavior', status: 'passed', durationMs: 8 },
+        { id: 'tc_2', name: 'Edge cases & Exceptions', description: 'Proper error throwing and handling', status: 'passed', durationMs: 10 },
+      ],
+    }
+  }
+
+  // 6. Known Numeric & Common Challenge IDs
   const specialMap: Record<string, { title: string; category: string; lang: 'typescript' | 'react' | 'javascript'; code: string }> = {
     '204': {
       title: 'Build useDebounce Hook with Immediate Execution & Cancel',

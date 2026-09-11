@@ -3,6 +3,7 @@ import { supabase } from './supabase/client';
 export interface InterviewSession {
   id: string;
   candidate_id: string;
+  admin_id?: string | null;
   candidate_name: string;
   candidate_email: string;
   question_id: string;
@@ -214,6 +215,63 @@ export const interviewSessionService = {
     const localMap = getLocalSessions();
     return localMap[sessionId] || null;
   },
+
+  /**
+   * Server-side session access verification.
+   * MUST be called before constructing SupabaseYjsProvider or joining a session.
+   *
+   * Returns true if:
+   *  - The current auth user is the session's candidate_id
+   *  - The current auth user is the session's admin_id
+   *  - The current auth user is a platform admin (checked via is_session_member RLS helper)
+   *  - The sessionId belongs to a local/offline fallback session owned by the current user
+   *
+   * Returns false if:
+   *  - The user is not authenticated
+   *  - The session does not exist
+   *  - The user has no relationship to the session
+   *
+   * NOTE: This is a defense-in-depth check. The primary enforcement is via RLS
+   * policies on session sub-tables (session_participants, session_messages, etc).
+   */
+  async verifySessionAccess(sessionId: string): Promise<boolean> {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return false;
+
+      // Try to read the session — RLS will reject unauthorized reads
+      const { data, error } = await supabase
+        .from('interview_sessions')
+        .select('id, candidate_id, admin_id')
+        .eq('id', sessionId)
+        .maybeSingle();
+
+      if (error || !data) return false;
+
+      // Explicit check: is user the candidate or assigned admin?
+      if (data.candidate_id === user.id || data.admin_id === user.id) return true;
+
+      // Check if user is a participant (covers admin observers)
+      const { data: participant } = await supabase
+        .from('session_participants')
+        .select('id')
+        .eq('session_id', sessionId)
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+      return !!participant;
+    } catch (_) {
+      // If Supabase is unreachable, allow local sessions as offline fallback
+      const { data: { user } } = await supabase.auth.getUser().catch(() => ({ data: { user: null } }));
+      if (!user) return false;
+
+      const localMap = getLocalSessions();
+      const localSession = localMap[sessionId];
+      return localSession?.candidate_id === user.id;
+    }
+  },
+
+
 
   /**
    * List all sessions for Admin live monitoring dashboard

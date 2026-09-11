@@ -17,14 +17,19 @@ import AdminActivityTab from './admin/AdminActivityTab'
 import AdminAnalyticsTab from './admin/AdminAnalyticsTab'
 import AdminRequestsTab from './admin/AdminRequestsTab'
 import AdminTelemetryTab from './admin/AdminTelemetryTab'
-import AdminTracksTab from './admin/AdminTracksTab'
+import AdminTracksTab, { type TrackStat } from './admin/AdminTracksTab'
 import AdminLiveSessionsTab from './admin/AdminLiveSessionsTab'
+import AdminBackupButton from './admin/AdminBackupButton'
 import AdminUserDetailModal from './admin/AdminUserDetailModal'
 import AdminSubmissionCodeModal from './admin/AdminSubmissionCodeModal'
 import AdminAttemptCodeModal from './admin/AdminAttemptCodeModal'
+import EnvironmentDiagnosticsModal from '../common/EnvironmentDiagnosticsModal'
 import RoleGuard from '../auth/RoleGuard'
 import Leaderboard from '../leaderboard/Leaderboard'
 import { MACHINE_CODING_CATALOG } from '../machinecoding/data/machineCodingCatalog'
+import { DSA_QUESTIONS } from '../dsa/data/dsaQuestions'
+import { CORE_PROGRAMMING_QUESTIONS } from '../coreprogramming/data/coreProgrammingQuestions'
+import { FRONTEND_JS_QUESTIONS } from '../frontendjs/data/frontendJsQuestions'
 import {
   adminAnalyticsService,
   type OverviewStats,
@@ -36,24 +41,8 @@ import {
 } from '../../lib/adminAnalyticsService'
 import './AdminDashboard.css'
 
-interface TrackStat {
-  id: string
-  name: string
-  icon: string
-  totalModules: number
-  activeCandidates: number
-  avgScore: number
-  difficulty: 'Core' | 'Advanced' | 'Staff'
-}
-
-const PLATFORM_TRACKS: TrackStat[] = [
-  { id: 't1', name: 'JavaScript & DOM Performance', icon: '⚡', totalModules: 85, activeCandidates: 1420, avgScore: 78, difficulty: 'Core' },
-  { id: 't2', name: 'React 19 & State Architecture', icon: '⚛️', totalModules: 110, activeCandidates: 1890, avgScore: 74, difficulty: 'Advanced' },
-  { id: 't3', name: 'Frontend System Design Studio', icon: '🏗️', totalModules: 48, activeCandidates: 950, avgScore: 68, difficulty: 'Staff' },
-  { id: 't4', name: 'Babel AST & Compiler Visualizer', icon: '⚙️', totalModules: 32, activeCandidates: 620, avgScore: 62, difficulty: 'Staff' },
-  { id: 't5', name: 'Algorithms & Data Structures', icon: '📐', totalModules: 140, activeCandidates: 1650, avgScore: 71, difficulty: 'Advanced' },
-  { id: 't6', name: 'AI Video Mock Interview Simulator', icon: '🎥', totalModules: 24, activeCandidates: 780, avgScore: 81, difficulty: 'Staff' },
-]
+// NOTE: Platform track stats are derived from live adminAnalyticsService data.
+// No hardcoded activeCandidates or avgScore constants.
 
 export type AdminTab =
   | 'overview'
@@ -113,11 +102,13 @@ export default function AdminDashboard() {
     return 'overview'
   }, [searchParams, urlTab])
 
-  // Proper query string routing mechanism
+  // Proper query string routing mechanism (preserves ?category= on rankings)
   const setActiveTab = useCallback((t: AdminTab) => {
     const tabName = t === 'users' ? 'candidates' : t === 'audit' ? 'telemetry' : t === 'live' ? 'live-sessions' : t
-    navigate(`${basePath}?tab=${tabName}`)
-  }, [navigate, basePath])
+    const cat = searchParams.get('category')
+    const qs = t === 'rankings' && cat ? `?tab=${tabName}&category=${encodeURIComponent(cat)}` : `?tab=${tabName}`
+    navigate(`${basePath}${qs}`)
+  }, [navigate, basePath, searchParams])
 
   // Horizon Light / Dark Theme State - synchronized with global ThemeContext
   const { resolvedTheme, toggleTheme: toggleGlobalTheme } = useTheme()
@@ -156,6 +147,7 @@ export default function AdminDashboard() {
   const [selectedUserForDeepDive, setSelectedUserForDeepDive] = useState<string | null>(null)
   const [selectedSubmissionForCode, setSelectedSubmissionForCode] = useState<SubmissionRecord | null>(null)
   const [selectedAttemptForCode, setSelectedAttemptForCode] = useState<AttemptRecord | null>(null)
+  const [isDiagnosticsOpen, setIsDiagnosticsOpen] = useState<boolean>(false)
 
   // Live Activities Stream State
   const [liveActivities, setLiveActivities] = useState<ActivityLogItem[]>([])
@@ -208,8 +200,8 @@ export default function AdminDashboard() {
         progressSyncService.getAllUsersProgress(),
         dbActivityService.getAllActivities(50),
         adminAnalyticsService.getOverviewStats(overviewTimeframe),
-        adminAnalyticsService.getSubmissionsList({ limit: 100 }),
-        adminAnalyticsService.getQuestionAttemptsList({ limit: 100 }),
+        adminAnalyticsService.getSubmissionsList({ limit: 2000 }),
+        adminAnalyticsService.getQuestionAttemptsList({ limit: 2000 }),
         adminAnalyticsService.getActivityFeed({ limit: 100 }),
         adminAnalyticsService.getQuestionStatsList({ limit: 100 }),
       ])
@@ -637,6 +629,61 @@ export default function AdminDashboard() {
     return list.slice().sort((a, b) => b.streak - a.streak)[0]
   }, [progressMap])
 
+  // Derived platform tracks with live metrics from Supabase analytics
+  const platformTracks = useMemo<TrackStat[]>(() => {
+    const totalUsersCount = profiles.length
+
+    // Count attempts/submissions per category
+    const trackStatsMap: Record<string, { count: number; totalScore: number; scoreCount: number }> = {
+      'JavaScript & DOM Performance': { count: 0, totalScore: 0, scoreCount: 0 },
+      'Machine Coding & React Systems': { count: 0, totalScore: 0, scoreCount: 0 },
+      'Core JavaScript Programming': { count: 0, totalScore: 0, scoreCount: 0 },
+      'Algorithms & Data Structures': { count: 0, totalScore: 0, scoreCount: 0 },
+      'Frontend System Design Studio': { count: 0, totalScore: 0, scoreCount: 0 },
+      'AI Video Mock Interview Simulator': { count: 0, totalScore: 0, scoreCount: 0 },
+    }
+
+    attemptsList.forEach(att => {
+      const targetTrack = att.track === 'FRONTEND_JS'
+        ? 'JavaScript & DOM Performance'
+        : att.track === 'DSA'
+        ? 'Algorithms & Data Structures'
+        : att.track === 'CORE_PROGRAMMING'
+        ? 'Core JavaScript Programming'
+        : att.track === 'AI_MOCK'
+        ? 'AI Video Mock Interview Simulator'
+        : 'Machine Coding & React Systems'
+
+      if (trackStatsMap[targetTrack]) {
+        trackStatsMap[targetTrack].count++
+        if (att.score !== undefined) {
+          trackStatsMap[targetTrack].totalScore += att.score
+          trackStatsMap[targetTrack].scoreCount++
+        }
+      }
+    })
+
+    const baseTracks = [
+      { id: 't1', name: 'JavaScript & DOM Performance', icon: '⚡', totalModules: FRONTEND_JS_QUESTIONS.length || 1000, difficulty: 'Core' as const, description: 'Core JS, Event Loop, DOM APIs and V8 runtime optimization' },
+      { id: 't2', name: 'Machine Coding & React Systems', icon: '⚛️', totalModules: MACHINE_CODING_CATALOG.length || 500, difficulty: 'Advanced' as const, description: 'Interactive React components, production UI & full application state' },
+      { id: 't3', name: 'Core JavaScript Programming', icon: '💻', totalModules: CORE_PROGRAMMING_QUESTIONS.length || 500, difficulty: 'Core' as const, description: 'Language fundamentals, polyfills, closures, recursion & async mechanics' },
+      { id: 't4', name: 'Algorithms & Data Structures', icon: '📐', totalModules: DSA_QUESTIONS.length || 1000, difficulty: 'Advanced' as const, description: 'LeetCode style algorithmic challenges tailored for frontend engineers' },
+      { id: 't5', name: 'Frontend System Design Studio', icon: '🏗️', totalModules: 48, difficulty: 'Staff' as const, description: 'Realtime collaborative architectures, edge routing, offline sync' },
+      { id: 't6', name: 'AI Video Mock Interview Simulator', icon: '🎥', totalModules: 50, difficulty: 'Staff' as const, description: 'Comprehensive AI-assisted real-time video mock interview sessions' },
+    ]
+
+    return baseTracks.map(t => {
+      const stats = trackStatsMap[t.name]
+      const activeCandidates = stats ? (stats.count > 0 ? Math.min(stats.count, totalUsersCount || stats.count) : (progressMap[t.name] ? 1 : 0)) : 0
+      const avgScore = stats && stats.scoreCount > 0 ? Math.round(stats.totalScore / stats.scoreCount) : (overviewStats?.successRate || 0)
+      return {
+        ...t,
+        activeCandidates,
+        avgScore,
+      }
+    })
+  }, [profiles.length, attemptsList, progressMap, overviewStats?.successRate])
+
   const handleExportActivitiesCSV = () => {
     const headers = ['ID', 'User', 'Email', 'Type', 'Title', 'Details', 'Timestamp']
     const rows = liveActivities.map(a => [
@@ -905,6 +952,15 @@ export default function AdminDashboard() {
               title="Synchronize live state with Supabase"
             >
               {isLoading ? '⏳ Syncing' : '🔄 Live Sync'}
+            </button>
+
+            <button
+              type="button"
+              className="h-topbar-btn secondary"
+              onClick={() => setIsDiagnosticsOpen(true)}
+              title="Inspect live database & environment integrity"
+            >
+              🛠️ Diagnostics
             </button>
 
             <button
@@ -1470,7 +1526,7 @@ export default function AdminDashboard() {
       {activeTab === 'tracks' && (
         <div className="admin-tab-content">
           <AdminTracksTab
-            tracks={PLATFORM_TRACKS}
+            tracks={platformTracks}
             onNavigateToCandidates={(trackFilter?: string) => {
               setTrackFilter(trackFilter || 'ALL')
               setActiveTab('users')
@@ -1588,6 +1644,7 @@ export default function AdminDashboard() {
                   <button type="button" className="btn btn-secondary" onClick={handleExportActivitiesCSV}>
                     📊 Export Telemetry Events (CSV)
                   </button>
+                  <AdminBackupButton showToast={showToast} />
                 </div>
               </div>
             </div>
@@ -1608,7 +1665,7 @@ export default function AdminDashboard() {
               </div>
 
               <div className="h-projects-list">
-                {PLATFORM_TRACKS.slice(0, 4).map(track => (
+                {platformTracks.slice(0, 4).map((track: TrackStat) => (
                   <div key={track.id} className="h-project-row">
                     <div className="h-project-icon">{track.icon}</div>
                     <div className="h-project-info">
@@ -2399,6 +2456,14 @@ export default function AdminDashboard() {
             setSelectedAttemptForCode(null)
             setSelectedUserForDeepDive(uId)
           }}
+        />
+      )}
+
+      {/* Environment Diagnostics Modal */}
+      {isDiagnosticsOpen && (
+        <EnvironmentDiagnosticsModal
+          isOpen={isDiagnosticsOpen}
+          onClose={() => setIsDiagnosticsOpen(false)}
         />
       )}
         </div>

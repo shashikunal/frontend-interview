@@ -1,5 +1,8 @@
 import type { AdminOverviewStats, TimeframeFilter } from '../../../lib/adminAnalyticsService'
 import { MACHINE_CODING_CATALOG } from '../../machinecoding/data/machineCodingCatalog'
+import { DSA_QUESTIONS } from '../../dsa/data/dsaQuestions'
+import { CORE_PROGRAMMING_QUESTIONS } from '../../coreprogramming/data/coreProgrammingQuestions'
+import { FRONTEND_JS_QUESTIONS } from '../../frontendjs/data/frontendJsQuestions'
 
 interface AdminOverviewTabProps {
   stats: AdminOverviewStats | null
@@ -16,11 +19,15 @@ export default function AdminOverviewTab({
   onNavigateTab,
 }: AdminOverviewTabProps) {
   const mcTotalQuestions = MACHINE_CODING_CATALOG.length
+  const dsaTotalQuestions = DSA_QUESTIONS.length
+  const cpTotalQuestions = CORE_PROGRAMMING_QUESTIONS.length
+  const fjsTotalQuestions = FRONTEND_JS_QUESTIONS.length
+  const totalPlatformChallenges = mcTotalQuestions + dsaTotalQuestions + cpTotalQuestions + fjsTotalQuestions
 
   const s = stats || {
-    totalUsers: 1,
-    activeUsers: 1,
-    totalQuestions: mcTotalQuestions,
+    totalUsers: 0,
+    activeUsers: 0,
+    totalQuestions: totalPlatformChallenges,
     totalAttempts: 0,
     totalSubmissions: 0,
     completedQuestions: 0,
@@ -29,16 +36,22 @@ export default function AdminOverviewTab({
     activityToday: 0,
     completionRate: 0,
     successRate: 0,
-    avgAttemptsPerQuestion: 1.2,
-    avgTimeSpentMinutes: 15,
+    avgAttemptsPerQuestion: 0,
+    avgTimeSpentMinutes: 0,
     mcTotalQuestions,
     mcSubmissionsCount: 0,
     mcAcceptedCount: 0,
     mcAttemptsCount: 0,
     mcCompletedCount: 0,
-    dsaTotalQuestions: 1000,
+    dsaTotalQuestions,
     dsaSubmissionsCount: 0,
     dsaAcceptedCount: 0,
+    cpTotalQuestions,
+    cpSubmissionsCount: 0,
+    cpAcceptedCount: 0,
+    fjsTotalQuestions,
+    fjsSubmissionsCount: 0,
+    fjsAcceptedCount: 0,
   }
 
   return (
@@ -48,7 +61,7 @@ export default function AdminOverviewTab({
         <div>
           <h2>System Operations &amp; Candidate Activity Overview</h2>
           <p className="overview-desc">
-            Aggregated real-time metrics across {mcTotalQuestions} Machine Coding questions (Q001–Q500), active candidate submissions, problem attempts, and cloud audit logs.
+            Aggregated real-time metrics across {totalPlatformChallenges.toLocaleString()} coding challenges (Machine Coding, Core Programming, DSA, Frontend JS), active candidate submissions, problem attempts, and database audit logs.
           </p>
         </div>
 
@@ -110,11 +123,11 @@ export default function AdminOverviewTab({
         <div className="overview-card" onClick={() => onNavigateTab('questions')}>
           <div className="oc-header">
             <span className="oc-icon">⚡</span>
-            <span className="oc-badge purple">MC 500</span>
+            <span className="oc-badge purple">Catalog</span>
           </div>
-          <div className="oc-value">{mcTotalQuestions.toLocaleString()}</div>
-          <div className="oc-label">Machine Coding Questions</div>
-          <div className="oc-sub">500 Challenges · Q001–Q500 (DSA isolated)</div>
+          <div className="oc-value">{totalPlatformChallenges.toLocaleString()}</div>
+          <div className="oc-label">Total Coding Challenges</div>
+          <div className="oc-sub">500 MC · 1,000 DSA · 500 CP · 1,000 FJS</div>
         </div>
 
         <div className="overview-card" onClick={() => onNavigateTab('attempts')}>
@@ -175,6 +188,107 @@ export default function AdminOverviewTab({
           <div className="oc-value">{s.activityToday.toLocaleString()}</div>
           <div className="oc-label">Activity Today</div>
           <div className="oc-sub">Telemetry events logged since 00:00 UTC</div>
+        </div>
+      </div>
+
+      {/* 4 Curriculum Tracks Performance Grid */}
+      <div className="overview-tracks-section">
+        <div className="tracks-section-header">
+          <h3>Curriculum Tracks &amp; Studio Performance</h3>
+          <span className="tracks-section-subtitle">Real-time submissions and acceptance across all 4 programming tracks</span>
+        </div>
+        <div className="overview-tracks-grid">
+          {/* Machine Coding */}
+          <div className="overview-track-card" onClick={() => onNavigateTab('submissions')}>
+            <div className="otc-top">
+              <span className="otc-icon">⚡</span>
+              <span className="otc-badge purple">Machine Coding</span>
+            </div>
+            <div className="otc-title">React &amp; UI Systems</div>
+            <div className="otc-stats-row">
+              <div>
+                <div className="otc-stat-val">{mcTotalQuestions}</div>
+                <div className="otc-stat-lbl">Challenges</div>
+              </div>
+              <div>
+                <div className="otc-stat-val">{s.mcSubmissionsCount || 0}</div>
+                <div className="otc-stat-lbl">Submissions</div>
+              </div>
+              <div>
+                <div className="otc-stat-val" style={{ color: '#22c55e' }}>{s.mcAcceptedCount || 0}</div>
+                <div className="otc-stat-lbl">Passed</div>
+              </div>
+            </div>
+          </div>
+
+          {/* DSA Masterclass */}
+          <div className="overview-track-card" onClick={() => onNavigateTab('submissions')}>
+            <div className="otc-top">
+              <span className="otc-icon">📐</span>
+              <span className="otc-badge cyan">DSA Masterclass</span>
+            </div>
+            <div className="otc-title">Data Structures &amp; Algorithms</div>
+            <div className="otc-stats-row">
+              <div>
+                <div className="otc-stat-val">{dsaTotalQuestions}</div>
+                <div className="otc-stat-lbl">Problems</div>
+              </div>
+              <div>
+                <div className="otc-stat-val">{s.dsaSubmissionsCount || 0}</div>
+                <div className="otc-stat-lbl">Submissions</div>
+              </div>
+              <div>
+                <div className="otc-stat-val" style={{ color: '#22c55e' }}>{s.dsaAcceptedCount || 0}</div>
+                <div className="otc-stat-lbl">Passed</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Core Programming */}
+          <div className="overview-track-card" onClick={() => onNavigateTab('submissions')}>
+            <div className="otc-top">
+              <span className="otc-icon">💻</span>
+              <span className="otc-badge amber">Core Programming</span>
+            </div>
+            <div className="otc-title">Core JavaScript &amp; Polyfills (JS-P)</div>
+            <div className="otc-stats-row">
+              <div>
+                <div className="otc-stat-val">{cpTotalQuestions}</div>
+                <div className="otc-stat-lbl">Problems</div>
+              </div>
+              <div>
+                <div className="otc-stat-val">{s.cpSubmissionsCount || 0}</div>
+                <div className="otc-stat-lbl">Submissions</div>
+              </div>
+              <div>
+                <div className="otc-stat-val" style={{ color: '#22c55e' }}>{s.cpAcceptedCount || 0}</div>
+                <div className="otc-stat-lbl">Passed</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Frontend JS */}
+          <div className="overview-track-card" onClick={() => onNavigateTab('submissions')}>
+            <div className="otc-top">
+              <span className="otc-icon">🌐</span>
+              <span className="otc-badge green">Frontend JS</span>
+            </div>
+            <div className="otc-title">DOM &amp; Web APIs (FJP)</div>
+            <div className="otc-stats-row">
+              <div>
+                <div className="otc-stat-val">{fjsTotalQuestions}</div>
+                <div className="otc-stat-lbl">Challenges</div>
+              </div>
+              <div>
+                <div className="otc-stat-val">{s.fjsSubmissionsCount || 0}</div>
+                <div className="otc-stat-lbl">Submissions</div>
+              </div>
+              <div>
+                <div className="otc-stat-val" style={{ color: '#22c55e' }}>{s.fjsAcceptedCount || 0}</div>
+                <div className="otc-stat-lbl">Passed</div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -244,7 +358,7 @@ export default function AdminOverviewTab({
             <span className="lp-icon">❓</span>
             <div>
               <div className="lp-title">Question Bank Performance</div>
-              <div className="lp-desc">Analyze completion rates and difficulty bottlenecks across 22,222 questions</div>
+              <div className="lp-desc">Analyze completion rates and difficulty bottlenecks across {totalPlatformChallenges.toLocaleString()} challenges</div>
             </div>
           </button>
         </div>

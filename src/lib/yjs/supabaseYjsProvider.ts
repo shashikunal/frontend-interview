@@ -1,6 +1,8 @@
 import * as Y from 'yjs';
 import { supabase } from '../supabase/client';
+import { interviewSessionService } from '../interviewSessionService';
 import type { RemoteCursor } from './monacoYjsBinding';
+
 
 export interface CollabUser {
   id: string;
@@ -37,6 +39,9 @@ export type CollabEventCallback = (event: {
  * Supabase Realtime Provider for Yjs Documents
  * Enables live collaborative editing between candidate, admin, and observers over WebSockets
  * without requiring any custom long-running backend server. Vercel & Supabase Cloud compatible.
+ *
+ * SECURITY: Always use SupabaseYjsProvider.create() rather than new SupabaseYjsProvider().
+ * The factory method verifies session access via Supabase RLS before opening the channel.
  */
 export class SupabaseYjsProvider {
   public doc: Y.Doc;
@@ -49,6 +54,36 @@ export class SupabaseYjsProvider {
   private onCursorsChanged: ((cursors: RemoteCursor[]) => void) | null = null;
   private isDestroyed = false;
 
+  /**
+   * Secure factory: verifies session access before opening the Realtime channel.
+   * Throws an error if the current user does not have access to the given session.
+   *
+   * @param sessionId    - The interview session UUID to connect to
+   * @param doc          - A fresh or existing Yjs Doc
+   * @param currentUser  - The authenticated user's collab identity
+   * @param options      - Optional cursor change callback
+   * @param skipAccessCheck - Set to true only for unit tests or offline/local sessions
+   */
+  static async create(
+    sessionId: string,
+    doc: Y.Doc,
+    currentUser: CollabUser,
+    options?: { onCursorsChanged?: (cursors: RemoteCursor[]) => void },
+    skipAccessCheck = false
+  ): Promise<SupabaseYjsProvider> {
+    if (!skipAccessCheck) {
+      const hasAccess = await interviewSessionService.verifySessionAccess(sessionId);
+      if (!hasAccess) {
+        throw new Error(
+          `[SupabaseYjsProvider] Access denied: user "${currentUser.id}" is not authorized for session "${sessionId}". ` +
+          'Only the session candidate, assigned admin, or platform administrators may join.'
+        );
+      }
+    }
+    return new SupabaseYjsProvider(sessionId, doc, currentUser, options);
+  }
+
+  /** @deprecated Use SupabaseYjsProvider.create() for secure access-verified construction. */
   constructor(
     sessionId: string,
     doc: Y.Doc,
@@ -57,6 +92,7 @@ export class SupabaseYjsProvider {
       onCursorsChanged?: (cursors: RemoteCursor[]) => void;
     }
   ) {
+
     this.sessionId = sessionId;
     this.doc = doc;
     this.currentUser = currentUser;
