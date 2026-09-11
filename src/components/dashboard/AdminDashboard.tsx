@@ -38,6 +38,7 @@ import {
   type FormattedActivityItem,
   type QuestionStatItem,
   type TimeframeFilter,
+  type OverviewDataSource,
 } from '../../lib/adminAnalyticsService'
 import './AdminDashboard.css'
 
@@ -75,7 +76,7 @@ export default function AdminDashboard() {
     )
   }
 
-  const [searchParams] = useSearchParams()
+  const [searchParams, setSearchParams] = useSearchParams()
   const { tab: urlTab } = useParams<{ tab?: string }>()
   const navigate = useNavigate()
   const location = useLocation()
@@ -139,7 +140,17 @@ export default function AdminDashboard() {
 
   // Telemetry Analytics State
   const [overviewStats, setOverviewStats] = useState<OverviewStats | null>(null)
-  const [overviewTimeframe, setOverviewTimeframe] = useState<TimeframeFilter>('7days')
+  const VALID_TIMEFRAMES: TimeframeFilter[] = ['today', '7days', '30days', 'all']
+  const initialTimeframe = ((): TimeframeFilter => {
+    const q = searchParams.get('timeframe')
+    return VALID_TIMEFRAMES.includes(q as TimeframeFilter) ? (q as TimeframeFilter) : '7days'
+  })()
+  const [overviewTimeframe, setOverviewTimeframe] = useState<TimeframeFilter>(initialTimeframe)
+  // Data source for overview stats: 'all' (server + this-device local rows, legacy)
+  // or 'server' (deterministic across browsers). Synced to ?source= for identical links.
+  const [overviewSource, setOverviewSource] = useState<OverviewDataSource>(
+    searchParams.get('source') === 'server' ? 'server' : 'all'
+  )
   const [submissionsList, setSubmissionsList] = useState<SubmissionRecord[]>([])
   const [attemptsList, setAttemptsList] = useState<AttemptRecord[]>([])
   const [activityFeedList, setActivityFeedList] = useState<FormattedActivityItem[]>([])
@@ -199,7 +210,7 @@ export default function AdminDashboard() {
         auditService.getAuditLogs(15),
         progressSyncService.getAllUsersProgress(),
         dbActivityService.getAllActivities(50),
-        adminAnalyticsService.getOverviewStats(overviewTimeframe),
+        adminAnalyticsService.getOverviewStats(overviewTimeframe, { includeLocal: overviewSource === 'all' }),
         adminAnalyticsService.getSubmissionsList({ limit: 2000 }),
         adminAnalyticsService.getQuestionAttemptsList({ limit: 2000 }),
         adminAnalyticsService.getActivityFeed({ limit: 100 }),
@@ -228,11 +239,26 @@ export default function AdminDashboard() {
     } finally {
       setIsLoading(false)
     }
-  }, [user, overviewTimeframe])
+  }, [user, overviewTimeframe, overviewSource])
+
+  const syncOverviewParams = useCallback((tf: TimeframeFilter, src: OverviewDataSource) => {
+    const next = new URLSearchParams(searchParams.toString())
+    next.set('timeframe', tf)
+    next.set('source', src)
+    setSearchParams(next, { replace: true })
+  }, [searchParams, setSearchParams])
 
   const handleTimeframeChange = async (tf: TimeframeFilter) => {
     setOverviewTimeframe(tf)
-    const updated = await adminAnalyticsService.getOverviewStats(tf)
+    syncOverviewParams(tf, overviewSource)
+    const updated = await adminAnalyticsService.getOverviewStats(tf, { includeLocal: overviewSource === 'all' })
+    setOverviewStats(updated)
+  }
+
+  const handleSourceChange = async (src: OverviewDataSource) => {
+    setOverviewSource(src)
+    syncOverviewParams(overviewTimeframe, src)
+    const updated = await adminAnalyticsService.getOverviewStats(overviewTimeframe, { includeLocal: src === 'all' })
     setOverviewStats(updated)
   }
 
@@ -1091,6 +1117,8 @@ export default function AdminDashboard() {
             stats={overviewStats}
             timeframe={overviewTimeframe}
             onTimeframeChange={handleTimeframeChange}
+            dataSource={overviewSource}
+            onDataSourceChange={handleSourceChange}
             onNavigateTab={tab => setActiveTab(tab as AdminTab)}
             onInspectUser={(uId: string) => setSelectedUserForDeepDive(uId)}
           />

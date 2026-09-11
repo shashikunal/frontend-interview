@@ -1,4 +1,4 @@
-import type { AdminOverviewStats, TimeframeFilter } from '../../../lib/adminAnalyticsService'
+import type { AdminOverviewStats, TimeframeFilter, OverviewDataSource } from '../../../lib/adminAnalyticsService'
 import { MACHINE_CODING_CATALOG } from '../../machinecoding/data/machineCodingCatalog'
 import { DSA_QUESTIONS } from '../../dsa/data/dsaQuestions'
 import { CORE_PROGRAMMING_QUESTIONS } from '../../coreprogramming/data/coreProgrammingQuestions'
@@ -8,6 +8,8 @@ interface AdminOverviewTabProps {
   stats: AdminOverviewStats | null
   timeframe: TimeframeFilter
   onTimeframeChange: (tf: TimeframeFilter) => void
+  dataSource: OverviewDataSource
+  onDataSourceChange: (src: OverviewDataSource) => void
   onNavigateTab: (tab: any) => void
   onInspectUser?: (userId: string) => void
 }
@@ -16,6 +18,8 @@ export default function AdminOverviewTab({
   stats,
   timeframe,
   onTimeframeChange,
+  dataSource,
+  onDataSourceChange,
   onNavigateTab,
 }: AdminOverviewTabProps) {
   const mcTotalQuestions = MACHINE_CODING_CATALOG.length
@@ -94,6 +98,25 @@ export default function AdminOverviewTab({
             onClick={() => onTimeframeChange('all')}
           >
             All Time
+          </button>
+        </div>
+        <div className="timeframe-pill-selector">
+          <span className="tf-label">Data:</span>
+          <button
+            type="button"
+            className={`tf-btn ${dataSource === 'all' ? 'active' : ''}`}
+            onClick={() => onDataSourceChange('all')}
+            title="Server rows plus this device's local practice rows"
+          >
+            🌐 All Data
+          </button>
+          <button
+            type="button"
+            className={`tf-btn ${dataSource === 'server' ? 'active' : ''}`}
+            onClick={() => onDataSourceChange('server')}
+            title="Server rows only — identical on every browser"
+          >
+            🗄️ Server Only
           </button>
         </div>
       </div>

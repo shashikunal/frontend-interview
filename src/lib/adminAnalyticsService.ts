@@ -193,6 +193,9 @@ export interface UserCodingStats {
 
 export type TimeframeFilter = 'today' | '7days' | '30days' | 'all'
 
+/** Overview data source: 'all' (server + this-device local rows, legacy) or 'server' (deterministic across browsers). */
+export type OverviewDataSource = 'all' | 'server'
+
 function getDateThreshold(filter: TimeframeFilter): Date | null {
   const now = new Date()
   if (filter === 'today') {
@@ -211,12 +214,14 @@ export const adminAnalyticsService = {
   /**
    * Aggregate overview metrics across users, attempts, submissions, and activities
    */
-  getOverviewStats: async (timeframe: TimeframeFilter = 'all'): Promise<AdminOverviewStats> => {
+  getOverviewStats: async (timeframe: TimeframeFilter = 'all', opts?: { includeLocal?: boolean }): Promise<AdminOverviewStats> => {
     const threshold = getDateThreshold(timeframe)
     const thresholdIso = threshold ? threshold.toISOString() : null
     const todayMidnight = new Date()
     todayMidnight.setHours(0, 0, 0, 0)
     const todayIso = todayMidnight.toISOString()
+    // 'server' source skips this-device localStorage so numbers are identical on every browser.
+    const includeLocal = opts?.includeLocal !== false
 
     let totalUsers = 0
     let activeUsers = 0
@@ -281,14 +286,22 @@ export const adminAnalyticsService = {
       const cpData = cpRes.status === 'fulfilled' && Array.isArray(cpRes.value.data) ? cpRes.value.data : []
       const fjsData = fjsRes.status === 'fulfilled' && Array.isArray(fjsRes.value.data) ? fjsRes.value.data : []
       const dsaData = dsaRes.status === 'fulfilled' && Array.isArray(dsaRes.value.data) ? dsaRes.value.data : []
+      // Dedicated tables are the source of truth for CP/FJS (dual-written + backfilled,
+      // so every canonical CP/FJS row already exists there). Count canonical CP/FJS rows
+      // only when the dedicated fetch failed, to avoid double counting.
+      const cpRemoteOk = cpRes.status === 'fulfilled' && !cpRes.value.error
+      const fjsRemoteOk = fjsRes.status === 'fulfilled' && !fjsRes.value.error
 
       subsData.forEach(s => {
-        totalSubmissions++
         const qid = String(s.question_id || '')
         const qUpper = qid.toUpperCase()
         const isCP = (qUpper.startsWith('JS-P') || qUpper.startsWith('JSP') || qUpper.startsWith('CP') || CORE_PROGRAMMING_QUESTIONS.some(q => q.id.toLowerCase() === qid.toLowerCase())) && !qUpper.startsWith('Q') && !qUpper.startsWith('MC')
         const isDSA = !isCP && (qUpper.startsWith('DSA') || (!qUpper.startsWith('Q') && !qUpper.startsWith('MC') && !qUpper.startsWith('FJP') && /^\d+$/.test(qid)) || DSA_QUESTIONS.some(q => q.id === qid))
         const isFJS = !isCP && qUpper.startsWith('FJP')
+        // Dedupe vs dedicated tables (dual-written mirrors): skip canonical CP/FJS
+        // rows here when the dedicated fetch succeeded; fallback-count them otherwise.
+        if ((isCP && cpRemoteOk) || (isFJS && fjsRemoteOk)) return
+        totalSubmissions++
         const isMC = !isCP && !isDSA && !isFJS
 
         const isAccepted = s.status === 'accepted' || s.status === 'Accepted'
@@ -342,8 +355,9 @@ export const adminAnalyticsService = {
       })
 
       // Also merge local machine coding submissions from browser practice
+      // (skipped for 'server' source so numbers match on every browser)
       try {
-        if (typeof localStorage !== 'undefined') {
+        if (includeLocal && typeof localStorage !== 'undefined') {
           const raw = localStorage.getItem(LOCAL_MC_SUBMISSIONS_KEY)
           if (raw) {
             const locList = JSON.parse(raw)
@@ -365,8 +379,9 @@ export const adminAnalyticsService = {
       } catch {}
 
       // Also merge local Core Programming submissions
+      // (skipped for 'server' source so numbers match on every browser)
       try {
-        if (typeof localStorage !== 'undefined') {
+        if (includeLocal && typeof localStorage !== 'undefined') {
           const rawCP = localStorage.getItem(LOCAL_CP_SUBMISSIONS_KEY)
           if (rawCP) {
             const cpList = JSON.parse(rawCP)
@@ -389,8 +404,9 @@ export const adminAnalyticsService = {
       } catch {}
 
       // Also merge local Frontend JS submissions
+      // (skipped for 'server' source so numbers match on every browser)
       try {
-        if (typeof localStorage !== 'undefined') {
+        if (includeLocal && typeof localStorage !== 'undefined') {
           const rawFJS = localStorage.getItem(LOCAL_FJS_SUBMISSIONS_KEY)
           if (rawFJS) {
             const fjsList = JSON.parse(rawFJS)
