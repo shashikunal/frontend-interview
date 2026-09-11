@@ -185,6 +185,8 @@ export default function AdminLiveSessionsTab() {
     submissions: number;
   }>>([]);
   const [rosterLoading, setRosterLoading] = useState(false);
+  const [rosterError, setRosterError] = useState<string | null>(null);
+  const rosterAttemptedRef = useRef(false);
   const [, setTick] = useState(0); // force re-render for relTime
 
   const sessionChannelsRef = useRef<Map<string, any>>(new Map());
@@ -323,12 +325,14 @@ export default function AdminLiveSessionsTab() {
   /* ── Roster: every registered user + honest last-activity (real rows only) */
   const loadRoster = useCallback(async () => {
     setRosterLoading(true);
+    setRosterError(null);
     try {
-      const [{ data: profs }, subsRes, attRes] = await Promise.all([
+      const [{ data: profs, error: profErr }, subsRes, attRes] = await Promise.all([
         supabase.from('profiles').select('id, full_name, email').limit(500),
         supabase.from('submissions').select('user_id, question_id, created_at').order('created_at', { ascending: false }).limit(2000).then(r => r, () => ({ data: [] as any[] })),
         supabase.from('question_attempts').select('user_id, question_id, last_activity_at').limit(2000).then(r => r, () => ({ data: [] as any[] })),
       ]);
+      if (profErr) throw new Error(profErr.message);
       const agg = new Map<string, { lastSeen: string | null; lastQuestionId: string | null; submissions: number }>();
       for (const s of (subsRes as any).data || []) {
         const uid = String(s.user_id || '');
@@ -365,18 +369,26 @@ export default function AdminLiveSessionsTab() {
           };
         })
       );
-    } catch {
-      // roster stays empty; live view unaffected
+    } catch (err) {
+      // roster stays as-is; surfaced honestly with manual retry (never auto-loops)
+      setRosterError(err instanceof Error ? err.message : 'Roster unavailable');
     } finally {
       setRosterLoading(false);
     }
   }, []);
 
+  const retryRoster = useCallback(() => {
+    rosterAttemptedRef.current = true;
+    loadRoster();
+  }, [loadRoster]);
+
   useEffect(() => {
-    if (monitorView === 'all' && roster.length === 0 && !rosterLoading) {
+    // Fetch once on first entry to the roster view; manual Retry/Refresh after that.
+    if (monitorView === 'all' && !rosterAttemptedRef.current && !rosterLoading) {
+      rosterAttemptedRef.current = true;
       loadRoster();
     }
-  }, [monitorView, roster.length, rosterLoading, loadRoster]);
+  }, [monitorView, rosterLoading, loadRoster]);
 
   /* ── Supabase Realtime: postgres_changes on interview_sessions ───────── */
   useEffect(() => {
@@ -579,16 +591,34 @@ export default function AdminLiveSessionsTab() {
             <div className="app-route-spinner" />
             <p>Loading student roster…</p>
           </div>
+        ) : rosterError ? (
+          <div className="live-empty-state">
+            <span className="empty-state-icon">🔴</span>
+            <h3>Roster unavailable</h3>
+            <p>Reconnecting… ({rosterError})</p>
+            <button type="button" className="btn btn-primary btn-sm" onClick={retryRoster}>
+              Retry →
+            </button>
+          </div>
         ) : roster.length === 0 ? (
           <div className="live-empty-state">
             <span className="empty-state-icon">👥</span>
             <h3>No students found</h3>
             <p>No registered profiles returned by the database.</p>
-            <button type="button" className="btn btn-primary btn-sm" onClick={loadRoster}>
+            <button type="button" className="btn btn-primary btn-sm" onClick={retryRoster}>
               Retry →
             </button>
           </div>
         ) : (
+          <div className="live-roster-toolbar">
+            <span className="live-field-val">{roster.length} students · live status merged from open sessions</span>
+            <button type="button" className="btn btn-sm btn-secondary" onClick={retryRoster} disabled={rosterLoading}>
+              {rosterLoading ? '⏳ Refreshing…' : '🔄 Refresh Roster'}
+            </button>
+          </div>
+        )
+      )}
+      {monitorView === 'all' && !rosterLoading && !rosterError && roster.length > 0 && (
           <div className="live-cards-grid">
             {roster
               .filter(u => {
@@ -638,8 +668,7 @@ export default function AdminLiveSessionsTab() {
                 );
               })}
           </div>
-        )
-      )}
+        )}
 
       {/* Sessions: honest states only — never fake data */}
       {monitorView !== 'all' && (loading ? (
