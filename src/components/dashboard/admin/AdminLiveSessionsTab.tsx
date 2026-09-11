@@ -175,6 +175,16 @@ export default function AdminLiveSessionsTab() {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [liveState, setLiveState] = useState<Record<string, LiveState>>({});
   const [activity, setActivity] = useState<Record<string, ActivityEvent[]>>({});
+  const [monitorView, setMonitorView] = useState<'live' | 'all'>('live');
+  const [roster, setRoster] = useState<Array<{
+    id: string;
+    name: string;
+    email: string;
+    lastSeen: string | null;
+    lastQuestionId: string | null;
+    submissions: number;
+  }>>([]);
+  const [rosterLoading, setRosterLoading] = useState(false);
   const [, setTick] = useState(0); // force re-render for relTime
 
   const sessionChannelsRef = useRef<Map<string, any>>(new Map());
@@ -309,6 +319,64 @@ export default function AdminLiveSessionsTab() {
   useEffect(() => {
     loadSessions();
   }, [loadSessions]);
+
+  /* ── Roster: every registered user + honest last-activity (real rows only) */
+  const loadRoster = useCallback(async () => {
+    setRosterLoading(true);
+    try {
+      const [{ data: profs }, subsRes, attRes] = await Promise.all([
+        supabase.from('profiles').select('id, full_name, email').limit(500),
+        supabase.from('submissions').select('user_id, question_id, created_at').order('created_at', { ascending: false }).limit(2000).then(r => r, () => ({ data: [] as any[] })),
+        supabase.from('question_attempts').select('user_id, question_id, last_activity_at').limit(2000).then(r => r, () => ({ data: [] as any[] })),
+      ]);
+      const agg = new Map<string, { lastSeen: string | null; lastQuestionId: string | null; submissions: number }>();
+      for (const s of (subsRes as any).data || []) {
+        const uid = String(s.user_id || '');
+        if (!uid) continue;
+        const cur = agg.get(uid) || { lastSeen: null, lastQuestionId: null, submissions: 0 };
+        cur.submissions += 1;
+        if (!cur.lastSeen || String(s.created_at) > cur.lastSeen) {
+          cur.lastSeen = String(s.created_at);
+          cur.lastQuestionId = String(s.question_id || '');
+        }
+        agg.set(uid, cur);
+      }
+      for (const a of (attRes as any).data || []) {
+        const uid = String(a.user_id || '');
+        if (!uid) continue;
+        const cur = agg.get(uid) || { lastSeen: null, lastQuestionId: null, submissions: 0 };
+        const at = String(a.last_activity_at || '');
+        if (at && (!cur.lastSeen || at > cur.lastSeen)) {
+          cur.lastSeen = at;
+          if (!cur.lastQuestionId) cur.lastQuestionId = String(a.question_id || '');
+        }
+        agg.set(uid, cur);
+      }
+      setRoster(
+        (profs || []).map((p: any) => {
+          const a = agg.get(String(p.id));
+          return {
+            id: String(p.id),
+            name: resolveDisplayName(p.full_name, p.email, String(p.id)),
+            email: String(p.email || ''),
+            lastSeen: a?.lastSeen || null,
+            lastQuestionId: a?.lastQuestionId || null,
+            submissions: a?.submissions || 0,
+          };
+        })
+      );
+    } catch {
+      // roster stays empty; live view unaffected
+    } finally {
+      setRosterLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (monitorView === 'all' && roster.length === 0 && !rosterLoading) {
+      loadRoster();
+    }
+  }, [monitorView, roster.length, rosterLoading, loadRoster]);
 
   /* ── Supabase Realtime: postgres_changes on interview_sessions ───────── */
   useEffect(() => {
@@ -470,6 +538,22 @@ export default function AdminLiveSessionsTab() {
           />
         </div>
         <div className="live-status-pills">
+          <button
+            type="button"
+            className={`live-status-pill ${monitorView === 'live' ? 'active' : ''}`}
+            onClick={() => setMonitorView('live')}
+          >
+            📡 Live Sessions
+          </button>
+          <button
+            type="button"
+            className={`live-status-pill ${monitorView === 'all' ? 'active' : ''}`}
+            onClick={() => setMonitorView('all')}
+          >
+            👥 All Students{roster.length > 0 ? ` (${roster.length})` : ''}
+          </button>
+        </div>
+        <div className="live-status-pills">
           {[
             { key: 'all', label: 'All' },
             { key: 'active', label: '🟢 Active' },
@@ -488,8 +572,77 @@ export default function AdminLiveSessionsTab() {
         </div>
       </div>
 
+      {/* All-students roster: every registered user, honest presence */}
+      {monitorView === 'all' && (
+        rosterLoading ? (
+          <div className="live-loading-state">
+            <div className="app-route-spinner" />
+            <p>Loading student roster…</p>
+          </div>
+        ) : roster.length === 0 ? (
+          <div className="live-empty-state">
+            <span className="empty-state-icon">👥</span>
+            <h3>No students found</h3>
+            <p>No registered profiles returned by the database.</p>
+            <button type="button" className="btn btn-primary btn-sm" onClick={loadRoster}>
+              Retry →
+            </button>
+          </div>
+        ) : (
+          <div className="live-cards-grid">
+            {roster
+              .filter(u => {
+                if (!searchQuery) return true;
+                const q = searchQuery.toLowerCase();
+                return u.name.toLowerCase().includes(q) || u.email.toLowerCase().includes(q);
+              })
+              .map(u => {
+                const liveSess = sessions.find(s => s.candidate_id === u.id && (s.status === 'active' || s.status === 'in_progress'));
+                const presence = liveSess ? presenceOf(liveSess) : 'closed';
+                const qid = liveSess?.question_id || u.lastQuestionId;
+                const track = qid ? trackOf(qid) : null;
+                return (
+                  <div key={u.id} className="live-card-slot">
+                    <div className={`live-student-card presence-${presence}`}>
+                      <span className="live-card-top">
+                        <span className="cand-cell">
+                          <span className="cand-avatar">{u.name.charAt(0).toUpperCase()}</span>
+                          <span>
+                            <strong className="cand-name">{u.name}</strong>
+                            <span className="cand-email">{u.email || '—'}</span>
+                          </span>
+                        </span>
+                        <span className="live-presence-dot" title={presence}>
+                          {presence === 'online' ? '🟢' : presence === 'idle' ? '🟡' : presence === 'disconnected' ? '🔴' : '⚪'}
+                        </span>
+                      </span>
+                      <span className="live-card-mid">
+                        {track ? (
+                          <>
+                            <span className={`live-track-badge track-${track.kind}`}>{track.label}</span>
+                            <span className="q-title">{liveSess ? (liveSess.question_title || qid) : qid}</span>
+                            <span className="q-id-pill">{qid}</span>
+                          </>
+                        ) : (
+                          <span className="live-field-val">No activity recorded</span>
+                        )}
+                      </span>
+                      <span className="live-card-foot">
+                        <span className="live-field-val">
+                          {liveSess ? `Live now · ${presence}` : u.lastSeen ? `Last seen ${relTime(new Date(u.lastSeen).getTime())}` : 'Never active'}
+                        </span>
+                        <span className="live-field-val">{u.submissions} submits</span>
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
+          </div>
+        )
+      )}
+
       {/* Sessions: honest states only — never fake data */}
-      {loading ? (
+      {monitorView !== 'all' && (loading ? (
         <div className="live-loading-state">
           <div className="app-route-spinner" />
           <p>Connecting to live monitoring…</p>
@@ -611,7 +764,7 @@ export default function AdminLiveSessionsTab() {
             );
           })}
         </div>
-      )}
+      ))}
     </div>
   );
 }
