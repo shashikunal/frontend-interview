@@ -103,7 +103,8 @@ function DSAStudioWorkspace({ questionId }: WorkspaceProps) {
   // Live session sync to Admin Real-time Candidate Monitor
   useEffect(() => {
     let active = true
-    const candidateId = user?.id || `cand_${Date.now().toString(36)}`
+    // Guests pass no id: service persists NULL candidate_id (FK-safe) instead of fake ids
+    const candidateId = user?.id
     const candidateName = user?.name || 'Candidate'
     const candidateEmail = user?.email || 'candidate@faang.io'
 

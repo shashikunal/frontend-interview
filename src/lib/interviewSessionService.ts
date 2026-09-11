@@ -62,7 +62,7 @@ export interface SessionExecutionRecord {
 export interface SessionActivityItem {
   id?: string;
   session_id: string;
-  user_id?: string;
+  user_id?: string | null;
   user_name: string;
   user_role: string;
   activity_type: string;
@@ -101,21 +101,27 @@ export const interviewSessionService = {
     language?: string;
     initialFiles?: Record<string, string>;
   }): Promise<InterviewSession> {
+    // candidate_id is UUID FK to auth.users: only real UUIDs may be persisted.
+    // Guests fall back to NULL candidate_id (nullable) so their sessions save.
+    const rawCandidateId = params.candidateId || null;
+    const isUuid = !!rawCandidateId && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(rawCandidateId);
     const candidateId = params.candidateId || 'anon-candidate';
     const candidateName = params.candidateName || 'Candidate';
     const candidateEmail = params.candidateEmail || 'candidate@platform.dev';
 
     try {
       // 1. Check Supabase for existing active session
-      const { data: existing, error: searchError } = await supabase
+      let existingQuery = supabase
         .from('interview_sessions')
         .select('*')
         .eq('question_id', params.questionId)
-        .eq('candidate_id', candidateId)
         .in('status', ['active', 'in_progress'])
         .order('created_at', { ascending: false })
-        .limit(1)
-        .maybeSingle();
+        .limit(1);
+      existingQuery = isUuid
+        ? existingQuery.eq('candidate_id', rawCandidateId)
+        : existingQuery.is('candidate_id', null).eq('candidate_name', candidateName);
+      const { data: existing, error: searchError } = await existingQuery.maybeSingle();
 
       if (!searchError && existing) {
         return existing as InterviewSession;
@@ -123,7 +129,7 @@ export const interviewSessionService = {
 
       // 2. Create new session in Supabase
       const newSessionPayload = {
-        candidate_id: candidateId,
+        candidate_id: isUuid ? rawCandidateId : null,
         candidate_name: candidateName,
         candidate_email: candidateEmail,
         question_id: params.questionId,
@@ -142,19 +148,21 @@ export const interviewSessionService = {
         .single();
 
       if (!insertError && created) {
-        // Record participant entry
-        await this.joinParticipant({
-          sessionId: created.id,
-          userId: candidateId,
-          role: 'candidate',
-          name: candidateName,
-          canEdit: true,
-        });
+        // Record participant entry (registered users only; guests have NULL user_id)
+        if (isUuid) {
+          await this.joinParticipant({
+            sessionId: created.id,
+            userId: rawCandidateId,
+            role: 'candidate',
+            name: candidateName,
+            canEdit: true,
+          });
+        }
 
         // Record activity
         await this.recordActivity({
           session_id: created.id,
-          user_id: candidateId,
+          user_id: isUuid ? (rawCandidateId as string) : null,
           user_name: candidateName,
           user_role: 'candidate',
           activity_type: 'SESSION_STARTED',
