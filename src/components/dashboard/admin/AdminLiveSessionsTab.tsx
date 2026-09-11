@@ -2,7 +2,13 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '../../../lib/supabase/client';
 import { interviewSessionService, type InterviewSession } from '../../../lib/interviewSessionService';
+import { resolveDisplayName } from '../../../lib/leaderboardService';
 import './AdminLiveSessionsTab.css';
+
+/* ─── Presence thresholds (honest recency bands, not fake data) ──────────── */
+// last_activity_at is heartbeated every 30s by open studios.
+const STALE_AFTER_MS = 5 * 60 * 1000; // active but quiet this long → Idle
+const GONE_AFTER_MS = 30 * 60 * 1000; // active but quiet this long → Disconnected
 
 /* ─── Types ───────────────────────────────────────────────────────────────── */
 
@@ -15,6 +21,18 @@ interface LiveState {
     timestamp: number;
   } | null;
   activeFile: string;
+  cursor: { line: number; column: number; at: number } | null;
+}
+
+/* ─── Track badge derived strictly from real question_id prefix ─────────── */
+function trackOf(questionId?: string | null): { label: string; kind: string } {
+  const u = String(questionId || '').toUpperCase();
+  if (u.startsWith('JS-P') || u.startsWith('JSP') || u.startsWith('CP')) return { label: 'Core Programming', kind: 'cp' };
+  if (u.startsWith('DSA')) return { label: 'DSA', kind: 'dsa' };
+  if (u.startsWith('FJP')) return { label: 'Frontend JS', kind: 'fjs' };
+  if (u.startsWith('Q') || u.startsWith('MC')) return { label: 'Machine Coding', kind: 'mc' };
+  if (/^\d+$/.test(u)) return { label: 'Quiz Bank', kind: 'quiz' };
+  return { label: 'Studio', kind: 'other' };
 }
 
 interface ActivityEvent {
@@ -25,7 +43,7 @@ interface ActivityEvent {
 }
 
 const MAX_ACTIVITY = 8;
-const DEFAULT_LIVE: LiveState = { isTyping: false, lastExecution: null, activeFile: 'App.tsx' };
+const DEFAULT_LIVE: LiveState = { isTyping: false, lastExecution: null, activeFile: 'App.tsx', cursor: null };
 
 /* ─── Helpers ─────────────────────────────────────────────────────────────── */
 
@@ -150,6 +168,7 @@ function CodePreviewPanel({ session, activity }: { session: InterviewSession; ac
 export default function AdminLiveSessionsTab() {
   const [sessions, setSessions] = useState<InterviewSession[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [isRealtimeConnected, setIsRealtimeConnected] = useState(false);
   const [filterStatus, setFilterStatus] = useState<string>('active');
   const [searchQuery, setSearchQuery] = useState('');
@@ -235,11 +254,17 @@ export default function AdminLiveSessionsTab() {
       });
     });
 
-    // 4. Cursor movement — mark as active
-    ch.on('broadcast', { event: 'cursor-update' }, () => {
+    // 4. Cursor movement — mark as active + store real position (line/col or unavailable)
+    ch.on('broadcast', { event: 'cursor-update' }, ({ payload }: { payload: any }) => {
+      const line = Number(payload?.range?.startLineNumber);
+      const column = Number(payload?.range?.startColumn);
       setLiveState(prev => {
         if (prev[sessionId]?.isTyping) return prev;
-        return { ...prev, [sessionId]: { ...(prev[sessionId] || DEFAULT_LIVE), isTyping: true } };
+        const next = { ...(prev[sessionId] || DEFAULT_LIVE), isTyping: true };
+        if (Number.isFinite(line) && Number.isFinite(column)) {
+          next.cursor = { line, column, at: Date.now() };
+        }
+        return { ...prev, [sessionId]: next };
       });
       const existing = typingTimersRef.current.get(`cur_${sessionId}`);
       if (existing) clearTimeout(existing);
@@ -268,13 +293,22 @@ export default function AdminLiveSessionsTab() {
     });
   }, []);
 
-  /* ── Initial fetch ───────────────────────────────────────────────────── */
-  useEffect(() => {
+  /* ── Initial fetch (honest failure state, never silent empty) ─────────── */
+  const loadSessions = useCallback(() => {
+    setLoading(true);
+    setLoadError(null);
     interviewSessionService.listAllSessions(100).then(list => {
       setSessions(list);
       setLoading(false);
-    }).catch(() => setLoading(false));
+    }).catch((err) => {
+      setLoading(false);
+      setLoadError(err instanceof Error ? err.message : 'Live monitoring unavailable');
+    });
   }, []);
+
+  useEffect(() => {
+    loadSessions();
+  }, [loadSessions]);
 
   /* ── Supabase Realtime: postgres_changes on interview_sessions ───────── */
   useEffect(() => {
@@ -344,7 +378,22 @@ export default function AdminLiveSessionsTab() {
     return true;
   });
 
-  const activeCount = sessions.filter(s => s.status === 'active' || s.status === 'in_progress').length;
+  /* ── Derived state: 100% computed from real sessions + live events ───── */
+  const presenceOf = (s: InterviewSession): 'online' | 'idle' | 'disconnected' | 'closed' => {
+    const live = s.status === 'active' || s.status === 'in_progress';
+    if (!live) return 'closed';
+    const age = Date.now() - new Date(s.last_activity_at || s.created_at).getTime();
+    if (Number.isNaN(age)) return 'idle';
+    if (age <= STALE_AFTER_MS) return 'online';
+    if (age <= GONE_AFTER_MS) return 'idle';
+    return 'disconnected';
+  };
+
+  const presenceList = sessions.map(s => presenceOf(s));
+  const onlineCount = presenceList.filter(p => p === 'online').length;
+  const idleCount = presenceList.filter(p => p === 'idle').length;
+  const disconnectedCount = presenceList.filter(p => p === 'disconnected').length;
+  const runningCount = sessions.filter(s => s.status === 'in_progress').length;
   const submittedCount = sessions.filter(s => s.status === 'submitted' || s.status === 'completed').length;
   const typingCount = Object.values(liveState).filter(ls => ls.isTyping).length;
 
@@ -357,10 +406,10 @@ export default function AdminLiveSessionsTab() {
         <div>
           <h2 className="live-sessions-title">
             <span className="live-header-pulse" />
-            Real-Time Candidate Monitor
+            Live Control Room
           </h2>
           <p className="live-sessions-sub">
-            All candidate activity streams here silently — typing, test runs, file switches. No candidate action required.
+            Every open studio across all tracks streams here — Machine Coding, Core Programming, DSA, Frontend JS. Select a card for live code, cursor, execution and activity.
           </p>
         </div>
         <div className="rt-header-controls">
@@ -370,27 +419,42 @@ export default function AdminLiveSessionsTab() {
         </div>
       </div>
 
-      {/* KPI Cards */}
+      {/* Status strip: every number computed live from sessions + events */}
       <div className="live-kpi-grid">
         <div className="live-kpi-card">
-          <span className="live-kpi-label">Active Sessions</span>
-          <span className="live-kpi-val green">{activeCount}</span>
-          <span className="live-kpi-note">Candidates in studio right now</span>
+          <span className="live-kpi-label">🟢 Online</span>
+          <span className="live-kpi-val green">{onlineCount}</span>
+          <span className="live-kpi-note">Heartbeated within 5 min</span>
         </div>
         <div className="live-kpi-card">
-          <span className="live-kpi-label">Currently Typing</span>
+          <span className="live-kpi-label">✏️ Typing</span>
           <span className="live-kpi-val orange">{typingCount}</span>
-          <span className="live-kpi-note">Live keystrokes detected</span>
+          <span className="live-kpi-note">Live keystrokes observed</span>
         </div>
         <div className="live-kpi-card">
-          <span className="live-kpi-label">Submissions</span>
+          <span className="live-kpi-label">🟡 Idle</span>
+          <span className="live-kpi-val orange">{idleCount}</span>
+          <span className="live-kpi-note">Quiet 5–30 min</span>
+        </div>
+        <div className="live-kpi-card">
+          <span className="live-kpi-label">▶ Running</span>
+          <span className="live-kpi-val blue">{runningCount}</span>
+          <span className="live-kpi-note">Status in_progress</span>
+        </div>
+        <div className="live-kpi-card">
+          <span className="live-kpi-label">📤 Submitted</span>
           <span className="live-kpi-val purple">{submittedCount}</span>
           <span className="live-kpi-note">Ready for review</span>
         </div>
         <div className="live-kpi-card">
-          <span className="live-kpi-label">Total Sessions</span>
+          <span className="live-kpi-label">🔴 Disconnected</span>
+          <span className="live-kpi-val">{disconnectedCount}</span>
+          <span className="live-kpi-note">Quiet over 30 min</span>
+        </div>
+        <div className="live-kpi-card">
+          <span className="live-kpi-label">Total Students</span>
           <span className="live-kpi-val blue">{sessions.length}</span>
-          <span className="live-kpi-note">Recorded in Supabase</span>
+          <span className="live-kpi-note">Sessions recorded</span>
         </div>
       </div>
 
@@ -424,135 +488,128 @@ export default function AdminLiveSessionsTab() {
         </div>
       </div>
 
-      {/* Sessions Table */}
+      {/* Sessions: honest states only — never fake data */}
       {loading ? (
         <div className="live-loading-state">
           <div className="app-route-spinner" />
-          <p>Connecting to Supabase Realtime…</p>
+          <p>Connecting to live monitoring…</p>
+        </div>
+      ) : loadError ? (
+        <div className="live-empty-state">
+          <span className="empty-state-icon">🔴</span>
+          <h3>Live monitoring unavailable</h3>
+          <p>Reconnecting… ({loadError})</p>
+          <button type="button" className="btn btn-primary btn-sm" onClick={loadSessions}>
+            Retry Connection →
+          </button>
         </div>
       ) : filteredSessions.length === 0 ? (
         <div className="live-empty-state">
           <span className="empty-state-icon">⚡</span>
-          <h3>No {filterStatus !== 'all' ? filterStatus : ''} Sessions Found</h3>
+          <h3>No active students</h3>
           <p>
-            When a candidate opens a question at <code>/machine-coding?id=…</code>, their session appears here instantly.
+            Sessions appear here the moment a student opens any studio question — Machine Coding, Core Programming, DSA or Frontend JS.
           </p>
-          <Link to="/machine-coding?id=Q001" className="btn btn-primary btn-sm" target="_blank">
-            Open Studio as Demo Candidate →
-          </Link>
         </div>
       ) : (
-        <div className="live-table-wrap">
-          <table className="live-table">
-            <thead>
-              <tr>
-                <th>Candidate</th>
-                <th>Challenge</th>
-                <th>Status</th>
-                <th>Active File</th>
-                <th>Last Test Run</th>
-                <th>Live Activity</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredSessions.map(sess => {
-                const isActive = sess.status === 'active' || sess.status === 'in_progress';
-                const live = liveState[sess.id] || DEFAULT_LIVE;
-                const acts = activity[sess.id] || [];
-                const isExpanded = expandedId === sess.id;
+        <div className="live-cards-grid">
+          {filteredSessions.map(sess => {
+            const isActive = sess.status === 'active' || sess.status === 'in_progress';
+            const live = liveState[sess.id] || DEFAULT_LIVE;
+            const acts = activity[sess.id] || [];
+            const isExpanded = expandedId === sess.id;
+            const presence = presenceOf(sess);
+            const track = trackOf(sess.question_id);
+            const displayName = resolveDisplayName(sess.candidate_name, sess.candidate_email, sess.id);
+            const cursor = live.cursor;
 
-                return (
-                  <>
-                    <tr
-                      key={sess.id}
-                      className={`rt-session-row ${isActive ? 'session-row-active' : ''} ${isExpanded ? 'rt-row-expanded' : ''}`}
-                      onClick={() => setExpandedId(isExpanded ? null : sess.id)}
-                      title="Click to expand code snapshot &amp; activity"
-                    >
-                      {/* Candidate */}
-                      <td>
-                        <div className="cand-cell">
-                          <div className={`cand-avatar ${live.isTyping ? 'cand-avatar-typing' : ''}`}>
-                            {sess.candidate_name?.charAt(0).toUpperCase() || '?'}
-                          </div>
-                          <div>
-                            <strong className="cand-name">{sess.candidate_name}</strong>
-                            <span className="cand-email">{sess.candidate_email || '—'}</span>
-                          </div>
-                          {live.isTyping && (
-                            <span className="rt-typing-indicator" title="Actively typing">
-                              <span /><span /><span />
-                            </span>
-                          )}
-                        </div>
-                      </td>
-
-                      {/* Challenge */}
-                      <td>
-                        <div className="q-cell">
-                          <span className="q-title">{sess.question_title}</span>
-                          <span className="q-id-pill">{sess.question_id}</span>
-                        </div>
-                      </td>
-
-                      {/* Status */}
-                      <td>
-                        <span className={`live-badge ${sess.status}`}>
-                          {isActive && <span className="live-mini-dot" />}
-                          {sess.status.replace('_', ' ').toUpperCase()}
+            return (
+              <div key={sess.id} className="live-card-slot">
+                <button
+                  type="button"
+                  className={`live-student-card presence-${presence} ${isExpanded ? 'selected' : ''}`}
+                  onClick={() => setExpandedId(isExpanded ? null : sess.id)}
+                  title="Select to open live detail viewer"
+                >
+                  <span className="live-card-top">
+                    <span className="cand-cell">
+                      <span className={`cand-avatar ${live.isTyping ? 'cand-avatar-typing' : ''}`}>
+                        {displayName.charAt(0).toUpperCase()}
+                      </span>
+                      <span>
+                        <strong className="cand-name">{displayName}</strong>
+                        <span className="cand-email">{sess.candidate_email || '—'}</span>
+                      </span>
+                      {live.isTyping && (
+                        <span className="rt-typing-indicator" title="Actively typing">
+                          <span /><span /><span />
                         </span>
-                      </td>
+                      )}
+                    </span>
+                    <span className={`live-presence-dot ${presence}`} title={presence}>
+                      {presence === 'online' ? '🟢' : presence === 'idle' ? '🟡' : presence === 'disconnected' ? '🔴' : '⚪'}
+                    </span>
+                  </span>
+                  <span className="live-card-mid">
+                    <span className={`live-track-badge track-${track.kind}`}>{track.label}</span>
+                    <span className="q-title">{sess.question_title || sess.question_id}</span>
+                    <span className="q-id-pill">{sess.question_id}</span>
+                  </span>
+                  <span className="live-card-grid">
+                    <span className="live-card-field">
+                      <span className="live-field-label">Status</span>
+                      <span className={`live-badge ${sess.status}`}>
+                        {isActive && <span className="live-mini-dot" />}
+                        {sess.status.replace('_', ' ').toUpperCase()}
+                      </span>
+                    </span>
+                    <span className="live-card-field">
+                      <span className="live-field-label">File</span>
+                      <code className="file-code-tag">
+                        {live.activeFile !== 'App.tsx' ? live.activeFile : (sess.active_file || '—')}
+                      </code>
+                    </span>
+                    <span className="live-card-field">
+                      <span className="live-field-label">Cursor</span>
+                      <span className="live-field-val">
+                        {cursor ? `Ln ${cursor.line}, Col ${cursor.column}` : 'Cursor unavailable'}
+                      </span>
+                    </span>
+                    <span className="live-card-field">
+                      <span className="live-field-label">Last run</span>
+                      {live.lastExecution ? (
+                        <span className={`rt-exec-badge ${live.lastExecution.status}`}>
+                          {live.lastExecution.status === 'success'
+                            ? `✅ ${live.lastExecution.total}/${live.lastExecution.total}`
+                            : `❌ ${live.lastExecution.passed}/${live.lastExecution.total}`}
+                        </span>
+                      ) : (
+                        <span className="live-field-val">No execution data</span>
+                      )}
+                    </span>
+                  </span>
+                  <span className="live-card-foot">
+                    <span className="rt-act-summary">
+                      {acts.slice(0, 2).map(ev => (
+                        <span key={ev.id} className={`rt-act-chip rt-act-${ev.type}`}>
+                          {actIcon(ev.type)} {ev.message.slice(0, 30)}
+                        </span>
+                      ))}
+                      {acts.length === 0 && <span className="rt-no-activity">Waiting…</span>}
+                    </span>
+                    <span className="rt-expand-hint">{isExpanded ? '▲ Detail' : '▼ Detail'}</span>
+                  </span>
+                </button>
 
-                      {/* Active file */}
-                      <td>
-                        <code className="file-code-tag">
-                          {live.activeFile !== 'App.tsx' ? live.activeFile : (sess.active_file || 'App.tsx')}
-                        </code>
-                      </td>
-
-                      {/* Last test run */}
-                      <td>
-                        {live.lastExecution ? (
-                          <span className={`rt-exec-badge ${live.lastExecution.status}`}>
-                            {live.lastExecution.status === 'success'
-                              ? `✅ ${live.lastExecution.total}/${live.lastExecution.total}`
-                              : `❌ ${live.lastExecution.passed}/${live.lastExecution.total}`}
-                            <span className="rt-exec-time">{relTime(live.lastExecution.timestamp)}</span>
-                          </span>
-                        ) : (
-                          <span className="time-cell">
-                            {new Date(sess.last_activity_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
-                          </span>
-                        )}
-                      </td>
-
-                      {/* Activity summary */}
-                      <td>
-                        <div className="rt-act-summary">
-                          {acts.slice(0, 2).map(ev => (
-                            <span key={ev.id} className={`rt-act-chip rt-act-${ev.type}`}>
-                              {actIcon(ev.type)} {ev.message.slice(0, 30)}
-                            </span>
-                          ))}
-                          {acts.length === 0 && <span className="rt-no-activity">Waiting…</span>}
-                          <span className="rt-expand-hint">{isExpanded ? '▲' : '▼'}</span>
-                        </div>
-                      </td>
-                    </tr>
-
-                    {/* Expanded inline panel */}
-                    {isExpanded && (
-                      <tr key={`${sess.id}-panel`} className="rt-panel-row">
-                        <td colSpan={6} className="rt-panel-cell">
-                          <CodePreviewPanel session={sess} activity={acts} />
-                        </td>
-                      </tr>
-                    )}
-                  </>
-                );
-              })}
-            </tbody>
-          </table>
+                {/* Single selective detail viewer */}
+                {isExpanded && (
+                  <div className="live-detail-row">
+                    <CodePreviewPanel session={sess} activity={acts} />
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       )}
     </div>

@@ -677,3 +677,117 @@
   margin: 0 auto 20px;
   font-size: 0.88rem;
 }
+
+/* ─── CCTV cards grid + single detail viewer (Control Room) ─────────────── */
+.live-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 14px;
+}
+
+.live-card-slot {
+  display: contents;
+}
+
+.live-student-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  text-align: left;
+  padding: 14px 16px;
+  border-radius: var(--radius-lg, 16px);
+  background: var(--surface, #13131d);
+  border: 1px solid var(--border, rgba(255,255,255,0.08));
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+
+.live-student-card:hover {
+  border-color: rgba(56, 189, 248, 0.45);
+}
+
+.live-student-card.selected {
+  border-color: rgba(56, 189, 248, 0.7);
+  box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.35);
+}
+
+.live-student-card.presence-disconnected {
+  opacity: 0.72;
+}
+
+.live-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.live-presence-dot {
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+.live-card-mid {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.live-track-badge {
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--border, rgba(255,255,255,0.12));
+  color: var(--text-secondary, #a1a1b5);
+}
+
+.live-track-badge.track-mc { color: #38bdf8; border-color: rgba(56,189,248,0.4); }
+.live-track-badge.track-cp { color: #a855f7; border-color: rgba(168,85,247,0.4); }
+.live-track-badge.track-dsa { color: #f59e0b; border-color: rgba(245,158,11,0.4); }
+.live-track-badge.track-fjs { color: #10b981; border-color: rgba(16,185,129,0.4); }
+.live-track-badge.track-quiz { color: #94a3b8; }
+
+.live-card-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 12px;
+}
+
+.live-card-field {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.live-field-label {
+  font-size: 0.66rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted, #67677c);
+}
+
+.live-field-val {
+  font-size: 0.8rem;
+  color: var(--text-secondary, #a1a1b5);
+}
+
+.live-card-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  border-top: 1px solid var(--border, rgba(255,255,255,0.06));
+  padding-top: 8px;
+}
+
+.live-detail-row {
+  grid-column: 1 / -1;
+}
