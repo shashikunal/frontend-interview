@@ -1,14 +1,12 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import { Link } from 'react-router-dom';
 import { supabase } from '../../../lib/supabase/client';
 import { interviewSessionService, type InterviewSession } from '../../../lib/interviewSessionService';
 import { resolveDisplayName } from '../../../lib/leaderboardService';
 import { VirtualStudentMonitor, type LiveStudentTelemetry } from './VirtualStudentMonitor';
+import { StudentWorkspaceMonitor } from './StudentWorkspaceMonitor';
+import { useAuth } from '../../../context/AuthContext';
+import { useAdminMonitorSocket } from '../../../hooks/useAdminMonitorSocket';
 import './AdminLiveSessionsTab.css';
-
-/* ─── Presence thresholds (honest recency bands) ─────────────────────────── */
-const STALE_AFTER_MS = 60 * 1000; // quiet 60s -> Idle
-const GONE_AFTER_MS = 15 * 60 * 1000; // quiet 15m -> Disconnected
 
 /* ─── Track badge derived strictly from real question_id prefix ─────────── */
 function trackOf(questionId?: string | null): { label: string; kind: string } {
@@ -21,15 +19,6 @@ function trackOf(questionId?: string | null): { label: string; kind: string } {
   return { label: 'Studio', kind: 'other' };
 }
 
-interface ActivityEvent {
-  id: string;
-  type: string;
-  message: string;
-  timestamp: number;
-}
-
-const MAX_ACTIVITY = 15;
-
 function relTime(ts: number): string {
   const d = Math.floor((Date.now() - ts) / 1000);
   if (d < 4) return 'just now';
@@ -38,34 +27,17 @@ function relTime(ts: number): string {
   return `${Math.floor(d / 3600)}h ago`;
 }
 
-function uid() {
-  return Math.random().toString(36).slice(2, 9);
-}
-
-function monitorPath(session: InterviewSession): string {
-  const qid = String(session.question_id || '');
-  const u = qid.toUpperCase();
-  const suffix = `?session=${session.id}&role=admin`;
-  if (u.startsWith('JS-P') || u.startsWith('JSP') || u.startsWith('CP')) return `/core-programming/question/${qid}${suffix}`;
-  if (u.startsWith('DSA')) return `/dsa/question/${qid}${suffix}`;
-  if (u.startsWith('FJP')) return `/frontend-javascript/question/${qid}${suffix}`;
-  return `/machine-coding?id=${qid}&session=${session.id}&role=admin`;
-}
-
 /* ─── Main Component ──────────────────────────────────────────────────────── */
 
 export default function AdminLiveSessionsTab() {
+  const { user } = useAuth();
   const [sessions, setSessions] = useState<InterviewSession[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
-  const [isRealtimeConnected, setIsRealtimeConnected] = useState(false);
   const [viewMode, setViewMode] = useState<'vsm' | 'compact' | 'all'>('vsm');
   const [filterStatus, setFilterStatus] = useState<string>('active');
   const [filterTrack, setFilterTrack] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
-  
-  // Per-session live telemetry
-  const [telemetryMap, setTelemetryMap] = useState<Record<string, LiveStudentTelemetry>>({});
   
   // Inspection Modal state
   const [inspectSession, setInspectSession] = useState<InterviewSession | null>(null);
@@ -85,312 +57,58 @@ export default function AdminLiveSessionsTab() {
 
   const [, setTick] = useState(0); // clock tick for relTime and idle checks
 
-  // References for channels & timers
-  const channelsRef = useRef<Map<string, { interviewCh: any; legacyCh?: any }>>(new Map());
-  const typingTimersRef = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
+  // Extract all active session IDs for Socket.IO multi-session room subscription
+  const activeSessionIds = useMemo(() => {
+    return sessions
+      .filter(s => s.status === 'active' || s.status === 'in_progress')
+      .map(s => s.id);
+  }, [sessions]);
 
-  /* ── Push activity helper ─────────────────────────────────────────────── */
-  const pushActivity = useCallback((sessionId: string, event: Omit<ActivityEvent, 'id'>) => {
-    setTelemetryMap(prev => {
-      const cur = prev[sessionId];
-      const existing = cur?.activityHistory || [];
-      const updatedHistory = [{ ...event, id: uid() }, ...existing].slice(0, MAX_ACTIVITY);
-      return {
-        ...prev,
-        [sessionId]: {
-          ...(cur || {
-            isTyping: false,
-            activeFile: 'solution.js',
-            code: '',
-            lineCount: 1,
-            cursor: null,
-            focused: true,
-            presence: 'online',
-            lastSeenAt: Date.now(),
-            lastExecution: null,
-            activityHistory: [],
-          }),
-          activityHistory: updatedHistory,
-        },
-      };
-    });
-  }, []);
+  // Two-way Realtime Socket.IO connection for admin live monitoring
+  const { isConnected: isRealtimeConnected, telemetryMap: socketTelemetryMap } = useAdminMonitorSocket(activeSessionIds, user);
 
-  /* ── Subscribe to session real-time channel (interview:${sessionId}) ─── */
-  const subscribeToSession = useCallback((session: InterviewSession) => {
-    const sessionId = session.id;
-    if (channelsRef.current.has(sessionId)) return;
-
-    // Default initial telemetry from persistent session record
-    const initialCode = session.current_code_snapshot ||
-      (session.files_snapshot ? (session.files_snapshot[session.active_file || ''] || Object.values(session.files_snapshot)[0] || '') : '');
-
-    setTelemetryMap(prev => {
-      if (prev[sessionId]) return prev;
-      return {
-        ...prev,
-        [sessionId]: {
-          isTyping: false,
-          activeFile: session.active_file || 'solution.js',
-          code: initialCode,
-          lineCount: initialCode ? initialCode.split('\n').length : 1,
-          cursor: null,
-          focused: true,
-          presence: 'online',
-          lastSeenAt: new Date(session.last_activity_at || session.created_at).getTime(),
-          lastExecution: null,
-          activityHistory: [
-            {
-              id: uid(),
-              type: 'joined',
-              message: `Session ready — ${session.question_title}`,
-              timestamp: new Date(session.started_at || session.created_at).getTime(),
-            },
-          ],
-        },
-      };
-    });
-
-    // 1. Primary Modern Channel: interview:${sessionId}
-    const interviewCh = supabase.channel(`interview:${sessionId}`, {
-      config: { broadcast: { ack: false, self: false }, presence: { key: `admin_${sessionId}` } },
-    });
-
-    // Handle Presence
-    interviewCh.on('presence', { event: 'sync' }, () => {
-      const state = interviewCh.presenceState();
-      const hasCandidate = Object.values(state).some((presences: any) =>
-        presences.some((p: any) => p.role === 'candidate' || p.status === 'online')
-      );
-      if (hasCandidate) {
-        setTelemetryMap(prev => prev[sessionId] ? { ...prev, [sessionId]: { ...prev[sessionId], presence: 'online', lastSeenAt: Date.now() } } : prev);
-      }
-    });
-
-    interviewCh.on('presence', { event: 'join' }, ({ newPresences }) => {
-      const isCandidate = newPresences.some((p: any) => p.role === 'candidate' || p.status === 'online');
-      if (isCandidate) {
-        setTelemetryMap(prev => prev[sessionId] ? { ...prev, [sessionId]: { ...prev[sessionId], presence: 'online', lastSeenAt: Date.now() } } : prev);
-        pushActivity(sessionId, { type: 'joined', message: 'Candidate connected', timestamp: Date.now() });
-      }
-    });
-
-    interviewCh.on('presence', { event: 'leave' }, ({ leftPresences }) => {
-      const wasCandidate = leftPresences.some((p: any) => p.role === 'candidate');
-      if (wasCandidate) {
-        setTelemetryMap(prev => prev[sessionId] ? { ...prev, [sessionId]: { ...prev[sessionId], presence: 'disconnected' } } : prev);
-        pushActivity(sessionId, { type: 'left', message: 'Candidate disconnected', timestamp: Date.now() });
-      }
-    });
-
-    // Broadcast: CODE_CHANGED
-    interviewCh.on('broadcast', { event: 'CODE_CHANGED' }, ({ payload }: { payload: any }) => {
-      setTelemetryMap(prev => {
-        const cur = prev[sessionId];
-        return {
-          ...prev,
-          [sessionId]: {
-            ...(cur || {
-              activeFile: payload?.activeFile || 'solution.js',
-              lineCount: 1,
-              focused: true,
-              lastExecution: null,
-              activityHistory: [],
-            }),
-            code: payload?.code ?? cur?.code ?? '',
-            lineCount: payload?.lineCount ?? (payload?.code ? payload.code.split('\n').length : cur?.lineCount || 1),
-            activeFile: payload?.activeFile || cur?.activeFile || 'solution.js',
-            cursor: payload?.cursor || cur?.cursor || null,
-            presence: 'online',
-            lastSeenAt: Date.now(),
-            isTyping: true,
+  // Merge persistent Supabase session data with live Socket.IO telemetry stream
+  const telemetryMap = useMemo<Record<string, LiveStudentTelemetry>>(() => {
+    const map: Record<string, LiveStudentTelemetry> = {};
+    for (const s of sessions) {
+      const initCode = s.current_code_snapshot ||
+        (s.files_snapshot ? (s.files_snapshot[s.active_file || ''] || Object.values(s.files_snapshot)[0] || '') : '');
+      map[s.id] = {
+        isTyping: false,
+        activeFile: s.active_file || 'solution.js',
+        code: initCode,
+        lineCount: initCode ? initCode.split('\n').length : 1,
+        cursor: null,
+        focused: true,
+        presence: (s.status === 'active' || s.status === 'in_progress') ? 'online' : 'disconnected',
+        lastSeenAt: new Date(s.last_activity_at || s.created_at).getTime(),
+        lastExecution: null,
+        activityHistory: [
+          {
+            id: `init_${s.id}`,
+            type: 'joined',
+            message: `Session ready — ${s.question_title}`,
+            timestamp: new Date(s.started_at || s.created_at).getTime(),
           },
+        ],
+      };
+    }
+    for (const [id, tel] of Object.entries(socketTelemetryMap)) {
+      if (map[id]) {
+        map[id] = {
+          ...map[id],
+          ...tel,
+          code: tel.code || map[id].code,
+          activeFile: tel.activeFile || map[id].activeFile,
+          presence: tel.presence || map[id].presence,
+          activityHistory: tel.activityHistory?.length ? tel.activityHistory : map[id].activityHistory,
         };
-      });
-
-      // Clear typing indicator after 2s silence
-      const timer = typingTimersRef.current.get(sessionId);
-      if (timer) clearTimeout(timer);
-      typingTimersRef.current.set(
-        sessionId,
-        setTimeout(() => {
-          setTelemetryMap(prev => prev[sessionId] ? { ...prev, [sessionId]: { ...prev[sessionId], isTyping: false } } : prev);
-        }, 2000)
-      );
-    });
-
-    // Broadcast: TYPING_STARTED
-    interviewCh.on('broadcast', { event: 'TYPING_STARTED' }, () => {
-      setTelemetryMap(prev => prev[sessionId] ? { ...prev, [sessionId]: { ...prev[sessionId], isTyping: true, presence: 'online', lastSeenAt: Date.now() } } : prev);
-    });
-
-    // Broadcast: TYPING_STOPPED
-    interviewCh.on('broadcast', { event: 'TYPING_STOPPED' }, () => {
-      setTelemetryMap(prev => prev[sessionId] ? { ...prev, [sessionId]: { ...prev[sessionId], isTyping: false } } : prev);
-    });
-
-    // Broadcast: CURSOR_MOVED
-    interviewCh.on('broadcast', { event: 'CURSOR_MOVED' }, ({ payload }: { payload: any }) => {
-      const line = Number(payload?.line);
-      const column = Number(payload?.column);
-      if (Number.isFinite(line) && Number.isFinite(column)) {
-        setTelemetryMap(prev => prev[sessionId] ? {
-          ...prev,
-          [sessionId]: {
-            ...prev[sessionId],
-            cursor: { line, column, at: Date.now() },
-            presence: 'online',
-            lastSeenAt: Date.now(),
-          },
-        } : prev);
+      } else {
+        map[id] = tel;
       }
-    });
-
-    // Broadcast: EDITOR_FOCUSED / BLURRED
-    interviewCh.on('broadcast', { event: 'EDITOR_FOCUSED' }, () => {
-      setTelemetryMap(prev => prev[sessionId] ? { ...prev, [sessionId]: { ...prev[sessionId], focused: true, presence: 'online', lastSeenAt: Date.now() } } : prev);
-    });
-    interviewCh.on('broadcast', { event: 'EDITOR_BLURRED' }, () => {
-      setTelemetryMap(prev => prev[sessionId] ? { ...prev, [sessionId]: { ...prev[sessionId], focused: false } } : prev);
-    });
-
-    // Broadcast: TEST_STARTED
-    interviewCh.on('broadcast', { event: 'TEST_STARTED' }, () => {
-      setTelemetryMap(prev => prev[sessionId] ? {
-        ...prev,
-        [sessionId]: {
-          ...prev[sessionId],
-          lastExecution: { status: 'running', timestamp: Date.now() },
-          presence: 'online',
-          lastSeenAt: Date.now(),
-        },
-      } : prev);
-      pushActivity(sessionId, { type: 'execution', message: 'Running test cases…', timestamp: Date.now() });
-    });
-
-    // Broadcast: TEST_COMPLETED
-    interviewCh.on('broadcast', { event: 'TEST_COMPLETED' }, ({ payload }: { payload: any }) => {
-      const exec = {
-        status: (payload?.status === 'success' ? 'success' : 'failed') as 'success' | 'failed',
-        passed: payload?.passed ?? 0,
-        total: payload?.total ?? 0,
-        runtimeMs: payload?.runtimeMs ?? 0,
-        error: payload?.error,
-        timestamp: Date.now(),
-      };
-      setTelemetryMap(prev => prev[sessionId] ? {
-        ...prev,
-        [sessionId]: {
-          ...prev[sessionId],
-          lastExecution: exec,
-          presence: 'online',
-          lastSeenAt: Date.now(),
-        },
-      } : prev);
-      pushActivity(sessionId, {
-        type: 'execution',
-        message: exec.status === 'success'
-          ? `Passed all ${exec.total} tests (${exec.runtimeMs}ms)`
-          : `Failed: ${exec.passed}/${exec.total} passed`,
-        timestamp: Date.now(),
-      });
-    });
-
-    // Broadcast: FILE_OPENED
-    interviewCh.on('broadcast', { event: 'FILE_OPENED' }, ({ payload }: { payload: any }) => {
-      const file = payload?.activeFile || 'solution.js';
-      setTelemetryMap(prev => prev[sessionId] ? {
-        ...prev,
-        [sessionId]: { ...prev[sessionId], activeFile: file, presence: 'online', lastSeenAt: Date.now() },
-      } : prev);
-      pushActivity(sessionId, { type: 'file_switch', message: `Switched to ${file}`, timestamp: Date.now() });
-    });
-
-    // Broadcast: QUESTION_OPENED
-    interviewCh.on('broadcast', { event: 'QUESTION_OPENED' }, ({ payload }: { payload: any }) => {
-      pushActivity(sessionId, {
-        type: 'question',
-        message: `Opened ${payload?.questionTitle || payload?.questionId}`,
-        timestamp: Date.now(),
-      });
-    });
-
-    // Broadcast: ACTIVITY
-    interviewCh.on('broadcast', { event: 'ACTIVITY' }, ({ payload }: { payload: any }) => {
-      if (payload?.message) {
-        pushActivity(sessionId, { type: payload.type || 'activity', message: payload.message, timestamp: Date.now() });
-      }
-    });
-
-    // Broadcast: SESSION_ENDED
-    interviewCh.on('broadcast', { event: 'SESSION_ENDED' }, () => {
-      setTelemetryMap(prev => prev[sessionId] ? { ...prev, [sessionId]: { ...prev[sessionId], presence: 'disconnected' } } : prev);
-      pushActivity(sessionId, { type: 'ended', message: 'Session completed/ended', timestamp: Date.now() });
-    });
-
-    interviewCh.subscribe();
-
-    // 2. Legacy fallback channel (for older studio sessions): session_collab_${sessionId}
-    const legacyCh = supabase.channel(`session_collab_${sessionId}`, {
-      config: { broadcast: { ack: false, self: false } },
-    });
-
-    legacyCh.on('broadcast', { event: 'yjs-update' }, () => {
-      setTelemetryMap(prev => prev[sessionId] ? { ...prev, [sessionId]: { ...prev[sessionId], isTyping: true, presence: 'online', lastSeenAt: Date.now() } } : prev);
-    });
-
-    legacyCh.on('broadcast', { event: 'execution-event' }, ({ payload }: { payload: any }) => {
-      const exec = {
-        status: (payload?.status === 'success' ? 'success' : 'failed') as 'success' | 'failed',
-        passed: payload?.testsPassed || 0,
-        total: payload?.testsTotal || 0,
-        timestamp: Date.now(),
-      };
-      setTelemetryMap(prev => prev[sessionId] ? { ...prev, [sessionId]: { ...prev[sessionId], lastExecution: exec, presence: 'online', lastSeenAt: Date.now() } } : prev);
-      pushActivity(sessionId, {
-        type: 'execution',
-        message: exec.status === 'success' ? `All ${exec.total} tests passed` : `${exec.passed}/${exec.total} tests passed`,
-        timestamp: Date.now(),
-      });
-    });
-
-    legacyCh.on('broadcast', { event: 'file-switch-event' }, ({ payload }: { payload: any }) => {
-      const file = payload?.fileName || 'solution.js';
-      setTelemetryMap(prev => prev[sessionId] ? { ...prev, [sessionId]: { ...prev[sessionId], activeFile: file, presence: 'online', lastSeenAt: Date.now() } } : prev);
-      pushActivity(sessionId, { type: 'file_switch', message: `Switched to ${file}`, timestamp: Date.now() });
-    });
-
-    legacyCh.on('broadcast', { event: 'cursor-update' }, ({ payload }: { payload: any }) => {
-      const line = Number(payload?.range?.startLineNumber);
-      const column = Number(payload?.range?.startColumn);
-      if (Number.isFinite(line) && Number.isFinite(column)) {
-        setTelemetryMap(prev => prev[sessionId] ? {
-          ...prev,
-          [sessionId]: { ...prev[sessionId], cursor: { line, column, at: Date.now() }, isTyping: true, presence: 'online', lastSeenAt: Date.now() },
-        } : prev);
-      }
-    });
-
-    legacyCh.subscribe();
-
-    channelsRef.current.set(sessionId, { interviewCh, legacyCh });
-  }, [pushActivity]);
-
-  const unsubscribeFromSession = useCallback((sessionId: string) => {
-    const entry = channelsRef.current.get(sessionId);
-    if (entry) {
-      try {
-        if (entry.interviewCh) supabase.removeChannel(entry.interviewCh);
-        if (entry.legacyCh) supabase.removeChannel(entry.legacyCh);
-      } catch (_) {}
-      channelsRef.current.delete(sessionId);
     }
-    const t = typingTimersRef.current.get(sessionId);
-    if (t) {
-      clearTimeout(t);
-      typingTimersRef.current.delete(sessionId);
-    }
-  }, []);
+    return map;
+  }, [sessions, socketTelemetryMap]);
 
   /* ── Initial Load Sessions ─────────────────────────────────────────────── */
   const loadSessions = useCallback(() => {
@@ -420,81 +138,26 @@ export default function AdminLiveSessionsTab() {
           if (prev.find(s => s.id === session.id)) return prev;
           return [session, ...prev];
         });
-        subscribeToSession(session);
       },
       onUpdate: session => {
         setSessions(prev => prev.map(s => (s.id === session.id ? session : s)));
-        // Update persistent code snapshot in telemetry if candidate did autosave
-        if (session.current_code_snapshot) {
-          setTelemetryMap(prev => {
-            const cur = prev[session.id];
-            if (!cur) return prev;
-            return {
-              ...prev,
-              [session.id]: {
-                ...cur,
-                code: cur.code || session.current_code_snapshot || '',
-                activeFile: session.active_file || cur.activeFile,
-              },
-            };
-          });
-        }
       },
       onDelete: id => {
         if (!id) return;
         setSessions(prev => prev.filter(s => s.id !== id));
-        unsubscribeFromSession(id);
       },
-      onConnectionChange: setIsRealtimeConnected,
     });
     return unsub;
-  }, [subscribeToSession, unsubscribeFromSession]);
-
-  /* ── Subscribe to all active sessions ─────────────────────────────────── */
-  useEffect(() => {
-    const activeSessions = sessions.filter(s => s.status === 'active' || s.status === 'in_progress');
-    const activeIds = new Set(activeSessions.map(s => s.id));
-    activeSessions.forEach(s => subscribeToSession(s));
-
-    // Cleanup channels for completed or removed sessions
-    channelsRef.current.forEach((_, id) => {
-      if (!activeIds.has(id)) unsubscribeFromSession(id);
-    });
-  }, [sessions, subscribeToSession, unsubscribeFromSession]);
+  }, []);
 
   /* ── Heartbeat & Idle Checker (every 10s) ──────────────────────────────── */
   useEffect(() => {
     const interval = setInterval(() => {
       setTick(n => n + 1);
-
-      // Check quiet times across telemetries
-      const now = Date.now();
-      setTelemetryMap(prev => {
-        let changed = false;
-        const next = { ...prev };
-        Object.entries(next).forEach(([sid, tel]) => {
-          if (tel.presence === 'online' && now - tel.lastSeenAt > STALE_AFTER_MS) {
-            next[sid] = { ...tel, presence: 'idle' };
-            changed = true;
-          } else if (tel.presence === 'idle' && now - tel.lastSeenAt > GONE_AFTER_MS) {
-            next[sid] = { ...tel, presence: 'disconnected' };
-            changed = true;
-          }
-        });
-        return changed ? next : prev;
-      });
     }, 10000);
 
     return () => clearInterval(interval);
   }, []);
-
-  /* ── Full Cleanup on Unmount ───────────────────────────────────────────── */
-  useEffect(() => {
-    return () => {
-      channelsRef.current.forEach((_, id) => unsubscribeFromSession(id));
-      typingTimersRef.current.forEach(t => clearTimeout(t));
-    };
-  }, [unsubscribeFromSession]);
 
   /* ── Roster Loader ─────────────────────────────────────────────────────── */
   const loadRoster = useCallback(async () => {
@@ -631,7 +294,7 @@ export default function AdminLiveSessionsTab() {
         </div>
         <div className="rt-header-controls">
           <span className={`rt-connected-badge ${isRealtimeConnected ? 'connected' : 'disconnected'}`}>
-            {isRealtimeConnected ? '🟢 Supabase Realtime Active' : '🔴 Reconnecting Stream…'}
+            {isRealtimeConnected ? '🟢 Socket.IO Realtime Active' : '🔴 Connecting Socket…'}
           </span>
         </div>
       </div>
@@ -641,7 +304,7 @@ export default function AdminLiveSessionsTab() {
         <div className="live-kpi-card">
           <span className="live-kpi-label">🟢 Live Now</span>
           <span className="live-kpi-val green">{onlineCount}</span>
-          <span className="live-kpi-note">Active on Supabase Realtime</span>
+          <span className="live-kpi-note">Active on Socket.IO</span>
         </div>
         <div className="live-kpi-card">
           <span className="live-kpi-label">⌨️ Typing</span>
@@ -950,7 +613,9 @@ export default function AdminLiveSessionsTab() {
                         ))}
                         {acts.length === 0 && <span className="rt-no-activity">Waiting…</span>}
                       </span>
-                      <span className="rt-expand-hint">Inspect ⤡</span>
+                      <span className="rt-expand-hint" style={{ fontWeight: 700, color: '#38bdf8' }}>
+                        VIEW MONITOR ⤡
+                      </span>
                     </span>
                   </div>
                 </div>
@@ -960,90 +625,14 @@ export default function AdminLiveSessionsTab() {
         )
       )}
 
-      {/* 5. INLINE FULL INSPECTION MODAL (WITHOUT LEAVING LIVE SESSIONS) */}
+      {/* 5. COMPLETE REALTIME VIRTUAL STUDENT WORKSPACE MONITOR (ADMIN ONLY) */}
+      {/* 5. COMPLETE REALTIME VIRTUAL STUDENT WORKSPACE MONITOR (ADMIN ONLY) */}
       {inspectSession && (
-        <div className="vsm-modal-backdrop" onClick={() => setInspectSession(null)}>
-          <div className="vsm-modal-dialog" onClick={e => e.stopPropagation()}>
-            <div className="vsm-modal-header">
-              <div className="vsm-modal-title-group">
-                <span className="vsm-presence-pill online">
-                  <span className="vsm-pulse-dot" />
-                  {telemetryMap[inspectSession.id]?.presence?.toUpperCase() || 'ONLINE'}
-                </span>
-                <div>
-                  <h3 style={{ margin: 0, fontSize: '1.05rem', color: '#f8fafc' }}>
-                    {inspectSession.candidate_name} — {inspectSession.question_title}
-                  </h3>
-                  <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>
-                    Session: <code>{inspectSession.id}</code> · {trackOf(inspectSession.question_id).label}
-                  </span>
-                </div>
-              </div>
-
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <Link
-                  to={monitorPath(inspectSession)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn btn-sm btn-primary"
-                >
-                  👁️ Open Full Studio Monitor
-                </Link>
-                <button
-                  type="button"
-                  className="vsm-modal-close-btn"
-                  onClick={() => setInspectSession(null)}
-                  title="Close Inspector"
-                >
-                  ×
-                </button>
-              </div>
-            </div>
-
-            <div className="vsm-modal-body">
-              {/* Virtual Code Viewer in Modal */}
-              <div className="vsm-modal-code-window">
-                <div className="vsm-code-window-header">
-                  <div className="vsm-window-dots">
-                    <span className="vsm-wdot red" />
-                    <span className="vsm-wdot yellow" />
-                    <span className="vsm-wdot green" />
-                  </div>
-                  <span className="vsm-editor-title">
-                    📄 {telemetryMap[inspectSession.id]?.activeFile || inspectSession.active_file || 'solution.js'} (Live Buffer)
-                  </span>
-                  <div className="vsm-window-status">
-                    {telemetryMap[inspectSession.id]?.cursor && (
-                      <span className="vsm-cursor-pos">
-                        Ln {telemetryMap[inspectSession.id]?.cursor?.line}, Col {telemetryMap[inspectSession.id]?.cursor?.column}
-                      </span>
-                    )}
-                    <span>{telemetryMap[inspectSession.id]?.code?.split('\n').length || 0} lines</span>
-                  </div>
-                </div>
-                <pre className="vsm-modal-code-body">
-                  <code>{telemetryMap[inspectSession.id]?.code || inspectSession.current_code_snapshot || '// Waiting for candidate code stream…'}</code>
-                </pre>
-              </div>
-
-              {/* Activity Timeline in Modal */}
-              <div className="vsm-activity-container" style={{ borderRadius: '10px' }}>
-                <div className="vsm-activity-title">⚡ Realtime Activity Stream</div>
-                <ul className="vsm-activity-list">
-                  {(telemetryMap[inspectSession.id]?.activityHistory || []).map(ev => (
-                    <li key={ev.id} className="vsm-act-item">
-                      <span className="vsm-act-msg">{ev.message}</span>
-                      <span className="vsm-act-time">{relTime(ev.timestamp)}</span>
-                    </li>
-                  ))}
-                  {(telemetryMap[inspectSession.id]?.activityHistory || []).length === 0 && (
-                    <li className="vsm-act-empty">No activity events recorded yet</li>
-                  )}
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
+        <StudentWorkspaceMonitor
+          session={inspectSession}
+          telemetry={telemetryMap[inspectSession.id]}
+          onClose={() => setInspectSession(null)}
+        />
       )}
     </div>
   );

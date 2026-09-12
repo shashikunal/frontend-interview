@@ -35,7 +35,7 @@ import {
 import LiveInterviewCollabDrawer from './LiveInterviewCollabDrawer';
 import { renderFormattedMarkdown } from '../../lib/questionTemplate';
 import { mcProgressService } from './lib/mcProgressService';
-import { useRealtimeStudentBroadcast } from '../../hooks/useRealtimeStudentBroadcast';
+import { useInterviewSocket } from '../../hooks/useInterviewSocket';
 import './MachineCodingStudio.css';
 
 interface ConsoleLog {
@@ -874,14 +874,14 @@ export default function MachineCodingStudio() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeQuestion?.id, userRole]);
 
-  // ── REALTIME STUDENT BROADCAST (Telemetry for Admin Virtual Monitor) ──
+  // ── REALTIME TWO-WAY SOCKET.IO (Telemetry for Admin Virtual Monitor) ──
   const {
     emitCodeChange,
     emitCursorMove,
     emitFocus,
     emitCodeRun,
     emitFileSwitch,
-  } = useRealtimeStudentBroadcast({
+  } = useInterviewSocket({
     sessionId: collabSession?.id,
     questionId: activeQuestion?.id || 'Q001',
     questionTitle: activeQuestion?.title || 'Machine Coding',

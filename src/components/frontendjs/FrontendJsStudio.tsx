@@ -8,7 +8,7 @@ import { runFrontendJsCode } from './lib/frontendJsRunner'
 import { frontendJsProgressService } from './lib/frontendJsProgressService'
 import { frontendJsSubmissionService } from './lib/frontendJsSubmissionService'
 import { interviewSessionService } from '../../lib/interviewSessionService'
-import { useRealtimeStudentBroadcast } from '../../hooks/useRealtimeStudentBroadcast'
+import { useInterviewSocket } from '../../hooks/useInterviewSocket'
 import { useAuth } from '../../context/AuthContext'
 import { useTheme } from '../../context/ThemeContext'
 import { FrontendJsQuestionDetail } from './components/FrontendJsQuestionDetail'
@@ -241,13 +241,13 @@ function FrontendJsWorkspace({
     })
   }, [question.id, question.title, question.starterCode, user?.id, role])
 
-  // ── REALTIME STUDENT BROADCAST (Telemetry for Admin Virtual Monitor) ──
+  // ── REALTIME TWO-WAY SOCKET.IO (Telemetry for Admin Virtual Monitor) ──
   const {
     emitCodeChange,
     emitCursorMove,
     emitFocus,
     emitCodeRun,
-  } = useRealtimeStudentBroadcast({
+  } = useInterviewSocket({
     sessionId: liveSessionId,
     questionId: question.id,
     questionTitle: question.title,

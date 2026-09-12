@@ -11,7 +11,7 @@ import { trackingService } from '../../lib/trackingService';
 import { interviewSessionService } from '../../lib/interviewSessionService';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
-import { useRealtimeStudentBroadcast } from '../../hooks/useRealtimeStudentBroadcast';
+import { useInterviewSocket } from '../../hooks/useInterviewSocket';
 import { CoreProgrammingDetail } from './components/CoreProgrammingDetail';
 import { CoreProgrammingTestPanel } from './components/CoreProgrammingTestPanel';
 import { CoreProgrammingDashboard } from './components/CoreProgrammingDashboard';
@@ -217,13 +217,13 @@ function CoreProgrammingWorkspace({
     });
   }, [question.id, question.title, question.starterCode, user?.id, role]);
 
-  // ── REALTIME STUDENT BROADCAST (Ephemeral telemetry for admin monitor) ──
+  // ── REALTIME TWO-WAY SOCKET.IO (Ephemeral telemetry for admin monitor) ──
   const {
     emitCodeChange,
     emitCursorMove,
     emitFocus,
     emitCodeRun,
-  } = useRealtimeStudentBroadcast({
+  } = useInterviewSocket({
     sessionId: liveSessionId,
     questionId: question.id,
     questionTitle: question.title,

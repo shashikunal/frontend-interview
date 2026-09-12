@@ -7,7 +7,7 @@ import { runDSACode } from './lib/dsaRunner'
 import { dsaProgressService } from './lib/dsaProgressService'
 import { dsaSubmissionService } from './lib/dsaSubmissionService'
 import { interviewSessionService } from '../../lib/interviewSessionService'
-import { useRealtimeStudentBroadcast } from '../../hooks/useRealtimeStudentBroadcast'
+import { useInterviewSocket } from '../../hooks/useInterviewSocket'
 import { useAuth } from '../../context/AuthContext'
 import { DSAQuestionDetail } from './components/DSAQuestionDetail'
 import { DSATestPanel } from './components/DSATestPanel'
@@ -137,13 +137,13 @@ function DSAStudioWorkspace({ questionId }: WorkspaceProps) {
 
   const fileName = language === 'typescript' ? 'solution.ts' : 'solution.js'
 
-  // ── REALTIME STUDENT BROADCAST (Telemetry for Admin Virtual Monitor) ──
+  // ── REALTIME TWO-WAY SOCKET.IO (Telemetry for Admin Virtual Monitor) ──
   const {
     emitCodeChange,
     emitCursorMove,
     emitFocus,
     emitCodeRun,
-  } = useRealtimeStudentBroadcast({
+  } = useInterviewSocket({
     sessionId: liveSessionId,
     questionId: question.id,
     questionTitle: `${question.number}. ${question.title}`,

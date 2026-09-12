@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import type { InterviewSession } from '../../../lib/interviewSessionService';
+import { getUnifiedQuestionMetadata } from '../../../lib/questionCatalogHelper';
 
 export interface LiveStudentTelemetry {
   isTyping: boolean;
@@ -9,7 +9,7 @@ export interface LiveStudentTelemetry {
   lineCount: number;
   cursor: { line: number; column: number; at: number } | null;
   focused: boolean;
-  presence: 'online' | 'idle' | 'disconnected';
+  presence: 'online' | 'idle' | 'disconnected' | 'reconnecting';
   lastSeenAt: number;
   lastExecution: {
     status: 'running' | 'success' | 'failed' | 'error';
@@ -52,25 +52,6 @@ function formatElapsed(startedAtIso: string): string {
   return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
 }
 
-function trackBadge(questionId?: string): { label: string; kind: string } {
-  const q = String(questionId || '').toUpperCase();
-  if (q.startsWith('JS-P') || q.startsWith('JSP') || q.startsWith('CP')) return { label: 'Core Programming', kind: 'cp' };
-  if (q.startsWith('DSA')) return { label: 'DSA Masterclass', kind: 'dsa' };
-  if (q.startsWith('FJP')) return { label: 'Frontend JS', kind: 'fjs' };
-  if (q.startsWith('Q') || q.startsWith('MC')) return { label: 'Machine Coding', kind: 'mc' };
-  return { label: 'Interview Studio', kind: 'other' };
-}
-
-function monitorDeepLink(session: InterviewSession): string {
-  const qid = String(session.question_id || '');
-  const u = qid.toUpperCase();
-  const suffix = `?session=${session.id}&role=admin`;
-  if (u.startsWith('JS-P') || u.startsWith('JSP') || u.startsWith('CP')) return `/core-programming/question/${qid}${suffix}`;
-  if (u.startsWith('DSA')) return `/dsa/question/${qid}${suffix}`;
-  if (u.startsWith('FJP')) return `/frontend-javascript/question/${qid}${suffix}`;
-  return `/machine-coding?id=${qid}&session=${session.id}&role=admin`;
-}
-
 export const VirtualStudentMonitor: React.FC<VirtualStudentMonitorProps> = ({
   session,
   telemetry,
@@ -95,6 +76,15 @@ export const VirtualStudentMonitor: React.FC<VirtualStudentMonitorProps> = ({
   const execution = telemetry?.lastExecution;
   const activities = telemetry?.activityHistory || [];
 
+  // Question & Academic Metadata
+  const questionMeta = useMemo(() => {
+    return getUnifiedQuestionMetadata(session.question_id);
+  }, [session.question_id]);
+
+  const studentId = `STU-${session.candidate_id ? session.candidate_id.replace(/-/g, '').slice(0, 4).toUpperCase() : '1024'}`;
+  const interviewId = `INT-${session.id.replace(/-/g, '').slice(0, 4).toUpperCase()}`;
+  const sessionIdFormatted = `SES-${session.id.replace(/-/g, '').slice(0, 8).toUpperCase()}`;
+
   // Code resolution
   const activeFile = telemetry?.activeFile || session.active_file || 'solution.js';
   const initialFileSnapshot = session.files_snapshot?.[activeFile] || Object.values(session.files_snapshot || {})[0] || '';
@@ -102,11 +92,10 @@ export const VirtualStudentMonitor: React.FC<VirtualStudentMonitorProps> = ({
 
   // Split code lines for virtual line-numbered view
   const lines = useMemo(() => {
-    return currentCode.split('\n').slice(0, 30); // Show first 30 lines in card preview
+    return currentCode.split('\n').slice(0, 24); // Show first 24 lines in card preview
   }, [currentCode]);
 
   const totalLines = currentCode.split('\n').length;
-  const track = trackBadge(session.question_id);
 
   return (
     <div className={`vsm-card ${presence} ${isExpanded ? 'vsm-expanded' : ''}`}>
@@ -119,14 +108,15 @@ export const VirtualStudentMonitor: React.FC<VirtualStudentMonitorProps> = ({
           <div className="vsm-candidate-meta">
             <div className="vsm-name-row">
               <strong className="vsm-candidate-name">{session.candidate_name}</strong>
+              <span className="vsm-id-tag">{studentId}</span>
               <span className={`vsm-presence-pill ${presence}`}>
                 <span className="vsm-pulse-dot" />
-                {presence === 'online' ? 'LIVE' : presence === 'idle' ? 'IDLE' : 'DISCONNECTED'}
+                {presence === 'online' ? 'LIVE' : presence === 'idle' ? 'IDLE' : presence === 'reconnecting' ? 'RECONNECTING' : 'DISCONNECTED'}
               </span>
             </div>
-            <span className="vsm-candidate-sub">
-              {session.candidate_email || 'guest-candidate'} · {track.label}
-            </span>
+            <div className="vsm-academic-sub">
+              <span>{questionMeta.programName}</span> · <span>{questionMeta.trackName}</span>
+            </div>
           </div>
         </div>
 
@@ -136,11 +126,11 @@ export const VirtualStudentMonitor: React.FC<VirtualStudentMonitorProps> = ({
           </div>
           <button
             type="button"
-            className="vsm-expand-btn"
+            className="vsm-expand-btn primary-monitor-btn"
             onClick={() => onExpand?.(session)}
-            title={isExpanded ? 'Collapse monitor' : 'Expand full monitor'}
+            title="Open Complete Realtime Virtual Monitor"
           >
-            {isExpanded ? 'Collapse ⤢' : 'Inspect ⤡'}
+            VIEW MONITOR ⤡
           </button>
         </div>
       </div>
@@ -149,6 +139,7 @@ export const VirtualStudentMonitor: React.FC<VirtualStudentMonitorProps> = ({
       <div className="vsm-context-bar">
         <div className="vsm-question-info">
           <span className="vsm-qid-tag">{session.question_id}</span>
+          <span className="vsm-q-order-badge">Question {questionMeta.orderNumber} / {questionMeta.totalInTrack}</span>
           <span className="vsm-qtitle" title={session.question_title}>
             {session.question_title}
           </span>
@@ -268,19 +259,18 @@ export const VirtualStudentMonitor: React.FC<VirtualStudentMonitorProps> = ({
         )}
       </div>
 
-      {/* 6. Card Footer with Deep-Link */}
+      {/* 6. Card Footer with VIEW MONITOR Action */}
       <div className="vsm-card-footer">
-        <span className="vsm-session-id">ID: {session.id.slice(0, 8)}...</span>
+        <span className="vsm-session-id">{interviewId} · {sessionIdFormatted}</span>
         <div className="vsm-action-buttons">
-          <Link
-            to={monitorDeepLink(session)}
-            className="vsm-deep-link-btn"
-            target="_blank"
-            rel="noopener noreferrer"
-            title="Open 1-on-1 collaborative workspace"
+          <button
+            type="button"
+            className="vsm-view-monitor-btn"
+            onClick={() => onExpand?.(session)}
+            title="Open complete Admin Realtime Virtual Workspace Monitor"
           >
-            👁️ Open Full Studio Monitor →
-          </Link>
+            🖥️ VIEW MONITOR →
+          </button>
         </div>
       </div>
     </div>

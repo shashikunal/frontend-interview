@@ -2,6 +2,20 @@ import { defineConfig, type Plugin } from 'vite'
 import react from '@vitejs/plugin-react'
 import fs from 'fs'
 import path from 'path'
+import { initSocketServer } from './server/socket/index.js'
+
+// Local Dev Socket.IO Middleware
+function localSocketIOPlugin(): Plugin {
+  return {
+    name: 'local-socket-io-middleware',
+    configureServer(server) {
+      if (server.httpServer) {
+        initSocketServer(server.httpServer)
+        console.log('🚀 [Socket.IO Dev Server] Attached to Vite HTTP server on /api/socket')
+      }
+    },
+  }
+}
 
 // Local Dev Email API Middleware
 function localEmailPlugin(): Plugin {
@@ -284,5 +298,5 @@ function localAIVideoMockPlugin(): Plugin {
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react(), localEmailPlugin(), localAIVideoMockPlugin()],
+  plugins: [react(), localEmailPlugin(), localAIVideoMockPlugin(), localSocketIOPlugin()],
 })
