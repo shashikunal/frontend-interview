@@ -50,6 +50,8 @@ const FrontendJsStudio = lazy(() => import('./components/frontendjs/FrontendJsSt
 const AnalyticsDashboard = lazy(() => import('./components/analytics/AnalyticsDashboard'))
 const Leaderboard = lazy(() => import('./components/leaderboard/Leaderboard'))
 const AIVideoMockApp = lazy(() => import('./features/ai-video-mock/AIVideoMockApp'))
+const StudentPerformanceView = lazy(() => import('./features/performance-history/components/student/StudentPerformanceView'))
+const AdminCandidatePerformancePage = lazy(() => import('./features/performance-history/components/admin/AdminCandidatePerformancePage'))
 import RoleGuard from './components/auth/RoleGuard'
 import { useAuth } from './context/AuthContext'
 import FeatureGuard from './components/auth/FeatureGuard'
@@ -129,6 +131,126 @@ export default function App() {
             }
           />
           <Route
+            path="/admin/candidates/:userId/performance"
+            element={
+              <ProtectedRoute>
+                <AdminCandidatePerformancePage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/candidates/:userId/performance/track/:trackKey"
+            element={
+              <ProtectedRoute>
+                <AdminCandidatePerformancePage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/candidates/:userId/performance/coding/:attemptId"
+            element={
+              <ProtectedRoute>
+                <AdminCandidatePerformancePage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/candidates/:userId/performance/ai-mock/:sessionId"
+            element={
+              <ProtectedRoute>
+                <AdminCandidatePerformancePage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/candidates/:userId/performance"
+            element={
+              <ProtectedRoute>
+                <AdminCandidatePerformancePage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/candidates/:userId/performance/track/:trackKey"
+            element={
+              <ProtectedRoute>
+                <AdminCandidatePerformancePage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/candidates/:userId/performance/mentor-mock/:sessionId"
+            element={
+              <RoleGuard
+                minRole="admin"
+                fallbackTitle="🔒 Administrator Access Required"
+                fallbackMessage="Candidate Performance Dossier is restricted to Platform Administrators."
+              >
+                <AdminCandidatePerformancePage />
+              </RoleGuard>
+            }
+          />
+          <Route
+            path="/admin/users/:userId/performance"
+            element={
+              <RoleGuard
+                minRole="admin"
+                fallbackTitle="🔒 Administrator Access Required"
+                fallbackMessage="Candidate Performance Dossier is restricted to Platform Administrators."
+              >
+                <AdminCandidatePerformancePage />
+              </RoleGuard>
+            }
+          />
+          <Route
+            path="/admin/users/:userId/performance/track/:trackKey"
+            element={
+              <RoleGuard
+                minRole="admin"
+                fallbackTitle="🔒 Administrator Access Required"
+                fallbackMessage="Candidate Performance Dossier is restricted to Platform Administrators."
+              >
+                <AdminCandidatePerformancePage />
+              </RoleGuard>
+            }
+          />
+          <Route
+            path="/admin/users/:userId/performance/coding/:attemptId"
+            element={
+              <RoleGuard
+                minRole="admin"
+                fallbackTitle="🔒 Administrator Access Required"
+                fallbackMessage="Candidate Performance Dossier is restricted to Platform Administrators."
+              >
+                <AdminCandidatePerformancePage />
+              </RoleGuard>
+            }
+          />
+          <Route
+            path="/admin/users/:userId/performance/ai-mock/:sessionId"
+            element={
+              <RoleGuard
+                minRole="admin"
+                fallbackTitle="🔒 Administrator Access Required"
+                fallbackMessage="Candidate Performance Dossier is restricted to Platform Administrators."
+              >
+                <AdminCandidatePerformancePage />
+              </RoleGuard>
+            }
+          />
+          <Route
+            path="/admin/users/:userId/performance/mentor-mock/:sessionId"
+            element={
+              <RoleGuard
+                minRole="admin"
+                fallbackTitle="🔒 Administrator Access Required"
+                fallbackMessage="Candidate Performance Dossier is restricted to Platform Administrators."
+              >
+                <AdminCandidatePerformancePage />
+              </RoleGuard>
+            }
+          />
+          <Route
             path="/dashboard"
             element={
               <ProtectedRoute>
@@ -146,6 +268,30 @@ export default function App() {
           />
           <Route path="/analytics" element={<AnalyticsDashboard />} />
           <Route path="/leaderboard" element={<Leaderboard />} />
+          <Route
+            path="/my-performance"
+            element={
+              <ProtectedRoute>
+                <StudentPerformanceView />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/performance"
+            element={
+              <ProtectedRoute>
+                <StudentPerformanceView />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/coding-history"
+            element={
+              <ProtectedRoute>
+                <StudentPerformanceView />
+              </ProtectedRoute>
+            }
+          />
 
 
 

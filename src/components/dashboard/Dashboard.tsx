@@ -28,6 +28,7 @@ import type { FrontendJsSubmission } from '../frontendjs/data/frontendJsTypes'
 import { FRONTEND_JS_QUESTIONS } from '../frontendjs/data/frontendJsQuestions'
 import { mockSessionService } from '../../features/ai-video-mock/services/mockSessionService'
 import { adminAnalyticsService } from '../../lib/adminAnalyticsService'
+import StudentPerformanceView from '../../features/performance-history/components/student/StudentPerformanceView'
 import './Dashboard.css'
 
 function catClass(name: string): string {
@@ -106,13 +107,46 @@ function CandidateDashboard() {
     setAiMockSessions(mockSessionService.getAllLocalSessions())
   }, [])
 
+  // Prevent background page scrolling while dashboard modals are open & handle Escape key
+  useEffect(() => {
+    if (viewingMCSubmission || viewingSubmission || showResetConfirm) {
+      const originalOverflow = document.body.style.overflow
+      document.body.style.overflow = 'hidden'
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === 'Escape') {
+          if (viewingMCSubmission) setViewingMCSubmission(null)
+          if (viewingSubmission) setViewingSubmission(null)
+          if (showResetConfirm) setShowResetConfirm(false)
+        }
+      }
+      window.addEventListener('keydown', handleKeyDown)
+      return () => {
+        document.body.style.overflow = originalOverflow
+        window.removeEventListener('keydown', handleKeyDown)
+      }
+    }
+  }, [viewingMCSubmission, viewingSubmission, showResetConfirm])
+
   // Sync tab & track from URL query params (?tab=submissions&track=dsa)
   const [searchParams] = useSearchParams()
   const { tab: urlTab } = useParams<{ tab?: string }>()
 
+  const [activeMainSection, setActiveMainSection] = useState<'overview' | 'performance'>(() => {
+    const rawTab = searchParams.get('tab') || urlTab
+    if (rawTab && (rawTab.toLowerCase() === 'performance' || rawTab.toLowerCase() === 'history' || rawTab.toLowerCase() === 'coding-history')) {
+      return 'performance'
+    }
+    return 'overview'
+  })
+
   useEffect(() => {
     const rawTab = searchParams.get('tab') || urlTab
     const rawTrack = searchParams.get('track')
+    if (rawTab && (rawTab.toLowerCase() === 'performance' || rawTab.toLowerCase() === 'history' || rawTab.toLowerCase() === 'coding-history')) {
+      setActiveMainSection('performance')
+    } else if (rawTab && rawTab.toLowerCase() === 'overview') {
+      setActiveMainSection('overview')
+    }
     if (rawTrack) {
       const t = rawTrack.toLowerCase()
       if (t === 'dsa' || t === 'leetcode') setActiveSubmissionsTab('dsa')
@@ -488,6 +522,9 @@ function CandidateDashboard() {
 
   const totalQuestionsCount = questions.length || 1
   const overallPercentage = Math.round((totalSolved / totalQuestionsCount) * 100)
+  const totalCatalogCount = useMemo(() => {
+    return MACHINE_CODING_CATALOG.length + DSA_QUESTIONS.length + CORE_PROGRAMMING_QUESTIONS.length + FRONTEND_JS_QUESTIONS.length;
+  }, []);
 
   if (loading) {
     return (
@@ -551,6 +588,28 @@ function CandidateDashboard() {
         </div>
       </div>
 
+      {/* Student Section Switcher */}
+      <div className="candidate-section-switcher-bar">
+        <button
+          type="button"
+          className={`cand-switcher-btn ${activeMainSection === 'overview' ? 'active' : ''}`}
+          onClick={() => setActiveMainSection('overview')}
+        >
+          📊 Curriculum &amp; Drills
+        </button>
+        <button
+          type="button"
+          className={`cand-switcher-btn ${activeMainSection === 'performance' ? 'active' : ''}`}
+          onClick={() => setActiveMainSection('performance')}
+        >
+          📈 My Performance &amp; Complete Coding History
+        </button>
+      </div>
+
+      {activeMainSection === 'performance' ? (
+        <StudentPerformanceView />
+      ) : (
+        <>
       {trackAlert && (
         <div className="candidate-track-live-alert">
           <span>🔔</span> {trackAlert}
@@ -788,7 +847,7 @@ function CandidateDashboard() {
               <span className="telemetry-tile-label">Question Bank</span>
               <span className="telemetry-tile-icon">📚</span>
             </div>
-            <div className="telemetry-tile-value">22,222</div>
+            <div className="telemetry-tile-value">{totalCatalogCount.toLocaleString()}</div>
             <span className="telemetry-tile-sub">Curated Problems</span>
           </div>
 
@@ -815,7 +874,7 @@ function CandidateDashboard() {
               <span className="telemetry-tile-label">Remaining</span>
               <span className="telemetry-tile-icon">🎯</span>
             </div>
-            <div className="telemetry-tile-value">{(22222 - telemetry.completedCount).toLocaleString()}</div>
+            <div className="telemetry-tile-value">{Math.max(0, totalCatalogCount - telemetry.completedCount).toLocaleString()}</div>
             <span className="telemetry-tile-sub">To Complete</span>
           </div>
 
@@ -1962,6 +2021,8 @@ function CandidateDashboard() {
             </div>
           </div>
         </div>
+      )}
+        </>
       )}
     </div>
   )

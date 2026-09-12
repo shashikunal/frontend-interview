@@ -1,0 +1,1384 @@
+/* ==============================================================================
+   Admin Candidate Management & Hiring Evaluation Styling
+   Horizon UI Design System Parity (Light Theme & Dark Navy)
+   ============================================================================== */
+
+.admin-cand-mgmt-container {
+  width: 100%;
+  padding: 4px 0 40px;
+  box-sizing: border-box;
+}
+
+.admin-cand-mgmt-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 22px;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.admin-cand-title {
+  font-size: 1.65rem;
+  font-weight: 800;
+  margin: 0 0 6px 0;
+  letter-spacing: -0.5px;
+  font-family: 'DM Sans', Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* Light Theme Title */
+:root[data-theme="light"] .admin-cand-title,
+[data-theme="light"] .admin-cand-title,
+.light-theme .admin-cand-title,
+html.light .admin-cand-title {
+  color: #2b3674 !important;
+}
+
+/* Dark Theme Title */
+:root[data-theme="dark"] .admin-cand-title,
+[data-theme="dark"] .admin-cand-title,
+.dark-theme .admin-cand-title,
+html.dark .admin-cand-title {
+  color: #ffffff !important;
+}
+
+.admin-cand-subtitle {
+  font-size: 0.92rem;
+  margin: 0;
+  max-width: 680px;
+  line-height: 1.5;
+  font-weight: 500;
+}
+
+:root[data-theme="light"] .admin-cand-subtitle,
+[data-theme="light"] .admin-cand-subtitle,
+.light-theme .admin-cand-subtitle,
+html.light .admin-cand-subtitle {
+  color: #707eae !important;
+}
+
+:root[data-theme="dark"] .admin-cand-subtitle,
+[data-theme="dark"] .admin-cand-subtitle,
+.dark-theme .admin-cand-subtitle,
+html.dark .admin-cand-subtitle {
+  color: #a3aed0 !important;
+}
+
+.admin-cand-refresh-btn {
+  padding: 9px 18px;
+  border-radius: 12px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+:root[data-theme="light"] .admin-cand-refresh-btn,
+[data-theme="light"] .admin-cand-refresh-btn,
+.light-theme .admin-cand-refresh-btn,
+html.light .admin-cand-refresh-btn {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  color: #2b3674;
+  box-shadow: 0 4px 14px rgba(112, 144, 176, 0.08);
+}
+
+:root[data-theme="light"] .admin-cand-refresh-btn:hover,
+[data-theme="light"] .admin-cand-refresh-btn:hover,
+.light-theme .admin-cand-refresh-btn:hover,
+html.light .admin-cand-refresh-btn:hover {
+  background: #4318ff;
+  color: #ffffff;
+  border-color: #4318ff;
+  box-shadow: 0 4px 16px rgba(67, 24, 255, 0.3);
+  transform: translateY(-1px);
+}
+
+:root[data-theme="dark"] .admin-cand-refresh-btn,
+[data-theme="dark"] .admin-cand-refresh-btn,
+.dark-theme .admin-cand-refresh-btn,
+html.dark .admin-cand-refresh-btn {
+  background: #111c44;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+}
+
+:root[data-theme="dark"] .admin-cand-refresh-btn:hover,
+[data-theme="dark"] .admin-cand-refresh-btn:hover,
+.dark-theme .admin-cand-refresh-btn:hover,
+html.dark .admin-cand-refresh-btn:hover {
+  background: #4318ff;
+  color: #ffffff;
+  border-color: #4318ff;
+  box-shadow: 0 4px 18px rgba(67, 24, 255, 0.4);
+  transform: translateY(-1px);
+}
+
+/* --------------------------------------------------------------------------
+   Toolbar: Search & Filter Inputs (Explicit Light & Dark Overrides)
+   -------------------------------------------------------------------------- */
+.admin-cand-filters-toolbar {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.admin-cand-search-wrap {
+  position: relative;
+  flex: 1;
+  min-width: 260px;
+}
+
+.admin-cand-search-input {
+  width: 100%;
+  border-radius: 12px;
+  padding: 11px 36px 11px 16px;
+  font-size: 0.9rem;
+  font-family: inherit;
+  font-weight: 500;
+  outline: none;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-sizing: border-box;
+}
+
+/* Light Theme Inputs */
+:root[data-theme="light"] .admin-cand-search-input,
+[data-theme="light"] .admin-cand-search-input,
+.light-theme .admin-cand-search-input,
+html.light .admin-cand-search-input {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  color: #2b3674 !important;
+  box-shadow: 0 2px 6px rgba(112, 144, 176, 0.06) !important;
+}
+
+:root[data-theme="light"] .admin-cand-search-input::placeholder,
+[data-theme="light"] .admin-cand-search-input::placeholder,
+.light-theme .admin-cand-search-input::placeholder,
+html.light .admin-cand-search-input::placeholder {
+  color: #a3aed0 !important;
+}
+
+:root[data-theme="light"] .admin-cand-search-input:focus,
+[data-theme="light"] .admin-cand-search-input:focus,
+.light-theme .admin-cand-search-input:focus,
+html.light .admin-cand-search-input:focus {
+  border-color: #4318ff !important;
+  box-shadow: 0 0 0 3px rgba(67, 24, 255, 0.15) !important;
+}
+
+/* Dark Theme Inputs */
+:root[data-theme="dark"] .admin-cand-search-input,
+[data-theme="dark"] .admin-cand-search-input,
+.dark-theme .admin-cand-search-input,
+html.dark .admin-cand-search-input {
+  background: #111c44 !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25) !important;
+}
+
+:root[data-theme="dark"] .admin-cand-search-input::placeholder,
+[data-theme="dark"] .admin-cand-search-input::placeholder,
+.dark-theme .admin-cand-search-input::placeholder,
+html.dark .admin-cand-search-input::placeholder {
+  color: #707eae !important;
+}
+
+:root[data-theme="dark"] .admin-cand-search-input:focus,
+[data-theme="dark"] .admin-cand-search-input:focus,
+.dark-theme .admin-cand-search-input:focus,
+html.dark .admin-cand-search-input:focus {
+  border-color: #7551ff !important;
+  box-shadow: 0 0 0 3px rgba(117, 81, 255, 0.25) !important;
+}
+
+.admin-cand-clear-search {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 0.95rem;
+  padding: 4px;
+}
+
+:root[data-theme="light"] .admin-cand-clear-search,
+[data-theme="light"] .admin-cand-clear-search,
+.light-theme .admin-cand-clear-search,
+html.light .admin-cand-clear-search {
+  color: #a3aed0;
+}
+
+:root[data-theme="dark"] .admin-cand-clear-search,
+[data-theme="dark"] .admin-cand-clear-search,
+.dark-theme .admin-cand-clear-search,
+html.dark .admin-cand-clear-search {
+  color: #707eae;
+}
+
+.admin-cand-filter-group {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.admin-cand-select {
+  border-radius: 12px;
+  padding: 10px 16px;
+  font-size: 0.88rem;
+  font-family: inherit;
+  font-weight: 600;
+  outline: none;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-sizing: border-box;
+}
+
+/* Light Theme Select Dropdowns */
+:root[data-theme="light"] .admin-cand-select,
+[data-theme="light"] .admin-cand-select,
+.light-theme .admin-cand-select,
+html.light .admin-cand-select {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  color: #2b3674 !important;
+  box-shadow: 0 2px 6px rgba(112, 144, 176, 0.06) !important;
+}
+
+:root[data-theme="light"] .admin-cand-select option,
+[data-theme="light"] .admin-cand-select option,
+.light-theme .admin-cand-select option,
+html.light .admin-cand-select option {
+  background: #ffffff !important;
+  color: #2b3674 !important;
+}
+
+:root[data-theme="light"] .admin-cand-select:focus,
+[data-theme="light"] .admin-cand-select:focus,
+.light-theme .admin-cand-select:focus,
+html.light .admin-cand-select:focus {
+  border-color: #4318ff !important;
+  box-shadow: 0 0 0 3px rgba(67, 24, 255, 0.15) !important;
+}
+
+/* Dark Theme Select Dropdowns */
+:root[data-theme="dark"] .admin-cand-select,
+[data-theme="dark"] .admin-cand-select,
+.dark-theme .admin-cand-select,
+html.dark .admin-cand-select {
+  background: #111c44 !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25) !important;
+}
+
+:root[data-theme="dark"] .admin-cand-select option,
+[data-theme="dark"] .admin-cand-select option,
+.dark-theme .admin-cand-select option,
+html.dark .admin-cand-select option {
+  background: #111c44 !important;
+  color: #ffffff !important;
+}
+
+:root[data-theme="dark"] .admin-cand-select:focus,
+[data-theme="dark"] .admin-cand-select:focus,
+.dark-theme .admin-cand-select:focus,
+html.dark .admin-cand-select:focus {
+  border-color: #7551ff !important;
+  box-shadow: 0 0 0 3px rgba(117, 81, 255, 0.25) !important;
+}
+
+/* --------------------------------------------------------------------------
+   Table & Responsive Wrapper (Zero Horizontal Scroll Guaranteed)
+   -------------------------------------------------------------------------- */
+.perf-table-responsive {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+  border-radius: 18px;
+  box-sizing: border-box;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+:root[data-theme="light"] .perf-table-responsive,
+[data-theme="light"] .perf-table-responsive,
+.light-theme .perf-table-responsive,
+html.light .perf-table-responsive {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: 0px 18px 40px rgba(112, 144, 176, 0.08) !important;
+}
+
+:root[data-theme="dark"] .perf-table-responsive,
+[data-theme="dark"] .perf-table-responsive,
+.dark-theme .perf-table-responsive,
+html.dark .perf-table-responsive {
+  background: #111c44 !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0px 18px 40px rgba(0, 0, 0, 0.35) !important;
+}
+
+.admin-cand-table {
+  width: 100%;
+  table-layout: auto;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.86rem;
+  box-sizing: border-box;
+}
+
+.admin-cand-table th {
+  padding: 13px 12px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+:root[data-theme="light"] .admin-cand-table th,
+[data-theme="light"] .admin-cand-table th,
+.light-theme .admin-cand-table th,
+html.light .admin-cand-table th {
+  background: #f4f7fe !important;
+  color: #a3aed0 !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+}
+
+:root[data-theme="dark"] .admin-cand-table th,
+[data-theme="dark"] .admin-cand-table th,
+.dark-theme .admin-cand-table th,
+html.dark .admin-cand-table th {
+  background: rgba(27, 37, 75, 0.4) !important;
+  color: #a3aed0 !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+.admin-cand-table td {
+  padding: 11px 12px;
+  vertical-align: middle;
+  font-size: 0.86rem;
+}
+
+:root[data-theme="light"] .admin-cand-table td,
+[data-theme="light"] .admin-cand-table td,
+.light-theme .admin-cand-table td,
+html.light .admin-cand-table td {
+  color: #2b3674 !important;
+  border-bottom: 1px solid #edf2f7 !important;
+}
+
+:root[data-theme="dark"] .admin-cand-table td,
+[data-theme="dark"] .admin-cand-table td,
+.dark-theme .admin-cand-table td,
+html.dark .admin-cand-table td {
+  color: #ffffff !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04) !important;
+}
+
+.clickable-row {
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+:root[data-theme="light"] .clickable-row:hover td,
+[data-theme="light"] .clickable-row:hover td,
+.light-theme .clickable-row:hover td,
+html.light .clickable-row:hover td {
+  background: #f8fafc !important;
+}
+
+:root[data-theme="dark"] .clickable-row:hover td,
+[data-theme="dark"] .clickable-row:hover td,
+.dark-theme .clickable-row:hover td,
+html.dark .clickable-row:hover td {
+  background: rgba(255, 255, 255, 0.02) !important;
+}
+
+/* Candidate Cell */
+.cand-info-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 240px;
+}
+
+.cand-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #868cff 0%, #4318ff 100%);
+  color: #ffffff;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95rem;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(67, 24, 255, 0.25);
+}
+
+.cand-meta {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.cand-name {
+  font-weight: 700;
+  font-size: 0.88rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+:root[data-theme="light"] .cand-name,
+[data-theme="light"] .cand-name,
+.light-theme .cand-name,
+html.light .cand-name {
+  color: #2b3674 !important;
+}
+
+:root[data-theme="dark"] .cand-name,
+[data-theme="dark"] .cand-name,
+.dark-theme .cand-name,
+html.dark .cand-name {
+  color: #ffffff !important;
+}
+
+.cand-email {
+  font-size: 0.74rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+:root[data-theme="light"] .cand-email,
+[data-theme="light"] .cand-email,
+.light-theme .cand-email,
+html.light .cand-email {
+  color: #707eae !important;
+}
+
+:root[data-theme="dark"] .cand-email,
+[data-theme="dark"] .cand-email,
+.dark-theme .cand-email,
+html.dark .cand-email {
+  color: #a3aed0 !important;
+}
+
+.role-tag {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+
+:root[data-theme="light"] .role-tag,
+[data-theme="light"] .role-tag,
+.light-theme .role-tag,
+html.light .role-tag {
+  background: rgba(67, 24, 255, 0.08) !important;
+  color: #4318ff !important;
+  border: 1px solid rgba(67, 24, 255, 0.18) !important;
+}
+
+:root[data-theme="dark"] .role-tag,
+[data-theme="dark"] .role-tag,
+.dark-theme .role-tag,
+html.dark .role-tag {
+  background: rgba(117, 81, 255, 0.15) !important;
+  color: #a78bfa !important;
+  border: 1px solid rgba(117, 81, 255, 0.25) !important;
+}
+
+.cell-number {
+  font-weight: 700;
+  font-size: 0.86rem;
+  white-space: nowrap;
+}
+
+:root[data-theme="light"] .cell-number,
+[data-theme="light"] .cell-number,
+.light-theme .cell-number,
+html.light .cell-number {
+  color: #2b3674 !important;
+}
+
+:root[data-theme="dark"] .cell-number,
+[data-theme="dark"] .cell-number,
+.dark-theme .cell-number,
+html.dark .cell-number {
+  color: #ffffff !important;
+}
+
+.text-green { color: #01b574 !important; }
+.text-purple { color: #a855f7 !important; }
+.text-blue { color: #38bdf8 !important; }
+.text-sub { color: #a3aed0 !important; }
+
+.perf-metric-bar-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 80px;
+}
+
+.rate-num {
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+:root[data-theme="light"] .rate-num,
+[data-theme="light"] .rate-num,
+.light-theme .rate-num,
+html.light .rate-num {
+  color: #2b3674 !important;
+}
+
+:root[data-theme="dark"] .rate-num,
+[data-theme="dark"] .rate-num,
+.dark-theme .rate-num,
+html.dark .rate-num {
+  color: #ffffff !important;
+}
+
+.mini-progress-bar {
+  width: 100%;
+  height: 4px;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+:root[data-theme="light"] .mini-progress-bar,
+[data-theme="light"] .mini-progress-bar,
+.light-theme .mini-progress-bar,
+html.light .mini-progress-bar {
+  background: #e2e8f0 !important;
+}
+
+:root[data-theme="dark"] .mini-progress-bar,
+[data-theme="dark"] .mini-progress-bar,
+.dark-theme .mini-progress-bar,
+html.dark .mini-progress-bar {
+  background: rgba(255, 255, 255, 0.08) !important;
+}
+
+.mini-progress-fill {
+  height: 100%;
+  background: linear-gradient(135deg, #868cff 0%, #4318ff 100%);
+  border-radius: 999px;
+}
+
+.score-cell {
+  font-weight: 800;
+  font-size: 0.86rem;
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* Status Badges */
+.admin-status-pill {
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 999px;
+  letter-spacing: 0.04em;
+  display: inline-block;
+  white-space: nowrap;
+  text-transform: uppercase;
+}
+
+.pill-hire {
+  background: rgba(1, 181, 116, 0.15) !important;
+  color: #01b574 !important;
+  border: 1px solid rgba(1, 181, 116, 0.35) !important;
+}
+
+.pill-consider {
+  background: rgba(255, 181, 71, 0.15) !important;
+  color: #ffb547 !important;
+  border: 1px solid rgba(255, 181, 71, 0.35) !important;
+}
+
+.pill-reject {
+  background: rgba(238, 93, 80, 0.15) !important;
+  color: #ee5d50 !important;
+  border: 1px solid rgba(238, 93, 80, 0.35) !important;
+}
+
+.pill-pending {
+  background: rgba(163, 174, 208, 0.18) !important;
+  color: #a3aed0 !important;
+  border: 1px solid rgba(163, 174, 208, 0.3) !important;
+}
+
+.pill-none {
+  background: rgba(112, 144, 176, 0.1) !important;
+  color: #707eae !important;
+  border: 1px solid rgba(112, 144, 176, 0.2) !important;
+}
+
+.admin-evaluate-btn {
+  border-radius: 10px;
+  padding: 6px 13px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+:root[data-theme="light"] .admin-evaluate-btn,
+[data-theme="light"] .admin-evaluate-btn,
+.light-theme .admin-evaluate-btn,
+html.light .admin-evaluate-btn {
+  background: #f4f7fe !important;
+  border: 1px solid #e2e8f0 !important;
+  color: #4318ff !important;
+  box-shadow: 0 2px 5px rgba(112, 144, 176, 0.06) !important;
+}
+
+:root[data-theme="light"] .admin-evaluate-btn:hover,
+[data-theme="light"] .admin-evaluate-btn:hover,
+.light-theme .admin-evaluate-btn:hover,
+html.light .admin-evaluate-btn:hover {
+  background: #4318ff !important;
+  color: #ffffff !important;
+  border-color: #4318ff !important;
+  box-shadow: 0 4px 12px rgba(67, 24, 255, 0.25) !important;
+  transform: translateY(-1px);
+}
+
+:root[data-theme="dark"] .admin-evaluate-btn,
+[data-theme="dark"] .admin-evaluate-btn,
+.dark-theme .admin-evaluate-btn,
+html.dark .admin-evaluate-btn {
+  background: #1b254b !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  color: #7551ff !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2) !important;
+}
+
+:root[data-theme="dark"] .admin-evaluate-btn:hover,
+[data-theme="dark"] .admin-evaluate-btn:hover,
+.dark-theme .admin-evaluate-btn:hover,
+html.dark .admin-evaluate-btn:hover {
+  background: #4318ff !important;
+  color: #ffffff !important;
+  border-color: #4318ff !important;
+  box-shadow: 0 4px 14px rgba(67, 24, 255, 0.35) !important;
+  transform: translateY(-1px);
+}
+
+/* Loading & Empty States */
+.admin-cand-loading-box {
+  text-align: center;
+  padding: 60px 20px;
+  color: #707eae;
+}
+
+.perf-spinner {
+  width: 44px;
+  height: 44px;
+  border: 4px solid rgba(67, 24, 255, 0.15);
+  border-top-color: #4318ff;
+  border-radius: 50%;
+  animation: adminPerfSpin 0.85s linear infinite;
+  margin: 0 auto 16px;
+}
+
+@keyframes adminPerfSpin {
+  to { transform: rotate(360deg); }
+}
+
+.perf-empty-state {
+  text-align: center;
+  padding: 50px 20px;
+  border-radius: 16px;
+  border: 1px dashed #e2e8f0;
+  margin: 10px 0;
+}
+
+:root[data-theme="light"] .perf-empty-state,
+[data-theme="light"] .perf-empty-state,
+.light-theme .perf-empty-state,
+html.light .perf-empty-state {
+  background: #ffffff;
+  border-color: #e2e8f0;
+  color: #2b3674;
+}
+
+:root[data-theme="dark"] .perf-empty-state,
+[data-theme="dark"] .perf-empty-state,
+.dark-theme .perf-empty-state,
+html.dark .perf-empty-state {
+  background: #111c44;
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+}
+
+.perf-empty-icon {
+  font-size: 2.2rem;
+  margin-bottom: 10px;
+}
+
+.perf-empty-state h4 {
+  margin: 0 0 6px 0;
+  font-size: 1.15rem;
+  font-weight: 800;
+}
+
+.perf-empty-state p {
+  margin: 0;
+  font-size: 0.88rem;
+  color: #707eae;
+}
+
+/* ==============================================================================
+   Candidate Profile Modal (Full Light & Dark Mode Parity)
+   ============================================================================== */
+.admin-cand-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(11, 20, 55, 0.65);
+  backdrop-filter: blur(8px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.admin-cand-modal-container {
+  border-radius: 20px;
+  width: 100%;
+  max-width: 1100px;
+  max-height: 92vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.35);
+  overflow: hidden;
+  animation: modalEnter 0.2s ease-out;
+}
+
+:root[data-theme="light"] .admin-cand-modal-container,
+[data-theme="light"] .admin-cand-modal-container,
+.light-theme .admin-cand-modal-container,
+html.light .admin-cand-modal-container {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  color: #2b3674 !important;
+}
+
+:root[data-theme="dark"] .admin-cand-modal-container,
+[data-theme="dark"] .admin-cand-modal-container,
+.dark-theme .admin-cand-modal-container,
+html.dark .admin-cand-modal-container {
+  background: #0b1437 !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  color: #ffffff !important;
+}
+
+.admin-cand-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 28px;
+}
+
+:root[data-theme="light"] .admin-cand-modal-header,
+[data-theme="light"] .admin-cand-modal-header,
+.light-theme .admin-cand-modal-header,
+html.light .admin-cand-modal-header {
+  background: #f4f7fe !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+}
+
+:root[data-theme="dark"] .admin-cand-modal-header,
+[data-theme="dark"] .admin-cand-modal-header,
+.dark-theme .admin-cand-modal-header,
+html.dark .admin-cand-modal-header {
+  background: #111c44 !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+.admin-cand-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.admin-cand-info .admin-cand-avatar {
+  width: 52px;
+  height: 52px;
+  font-size: 1.4rem;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #868cff 0%, #4318ff 100%);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+}
+
+.admin-cand-name-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 4px;
+}
+
+.admin-cand-name-row h2 {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 800;
+}
+
+:root[data-theme="light"] .admin-cand-name-row h2,
+[data-theme="light"] .admin-cand-name-row h2,
+.light-theme .admin-cand-name-row h2,
+html.light .admin-cand-name-row h2 {
+  color: #2b3674 !important;
+}
+
+:root[data-theme="dark"] .admin-cand-name-row h2,
+[data-theme="dark"] .admin-cand-name-row h2,
+.dark-theme .admin-cand-name-row h2,
+html.dark .admin-cand-name-row h2 {
+  color: #ffffff !important;
+}
+
+.admin-cand-role-pill {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 999px;
+}
+
+:root[data-theme="light"] .admin-cand-role-pill,
+[data-theme="light"] .admin-cand-role-pill,
+.light-theme .admin-cand-role-pill,
+html.light .admin-cand-role-pill {
+  background: rgba(67, 24, 255, 0.08);
+  color: #4318ff;
+  border: 1px solid rgba(67, 24, 255, 0.2);
+}
+
+:root[data-theme="dark"] .admin-cand-role-pill,
+[data-theme="dark"] .admin-cand-role-pill,
+.dark-theme .admin-cand-role-pill,
+html.dark .admin-cand-role-pill {
+  background: rgba(117, 81, 255, 0.15);
+  color: #a78bfa;
+  border: 1px solid rgba(117, 81, 255, 0.3);
+}
+
+.admin-cand-sub-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  font-size: 0.82rem;
+  color: #707eae;
+}
+
+.admin-cand-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.admin-cand-pwd-btn {
+  background: rgba(255, 181, 71, 0.15);
+  border: 1px solid rgba(255, 181, 71, 0.35);
+  color: #ffb547;
+  padding: 8px 14px;
+  border-radius: 10px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.admin-cand-pwd-btn:hover {
+  background: #ffb547;
+  color: #0b1437;
+}
+
+.admin-cand-close-btn {
+  background: transparent;
+  border: none;
+  font-size: 1.3rem;
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: 8px;
+  transition: all 0.2s;
+  color: #707eae;
+}
+
+.admin-cand-close-btn:hover {
+  background: rgba(67, 24, 255, 0.1);
+  color: #4318ff;
+}
+
+.admin-cand-toast {
+  padding: 10px 24px;
+  background: rgba(1, 181, 116, 0.15);
+  border-bottom: 1px solid rgba(1, 181, 116, 0.3);
+  color: #01b574;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+/* Modal Tabs */
+.admin-cand-nav-tabs {
+  display: flex;
+  padding: 0 28px;
+  gap: 8px;
+}
+
+:root[data-theme="light"] .admin-cand-nav-tabs,
+[data-theme="light"] .admin-cand-nav-tabs,
+.light-theme .admin-cand-nav-tabs,
+html.light .admin-cand-nav-tabs {
+  background: #f4f7fe !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+}
+
+:root[data-theme="dark"] .admin-cand-nav-tabs,
+[data-theme="dark"] .admin-cand-nav-tabs,
+.dark-theme .admin-cand-nav-tabs,
+html.dark .admin-cand-nav-tabs {
+  background: #111c44 !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+.admin-cand-tab-btn {
+  background: transparent;
+  border: none;
+  padding: 14px 18px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+  font-family: inherit;
+  color: #707eae;
+}
+
+.admin-cand-tab-btn:hover {
+  color: #4318ff;
+}
+
+.admin-cand-tab-btn.active {
+  color: #4318ff !important;
+  border-bottom-color: #4318ff !important;
+}
+
+/* Modal Body */
+.admin-cand-modal-body {
+  padding: 24px 28px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.admin-scorecard-section {
+  margin-bottom: 28px;
+}
+
+.admin-section-heading {
+  font-size: 1.1rem;
+  font-weight: 800;
+  margin: 0 0 14px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+:root[data-theme="light"] .admin-section-heading,
+[data-theme="light"] .admin-section-heading,
+.light-theme .admin-section-heading,
+html.light .admin-section-heading {
+  color: #2b3674 !important;
+}
+
+:root[data-theme="dark"] .admin-section-heading,
+[data-theme="dark"] .admin-section-heading,
+.dark-theme .admin-section-heading,
+html.dark .admin-section-heading {
+  color: #ffffff !important;
+}
+
+.admin-scorecard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 14px;
+}
+
+.admin-scorecard-card {
+  border-radius: 14px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+:root[data-theme="light"] .admin-scorecard-card,
+[data-theme="light"] .admin-scorecard-card,
+.light-theme .admin-scorecard-card,
+html.light .admin-scorecard-card {
+  background: #f4f7fe !important;
+  border: 1px solid #e2e8f0 !important;
+}
+
+:root[data-theme="dark"] .admin-scorecard-card,
+[data-theme="dark"] .admin-scorecard-card,
+.dark-theme .admin-scorecard-card,
+html.dark .admin-scorecard-card {
+  background: #1b254b !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+.admin-scorecard-card .lbl {
+  font-size: 0.75rem;
+  color: #707eae;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.admin-scorecard-card .val {
+  font-size: 1.6rem;
+  font-weight: 800;
+  margin: 4px 0 2px;
+}
+
+:root[data-theme="light"] .admin-scorecard-card .val,
+[data-theme="light"] .admin-scorecard-card .val,
+.light-theme .admin-scorecard-card .val,
+html.light .admin-scorecard-card .val {
+  color: #2b3674 !important;
+}
+
+:root[data-theme="dark"] .admin-scorecard-card .val,
+[data-theme="dark"] .admin-scorecard-card .val,
+.dark-theme .admin-scorecard-card .val,
+html.dark .admin-scorecard-card .val {
+  color: #ffffff !important;
+}
+
+.admin-scorecard-card .sub {
+  font-size: 0.74rem;
+  color: #a3aed0;
+  font-weight: 500;
+}
+
+/* Hiring Form Inside Modal */
+.admin-hiring-form {
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 28px;
+}
+
+:root[data-theme="light"] .admin-hiring-form,
+[data-theme="light"] .admin-hiring-form,
+.light-theme .admin-hiring-form,
+html.light .admin-hiring-form {
+  background: #f4f7fe !important;
+  border: 1px solid #e2e8f0 !important;
+}
+
+:root[data-theme="dark"] .admin-hiring-form,
+[data-theme="dark"] .admin-hiring-form,
+.dark-theme .admin-hiring-form,
+html.dark .admin-hiring-form {
+  background: #111c44 !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+.admin-form-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+@media (max-width: 860px) {
+  .admin-form-split {
+    grid-template-columns: 1fr;
+  }
+}
+
+.admin-decision-radio-group {
+  margin-bottom: 18px;
+}
+
+.admin-radio-lbl {
+  display: block;
+  font-size: 0.84rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+:root[data-theme="light"] .admin-radio-lbl,
+[data-theme="light"] .admin-radio-lbl,
+.light-theme .admin-radio-lbl,
+html.light .admin-radio-lbl {
+  color: #2b3674 !important;
+}
+
+:root[data-theme="dark"] .admin-radio-lbl,
+[data-theme="dark"] .admin-radio-lbl,
+.dark-theme .admin-radio-lbl,
+html.dark .admin-radio-lbl {
+  color: #ffffff !important;
+}
+
+.admin-radio-options {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.admin-radio-tile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 6px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 700;
+}
+
+:root[data-theme="light"] .admin-radio-tile,
+[data-theme="light"] .admin-radio-tile,
+.light-theme .admin-radio-tile,
+html.light .admin-radio-tile {
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  color: #707eae;
+}
+
+:root[data-theme="dark"] .admin-radio-tile,
+[data-theme="dark"] .admin-radio-tile,
+.dark-theme .admin-radio-tile,
+html.dark .admin-radio-tile {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.03);
+  color: #a3aed0;
+}
+
+.admin-radio-tile input {
+  display: none;
+}
+
+.admin-radio-tile .tile-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.tile-hire.selected { background: rgba(1, 181, 116, 0.2) !important; border-color: #01b574 !important; color: #01b574 !important; }
+.tile-consider.selected { background: rgba(255, 181, 71, 0.2) !important; border-color: #ffb547 !important; color: #ffb547 !important; }
+.tile-reject.selected { background: rgba(238, 93, 80, 0.2) !important; border-color: #ee5d50 !important; color: #ee5d50 !important; }
+.tile-pending.selected { background: rgba(67, 24, 255, 0.2) !important; border-color: #4318ff !important; color: #4318ff !important; }
+
+/* Modal Rubric Box */
+.admin-rubric-box {
+  border-radius: 12px;
+  padding: 16px;
+  margin-top: 18px;
+}
+
+:root[data-theme="light"] .admin-rubric-box,
+[data-theme="light"] .admin-rubric-box,
+.light-theme .admin-rubric-box,
+html.light .admin-rubric-box {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+}
+
+:root[data-theme="dark"] .admin-rubric-box,
+[data-theme="dark"] .admin-rubric-box,
+.dark-theme .admin-rubric-box,
+html.dark .admin-rubric-box {
+  background: #1b254b !important;
+  border: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
+
+.rubric-box-title {
+  font-size: 0.82rem;
+  color: #707eae;
+  margin: 0 0 12px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: 700;
+}
+
+.rubric-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.rubric-dim {
+  font-size: 0.84rem;
+  font-weight: 600;
+}
+
+:root[data-theme="light"] .rubric-dim,
+[data-theme="light"] .rubric-dim,
+.light-theme .rubric-dim,
+html.light .rubric-dim {
+  color: #2b3674 !important;
+}
+
+:root[data-theme="dark"] .rubric-dim,
+[data-theme="dark"] .rubric-dim,
+.dark-theme .rubric-dim,
+html.dark .rubric-dim {
+  color: #ffffff !important;
+}
+
+.rubric-stars {
+  display: flex;
+  gap: 4px;
+}
+
+.star-pill {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+:root[data-theme="light"] .star-pill,
+[data-theme="light"] .star-pill,
+.light-theme .star-pill,
+html.light .star-pill {
+  background: #f4f7fe;
+  color: #a3aed0;
+}
+
+:root[data-theme="dark"] .star-pill,
+[data-theme="dark"] .star-pill,
+.dark-theme .star-pill,
+html.dark .star-pill {
+  background: rgba(255, 255, 255, 0.06);
+  color: #707eae;
+}
+
+.star-pill.active {
+  background: #ffb547 !important;
+  color: #0b1437 !important;
+}
+
+.admin-field-group {
+  margin-bottom: 16px;
+}
+
+.admin-field-group label {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+:root[data-theme="light"] .admin-field-group label,
+[data-theme="light"] .admin-field-group label,
+.light-theme .admin-field-group label,
+html.light .admin-field-group label {
+  color: #2b3674 !important;
+}
+
+:root[data-theme="dark"] .admin-field-group label,
+[data-theme="dark"] .admin-field-group label,
+.dark-theme .admin-field-group label,
+html.dark .admin-field-group label {
+  color: #ffffff !important;
+}
+
+.admin-field-group input,
+.admin-field-group textarea {
+  width: 100%;
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-size: 0.88rem;
+  font-family: inherit;
+  outline: none;
+  box-sizing: border-box;
+}
+
+:root[data-theme="light"] .admin-field-group input,
+:root[data-theme="light"] .admin-field-group textarea,
+[data-theme="light"] .admin-field-group input,
+[data-theme="light"] .admin-field-group textarea,
+.light-theme .admin-field-group input,
+.light-theme .admin-field-group textarea,
+html.light .admin-field-group input,
+html.light .admin-field-group textarea {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  color: #2b3674 !important;
+}
+
+:root[data-theme="dark"] .admin-field-group input,
+:root[data-theme="dark"] .admin-field-group textarea,
+[data-theme="dark"] .admin-field-group input,
+[data-theme="dark"] .admin-field-group textarea,
+.dark-theme .admin-field-group input,
+.dark-theme .admin-field-group textarea,
+html.dark .admin-field-group input,
+html.dark .admin-field-group textarea {
+  background: #1b254b !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  color: #ffffff !important;
+}
+
+.admin-submit-btn {
+  background: linear-gradient(135deg, #868cff 0%, #4318ff 100%);
+  border: none;
+  color: #ffffff;
+  padding: 12px 28px;
+  border-radius: 12px;
+  font-size: 0.94rem;
+  font-weight: 800;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 18px rgba(67, 24, 255, 0.35);
+}
+
+.admin-submit-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 24px rgba(67, 24, 255, 0.45);
+}
+
+@keyframes modalEnter {
+  from { opacity: 0; transform: scale(0.96) translateY(10px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}

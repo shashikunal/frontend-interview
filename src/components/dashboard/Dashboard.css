@@ -1303,16 +1303,20 @@
 .dash-modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(11, 20, 55, 0.6);
+  background: rgba(11, 20, 55, 0.72);
   backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 200;
-  padding: 16px;
+  z-index: 99999;
+  padding: 20px;
+  box-sizing: border-box;
+  overflow: hidden; /* No scroll on backdrop */
 }
 
 .dash-modal-box {
+  position: relative;
   background: var(--surface);
   border: 1px solid var(--border-strong);
   border-radius: 20px;
@@ -1321,6 +1325,17 @@
   width: 100%;
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
   animation: modalPop 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  margin: 0;
+}
+
+.dash-modal-box.mc-code-modal-box {
+  max-width: 920px;
+  width: 95%;
+  max-height: min(90vh, 820px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 24px 28px;
 }
 
 [data-theme="light"] .dash-modal-box {
@@ -1526,3 +1541,56 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Candidate Section Switcher Bar */
+.candidate-section-switcher-bar {
+  display: flex;
+  gap: 8px;
+  margin: 0 0 24px 0;
+  background: var(--surface);
+  padding: 6px;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  width: fit-content;
+  flex-wrap: wrap;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+}
+
+[data-theme="light"] .candidate-section-switcher-bar {
+  background: #ffffff;
+  border-color: rgba(226, 232, 240, 0.9);
+  box-shadow: 0 6px 20px rgba(112, 144, 176, 0.08);
+}
+
+[data-theme="dark"] .candidate-section-switcher-bar {
+  background: linear-gradient(135deg, rgba(17, 28, 68, 0.95) 0%, rgba(15, 23, 42, 0.98) 100%);
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+.cand-switcher-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  padding: 10px 22px;
+  border-radius: 12px;
+  font-size: 0.92rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cand-switcher-btn:hover {
+  color: var(--text-primary);
+  background: var(--surface-hover);
+}
+
+.cand-switcher-btn.active {
+  background: linear-gradient(135deg, #4318FF 0%, #3311db 100%) !important;
+  color: #ffffff !important;
+  box-shadow: 0 6px 18px rgba(67, 24, 255, 0.32) !important;
+}
+

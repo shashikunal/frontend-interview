@@ -19,6 +19,7 @@ import AdminRequestsTab from './admin/AdminRequestsTab'
 import AdminTelemetryTab from './admin/AdminTelemetryTab'
 import AdminTracksTab, { type TrackStat } from './admin/AdminTracksTab'
 import AdminLiveSessionsTab from './admin/AdminLiveSessionsTab'
+import AdminCandidateManagementTab from '../../features/performance-history/components/admin/AdminCandidateManagementTab'
 import AdminBackupButton from './admin/AdminBackupButton'
 import AdminUserDetailModal from './admin/AdminUserDetailModal'
 import AdminSubmissionCodeModal from './admin/AdminSubmissionCodeModal'
@@ -47,6 +48,7 @@ import './AdminDashboard.css'
 
 export type AdminTab =
   | 'overview'
+  | 'candidates'
   | 'users'
   | 'live'
   | 'rankings'
@@ -88,7 +90,8 @@ export default function AdminDashboard() {
     if (!rawTab) return 'overview'
     const clean = rawTab.toLowerCase()
     if (clean === 'overview') return 'overview'
-    if (clean === 'candidates' || clean === 'users') return 'users'
+    if (clean === 'candidates' || clean === 'hiring' || clean === 'evaluations') return 'candidates'
+    if (clean === 'users' || clean === 'directory') return 'users'
     if (clean === 'live' || clean === 'live-sessions') return 'live'
     if (clean === 'rankings' || clean === 'leaderboard') return 'rankings'
     if (clean === 'submissions') return 'submissions'
@@ -105,7 +108,7 @@ export default function AdminDashboard() {
 
   // Proper query string routing mechanism (preserves ?category= on rankings)
   const setActiveTab = useCallback((t: AdminTab) => {
-    const tabName = t === 'users' ? 'candidates' : t === 'audit' ? 'telemetry' : t === 'live' ? 'live-sessions' : t
+    const tabName = t === 'audit' ? 'telemetry' : t === 'live' ? 'live-sessions' : t
     const cat = searchParams.get('category')
     const qs = t === 'rankings' && cat ? `?tab=${tabName}&category=${encodeURIComponent(cat)}` : `?tab=${tabName}`
     navigate(`${basePath}${qs}`)
@@ -767,11 +770,21 @@ export default function AdminDashboard() {
 
           <button
             type="button"
+            className={`h-nav-item ${activeTab === 'candidates' ? 'active' : ''}`}
+            onClick={() => { setActiveTab('candidates'); setIsMobileSidebarOpen(false); }}
+          >
+            <span className="h-nav-icon">⚖️</span>
+            <span>Hiring Management</span>
+            <span className="h-nav-badge" style={{ background: '#3b82f6', color: '#ffffff' }}>NEW</span>
+          </button>
+
+          <button
+            type="button"
             className={`h-nav-item ${activeTab === 'users' ? 'active' : ''}`}
             onClick={() => { setActiveTab('users'); setIsMobileSidebarOpen(false); }}
           >
             <span className="h-nav-icon">👥</span>
-            <span>Candidates</span>
+            <span>User Directory</span>
             <span className="h-nav-badge">{profiles.length}</span>
           </button>
 
@@ -1140,6 +1153,15 @@ export default function AdminDashboard() {
       {activeTab === 'rankings' && (
         <div className="admin-tab-content">
           <Leaderboard compact={false} />
+        </div>
+      )}
+
+      {/* ================================================================ */}
+      {/* TAB: CANDIDATE HIRING MANAGEMENT & EVALUATIONS */}
+      {/* ================================================================ */}
+      {activeTab === 'candidates' && (
+        <div className="admin-tab-content">
+          <AdminCandidateManagementTab />
         </div>
       )}
 
