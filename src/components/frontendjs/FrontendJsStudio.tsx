@@ -8,6 +8,7 @@ import { runFrontendJsCode } from './lib/frontendJsRunner'
 import { frontendJsProgressService } from './lib/frontendJsProgressService'
 import { frontendJsSubmissionService } from './lib/frontendJsSubmissionService'
 import { interviewSessionService } from '../../lib/interviewSessionService'
+import { useRealtimeStudentBroadcast } from '../../hooks/useRealtimeStudentBroadcast'
 import { useAuth } from '../../context/AuthContext'
 import { useTheme } from '../../context/ThemeContext'
 import { FrontendJsQuestionDetail } from './components/FrontendJsQuestionDetail'
@@ -240,6 +241,23 @@ function FrontendJsWorkspace({
     })
   }, [question.id, question.title, question.starterCode, user?.id, role])
 
+  // ── REALTIME STUDENT BROADCAST (Telemetry for Admin Virtual Monitor) ──
+  const {
+    emitCodeChange,
+    emitCursorMove,
+    emitFocus,
+    emitCodeRun,
+  } = useRealtimeStudentBroadcast({
+    sessionId: liveSessionId,
+    questionId: question.id,
+    questionTitle: question.title,
+    track: 'frontend-js',
+    language: 'javascript',
+    activeFile: 'solution.js',
+    code: currentCode,
+    user,
+  })
+
   // ── SESSION HEARTBEAT (every 30s, MC/CP/DSA parity) ──
   useEffect(() => {
     if (!liveSessionId) return
@@ -287,6 +305,7 @@ function FrontendJsWorkspace({
   const handleCodeChange = (newVal: string | undefined) => {
     const val = newVal || ''
     setCurrentCode(val)
+    emitCodeChange(val, 'solution.js')
 
     if (autosaveTimeoutRef.current) {
       clearTimeout(autosaveTimeoutRef.current)
@@ -301,6 +320,7 @@ function FrontendJsWorkspace({
   const handleRunCode = async () => {
     if (isRunning) return
     setIsRunning(true)
+    emitCodeRun({ status: 'running' })
     setActiveTestTab('result')
     showToast('⚙️ Executing JavaScript in isolated Web Worker...')
 
@@ -308,6 +328,13 @@ function FrontendJsWorkspace({
       const allTests = [...question.testCases, ...(question.hiddenTestCases || [])]
       const res = await runFrontendJsCode(currentCode, question.functionName, allTests, 4000)
       setRunResult(res)
+
+      emitCodeRun({
+        status: res.success ? 'success' : 'failed',
+        passed: res.passedCount,
+        total: res.totalCount,
+        runtimeMs: res.totalRuntimeMs,
+      })
 
       if (res.consoleLogs && res.consoleLogs.length > 0) {
         setConsoleLogs(res.consoleLogs.map(l => ({ level: l.level as any, message: l.message })))
@@ -325,6 +352,12 @@ function FrontendJsWorkspace({
       }, user)
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err)
+      emitCodeRun({
+        status: 'error',
+        passed: 0,
+        total: question.testCases.length,
+        error: msg,
+      })
       setRunResult({
         success: false,
         status: 'Runtime Error',
@@ -345,6 +378,7 @@ function FrontendJsWorkspace({
     if (isSubmitting || isRunning) return
     setIsSubmitting(true)
     setIsRunning(true)
+    emitCodeRun({ status: 'running' })
     setActiveTestTab('result')
     showToast('🏁 Evaluating official candidate submission...')
 
@@ -352,6 +386,13 @@ function FrontendJsWorkspace({
       const allTests = [...question.testCases, ...(question.hiddenTestCases || [])]
       const res = await runFrontendJsCode(currentCode, question.functionName, allTests, 4000)
       setRunResult(res)
+
+      emitCodeRun({
+        status: res.success ? 'success' : 'failed',
+        passed: res.passedCount,
+        total: res.totalCount,
+        runtimeMs: res.totalRuntimeMs,
+      })
 
       // Live-session execution feed (best-effort, never blocks submit)
       if (liveSessionId) {
@@ -945,6 +986,12 @@ function FrontendJsWorkspace({
                   onChange={handleCodeChange}
                   onMount={(editor, monaco) => {
                     editorRef.current = editor
+                    editor.onDidChangeCursorPosition(e => {
+                      emitCursorMove(e.position.lineNumber, e.position.column)
+                    })
+                    editor.onDidFocusEditorWidget(() => emitFocus(true))
+                    editor.onDidBlurEditorWidget(() => emitFocus(false))
+
                     if (monaco?.languages?.typescript) {
                       monaco.languages.typescript.javascriptDefaults.setDiagnosticsOptions({
                         noSemanticValidation: true,

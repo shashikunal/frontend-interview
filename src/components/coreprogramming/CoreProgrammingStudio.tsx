@@ -11,6 +11,7 @@ import { trackingService } from '../../lib/trackingService';
 import { interviewSessionService } from '../../lib/interviewSessionService';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
+import { useRealtimeStudentBroadcast } from '../../hooks/useRealtimeStudentBroadcast';
 import { CoreProgrammingDetail } from './components/CoreProgrammingDetail';
 import { CoreProgrammingTestPanel } from './components/CoreProgrammingTestPanel';
 import { CoreProgrammingDashboard } from './components/CoreProgrammingDashboard';
@@ -216,6 +217,23 @@ function CoreProgrammingWorkspace({
     });
   }, [question.id, question.title, question.starterCode, user?.id, role]);
 
+  // ── REALTIME STUDENT BROADCAST (Ephemeral telemetry for admin monitor) ──
+  const {
+    emitCodeChange,
+    emitCursorMove,
+    emitFocus,
+    emitCodeRun,
+  } = useRealtimeStudentBroadcast({
+    sessionId: liveSessionId,
+    questionId: question.id,
+    questionTitle: question.title,
+    track: 'core-programming',
+    language: 'javascript',
+    activeFile: 'solution.js',
+    code: currentCode,
+    user,
+  });
+
   // ── SESSION HEARTBEAT (every 30s, MC parity) ──
   useEffect(() => {
     if (!liveSessionId) return;
@@ -245,10 +263,11 @@ function CoreProgrammingWorkspace({
     return () => clearInterval(interval);
   }, [isTimerRunning, question.id]);
 
-  // Autosave code changes with debounce
+  // Autosave code changes with debounce & realtime broadcast
   const handleCodeChange = (newVal: string | undefined) => {
     const val = newVal || '';
     setCurrentCode(val);
+    emitCodeChange(val, 'solution.js');
 
     if (autosaveTimeoutRef.current) {
       clearTimeout(autosaveTimeoutRef.current);
@@ -263,6 +282,7 @@ function CoreProgrammingWorkspace({
   const handleRunCode = async () => {
     if (isRunning) return;
     setIsRunning(true);
+    emitCodeRun({ status: 'running' });
     coreProgrammingProgressService.markAttempted(question.id);
     setIsAttempted(true);
     setActiveTestTab('result');
@@ -286,6 +306,13 @@ function CoreProgrammingWorkspace({
       const res = await runCoreProgrammingCode(currentCode, question.functionName, targetCases, 4000);
       setRunResult(res);
 
+      emitCodeRun({
+        status: res.success ? 'success' : 'failed',
+        passed: res.passedCount,
+        total: res.totalCount,
+        runtimeMs: res.totalRuntimeMs || 0,
+      });
+
       if (res.success) {
         showToast('✓ All sample test cases passed!');
       } else {
@@ -293,6 +320,12 @@ function CoreProgrammingWorkspace({
       }
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
+      emitCodeRun({
+        status: 'error',
+        passed: 0,
+        total: question.testCases.length,
+        error: msg,
+      });
       setRunResult({
         success: false,
         status: 'Runtime Error',
@@ -313,6 +346,7 @@ function CoreProgrammingWorkspace({
     if (isSubmitting || isRunning) return;
     setIsSubmitting(true);
     setIsRunning(true);
+    emitCodeRun({ status: 'running' });
     coreProgrammingProgressService.markAttempted(question.id);
     setIsAttempted(true);
     setActiveTestTab('result');
@@ -322,6 +356,13 @@ function CoreProgrammingWorkspace({
       const allTests = [...question.testCases, ...(question.hiddenTestCases || [])];
       const res = await runCoreProgrammingCode(currentCode, question.functionName, allTests, 5000);
       setRunResult(res);
+
+      emitCodeRun({
+        status: res.success ? 'success' : 'failed',
+        passed: res.passedCount,
+        total: res.totalCount,
+        runtimeMs: res.totalRuntimeMs || 0,
+      });
 
       // Live-session execution feed (best-effort, never blocks submit)
       if (liveSessionId) {
@@ -809,6 +850,11 @@ function CoreProgrammingWorkspace({
               onChange={handleCodeChange}
               onMount={(ed) => {
                 editorRef.current = ed;
+                ed.onDidChangeCursorPosition(e => {
+                  emitCursorMove(e.position.lineNumber, e.position.column);
+                });
+                ed.onDidFocusEditorWidget(() => emitFocus(true));
+                ed.onDidBlurEditorWidget(() => emitFocus(false));
               }}
               options={{
                 fontSize: fontSize,

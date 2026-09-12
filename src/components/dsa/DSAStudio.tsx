@@ -7,6 +7,7 @@ import { runDSACode } from './lib/dsaRunner'
 import { dsaProgressService } from './lib/dsaProgressService'
 import { dsaSubmissionService } from './lib/dsaSubmissionService'
 import { interviewSessionService } from '../../lib/interviewSessionService'
+import { useRealtimeStudentBroadcast } from '../../hooks/useRealtimeStudentBroadcast'
 import { useAuth } from '../../context/AuthContext'
 import { DSAQuestionDetail } from './components/DSAQuestionDetail'
 import { DSATestPanel } from './components/DSATestPanel'
@@ -99,6 +100,7 @@ function DSAStudioWorkspace({ questionId }: WorkspaceProps) {
 
   // Submissions list for current question
   const [submissions, setSubmissions] = useState<DSASubmission[]>([])
+  const [liveSessionId, setLiveSessionId] = useState<string | null>(null)
 
   // Live session sync to Admin Real-time Candidate Monitor
   useEffect(() => {
@@ -123,6 +125,7 @@ function DSAStudioWorkspace({ questionId }: WorkspaceProps) {
       .then(sess => {
         if (active && sess) {
           sessionIdRef.current = sess.id
+          setLiveSessionId(sess.id)
         }
       })
       .catch(() => {})
@@ -131,6 +134,25 @@ function DSAStudioWorkspace({ questionId }: WorkspaceProps) {
       active = false
     }
   }, [question.id, language, user])
+
+  const fileName = language === 'typescript' ? 'solution.ts' : 'solution.js'
+
+  // ── REALTIME STUDENT BROADCAST (Telemetry for Admin Virtual Monitor) ──
+  const {
+    emitCodeChange,
+    emitCursorMove,
+    emitFocus,
+    emitCodeRun,
+  } = useRealtimeStudentBroadcast({
+    sessionId: liveSessionId,
+    questionId: question.id,
+    questionTitle: `${question.number}. ${question.title}`,
+    track: 'dsa',
+    language,
+    activeFile: fileName,
+    code,
+    user,
+  })
 
   // Heartbeat keeps admin "last seen" fresh (MC/CP parity)
   useEffect(() => {
@@ -215,6 +237,7 @@ function DSAStudioWorkspace({ questionId }: WorkspaceProps) {
   const handleCodeChange = (newVal: string | undefined) => {
     const val = newVal || ''
     setCode(val)
+    emitCodeChange(val, fileName)
     dsaProgressService.saveCode(question.id, language, val)
 
     // Debounce live code snapshot to Admin monitor
@@ -222,9 +245,9 @@ function DSAStudioWorkspace({ questionId }: WorkspaceProps) {
       if (updateCodeTimeoutRef.current) clearTimeout(updateCodeTimeoutRef.current)
       updateCodeTimeoutRef.current = window.setTimeout(() => {
         if (sessionIdRef.current) {
-          const fileName = language === 'typescript' ? 'solution.ts' : 'solution.js'
+          const fName = language === 'typescript' ? 'solution.ts' : 'solution.js'
           interviewSessionService
-            .saveSnapshot(sessionIdRef.current, { [fileName]: val }, 'DSA Code Autosave')
+            .saveSnapshot(sessionIdRef.current, { [fName]: val }, 'DSA Code Autosave')
             .catch(() => {})
         }
       }, 1200)
@@ -243,6 +266,7 @@ function DSAStudioWorkspace({ questionId }: WorkspaceProps) {
     if (window.confirm('Reset code to the original starter template for this problem?')) {
       const initial = language === 'javascript' ? question.starterCodeJS : question.starterCodeTS
       setCode(initial)
+      emitCodeChange(initial, fileName)
       dsaProgressService.saveCode(question.id, language, initial)
     }
   }
@@ -250,6 +274,7 @@ function DSAStudioWorkspace({ questionId }: WorkspaceProps) {
   // Run Code (Visible test cases or custom testcase)
   const handleRunCode = async () => {
     setIsRunning(true)
+    emitCodeRun({ status: 'running' })
     setActiveTestTab('result')
 
     let targetCases: DSATestCase[]
@@ -269,6 +294,13 @@ function DSAStudioWorkspace({ questionId }: WorkspaceProps) {
     const result = await runDSACode(code, language, question.functionName, targetCases)
     setRunResult(result)
     setIsRunning(false)
+
+    emitCodeRun({
+      status: result.success ? 'success' : 'failed',
+      passed: result.passedCount,
+      total: result.totalCount,
+      runtimeMs: result.totalRuntimeMs,
+    })
 
     // Report execution event to Admin live monitor
     if (sessionIdRef.current) {
@@ -292,6 +324,7 @@ function DSAStudioWorkspace({ questionId }: WorkspaceProps) {
   const handleSubmitCode = async () => {
     setIsSubmitting(true)
     setIsRunning(true)
+    emitCodeRun({ status: 'running' })
     setActiveTestTab('result')
 
     // Evaluate against all test cases
@@ -299,6 +332,13 @@ function DSAStudioWorkspace({ questionId }: WorkspaceProps) {
     setRunResult(result)
     setIsRunning(false)
     setIsSubmitting(false)
+
+    emitCodeRun({
+      status: result.success ? 'success' : 'failed',
+      passed: result.passedCount,
+      total: result.totalCount,
+      runtimeMs: result.totalRuntimeMs,
+    })
 
     // Log submission record
     const sub: DSASubmission = {
@@ -608,6 +648,11 @@ function DSAStudioWorkspace({ questionId }: WorkspaceProps) {
               onChange={handleCodeChange}
               onMount={(editor) => {
                 editorRef.current = editor
+                editor.onDidChangeCursorPosition(e => {
+                  emitCursorMove(e.position.lineNumber, e.position.column)
+                })
+                editor.onDidFocusEditorWidget(() => emitFocus(true))
+                editor.onDidBlurEditorWidget(() => emitFocus(false))
               }}
               options={{
                 fontSize: fontSize,

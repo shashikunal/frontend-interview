@@ -35,6 +35,7 @@ import {
 import LiveInterviewCollabDrawer from './LiveInterviewCollabDrawer';
 import { renderFormattedMarkdown } from '../../lib/questionTemplate';
 import { mcProgressService } from './lib/mcProgressService';
+import { useRealtimeStudentBroadcast } from '../../hooks/useRealtimeStudentBroadcast';
 import './MachineCodingStudio.css';
 
 interface ConsoleLog {
@@ -873,6 +874,24 @@ export default function MachineCodingStudio() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeQuestion?.id, userRole]);
 
+  // ── REALTIME STUDENT BROADCAST (Telemetry for Admin Virtual Monitor) ──
+  const {
+    emitCodeChange,
+    emitCursorMove,
+    emitFocus,
+    emitCodeRun,
+    emitFileSwitch,
+  } = useRealtimeStudentBroadcast({
+    sessionId: collabSession?.id,
+    questionId: activeQuestion?.id || 'Q001',
+    questionTitle: activeQuestion?.title || 'Machine Coding',
+    track: 'machine-coding',
+    language: selectedLanguage,
+    activeFile: activeFileName,
+    code: currentCode,
+    user,
+  });
+
   // ── SESSION HEARTBEAT ────────────────────────────────────────────────────
   // Every 30 seconds, update last_activity_at + active_file on Supabase so
   // the admin dashboard shows accurate "last seen" times.
@@ -912,6 +931,13 @@ export default function MachineCodingStudio() {
         }
         const passedCount = res.filter(r => r.status === 'passed').length;
         const isAllPassed = res.length > 0 && passedCount === res.length;
+
+        emitCodeRun({
+          status: isAllPassed ? 'success' : 'failed',
+          passed: passedCount,
+          total: res.length,
+          runtimeMs: res.reduce((acc, r) => acc + (r.durationMs || 0), 0),
+        });
 
         if (activeQuestion?.id) {
           // Log code execution event only (Run != Submit)
@@ -1343,6 +1369,7 @@ export default function MachineCodingStudio() {
     if (fileName === activeFileName) return;
     activeFileNameRef.current = fileName;
     setActiveFileName(fileName);
+    emitFileSwitch(fileName);
     const content = files[fileName] ?? '';
     setCurrentCode(content);
     if (editorRef.current) {
@@ -1495,6 +1522,7 @@ export default function MachineCodingStudio() {
     if (!activeQuestion) return;
     mcProgressService.markAttempted(activeQuestion.id);
     setIsRunningTests(true);
+    emitCodeRun({ status: 'running' });
     setActiveTab('tests');
     const tests = getAllQuestionTests(activeQuestion);
 
@@ -1815,6 +1843,7 @@ export default function MachineCodingStudio() {
     const nextVal = val ?? '';
     setCurrentCode(nextVal);
     const currentFile = activeFileNameRef.current;
+    emitCodeChange(nextVal, currentFile);
     const q = activeQuestionRef.current;
 
     const updatedFiles = { ...filesRef.current, [currentFile]: nextVal };
@@ -3475,6 +3504,12 @@ export default function MachineCodingStudio() {
                       }}
                       onMount={(editor, monaco) => {
                         editorRef.current = editor;
+                        editor.onDidChangeCursorPosition((e: any) => {
+                          emitCursorMove(e.position.lineNumber, e.position.column);
+                        });
+                        editor.onDidFocusEditorWidget(() => emitFocus(true));
+                        editor.onDidBlurEditorWidget(() => emitFocus(false));
+
                         if (monaco?.languages?.typescript) {
                           monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
                             noSemanticValidation: true,

@@ -804,3 +804,655 @@
   border: 1px solid var(--border, rgba(255,255,255,0.08));
   margin-bottom: 14px;
 }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   LIVE MULTI-STUDENT VIRTUAL MONITOR (VSM) STYLES
+   ══════════════════════════════════════════════════════════════════════════ */
+
+.vsm-grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+  gap: 20px;
+  width: 100%;
+}
+
+@media (max-width: 900px) {
+  .vsm-grid-container {
+    grid-template-columns: 1fr;
+  }
+}
+
+.vsm-card {
+  display: flex;
+  flex-direction: column;
+  background: #0f111a;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  position: relative;
+}
+
+.vsm-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(99, 102, 241, 0.4);
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.45);
+}
+
+.vsm-card.online {
+  border-left: 4px solid #10b981;
+}
+
+.vsm-card.idle {
+  border-left: 4px solid #f59e0b;
+}
+
+.vsm-card.disconnected {
+  border-left: 4px solid #64748b;
+  opacity: 0.85;
+}
+
+/* 1. Top Bar */
+.vsm-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: #141724;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  gap: 12px;
+}
+
+.vsm-candidate-block {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  flex: 1;
+}
+
+.vsm-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: #ffffff;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
+.vsm-candidate-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.vsm-name-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.vsm-candidate-name {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #f8fafc;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.vsm-presence-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  padding: 2px 7px;
+  border-radius: 999px;
+  text-transform: uppercase;
+}
+
+.vsm-presence-pill.online {
+  background: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.35);
+}
+
+.vsm-presence-pill.idle {
+  background: rgba(245, 158, 11, 0.15);
+  color: #fbbf24;
+  border: 1px solid rgba(245, 158, 11, 0.35);
+}
+
+.vsm-presence-pill.disconnected {
+  background: rgba(100, 116, 139, 0.15);
+  color: #94a3b8;
+  border: 1px solid rgba(100, 116, 139, 0.3);
+}
+
+.vsm-pulse-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.vsm-presence-pill.online .vsm-pulse-dot {
+  box-shadow: 0 0 8px #34d399;
+  animation: pulseDot 1.6s infinite;
+}
+
+.vsm-candidate-sub {
+  font-size: 0.74rem;
+  color: #94a3b8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.vsm-top-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.vsm-timer-badge {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #cbd5e1;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 4px 8px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.vsm-expand-btn {
+  background: rgba(99, 102, 241, 0.15);
+  border: 1px solid rgba(99, 102, 241, 0.35);
+  color: #818cf8;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.vsm-expand-btn:hover {
+  background: rgba(99, 102, 241, 0.25);
+  color: #a5b4fc;
+}
+
+/* 2. Context Bar */
+.vsm-context-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 14px;
+  background: #111420;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  gap: 10px;
+  font-size: 0.76rem;
+}
+
+.vsm-question-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  flex: 1;
+}
+
+.vsm-qid-tag {
+  background: rgba(129, 140, 248, 0.15);
+  color: #a5b4fc;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 4px;
+  border: 1px solid rgba(129, 140, 248, 0.25);
+  font-size: 0.7rem;
+  flex-shrink: 0;
+}
+
+.vsm-qtitle {
+  color: #e2e8f0;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.vsm-file-tag {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: #94a3b8;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  background: rgba(255, 255, 255, 0.04);
+  padding: 2px 7px;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  flex-shrink: 0;
+}
+
+/* 3. Live Virtual Code Window */
+.vsm-code-window {
+  background: #080a11;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  position: relative;
+}
+
+.vsm-code-window-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 12px;
+  background: #0d0f19;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  font-size: 0.7rem;
+}
+
+.vsm-window-dots {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.vsm-wdot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+}
+
+.vsm-wdot.red { background: #ef4444; opacity: 0.7; }
+.vsm-wdot.yellow { background: #f59e0b; opacity: 0.7; }
+.vsm-wdot.green { background: #10b981; opacity: 0.7; }
+
+.vsm-editor-title {
+  font-weight: 600;
+  color: #64748b;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  font-size: 0.65rem;
+}
+
+.vsm-window-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #94a3b8;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.68rem;
+}
+
+.vsm-cursor-pos {
+  color: #38bdf8;
+  background: rgba(56, 189, 248, 0.1);
+  padding: 1px 5px;
+  border-radius: 3px;
+  border: 1px solid rgba(56, 189, 248, 0.2);
+}
+
+.vsm-line-count {
+  color: #64748b;
+}
+
+.vsm-code-content {
+  display: flex;
+  max-height: 220px;
+  min-height: 180px;
+  overflow-y: auto;
+  font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+  font-size: 0.76rem;
+  line-height: 1.5;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+}
+
+.vsm-line-numbers {
+  display: flex;
+  flex-direction: column;
+  padding: 8px 10px 8px 6px;
+  text-align: right;
+  background: rgba(255, 255, 255, 0.015);
+  border-right: 1px solid rgba(255, 255, 255, 0.04);
+  color: #475569;
+  user-select: none;
+  min-width: 38px;
+}
+
+.vsm-line-num {
+  font-size: 0.72rem;
+  height: 1.5em;
+  display: block;
+}
+
+.vsm-line-num.vsm-active-line {
+  color: #38bdf8;
+  font-weight: 700;
+}
+
+.vsm-code-body {
+  flex: 1;
+  margin: 0;
+  padding: 8px 12px;
+  overflow-x: auto;
+  color: #e2e8f0;
+  background: transparent;
+}
+
+.vsm-code-line {
+  height: 1.5em;
+  white-space: pre;
+  position: relative;
+}
+
+.vsm-code-line.vsm-cursor-line {
+  background: rgba(56, 189, 248, 0.08);
+}
+
+.vsm-blinking-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1.2em;
+  background: #38bdf8;
+  vertical-align: text-bottom;
+  margin-left: 2px;
+  animation: vsmBlink 1s step-start infinite;
+}
+
+@keyframes vsmBlink {
+  50% { opacity: 0; }
+}
+
+.vsm-code-empty {
+  color: #64748b;
+  font-style: italic;
+  padding: 12px;
+}
+
+/* 4. Typing Banner */
+.vsm-typing-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  background: rgba(14, 165, 233, 0.12);
+  border-bottom: 1px solid rgba(14, 165, 233, 0.25);
+  color: #38bdf8;
+  font-size: 0.74rem;
+  font-weight: 600;
+}
+
+.vsm-typing-spinner {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.vsm-typing-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #38bdf8;
+  animation: typingDot 1.2s infinite ease-in-out;
+}
+
+.vsm-typing-dot:nth-child(2) { animation-delay: 0.2s; }
+.vsm-typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes typingDot {
+  0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+  40% { transform: scale(1.1); opacity: 1; }
+}
+
+/* 5. Execution Bar */
+.vsm-exec-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 7px 14px;
+  background: #111420;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  font-size: 0.75rem;
+}
+
+.vsm-exec-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+
+.vsm-exec-chip.running {
+  background: rgba(56, 189, 248, 0.15);
+  color: #38bdf8;
+  border: 1px solid rgba(56, 189, 248, 0.3);
+}
+
+.vsm-exec-chip.success {
+  background: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.vsm-exec-chip.failed,
+.vsm-exec-chip.error {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.vsm-exec-chip.idle {
+  background: rgba(255, 255, 255, 0.05);
+  color: #94a3b8;
+}
+
+.vsm-exec-details {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+}
+
+.vsm-exec-pass {
+  color: #34d399;
+  font-weight: 600;
+}
+
+.vsm-exec-fail {
+  color: #f87171;
+  font-weight: 600;
+}
+
+.vsm-exec-time {
+  color: #64748b;
+}
+
+/* 6. Activity Timeline */
+.vsm-activity-container {
+  padding: 10px 14px;
+  background: #0c0e17;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.vsm-activity-title {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #64748b;
+  margin-bottom: 6px;
+}
+
+.vsm-activity-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.vsm-act-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 0.72rem;
+  color: #cbd5e1;
+}
+
+.vsm-act-icon {
+  margin-right: 5px;
+}
+
+.vsm-act-msg {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+}
+
+.vsm-act-time {
+  color: #64748b;
+  font-size: 0.68rem;
+  flex-shrink: 0;
+}
+
+.vsm-act-empty {
+  font-size: 0.72rem;
+  color: #64748b;
+  font-style: italic;
+}
+
+/* 7. Footer Bar */
+.vsm-footer-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 9px 14px;
+  background: #111420;
+  font-size: 0.72rem;
+  color: #94a3b8;
+}
+
+.vsm-deep-link {
+  color: #818cf8;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.74rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: color 0.2s ease;
+}
+
+.vsm-deep-link:hover {
+  color: #a5b4fc;
+  text-decoration: underline;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   INLINE MODAL INSPECTION VIEWER (WITHOUT LEAVING LIVE SESSIONS)
+   ══════════════════════════════════════════════════════════════════════════ */
+
+.vsm-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 20px;
+}
+
+.vsm-modal-dialog {
+  background: #0f111d;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  width: 100%;
+  max-width: 960px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+  overflow: hidden;
+}
+
+.vsm-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  background: #151827;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.vsm-modal-title-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.vsm-modal-body {
+  padding: 20px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.vsm-modal-code-window {
+  background: #07090f;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.vsm-modal-code-body {
+  max-height: 420px;
+  overflow: auto;
+  padding: 14px 16px;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: #f1f5f9;
+}
+
+.vsm-modal-close-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: none;
+  color: #cbd5e1;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.vsm-modal-close-btn:hover {
+  background: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+}
