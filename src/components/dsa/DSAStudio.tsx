@@ -234,11 +234,18 @@ function DSAStudioWorkspace({ questionId }: WorkspaceProps) {
     window.addEventListener('mouseup', handleBottomMouseUp)
   }
 
-  // Handle code change
+  // Handle code change with immediate cursor streaming
   const handleCodeChange = (newVal: string | undefined) => {
     const val = newVal || ''
     setCode(val)
-    emitCodeChange(val, fileName)
+
+    const pos = editorRef.current?.getPosition()
+    const cursor = pos ? { line: pos.lineNumber, column: pos.column } : undefined
+    emitCodeChange(val, fileName, cursor)
+    if (pos) {
+      emitCursorMove(pos.lineNumber, pos.column)
+    }
+
     dsaProgressService.saveCode(question.id, language, val)
 
     // Debounce live code snapshot to Admin monitor

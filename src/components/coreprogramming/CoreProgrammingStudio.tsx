@@ -196,16 +196,33 @@ function CoreProgrammingWorkspace({
   // ── LIVE SESSION REGISTRATION (Admin live-sessions parity with MC) ──
   // Candidates only; one row per candidate+question via getOrCreateSession.
   useEffect(() => {
-    if (!user?.id) return;
     if (role === 'observer') return;
-    if (autoSessionRef.current === `${user.id}:${question.id}`) return;
-    autoSessionRef.current = `${user.id}:${question.id}`;
+
+    const guestCandidateId = (() => {
+      try {
+        let gid = localStorage.getItem('interview_candidate_id');
+        if (!gid) {
+          gid = `guest_${Math.random().toString(36).slice(2, 8)}`;
+          localStorage.setItem('interview_candidate_id', gid);
+        }
+        return gid;
+      } catch {
+        return 'guest_student';
+      }
+    })();
+
+    const candidateId = user?.id || guestCandidateId;
+    const candidateName = user?.name || user?.email?.split('@')[0] || `Candidate (${candidateId.slice(-4).toUpperCase()})`;
+    const candidateEmail = user?.email || `${candidateId}@interview.local`;
+
+    if (autoSessionRef.current === `${candidateId}:${question.id}`) return;
+    autoSessionRef.current = `${candidateId}:${question.id}`;
     setLiveSessionId(null);
 
     interviewSessionService.getOrCreateSession({
-      candidateId: user.id,
-      candidateName: user.name || user.email?.split('@')[0] || 'Candidate',
-      candidateEmail: user.email,
+      candidateId,
+      candidateName,
+      candidateEmail,
       questionId: question.id,
       questionTitle: question.title,
       language: 'javascript',
@@ -215,7 +232,7 @@ function CoreProgrammingWorkspace({
     }).catch(err => {
       console.warn('[CPLiveSession] Could not register session:', err);
     });
-  }, [question.id, question.title, question.starterCode, user?.id, role]);
+  }, [question.id, question.title, question.starterCode, user?.id, user?.name, user?.email, role]);
 
   // ── REALTIME TWO-WAY SOCKET.IO (Ephemeral telemetry for admin monitor) ──
   const {
@@ -264,11 +281,17 @@ function CoreProgrammingWorkspace({
     return () => clearInterval(interval);
   }, [isTimerRunning, question.id]);
 
-  // Autosave code changes with debounce & realtime broadcast
+  // Autosave code changes with realtime broadcast & background draft save
   const handleCodeChange = (newVal: string | undefined) => {
     const val = newVal || '';
     setCurrentCode(val);
-    emitCodeChange(val, 'solution.js');
+
+    const pos = editorRef.current?.getPosition();
+    const cursor = pos ? { line: pos.lineNumber, column: pos.column } : undefined;
+    emitCodeChange(val, 'solution.js', cursor);
+    if (pos) {
+      emitCursorMove(pos.lineNumber, pos.column);
+    }
 
     if (autosaveTimeoutRef.current) {
       clearTimeout(autosaveTimeoutRef.current);

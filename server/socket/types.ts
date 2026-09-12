@@ -126,11 +126,23 @@ export interface YjsSyncResponseEvent {
   docState: Uint8Array | number[];
 }
 
+export interface StudentKeystrokeEvent {
+  sessionId: string;
+  fileId?: string;
+  code: string;
+  cursor?: {
+    line: number;
+    column: number;
+  } | null;
+  timestamp: number;
+}
+
 export interface ClientToServerEvents {
   'session:join': (data: { sessionId: string; questionId?: string; questionTitle?: string; language?: string; initialCode?: string }, callback?: (ack: { success: boolean; state?: SessionStatePayload; error?: string }) => void) => void;
   'session:leave': (data: { sessionId: string }) => void;
   'session:heartbeat': (data: { sessionId: string; status?: 'online' | 'idle' }) => void;
   'student:typing': (data: StudentTypingEvent) => void;
+  'student:keystroke': (data: StudentKeystrokeEvent) => void;
   'student:code-change': (data: StudentCodeChangeEvent) => void;
   'student:file-change': (data: StudentFileChangeEvent) => void;
   'student:cursor-change': (data: StudentCursorChangeEvent) => void;
@@ -147,6 +159,7 @@ export interface ClientToServerEvents {
 export interface ServerToClientEvents {
   'session:state': (state: SessionStatePayload) => void;
   'student:typing': (data: StudentTypingEvent) => void;
+  'student:keystroke': (data: StudentKeystrokeEvent) => void;
   'student:code-change': (data: StudentCodeChangeEvent) => void;
   'student:file-change': (data: StudentFileChangeEvent) => void;
   'student:cursor-change': (data: StudentCursorChangeEvent) => void;

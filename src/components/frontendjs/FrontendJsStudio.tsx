@@ -220,16 +220,33 @@ function FrontendJsWorkspace({
   // ── LIVE SESSION REGISTRATION (Admin live-sessions parity) ──
   // Candidates only; one row per candidate+question via getOrCreateSession.
   useEffect(() => {
-    if (!user?.id) return
     if (role === 'observer') return
-    if (autoSessionRef.current === `${user.id}:${question.id}`) return
-    autoSessionRef.current = `${user.id}:${question.id}`
+
+    const guestCandidateId = (() => {
+      try {
+        let gid = localStorage.getItem('interview_candidate_id')
+        if (!gid) {
+          gid = `guest_${Math.random().toString(36).slice(2, 8)}`
+          localStorage.setItem('interview_candidate_id', gid)
+        }
+        return gid
+      } catch {
+        return 'guest_student'
+      }
+    })()
+
+    const candidateId = user?.id || guestCandidateId
+    const candidateName = user?.name || user?.email?.split('@')[0] || `Candidate (${candidateId.slice(-4).toUpperCase()})`
+    const candidateEmail = user?.email || `${candidateId}@interview.local`
+
+    if (autoSessionRef.current === `${candidateId}:${question.id}`) return
+    autoSessionRef.current = `${candidateId}:${question.id}`
     setLiveSessionId(null)
 
     interviewSessionService.getOrCreateSession({
-      candidateId: user.id,
-      candidateName: user.name || user.email?.split('@')[0] || 'Candidate',
-      candidateEmail: user.email,
+      candidateId,
+      candidateName,
+      candidateEmail,
       questionId: question.id,
       questionTitle: question.title,
       language: 'javascript',
@@ -239,7 +256,7 @@ function FrontendJsWorkspace({
     }).catch(err => {
       console.warn('[FJSLiveSession] Could not register session:', err)
     })
-  }, [question.id, question.title, question.starterCode, user?.id, role])
+  }, [question.id, question.title, question.starterCode, user?.id, user?.name, user?.email, role])
 
   // ── REALTIME TWO-WAY SOCKET.IO (Telemetry for Admin Virtual Monitor) ──
   const {

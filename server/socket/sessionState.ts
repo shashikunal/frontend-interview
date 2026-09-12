@@ -200,14 +200,15 @@ export const sessionStateManager = {
     if (!ydoc) {
       ydoc = new Y.Doc();
       sessionYDocs.set(sessionId, ydoc);
+    }
 
-      if (initialCode && initialCode.trim().length > 0) {
-        const ytext = ydoc.getText(activeFile);
-        if (ytext.length === 0) {
-          ytext.insert(0, initialCode);
-        }
+    if (initialCode && initialCode.trim().length > 0) {
+      const ytext = ydoc.getText(activeFile);
+      if (ytext.length === 0) {
+        ytext.insert(0, initialCode);
       }
     }
+
     return ydoc;
   },
 
@@ -238,11 +239,12 @@ export const sessionStateManager = {
   },
 
   /**
-   * Encodes the full current Y.Doc state as a single update for initial synchronization
+   * Encodes the current Y.Doc state (or state vector diff) as a single update for synchronization
    */
-  getYDocState(sessionId: string, initialCode?: string, activeFile: string = 'solution.js'): Uint8Array {
+  getYDocState(sessionId: string, initialCode?: string, activeFile: string = 'solution.js', stateVector?: Uint8Array | number[]): Uint8Array {
     const ydoc = this.getOrCreateYDoc(sessionId, initialCode, activeFile);
-    return Y.encodeStateAsUpdate(ydoc);
+    const sv = stateVector ? toUint8Array(stateVector) : undefined;
+    return Y.encodeStateAsUpdate(ydoc, sv);
   },
 
   /**

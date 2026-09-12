@@ -470,3 +470,109 @@
   font-size: 11px;
   word-break: break-all;
 }
+
+/* ── 6. REMOTE CURSOR WITH NAME TAG (FIGMA / LIVE SHARE STYLE) ─────────── */
+
+/* Caret Bar on line */
+.cmp-remote-cursor-caret {
+  position: relative;
+  border-left: 2px solid #38bdf8 !important;
+  margin-left: -1px;
+  box-shadow: 0 0 10px #38bdf8, 0 0 20px rgba(56, 189, 248, 0.4);
+  animation: cmp-cursor-blink 1s ease-in-out infinite;
+  z-index: 100;
+  pointer-events: none;
+}
+
+@keyframes cmp-cursor-blink {
+  0%, 100% {
+    border-left-color: #38bdf8;
+    opacity: 1;
+  }
+  50% {
+    border-left-color: rgba(56, 189, 248, 0.3);
+    opacity: 0.5;
+  }
+}
+
+/* Floating Name Flag Widget */
+.cmp-remote-cursor-widget {
+  pointer-events: none;
+  z-index: 120;
+  position: absolute;
+  transform: translate3d(0, -6px, 0);
+  transition: transform 0.05s ease-out;
+}
+
+.cmp-cursor-flag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: linear-gradient(135deg, #0284c7, #2563eb);
+  color: #ffffff;
+  padding: 2px 8px 3px 7px;
+  border-radius: 6px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.6), 0 0 10px rgba(56, 189, 248, 0.4);
+  white-space: nowrap;
+  position: relative;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  user-select: none;
+}
+
+.cmp-remote-cursor-widget.is-typing .cmp-cursor-flag {
+  background: linear-gradient(135deg, #0ea5e9, #6366f1);
+  box-shadow: 0 4px 18px rgba(14, 165, 233, 0.6), 0 0 14px rgba(99, 102, 241, 0.6);
+}
+
+.cmp-cursor-flag-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #34d399;
+  box-shadow: 0 0 6px #34d399;
+}
+
+.cmp-cursor-flag-dot.typing {
+  background: #38bdf8;
+  box-shadow: 0 0 8px #38bdf8;
+  animation: cmp-pulse 0.8s infinite;
+}
+
+.cmp-cursor-flag-name {
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cmp-cursor-flag-typing {
+  font-size: 9.5px;
+  font-weight: 600;
+  color: #bfdbfe;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 1px 5px;
+  border-radius: 4px;
+  text-transform: lowercase;
+  font-style: italic;
+  animation: cmp-pulse 1.2s infinite;
+}
+
+.cmp-cursor-flag-arrow {
+  position: absolute;
+  bottom: -4px;
+  left: 8px;
+  width: 0;
+  height: 0;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 5px solid #2563eb;
+}
+
+.cmp-remote-cursor-widget.is-typing .cmp-cursor-flag-arrow {
+  border-top-color: #6366f1;
+}
+

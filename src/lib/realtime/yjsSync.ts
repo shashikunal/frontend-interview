@@ -59,15 +59,13 @@ export function bridgeYDocWithSocket(
   // 1. Local changes produce Yjs binary updates -> emit to Socket.IO room
   const handleDocUpdate = (update: Uint8Array, origin: any) => {
     if (origin === 'remote') return;
-    console.log(`[YJS-STUDENT] Yjs update generated for session ${sessionId} (${update.length} bytes)`);
     if (socket.connected) {
       socket.emit('yjs:update', {
         sessionId,
-        update,
+        update: Array.from(update),
         fileId: getActiveFile(),
         timestamp: Date.now(),
       });
-      console.log(`[YJS-STUDENT] Socket.IO update emitted for session ${sessionId}`);
     }
   };
 
@@ -98,15 +96,22 @@ export function bridgeYDocWithSocket(
   socket.on('yjs:update', handleRemoteUpdate);
   socket.on('yjs:sync-response', handleSyncResponse);
 
-  // Request initial full sync if connected
-  if (socket.connected) {
-    socket.emit('yjs:sync-request', { sessionId });
-  }
+  // Request initial sync with local state vector if connected
+  const requestSync = () => {
+    if (socket.connected) {
+      const sv = Y.encodeStateVector(ydoc);
+      socket.emit('yjs:sync-request', { sessionId, stateVector: Array.from(sv) });
+    }
+  };
+
+  requestSync();
+  socket.on('connect', requestSync);
 
   return () => {
     ydoc.off('update', handleDocUpdate);
     socket.off('yjs:update', handleRemoteUpdate);
     socket.off('yjs:sync-response', handleSyncResponse);
+    socket.off('connect', requestSync);
   };
 }
 
@@ -125,18 +130,17 @@ export function bindMonacoToYDoc(
 
   const ytext = ydoc.getText(fileId);
 
-  if (!isReadOnly) {
-    // Student side: if ytext is empty and initialContent is provided, populate it
-    if (ytext.length === 0 && initialContent && initialContent.trim().length > 0) {
-      ytext.insert(0, initialContent);
-      console.log(`[YJS-STUDENT] Y.Text initialized for ${fileId} (${initialContent.length} chars)`);
+  // If ytext already has content from Y.Doc sync, ensure model matches ytext
+  if (ytext.length > 0) {
+    if (model.getValue() !== ytext.toString()) {
+      model.setValue(ytext.toString());
     }
-  } else {
-    // Admin side: if ytext is currently empty, show snapshot in model without mutating Y.Doc
-    if (ytext.length === 0 && initialContent && initialContent.trim().length > 0) {
-      if (model.getValue() !== initialContent) {
-        model.setValue(initialContent);
-      }
+  } else if (!isReadOnly && initialContent && initialContent.trim().length > 0) {
+    // Only student initializes empty ytext if no server sync was applied
+    ytext.insert(0, initialContent);
+  } else if (initialContent && initialContent.trim().length > 0) {
+    if (model.getValue() !== initialContent) {
+      model.setValue(initialContent);
     }
   }
 
@@ -147,9 +151,9 @@ export function bindMonacoToYDoc(
       new Set([editorInstance])
     );
     if (isReadOnly) {
-      console.log(`[YJS-ADMIN] Monaco binding active for file ${fileId}`);
+      console.log(`[YJS-ADMIN] Monaco binding active for file ${fileId} (${ytext.length} chars)`);
     } else {
-      console.log(`[YJS-STUDENT] Binding initialized for file ${fileId}`);
+      console.log(`[YJS-STUDENT] Binding initialized for file ${fileId} (${ytext.length} chars)`);
     }
     return binding;
   } catch (err) {

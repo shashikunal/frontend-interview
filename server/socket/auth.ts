@@ -17,13 +17,14 @@ export async function authenticateSocket(
 
     if (!token) {
       // In development, permit fallback guest/demo session with explicit role
-      if (process.env.NODE_ENV !== 'production' && socket.handshake.auth?.devUser) {
-        const devUser = socket.handshake.auth.devUser;
+      if (process.env.NODE_ENV !== 'production') {
+        const devUser = socket.handshake.auth?.devUser || {};
+        const isDevAdmin = devUser.role === 'admin' || devUser.id?.includes('admin');
         socket.data.user = {
-          id: devUser.id || 'dev_candidate',
+          id: devUser.id || `guest_${socket.id.slice(0, 8)}`,
           email: devUser.email || 'candidate@dev.local',
-          role: devUser.role === 'admin' ? 'admin' : 'candidate',
-          name: devUser.name || 'Developer',
+          role: isDevAdmin ? 'admin' : 'candidate',
+          name: devUser.name || 'Candidate',
         };
         socket.data.role = socket.data.user.role;
         socket.data.subscribedSessions = new Set();

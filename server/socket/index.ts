@@ -101,7 +101,8 @@ export function initSocketServer(server: HTTPServer | Http2SecureServer): Socket
         timestamp: Date.now(),
       });
 
-      callback?.({ success: true, state });
+      const docState = sessionStateManager.getYDocState(sessionId, initialCode, 'solution.js');
+      callback?.({ success: true, state, docState: Array.from(docState) });
       socket.emit('session:state', state);
 
       if (process.env.NODE_ENV !== 'production') {
@@ -152,6 +153,13 @@ export function initSocketServer(server: HTTPServer | Http2SecureServer): Socket
       if (process.env.NODE_ENV !== 'production') {
         console.log(`[Socket.IO Relay] code-change on ${data.sessionId} (${data.code.length} chars, v${updated.codeVersion})`);
       }
+    });
+
+    // ── Candidate: student:keystroke (Zero-Latency Character-by-Character Relay) ──
+    socket.on('student:keystroke', (data: any) => {
+      if (!data?.sessionId) return;
+      const room = getInterviewRoom(data.sessionId);
+      socket.to(room).emit('student:keystroke', data);
     });
 
     // ── Candidate: student:cursor-change ──────────────────────────────────
@@ -271,8 +279,8 @@ export function initSocketServer(server: HTTPServer | Http2SecureServer): Socket
     // ── Yjs: yjs:sync-request (Full State Resync) ─────────────────────────
     socket.on('yjs:sync-request', (data: any, callback?: any) => {
       if (!data?.sessionId) return;
-      const docState = sessionStateManager.getYDocState(data.sessionId);
-      const response = { sessionId: data.sessionId, docState };
+      const docState = sessionStateManager.getYDocState(data.sessionId, undefined, 'solution.js', data?.stateVector);
+      const response = { sessionId: data.sessionId, docState: Array.from(docState) };
       callback?.(response);
       socket.emit('yjs:sync-response', response);
     });

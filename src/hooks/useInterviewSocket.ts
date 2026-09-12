@@ -24,8 +24,8 @@ export interface CodeRunPayload {
   output?: string;
 }
 
-const CODE_DEBOUNCE_MS = 200;
-const CURSOR_THROTTLE_MS = 150;
+const CODE_DEBOUNCE_MS = 25;
+const CURSOR_THROTTLE_MS = 16;
 const HEARTBEAT_INTERVAL_MS = 25 * 1000;
 
 export function useInterviewSocket({
@@ -48,26 +48,38 @@ export function useInterviewSocket({
   const lastCursorEmitRef = useRef<number>(0);
   const isTypingRef = useRef<boolean>(false);
   const monacoBindingRef = useRef<MonacoBinding | null>(null);
+  const pendingEditorRef = useRef<any>(null);
+  const pendingFileRef = useRef<string | null>(null);
+  const latestFileRef = useRef<string>(activeFile);
+  const latestCodeRef = useRef<string>(code);
+  const sessionIdRef = useRef<string | null>(sessionId);
 
-  const latestCodeRef = useRef(code);
-  latestCodeRef.current = code;
-  const latestFileRef = useRef(activeFile);
-  latestFileRef.current = activeFile;
+  useEffect(() => {
+    sessionIdRef.current = sessionId;
+  }, [sessionId]);
 
-  // Initialize or get Yjs Document for this session
+  useEffect(() => {
+    latestFileRef.current = activeFile;
+  }, [activeFile]);
+
+  useEffect(() => {
+    latestCodeRef.current = code;
+  }, [code]);
+
+  // Derived Y.Doc instance for this session room
   const ydoc = sessionId ? getOrCreateSessionYDoc(sessionId) : null;
 
   // Initialize socket and join room
   useEffect(() => {
+    let isMounted = true;
+    let heartbeatInterval: ReturnType<typeof setInterval> | null = null;
+    let unbridgeYDoc: (() => void) | null = null;
+
     if (!sessionId || !ydoc) {
       setIsConnected(false);
       setPresenceStatus('disconnected');
       return;
     }
-
-    let isMounted = true;
-    let heartbeatInterval: ReturnType<typeof setInterval> | null = null;
-    let unbridgeYDoc: (() => void) | null = null;
 
     async function init() {
       const socket = await getSharedInterviewSocket(user);
@@ -89,6 +101,13 @@ export function useInterviewSocket({
           if (ack?.success) {
             setIsConnected(true);
             setPresenceStatus('online');
+            if (ack.docState && ydoc) {
+              try {
+                Y.applyUpdate(ydoc, toUint8Array(ack.docState), 'remote');
+              } catch (err) {
+                console.warn('[useInterviewSocket] Failed applying initial docState from server:', err);
+              }
+            }
           }
         });
       }
@@ -138,23 +157,55 @@ export function useInterviewSocket({
     };
   }, [sessionId, questionId, questionTitle, language, user, ydoc]);
 
-  // ── Emit Code Change (with typing indicator) ──────────────────────────────
+  // ── Emit Code Change (with immediate typing indicator & fast 25ms broadcast) ──
   const emitCodeChange = useCallback(
     (newCode: string, fileOverride?: string, cursor?: { line: number; column: number }) => {
       const socket = socketRef.current;
-      if (!socket || !sessionId) return;
+      const currentSessionId = sessionIdRef.current || sessionId;
+      if (!socket || !currentSessionId) return;
 
       const curFile = fileOverride || latestFileRef.current;
 
-      // 1. Send typing started event
+      // 1. Send typing started event immediately
       if (!isTypingRef.current) {
         isTypingRef.current = true;
         socket.emit('student:typing', {
-          sessionId,
+          sessionId: currentSessionId,
           isTyping: true,
           fileId: curFile,
           timestamp: Date.now(),
         });
+      }
+
+      // 2. Immediately emit cursor change if cursor was provided with keystroke
+      if (cursor) {
+        socket.emit('student:cursor-change', {
+          sessionId: currentSessionId,
+          fileId: curFile,
+          line: cursor.line,
+          column: cursor.column,
+          timestamp: Date.now(),
+        });
+      }
+
+      // 3. ZERO-LATENCY FASTPATH: Emit student:keystroke immediately without debounce
+      socket.emit('student:keystroke', {
+        sessionId: currentSessionId,
+        fileId: curFile,
+        code: newCode,
+        cursor: cursor || null,
+        timestamp: Date.now(),
+      });
+
+      // 4. Update local Y.Doc text if needed to trigger CRDT updates
+      if (ydoc) {
+        const ytext = ydoc.getText(curFile);
+        if (ytext.toString() !== newCode) {
+          ydoc.transact(() => {
+            ytext.delete(0, ytext.length);
+            ytext.insert(0, newCode);
+          }, 'student-keystroke');
+        }
       }
 
       // Auto clear typing state after 1.5s silence
@@ -162,21 +213,21 @@ export function useInterviewSocket({
       typingTimerRef.current = setTimeout(() => {
         isTypingRef.current = false;
         socket.emit('student:typing', {
-          sessionId,
+          sessionId: currentSessionId,
           isTyping: false,
           fileId: curFile,
           timestamp: Date.now(),
         });
       }, 1500);
 
-      // 2. Debounce code broadcast
+      // 5. Fast 25ms debounce for full code snapshot broadcast
       if (codeDebounceTimerRef.current) clearTimeout(codeDebounceTimerRef.current);
       codeDebounceTimerRef.current = setTimeout(() => {
         const v = ++codeVersionRef.current;
         const lineCount = newCode.split('\n').length;
 
         socket.emit('student:code-change', {
-          sessionId,
+          sessionId: currentSessionId,
           fileId: curFile,
           language,
           code: newCode,
@@ -187,7 +238,7 @@ export function useInterviewSocket({
         });
       }, CODE_DEBOUNCE_MS);
     },
-    [sessionId, language]
+    [sessionId, language, ydoc]
   );
 
   // ── Emit Cursor Movement ──────────────────────────────────────────────────
@@ -309,8 +360,15 @@ export function useInterviewSocket({
   // ── Bind Monaco Editor to Yjs Document ────────────────────────────────────
   const bindMonacoEditor = useCallback(
     (editorInstance: any, fileOverride?: string) => {
-      if (!ydoc || !editorInstance) return;
-      const targetFile = fileOverride || latestFileRef.current;
+      if (editorInstance) pendingEditorRef.current = editorInstance;
+      if (fileOverride) pendingFileRef.current = fileOverride;
+
+      if (!ydoc || !editorInstance) {
+        console.log(`[YJS-STUDENT] Storing editor reference; awaiting ydoc for session: ${sessionId}`);
+        return;
+      }
+
+      const targetFile = fileOverride || pendingFileRef.current || latestFileRef.current;
 
       // Clean up previous binding if existing
       if (monacoBindingRef.current) {
@@ -327,10 +385,78 @@ export function useInterviewSocket({
         latestCodeRef.current
       );
       monacoBindingRef.current = binding;
+
+      // Attach instantaneous 0ms character-by-character keystroke emitter
+      if (editorInstance?.onDidChangeModelContent) {
+        editorInstance.onDidChangeModelContent(() => {
+          const s = socketRef.current;
+          const sid = sessionIdRef.current || sessionId;
+          if (s && s.connected && sid) {
+            const m = editorInstance.getModel();
+            const pos = editorInstance.getPosition();
+            if (m) {
+              s.emit('student:keystroke', {
+                sessionId: sid,
+                fileId: targetFile,
+                code: m.getValue(),
+                cursor: pos ? { line: pos.lineNumber, column: pos.column } : null,
+                timestamp: Date.now(),
+              });
+            }
+          }
+        });
+      }
+
+      console.log(`[YJS-STUDENT] Monaco editor successfully bound to session ${sessionId} (${targetFile})`);
       return binding;
     },
-    [ydoc]
+    [ydoc, sessionId]
   );
+
+  // Auto-bind as soon as ydoc becomes available if editor was already mounted
+  useEffect(() => {
+    if (!ydoc || !pendingEditorRef.current) return;
+    const targetFile = pendingFileRef.current || latestFileRef.current || 'solution.js';
+    const editorInstance = pendingEditorRef.current;
+
+    if (monacoBindingRef.current) {
+      try {
+        monacoBindingRef.current.destroy();
+      } catch (_) {}
+      monacoBindingRef.current = null;
+    }
+
+    const binding = bindMonacoToYDoc(
+      ydoc,
+      targetFile,
+      editorInstance,
+      latestCodeRef.current
+    );
+    monacoBindingRef.current = binding;
+
+    // Attach instantaneous 0ms character-by-character keystroke emitter
+    if (editorInstance?.onDidChangeModelContent) {
+      editorInstance.onDidChangeModelContent(() => {
+        const s = socketRef.current;
+        const sid = sessionIdRef.current || sessionId;
+        if (s && s.connected && sid) {
+          const m = editorInstance.getModel();
+          const pos = editorInstance.getPosition();
+          if (m) {
+            s.emit('student:keystroke', {
+              sessionId: sid,
+              fileId: targetFile,
+              code: m.getValue(),
+              cursor: pos ? { line: pos.lineNumber, column: pos.column } : null,
+              timestamp: Date.now(),
+            });
+          }
+        }
+      });
+    }
+
+    console.log(`[YJS-STUDENT] Auto-bound Monaco editor on Y.Doc availability for session ${sessionId} (${targetFile})`);
+  }, [ydoc, sessionId]);
 
   return {
     isConnected,

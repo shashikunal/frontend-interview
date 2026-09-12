@@ -3,9 +3,9 @@ import Editor from '@monaco-editor/react';
 import type { editor } from 'monaco-editor';
 import type { InterviewSession } from '../../../lib/interviewSessionService';
 import type { LiveTelemetryItem } from '../../../hooks/useAdminMonitorSocket';
-import { bindMonacoToYDoc } from '../../../lib/realtime/yjsSync';
-import type { MonacoBinding } from 'y-monaco';
+import { MonacoBinding } from 'y-monaco';
 import type * as Y from 'yjs';
+import { bindMonacoToYDoc } from '../../../lib/realtime/yjsSync';
 import './CandidateMonitorPanel.css';
 
 export interface CandidateMonitorPanelProps {
@@ -41,8 +41,11 @@ export const CandidateMonitorPanel: React.FC<CandidateMonitorPanelProps> = ({
   );
   const [isBound, setIsBound] = useState(false);
 
-  const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
+  const [editorInstance, setEditorInstance] = useState<editor.IStandaloneCodeEditor | null>(null);
   const bindingRef = useRef<MonacoBinding | null>(null);
+  const monacoRef = useRef<any>(null);
+  const cursorWidgetRef = useRef<{ widget: any; domNode: HTMLElement } | null>(null);
+  const cursorDecorationsRef = useRef<string[]>([]);
 
   // Sync selected file when telemetry pushes file switch
   useEffect(() => {
@@ -60,7 +63,7 @@ export const CandidateMonitorPanel: React.FC<CandidateMonitorPanelProps> = ({
   const studentId = `STU-${(session.candidate_id || session.id).slice(-4).toUpperCase()}`;
   const questionTitle = session.question_title || session.question_id || 'Coding Assessment';
 
-  // Available files for multi-file sessions
+  // Unique list of candidate session files
   const availableFiles = useMemo(() => {
     const files = new Set<string>();
     files.add(selectedFile);
@@ -71,56 +74,160 @@ export const CandidateMonitorPanel: React.FC<CandidateMonitorPanelProps> = ({
     return Array.from(files);
   }, [session.files_snapshot, selectedFile]);
 
-  // Bind Monaco to Yjs on mount
-  const handleEditorMount = useCallback((editorInstance: editor.IStandaloneCodeEditor) => {
-    editorRef.current = editorInstance;
+  // Handle Monaco mount (captures both editor and monaco instance)
+  const handleEditorMount = useCallback((ed: editor.IStandaloneCodeEditor, monaco: any) => {
+    monacoRef.current = monaco;
+    setEditorInstance(ed);
+  }, []);
+
+  // Monaco & Yjs live synchronization lifecycle
+  useEffect(() => {
+    if (!editorInstance) return;
+
     const ydoc = getYDoc(session.id);
-    const initialCode = session.current_code_snapshot || '';
+    const model = editorInstance.getModel();
+    if (!model) return;
 
-    if (bindingRef.current) {
-      try { bindingRef.current.destroy(); } catch (_) {}
-      bindingRef.current = null;
-    }
+    const snapshot = telemetry?.code || session.current_code_snapshot || '';
 
-    bindingRef.current = bindMonacoToYDoc(
+    // Direct Yjs Monaco Binding (Read-Only Observer)
+    const binding = bindMonacoToYDoc(
       ydoc,
       selectedFile,
       editorInstance,
-      initialCode,
-      true // isReadOnly = true: Never mutate student Y.Doc with snapshot
+      snapshot,
+      true
     );
-    setIsBound(Boolean(bindingRef.current));
-    console.log(`[YJS-ADMIN] Monaco binding active for session ${session.id}, file ${selectedFile}`);
-  }, [session.id, selectedFile, getYDoc, session.current_code_snapshot]);
-
-  // Re-bind when selectedFile changes
-  useEffect(() => {
-    if (editorRef.current) {
-      const ydoc = getYDoc(session.id);
-      if (bindingRef.current) {
-        try { bindingRef.current.destroy(); } catch (_) {}
-        bindingRef.current = null;
-      }
-      bindingRef.current = bindMonacoToYDoc(
-        ydoc,
-        selectedFile,
-        editorRef.current,
-        '',
-        true // isReadOnly = true
-      );
-      setIsBound(Boolean(bindingRef.current));
+    bindingRef.current = binding;
+    if (binding) {
+      setIsBound(true);
+      console.log(`[YJS-ADMIN] Monaco successfully BOUND to Yjs for session ${session.id}, file ${selectedFile}`);
     }
-  }, [selectedFile, session.id, getYDoc]);
 
-  // Cleanup binding on unmount
-  useEffect(() => {
     return () => {
       if (bindingRef.current) {
         try { bindingRef.current.destroy(); } catch (_) {}
         bindingRef.current = null;
+        setIsBound(false);
       }
     };
-  }, []);
+  }, [editorInstance, selectedFile, session.id, getYDoc]);
+
+  // ── LIVE REMOTE CURSOR WITH NAME TAG (FIGMA / VS CODE LIVE SHARE STYLE) ──
+  useEffect(() => {
+    if (!editorInstance) return;
+    const cursor = telemetry?.cursor;
+
+    // 1. Clear cursor decoration and widget if no active cursor
+    if (!cursor || typeof cursor.line !== 'number' || typeof cursor.column !== 'number') {
+      if (cursorDecorationsRef.current.length > 0) {
+        cursorDecorationsRef.current = editorInstance.deltaDecorations(cursorDecorationsRef.current, []);
+      }
+      if (cursorWidgetRef.current) {
+        try {
+          editorInstance.removeContentWidget(cursorWidgetRef.current.widget);
+        } catch (_) {}
+        cursorWidgetRef.current = null;
+      }
+      return;
+    }
+
+    const curLine = Math.max(1, cursor.line);
+    const curCol = Math.max(1, cursor.column);
+
+    // 2. Render glowing vertical caret bar on line & column
+    cursorDecorationsRef.current = editorInstance.deltaDecorations(cursorDecorationsRef.current, [
+      {
+        range: {
+          startLineNumber: curLine,
+          startColumn: curCol,
+          endLineNumber: curLine,
+          endColumn: curCol,
+        },
+        options: {
+          className: 'cmp-remote-cursor-caret',
+          isWholeLine: false,
+          zIndex: 100,
+          stickiness: 1, // NeverGrowsWhenTypingAtEdges
+        },
+      },
+    ]);
+
+    // 3. Create or update floating name tag widget
+    if (!cursorWidgetRef.current) {
+      const domNode = document.createElement('div');
+      domNode.className = 'cmp-remote-cursor-widget';
+
+      const widget = {
+        getId: () => `cursor-widget-${session.id}`,
+        getDomNode: () => domNode,
+        getPosition: () => ({
+          position: { lineNumber: curLine, column: curCol },
+          preference: [
+            1, // ContentWidgetPositionPreference.ABOVE
+            0, // ContentWidgetPositionPreference.EXACT
+          ],
+        }),
+      };
+
+      cursorWidgetRef.current = { widget, domNode };
+      editorInstance.addContentWidget(widget);
+    }
+
+    // 4. Update widget position & contents smoothly
+    if (cursorWidgetRef.current) {
+      const { widget, domNode } = cursorWidgetRef.current;
+
+      widget.getPosition = () => ({
+        position: { lineNumber: curLine, column: curCol },
+        preference: [1, 0],
+      });
+
+      domNode.className = `cmp-remote-cursor-widget ${isTyping ? 'is-typing' : ''}`;
+      domNode.innerHTML = `
+        <div class="cmp-cursor-flag">
+          <span class="cmp-cursor-flag-dot ${isTyping ? 'typing' : ''}"></span>
+          <span class="cmp-cursor-flag-name">${candidateName}</span>
+          ${isTyping ? '<span class="cmp-cursor-flag-typing">typing...</span>' : ''}
+          <span class="cmp-cursor-flag-arrow"></span>
+        </div>
+      `;
+
+      editorInstance.layoutContentWidget(widget);
+    }
+  }, [editorInstance, telemetry?.cursor?.line, telemetry?.cursor?.column, isTyping, candidateName, session.id]);
+
+  // Clean up cursor widget and decorations on unmount
+  useEffect(() => {
+    return () => {
+      if (editorInstance) {
+        if (cursorWidgetRef.current) {
+          try {
+            editorInstance.removeContentWidget(cursorWidgetRef.current.widget);
+          } catch (_) {}
+          cursorWidgetRef.current = null;
+        }
+        if (cursorDecorationsRef.current.length > 0) {
+          try {
+            editorInstance.deltaDecorations(cursorDecorationsRef.current, []);
+          } catch (_) {}
+          cursorDecorationsRef.current = [];
+        }
+      }
+    };
+  }, [editorInstance]);
+
+  // Realtime Code Stream: Guarantee Monaco editor matches latest code with 0ms delay
+  useEffect(() => {
+    if (!editorInstance || telemetry?.code === undefined) return;
+    const model = editorInstance.getModel();
+    if (!model) return;
+
+    if (model.getValue() !== telemetry.code) {
+      const fullRange = model.getFullModelRange();
+      model.pushEditOperations([], [{ range: fullRange, text: telemetry.code }], () => null);
+    }
+  }, [editorInstance, telemetry?.code]);
 
   // Execution state
   const exec = telemetry?.lastExecution;

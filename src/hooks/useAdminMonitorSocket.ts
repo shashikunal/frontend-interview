@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import * as Y from 'yjs';
-import { getSharedInterviewSocket, type TypedSocket } from '../lib/realtime/socketClient';
+import { getAdminInterviewSocket, type TypedSocket } from '../lib/realtime/socketClient';
 import { toUint8Array, getOrCreateSessionYDoc } from '../lib/realtime/yjsSync';
 import type { SessionStatePayload, PresenceStatus } from '../../server/socket/types';
 
@@ -70,7 +70,13 @@ export function useAdminMonitorSocket(sessionIds: string[], user?: any) {
     let isMounted = true;
 
     async function init() {
-      const socket = await getSharedInterviewSocket(user);
+      const adminDevUser = {
+        id: user?.id ? `admin_${user.id}` : 'admin_local_dev',
+        email: user?.email || 'admin@interview.local',
+        role: 'admin',
+        name: user?.name || 'Administrator',
+      };
+      const socket = await getAdminInterviewSocket(adminDevUser);
       if (!isMounted) return;
       socketRef.current = socket;
 
@@ -78,26 +84,39 @@ export function useAdminMonitorSocket(sessionIds: string[], user?: any) {
         sessionIds.forEach(sid => {
           if (!sid) return;
           socket.emit('monitor:subscribe', { sessionId: sid }, (ack) => {
-            if (ack?.success && ack.state) {
-              const s = ack.state;
-              setTelemetryMap(prev => ({
-                ...prev,
-                [s.sessionId]: {
-                  sessionId: s.sessionId,
-                  isTyping: s.isTyping,
-                  activeFile: s.activeFile,
-                  code: s.code,
-                  lineCount: s.code ? s.code.split('\n').length : 1,
-                  cursor: s.cursor ? { ...s.cursor, at: Date.now() } : null,
-                  focused: true,
-                  presence: s.presence,
-                  lastSeenAt: s.lastActivityAt,
-                  lastExecution: s.lastExecution || null,
-                  activityHistory: s.activityHistory || [],
-                },
-              }));
+            if (ack?.success) {
+              if (ack.state) {
+                const s = ack.state;
+                setTelemetryMap(prev => ({
+                  ...prev,
+                  [s.sessionId]: {
+                    sessionId: s.sessionId,
+                    isTyping: s.isTyping,
+                    activeFile: s.activeFile,
+                    code: s.code,
+                    lineCount: s.code ? s.code.split('\n').length : 1,
+                    cursor: s.cursor ? { ...s.cursor, at: Date.now() } : null,
+                    focused: true,
+                    presence: s.presence,
+                    lastSeenAt: s.lastActivityAt,
+                    lastExecution: s.lastExecution || null,
+                    activityHistory: s.activityHistory || [],
+                  },
+                }));
+              }
+              if (ack.docState) {
+                const ydoc = getOrCreateSessionYDoc(sid);
+                try {
+                  Y.applyUpdate(ydoc, toUint8Array(ack.docState), 'remote');
+                  console.log(`[YJS-ADMIN] Hydrated Y.Doc from monitor:subscribe docState for ${sid} (${ack.docState.length} bytes)`);
+                } catch (err) {
+                  console.warn(`[YJS-ADMIN] Failed applying ack.docState for ${sid}:`, err);
+                }
+              }
             }
           });
+          // Request full Y.Doc sync
+          socket.emit('yjs:sync-request', { sessionId: sid });
         });
       }
 
@@ -139,6 +158,17 @@ export function useAdminMonitorSocket(sessionIds: string[], user?: any) {
 
       // 2. student:code-change
       socket.on('student:code-change', (data) => {
+        if (data.sessionId && data.code !== undefined) {
+          const ydoc = getOrCreateSessionYDoc(data.sessionId);
+          const ytext = ydoc.getText(data.fileId || 'solution.js');
+          if (ytext.toString() !== data.code) {
+            ydoc.transact(() => {
+              ytext.delete(0, ytext.length);
+              ytext.insert(0, data.code);
+            }, 'code-change-sync');
+          }
+        }
+
         setTelemetryMap(prev => {
           const cur = prev[data.sessionId];
           return {
@@ -171,6 +201,53 @@ export function useAdminMonitorSocket(sessionIds: string[], user?: any) {
           setTimeout(() => {
             setTelemetryMap(prev => prev[data.sessionId] ? { ...prev, [data.sessionId]: { ...prev[data.sessionId], isTyping: false } } : prev);
           }, 1800)
+        );
+      });
+
+      // 2b. student:keystroke (Zero-Latency Character-by-Character Fastpath)
+      socket.on('student:keystroke', (data: any) => {
+        if (data.sessionId && data.code !== undefined) {
+          const ydoc = getOrCreateSessionYDoc(data.sessionId);
+          const ytext = ydoc.getText(data.fileId || 'solution.js');
+          if (ytext.toString() !== data.code) {
+            ydoc.transact(() => {
+              ytext.delete(0, ytext.length);
+              ytext.insert(0, data.code);
+            }, 'keystroke-sync');
+          }
+        }
+
+        setTelemetryMap(prev => {
+          const cur = prev[data.sessionId];
+          return {
+            ...prev,
+            [data.sessionId]: {
+              ...(cur || {
+                sessionId: data.sessionId,
+                activeFile: data.fileId || 'solution.js',
+                lineCount: 1,
+                focused: true,
+                lastExecution: null,
+                activityHistory: [],
+              }),
+              code: data.code,
+              lineCount: data.code ? data.code.split('\n').length : 1,
+              activeFile: data.fileId || cur?.activeFile || 'solution.js',
+              cursor: data.cursor ? { ...data.cursor, at: Date.now() } : cur?.cursor || null,
+              presence: 'online',
+              lastSeenAt: data.timestamp || Date.now(),
+              isTyping: true,
+            },
+          };
+        });
+
+        const t = typingTimersRef.current.get(data.sessionId);
+        if (t) clearTimeout(t);
+        typingTimersRef.current.set(
+          data.sessionId,
+          setTimeout(() => {
+            setTelemetryMap(prev => prev[data.sessionId] ? { ...prev, [data.sessionId]: { ...prev[data.sessionId], isTyping: false } } : prev);
+          }, 1500)
         );
       });
 
