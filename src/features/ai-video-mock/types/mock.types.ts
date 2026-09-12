@@ -109,7 +109,7 @@ export interface TranscriptRecord {
   cleanedText?: string;
   wpm?: number;
   language: string;
-  provider: 'local-whisper' | 'web-speech-api' | 'cloud-whisper';
+  provider: 'local-whisper' | 'web-speech-api' | 'cloud-whisper' | 'manual-text';
   model: string;
   confidence: number;
   timestamp: string;

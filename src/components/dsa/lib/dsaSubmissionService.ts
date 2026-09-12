@@ -55,6 +55,7 @@ export class DSASubmissionService {
     try {
       const trackingStatus = submission.status === 'Accepted' ? 'accepted' : 'failed'
       await trackingService.recordSubmission({
+        id: submission.id,
         questionId: submission.questionId,
         category: 'DSA',
         userId: userId,
@@ -68,28 +69,6 @@ export class DSASubmissionService {
       })
     } catch (trackErr) {
       console.debug('Tracking service sync notice:', trackErr)
-    }
-
-    // 5. If authenticated and supabase is configured, insert directly into canonical submissions table
-    if (userId && supabase) {
-      try {
-        const { error } = await supabase.from('submissions').insert({
-          user_id: userId,
-          question_id: submission.questionId,
-          language: submission.language || 'javascript',
-          code: submission.code,
-          status: submission.status.toLowerCase().replace(/\s+/g, '_') === 'accepted' ? 'accepted' : 'wrong_answer',
-          score,
-          execution_time: submission.runtimeMs ? Math.max(1, Math.round(submission.runtimeMs / 1000)) : 1,
-          created_at: submission.timestamp,
-        })
-
-        if (error && !error.message.includes('duplicate')) {
-          console.debug('DSA submission Supabase notice:', error.message)
-        }
-      } catch (err) {
-        console.debug('DSA submission sync skipped:', err)
-      }
     }
   }
 
@@ -119,37 +98,40 @@ export class DSASubmissionService {
       }
     } catch (_) {}
 
-    // 3. Collect from faang_tracking_submissions_v1 local storage
-    try {
-      if (typeof localStorage !== 'undefined') {
-        const rawTrack = localStorage.getItem('faang_tracking_submissions_v1')
-        if (rawTrack) {
-          const parsedTrack: any[] = JSON.parse(rawTrack)
-          if (Array.isArray(parsedTrack)) {
-            parsedTrack.forEach(item => {
-              const qid = String(item.questionId || '')
-              const qUpper = qid.toUpperCase()
-              const isDSA = item.category === 'DSA' || qUpper.startsWith('DSA') || (/^\d+$/.test(qid) && !qUpper.startsWith('JS-P') && !qUpper.startsWith('FJP') && !qUpper.startsWith('Q'))
-              if (isDSA && (!questionId || qid === questionId)) {
-                localItems.push({
-                  id: String(item.id),
-                  questionId: qid,
-                  language: (item.language || 'javascript') as 'javascript' | 'typescript',
-                  code: item.code || '',
-                  status: (item.status === 'accepted' ? 'Accepted' : 'Wrong Answer') as DSASubmission['status'],
-                  testsPassed: Number(item.passedTests || item.testsPassed || (item.status === 'accepted' ? 4 : 0)),
-                  testsTotal: Number(item.totalTests || item.testsTotal || 4),
-                  runtimeMs: Number(item.executionTime || item.runtimeMs || 0),
-                  timestamp: item.createdAt || new Date().toISOString(),
-                })
-              }
-            })
+    // 3. Collect from faang_tracking_submissions_v1 local storage — only as fallback if localItems is empty
+    if (localItems.length === 0) {
+      try {
+        if (typeof localStorage !== 'undefined') {
+          const rawTrack = localStorage.getItem('faang_tracking_submissions_v1')
+          if (rawTrack) {
+            const parsedTrack: any[] = JSON.parse(rawTrack)
+            if (Array.isArray(parsedTrack)) {
+              parsedTrack.forEach(item => {
+                const qid = String(item.questionId || '')
+                const qUpper = qid.toUpperCase()
+                const isDSA = item.category === 'DSA' || qUpper.startsWith('DSA') || (/^\d+$/.test(qid) && !qUpper.startsWith('JS-P') && !qUpper.startsWith('FJP') && !qUpper.startsWith('Q'))
+                if (isDSA && (!questionId || qid === questionId)) {
+                  localItems.push({
+                    id: String(item.id),
+                    questionId: qid,
+                    language: (item.language || 'javascript') as 'javascript' | 'typescript',
+                    code: item.code || '',
+                    status: (item.status === 'accepted' ? 'Accepted' : 'Wrong Answer') as DSASubmission['status'],
+                    testsPassed: Number(item.passedTests ?? item.testsPassed ?? (item.status === 'accepted' ? 4 : 0)),
+                    testsTotal: Number(item.totalTests ?? item.testsTotal ?? 4),
+                    runtimeMs: Number(item.executionTime || item.runtimeMs || 0),
+                    timestamp: item.createdAt || new Date().toISOString(),
+                  })
+                }
+              })
+            }
           }
         }
-      }
-    } catch (_) {}
+      } catch (_) {}
+    }
 
-    if (!userId || !supabase) {
+    const isValidUuid = Boolean(userId && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(userId))
+    if (!userId || !isValidUuid || !supabase) {
       return this.deduplicateAndSort(localItems)
     }
 
@@ -231,16 +213,34 @@ export class DSASubmissionService {
   }
 
   private deduplicateAndSort(items: DSASubmission[]): DSASubmission[] {
-    const seen = new Set<string>()
     const result: DSASubmission[] = []
 
     for (const item of items) {
       if (!item || !item.id) continue
-      const timeKey = `${item.questionId}_${new Date(item.timestamp).getTime()}`
-      if (seen.has(item.id) || seen.has(timeKey)) continue
-      seen.add(item.id)
-      seen.add(timeKey)
-      result.push(item)
+      const itemTime = new Date(item.timestamp).getTime()
+      const duplicateIdx = result.findIndex(existing => {
+        if (existing.id === item.id) return true
+        if (existing.questionId === item.questionId && existing.code === item.code) {
+          const existingTime = new Date(existing.timestamp).getTime()
+          if (!isNaN(itemTime) && !isNaN(existingTime) && Math.abs(itemTime - existingTime) < 15000) {
+            return true
+          }
+        }
+        return false
+      })
+
+      if (duplicateIdx === -1) {
+        result.push(item)
+      } else {
+        const existing = result[duplicateIdx]
+        const preferItem = (item.testsTotal || 0) > (existing.testsTotal || 0) || Boolean(item.runtimeMs && !existing.runtimeMs)
+        result[duplicateIdx] = {
+          ...(preferItem ? item : existing),
+          testsPassed: Math.max(existing.testsPassed ?? 0, item.testsPassed ?? 0),
+          testsTotal: Math.max(existing.testsTotal ?? 0, item.testsTotal ?? 0),
+          runtimeMs: existing.runtimeMs || item.runtimeMs,
+        }
+      }
     }
 
     return result.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())

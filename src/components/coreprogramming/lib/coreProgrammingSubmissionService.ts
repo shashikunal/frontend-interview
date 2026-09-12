@@ -9,6 +9,9 @@ import { trackingService } from '../../../lib/trackingService'
 
 export const LOCAL_CP_SUBMISSIONS_KEY = 'cp_candidate_submissions_v1'
 
+const isValidUuid = (val?: string | null): boolean =>
+  Boolean(val && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(val))
+
 export class CoreProgrammingSubmissionService {
   private inFlight = new Set<string>()
 
@@ -19,7 +22,7 @@ export class CoreProgrammingSubmissionService {
     // Idempotency: prevent double-submits within a 3-second window
     const key = `${submission.questionId}_${submission.code.length}_${Math.floor(Date.now() / 3000)}`
     if (this.inFlight.has(key)) {
-      console.warn('[CP] Duplicate submission prevented')
+      console.warn('[CP] Duplicate submission prevented by in-flight lock')
       return false
     }
     this.inFlight.add(key)
@@ -40,9 +43,10 @@ export class CoreProgrammingSubmissionService {
         console.warn('[CP] Local mirror save failed:', e)
       }
 
-      // 2. Sync to Tracking Service for Candidate Dashboard Telemetry, Streaks & Canonical Submissions Table
+      // 2. Sync to Tracking Service (records telemetry, streaks, and canonical Supabase submissions table)
       try {
         await trackingService.recordSubmission({
+          id: submission.id,
           questionId: submission.questionId,
           category: 'CORE_PROGRAMMING',
           userId: user?.id,
@@ -59,87 +63,62 @@ export class CoreProgrammingSubmissionService {
         console.debug('[CP] Tracking service sync notice:', trackErr)
       }
 
-      // 3. Sync directly to canonical `submissions` table when authenticated
+      // 3. Mirror into dedicated core_programming_submissions & question_attempts when authenticated with valid UUID
       const userId = user?.id
-      if (userId && supabase) {
+      if (isValidUuid(userId) && supabase) {
         try {
-          // Insert directly into the live canonical Supabase submissions table
-          const { error } = await supabase.from('submissions').insert({
+          const { error: cpErr } = await supabase.from('core_programming_submissions').insert({
+            id: submission.id,
             user_id: userId,
             question_id: submission.questionId,
             code: submission.code,
-            language: 'javascript',
             status: submission.status === 'Accepted' ? 'accepted' : 'wrong_answer',
             score: submission.score,
-            execution_time: submission.runtimeMs ? Math.max(1, Math.round(submission.runtimeMs / 1000)) : 1,
+            tests_passed: submission.testsPassed,
+            tests_total: submission.testsTotal,
+            execution_time_ms: submission.runtimeMs || 0,
+            time_spent_seconds: submission.timeSpentSeconds || 0,
             created_at: submission.timestamp,
           })
-
-          if (error && !error.message.includes('duplicate')) {
-            console.debug('[CP] Supabase canonical submissions sync notice:', error.message)
+          if (cpErr && !cpErr.message.includes('duplicate') && !cpErr.message.includes('schema cache')) {
+            console.debug('[CP] Dedicated table sync notice:', cpErr.message)
           }
+        } catch {
+          // ignore — canonical tracking record is source of truth
+        }
 
-          // 3b. Best-effort mirror into dedicated core_programming_submissions.
-          // Canonical `submissions` stays source of truth; ignore schema-cache
-          // errors so this never breaks when the table is not yet deployed.
-          try {
-            const { error: cpErr } = await supabase.from('core_programming_submissions').insert({
-              id: submission.id,
+        try {
+          const nowIso = new Date().toISOString()
+          const accepted = submission.status === 'Accepted'
+          const { data: existing } = await supabase
+            .from('question_attempts')
+            .select('id, attempt_count')
+            .eq('user_id', userId)
+            .eq('question_id', submission.questionId)
+            .order('updated_at', { ascending: false })
+            .limit(1)
+            .maybeSingle()
+          if (existing?.id) {
+            await supabase.from('question_attempts').update({
+              status: accepted ? 'completed' : 'in_progress',
+              attempt_count: Number(existing.attempt_count || 0) + 1,
+              completed_at: accepted ? nowIso : null,
+              last_activity_at: nowIso,
+              updated_at: nowIso,
+            }).eq('id', existing.id)
+          } else {
+            await supabase.from('question_attempts').insert({
               user_id: userId,
               question_id: submission.questionId,
-              code: submission.code,
-              status: submission.status === 'Accepted' ? 'accepted' : 'wrong_answer',
-              score: submission.score,
-              tests_passed: submission.testsPassed,
-              tests_total: submission.testsTotal,
-              execution_time_ms: submission.runtimeMs || 0,
-              time_spent_seconds: submission.timeSpentSeconds || 0,
-              created_at: submission.timestamp,
+              status: accepted ? 'completed' : 'in_progress',
+              attempt_count: 1,
+              started_at: nowIso,
+              last_activity_at: nowIso,
+              completed_at: accepted ? nowIso : null,
             })
-            if (cpErr && !cpErr.message.includes('duplicate') && !cpErr.message.includes('schema cache')) {
-              console.debug('[CP] Dedicated table sync notice:', cpErr.message)
-            }
-          } catch {
-            // ignore — canonical insert above already succeeded
           }
-
-          // 3c. Best-effort attempt ledger so Attempt sections + Tracks pick up
-          // Core Programming (submits otherwise bypass question_attempts entirely).
-          try {
-            const nowIso = new Date().toISOString()
-            const accepted = submission.status === 'Accepted'
-            const { data: existing } = await supabase
-              .from('question_attempts')
-              .select('id, attempt_count')
-              .eq('user_id', userId)
-              .eq('question_id', submission.questionId)
-              .order('updated_at', { ascending: false })
-              .limit(1)
-              .maybeSingle()
-            if (existing?.id) {
-              await supabase.from('question_attempts').update({
-                status: accepted ? 'completed' : 'in_progress',
-                attempt_count: Number(existing.attempt_count || 0) + 1,
-                completed_at: accepted ? nowIso : null,
-                last_activity_at: nowIso,
-                updated_at: nowIso,
-              }).eq('id', existing.id)
-            } else {
-              await supabase.from('question_attempts').insert({
-                user_id: userId,
-                question_id: submission.questionId,
-                status: accepted ? 'completed' : 'in_progress',
-                attempt_count: 1,
-                started_at: nowIso,
-                last_activity_at: nowIso,
-                completed_at: accepted ? nowIso : null,
-              })
-            }
-          } catch {
-            // ignore — submissions above are the source of truth
-          }
-        } catch (dbErr) {
-          console.debug('[CP] Supabase sync skipped:', dbErr)
+        } catch {
+          // ignore
         }
       }
 
@@ -153,16 +132,15 @@ export class CoreProgrammingSubmissionService {
     userId?: string,
     questionId?: string
   ): Promise<CoreProgrammingSubmission[]> {
-    // 1. Collect all local submissions across all known local storage storage keys
     const localItems: CoreProgrammingSubmission[] = []
     
-    // a) core_prog_submissions_v1
+    // a) core_prog_submissions_v1 (primary store)
     try {
       const fromProg = coreProgrammingProgressService.getSubmissions(questionId)
       localItems.push(...fromProg)
     } catch (_) {}
 
-    // b) cp_candidate_submissions_v1
+    // b) cp_candidate_submissions_v1 (local mirror)
     try {
       if (typeof localStorage !== 'undefined') {
         const raw = localStorage.getItem(LOCAL_CP_SUBMISSIONS_KEY)
@@ -179,37 +157,39 @@ export class CoreProgrammingSubmissionService {
       }
     } catch (_) {}
 
-    // c) faang_tracking_submissions_v1 (matching core programming)
-    try {
-      if (typeof localStorage !== 'undefined') {
-        const rawTrack = localStorage.getItem('faang_tracking_submissions_v1')
-        if (rawTrack) {
-          const parsedTrack: any[] = JSON.parse(rawTrack)
-          if (Array.isArray(parsedTrack)) {
-            parsedTrack.forEach(item => {
-              const qid = String(item.questionId || '')
-              const qUpper = qid.toUpperCase()
-              const isCP = item.category === 'CORE_PROGRAMMING' || qUpper.startsWith('JS-P') || qUpper.startsWith('JSP') || qUpper.startsWith('CP')
-              if (isCP && (!questionId || qid === questionId)) {
-                localItems.push({
-                  id: String(item.id),
-                  candidateId: item.userId || userId || 'anon',
-                  questionId: qid,
-                  code: item.code || '',
-                  status: (item.status === 'accepted' ? 'Accepted' : 'Wrong Answer') as CoreProgrammingSubmission['status'],
-                  score: Number(item.score || 0),
-                  testsPassed: Number(item.passedTests || item.testsPassed || (item.status === 'accepted' ? 4 : 0)),
-                  testsTotal: Number(item.totalTests || item.testsTotal || 4),
-                  runtimeMs: Number(item.executionTime || item.runtimeMs || 0),
-                  timeSpentSeconds: Number(item.timeSpent || item.timeSpentSeconds || 0),
-                  timestamp: item.createdAt || new Date().toISOString(),
-                })
-              }
-            })
+    // c) faang_tracking_submissions_v1 — only used as fallback if primary local store is empty
+    if (localItems.length === 0) {
+      try {
+        if (typeof localStorage !== 'undefined') {
+          const rawTrack = localStorage.getItem('faang_tracking_submissions_v1')
+          if (rawTrack) {
+            const parsedTrack: any[] = JSON.parse(rawTrack)
+            if (Array.isArray(parsedTrack)) {
+              parsedTrack.forEach(item => {
+                const qid = String(item.questionId || '')
+                const qUpper = qid.toUpperCase()
+                const isCP = item.category === 'CORE_PROGRAMMING' || qUpper.startsWith('JS-P') || qUpper.startsWith('JSP') || qUpper.startsWith('CP')
+                if (isCP && (!questionId || qid === questionId)) {
+                  localItems.push({
+                    id: String(item.id),
+                    candidateId: item.userId || userId || 'anon',
+                    questionId: qid,
+                    code: item.code || '',
+                    status: (item.status === 'accepted' ? 'Accepted' : 'Wrong Answer') as CoreProgrammingSubmission['status'],
+                    score: Number(item.score || 0),
+                    testsPassed: Number(item.passedTests ?? item.testsPassed ?? (item.status === 'accepted' ? 4 : 0)),
+                    testsTotal: Number(item.totalTests ?? item.testsTotal ?? 4),
+                    runtimeMs: Number(item.executionTime || item.runtimeMs || 0),
+                    timeSpentSeconds: Number(item.timeSpent || item.timeSpentSeconds || 0),
+                    timestamp: item.createdAt || new Date().toISOString(),
+                  })
+                }
+              })
+            }
           }
         }
-      }
-    } catch (_) {}
+      } catch (_) {}
+    }
 
     let effectiveUserId = userId
     if (!effectiveUserId && supabase) {
@@ -219,7 +199,7 @@ export class CoreProgrammingSubmissionService {
       } catch {}
     }
 
-    if (!effectiveUserId || !supabase) {
+    if (!effectiveUserId || !isValidUuid(effectiveUserId) || !supabase) {
       return this.deduplicateAndSort(localItems)
     }
 
@@ -302,14 +282,39 @@ export class CoreProgrammingSubmissionService {
   }
 
   private deduplicateAndSort(items: CoreProgrammingSubmission[]): CoreProgrammingSubmission[] {
-    const seen = new Set<string>()
     const result: CoreProgrammingSubmission[] = []
 
     for (const item of items) {
       if (!item || !item.id) continue
-      if (seen.has(item.id)) continue
-      seen.add(item.id)
-      result.push(item)
+
+      const itemTime = new Date(item.timestamp).getTime()
+      const duplicateIdx = result.findIndex(existing => {
+        // 1. Exact same ID
+        if (existing.id === item.id) return true
+        // 2. Same question, same code, and timestamps within 15 seconds
+        if (existing.questionId === item.questionId && existing.code === item.code) {
+          const existingTime = new Date(existing.timestamp).getTime()
+          if (!isNaN(itemTime) && !isNaN(existingTime) && Math.abs(itemTime - existingTime) < 15000) {
+            return true
+          }
+        }
+        return false
+      })
+
+      if (duplicateIdx === -1) {
+        result.push(item)
+      } else {
+        // Merge richer metadata into existing record
+        const existing = result[duplicateIdx]
+        const preferItem = (item.testsTotal || 0) > (existing.testsTotal || 0) || Boolean(item.runtimeMs && !existing.runtimeMs)
+        result[duplicateIdx] = {
+          ...(preferItem ? item : existing),
+          testsPassed: Math.max(existing.testsPassed ?? 0, item.testsPassed ?? 0),
+          testsTotal: Math.max(existing.testsTotal ?? 0, item.testsTotal ?? 0),
+          runtimeMs: existing.runtimeMs || item.runtimeMs,
+          score: Math.max(existing.score ?? 0, item.score ?? 0),
+        }
+      }
     }
 
     // Sort descending by timestamp

@@ -8,6 +8,7 @@ import { finalReportService } from '../../services/finalReportService';
 import { sandboxProvider } from '../../services/providers/sandboxProvider';
 import { voiceSynthesisService } from '../../services/providers/voiceSynthesisService';
 import { followUpService, type FollowUpDecision } from '../../services/followUpService';
+import { transcriptionService } from '../../services/transcriptionService';
 import { videoStorageService } from '../../services/providers/videoStorageService';
 import { interviewEngine } from '../../services/interviewEngine';
 import { PERSONAS } from './MockSetupPage';
@@ -358,23 +359,38 @@ export default function MockSessionPage() {
       updatedAns.evaluation = evalRes;
       updatedAns.status = 'EVALUATED';
     } else {
+      // Resolve transcript via fallback chain: Local Whisper → Web Speech → typed.
+      // Raw text is never fabricated: winner's text kept verbatim + stamped.
+      let audioBlob: Blob | null = null;
+      try {
+        if (recordedChunksRef.current.length > 0) {
+          audioBlob = new Blob(recordedChunksRef.current, { type: 'video/webm' });
+        }
+      } catch {}
+      const resolved = await transcriptionService.transcribe({
+        audioBlob,
+        webSpeechText: fullAnswerText,
+        typedText: fullAnswerText,
+        previousVersion: currentAnswer.transcript?.version || 0,
+      });
+      const finalText = resolved.rawTranscript || fullAnswerText;
       updatedAns.transcript = {
-        id: `tr_${Date.now()}`,
-        version: 1,
-        rawTranscript: fullAnswerText,
-        cleanedTranscript: fullAnswerText.trim(),
-        rawText: fullAnswerText,
-        cleanedText: fullAnswerText.trim(),
-        language: 'en',
-        provider: 'web-speech-api',
-        model: 'browser-native',
-        confidence: 0.95,
-        timestamp: new Date().toISOString(),
+        id: currentAnswer.transcript?.id || `tr_${Date.now()}`,
+        version: resolved.version,
+        rawTranscript: finalText,
+        cleanedTranscript: (resolved.cleanedTranscript || finalText).trim(),
+        rawText: finalText,
+        cleanedText: (resolved.cleanedTranscript || finalText).trim(),
+        language: resolved.language,
+        provider: resolved.provider,
+        model: resolved.model,
+        confidence: resolved.confidence,
+        timestamp: resolved.timestamp,
       };
 
       const evalRes = await answerEvaluationService.evaluateTheoryAnswer(
         currentAnswer.question,
-        fullAnswerText,
+        finalText,
         session.config.experienceTier
       );
       updatedAns.evaluation = evalRes;

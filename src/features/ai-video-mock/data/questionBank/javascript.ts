@@ -3,17373 +3,2923 @@ import type { MockQuestion } from '../../types/questionBank.types';
 
 export const javascript_questions: MockQuestion[] = [
   {
-    "id": "JS-0001",
+    "id": "JS-B001",
     "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Garbage Collection",
+    "topic": "Language Fundamentals",
+    "subtopic": "Data Types",
     "difficulty": "Basic",
-    "question": "[Q001] In JavaScript, focusing on Implementation Mechanics & Internal Execution when refactoring a legacy monolithic codebase with zero automated regression tests: Explain how \"Garbage Collection\" (Closures & Memory) functions. What fundamental problem does it solve, and how do you implement it correctly?",
-    "questionType": "Practical",
-    "experienceLevels": [
-      "0-1",
-      "1-2",
-      "2-4"
-    ],
-    "expectedConcepts": [
-      "Garbage Collection",
-      "Closures & Memory",
-      "JavaScript",
-      "Implementation Mechanics & Internal Execution",
-      "Runtime Execution",
-      "Best Practices"
-    ],
+    "question": "What are the data types in JavaScript? List the primitive types with a typeof example for each.",
+    "questionType": "Theory",
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["Primitive types", "typeof operator"],
     "idealAnswerPoints": [
-      "State clear definition and primary purpose of Garbage Collection",
-      "Provide concrete syntax or architectural example",
-      "Contrast with legacy or alternative approaches"
+      "Names string, number, bigint, boolean, undefined, symbol, null",
+      "Shows typeof examples like typeof 42 and typeof 'hi'"
     ],
-    "commonMistakes": [
-      "Confusing Garbage Collection with adjacent mechanics",
-      "Overlooking basic edge cases and browser support"
-    ],
-    "followUpTopics": [
-      "Can you illustrate a real-world bug caused by improper use of Garbage Collection?",
-      "How does this behave under strict mode or modern build targets?"
-    ],
+    "commonMistakes": ["Forgetting bigint and symbol"],
+    "followUpTopics": ["Why does typeof null return 'object'?"],
     "estimatedTimeMinutes": 3,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "garbage-collection",
-      "basic"
-    ],
+    "tags": ["javascript", "data-types", "basic"],
     "status": "APPROVED",
     "qualityScore": 95,
     "reviewStatus": "APPROVED",
     "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
     "rubric": {
-      "minimumExpected": "Garbage Collection provides a core mechanism in JavaScript to handle closures & memory, ensuring predictable behavior and cleaner code structure.",
-      "strongAnswer": "It establishes explicit control over garbage collection, preventing unintended side effects and conforming to modern JavaScript standards with clean syntax.",
-      "seniorLevelExpectations": "In production, Garbage Collection must be configured with awareness of memory lifecycle, browser runtime constraints, and team-wide conventions to prevent bugs.",
-      "expertLevelExpectations": "At high scale, it impacts compiler optimizations, cache invalidation, and runtime performance profiles across distributed client environments."
+      "minimumExpected": "Lists most primitive data types of JavaScript.",
+      "strongAnswer": "Lists all seven primitives plus reference types with typeof demos.",
+      "seniorLevelExpectations": "Senior candidates explain the typeof null quirk and reliable checks.",
+      "expertLevelExpectations": "Expert candidates discuss spec type tags and cross-realm pitfalls."
     }
   },
   {
-    "id": "JS-0002",
+    "id": "JS-B002",
     "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Symbol.iterator",
+    "topic": "Language Fundamentals",
+    "subtopic": "typeof Operator",
     "difficulty": "Basic",
-    "question": "[Q002] In JavaScript, focusing on Debugging & Production Failure Analysis within a real-time collaborative whiteboarding canvas: Explain how \"Symbol.iterator\" (Object Prototypes & Inheritance) functions. What fundamental problem does it solve, and how do you implement it correctly?",
-    "questionType": "Scenario Based",
-    "experienceLevels": [
-      "0-1",
-      "1-2",
-      "2-4"
-    ],
-    "expectedConcepts": [
-      "Symbol.iterator",
-      "Object Prototypes & Inheritance",
-      "JavaScript",
-      "Debugging & Production Failure Analysis",
-      "Runtime Execution",
-      "Best Practices"
-    ],
+    "question": "What does the typeof operator return for 42, 'hello', true, undefined, null, and {}? Explain the null result.",
+    "questionType": "Theory",
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["typeof results", "Legacy null quirk"],
     "idealAnswerPoints": [
-      "State clear definition and primary purpose of Symbol.iterator",
-      "Provide concrete syntax or architectural example",
-      "Contrast with legacy or alternative approaches"
+      "Gives number, string, boolean, undefined, object, object",
+      "Explains typeof null as a legacy engine quirk"
     ],
-    "commonMistakes": [
-      "Confusing Symbol.iterator with adjacent mechanics",
-      "Overlooking basic edge cases and browser support"
-    ],
-    "followUpTopics": [
-      "Can you illustrate a real-world bug caused by improper use of Symbol.iterator?",
-      "How does this behave under strict mode or modern build targets?"
-    ],
+    "commonMistakes": ["Expecting typeof null to be null"],
+    "followUpTopics": ["How do you reliably check for arrays?"],
     "estimatedTimeMinutes": 3,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "symbol-iterator",
-      "basic"
-    ],
+    "tags": ["javascript", "typeof", "basic"],
     "status": "APPROVED",
-    "qualityScore": 96,
+    "qualityScore": 95,
     "reviewStatus": "APPROVED",
     "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
     "rubric": {
-      "minimumExpected": "Symbol.iterator provides a core mechanism in JavaScript to handle object prototypes & inheritance, ensuring predictable behavior and cleaner code structure.",
-      "strongAnswer": "It establishes explicit control over symbol.iterator, preventing unintended side effects and conforming to modern JavaScript standards with clean syntax.",
-      "seniorLevelExpectations": "In production, Symbol.iterator must be configured with awareness of memory lifecycle, browser runtime constraints, and team-wide conventions to prevent bugs.",
-      "expertLevelExpectations": "At high scale, it impacts compiler optimizations, cache invalidation, and runtime performance profiles across distributed client environments."
+      "minimumExpected": "Gives most typeof results correctly.",
+      "strongAnswer": "All six correct with the null explanation.",
+      "seniorLevelExpectations": "Senior candidates add Array.isArray and edge cases.",
+      "expertLevelExpectations": "Expert candidates reference the spec type table."
     }
   },
   {
-    "id": "JS-0003",
+    "id": "JS-B003",
     "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Eval & Function Constructor",
+    "topic": "Language Fundamentals",
+    "subtopic": "Variables",
     "difficulty": "Basic",
-    "question": "[Q003] In JavaScript, focusing on Performance Optimization & Latency Bottlenecks during a live zero-downtime database and schema migration: Explain how \"Eval & Function Constructor\" (Language Mechanics & Coercion) functions. What fundamental problem does it solve, and how do you implement it correctly?",
-    "questionType": "System Design",
-    "experienceLevels": [
-      "0-1",
-      "1-2",
-      "2-4"
-    ],
-    "expectedConcepts": [
-      "Eval & Function Constructor",
-      "Language Mechanics & Coercion",
-      "JavaScript",
-      "Performance Optimization & Latency Bottlenecks",
-      "Runtime Execution",
-      "Best Practices"
-    ],
+    "question": "What is the difference between var, let, and const? When would you use each one?",
+    "questionType": "Theory",
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["Block scope", "Reassignment rules"],
     "idealAnswerPoints": [
-      "State clear definition and primary purpose of Eval & Function Constructor",
-      "Provide concrete syntax or architectural example",
-      "Contrast with legacy or alternative approaches"
+      "var is function-scoped; let and const are block-scoped",
+      "const forbids rebinding; default to const, use let when rebinding"
     ],
-    "commonMistakes": [
-      "Confusing Eval & Function Constructor with adjacent mechanics",
-      "Overlooking basic edge cases and browser support"
-    ],
-    "followUpTopics": [
-      "Can you illustrate a real-world bug caused by improper use of Eval & Function Constructor?",
-      "How does this behave under strict mode or modern build targets?"
-    ],
+    "commonMistakes": ["Saying const objects are deeply immutable"],
+    "followUpTopics": ["What is the temporal dead zone?"],
     "estimatedTimeMinutes": 3,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "eval---function-constructor",
-      "basic"
-    ],
+    "tags": ["javascript", "var-let-const", "basic"],
     "status": "APPROVED",
-    "qualityScore": 97,
+    "qualityScore": 95,
     "reviewStatus": "APPROVED",
     "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
     "rubric": {
-      "minimumExpected": "Eval & Function Constructor provides a core mechanism in JavaScript to handle language mechanics & coercion, ensuring predictable behavior and cleaner code structure.",
-      "strongAnswer": "It establishes explicit control over eval & function constructor, preventing unintended side effects and conforming to modern JavaScript standards with clean syntax.",
-      "seniorLevelExpectations": "In production, Eval & Function Constructor must be configured with awareness of memory lifecycle, browser runtime constraints, and team-wide conventions to prevent bugs.",
-      "expertLevelExpectations": "At high scale, it impacts compiler optimizations, cache invalidation, and runtime performance profiles across distributed client environments."
+      "minimumExpected": "States scope differences between the three.",
+      "strongAnswer": "Explains scope, hoisting, and reassignment with an example.",
+      "seniorLevelExpectations": "Senior candidates explain the dead zone precisely.",
+      "expertLevelExpectations": "Expert candidates discuss declaration instantiation."
     }
   },
   {
-    "id": "JS-0004",
+    "id": "JS-B004",
     "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Garbage Collection",
+    "topic": "Language Fundamentals",
+    "subtopic": "Equality",
     "difficulty": "Basic",
-    "question": "[Q004] In JavaScript, focusing on Architecture & Modularity Design in an executive architectural review evaluating long-term technical debt: Explain how \"Garbage Collection\" (Closures & Memory) functions. What fundamental problem does it solve, and how do you implement it correctly?",
-    "questionType": "Problem Solving",
-    "experienceLevels": [
-      "0-1",
-      "1-2",
-      "2-4"
-    ],
-    "expectedConcepts": [
-      "Garbage Collection",
-      "Closures & Memory",
-      "JavaScript",
-      "Architecture & Modularity Design",
-      "Runtime Execution",
-      "Best Practices"
-    ],
+    "question": "What is the difference between == and ===? Give one example where they disagree.",
+    "questionType": "Theory",
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["Strict equality", "Type coercion"],
     "idealAnswerPoints": [
-      "State clear definition and primary purpose of Garbage Collection",
-      "Provide concrete syntax or architectural example",
-      "Contrast with legacy or alternative approaches"
+      "=== checks type and value; == converts types first",
+      "Example: '5' == 5 is true while '5' === 5 is false"
     ],
-    "commonMistakes": [
-      "Confusing Garbage Collection with adjacent mechanics",
-      "Overlooking basic edge cases and browser support"
-    ],
-    "followUpTopics": [
-      "Can you illustrate a real-world bug caused by improper use of Garbage Collection?",
-      "How does this behave under strict mode or modern build targets?"
-    ],
+    "commonMistakes": ["Saying == also checks types"],
+    "followUpTopics": ["What does [] == false give?"],
     "estimatedTimeMinutes": 3,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "garbage-collection",
-      "basic"
-    ],
+    "tags": ["javascript", "equality", "basic"],
     "status": "APPROVED",
-    "qualityScore": 98,
+    "qualityScore": 95,
     "reviewStatus": "APPROVED",
     "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
     "rubric": {
-      "minimumExpected": "Garbage Collection provides a core mechanism in JavaScript to handle closures & memory, ensuring predictable behavior and cleaner code structure.",
-      "strongAnswer": "It establishes explicit control over garbage collection, preventing unintended side effects and conforming to modern JavaScript standards with clean syntax.",
-      "seniorLevelExpectations": "In production, Garbage Collection must be configured with awareness of memory lifecycle, browser runtime constraints, and team-wide conventions to prevent bugs.",
-      "expertLevelExpectations": "At high scale, it impacts compiler optimizations, cache invalidation, and runtime performance profiles across distributed client environments."
+      "minimumExpected": "States the core difference.",
+      "strongAnswer": "Gives a correct disagreeing example.",
+      "seniorLevelExpectations": "Senior candidates walk the coercion steps.",
+      "expertLevelExpectations": "Expert candidates discuss SameValueZero and Object.is."
     }
   },
   {
-    "id": "JS-0005",
+    "id": "JS-B005",
     "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Symbol.iterator",
+    "topic": "Language Fundamentals",
+    "subtopic": "Null vs Undefined",
     "difficulty": "Basic",
-    "question": "[Q005] In JavaScript, focusing on Edge Case Handling & Defensive Validation in a mission-critical healthcare portal with strict latency SLAs: Explain how \"Symbol.iterator\" (Object Prototypes & Inheritance) functions. What fundamental problem does it solve, and how do you implement it correctly?",
-    "questionType": "Debugging",
-    "experienceLevels": [
-      "0-1",
-      "1-2",
-      "2-4"
-    ],
-    "expectedConcepts": [
-      "Symbol.iterator",
-      "Object Prototypes & Inheritance",
-      "JavaScript",
-      "Edge Case Handling & Defensive Validation",
-      "Runtime Execution",
-      "Best Practices"
-    ],
+    "question": "What is the difference between null and undefined? Give an example of when each appears.",
+    "questionType": "Theory",
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["Uninitialized values", "Intentional emptiness"],
     "idealAnswerPoints": [
-      "State clear definition and primary purpose of Symbol.iterator",
-      "Provide concrete syntax or architectural example",
-      "Contrast with legacy or alternative approaches"
+      "undefined means declared but unassigned; null is assigned emptiness",
+      "Example of each in real code"
     ],
-    "commonMistakes": [
-      "Confusing Symbol.iterator with adjacent mechanics",
-      "Overlooking basic edge cases and browser support"
-    ],
-    "followUpTopics": [
-      "Can you illustrate a real-world bug caused by improper use of Symbol.iterator?",
-      "How does this behave under strict mode or modern build targets?"
-    ],
+    "commonMistakes": ["Using them interchangeably in APIs"],
+    "followUpTopics": ["How do you check for each explicitly?"],
     "estimatedTimeMinutes": 3,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "symbol-iterator",
-      "basic"
-    ],
+    "tags": ["javascript", "null", "undefined", "basic"],
     "status": "APPROVED",
-    "qualityScore": 99,
+    "qualityScore": 95,
     "reviewStatus": "APPROVED",
     "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
     "rubric": {
-      "minimumExpected": "Symbol.iterator provides a core mechanism in JavaScript to handle object prototypes & inheritance, ensuring predictable behavior and cleaner code structure.",
-      "strongAnswer": "It establishes explicit control over symbol.iterator, preventing unintended side effects and conforming to modern JavaScript standards with clean syntax.",
-      "seniorLevelExpectations": "In production, Symbol.iterator must be configured with awareness of memory lifecycle, browser runtime constraints, and team-wide conventions to prevent bugs.",
-      "expertLevelExpectations": "At high scale, it impacts compiler optimizations, cache invalidation, and runtime performance profiles across distributed client environments."
+      "minimumExpected": "Distinguishes the two meanings.",
+      "strongAnswer": "Correct examples plus the == versus === nuance.",
+      "seniorLevelExpectations": "Senior candidates prescribe API conventions.",
+      "expertLevelExpectations": "Expert candidates discuss JSON and defaults interplay."
     }
   },
   {
-    "id": "JS-0006",
+    "id": "JS-B006",
     "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Eval & Function Constructor",
+    "topic": "Language Fundamentals",
+    "subtopic": "Truthy and Falsy",
     "difficulty": "Basic",
-    "question": "[Q006] In JavaScript, focusing on Memory Lifecycle & Garbage Collection Pressure in a design system adopted across 12 distinct product platforms: Explain how \"Eval & Function Constructor\" (Language Mechanics & Coercion) functions. What fundamental problem does it solve, and how do you implement it correctly?",
+    "question": "Which values are falsy in JavaScript? Show how if (value) behaves for 0, '', null, undefined, NaN, and 'hello'.",
+    "questionType": "Theory",
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["Falsy set", "Boolean coercion"],
+    "idealAnswerPoints": [
+      "Lists false, 0, -0, '', null, undefined, NaN",
+      "Shows 'hello' passes while the rest fail the if"
+    ],
+    "commonMistakes": ["Thinking empty arrays or objects are falsy"],
+    "followUpTopics": ["How do you check for empty string vs null?"],
+    "estimatedTimeMinutes": 3,
+    "tags": ["javascript", "truthy-falsy", "basic"],
+    "status": "APPROVED",
+    "qualityScore": 95,
+    "reviewStatus": "APPROVED",
+    "version": 1,
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
+    "rubric": {
+      "minimumExpected": "Names most falsy values.",
+      "strongAnswer": "Complete falsy list with if-behavior demo.",
+      "seniorLevelExpectations": "Senior candidates note [] and {} are truthy.",
+      "expertLevelExpectations": "Expert candidates explain ToBoolean spec steps."
+    }
+  },
+  {
+    "id": "JS-B007",
+    "technology": "javascript",
+    "topic": "Language Fundamentals",
+    "subtopic": "Template Literals",
+    "difficulty": "Basic",
+    "question": "What are template literals? Rewrite 'Hello ' + name + ', you are ' + age + ' years old' using one.",
     "questionType": "Practical",
-    "experienceLevels": [
-      "0-1",
-      "1-2",
-      "2-4"
-    ],
-    "expectedConcepts": [
-      "Eval & Function Constructor",
-      "Language Mechanics & Coercion",
-      "JavaScript",
-      "Memory Lifecycle & Garbage Collection Pressure",
-      "Runtime Execution",
-      "Best Practices"
-    ],
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["Backticks", "Interpolation"],
     "idealAnswerPoints": [
-      "State clear definition and primary purpose of Eval & Function Constructor",
-      "Provide concrete syntax or architectural example",
-      "Contrast with legacy or alternative approaches"
+      "Uses backticks with ${} placeholders",
+      "Produces the same sentence with one literal"
     ],
-    "commonMistakes": [
-      "Confusing Eval & Function Constructor with adjacent mechanics",
-      "Overlooking basic edge cases and browser support"
-    ],
-    "followUpTopics": [
-      "Can you illustrate a real-world bug caused by improper use of Eval & Function Constructor?",
-      "How does this behave under strict mode or modern build targets?"
-    ],
+    "commonMistakes": ["Using quotes instead of backticks"],
+    "followUpTopics": ["How do multiline strings work in them?"],
     "estimatedTimeMinutes": 3,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "eval---function-constructor",
-      "basic"
+    "tags": ["javascript", "template-literals", "basic"],
+    "status": "APPROVED",
+    "qualityScore": 95,
+    "reviewStatus": "APPROVED",
+    "version": 1,
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
+    "rubric": {
+      "minimumExpected": "Rewrites the sentence with a template literal.",
+      "strongAnswer": "Correct interpolation plus a multiline note.",
+      "seniorLevelExpectations": "Senior candidates mention nesting and readability rules.",
+      "expertLevelExpectations": "Expert candidates describe tagged templates briefly."
+    }
+  },
+  {
+    "id": "JS-B008",
+    "technology": "javascript",
+    "topic": "Language Fundamentals",
+    "subtopic": "Type Conversion",
+    "difficulty": "Basic",
+    "question": "How do you convert values between types? Show Number('42'), String(42), and Boolean(0) with their results.",
+    "questionType": "Practical",
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["Explicit conversion", "Constructor coercion"],
+    "idealAnswerPoints": [
+      "Number('42') gives 42, String(42) gives '42'",
+      "Boolean(0) gives false; explains explicit over implicit"
     ],
+    "commonMistakes": ["Relying on implicit coercion in conditions"],
+    "followUpTopics": ["What does Number('abc') return?"],
+    "estimatedTimeMinutes": 3,
+    "tags": ["javascript", "conversion", "basic"],
+    "status": "APPROVED",
+    "qualityScore": 95,
+    "reviewStatus": "APPROVED",
+    "version": 1,
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
+    "rubric": {
+      "minimumExpected": "Converts all three correctly.",
+      "strongAnswer": "Correct results plus explicit-conversion advice.",
+      "seniorLevelExpectations": "Senior candidates cover edge inputs like '' and null.",
+      "expertLevelExpectations": "Expert candidates detail ToNumber/ToString algorithms."
+    }
+  },
+  {
+    "id": "JS-B009",
+    "technology": "javascript",
+    "topic": "Language Fundamentals",
+    "subtopic": "NaN",
+    "difficulty": "Basic",
+    "question": "What is NaN in JavaScript and how do you check for it? Why does NaN === NaN return false?",
+    "questionType": "Theory",
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["Not-a-Number", "Number.isNaN"],
+    "idealAnswerPoints": [
+      "NaN means a failed numeric operation result",
+      "Use Number.isNaN; NaN never equals anything including itself"
+    ],
+    "commonMistakes": ["Using == NaN or global isNaN with coercion"],
+    "followUpTopics": ["What produces NaN in real code?"],
+    "estimatedTimeMinutes": 3,
+    "tags": ["javascript", "nan", "basic"],
+    "status": "APPROVED",
+    "qualityScore": 95,
+    "reviewStatus": "APPROVED",
+    "version": 1,
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
+    "rubric": {
+      "minimumExpected": "Defines NaN and names a check.",
+      "strongAnswer": "Correct check plus the self-inequality reason.",
+      "seniorLevelExpectations": "Senior candidates contrast global isNaN vs Number.isNaN.",
+      "expertLevelExpectations": "Expert candidates note IEEE 754 roots."
+    }
+  },
+  {
+    "id": "JS-B010",
+    "technology": "javascript",
+    "topic": "Language Fundamentals",
+    "subtopic": "Comments",
+    "difficulty": "Basic",
+    "question": "How do you write single-line and multi-line comments in JavaScript? When should comments explain why instead of what?",
+    "questionType": "Theory",
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["Comment syntax", "Documentation intent"],
+    "idealAnswerPoints": [
+      "Shows // and /* */ forms",
+      "Comments should capture intent and non-obvious reasons"
+    ],
+    "commonMistakes": ["Commenting obvious code instead of tricky logic"],
+    "followUpTopics": ["How do doc comments differ?"],
+    "estimatedTimeMinutes": 2,
+    "tags": ["javascript", "comments", "basic"],
     "status": "APPROVED",
     "qualityScore": 94,
     "reviewStatus": "APPROVED",
     "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
     "rubric": {
-      "minimumExpected": "Eval & Function Constructor provides a core mechanism in JavaScript to handle language mechanics & coercion, ensuring predictable behavior and cleaner code structure.",
-      "strongAnswer": "It establishes explicit control over eval & function constructor, preventing unintended side effects and conforming to modern JavaScript standards with clean syntax.",
-      "seniorLevelExpectations": "In production, Eval & Function Constructor must be configured with awareness of memory lifecycle, browser runtime constraints, and team-wide conventions to prevent bugs.",
-      "expertLevelExpectations": "At high scale, it impacts compiler optimizations, cache invalidation, and runtime performance profiles across distributed client environments."
+      "minimumExpected": "Writes both comment forms.",
+      "strongAnswer": "Both forms plus why-over-what guidance.",
+      "seniorLevelExpectations": "Senior candidates tie comments to maintainability.",
+      "expertLevelExpectations": "Expert candidates discuss self-documenting code balance."
     }
   },
   {
-    "id": "JS-0007",
+    "id": "JS-B011",
     "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Garbage Collection",
+    "topic": "Language Fundamentals",
+    "subtopic": "Strict Mode",
     "difficulty": "Basic",
-    "question": "[Q007] In JavaScript, focusing on Security Hardening & Threat Mitigation across a distributed micro-frontend monorepo with 40+ engineering squads: Explain how \"Garbage Collection\" (Closures & Memory) functions. What fundamental problem does it solve, and how do you implement it correctly?",
-    "questionType": "Scenario Based",
-    "experienceLevels": [
-      "0-1",
-      "1-2",
-      "2-4"
-    ],
-    "expectedConcepts": [
-      "Garbage Collection",
-      "Closures & Memory",
-      "JavaScript",
-      "Security Hardening & Threat Mitigation",
-      "Runtime Execution",
-      "Best Practices"
-    ],
+    "question": "What is strict mode in JavaScript and how do you enable it? Name two errors it catches that sloppy mode allows.",
+    "questionType": "Theory",
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["use strict directive", "Silent-error prevention"],
     "idealAnswerPoints": [
-      "State clear definition and primary purpose of Garbage Collection",
-      "Provide concrete syntax or architectural example",
-      "Contrast with legacy or alternative approaches"
+      "Enabled with 'use strict' at top of file or function",
+      "Catches undeclared assignments and duplicate mistakes early"
     ],
-    "commonMistakes": [
-      "Confusing Garbage Collection with adjacent mechanics",
-      "Overlooking basic edge cases and browser support"
-    ],
-    "followUpTopics": [
-      "Can you illustrate a real-world bug caused by improper use of Garbage Collection?",
-      "How does this behave under strict mode or modern build targets?"
-    ],
+    "commonMistakes": ["Thinking strict mode changes syntax colors only"],
+    "followUpTopics": ["How does strict mode change this?"],
     "estimatedTimeMinutes": 3,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "garbage-collection",
-      "basic"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 95,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Garbage Collection provides a core mechanism in JavaScript to handle closures & memory, ensuring predictable behavior and cleaner code structure.",
-      "strongAnswer": "It establishes explicit control over garbage collection, preventing unintended side effects and conforming to modern JavaScript standards with clean syntax.",
-      "seniorLevelExpectations": "In production, Garbage Collection must be configured with awareness of memory lifecycle, browser runtime constraints, and team-wide conventions to prevent bugs.",
-      "expertLevelExpectations": "At high scale, it impacts compiler optimizations, cache invalidation, and runtime performance profiles across distributed client environments."
-    }
-  },
-  {
-    "id": "JS-0008",
-    "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Symbol.iterator",
-    "difficulty": "Basic",
-    "question": "[Q008] In JavaScript, focusing on Testing Strategy & Flakiness Elimination inside a multi-tenant SaaS application with strict client-side data isolation: Explain how \"Symbol.iterator\" (Object Prototypes & Inheritance) functions. What fundamental problem does it solve, and how do you implement it correctly?",
-    "questionType": "System Design",
-    "experienceLevels": [
-      "0-1",
-      "1-2",
-      "2-4"
-    ],
-    "expectedConcepts": [
-      "Symbol.iterator",
-      "Object Prototypes & Inheritance",
-      "JavaScript",
-      "Testing Strategy & Flakiness Elimination",
-      "Runtime Execution",
-      "Best Practices"
-    ],
-    "idealAnswerPoints": [
-      "State clear definition and primary purpose of Symbol.iterator",
-      "Provide concrete syntax or architectural example",
-      "Contrast with legacy or alternative approaches"
-    ],
-    "commonMistakes": [
-      "Confusing Symbol.iterator with adjacent mechanics",
-      "Overlooking basic edge cases and browser support"
-    ],
-    "followUpTopics": [
-      "Can you illustrate a real-world bug caused by improper use of Symbol.iterator?",
-      "How does this behave under strict mode or modern build targets?"
-    ],
-    "estimatedTimeMinutes": 3,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "symbol-iterator",
-      "basic"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 96,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Symbol.iterator provides a core mechanism in JavaScript to handle object prototypes & inheritance, ensuring predictable behavior and cleaner code structure.",
-      "strongAnswer": "It establishes explicit control over symbol.iterator, preventing unintended side effects and conforming to modern JavaScript standards with clean syntax.",
-      "seniorLevelExpectations": "In production, Symbol.iterator must be configured with awareness of memory lifecycle, browser runtime constraints, and team-wide conventions to prevent bugs.",
-      "expertLevelExpectations": "At high scale, it impacts compiler optimizations, cache invalidation, and runtime performance profiles across distributed client environments."
-    }
-  },
-  {
-    "id": "JS-0009",
-    "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Eval & Function Constructor",
-    "difficulty": "Basic",
-    "question": "[Q009] In JavaScript, focusing on Cross-Browser Consistency & Standards Compliance during high-concurrency peak retail traffic (e.g. Cyber Monday): Explain how \"Eval & Function Constructor\" (Language Mechanics & Coercion) functions. What fundamental problem does it solve, and how do you implement it correctly?",
-    "questionType": "Problem Solving",
-    "experienceLevels": [
-      "0-1",
-      "1-2",
-      "2-4"
-    ],
-    "expectedConcepts": [
-      "Eval & Function Constructor",
-      "Language Mechanics & Coercion",
-      "JavaScript",
-      "Cross-Browser Consistency & Standards Compliance",
-      "Runtime Execution",
-      "Best Practices"
-    ],
-    "idealAnswerPoints": [
-      "State clear definition and primary purpose of Eval & Function Constructor",
-      "Provide concrete syntax or architectural example",
-      "Contrast with legacy or alternative approaches"
-    ],
-    "commonMistakes": [
-      "Confusing Eval & Function Constructor with adjacent mechanics",
-      "Overlooking basic edge cases and browser support"
-    ],
-    "followUpTopics": [
-      "Can you illustrate a real-world bug caused by improper use of Eval & Function Constructor?",
-      "How does this behave under strict mode or modern build targets?"
-    ],
-    "estimatedTimeMinutes": 3,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "eval---function-constructor",
-      "basic"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 97,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Eval & Function Constructor provides a core mechanism in JavaScript to handle language mechanics & coercion, ensuring predictable behavior and cleaner code structure.",
-      "strongAnswer": "It establishes explicit control over eval & function constructor, preventing unintended side effects and conforming to modern JavaScript standards with clean syntax.",
-      "seniorLevelExpectations": "In production, Eval & Function Constructor must be configured with awareness of memory lifecycle, browser runtime constraints, and team-wide conventions to prevent bugs.",
-      "expertLevelExpectations": "At high scale, it impacts compiler optimizations, cache invalidation, and runtime performance profiles across distributed client environments."
-    }
-  },
-  {
-    "id": "JS-0010",
-    "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Garbage Collection",
-    "difficulty": "Basic",
-    "question": "[Q010] In JavaScript, focusing on Developer Experience & API Ergonomics in a low-bandwidth, high-latency global mobile environment: Explain how \"Garbage Collection\" (Closures & Memory) functions. What fundamental problem does it solve, and how do you implement it correctly?",
-    "questionType": "Debugging",
-    "experienceLevels": [
-      "0-1",
-      "1-2",
-      "2-4"
-    ],
-    "expectedConcepts": [
-      "Garbage Collection",
-      "Closures & Memory",
-      "JavaScript",
-      "Developer Experience & API Ergonomics",
-      "Runtime Execution",
-      "Best Practices"
-    ],
-    "idealAnswerPoints": [
-      "State clear definition and primary purpose of Garbage Collection",
-      "Provide concrete syntax or architectural example",
-      "Contrast with legacy or alternative approaches"
-    ],
-    "commonMistakes": [
-      "Confusing Garbage Collection with adjacent mechanics",
-      "Overlooking basic edge cases and browser support"
-    ],
-    "followUpTopics": [
-      "Can you illustrate a real-world bug caused by improper use of Garbage Collection?",
-      "How does this behave under strict mode or modern build targets?"
-    ],
-    "estimatedTimeMinutes": 3,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "garbage-collection",
-      "basic"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 98,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Garbage Collection provides a core mechanism in JavaScript to handle closures & memory, ensuring predictable behavior and cleaner code structure.",
-      "strongAnswer": "It establishes explicit control over garbage collection, preventing unintended side effects and conforming to modern JavaScript standards with clean syntax.",
-      "seniorLevelExpectations": "In production, Garbage Collection must be configured with awareness of memory lifecycle, browser runtime constraints, and team-wide conventions to prevent bugs.",
-      "expertLevelExpectations": "At high scale, it impacts compiler optimizations, cache invalidation, and runtime performance profiles across distributed client environments."
-    }
-  },
-  {
-    "id": "JS-0011",
-    "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Symbol.iterator",
-    "difficulty": "Basic",
-    "question": "[Q011] In JavaScript, focusing on Concurrency & Asynchronous Race Conditions in a high-throughput fintech checkout system: Explain how \"Symbol.iterator\" (Object Prototypes & Inheritance) functions. What fundamental problem does it solve, and how do you implement it correctly?",
-    "questionType": "Practical",
-    "experienceLevels": [
-      "0-1",
-      "1-2",
-      "2-4"
-    ],
-    "expectedConcepts": [
-      "Symbol.iterator",
-      "Object Prototypes & Inheritance",
-      "JavaScript",
-      "Concurrency & Asynchronous Race Conditions",
-      "Runtime Execution",
-      "Best Practices"
-    ],
-    "idealAnswerPoints": [
-      "State clear definition and primary purpose of Symbol.iterator",
-      "Provide concrete syntax or architectural example",
-      "Contrast with legacy or alternative approaches"
-    ],
-    "commonMistakes": [
-      "Confusing Symbol.iterator with adjacent mechanics",
-      "Overlooking basic edge cases and browser support"
-    ],
-    "followUpTopics": [
-      "Can you illustrate a real-world bug caused by improper use of Symbol.iterator?",
-      "How does this behave under strict mode or modern build targets?"
-    ],
-    "estimatedTimeMinutes": 3,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "symbol-iterator",
-      "basic"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 99,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Symbol.iterator provides a core mechanism in JavaScript to handle object prototypes & inheritance, ensuring predictable behavior and cleaner code structure.",
-      "strongAnswer": "It establishes explicit control over symbol.iterator, preventing unintended side effects and conforming to modern JavaScript standards with clean syntax.",
-      "seniorLevelExpectations": "In production, Symbol.iterator must be configured with awareness of memory lifecycle, browser runtime constraints, and team-wide conventions to prevent bugs.",
-      "expertLevelExpectations": "At high scale, it impacts compiler optimizations, cache invalidation, and runtime performance profiles across distributed client environments."
-    }
-  },
-  {
-    "id": "JS-0012",
-    "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Eval & Function Constructor",
-    "difficulty": "Basic",
-    "question": "[Q012] In JavaScript, focusing on Refactoring & Safe Legacy Migration within a media streaming player handling adaptive bitrate switching: Explain how \"Eval & Function Constructor\" (Language Mechanics & Coercion) functions. What fundamental problem does it solve, and how do you implement it correctly?",
-    "questionType": "Scenario Based",
-    "experienceLevels": [
-      "0-1",
-      "1-2",
-      "2-4"
-    ],
-    "expectedConcepts": [
-      "Eval & Function Constructor",
-      "Language Mechanics & Coercion",
-      "JavaScript",
-      "Refactoring & Safe Legacy Migration",
-      "Runtime Execution",
-      "Best Practices"
-    ],
-    "idealAnswerPoints": [
-      "State clear definition and primary purpose of Eval & Function Constructor",
-      "Provide concrete syntax or architectural example",
-      "Contrast with legacy or alternative approaches"
-    ],
-    "commonMistakes": [
-      "Confusing Eval & Function Constructor with adjacent mechanics",
-      "Overlooking basic edge cases and browser support"
-    ],
-    "followUpTopics": [
-      "Can you illustrate a real-world bug caused by improper use of Eval & Function Constructor?",
-      "How does this behave under strict mode or modern build targets?"
-    ],
-    "estimatedTimeMinutes": 3,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "eval---function-constructor",
-      "basic"
-    ],
+    "tags": ["javascript", "strict-mode", "basic"],
     "status": "APPROVED",
     "qualityScore": 94,
     "reviewStatus": "APPROVED",
     "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
     "rubric": {
-      "minimumExpected": "Eval & Function Constructor provides a core mechanism in JavaScript to handle language mechanics & coercion, ensuring predictable behavior and cleaner code structure.",
-      "strongAnswer": "It establishes explicit control over eval & function constructor, preventing unintended side effects and conforming to modern JavaScript standards with clean syntax.",
-      "seniorLevelExpectations": "In production, Eval & Function Constructor must be configured with awareness of memory lifecycle, browser runtime constraints, and team-wide conventions to prevent bugs.",
-      "expertLevelExpectations": "At high scale, it impacts compiler optimizations, cache invalidation, and runtime performance profiles across distributed client environments."
+      "minimumExpected": "Enables strict mode correctly.",
+      "strongAnswer": "Two real caught errors named.",
+      "seniorLevelExpectations": "Senior candidates note modules are strict by default.",
+      "expertLevelExpectations": "Expert candidates list spec-level restrictions."
     }
   },
   {
-    "id": "JS-0013",
+    "id": "JS-B012",
     "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Garbage Collection",
+    "topic": "Language Fundamentals",
+    "subtopic": "Semicolons",
     "difficulty": "Basic",
-    "question": "[Q013] In JavaScript, focusing on State Synchronization & Boundary Isolation during a high-severity production outage requiring immediate triage: Explain how \"Garbage Collection\" (Closures & Memory) functions. What fundamental problem does it solve, and how do you implement it correctly?",
-    "questionType": "System Design",
-    "experienceLevels": [
-      "0-1",
-      "1-2",
-      "2-4"
-    ],
-    "expectedConcepts": [
-      "Garbage Collection",
-      "Closures & Memory",
-      "JavaScript",
-      "State Synchronization & Boundary Isolation",
-      "Runtime Execution",
-      "Best Practices"
-    ],
+    "question": "Does JavaScript require semicolons? Explain automatic semicolon insertion with one example where omitting them breaks code.",
+    "questionType": "Theory",
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["ASI rules", "Return-newline hazard"],
     "idealAnswerPoints": [
-      "State clear definition and primary purpose of Garbage Collection",
-      "Provide concrete syntax or architectural example",
-      "Contrast with legacy or alternative approaches"
+      "Semicolons are usually auto-inserted but not guaranteed",
+      "Example: return newline object literal returns undefined"
     ],
-    "commonMistakes": [
-      "Confusing Garbage Collection with adjacent mechanics",
-      "Overlooking basic edge cases and browser support"
-    ],
-    "followUpTopics": [
-      "Can you illustrate a real-world bug caused by improper use of Garbage Collection?",
-      "How does this behave under strict mode or modern build targets?"
-    ],
+    "commonMistakes": ["Claiming semicolons are never needed"],
+    "followUpTopics": ["Which style do teams enforce and how?"],
     "estimatedTimeMinutes": 3,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "garbage-collection",
-      "basic"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 95,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Garbage Collection provides a core mechanism in JavaScript to handle closures & memory, ensuring predictable behavior and cleaner code structure.",
-      "strongAnswer": "It establishes explicit control over garbage collection, preventing unintended side effects and conforming to modern JavaScript standards with clean syntax.",
-      "seniorLevelExpectations": "In production, Garbage Collection must be configured with awareness of memory lifecycle, browser runtime constraints, and team-wide conventions to prevent bugs.",
-      "expertLevelExpectations": "At high scale, it impacts compiler optimizations, cache invalidation, and runtime performance profiles across distributed client environments."
-    }
-  },
-  {
-    "id": "JS-0014",
-    "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Symbol.iterator",
-    "difficulty": "Basic",
-    "question": "[Q014] In JavaScript, focusing on Error Boundaries & Graceful Degradation inside an embedded financial analytics dashboard processing live WebSockets: Explain how \"Symbol.iterator\" (Object Prototypes & Inheritance) functions. What fundamental problem does it solve, and how do you implement it correctly?",
-    "questionType": "Problem Solving",
-    "experienceLevels": [
-      "0-1",
-      "1-2",
-      "2-4"
-    ],
-    "expectedConcepts": [
-      "Symbol.iterator",
-      "Object Prototypes & Inheritance",
-      "JavaScript",
-      "Error Boundaries & Graceful Degradation",
-      "Runtime Execution",
-      "Best Practices"
-    ],
-    "idealAnswerPoints": [
-      "State clear definition and primary purpose of Symbol.iterator",
-      "Provide concrete syntax or architectural example",
-      "Contrast with legacy or alternative approaches"
-    ],
-    "commonMistakes": [
-      "Confusing Symbol.iterator with adjacent mechanics",
-      "Overlooking basic edge cases and browser support"
-    ],
-    "followUpTopics": [
-      "Can you illustrate a real-world bug caused by improper use of Symbol.iterator?",
-      "How does this behave under strict mode or modern build targets?"
-    ],
-    "estimatedTimeMinutes": 3,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "symbol-iterator",
-      "basic"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 96,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Symbol.iterator provides a core mechanism in JavaScript to handle object prototypes & inheritance, ensuring predictable behavior and cleaner code structure.",
-      "strongAnswer": "It establishes explicit control over symbol.iterator, preventing unintended side effects and conforming to modern JavaScript standards with clean syntax.",
-      "seniorLevelExpectations": "In production, Symbol.iterator must be configured with awareness of memory lifecycle, browser runtime constraints, and team-wide conventions to prevent bugs.",
-      "expertLevelExpectations": "At high scale, it impacts compiler optimizations, cache invalidation, and runtime performance profiles across distributed client environments."
-    }
-  },
-  {
-    "id": "JS-0015",
-    "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Eval & Function Constructor",
-    "difficulty": "Basic",
-    "question": "[Q015] In JavaScript, focusing on Observability, Telemetry & Real User Monitoring when integrating third-party untrusted scripts without compromising security: Explain how \"Eval & Function Constructor\" (Language Mechanics & Coercion) functions. What fundamental problem does it solve, and how do you implement it correctly?",
-    "questionType": "Debugging",
-    "experienceLevels": [
-      "0-1",
-      "1-2",
-      "2-4"
-    ],
-    "expectedConcepts": [
-      "Eval & Function Constructor",
-      "Language Mechanics & Coercion",
-      "JavaScript",
-      "Observability, Telemetry & Real User Monitoring",
-      "Runtime Execution",
-      "Best Practices"
-    ],
-    "idealAnswerPoints": [
-      "State clear definition and primary purpose of Eval & Function Constructor",
-      "Provide concrete syntax or architectural example",
-      "Contrast with legacy or alternative approaches"
-    ],
-    "commonMistakes": [
-      "Confusing Eval & Function Constructor with adjacent mechanics",
-      "Overlooking basic edge cases and browser support"
-    ],
-    "followUpTopics": [
-      "Can you illustrate a real-world bug caused by improper use of Eval & Function Constructor?",
-      "How does this behave under strict mode or modern build targets?"
-    ],
-    "estimatedTimeMinutes": 3,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "eval---function-constructor",
-      "basic"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 97,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Eval & Function Constructor provides a core mechanism in JavaScript to handle language mechanics & coercion, ensuring predictable behavior and cleaner code structure.",
-      "strongAnswer": "It establishes explicit control over eval & function constructor, preventing unintended side effects and conforming to modern JavaScript standards with clean syntax.",
-      "seniorLevelExpectations": "In production, Eval & Function Constructor must be configured with awareness of memory lifecycle, browser runtime constraints, and team-wide conventions to prevent bugs.",
-      "expertLevelExpectations": "At high scale, it impacts compiler optimizations, cache invalidation, and runtime performance profiles across distributed client environments."
-    }
-  },
-  {
-    "id": "JS-0016",
-    "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Garbage Collection",
-    "difficulty": "Basic",
-    "question": "[Q016] In JavaScript, focusing on Scalability Tradeoffs under High Traffic in an offline-first enterprise mobile web application: Explain how \"Garbage Collection\" (Closures & Memory) functions. What fundamental problem does it solve, and how do you implement it correctly?",
-    "questionType": "Practical",
-    "experienceLevels": [
-      "0-1",
-      "1-2",
-      "2-4"
-    ],
-    "expectedConcepts": [
-      "Garbage Collection",
-      "Closures & Memory",
-      "JavaScript",
-      "Scalability Tradeoffs under High Traffic",
-      "Runtime Execution",
-      "Best Practices"
-    ],
-    "idealAnswerPoints": [
-      "State clear definition and primary purpose of Garbage Collection",
-      "Provide concrete syntax or architectural example",
-      "Contrast with legacy or alternative approaches"
-    ],
-    "commonMistakes": [
-      "Confusing Garbage Collection with adjacent mechanics",
-      "Overlooking basic edge cases and browser support"
-    ],
-    "followUpTopics": [
-      "Can you illustrate a real-world bug caused by improper use of Garbage Collection?",
-      "How does this behave under strict mode or modern build targets?"
-    ],
-    "estimatedTimeMinutes": 3,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "garbage-collection",
-      "basic"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 98,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Garbage Collection provides a core mechanism in JavaScript to handle closures & memory, ensuring predictable behavior and cleaner code structure.",
-      "strongAnswer": "It establishes explicit control over garbage collection, preventing unintended side effects and conforming to modern JavaScript standards with clean syntax.",
-      "seniorLevelExpectations": "In production, Garbage Collection must be configured with awareness of memory lifecycle, browser runtime constraints, and team-wide conventions to prevent bugs.",
-      "expertLevelExpectations": "At high scale, it impacts compiler optimizations, cache invalidation, and runtime performance profiles across distributed client environments."
-    }
-  },
-  {
-    "id": "JS-0017",
-    "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Symbol.iterator",
-    "difficulty": "Basic",
-    "question": "[Q017] In JavaScript, focusing on Implementation Mechanics & Internal Execution when refactoring a legacy monolithic codebase with zero automated regression tests: Explain how \"Symbol.iterator\" (Object Prototypes & Inheritance) functions. What fundamental problem does it solve, and how do you implement it correctly?",
-    "questionType": "Scenario Based",
-    "experienceLevels": [
-      "0-1",
-      "1-2",
-      "2-4"
-    ],
-    "expectedConcepts": [
-      "Symbol.iterator",
-      "Object Prototypes & Inheritance",
-      "JavaScript",
-      "Implementation Mechanics & Internal Execution",
-      "Runtime Execution",
-      "Best Practices"
-    ],
-    "idealAnswerPoints": [
-      "State clear definition and primary purpose of Symbol.iterator",
-      "Provide concrete syntax or architectural example",
-      "Contrast with legacy or alternative approaches"
-    ],
-    "commonMistakes": [
-      "Confusing Symbol.iterator with adjacent mechanics",
-      "Overlooking basic edge cases and browser support"
-    ],
-    "followUpTopics": [
-      "Can you illustrate a real-world bug caused by improper use of Symbol.iterator?",
-      "How does this behave under strict mode or modern build targets?"
-    ],
-    "estimatedTimeMinutes": 3,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "symbol-iterator",
-      "basic"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 99,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Symbol.iterator provides a core mechanism in JavaScript to handle object prototypes & inheritance, ensuring predictable behavior and cleaner code structure.",
-      "strongAnswer": "It establishes explicit control over symbol.iterator, preventing unintended side effects and conforming to modern JavaScript standards with clean syntax.",
-      "seniorLevelExpectations": "In production, Symbol.iterator must be configured with awareness of memory lifecycle, browser runtime constraints, and team-wide conventions to prevent bugs.",
-      "expertLevelExpectations": "At high scale, it impacts compiler optimizations, cache invalidation, and runtime performance profiles across distributed client environments."
-    }
-  },
-  {
-    "id": "JS-0018",
-    "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Eval & Function Constructor",
-    "difficulty": "Basic",
-    "question": "[Q018] In JavaScript, focusing on Debugging & Production Failure Analysis within a real-time collaborative whiteboarding canvas: Explain how \"Eval & Function Constructor\" (Language Mechanics & Coercion) functions. What fundamental problem does it solve, and how do you implement it correctly?",
-    "questionType": "System Design",
-    "experienceLevels": [
-      "0-1",
-      "1-2",
-      "2-4"
-    ],
-    "expectedConcepts": [
-      "Eval & Function Constructor",
-      "Language Mechanics & Coercion",
-      "JavaScript",
-      "Debugging & Production Failure Analysis",
-      "Runtime Execution",
-      "Best Practices"
-    ],
-    "idealAnswerPoints": [
-      "State clear definition and primary purpose of Eval & Function Constructor",
-      "Provide concrete syntax or architectural example",
-      "Contrast with legacy or alternative approaches"
-    ],
-    "commonMistakes": [
-      "Confusing Eval & Function Constructor with adjacent mechanics",
-      "Overlooking basic edge cases and browser support"
-    ],
-    "followUpTopics": [
-      "Can you illustrate a real-world bug caused by improper use of Eval & Function Constructor?",
-      "How does this behave under strict mode or modern build targets?"
-    ],
-    "estimatedTimeMinutes": 3,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "eval---function-constructor",
-      "basic"
-    ],
+    "tags": ["javascript", "semicolons", "basic"],
     "status": "APPROVED",
     "qualityScore": 94,
     "reviewStatus": "APPROVED",
     "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
     "rubric": {
-      "minimumExpected": "Eval & Function Constructor provides a core mechanism in JavaScript to handle language mechanics & coercion, ensuring predictable behavior and cleaner code structure.",
-      "strongAnswer": "It establishes explicit control over eval & function constructor, preventing unintended side effects and conforming to modern JavaScript standards with clean syntax.",
-      "seniorLevelExpectations": "In production, Eval & Function Constructor must be configured with awareness of memory lifecycle, browser runtime constraints, and team-wide conventions to prevent bugs.",
-      "expertLevelExpectations": "At high scale, it impacts compiler optimizations, cache invalidation, and runtime performance profiles across distributed client environments."
+      "minimumExpected": "States ASI exists with caveats.",
+      "strongAnswer": "Working breakage example given.",
+      "seniorLevelExpectations": "Senior candidates cite lint enforcement.",
+      "expertLevelExpectations": "Expert candidates detail ASI grammar rules."
     }
   },
   {
-    "id": "JS-0019",
+    "id": "JS-B013",
     "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Garbage Collection",
+    "topic": "Functions",
+    "subtopic": "Declarations",
     "difficulty": "Basic",
-    "question": "[Q019] In JavaScript, focusing on Performance Optimization & Latency Bottlenecks during a live zero-downtime database and schema migration: Explain how \"Garbage Collection\" (Closures & Memory) functions. What fundamental problem does it solve, and how do you implement it correctly?",
-    "questionType": "Problem Solving",
-    "experienceLevels": [
-      "0-1",
-      "1-2",
-      "2-4"
-    ],
-    "expectedConcepts": [
-      "Garbage Collection",
-      "Closures & Memory",
-      "JavaScript",
-      "Performance Optimization & Latency Bottlenecks",
-      "Runtime Execution",
-      "Best Practices"
-    ],
+    "question": "How do you declare and call a function in JavaScript? Write a greet function that takes a name and returns a greeting.",
+    "questionType": "Practical",
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["Function syntax", "Invocation"],
     "idealAnswerPoints": [
-      "State clear definition and primary purpose of Garbage Collection",
-      "Provide concrete syntax or architectural example",
-      "Contrast with legacy or alternative approaches"
+      "Uses function keyword with name and parameters",
+      "Calls it with an argument and returns a value"
     ],
-    "commonMistakes": [
-      "Confusing Garbage Collection with adjacent mechanics",
-      "Overlooking basic edge cases and browser support"
-    ],
-    "followUpTopics": [
-      "Can you illustrate a real-world bug caused by improper use of Garbage Collection?",
-      "How does this behave under strict mode or modern build targets?"
-    ],
+    "commonMistakes": ["Forgetting return so result is undefined"],
+    "followUpTopics": ["What happens without return?"],
     "estimatedTimeMinutes": 3,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "garbage-collection",
-      "basic"
-    ],
+    "tags": ["javascript", "functions", "basic"],
     "status": "APPROVED",
     "qualityScore": 95,
     "reviewStatus": "APPROVED",
     "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
     "rubric": {
-      "minimumExpected": "Garbage Collection provides a core mechanism in JavaScript to handle closures & memory, ensuring predictable behavior and cleaner code structure.",
-      "strongAnswer": "It establishes explicit control over garbage collection, preventing unintended side effects and conforming to modern JavaScript standards with clean syntax.",
-      "seniorLevelExpectations": "In production, Garbage Collection must be configured with awareness of memory lifecycle, browser runtime constraints, and team-wide conventions to prevent bugs.",
-      "expertLevelExpectations": "At high scale, it impacts compiler optimizations, cache invalidation, and runtime performance profiles across distributed client environments."
+      "minimumExpected": "Writes a callable function.",
+      "strongAnswer": "Correct greet with parameter and return.",
+      "seniorLevelExpectations": "Senior candidates note hoisting of declarations.",
+      "expertLevelExpectations": "Expert candidates mention function object properties."
     }
   },
   {
-    "id": "JS-0020",
+    "id": "JS-B014",
     "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Symbol.iterator",
+    "topic": "Functions",
+    "subtopic": "Expressions",
     "difficulty": "Basic",
-    "question": "[Q020] In JavaScript, focusing on Architecture & Modularity Design in an executive architectural review evaluating long-term technical debt: Explain how \"Symbol.iterator\" (Object Prototypes & Inheritance) functions. What fundamental problem does it solve, and how do you implement it correctly?",
-    "questionType": "Debugging",
-    "experienceLevels": [
-      "0-1",
-      "1-2",
-      "2-4"
-    ],
-    "expectedConcepts": [
-      "Symbol.iterator",
-      "Object Prototypes & Inheritance",
-      "JavaScript",
-      "Architecture & Modularity Design",
-      "Runtime Execution",
-      "Best Practices"
-    ],
-    "idealAnswerPoints": [
-      "State clear definition and primary purpose of Symbol.iterator",
-      "Provide concrete syntax or architectural example",
-      "Contrast with legacy or alternative approaches"
-    ],
-    "commonMistakes": [
-      "Confusing Symbol.iterator with adjacent mechanics",
-      "Overlooking basic edge cases and browser support"
-    ],
-    "followUpTopics": [
-      "Can you illustrate a real-world bug caused by improper use of Symbol.iterator?",
-      "How does this behave under strict mode or modern build targets?"
-    ],
-    "estimatedTimeMinutes": 3,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "symbol-iterator",
-      "basic"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 96,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Symbol.iterator provides a core mechanism in JavaScript to handle object prototypes & inheritance, ensuring predictable behavior and cleaner code structure.",
-      "strongAnswer": "It establishes explicit control over symbol.iterator, preventing unintended side effects and conforming to modern JavaScript standards with clean syntax.",
-      "seniorLevelExpectations": "In production, Symbol.iterator must be configured with awareness of memory lifecycle, browser runtime constraints, and team-wide conventions to prevent bugs.",
-      "expertLevelExpectations": "At high scale, it impacts compiler optimizations, cache invalidation, and runtime performance profiles across distributed client environments."
-    }
-  },
-  {
-    "id": "JS-0021",
-    "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Eval & Function Constructor",
-    "difficulty": "Basic",
-    "question": "[Q021] In JavaScript, focusing on Edge Case Handling & Defensive Validation in a mission-critical healthcare portal with strict latency SLAs: Explain how \"Eval & Function Constructor\" (Language Mechanics & Coercion) functions. What fundamental problem does it solve, and how do you implement it correctly?",
+    "question": "What is a function expression? Assign an anonymous function to a variable and call it.",
     "questionType": "Practical",
-    "experienceLevels": [
-      "0-1",
-      "1-2",
-      "2-4"
-    ],
-    "expectedConcepts": [
-      "Eval & Function Constructor",
-      "Language Mechanics & Coercion",
-      "JavaScript",
-      "Edge Case Handling & Defensive Validation",
-      "Runtime Execution",
-      "Best Practices"
-    ],
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["First-class functions", "Assignment"],
     "idealAnswerPoints": [
-      "State clear definition and primary purpose of Eval & Function Constructor",
-      "Provide concrete syntax or architectural example",
-      "Contrast with legacy or alternative approaches"
+      "Function stored in a variable or const",
+      "Called through the variable name"
     ],
-    "commonMistakes": [
-      "Confusing Eval & Function Constructor with adjacent mechanics",
-      "Overlooking basic edge cases and browser support"
-    ],
-    "followUpTopics": [
-      "Can you illustrate a real-world bug caused by improper use of Eval & Function Constructor?",
-      "How does this behave under strict mode or modern build targets?"
-    ],
+    "commonMistakes": ["Calling before the assignment line runs"],
+    "followUpTopics": ["How does hoisting differ here?"],
     "estimatedTimeMinutes": 3,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "eval---function-constructor",
-      "basic"
-    ],
+    "tags": ["javascript", "function-expression", "basic"],
     "status": "APPROVED",
-    "qualityScore": 97,
+    "qualityScore": 95,
     "reviewStatus": "APPROVED",
     "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
     "rubric": {
-      "minimumExpected": "Eval & Function Constructor provides a core mechanism in JavaScript to handle language mechanics & coercion, ensuring predictable behavior and cleaner code structure.",
-      "strongAnswer": "It establishes explicit control over eval & function constructor, preventing unintended side effects and conforming to modern JavaScript standards with clean syntax.",
-      "seniorLevelExpectations": "In production, Eval & Function Constructor must be configured with awareness of memory lifecycle, browser runtime constraints, and team-wide conventions to prevent bugs.",
-      "expertLevelExpectations": "At high scale, it impacts compiler optimizations, cache invalidation, and runtime performance profiles across distributed client environments."
+      "minimumExpected": "Assigns and calls a function expression.",
+      "strongAnswer": "Correct call plus hoisting contrast.",
+      "seniorLevelExpectations": "Senior candidates choose expression vs declaration idiomatically.",
+      "expertLevelExpectations": "Expert candidates discuss name inference for stack traces."
     }
   },
   {
-    "id": "JS-0022",
+    "id": "JS-B015",
     "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Garbage Collection",
+    "topic": "Functions",
+    "subtopic": "Arrow Functions",
     "difficulty": "Basic",
-    "question": "[Q022] In JavaScript, focusing on Memory Lifecycle & Garbage Collection Pressure in a design system adopted across 12 distinct product platforms: Explain how \"Garbage Collection\" (Closures & Memory) functions. What fundamental problem does it solve, and how do you implement it correctly?",
-    "questionType": "Scenario Based",
-    "experienceLevels": [
-      "0-1",
-      "1-2",
-      "2-4"
-    ],
-    "expectedConcepts": [
-      "Garbage Collection",
-      "Closures & Memory",
-      "JavaScript",
-      "Memory Lifecycle & Garbage Collection Pressure",
-      "Runtime Execution",
-      "Best Practices"
-    ],
+    "question": "How do you write an arrow function that adds two numbers? How is its this different from a regular function?",
+    "questionType": "Practical",
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["Concise syntax", "Lexical this"],
     "idealAnswerPoints": [
-      "State clear definition and primary purpose of Garbage Collection",
-      "Provide concrete syntax or architectural example",
-      "Contrast with legacy or alternative approaches"
+      "Writes (a, b) => a + b correctly",
+      "Arrow inherits this; regular takes call-site this"
     ],
-    "commonMistakes": [
-      "Confusing Garbage Collection with adjacent mechanics",
-      "Overlooking basic edge cases and browser support"
-    ],
-    "followUpTopics": [
-      "Can you illustrate a real-world bug caused by improper use of Garbage Collection?",
-      "How does this behave under strict mode or modern build targets?"
-    ],
+    "commonMistakes": ["Using arrows as object methods needing this"],
+    "followUpTopics": ["When should you avoid arrows?"],
     "estimatedTimeMinutes": 3,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "garbage-collection",
-      "basic"
-    ],
+    "tags": ["javascript", "arrow-functions", "basic"],
     "status": "APPROVED",
-    "qualityScore": 98,
+    "qualityScore": 95,
     "reviewStatus": "APPROVED",
     "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
     "rubric": {
-      "minimumExpected": "Garbage Collection provides a core mechanism in JavaScript to handle closures & memory, ensuring predictable behavior and cleaner code structure.",
-      "strongAnswer": "It establishes explicit control over garbage collection, preventing unintended side effects and conforming to modern JavaScript standards with clean syntax.",
-      "seniorLevelExpectations": "In production, Garbage Collection must be configured with awareness of memory lifecycle, browser runtime constraints, and team-wide conventions to prevent bugs.",
-      "expertLevelExpectations": "At high scale, it impacts compiler optimizations, cache invalidation, and runtime performance profiles across distributed client environments."
+      "minimumExpected": "Writes a working arrow adder.",
+      "strongAnswer": "Correct plus this difference stated.",
+      "seniorLevelExpectations": "Senior candidates pick forms by this needs.",
+      "expertLevelExpectations": "Expert candidates note constructor/prototype limits."
     }
   },
   {
-    "id": "JS-0023",
+    "id": "JS-B016",
     "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Symbol.iterator",
+    "topic": "Functions",
+    "subtopic": "Parameters",
     "difficulty": "Basic",
-    "question": "[Q023] In JavaScript, focusing on Security Hardening & Threat Mitigation across a distributed micro-frontend monorepo with 40+ engineering squads: Explain how \"Symbol.iterator\" (Object Prototypes & Inheritance) functions. What fundamental problem does it solve, and how do you implement it correctly?",
-    "questionType": "System Design",
-    "experienceLevels": [
-      "0-1",
-      "1-2",
-      "2-4"
-    ],
-    "expectedConcepts": [
-      "Symbol.iterator",
-      "Object Prototypes & Inheritance",
-      "JavaScript",
-      "Security Hardening & Threat Mitigation",
-      "Runtime Execution",
-      "Best Practices"
-    ],
+    "question": "What is the difference between parameters and arguments? Show a function with two parameters called with two arguments.",
+    "questionType": "Theory",
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["Parameter binding", "Call-site values"],
     "idealAnswerPoints": [
-      "State clear definition and primary purpose of Symbol.iterator",
-      "Provide concrete syntax or architectural example",
-      "Contrast with legacy or alternative approaches"
+      "Parameters are placeholders in definition; arguments are values at call",
+      "Working two-parameter example"
     ],
-    "commonMistakes": [
-      "Confusing Symbol.iterator with adjacent mechanics",
-      "Overlooking basic edge cases and browser support"
-    ],
-    "followUpTopics": [
-      "Can you illustrate a real-world bug caused by improper use of Symbol.iterator?",
-      "How does this behave under strict mode or modern build targets?"
-    ],
-    "estimatedTimeMinutes": 3,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "symbol-iterator",
-      "basic"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 99,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Symbol.iterator provides a core mechanism in JavaScript to handle object prototypes & inheritance, ensuring predictable behavior and cleaner code structure.",
-      "strongAnswer": "It establishes explicit control over symbol.iterator, preventing unintended side effects and conforming to modern JavaScript standards with clean syntax.",
-      "seniorLevelExpectations": "In production, Symbol.iterator must be configured with awareness of memory lifecycle, browser runtime constraints, and team-wide conventions to prevent bugs.",
-      "expertLevelExpectations": "At high scale, it impacts compiler optimizations, cache invalidation, and runtime performance profiles across distributed client environments."
-    }
-  },
-  {
-    "id": "JS-0024",
-    "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Eval & Function Constructor",
-    "difficulty": "Basic",
-    "question": "[Q024] In JavaScript, focusing on Testing Strategy & Flakiness Elimination inside a multi-tenant SaaS application with strict client-side data isolation: Explain how \"Eval & Function Constructor\" (Language Mechanics & Coercion) functions. What fundamental problem does it solve, and how do you implement it correctly?",
-    "questionType": "Problem Solving",
-    "experienceLevels": [
-      "0-1",
-      "1-2",
-      "2-4"
-    ],
-    "expectedConcepts": [
-      "Eval & Function Constructor",
-      "Language Mechanics & Coercion",
-      "JavaScript",
-      "Testing Strategy & Flakiness Elimination",
-      "Runtime Execution",
-      "Best Practices"
-    ],
-    "idealAnswerPoints": [
-      "State clear definition and primary purpose of Eval & Function Constructor",
-      "Provide concrete syntax or architectural example",
-      "Contrast with legacy or alternative approaches"
-    ],
-    "commonMistakes": [
-      "Confusing Eval & Function Constructor with adjacent mechanics",
-      "Overlooking basic edge cases and browser support"
-    ],
-    "followUpTopics": [
-      "Can you illustrate a real-world bug caused by improper use of Eval & Function Constructor?",
-      "How does this behave under strict mode or modern build targets?"
-    ],
-    "estimatedTimeMinutes": 3,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "eval---function-constructor",
-      "basic"
-    ],
+    "commonMistakes": ["Using the terms interchangeably"],
+    "followUpTopics": ["What happens with missing arguments?"],
+    "estimatedTimeMinutes": 2,
+    "tags": ["javascript", "parameters", "basic"],
     "status": "APPROVED",
     "qualityScore": 94,
     "reviewStatus": "APPROVED",
     "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
     "rubric": {
-      "minimumExpected": "Eval & Function Constructor provides a core mechanism in JavaScript to handle language mechanics & coercion, ensuring predictable behavior and cleaner code structure.",
-      "strongAnswer": "It establishes explicit control over eval & function constructor, preventing unintended side effects and conforming to modern JavaScript standards with clean syntax.",
-      "seniorLevelExpectations": "In production, Eval & Function Constructor must be configured with awareness of memory lifecycle, browser runtime constraints, and team-wide conventions to prevent bugs.",
-      "expertLevelExpectations": "At high scale, it impacts compiler optimizations, cache invalidation, and runtime performance profiles across distributed client environments."
+      "minimumExpected": "Distinguishes the two terms.",
+      "strongAnswer": "Clear example of both in use.",
+      "seniorLevelExpectations": "Senior candidates cover defaults and rest.",
+      "expertLevelExpectations": "Expert candidates mention arguments object mapping."
     }
   },
   {
-    "id": "JS-0025",
+    "id": "JS-B017",
     "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Garbage Collection",
+    "topic": "Functions",
+    "subtopic": "Default Parameters",
     "difficulty": "Basic",
-    "question": "[Q025] In JavaScript, focusing on Cross-Browser Consistency & Standards Compliance during high-concurrency peak retail traffic (e.g. Cyber Monday): Explain how \"Garbage Collection\" (Closures & Memory) functions. What fundamental problem does it solve, and how do you implement it correctly?",
-    "questionType": "Debugging",
-    "experienceLevels": [
-      "0-1",
-      "1-2",
-      "2-4"
-    ],
-    "expectedConcepts": [
-      "Garbage Collection",
-      "Closures & Memory",
-      "JavaScript",
-      "Cross-Browser Consistency & Standards Compliance",
-      "Runtime Execution",
-      "Best Practices"
-    ],
+    "question": "How do default parameters work? Write a greet function that defaults the name to Guest.",
+    "questionType": "Practical",
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["Default binding", "undefined trigger"],
     "idealAnswerPoints": [
-      "State clear definition and primary purpose of Garbage Collection",
-      "Provide concrete syntax or architectural example",
-      "Contrast with legacy or alternative approaches"
+      "Default applies when argument is undefined",
+      "Working greet(name = 'Guest') demo"
     ],
-    "commonMistakes": [
-      "Confusing Garbage Collection with adjacent mechanics",
-      "Overlooking basic edge cases and browser support"
-    ],
-    "followUpTopics": [
-      "Can you illustrate a real-world bug caused by improper use of Garbage Collection?",
-      "How does this behave under strict mode or modern build targets?"
-    ],
+    "commonMistakes": ["Expecting defaults for null too"],
+    "followUpTopics": ["Which values trigger the default?"],
     "estimatedTimeMinutes": 3,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "garbage-collection",
-      "basic"
-    ],
+    "tags": ["javascript", "default-params", "basic"],
     "status": "APPROVED",
     "qualityScore": 95,
     "reviewStatus": "APPROVED",
     "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
     "rubric": {
-      "minimumExpected": "Garbage Collection provides a core mechanism in JavaScript to handle closures & memory, ensuring predictable behavior and cleaner code structure.",
-      "strongAnswer": "It establishes explicit control over garbage collection, preventing unintended side effects and conforming to modern JavaScript standards with clean syntax.",
-      "seniorLevelExpectations": "In production, Garbage Collection must be configured with awareness of memory lifecycle, browser runtime constraints, and team-wide conventions to prevent bugs.",
-      "expertLevelExpectations": "At high scale, it impacts compiler optimizations, cache invalidation, and runtime performance profiles across distributed client environments."
+      "minimumExpected": "Writes a defaulted parameter.",
+      "strongAnswer": "Demo plus undefined-trigger rule.",
+      "seniorLevelExpectations": "Senior candidates contrast null handling.",
+      "expertLevelExpectations": "Expert candidates note evaluation order effects."
     }
   },
   {
-    "id": "JS-0026",
+    "id": "JS-B018",
     "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Symbol.iterator",
+    "topic": "Functions",
+    "subtopic": "Rest Parameters",
     "difficulty": "Basic",
-    "question": "[Q026] In JavaScript, focusing on Developer Experience & API Ergonomics in a low-bandwidth, high-latency global mobile environment: Explain how \"Symbol.iterator\" (Object Prototypes & Inheritance) functions. What fundamental problem does it solve, and how do you implement it correctly?",
+    "question": "What are rest parameters? Write a sum function that accepts any number of arguments using ...numbers.",
     "questionType": "Practical",
-    "experienceLevels": [
-      "0-1",
-      "1-2",
-      "2-4"
-    ],
-    "expectedConcepts": [
-      "Symbol.iterator",
-      "Object Prototypes & Inheritance",
-      "JavaScript",
-      "Developer Experience & API Ergonomics",
-      "Runtime Execution",
-      "Best Practices"
-    ],
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["Variadic functions", "True arrays"],
     "idealAnswerPoints": [
-      "State clear definition and primary purpose of Symbol.iterator",
-      "Provide concrete syntax or architectural example",
-      "Contrast with legacy or alternative approaches"
+      "Rest collects remaining args into a real array",
+      "sum(...numbers) reduces them to a total"
     ],
-    "commonMistakes": [
-      "Confusing Symbol.iterator with adjacent mechanics",
-      "Overlooking basic edge cases and browser support"
-    ],
-    "followUpTopics": [
-      "Can you illustrate a real-world bug caused by improper use of Symbol.iterator?",
-      "How does this behave under strict mode or modern build targets?"
-    ],
+    "commonMistakes": ["Confusing rest with spread"],
+    "followUpTopics": ["Rest vs arguments object?"],
     "estimatedTimeMinutes": 3,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "symbol-iterator",
-      "basic"
-    ],
+    "tags": ["javascript", "rest-params", "basic"],
     "status": "APPROVED",
-    "qualityScore": 96,
+    "qualityScore": 95,
     "reviewStatus": "APPROVED",
     "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
     "rubric": {
-      "minimumExpected": "Symbol.iterator provides a core mechanism in JavaScript to handle object prototypes & inheritance, ensuring predictable behavior and cleaner code structure.",
-      "strongAnswer": "It establishes explicit control over symbol.iterator, preventing unintended side effects and conforming to modern JavaScript standards with clean syntax.",
-      "seniorLevelExpectations": "In production, Symbol.iterator must be configured with awareness of memory lifecycle, browser runtime constraints, and team-wide conventions to prevent bugs.",
-      "expertLevelExpectations": "At high scale, it impacts compiler optimizations, cache invalidation, and runtime performance profiles across distributed client environments."
+      "minimumExpected": "Collects args with rest syntax.",
+      "strongAnswer": "Working variadic sum.",
+      "seniorLevelExpectations": "Senior candidates contrast rest and arguments.",
+      "expertLevelExpectations": "Expert candidates note last-position requirement."
     }
   },
   {
-    "id": "JS-0027",
+    "id": "JS-B019",
     "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Eval & Function Constructor",
+    "topic": "Functions",
+    "subtopic": "Return Values",
     "difficulty": "Basic",
-    "question": "[Q027] In JavaScript, focusing on Concurrency & Asynchronous Race Conditions in a high-throughput fintech checkout system: Explain how \"Eval & Function Constructor\" (Language Mechanics & Coercion) functions. What fundamental problem does it solve, and how do you implement it correctly?",
-    "questionType": "Scenario Based",
-    "experienceLevels": [
-      "0-1",
-      "1-2",
-      "2-4"
-    ],
-    "expectedConcepts": [
-      "Eval & Function Constructor",
-      "Language Mechanics & Coercion",
-      "JavaScript",
-      "Concurrency & Asynchronous Race Conditions",
-      "Runtime Execution",
-      "Best Practices"
-    ],
+    "question": "What does return do in a function, and what happens if a function has no return statement? Show both cases.",
+    "questionType": "Theory",
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["Return semantics", "Implicit undefined"],
     "idealAnswerPoints": [
-      "State clear definition and primary purpose of Eval & Function Constructor",
-      "Provide concrete syntax or architectural example",
-      "Contrast with legacy or alternative approaches"
+      "return sends a value back and exits",
+      "No return means the call evaluates to undefined"
     ],
-    "commonMistakes": [
-      "Confusing Eval & Function Constructor with adjacent mechanics",
-      "Overlooking basic edge cases and browser support"
-    ],
-    "followUpTopics": [
-      "Can you illustrate a real-world bug caused by improper use of Eval & Function Constructor?",
-      "How does this behave under strict mode or modern build targets?"
-    ],
-    "estimatedTimeMinutes": 3,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "eval---function-constructor",
-      "basic"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 97,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Eval & Function Constructor provides a core mechanism in JavaScript to handle language mechanics & coercion, ensuring predictable behavior and cleaner code structure.",
-      "strongAnswer": "It establishes explicit control over eval & function constructor, preventing unintended side effects and conforming to modern JavaScript standards with clean syntax.",
-      "seniorLevelExpectations": "In production, Eval & Function Constructor must be configured with awareness of memory lifecycle, browser runtime constraints, and team-wide conventions to prevent bugs.",
-      "expertLevelExpectations": "At high scale, it impacts compiler optimizations, cache invalidation, and runtime performance profiles across distributed client environments."
-    }
-  },
-  {
-    "id": "JS-0028",
-    "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Garbage Collection",
-    "difficulty": "Basic",
-    "question": "[Q028] In JavaScript, focusing on Refactoring & Safe Legacy Migration within a media streaming player handling adaptive bitrate switching: Explain how \"Garbage Collection\" (Closures & Memory) functions. What fundamental problem does it solve, and how do you implement it correctly?",
-    "questionType": "System Design",
-    "experienceLevels": [
-      "0-1",
-      "1-2",
-      "2-4"
-    ],
-    "expectedConcepts": [
-      "Garbage Collection",
-      "Closures & Memory",
-      "JavaScript",
-      "Refactoring & Safe Legacy Migration",
-      "Runtime Execution",
-      "Best Practices"
-    ],
-    "idealAnswerPoints": [
-      "State clear definition and primary purpose of Garbage Collection",
-      "Provide concrete syntax or architectural example",
-      "Contrast with legacy or alternative approaches"
-    ],
-    "commonMistakes": [
-      "Confusing Garbage Collection with adjacent mechanics",
-      "Overlooking basic edge cases and browser support"
-    ],
-    "followUpTopics": [
-      "Can you illustrate a real-world bug caused by improper use of Garbage Collection?",
-      "How does this behave under strict mode or modern build targets?"
-    ],
-    "estimatedTimeMinutes": 3,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "garbage-collection",
-      "basic"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 98,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Garbage Collection provides a core mechanism in JavaScript to handle closures & memory, ensuring predictable behavior and cleaner code structure.",
-      "strongAnswer": "It establishes explicit control over garbage collection, preventing unintended side effects and conforming to modern JavaScript standards with clean syntax.",
-      "seniorLevelExpectations": "In production, Garbage Collection must be configured with awareness of memory lifecycle, browser runtime constraints, and team-wide conventions to prevent bugs.",
-      "expertLevelExpectations": "At high scale, it impacts compiler optimizations, cache invalidation, and runtime performance profiles across distributed client environments."
-    }
-  },
-  {
-    "id": "JS-0029",
-    "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Symbol.iterator",
-    "difficulty": "Basic",
-    "question": "[Q029] In JavaScript, focusing on State Synchronization & Boundary Isolation during a high-severity production outage requiring immediate triage: Explain how \"Symbol.iterator\" (Object Prototypes & Inheritance) functions. What fundamental problem does it solve, and how do you implement it correctly?",
-    "questionType": "Problem Solving",
-    "experienceLevels": [
-      "0-1",
-      "1-2",
-      "2-4"
-    ],
-    "expectedConcepts": [
-      "Symbol.iterator",
-      "Object Prototypes & Inheritance",
-      "JavaScript",
-      "State Synchronization & Boundary Isolation",
-      "Runtime Execution",
-      "Best Practices"
-    ],
-    "idealAnswerPoints": [
-      "State clear definition and primary purpose of Symbol.iterator",
-      "Provide concrete syntax or architectural example",
-      "Contrast with legacy or alternative approaches"
-    ],
-    "commonMistakes": [
-      "Confusing Symbol.iterator with adjacent mechanics",
-      "Overlooking basic edge cases and browser support"
-    ],
-    "followUpTopics": [
-      "Can you illustrate a real-world bug caused by improper use of Symbol.iterator?",
-      "How does this behave under strict mode or modern build targets?"
-    ],
-    "estimatedTimeMinutes": 3,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "symbol-iterator",
-      "basic"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 99,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Symbol.iterator provides a core mechanism in JavaScript to handle object prototypes & inheritance, ensuring predictable behavior and cleaner code structure.",
-      "strongAnswer": "It establishes explicit control over symbol.iterator, preventing unintended side effects and conforming to modern JavaScript standards with clean syntax.",
-      "seniorLevelExpectations": "In production, Symbol.iterator must be configured with awareness of memory lifecycle, browser runtime constraints, and team-wide conventions to prevent bugs.",
-      "expertLevelExpectations": "At high scale, it impacts compiler optimizations, cache invalidation, and runtime performance profiles across distributed client environments."
-    }
-  },
-  {
-    "id": "JS-0030",
-    "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Eval & Function Constructor",
-    "difficulty": "Basic",
-    "question": "[Q030] In JavaScript, focusing on Error Boundaries & Graceful Degradation inside an embedded financial analytics dashboard processing live WebSockets: Explain how \"Eval & Function Constructor\" (Language Mechanics & Coercion) functions. What fundamental problem does it solve, and how do you implement it correctly?",
-    "questionType": "Debugging",
-    "experienceLevels": [
-      "0-1",
-      "1-2",
-      "2-4"
-    ],
-    "expectedConcepts": [
-      "Eval & Function Constructor",
-      "Language Mechanics & Coercion",
-      "JavaScript",
-      "Error Boundaries & Graceful Degradation",
-      "Runtime Execution",
-      "Best Practices"
-    ],
-    "idealAnswerPoints": [
-      "State clear definition and primary purpose of Eval & Function Constructor",
-      "Provide concrete syntax or architectural example",
-      "Contrast with legacy or alternative approaches"
-    ],
-    "commonMistakes": [
-      "Confusing Eval & Function Constructor with adjacent mechanics",
-      "Overlooking basic edge cases and browser support"
-    ],
-    "followUpTopics": [
-      "Can you illustrate a real-world bug caused by improper use of Eval & Function Constructor?",
-      "How does this behave under strict mode or modern build targets?"
-    ],
-    "estimatedTimeMinutes": 3,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "eval---function-constructor",
-      "basic"
-    ],
+    "commonMistakes": ["Expecting console.log to return the printed value"],
+    "followUpTopics": ["Can a function return multiple values?"],
+    "estimatedTimeMinutes": 2,
+    "tags": ["javascript", "return", "basic"],
     "status": "APPROVED",
     "qualityScore": 94,
     "reviewStatus": "APPROVED",
     "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
     "rubric": {
-      "minimumExpected": "Eval & Function Constructor provides a core mechanism in JavaScript to handle language mechanics & coercion, ensuring predictable behavior and cleaner code structure.",
-      "strongAnswer": "It establishes explicit control over eval & function constructor, preventing unintended side effects and conforming to modern JavaScript standards with clean syntax.",
-      "seniorLevelExpectations": "In production, Eval & Function Constructor must be configured with awareness of memory lifecycle, browser runtime constraints, and team-wide conventions to prevent bugs.",
-      "expertLevelExpectations": "At high scale, it impacts compiler optimizations, cache invalidation, and runtime performance profiles across distributed client environments."
+      "minimumExpected": "Explains return and undefined default.",
+      "strongAnswer": "Both cases demonstrated.",
+      "seniorLevelExpectations": "Senior candidates note early-return style.",
+      "expertLevelExpectations": "Expert candidates mention completion values."
     }
   },
   {
-    "id": "JS-0031",
+    "id": "JS-B020",
     "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Garbage Collection",
+    "topic": "Functions",
+    "subtopic": "Callbacks",
     "difficulty": "Basic",
-    "question": "[Q031] In JavaScript, focusing on Observability, Telemetry & Real User Monitoring when integrating third-party untrusted scripts without compromising security: Explain how \"Garbage Collection\" (Closures & Memory) functions. What fundamental problem does it solve, and how do you implement it correctly?",
+    "question": "What is a callback function? Show setTimeout printing Done after one second using a callback.",
     "questionType": "Practical",
-    "experienceLevels": [
-      "0-1",
-      "1-2",
-      "2-4"
-    ],
-    "expectedConcepts": [
-      "Garbage Collection",
-      "Closures & Memory",
-      "JavaScript",
-      "Observability, Telemetry & Real User Monitoring",
-      "Runtime Execution",
-      "Best Practices"
-    ],
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["Deferred invocation", "Async scheduling"],
     "idealAnswerPoints": [
-      "State clear definition and primary purpose of Garbage Collection",
-      "Provide concrete syntax or architectural example",
-      "Contrast with legacy or alternative approaches"
+      "Callback passed to setTimeout runs later",
+      "Correct delay and message output"
     ],
-    "commonMistakes": [
-      "Confusing Garbage Collection with adjacent mechanics",
-      "Overlooking basic edge cases and browser support"
-    ],
-    "followUpTopics": [
-      "Can you illustrate a real-world bug caused by improper use of Garbage Collection?",
-      "How does this behave under strict mode or modern build targets?"
-    ],
+    "commonMistakes": ["Calling the callback immediately with ()"],
+    "followUpTopics": ["Sync vs async callbacks?"],
     "estimatedTimeMinutes": 3,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "garbage-collection",
-      "basic"
-    ],
+    "tags": ["javascript", "callbacks", "basic"],
     "status": "APPROVED",
     "qualityScore": 95,
     "reviewStatus": "APPROVED",
     "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
     "rubric": {
-      "minimumExpected": "Garbage Collection provides a core mechanism in JavaScript to handle closures & memory, ensuring predictable behavior and cleaner code structure.",
-      "strongAnswer": "It establishes explicit control over garbage collection, preventing unintended side effects and conforming to modern JavaScript standards with clean syntax.",
-      "seniorLevelExpectations": "In production, Garbage Collection must be configured with awareness of memory lifecycle, browser runtime constraints, and team-wide conventions to prevent bugs.",
-      "expertLevelExpectations": "At high scale, it impacts compiler optimizations, cache invalidation, and runtime performance profiles across distributed client environments."
+      "minimumExpected": "Defines callbacks and shows setTimeout.",
+      "strongAnswer": "Correct delayed output explained.",
+      "seniorLevelExpectations": "Senior candidates explain task queue timing.",
+      "expertLevelExpectations": "Expert candidates note timer clamping."
     }
   },
   {
-    "id": "JS-0032",
+    "id": "JS-B021",
     "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Symbol.iterator",
+    "topic": "Functions",
+    "subtopic": "Higher-Order Functions",
     "difficulty": "Basic",
-    "question": "[Q032] In JavaScript, focusing on Scalability Tradeoffs under High Traffic in an offline-first enterprise mobile web application: Explain how \"Symbol.iterator\" (Object Prototypes & Inheritance) functions. What fundamental problem does it solve, and how do you implement it correctly?",
-    "questionType": "Scenario Based",
-    "experienceLevels": [
-      "0-1",
-      "1-2",
-      "2-4"
-    ],
-    "expectedConcepts": [
-      "Symbol.iterator",
-      "Object Prototypes & Inheritance",
-      "JavaScript",
-      "Scalability Tradeoffs under High Traffic",
-      "Runtime Execution",
-      "Best Practices"
-    ],
-    "idealAnswerPoints": [
-      "State clear definition and primary purpose of Symbol.iterator",
-      "Provide concrete syntax or architectural example",
-      "Contrast with legacy or alternative approaches"
-    ],
-    "commonMistakes": [
-      "Confusing Symbol.iterator with adjacent mechanics",
-      "Overlooking basic edge cases and browser support"
-    ],
-    "followUpTopics": [
-      "Can you illustrate a real-world bug caused by improper use of Symbol.iterator?",
-      "How does this behave under strict mode or modern build targets?"
-    ],
-    "estimatedTimeMinutes": 3,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "symbol-iterator",
-      "basic"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 96,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Symbol.iterator provides a core mechanism in JavaScript to handle object prototypes & inheritance, ensuring predictable behavior and cleaner code structure.",
-      "strongAnswer": "It establishes explicit control over symbol.iterator, preventing unintended side effects and conforming to modern JavaScript standards with clean syntax.",
-      "seniorLevelExpectations": "In production, Symbol.iterator must be configured with awareness of memory lifecycle, browser runtime constraints, and team-wide conventions to prevent bugs.",
-      "expertLevelExpectations": "At high scale, it impacts compiler optimizations, cache invalidation, and runtime performance profiles across distributed client environments."
-    }
-  },
-  {
-    "id": "JS-0033",
-    "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Eval & Function Constructor",
-    "difficulty": "Basic",
-    "question": "[Q033] In JavaScript, focusing on Implementation Mechanics & Internal Execution when refactoring a legacy monolithic codebase with zero automated regression tests: Explain how \"Eval & Function Constructor\" (Language Mechanics & Coercion) functions. What fundamental problem does it solve, and how do you implement it correctly?",
-    "questionType": "System Design",
-    "experienceLevels": [
-      "0-1",
-      "1-2",
-      "2-4"
-    ],
-    "expectedConcepts": [
-      "Eval & Function Constructor",
-      "Language Mechanics & Coercion",
-      "JavaScript",
-      "Implementation Mechanics & Internal Execution",
-      "Runtime Execution",
-      "Best Practices"
-    ],
-    "idealAnswerPoints": [
-      "State clear definition and primary purpose of Eval & Function Constructor",
-      "Provide concrete syntax or architectural example",
-      "Contrast with legacy or alternative approaches"
-    ],
-    "commonMistakes": [
-      "Confusing Eval & Function Constructor with adjacent mechanics",
-      "Overlooking basic edge cases and browser support"
-    ],
-    "followUpTopics": [
-      "Can you illustrate a real-world bug caused by improper use of Eval & Function Constructor?",
-      "How does this behave under strict mode or modern build targets?"
-    ],
-    "estimatedTimeMinutes": 3,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "eval---function-constructor",
-      "basic"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 97,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Eval & Function Constructor provides a core mechanism in JavaScript to handle language mechanics & coercion, ensuring predictable behavior and cleaner code structure.",
-      "strongAnswer": "It establishes explicit control over eval & function constructor, preventing unintended side effects and conforming to modern JavaScript standards with clean syntax.",
-      "seniorLevelExpectations": "In production, Eval & Function Constructor must be configured with awareness of memory lifecycle, browser runtime constraints, and team-wide conventions to prevent bugs.",
-      "expertLevelExpectations": "At high scale, it impacts compiler optimizations, cache invalidation, and runtime performance profiles across distributed client environments."
-    }
-  },
-  {
-    "id": "JS-0034",
-    "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Garbage Collection",
-    "difficulty": "Basic",
-    "question": "[Q034] In JavaScript, focusing on Debugging & Production Failure Analysis within a real-time collaborative whiteboarding canvas: Explain how \"Garbage Collection\" (Closures & Memory) functions. What fundamental problem does it solve, and how do you implement it correctly?",
-    "questionType": "Problem Solving",
-    "experienceLevels": [
-      "0-1",
-      "1-2",
-      "2-4"
-    ],
-    "expectedConcepts": [
-      "Garbage Collection",
-      "Closures & Memory",
-      "JavaScript",
-      "Debugging & Production Failure Analysis",
-      "Runtime Execution",
-      "Best Practices"
-    ],
-    "idealAnswerPoints": [
-      "State clear definition and primary purpose of Garbage Collection",
-      "Provide concrete syntax or architectural example",
-      "Contrast with legacy or alternative approaches"
-    ],
-    "commonMistakes": [
-      "Confusing Garbage Collection with adjacent mechanics",
-      "Overlooking basic edge cases and browser support"
-    ],
-    "followUpTopics": [
-      "Can you illustrate a real-world bug caused by improper use of Garbage Collection?",
-      "How does this behave under strict mode or modern build targets?"
-    ],
-    "estimatedTimeMinutes": 3,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "garbage-collection",
-      "basic"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 98,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Garbage Collection provides a core mechanism in JavaScript to handle closures & memory, ensuring predictable behavior and cleaner code structure.",
-      "strongAnswer": "It establishes explicit control over garbage collection, preventing unintended side effects and conforming to modern JavaScript standards with clean syntax.",
-      "seniorLevelExpectations": "In production, Garbage Collection must be configured with awareness of memory lifecycle, browser runtime constraints, and team-wide conventions to prevent bugs.",
-      "expertLevelExpectations": "At high scale, it impacts compiler optimizations, cache invalidation, and runtime performance profiles across distributed client environments."
-    }
-  },
-  {
-    "id": "JS-0035",
-    "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Symbol.iterator",
-    "difficulty": "Basic",
-    "question": "[Q035] In JavaScript, focusing on Performance Optimization & Latency Bottlenecks during a live zero-downtime database and schema migration: Explain how \"Symbol.iterator\" (Object Prototypes & Inheritance) functions. What fundamental problem does it solve, and how do you implement it correctly?",
-    "questionType": "Debugging",
-    "experienceLevels": [
-      "0-1",
-      "1-2",
-      "2-4"
-    ],
-    "expectedConcepts": [
-      "Symbol.iterator",
-      "Object Prototypes & Inheritance",
-      "JavaScript",
-      "Performance Optimization & Latency Bottlenecks",
-      "Runtime Execution",
-      "Best Practices"
-    ],
-    "idealAnswerPoints": [
-      "State clear definition and primary purpose of Symbol.iterator",
-      "Provide concrete syntax or architectural example",
-      "Contrast with legacy or alternative approaches"
-    ],
-    "commonMistakes": [
-      "Confusing Symbol.iterator with adjacent mechanics",
-      "Overlooking basic edge cases and browser support"
-    ],
-    "followUpTopics": [
-      "Can you illustrate a real-world bug caused by improper use of Symbol.iterator?",
-      "How does this behave under strict mode or modern build targets?"
-    ],
-    "estimatedTimeMinutes": 3,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "symbol-iterator",
-      "basic"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 99,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Symbol.iterator provides a core mechanism in JavaScript to handle object prototypes & inheritance, ensuring predictable behavior and cleaner code structure.",
-      "strongAnswer": "It establishes explicit control over symbol.iterator, preventing unintended side effects and conforming to modern JavaScript standards with clean syntax.",
-      "seniorLevelExpectations": "In production, Symbol.iterator must be configured with awareness of memory lifecycle, browser runtime constraints, and team-wide conventions to prevent bugs.",
-      "expertLevelExpectations": "At high scale, it impacts compiler optimizations, cache invalidation, and runtime performance profiles across distributed client environments."
-    }
-  },
-  {
-    "id": "JS-0036",
-    "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Eval & Function Constructor",
-    "difficulty": "Basic",
-    "question": "[Q036] In JavaScript, focusing on Architecture & Modularity Design in an executive architectural review evaluating long-term technical debt: Explain how \"Eval & Function Constructor\" (Language Mechanics & Coercion) functions. What fundamental problem does it solve, and how do you implement it correctly?",
+    "question": "What is a higher-order function? Show one that takes a function and applies it twice to a value.",
     "questionType": "Practical",
-    "experienceLevels": [
-      "0-1",
-      "1-2",
-      "2-4"
-    ],
-    "expectedConcepts": [
-      "Eval & Function Constructor",
-      "Language Mechanics & Coercion",
-      "JavaScript",
-      "Architecture & Modularity Design",
-      "Runtime Execution",
-      "Best Practices"
-    ],
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["Functions as values", "Abstraction"],
     "idealAnswerPoints": [
-      "State clear definition and primary purpose of Eval & Function Constructor",
-      "Provide concrete syntax or architectural example",
-      "Contrast with legacy or alternative approaches"
+      "Takes or returns a function",
+      "Working apply-twice example"
     ],
-    "commonMistakes": [
-      "Confusing Eval & Function Constructor with adjacent mechanics",
-      "Overlooking basic edge cases and browser support"
+    "commonMistakes": ["Passing called results instead of the function"],
+    "followUpTopics": ["Name built-in higher-order functions."],
+    "estimatedTimeMinutes": 4,
+    "tags": ["javascript", "hof", "basic"],
+    "status": "APPROVED",
+    "qualityScore": 95,
+    "reviewStatus": "APPROVED",
+    "version": 1,
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
+    "rubric": {
+      "minimumExpected": "Defines higher-order functions.",
+      "strongAnswer": "Correct apply-twice implementation.",
+      "seniorLevelExpectations": "Senior candidates cite map/filter as examples.",
+      "expertLevelExpectations": "Expert candidates discuss composition patterns."
+    }
+  },
+  {
+    "id": "JS-B022",
+    "technology": "javascript",
+    "topic": "Functions",
+    "subtopic": "IIFE",
+    "difficulty": "Basic",
+    "question": "What is an IIFE? Write one that logs Started without leaking variables globally.",
+    "questionType": "Practical",
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["Immediate execution", "Scope isolation"],
+    "idealAnswerPoints": [
+      "Wraps function in parens and invokes at once",
+      "Variables stay out of global scope"
     ],
-    "followUpTopics": [
-      "Can you illustrate a real-world bug caused by improper use of Eval & Function Constructor?",
-      "How does this behave under strict mode or modern build targets?"
-    ],
+    "commonMistakes": ["Missing the wrapping parens"],
+    "followUpTopics": ["What replaced IIFEs in modern code?"],
     "estimatedTimeMinutes": 3,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "eval---function-constructor",
-      "basic"
+    "tags": ["javascript", "iife", "basic"],
+    "status": "APPROVED",
+    "qualityScore": 95,
+    "reviewStatus": "APPROVED",
+    "version": 1,
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
+    "rubric": {
+      "minimumExpected": "Expands IIFE and writes syntax.",
+      "strongAnswer": "Working isolated example.",
+      "seniorLevelExpectations": "Senior candidates link it to module history.",
+      "expertLevelExpectations": "Expert candidates parse expression grammar."
+    }
+  },
+  {
+    "id": "JS-B023",
+    "technology": "javascript",
+    "topic": "Functions",
+    "subtopic": "Nested Functions",
+    "difficulty": "Basic",
+    "question": "Can you define a function inside another function? Show an outer function with an inner helper it calls.",
+    "questionType": "Practical",
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["Nesting", "Encapsulation"],
+    "idealAnswerPoints": [
+      "Inner function defined and called within outer",
+      "Inner is hidden from outside code"
     ],
+    "commonMistakes": ["Trying to call the inner function globally"],
+    "followUpTopics": ["How does the inner see outer variables?"],
+    "estimatedTimeMinutes": 3,
+    "tags": ["javascript", "nesting", "basic"],
     "status": "APPROVED",
     "qualityScore": 94,
     "reviewStatus": "APPROVED",
     "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
     "rubric": {
-      "minimumExpected": "Eval & Function Constructor provides a core mechanism in JavaScript to handle language mechanics & coercion, ensuring predictable behavior and cleaner code structure.",
-      "strongAnswer": "It establishes explicit control over eval & function constructor, preventing unintended side effects and conforming to modern JavaScript standards with clean syntax.",
-      "seniorLevelExpectations": "In production, Eval & Function Constructor must be configured with awareness of memory lifecycle, browser runtime constraints, and team-wide conventions to prevent bugs.",
-      "expertLevelExpectations": "At high scale, it impacts compiler optimizations, cache invalidation, and runtime performance profiles across distributed client environments."
+      "minimumExpected": "Nests and calls a helper.",
+      "strongAnswer": "Clean encapsulated example.",
+      "seniorLevelExpectations": "Senior candidates note closure capture.",
+      "expertLevelExpectations": "Expert candidates discuss per-call allocation."
     }
   },
   {
-    "id": "JS-0037",
+    "id": "JS-B024",
     "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Garbage Collection",
+    "topic": "Functions",
+    "subtopic": "Function Hoisting",
     "difficulty": "Basic",
-    "question": "[Q037] In JavaScript, focusing on Edge Case Handling & Defensive Validation in a mission-critical healthcare portal with strict latency SLAs: Explain how \"Garbage Collection\" (Closures & Memory) functions. What fundamental problem does it solve, and how do you implement it correctly?",
-    "questionType": "Scenario Based",
-    "experienceLevels": [
-      "0-1",
-      "1-2",
-      "2-4"
-    ],
-    "expectedConcepts": [
-      "Garbage Collection",
-      "Closures & Memory",
-      "JavaScript",
-      "Edge Case Handling & Defensive Validation",
-      "Runtime Execution",
-      "Best Practices"
-    ],
+    "question": "Can you call a function declaration before its line in the file? Show it working and explain why.",
+    "questionType": "Theory",
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["Declaration hoisting", "Call order"],
     "idealAnswerPoints": [
-      "State clear definition and primary purpose of Garbage Collection",
-      "Provide concrete syntax or architectural example",
-      "Contrast with legacy or alternative approaches"
+      "Yes for declarations; they are lifted whole",
+      "Working before-line call demo"
     ],
-    "commonMistakes": [
-      "Confusing Garbage Collection with adjacent mechanics",
-      "Overlooking basic edge cases and browser support"
-    ],
-    "followUpTopics": [
-      "Can you illustrate a real-world bug caused by improper use of Garbage Collection?",
-      "How does this behave under strict mode or modern build targets?"
-    ],
-    "estimatedTimeMinutes": 3,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "garbage-collection",
-      "basic"
-    ],
+    "commonMistakes": ["Assuming expressions hoist the same way"],
+    "followUpTopics": ["What about const-held functions?"],
+    "estimatedTimeMinutes": 2,
+    "tags": ["javascript", "hoisting", "basic"],
     "status": "APPROVED",
-    "qualityScore": 95,
+    "qualityScore": 94,
     "reviewStatus": "APPROVED",
     "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
     "rubric": {
-      "minimumExpected": "Garbage Collection provides a core mechanism in JavaScript to handle closures & memory, ensuring predictable behavior and cleaner code structure.",
-      "strongAnswer": "It establishes explicit control over garbage collection, preventing unintended side effects and conforming to modern JavaScript standards with clean syntax.",
-      "seniorLevelExpectations": "In production, Garbage Collection must be configured with awareness of memory lifecycle, browser runtime constraints, and team-wide conventions to prevent bugs.",
-      "expertLevelExpectations": "At high scale, it impacts compiler optimizations, cache invalidation, and runtime performance profiles across distributed client environments."
+      "minimumExpected": "Demonstrates early call works.",
+      "strongAnswer": "Explains lifting clearly.",
+      "seniorLevelExpectations": "Senior candidates contrast expressions.",
+      "expertLevelExpectations": "Expert candidates cite instantiation semantics."
     }
   },
   {
-    "id": "JS-0038",
+    "id": "JS-B025",
     "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Symbol.iterator",
+    "topic": "Scope",
+    "subtopic": "Global vs Block",
     "difficulty": "Basic",
-    "question": "[Q038] In JavaScript, focusing on Memory Lifecycle & Garbage Collection Pressure in a design system adopted across 12 distinct product platforms: Explain how \"Symbol.iterator\" (Object Prototypes & Inheritance) functions. What fundamental problem does it solve, and how do you implement it correctly?",
-    "questionType": "System Design",
-    "experienceLevels": [
-      "0-1",
-      "1-2",
-      "2-4"
-    ],
-    "expectedConcepts": [
-      "Symbol.iterator",
-      "Object Prototypes & Inheritance",
-      "JavaScript",
-      "Memory Lifecycle & Garbage Collection Pressure",
-      "Runtime Execution",
-      "Best Practices"
-    ],
+    "question": "What is the difference between global scope and block scope? Show a let inside braces that is invisible outside.",
+    "questionType": "Practical",
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["Scope boundaries", "Visibility"],
     "idealAnswerPoints": [
-      "State clear definition and primary purpose of Symbol.iterator",
-      "Provide concrete syntax or architectural example",
-      "Contrast with legacy or alternative approaches"
+      "Global visible everywhere; block ends at braces",
+      "Accessing the inner let outside throws"
     ],
-    "commonMistakes": [
-      "Confusing Symbol.iterator with adjacent mechanics",
-      "Overlooking basic edge cases and browser support"
-    ],
-    "followUpTopics": [
-      "Can you illustrate a real-world bug caused by improper use of Symbol.iterator?",
-      "How does this behave under strict mode or modern build targets?"
-    ],
+    "commonMistakes": ["Declaring everything globally"],
+    "followUpTopics": ["Why minimize globals?"],
     "estimatedTimeMinutes": 3,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "symbol-iterator",
-      "basic"
-    ],
+    "tags": ["javascript", "scope", "basic"],
     "status": "APPROVED",
-    "qualityScore": 96,
+    "qualityScore": 95,
     "reviewStatus": "APPROVED",
     "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
     "rubric": {
-      "minimumExpected": "Symbol.iterator provides a core mechanism in JavaScript to handle object prototypes & inheritance, ensuring predictable behavior and cleaner code structure.",
-      "strongAnswer": "It establishes explicit control over symbol.iterator, preventing unintended side effects and conforming to modern JavaScript standards with clean syntax.",
-      "seniorLevelExpectations": "In production, Symbol.iterator must be configured with awareness of memory lifecycle, browser runtime constraints, and team-wide conventions to prevent bugs.",
-      "expertLevelExpectations": "At high scale, it impacts compiler optimizations, cache invalidation, and runtime performance profiles across distributed client environments."
+      "minimumExpected": "Shows the visibility difference.",
+      "strongAnswer": "Correct error case explained.",
+      "seniorLevelExpectations": "Senior candidates discuss pollution risks.",
+      "expertLevelExpectations": "Expert candidates cover environment records."
     }
   },
   {
-    "id": "JS-0039",
+    "id": "JS-B026",
     "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Eval & Function Constructor",
+    "topic": "Scope",
+    "subtopic": "var Hoisting Output",
     "difficulty": "Basic",
-    "question": "[Q039] In JavaScript, focusing on Security Hardening & Threat Mitigation across a distributed micro-frontend monorepo with 40+ engineering squads: Explain how \"Eval & Function Constructor\" (Language Mechanics & Coercion) functions. What fundamental problem does it solve, and how do you implement it correctly?",
-    "questionType": "Problem Solving",
-    "experienceLevels": [
-      "0-1",
-      "1-2",
-      "2-4"
-    ],
-    "expectedConcepts": [
-      "Eval & Function Constructor",
-      "Language Mechanics & Coercion",
-      "JavaScript",
-      "Security Hardening & Threat Mitigation",
-      "Runtime Execution",
-      "Best Practices"
-    ],
+    "question": "Predict the output of: console.log(a); var a = 5; Then explain each step of why it prints that.",
+    "questionType": "Theory",
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["Declaration lifting", "undefined init"],
     "idealAnswerPoints": [
-      "State clear definition and primary purpose of Eval & Function Constructor",
-      "Provide concrete syntax or architectural example",
-      "Contrast with legacy or alternative approaches"
+      "Prints undefined, not 5 or an error",
+      "Declaration lifts; assignment stays in place"
     ],
-    "commonMistakes": [
-      "Confusing Eval & Function Constructor with adjacent mechanics",
-      "Overlooking basic edge cases and browser support"
-    ],
-    "followUpTopics": [
-      "Can you illustrate a real-world bug caused by improper use of Eval & Function Constructor?",
-      "How does this behave under strict mode or modern build targets?"
-    ],
+    "commonMistakes": ["Predicting 5"],
+    "followUpTopics": ["What would let do instead?"],
     "estimatedTimeMinutes": 3,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "eval---function-constructor",
-      "basic"
-    ],
+    "tags": ["javascript", "hoisting", "basic"],
     "status": "APPROVED",
-    "qualityScore": 97,
+    "qualityScore": 95,
     "reviewStatus": "APPROVED",
     "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
     "rubric": {
-      "minimumExpected": "Eval & Function Constructor provides a core mechanism in JavaScript to handle language mechanics & coercion, ensuring predictable behavior and cleaner code structure.",
-      "strongAnswer": "It establishes explicit control over eval & function constructor, preventing unintended side effects and conforming to modern JavaScript standards with clean syntax.",
-      "seniorLevelExpectations": "In production, Eval & Function Constructor must be configured with awareness of memory lifecycle, browser runtime constraints, and team-wide conventions to prevent bugs.",
-      "expertLevelExpectations": "At high scale, it impacts compiler optimizations, cache invalidation, and runtime performance profiles across distributed client environments."
+      "minimumExpected": "Predicts undefined.",
+      "strongAnswer": "Step-by-step lifting explanation.",
+      "seniorLevelExpectations": "Senior candidates contrast let TDZ.",
+      "expertLevelExpectations": "Expert candidates detail creation phase."
     }
   },
   {
-    "id": "JS-0040",
+    "id": "JS-B027",
     "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Garbage Collection",
+    "topic": "Scope",
+    "subtopic": "Temporal Dead Zone",
     "difficulty": "Basic",
-    "question": "[Q040] In JavaScript, focusing on Testing Strategy & Flakiness Elimination inside a multi-tenant SaaS application with strict client-side data isolation: Explain how \"Garbage Collection\" (Closures & Memory) functions. What fundamental problem does it solve, and how do you implement it correctly?",
-    "questionType": "Debugging",
-    "experienceLevels": [
-      "0-1",
-      "1-2",
-      "2-4"
-    ],
-    "expectedConcepts": [
-      "Garbage Collection",
-      "Closures & Memory",
-      "JavaScript",
-      "Testing Strategy & Flakiness Elimination",
-      "Runtime Execution",
-      "Best Practices"
-    ],
+    "question": "What error do you get from: console.log(b); let b = 5;? Explain the temporal dead zone in plain words.",
+    "questionType": "Theory",
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["TDZ", "ReferenceError"],
     "idealAnswerPoints": [
-      "State clear definition and primary purpose of Garbage Collection",
-      "Provide concrete syntax or architectural example",
-      "Contrast with legacy or alternative approaches"
+      "ReferenceError: Cannot access before initialization",
+      "The variable exists but is off-limits until its line"
     ],
-    "commonMistakes": [
-      "Confusing Garbage Collection with adjacent mechanics",
-      "Overlooking basic edge cases and browser support"
-    ],
-    "followUpTopics": [
-      "Can you illustrate a real-world bug caused by improper use of Garbage Collection?",
-      "How does this behave under strict mode or modern build targets?"
-    ],
+    "commonMistakes": ["Expecting undefined like var"],
+    "followUpTopics": ["Does const behave the same?"],
     "estimatedTimeMinutes": 3,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "garbage-collection",
-      "basic"
-    ],
+    "tags": ["javascript", "tdz", "basic"],
     "status": "APPROVED",
-    "qualityScore": 98,
+    "qualityScore": 95,
     "reviewStatus": "APPROVED",
     "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
     "rubric": {
-      "minimumExpected": "Garbage Collection provides a core mechanism in JavaScript to handle closures & memory, ensuring predictable behavior and cleaner code structure.",
-      "strongAnswer": "It establishes explicit control over garbage collection, preventing unintended side effects and conforming to modern JavaScript standards with clean syntax.",
-      "seniorLevelExpectations": "In production, Garbage Collection must be configured with awareness of memory lifecycle, browser runtime constraints, and team-wide conventions to prevent bugs.",
-      "expertLevelExpectations": "At high scale, it impacts compiler optimizations, cache invalidation, and runtime performance profiles across distributed client environments."
+      "minimumExpected": "Names the ReferenceError.",
+      "strongAnswer": "Plain-words TDZ explanation.",
+      "seniorLevelExpectations": "Senior candidates compare var behavior.",
+      "expertLevelExpectations": "Expert candidates note uninitialized binding state."
     }
   },
   {
-    "id": "JS-0041",
+    "id": "JS-B028",
     "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Symbol.iterator",
+    "topic": "Closures",
+    "subtopic": "Definition",
     "difficulty": "Basic",
-    "question": "[Q041] In JavaScript, focusing on Cross-Browser Consistency & Standards Compliance during high-concurrency peak retail traffic (e.g. Cyber Monday): Explain how \"Symbol.iterator\" (Object Prototypes & Inheritance) functions. What fundamental problem does it solve, and how do you implement it correctly?",
-    "questionType": "Practical",
-    "experienceLevels": [
-      "0-1",
-      "1-2",
-      "2-4"
-    ],
-    "expectedConcepts": [
-      "Symbol.iterator",
-      "Object Prototypes & Inheritance",
-      "JavaScript",
-      "Cross-Browser Consistency & Standards Compliance",
-      "Runtime Execution",
-      "Best Practices"
-    ],
+    "question": "In plain words, what is a closure? Give a one-sentence definition plus a tiny example.",
+    "questionType": "Theory",
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["Lexical capture", "Plain definition"],
     "idealAnswerPoints": [
-      "State clear definition and primary purpose of Symbol.iterator",
-      "Provide concrete syntax or architectural example",
-      "Contrast with legacy or alternative approaches"
+      "A function that remembers its outer variables",
+      "Tiny example showing remembered value"
     ],
-    "commonMistakes": [
-      "Confusing Symbol.iterator with adjacent mechanics",
-      "Overlooking basic edge cases and browser support"
-    ],
-    "followUpTopics": [
-      "Can you illustrate a real-world bug caused by improper use of Symbol.iterator?",
-      "How does this behave under strict mode or modern build targets?"
-    ],
-    "estimatedTimeMinutes": 3,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "symbol-iterator",
-      "basic"
-    ],
+    "commonMistakes": ["Calling any nested function a closure"],
+    "followUpTopics": ["Where have you used one unknowingly?"],
+    "estimatedTimeMinutes": 2,
+    "tags": ["javascript", "closures", "basic"],
     "status": "APPROVED",
-    "qualityScore": 99,
+    "qualityScore": 95,
     "reviewStatus": "APPROVED",
     "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
     "rubric": {
-      "minimumExpected": "Symbol.iterator provides a core mechanism in JavaScript to handle object prototypes & inheritance, ensuring predictable behavior and cleaner code structure.",
-      "strongAnswer": "It establishes explicit control over symbol.iterator, preventing unintended side effects and conforming to modern JavaScript standards with clean syntax.",
-      "seniorLevelExpectations": "In production, Symbol.iterator must be configured with awareness of memory lifecycle, browser runtime constraints, and team-wide conventions to prevent bugs.",
-      "expertLevelExpectations": "At high scale, it impacts compiler optimizations, cache invalidation, and runtime performance profiles across distributed client environments."
+      "minimumExpected": "Gives the remembered-variables definition.",
+      "strongAnswer": "Definition plus correct tiny example.",
+      "seniorLevelExpectations": "Senior candidates add a real-world use.",
+      "expertLevelExpectations": "Expert candidates mention scope retention cost."
     }
   },
   {
-    "id": "JS-0042",
+    "id": "JS-B029",
     "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Eval & Function Constructor",
+    "topic": "Closures",
+    "subtopic": "Private Counter",
     "difficulty": "Basic",
-    "question": "[Q042] In JavaScript, focusing on Developer Experience & API Ergonomics in a low-bandwidth, high-latency global mobile environment: Explain how \"Eval & Function Constructor\" (Language Mechanics & Coercion) functions. What fundamental problem does it solve, and how do you implement it correctly?",
-    "questionType": "Scenario Based",
-    "experienceLevels": [
-      "0-1",
-      "1-2",
-      "2-4"
-    ],
-    "expectedConcepts": [
-      "Eval & Function Constructor",
-      "Language Mechanics & Coercion",
-      "JavaScript",
-      "Developer Experience & API Ergonomics",
-      "Runtime Execution",
-      "Best Practices"
-    ],
+    "question": "Write a makeCounter function using a closure so the count stays private and only changes through returned methods.",
+    "questionType": "Practical",
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["Private state", "Returned interface"],
     "idealAnswerPoints": [
-      "State clear definition and primary purpose of Eval & Function Constructor",
-      "Provide concrete syntax or architectural example",
-      "Contrast with legacy or alternative approaches"
+      "Outer holds count; inner methods close over it",
+      "No direct global access to count"
     ],
-    "commonMistakes": [
-      "Confusing Eval & Function Constructor with adjacent mechanics",
-      "Overlooking basic edge cases and browser support"
-    ],
-    "followUpTopics": [
-      "Can you illustrate a real-world bug caused by improper use of Eval & Function Constructor?",
-      "How does this behave under strict mode or modern build targets?"
-    ],
-    "estimatedTimeMinutes": 3,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "eval---function-constructor",
-      "basic"
-    ],
+    "commonMistakes": ["Storing count outside the closure"],
+    "followUpTopics": ["How would you add a reset method?"],
+    "estimatedTimeMinutes": 4,
+    "tags": ["javascript", "closures", "basic"],
     "status": "APPROVED",
-    "qualityScore": 94,
+    "qualityScore": 96,
     "reviewStatus": "APPROVED",
     "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
     "rubric": {
-      "minimumExpected": "Eval & Function Constructor provides a core mechanism in JavaScript to handle language mechanics & coercion, ensuring predictable behavior and cleaner code structure.",
-      "strongAnswer": "It establishes explicit control over eval & function constructor, preventing unintended side effects and conforming to modern JavaScript standards with clean syntax.",
-      "seniorLevelExpectations": "In production, Eval & Function Constructor must be configured with awareness of memory lifecycle, browser runtime constraints, and team-wide conventions to prevent bugs.",
-      "expertLevelExpectations": "At high scale, it impacts compiler optimizations, cache invalidation, and runtime performance profiles across distributed client environments."
+      "minimumExpected": "Counter works through closure methods.",
+      "strongAnswer": "Fully private with clean interface.",
+      "seniorLevelExpectations": "Senior candidates add reset cleanly.",
+      "expertLevelExpectations": "Expert candidates note per-instance memory."
     }
   },
   {
-    "id": "JS-0043",
+    "id": "JS-B030",
     "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Garbage Collection",
+    "topic": "Closures",
+    "subtopic": "Greeting Factory",
     "difficulty": "Basic",
-    "question": "[Q043] In JavaScript, focusing on Concurrency & Asynchronous Race Conditions in a high-throughput fintech checkout system: Explain how \"Garbage Collection\" (Closures & Memory) functions. What fundamental problem does it solve, and how do you implement it correctly?",
-    "questionType": "System Design",
-    "experienceLevels": [
-      "0-1",
-      "1-2",
-      "2-4"
-    ],
-    "expectedConcepts": [
-      "Garbage Collection",
-      "Closures & Memory",
-      "JavaScript",
-      "Concurrency & Asynchronous Race Conditions",
-      "Runtime Execution",
-      "Best Practices"
-    ],
+    "question": "Write a greeter factory: makeGreeter('Hi') returns a function that greets any name with Hi. Show two greeters coexisting.",
+    "questionType": "Practical",
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["Factory pattern", "Independent captures"],
     "idealAnswerPoints": [
-      "State clear definition and primary purpose of Garbage Collection",
-      "Provide concrete syntax or architectural example",
-      "Contrast with legacy or alternative approaches"
+      "Factory captures its greeting per call",
+      "Two greeters keep separate greetings"
     ],
-    "commonMistakes": [
-      "Confusing Garbage Collection with adjacent mechanics",
-      "Overlooking basic edge cases and browser support"
-    ],
-    "followUpTopics": [
-      "Can you illustrate a real-world bug caused by improper use of Garbage Collection?",
-      "How does this behave under strict mode or modern build targets?"
-    ],
-    "estimatedTimeMinutes": 3,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "garbage-collection",
-      "basic"
-    ],
+    "commonMistakes": ["Sharing one greeting variable"],
+    "followUpTopics": ["Why do the two stay independent?"],
+    "estimatedTimeMinutes": 4,
+    "tags": ["javascript", "closures", "basic"],
     "status": "APPROVED",
     "qualityScore": 95,
     "reviewStatus": "APPROVED",
     "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
     "rubric": {
-      "minimumExpected": "Garbage Collection provides a core mechanism in JavaScript to handle closures & memory, ensuring predictable behavior and cleaner code structure.",
-      "strongAnswer": "It establishes explicit control over garbage collection, preventing unintended side effects and conforming to modern JavaScript standards with clean syntax.",
-      "seniorLevelExpectations": "In production, Garbage Collection must be configured with awareness of memory lifecycle, browser runtime constraints, and team-wide conventions to prevent bugs.",
-      "expertLevelExpectations": "At high scale, it impacts compiler optimizations, cache invalidation, and runtime performance profiles across distributed client environments."
+      "minimumExpected": "Factory returns working greeters.",
+      "strongAnswer": "Independence demonstrated.",
+      "seniorLevelExpectations": "Senior candidates explain separate environments.",
+      "expertLevelExpectations": "Expert candidates generalize to currying."
     }
   },
   {
-    "id": "JS-0044",
+    "id": "JS-B031",
     "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Symbol.iterator",
+    "topic": "this Keyword",
+    "subtopic": "Method Call",
     "difficulty": "Basic",
-    "question": "[Q044] In JavaScript, focusing on Refactoring & Safe Legacy Migration within a media streaming player handling adaptive bitrate switching: Explain how \"Symbol.iterator\" (Object Prototypes & Inheritance) functions. What fundamental problem does it solve, and how do you implement it correctly?",
-    "questionType": "Problem Solving",
-    "experienceLevels": [
-      "0-1",
-      "1-2",
-      "2-4"
-    ],
-    "expectedConcepts": [
-      "Symbol.iterator",
-      "Object Prototypes & Inheritance",
-      "JavaScript",
-      "Refactoring & Safe Legacy Migration",
-      "Runtime Execution",
-      "Best Practices"
-    ],
+    "question": "Show an object with a method that logs this.name working, then detach the method and show what breaks. Explain both.",
+    "questionType": "Practical",
+    "experienceLevels": ["0-1", "1-2", "2-4"],
+    "expectedConcepts": ["Method binding", "Detachment loss"],
     "idealAnswerPoints": [
-      "State clear definition and primary purpose of Symbol.iterator",
-      "Provide concrete syntax or architectural example",
-      "Contrast with legacy or alternative approaches"
+      "Method call binds this to the object",
+      "Detached call loses it; explains call-site rule"
     ],
-    "commonMistakes": [
-      "Confusing Symbol.iterator with adjacent mechanics",
-      "Overlooking basic edge cases and browser support"
-    ],
-    "followUpTopics": [
-      "Can you illustrate a real-world bug caused by improper use of Symbol.iterator?",
-      "How does this behave under strict mode or modern build targets?"
-    ],
-    "estimatedTimeMinutes": 3,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "symbol-iterator",
-      "basic"
-    ],
+    "commonMistakes": ["Expecting this to stay bound after detach"],
+    "followUpTopics": ["How do you permanently bind it?"],
+    "estimatedTimeMinutes": 4,
+    "tags": ["javascript", "this", "basic"],
     "status": "APPROVED",
-    "qualityScore": 96,
+    "qualityScore": 95,
     "reviewStatus": "APPROVED",
     "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
     "rubric": {
-      "minimumExpected": "Symbol.iterator provides a core mechanism in JavaScript to handle object prototypes & inheritance, ensuring predictable behavior and cleaner code structure.",
-      "strongAnswer": "It establishes explicit control over symbol.iterator, preventing unintended side effects and conforming to modern JavaScript standards with clean syntax.",
-      "seniorLevelExpectations": "In production, Symbol.iterator must be configured with awareness of memory lifecycle, browser runtime constraints, and team-wide conventions to prevent bugs.",
-      "expertLevelExpectations": "At high scale, it impacts compiler optimizations, cache invalidation, and runtime performance profiles across distributed client environments."
+      "minimumExpected": "Shows both behaviors.",
+      "strongAnswer": "Both explained via call-site rule.",
+      "seniorLevelExpectations": "Senior candidates fix with bind.",
+      "expertLevelExpectations": "Expert candidates detail strict-mode default."
     }
   },
   {
-    "id": "JS-0045",
+    "id": "JS-B032",
     "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Eval & Function Constructor",
+    "topic": "this Keyword",
+    "subtopic": "Plain Call",
     "difficulty": "Basic",
-    "question": "[Q045] In JavaScript, focusing on State Synchronization & Boundary Isolation during a high-severity production outage requiring immediate triage: Explain how \"Eval & Function Constructor\" (Language Mechanics & Coercion) functions. What fundamental problem does it solve, and how do you implement it correctly?",
-    "questionType": "Debugging",
-    "experienceLevels": [
-      "0-1",
-      "1-2",
-      "2-4"
-    ],
-    "expectedConcepts": [
-      "Eval & Function Constructor",
-      "Language Mechanics & Coercion",
-      "JavaScript",
-      "State Synchronization & Boundary Isolation",
-      "Runtime Execution",
-      "Best Practices"
-    ],
+    "question": "What is this inside a plain function call in strict mode versus sloppy mode? Demonstrate both outcomes.",
+    "questionType": "Theory",
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["Strict undefined", "Global fallback"],
     "idealAnswerPoints": [
-      "State clear definition and primary purpose of Eval & Function Constructor",
-      "Provide concrete syntax or architectural example",
-      "Contrast with legacy or alternative approaches"
+      "Strict gives undefined; sloppy gives global object",
+      "Both demonstrated"
     ],
-    "commonMistakes": [
-      "Confusing Eval & Function Constructor with adjacent mechanics",
-      "Overlooking basic edge cases and browser support"
-    ],
-    "followUpTopics": [
-      "Can you illustrate a real-world bug caused by improper use of Eval & Function Constructor?",
-      "How does this behave under strict mode or modern build targets?"
-    ],
+    "commonMistakes": ["Assuming global in both modes"],
+    "followUpTopics": ["Why did modules choose strict?"],
     "estimatedTimeMinutes": 3,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "eval---function-constructor",
-      "basic"
-    ],
+    "tags": ["javascript", "this", "basic"],
     "status": "APPROVED",
-    "qualityScore": 97,
+    "qualityScore": 94,
     "reviewStatus": "APPROVED",
     "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
     "rubric": {
-      "minimumExpected": "Eval & Function Constructor provides a core mechanism in JavaScript to handle language mechanics & coercion, ensuring predictable behavior and cleaner code structure.",
-      "strongAnswer": "It establishes explicit control over eval & function constructor, preventing unintended side effects and conforming to modern JavaScript standards with clean syntax.",
-      "seniorLevelExpectations": "In production, Eval & Function Constructor must be configured with awareness of memory lifecycle, browser runtime constraints, and team-wide conventions to prevent bugs.",
-      "expertLevelExpectations": "At high scale, it impacts compiler optimizations, cache invalidation, and runtime performance profiles across distributed client environments."
+      "minimumExpected": "States both outcomes.",
+      "strongAnswer": "Both demonstrated correctly.",
+      "seniorLevelExpectations": "Senior candidates explain the rationale.",
+      "expertLevelExpectations": "Expert candidates cite spec receiver steps."
     }
   },
   {
-    "id": "JS-0046",
+    "id": "JS-B033",
     "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Garbage Collection",
+    "topic": "this Keyword",
+    "subtopic": "Arrow this",
     "difficulty": "Basic",
-    "question": "[Q046] In JavaScript, focusing on Error Boundaries & Graceful Degradation inside an embedded financial analytics dashboard processing live WebSockets: Explain how \"Garbage Collection\" (Closures & Memory) functions. What fundamental problem does it solve, and how do you implement it correctly?",
+    "question": "Why does an arrow function ignore call-site this? Show an arrow inside a method keeping the object context in a setTimeout.",
     "questionType": "Practical",
-    "experienceLevels": [
-      "0-1",
-      "1-2",
-      "2-4"
-    ],
-    "expectedConcepts": [
-      "Garbage Collection",
-      "Closures & Memory",
-      "JavaScript",
-      "Error Boundaries & Graceful Degradation",
-      "Runtime Execution",
-      "Best Practices"
-    ],
+    "experienceLevels": ["0-1", "1-2", "2-4"],
+    "expectedConcepts": ["Lexical this", "Callback context"],
     "idealAnswerPoints": [
-      "State clear definition and primary purpose of Garbage Collection",
-      "Provide concrete syntax or architectural example",
-      "Contrast with legacy or alternative approaches"
+      "Arrow captures surrounding this at definition",
+      "setTimeout arrow still sees the object"
     ],
-    "commonMistakes": [
-      "Confusing Garbage Collection with adjacent mechanics",
-      "Overlooking basic edge cases and browser support"
-    ],
-    "followUpTopics": [
-      "Can you illustrate a real-world bug caused by improper use of Garbage Collection?",
-      "How does this behave under strict mode or modern build targets?"
-    ],
-    "estimatedTimeMinutes": 3,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "garbage-collection",
-      "basic"
-    ],
+    "commonMistakes": ["Using regular function and losing context"],
+    "followUpTopics": ["When is arrow the wrong choice?"],
+    "estimatedTimeMinutes": 4,
+    "tags": ["javascript", "arrow", "this", "basic"],
     "status": "APPROVED",
-    "qualityScore": 98,
+    "qualityScore": 95,
     "reviewStatus": "APPROVED",
     "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
     "rubric": {
-      "minimumExpected": "Garbage Collection provides a core mechanism in JavaScript to handle closures & memory, ensuring predictable behavior and cleaner code structure.",
-      "strongAnswer": "It establishes explicit control over garbage collection, preventing unintended side effects and conforming to modern JavaScript standards with clean syntax.",
-      "seniorLevelExpectations": "In production, Garbage Collection must be configured with awareness of memory lifecycle, browser runtime constraints, and team-wide conventions to prevent bugs.",
-      "expertLevelExpectations": "At high scale, it impacts compiler optimizations, cache invalidation, and runtime performance profiles across distributed client environments."
+      "minimumExpected": "Shows the preserved context.",
+      "strongAnswer": "Lexical rule explained with demo.",
+      "seniorLevelExpectations": "Senior candidates contrast bind alternative.",
+      "expertLevelExpectations": "Expert candidates note no own this slot."
     }
   },
   {
-    "id": "JS-0047",
+    "id": "JS-B034",
     "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Symbol.iterator",
+    "topic": "Scope",
+    "subtopic": "Lexical Chain",
     "difficulty": "Basic",
-    "question": "[Q047] In JavaScript, focusing on Observability, Telemetry & Real User Monitoring when integrating third-party untrusted scripts without compromising security: Explain how \"Symbol.iterator\" (Object Prototypes & Inheritance) functions. What fundamental problem does it solve, and how do you implement it correctly?",
-    "questionType": "Scenario Based",
-    "experienceLevels": [
-      "0-1",
-      "1-2",
-      "2-4"
-    ],
-    "expectedConcepts": [
-      "Symbol.iterator",
-      "Object Prototypes & Inheritance",
-      "JavaScript",
-      "Observability, Telemetry & Real User Monitoring",
-      "Runtime Execution",
-      "Best Practices"
-    ],
+    "question": "How does JavaScript resolve a variable through nested scopes? Show three nested levels reading one outer variable.",
+    "questionType": "Practical",
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["Scope chain", "Outward lookup"],
     "idealAnswerPoints": [
-      "State clear definition and primary purpose of Symbol.iterator",
-      "Provide concrete syntax or architectural example",
-      "Contrast with legacy or alternative approaches"
+      "Lookup walks outward until found",
+      "Three-level demo reading outer value"
     ],
-    "commonMistakes": [
-      "Confusing Symbol.iterator with adjacent mechanics",
-      "Overlooking basic edge cases and browser support"
-    ],
-    "followUpTopics": [
-      "Can you illustrate a real-world bug caused by improper use of Symbol.iterator?",
-      "How does this behave under strict mode or modern build targets?"
-    ],
+    "commonMistakes": ["Thinking inner scopes are visible outward"],
+    "followUpTopics": ["What happens when nothing holds it?"],
     "estimatedTimeMinutes": 3,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "symbol-iterator",
-      "basic"
-    ],
+    "tags": ["javascript", "scope", "basic"],
     "status": "APPROVED",
-    "qualityScore": 99,
+    "qualityScore": 94,
     "reviewStatus": "APPROVED",
     "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
     "rubric": {
-      "minimumExpected": "Symbol.iterator provides a core mechanism in JavaScript to handle object prototypes & inheritance, ensuring predictable behavior and cleaner code structure.",
-      "strongAnswer": "It establishes explicit control over symbol.iterator, preventing unintended side effects and conforming to modern JavaScript standards with clean syntax.",
-      "seniorLevelExpectations": "In production, Symbol.iterator must be configured with awareness of memory lifecycle, browser runtime constraints, and team-wide conventions to prevent bugs.",
-      "expertLevelExpectations": "At high scale, it impacts compiler optimizations, cache invalidation, and runtime performance profiles across distributed client environments."
+      "minimumExpected": "Demonstrates outward lookup.",
+      "strongAnswer": "Three levels working.",
+      "seniorLevelExpectations": "Senior candidates add shadowing nuance.",
+      "expertLevelExpectations": "Expert candidates reference environments."
     }
   },
   {
-    "id": "JS-0048",
+    "id": "JS-B035",
     "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Eval & Function Constructor",
+    "topic": "Arrays",
+    "subtopic": "Create and Access",
     "difficulty": "Basic",
-    "question": "[Q048] In JavaScript, focusing on Scalability Tradeoffs under High Traffic in an offline-first enterprise mobile web application: Explain how \"Eval & Function Constructor\" (Language Mechanics & Coercion) functions. What fundamental problem does it solve, and how do you implement it correctly?",
-    "questionType": "System Design",
-    "experienceLevels": [
-      "0-1",
-      "1-2",
-      "2-4"
-    ],
-    "expectedConcepts": [
-      "Eval & Function Constructor",
-      "Language Mechanics & Coercion",
-      "JavaScript",
-      "Scalability Tradeoffs under High Traffic",
-      "Runtime Execution",
-      "Best Practices"
-    ],
+    "question": "How do you create an array and access its first and last elements? Show with ['a', 'b', 'c'].",
+    "questionType": "Practical",
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["Zero indexing", "Length property"],
     "idealAnswerPoints": [
-      "State clear definition and primary purpose of Eval & Function Constructor",
-      "Provide concrete syntax or architectural example",
-      "Contrast with legacy or alternative approaches"
+      "First via index 0; last via length - 1",
+      "Correct outputs shown"
     ],
-    "commonMistakes": [
-      "Confusing Eval & Function Constructor with adjacent mechanics",
-      "Overlooking basic edge cases and browser support"
-    ],
-    "followUpTopics": [
-      "Can you illustrate a real-world bug caused by improper use of Eval & Function Constructor?",
-      "How does this behave under strict mode or modern build targets?"
-    ],
-    "estimatedTimeMinutes": 3,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "eval---function-constructor",
-      "basic"
-    ],
+    "commonMistakes": ["Using index 1 for first element"],
+    "followUpTopics": ["What is at(-1)?"],
+    "estimatedTimeMinutes": 2,
+    "tags": ["javascript", "arrays", "basic"],
     "status": "APPROVED",
     "qualityScore": 94,
     "reviewStatus": "APPROVED",
     "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
     "rubric": {
-      "minimumExpected": "Eval & Function Constructor provides a core mechanism in JavaScript to handle language mechanics & coercion, ensuring predictable behavior and cleaner code structure.",
-      "strongAnswer": "It establishes explicit control over eval & function constructor, preventing unintended side effects and conforming to modern JavaScript standards with clean syntax.",
-      "seniorLevelExpectations": "In production, Eval & Function Constructor must be configured with awareness of memory lifecycle, browser runtime constraints, and team-wide conventions to prevent bugs.",
-      "expertLevelExpectations": "At high scale, it impacts compiler optimizations, cache invalidation, and runtime performance profiles across distributed client environments."
+      "minimumExpected": "Accesses both ends.",
+      "strongAnswer": "Correct indices explained.",
+      "seniorLevelExpectations": "Senior candidates mention at() method.",
+      "expertLevelExpectations": "Expert candidates note hole behavior."
     }
   },
   {
-    "id": "JS-0049",
+    "id": "JS-B036",
     "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Garbage Collection",
+    "topic": "Arrays",
+    "subtopic": "push and pop",
     "difficulty": "Basic",
-    "question": "[Q049] In JavaScript, focusing on Implementation Mechanics & Internal Execution when refactoring a legacy monolithic codebase with zero automated regression tests: Explain how \"Garbage Collection\" (Closures & Memory) functions. What fundamental problem does it solve, and how do you implement it correctly?",
-    "questionType": "Problem Solving",
-    "experienceLevels": [
-      "0-1",
-      "1-2",
-      "2-4"
-    ],
-    "expectedConcepts": [
-      "Garbage Collection",
-      "Closures & Memory",
-      "JavaScript",
-      "Implementation Mechanics & Internal Execution",
-      "Runtime Execution",
-      "Best Practices"
-    ],
+    "question": "What do push and pop do? Starting from [1, 2], push 3 then pop, showing the array and popped value each step.",
+    "questionType": "Practical",
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["Stack end ops", "Return values"],
     "idealAnswerPoints": [
-      "State clear definition and primary purpose of Garbage Collection",
-      "Provide concrete syntax or architectural example",
-      "Contrast with legacy or alternative approaches"
+      "push appends and returns length; pop removes and returns item",
+      "Step outputs correct"
     ],
-    "commonMistakes": [
-      "Confusing Garbage Collection with adjacent mechanics",
-      "Overlooking basic edge cases and browser support"
-    ],
-    "followUpTopics": [
-      "Can you illustrate a real-world bug caused by improper use of Garbage Collection?",
-      "How does this behave under strict mode or modern build targets?"
-    ],
+    "commonMistakes": ["Thinking push returns the array"],
+    "followUpTopics": ["How do shift/unshift differ?"],
     "estimatedTimeMinutes": 3,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "garbage-collection",
-      "basic"
-    ],
+    "tags": ["javascript", "arrays", "basic"],
     "status": "APPROVED",
     "qualityScore": 95,
     "reviewStatus": "APPROVED",
     "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
     "rubric": {
-      "minimumExpected": "Garbage Collection provides a core mechanism in JavaScript to handle closures & memory, ensuring predictable behavior and cleaner code structure.",
-      "strongAnswer": "It establishes explicit control over garbage collection, preventing unintended side effects and conforming to modern JavaScript standards with clean syntax.",
-      "seniorLevelExpectations": "In production, Garbage Collection must be configured with awareness of memory lifecycle, browser runtime constraints, and team-wide conventions to prevent bugs.",
-      "expertLevelExpectations": "At high scale, it impacts compiler optimizations, cache invalidation, and runtime performance profiles across distributed client environments."
+      "minimumExpected": "Uses both correctly.",
+      "strongAnswer": "Return values stated right.",
+      "seniorLevelExpectations": "Senior candidates note mutation in place.",
+      "expertLevelExpectations": "Expert candidates discuss length mechanics."
     }
   },
   {
-    "id": "JS-0050",
+    "id": "JS-B037",
     "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Symbol.iterator",
+    "topic": "Arrays",
+    "subtopic": "shift and unshift",
     "difficulty": "Basic",
-    "question": "[Q050] In JavaScript, focusing on Debugging & Production Failure Analysis within a real-time collaborative whiteboarding canvas: Explain how \"Symbol.iterator\" (Object Prototypes & Inheritance) functions. What fundamental problem does it solve, and how do you implement it correctly?",
-    "questionType": "Debugging",
-    "experienceLevels": [
-      "0-1",
-      "1-2",
-      "2-4"
-    ],
-    "expectedConcepts": [
-      "Symbol.iterator",
-      "Object Prototypes & Inheritance",
-      "JavaScript",
-      "Debugging & Production Failure Analysis",
-      "Runtime Execution",
-      "Best Practices"
-    ],
+    "question": "What do shift and unshift do? Starting from [2, 3], unshift 1 then shift, showing results each step.",
+    "questionType": "Practical",
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["Front ops", "Mirror of push/pop"],
     "idealAnswerPoints": [
-      "State clear definition and primary purpose of Symbol.iterator",
-      "Provide concrete syntax or architectural example",
-      "Contrast with legacy or alternative approaches"
+      "unshift prepends; shift removes first",
+      "Step outputs correct"
     ],
-    "commonMistakes": [
-      "Confusing Symbol.iterator with adjacent mechanics",
-      "Overlooking basic edge cases and browser support"
-    ],
-    "followUpTopics": [
-      "Can you illustrate a real-world bug caused by improper use of Symbol.iterator?",
-      "How does this behave under strict mode or modern build targets?"
-    ],
+    "commonMistakes": ["Mixing up which end each touches"],
+    "followUpTopics": ["Which end is cheaper and why?"],
     "estimatedTimeMinutes": 3,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "symbol-iterator",
-      "basic"
-    ],
+    "tags": ["javascript", "arrays", "basic"],
     "status": "APPROVED",
-    "qualityScore": 96,
+    "qualityScore": 94,
     "reviewStatus": "APPROVED",
     "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
     "rubric": {
-      "minimumExpected": "Symbol.iterator provides a core mechanism in JavaScript to handle object prototypes & inheritance, ensuring predictable behavior and cleaner code structure.",
-      "strongAnswer": "It establishes explicit control over symbol.iterator, preventing unintended side effects and conforming to modern JavaScript standards with clean syntax.",
-      "seniorLevelExpectations": "In production, Symbol.iterator must be configured with awareness of memory lifecycle, browser runtime constraints, and team-wide conventions to prevent bugs.",
-      "expertLevelExpectations": "At high scale, it impacts compiler optimizations, cache invalidation, and runtime performance profiles across distributed client environments."
+      "minimumExpected": "Uses both correctly.",
+      "strongAnswer": "Correct step outputs.",
+      "seniorLevelExpectations": "Senior candidates note reindex cost.",
+      "expertLevelExpectations": "Expert candidates compare queue designs."
     }
   },
   {
-    "id": "JS-0051",
+    "id": "JS-B038",
     "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Eval & Function Constructor",
+    "topic": "Arrays",
+    "subtopic": "map",
     "difficulty": "Basic",
-    "question": "[Q051] In JavaScript, focusing on Performance Optimization & Latency Bottlenecks during a live zero-downtime database and schema migration: Explain how \"Eval & Function Constructor\" (Language Mechanics & Coercion) functions. What fundamental problem does it solve, and how do you implement it correctly?",
+    "question": "What does map do? Double every number in [1, 2, 3] with map without changing the original.",
     "questionType": "Practical",
-    "experienceLevels": [
-      "0-1",
-      "1-2",
-      "2-4"
-    ],
-    "expectedConcepts": [
-      "Eval & Function Constructor",
-      "Language Mechanics & Coercion",
-      "JavaScript",
-      "Performance Optimization & Latency Bottlenecks",
-      "Runtime Execution",
-      "Best Practices"
-    ],
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["Transformation", "New array"],
     "idealAnswerPoints": [
-      "State clear definition and primary purpose of Eval & Function Constructor",
-      "Provide concrete syntax or architectural example",
-      "Contrast with legacy or alternative approaches"
+      "map returns a new same-length array",
+      "Original untouched, result [2, 4, 6]"
     ],
-    "commonMistakes": [
-      "Confusing Eval & Function Constructor with adjacent mechanics",
-      "Overlooking basic edge cases and browser support"
-    ],
-    "followUpTopics": [
-      "Can you illustrate a real-world bug caused by improper use of Eval & Function Constructor?",
-      "How does this behave under strict mode or modern build targets?"
-    ],
+    "commonMistakes": ["Forgetting return inside braces-body arrow"],
+    "followUpTopics": ["map vs forEach?"],
     "estimatedTimeMinutes": 3,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "eval---function-constructor",
-      "basic"
-    ],
+    "tags": ["javascript", "map", "basic"],
     "status": "APPROVED",
-    "qualityScore": 97,
+    "qualityScore": 95,
     "reviewStatus": "APPROVED",
     "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
     "rubric": {
-      "minimumExpected": "Eval & Function Constructor provides a core mechanism in JavaScript to handle language mechanics & coercion, ensuring predictable behavior and cleaner code structure.",
-      "strongAnswer": "It establishes explicit control over eval & function constructor, preventing unintended side effects and conforming to modern JavaScript standards with clean syntax.",
-      "seniorLevelExpectations": "In production, Eval & Function Constructor must be configured with awareness of memory lifecycle, browser runtime constraints, and team-wide conventions to prevent bugs.",
-      "expertLevelExpectations": "At high scale, it impacts compiler optimizations, cache invalidation, and runtime performance profiles across distributed client environments."
+      "minimumExpected": "Produces the doubled array.",
+      "strongAnswer": "Correct plus immutability noted.",
+      "seniorLevelExpectations": "Senior candidates warn on brace-return bug.",
+      "expertLevelExpectations": "Expert candidates note sparse-array behavior."
     }
   },
   {
-    "id": "JS-0052",
+    "id": "JS-B039",
     "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Garbage Collection",
+    "topic": "Arrays",
+    "subtopic": "filter",
     "difficulty": "Basic",
-    "question": "[Q052] In JavaScript, focusing on Architecture & Modularity Design in an executive architectural review evaluating long-term technical debt: Explain how \"Garbage Collection\" (Closures & Memory) functions. What fundamental problem does it solve, and how do you implement it correctly?",
-    "questionType": "Scenario Based",
-    "experienceLevels": [
-      "0-1",
-      "1-2",
-      "2-4"
-    ],
-    "expectedConcepts": [
-      "Garbage Collection",
-      "Closures & Memory",
-      "JavaScript",
-      "Architecture & Modularity Design",
-      "Runtime Execution",
-      "Best Practices"
-    ],
+    "question": "What does filter do? Keep only numbers greater than 10 from [4, 12, 7, 20].",
+    "questionType": "Practical",
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["Predicate selection", "New array"],
     "idealAnswerPoints": [
-      "State clear definition and primary purpose of Garbage Collection",
-      "Provide concrete syntax or architectural example",
-      "Contrast with legacy or alternative approaches"
+      "Keeps items where callback returns true",
+      "Result [12, 20]"
     ],
-    "commonMistakes": [
-      "Confusing Garbage Collection with adjacent mechanics",
-      "Overlooking basic edge cases and browser support"
-    ],
-    "followUpTopics": [
-      "Can you illustrate a real-world bug caused by improper use of Garbage Collection?",
-      "How does this behave under strict mode or modern build targets?"
-    ],
+    "commonMistakes": ["Returning the item instead of a boolean"],
+    "followUpTopics": ["How to get first match only?"],
     "estimatedTimeMinutes": 3,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "garbage-collection",
-      "basic"
-    ],
+    "tags": ["javascript", "filter", "basic"],
     "status": "APPROVED",
-    "qualityScore": 98,
+    "qualityScore": 95,
     "reviewStatus": "APPROVED",
     "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
     "rubric": {
-      "minimumExpected": "Garbage Collection provides a core mechanism in JavaScript to handle closures & memory, ensuring predictable behavior and cleaner code structure.",
-      "strongAnswer": "It establishes explicit control over garbage collection, preventing unintended side effects and conforming to modern JavaScript standards with clean syntax.",
-      "seniorLevelExpectations": "In production, Garbage Collection must be configured with awareness of memory lifecycle, browser runtime constraints, and team-wide conventions to prevent bugs.",
-      "expertLevelExpectations": "At high scale, it impacts compiler optimizations, cache invalidation, and runtime performance profiles across distributed client environments."
+      "minimumExpected": "Filters to the right subset.",
+      "strongAnswer": "Boolean-predicate rule stated.",
+      "seniorLevelExpectations": "Senior candidates chain with map.",
+      "expertLevelExpectations": "Expert candidates note truthiness filtering."
     }
   },
   {
-    "id": "JS-0053",
+    "id": "JS-B040",
     "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Symbol.iterator",
+    "topic": "Arrays",
+    "subtopic": "find",
     "difficulty": "Basic",
-    "question": "[Q053] In JavaScript, focusing on Edge Case Handling & Defensive Validation in a mission-critical healthcare portal with strict latency SLAs: Explain how \"Symbol.iterator\" (Object Prototypes & Inheritance) functions. What fundamental problem does it solve, and how do you implement it correctly?",
-    "questionType": "System Design",
-    "experienceLevels": [
-      "0-1",
-      "1-2",
-      "2-4"
-    ],
-    "expectedConcepts": [
-      "Symbol.iterator",
-      "Object Prototypes & Inheritance",
-      "JavaScript",
-      "Edge Case Handling & Defensive Validation",
-      "Runtime Execution",
-      "Best Practices"
-    ],
+    "question": "How is find different from filter? Find the first user older than 18 in an array of user objects.",
+    "questionType": "Practical",
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["Single match", "undefined fallback"],
     "idealAnswerPoints": [
-      "State clear definition and primary purpose of Symbol.iterator",
-      "Provide concrete syntax or architectural example",
-      "Contrast with legacy or alternative approaches"
+      "find returns the item; filter returns an array",
+      "Returns undefined when nothing matches"
     ],
-    "commonMistakes": [
-      "Confusing Symbol.iterator with adjacent mechanics",
-      "Overlooking basic edge cases and browser support"
-    ],
-    "followUpTopics": [
-      "Can you illustrate a real-world bug caused by improper use of Symbol.iterator?",
-      "How does this behave under strict mode or modern build targets?"
-    ],
+    "commonMistakes": ["Treating find result as an array"],
+    "followUpTopics": ["How to get the index instead?"],
     "estimatedTimeMinutes": 3,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "symbol-iterator",
-      "basic"
-    ],
+    "tags": ["javascript", "find", "basic"],
     "status": "APPROVED",
-    "qualityScore": 99,
+    "qualityScore": 95,
     "reviewStatus": "APPROVED",
     "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
     "rubric": {
-      "minimumExpected": "Symbol.iterator provides a core mechanism in JavaScript to handle object prototypes & inheritance, ensuring predictable behavior and cleaner code structure.",
-      "strongAnswer": "It establishes explicit control over symbol.iterator, preventing unintended side effects and conforming to modern JavaScript standards with clean syntax.",
-      "seniorLevelExpectations": "In production, Symbol.iterator must be configured with awareness of memory lifecycle, browser runtime constraints, and team-wide conventions to prevent bugs.",
-      "expertLevelExpectations": "At high scale, it impacts compiler optimizations, cache invalidation, and runtime performance profiles across distributed client environments."
+      "minimumExpected": "Finds the right user.",
+      "strongAnswer": "Contrast with filter plus undefined case.",
+      "seniorLevelExpectations": "Senior candidates mention findIndex.",
+      "expertLevelExpectations": "Expert candidates note short-circuiting."
     }
   },
   {
-    "id": "JS-0054",
+    "id": "JS-B041",
     "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Eval & Function Constructor",
+    "topic": "Arrays",
+    "subtopic": "includes",
     "difficulty": "Basic",
-    "question": "[Q054] In JavaScript, focusing on Memory Lifecycle & Garbage Collection Pressure in a design system adopted across 12 distinct product platforms: Explain how \"Eval & Function Constructor\" (Language Mechanics & Coercion) functions. What fundamental problem does it solve, and how do you implement it correctly?",
-    "questionType": "Problem Solving",
-    "experienceLevels": [
-      "0-1",
-      "1-2",
-      "2-4"
-    ],
-    "expectedConcepts": [
-      "Eval & Function Constructor",
-      "Language Mechanics & Coercion",
-      "JavaScript",
-      "Memory Lifecycle & Garbage Collection Pressure",
-      "Runtime Execution",
-      "Best Practices"
-    ],
-    "idealAnswerPoints": [
-      "State clear definition and primary purpose of Eval & Function Constructor",
-      "Provide concrete syntax or architectural example",
-      "Contrast with legacy or alternative approaches"
-    ],
-    "commonMistakes": [
-      "Confusing Eval & Function Constructor with adjacent mechanics",
-      "Overlooking basic edge cases and browser support"
-    ],
-    "followUpTopics": [
-      "Can you illustrate a real-world bug caused by improper use of Eval & Function Constructor?",
-      "How does this behave under strict mode or modern build targets?"
-    ],
-    "estimatedTimeMinutes": 3,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "eval---function-constructor",
-      "basic"
-    ],
+    "question": "How do you check if an array contains a value? Show includes on ['red', 'green'] for 'green' and 'blue'.",
+    "questionType": "Practical",
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["Membership test", "Boolean result"],
+    "idealAnswerPoints": ["Returns true then false correctly", "Notes case sensitivity"],
+    "commonMistakes": ["Using indexOf comparison incorrectly"],
+    "followUpTopics": ["How to check objects inside arrays?"],
+    "estimatedTimeMinutes": 2,
+    "tags": ["javascript", "includes", "basic"],
     "status": "APPROVED",
     "qualityScore": 94,
     "reviewStatus": "APPROVED",
     "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
     "rubric": {
-      "minimumExpected": "Eval & Function Constructor provides a core mechanism in JavaScript to handle language mechanics & coercion, ensuring predictable behavior and cleaner code structure.",
-      "strongAnswer": "It establishes explicit control over eval & function constructor, preventing unintended side effects and conforming to modern JavaScript standards with clean syntax.",
-      "seniorLevelExpectations": "In production, Eval & Function Constructor must be configured with awareness of memory lifecycle, browser runtime constraints, and team-wide conventions to prevent bugs.",
-      "expertLevelExpectations": "At high scale, it impacts compiler optimizations, cache invalidation, and runtime performance profiles across distributed client environments."
+      "minimumExpected": "Uses includes correctly.",
+      "strongAnswer": "Both results right.",
+      "seniorLevelExpectations": "Senior candidates note SameValueZero.",
+      "expertLevelExpectations": "Expert candidates contrast indexOf NaN."
     }
   },
   {
-    "id": "JS-0055",
+    "id": "JS-B042",
     "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Garbage Collection",
+    "topic": "Arrays",
+    "subtopic": "indexOf",
     "difficulty": "Basic",
-    "question": "[Q055] In JavaScript, focusing on Security Hardening & Threat Mitigation across a distributed micro-frontend monorepo with 40+ engineering squads: Explain how \"Garbage Collection\" (Closures & Memory) functions. What fundamental problem does it solve, and how do you implement it correctly?",
-    "questionType": "Debugging",
-    "experienceLevels": [
-      "0-1",
-      "1-2",
-      "2-4"
-    ],
-    "expectedConcepts": [
-      "Garbage Collection",
-      "Closures & Memory",
-      "JavaScript",
-      "Security Hardening & Threat Mitigation",
-      "Runtime Execution",
-      "Best Practices"
-    ],
-    "idealAnswerPoints": [
-      "State clear definition and primary purpose of Garbage Collection",
-      "Provide concrete syntax or architectural example",
-      "Contrast with legacy or alternative approaches"
-    ],
-    "commonMistakes": [
-      "Confusing Garbage Collection with adjacent mechanics",
-      "Overlooking basic edge cases and browser support"
-    ],
-    "followUpTopics": [
-      "Can you illustrate a real-world bug caused by improper use of Garbage Collection?",
-      "How does this behave under strict mode or modern build targets?"
-    ],
-    "estimatedTimeMinutes": 3,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "garbage-collection",
-      "basic"
-    ],
+    "question": "What does indexOf return? Find the positions of 'b' and 'z' in ['a', 'b', 'c'].",
+    "questionType": "Practical",
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["Position search", "Missing marker -1"],
+    "idealAnswerPoints": ["Returns 1 then -1", "Explains -1 means absent"],
+    "commonMistakes": ["Treating 0 as falsy-absent"],
+    "followUpTopics": ["How to safely test presence with it?"],
+    "estimatedTimeMinutes": 2,
+    "tags": ["javascript", "indexof", "basic"],
     "status": "APPROVED",
-    "qualityScore": 95,
+    "qualityScore": 94,
     "reviewStatus": "APPROVED",
     "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
     "rubric": {
-      "minimumExpected": "Garbage Collection provides a core mechanism in JavaScript to handle closures & memory, ensuring predictable behavior and cleaner code structure.",
-      "strongAnswer": "It establishes explicit control over garbage collection, preventing unintended side effects and conforming to modern JavaScript standards with clean syntax.",
-      "seniorLevelExpectations": "In production, Garbage Collection must be configured with awareness of memory lifecycle, browser runtime constraints, and team-wide conventions to prevent bugs.",
-      "expertLevelExpectations": "At high scale, it impacts compiler optimizations, cache invalidation, and runtime performance profiles across distributed client environments."
+      "minimumExpected": "Returns both positions.",
+      "strongAnswer": "Explains -1 and the zero trap.",
+      "seniorLevelExpectations": "Senior candidates compare with includes.",
+      "expertLevelExpectations": "Expert candidates note strict equality use."
     }
   },
   {
-    "id": "JS-0056",
+    "id": "JS-B043",
     "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Symbol.iterator",
+    "topic": "Arrays",
+    "subtopic": "slice",
     "difficulty": "Basic",
-    "question": "[Q056] In JavaScript, focusing on Testing Strategy & Flakiness Elimination inside a multi-tenant SaaS application with strict client-side data isolation: Explain how \"Symbol.iterator\" (Object Prototypes & Inheritance) functions. What fundamental problem does it solve, and how do you implement it correctly?",
+    "question": "How does slice work? From [10, 20, 30, 40] take [20, 30] without changing the original.",
     "questionType": "Practical",
-    "experienceLevels": [
-      "0-1",
-      "1-2",
-      "2-4"
-    ],
-    "expectedConcepts": [
-      "Symbol.iterator",
-      "Object Prototypes & Inheritance",
-      "JavaScript",
-      "Testing Strategy & Flakiness Elimination",
-      "Runtime Execution",
-      "Best Practices"
-    ],
-    "idealAnswerPoints": [
-      "State clear definition and primary purpose of Symbol.iterator",
-      "Provide concrete syntax or architectural example",
-      "Contrast with legacy or alternative approaches"
-    ],
-    "commonMistakes": [
-      "Confusing Symbol.iterator with adjacent mechanics",
-      "Overlooking basic edge cases and browser support"
-    ],
-    "followUpTopics": [
-      "Can you illustrate a real-world bug caused by improper use of Symbol.iterator?",
-      "How does this behave under strict mode or modern build targets?"
-    ],
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["Non-mutating copy", "Start/end indices"],
+    "idealAnswerPoints": ["Uses slice(1, 3) correctly", "Original array intact"],
+    "commonMistakes": ["Expecting the end index to be included"],
+    "followUpTopics": ["slice vs splice?"],
     "estimatedTimeMinutes": 3,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "symbol-iterator",
-      "basic"
-    ],
+    "tags": ["javascript", "slice", "basic"],
     "status": "APPROVED",
-    "qualityScore": 96,
+    "qualityScore": 95,
     "reviewStatus": "APPROVED",
     "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
     "rubric": {
-      "minimumExpected": "Symbol.iterator provides a core mechanism in JavaScript to handle object prototypes & inheritance, ensuring predictable behavior and cleaner code structure.",
-      "strongAnswer": "It establishes explicit control over symbol.iterator, preventing unintended side effects and conforming to modern JavaScript standards with clean syntax.",
-      "seniorLevelExpectations": "In production, Symbol.iterator must be configured with awareness of memory lifecycle, browser runtime constraints, and team-wide conventions to prevent bugs.",
-      "expertLevelExpectations": "At high scale, it impacts compiler optimizations, cache invalidation, and runtime performance profiles across distributed client environments."
+      "minimumExpected": "Slices the right portion.",
+      "strongAnswer": "Correct plus end-exclusive rule.",
+      "seniorLevelExpectations": "Senior candidates clone with slice().",
+      "expertLevelExpectations": "Expert candidates note shallow-copy nature."
     }
   },
   {
-    "id": "JS-0057",
+    "id": "JS-B044",
     "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Eval & Function Constructor",
+    "topic": "Arrays",
+    "subtopic": "splice",
     "difficulty": "Basic",
-    "question": "[Q057] In JavaScript, focusing on Cross-Browser Consistency & Standards Compliance during high-concurrency peak retail traffic (e.g. Cyber Monday): Explain how \"Eval & Function Constructor\" (Language Mechanics & Coercion) functions. What fundamental problem does it solve, and how do you implement it correctly?",
-    "questionType": "Scenario Based",
-    "experienceLevels": [
-      "0-1",
-      "1-2",
-      "2-4"
-    ],
-    "expectedConcepts": [
-      "Eval & Function Constructor",
-      "Language Mechanics & Coercion",
-      "JavaScript",
-      "Cross-Browser Consistency & Standards Compliance",
-      "Runtime Execution",
-      "Best Practices"
-    ],
-    "idealAnswerPoints": [
-      "State clear definition and primary purpose of Eval & Function Constructor",
-      "Provide concrete syntax or architectural example",
-      "Contrast with legacy or alternative approaches"
-    ],
-    "commonMistakes": [
-      "Confusing Eval & Function Constructor with adjacent mechanics",
-      "Overlooking basic edge cases and browser support"
-    ],
-    "followUpTopics": [
-      "Can you illustrate a real-world bug caused by improper use of Eval & Function Constructor?",
-      "How does this behave under strict mode or modern build targets?"
-    ],
+    "question": "How does splice differ from slice? Remove the second item from [10, 20, 30] with splice and show what changed.",
+    "questionType": "Practical",
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["In-place mutation", "Removed items return"],
+    "idealAnswerPoints": ["splice mutates; slice does not", "Shows changed array and removed [20]"],
+    "commonMistakes": ["Using splice expecting a copy"],
+    "followUpTopics": ["How to insert with splice?"],
     "estimatedTimeMinutes": 3,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "eval---function-constructor",
-      "basic"
-    ],
+    "tags": ["javascript", "splice", "basic"],
     "status": "APPROVED",
-    "qualityScore": 97,
+    "qualityScore": 95,
     "reviewStatus": "APPROVED",
     "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
     "rubric": {
-      "minimumExpected": "Eval & Function Constructor provides a core mechanism in JavaScript to handle language mechanics & coercion, ensuring predictable behavior and cleaner code structure.",
-      "strongAnswer": "It establishes explicit control over eval & function constructor, preventing unintended side effects and conforming to modern JavaScript standards with clean syntax.",
-      "seniorLevelExpectations": "In production, Eval & Function Constructor must be configured with awareness of memory lifecycle, browser runtime constraints, and team-wide conventions to prevent bugs.",
-      "expertLevelExpectations": "At high scale, it impacts compiler optimizations, cache invalidation, and runtime performance profiles across distributed client environments."
+      "minimumExpected": "Removes via splice.",
+      "strongAnswer": "Mutation contrast stated.",
+      "seniorLevelExpectations": "Senior candidates demo insert form.",
+      "expertLevelExpectations": "Expert candidates note index-shift hazards."
     }
   },
   {
-    "id": "JS-0058",
+    "id": "JS-B045",
     "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Garbage Collection",
+    "topic": "Arrays",
+    "subtopic": "join and split",
     "difficulty": "Basic",
-    "question": "[Q058] In JavaScript, focusing on Developer Experience & API Ergonomics in a low-bandwidth, high-latency global mobile environment: Explain how \"Garbage Collection\" (Closures & Memory) functions. What fundamental problem does it solve, and how do you implement it correctly?",
-    "questionType": "System Design",
-    "experienceLevels": [
-      "0-1",
-      "1-2",
-      "2-4"
-    ],
-    "expectedConcepts": [
-      "Garbage Collection",
-      "Closures & Memory",
-      "JavaScript",
-      "Developer Experience & API Ergonomics",
-      "Runtime Execution",
-      "Best Practices"
-    ],
-    "idealAnswerPoints": [
-      "State clear definition and primary purpose of Garbage Collection",
-      "Provide concrete syntax or architectural example",
-      "Contrast with legacy or alternative approaches"
-    ],
-    "commonMistakes": [
-      "Confusing Garbage Collection with adjacent mechanics",
-      "Overlooking basic edge cases and browser support"
-    ],
-    "followUpTopics": [
-      "Can you illustrate a real-world bug caused by improper use of Garbage Collection?",
-      "How does this behave under strict mode or modern build targets?"
-    ],
+    "question": "How do join and split convert between arrays and strings? Turn ['a', 'b'] into 'a-b' and back.",
+    "questionType": "Practical",
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["Delimiter joining", "String splitting"],
+    "idealAnswerPoints": ["join('-') then split('-') round-trips", "Delimiter choice explained"],
+    "commonMistakes": ["Splitting on the wrong delimiter"],
+    "followUpTopics": ["What does split('') do?"],
     "estimatedTimeMinutes": 3,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "garbage-collection",
-      "basic"
-    ],
+    "tags": ["javascript", "join-split", "basic"],
     "status": "APPROVED",
-    "qualityScore": 98,
+    "qualityScore": 94,
     "reviewStatus": "APPROVED",
     "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
     "rubric": {
-      "minimumExpected": "Garbage Collection provides a core mechanism in JavaScript to handle closures & memory, ensuring predictable behavior and cleaner code structure.",
-      "strongAnswer": "It establishes explicit control over garbage collection, preventing unintended side effects and conforming to modern JavaScript standards with clean syntax.",
-      "seniorLevelExpectations": "In production, Garbage Collection must be configured with awareness of memory lifecycle, browser runtime constraints, and team-wide conventions to prevent bugs.",
-      "expertLevelExpectations": "At high scale, it impacts compiler optimizations, cache invalidation, and runtime performance profiles across distributed client environments."
+      "minimumExpected": "Round-trips both ways.",
+      "strongAnswer": "Delimiter role explained.",
+      "seniorLevelExpectations": "Senior candidates handle edge empties.",
+      "expertLevelExpectations": "Expert candidates note separator regex form."
     }
   },
   {
-    "id": "JS-0059",
+    "id": "JS-B046",
     "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Symbol.iterator",
+    "topic": "Arrays",
+    "subtopic": "sort Numbers",
     "difficulty": "Basic",
-    "question": "[Q059] In JavaScript, focusing on Concurrency & Asynchronous Race Conditions in a high-throughput fintech checkout system: Explain how \"Symbol.iterator\" (Object Prototypes & Inheritance) functions. What fundamental problem does it solve, and how do you implement it correctly?",
-    "questionType": "Problem Solving",
-    "experienceLevels": [
-      "0-1",
-      "1-2",
-      "2-4"
-    ],
-    "expectedConcepts": [
-      "Symbol.iterator",
-      "Object Prototypes & Inheritance",
-      "JavaScript",
-      "Concurrency & Asynchronous Race Conditions",
-      "Runtime Execution",
-      "Best Practices"
-    ],
-    "idealAnswerPoints": [
-      "State clear definition and primary purpose of Symbol.iterator",
-      "Provide concrete syntax or architectural example",
-      "Contrast with legacy or alternative approaches"
-    ],
-    "commonMistakes": [
-      "Confusing Symbol.iterator with adjacent mechanics",
-      "Overlooking basic edge cases and browser support"
-    ],
-    "followUpTopics": [
-      "Can you illustrate a real-world bug caused by improper use of Symbol.iterator?",
-      "How does this behave under strict mode or modern build targets?"
-    ],
+    "question": "Why does [10, 9, 80].sort() give [10, 80, 9]? Fix it to sort numbers correctly.",
+    "questionType": "Debugging",
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["Lexicographic default", "Comparator function"],
+    "idealAnswerPoints": ["Default sorts as strings", "Fix with (a, b) => a - b"],
+    "commonMistakes": ["Trusting default sort for numbers"],
+    "followUpTopics": ["How to sort descending?"],
     "estimatedTimeMinutes": 3,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "symbol-iterator",
-      "basic"
-    ],
+    "tags": ["javascript", "sort", "basic"],
     "status": "APPROVED",
-    "qualityScore": 99,
+    "qualityScore": 95,
     "reviewStatus": "APPROVED",
     "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
     "rubric": {
-      "minimumExpected": "Symbol.iterator provides a core mechanism in JavaScript to handle object prototypes & inheritance, ensuring predictable behavior and cleaner code structure.",
-      "strongAnswer": "It establishes explicit control over symbol.iterator, preventing unintended side effects and conforming to modern JavaScript standards with clean syntax.",
-      "seniorLevelExpectations": "In production, Symbol.iterator must be configured with awareness of memory lifecycle, browser runtime constraints, and team-wide conventions to prevent bugs.",
-      "expertLevelExpectations": "At high scale, it impacts compiler optimizations, cache invalidation, and runtime performance profiles across distributed client environments."
+      "minimumExpected": "Identifies string sorting.",
+      "strongAnswer": "Comparator fix applied.",
+      "seniorLevelExpectations": "Senior candidates explain comparator contract.",
+      "expertLevelExpectations": "Expert candidates note stability guarantees."
     }
   },
   {
-    "id": "JS-0060",
+    "id": "JS-B047",
     "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Eval & Function Constructor",
+    "topic": "Arrays",
+    "subtopic": "concat and spread",
     "difficulty": "Basic",
-    "question": "[Q060] In JavaScript, focusing on Refactoring & Safe Legacy Migration within a media streaming player handling adaptive bitrate switching: Explain how \"Eval & Function Constructor\" (Language Mechanics & Coercion) functions. What fundamental problem does it solve, and how do you implement it correctly?",
-    "questionType": "Debugging",
-    "experienceLevels": [
-      "0-1",
-      "1-2",
-      "2-4"
-    ],
-    "expectedConcepts": [
-      "Eval & Function Constructor",
-      "Language Mechanics & Coercion",
-      "JavaScript",
-      "Refactoring & Safe Legacy Migration",
-      "Runtime Execution",
-      "Best Practices"
-    ],
-    "idealAnswerPoints": [
-      "State clear definition and primary purpose of Eval & Function Constructor",
-      "Provide concrete syntax or architectural example",
-      "Contrast with legacy or alternative approaches"
-    ],
-    "commonMistakes": [
-      "Confusing Eval & Function Constructor with adjacent mechanics",
-      "Overlooking basic edge cases and browser support"
-    ],
-    "followUpTopics": [
-      "Can you illustrate a real-world bug caused by improper use of Eval & Function Constructor?",
-      "How does this behave under strict mode or modern build targets?"
-    ],
+    "question": "How do you combine two arrays without mutating them? Show concat and the spread version.",
+    "questionType": "Practical",
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["Non-mutating merge", "Spread syntax"],
+    "idealAnswerPoints": ["Both produce a new combined array", "Originals unchanged"],
+    "commonMistakes": ["Using push and mutating the first array"],
+    "followUpTopics": ["Shallow copy caveat?"],
     "estimatedTimeMinutes": 3,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "eval---function-constructor",
-      "basic"
-    ],
+    "tags": ["javascript", "concat-spread", "basic"],
     "status": "APPROVED",
     "qualityScore": 94,
     "reviewStatus": "APPROVED",
     "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
     "rubric": {
-      "minimumExpected": "Eval & Function Constructor provides a core mechanism in JavaScript to handle language mechanics & coercion, ensuring predictable behavior and cleaner code structure.",
-      "strongAnswer": "It establishes explicit control over eval & function constructor, preventing unintended side effects and conforming to modern JavaScript standards with clean syntax.",
-      "seniorLevelExpectations": "In production, Eval & Function Constructor must be configured with awareness of memory lifecycle, browser runtime constraints, and team-wide conventions to prevent bugs.",
-      "expertLevelExpectations": "At high scale, it impacts compiler optimizations, cache invalidation, and runtime performance profiles across distributed client environments."
+      "minimumExpected": "Merges both ways.",
+      "strongAnswer": "Non-mutation verified.",
+      "seniorLevelExpectations": "Senior candidates note shallow copies.",
+      "expertLevelExpectations": "Expert candidates compare performance traits."
     }
   },
   {
-    "id": "JS-0061",
+    "id": "JS-B048",
     "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Garbage Collection",
+    "topic": "Arrays",
+    "subtopic": "for of Loop",
     "difficulty": "Basic",
-    "question": "[Q061] In JavaScript, focusing on State Synchronization & Boundary Isolation during a high-severity production outage requiring immediate triage: Explain how \"Garbage Collection\" (Closures & Memory) functions. What fundamental problem does it solve, and how do you implement it correctly?",
+    "question": "How do you loop over array values with for...of? Print each fruit in ['apple', 'mango'] with its index too.",
     "questionType": "Practical",
-    "experienceLevels": [
-      "0-1",
-      "1-2",
-      "2-4"
-    ],
-    "expectedConcepts": [
-      "Garbage Collection",
-      "Closures & Memory",
-      "JavaScript",
-      "State Synchronization & Boundary Isolation",
-      "Runtime Execution",
-      "Best Practices"
-    ],
-    "idealAnswerPoints": [
-      "State clear definition and primary purpose of Garbage Collection",
-      "Provide concrete syntax or architectural example",
-      "Contrast with legacy or alternative approaches"
-    ],
-    "commonMistakes": [
-      "Confusing Garbage Collection with adjacent mechanics",
-      "Overlooking basic edge cases and browser support"
-    ],
-    "followUpTopics": [
-      "Can you illustrate a real-world bug caused by improper use of Garbage Collection?",
-      "How does this behave under strict mode or modern build targets?"
-    ],
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["Value iteration", "entries() helper"],
+    "idealAnswerPoints": ["Basic for...of prints values", "Uses entries() for index pairing"],
+    "commonMistakes": ["Using for...in and getting indices as strings"],
+    "followUpTopics": ["for...of vs for...in?"],
     "estimatedTimeMinutes": 3,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "garbage-collection",
-      "basic"
-    ],
+    "tags": ["javascript", "loops", "basic"],
     "status": "APPROVED",
-    "qualityScore": 95,
+    "qualityScore": 94,
     "reviewStatus": "APPROVED",
     "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
     "rubric": {
-      "minimumExpected": "Garbage Collection provides a core mechanism in JavaScript to handle closures & memory, ensuring predictable behavior and cleaner code structure.",
-      "strongAnswer": "It establishes explicit control over garbage collection, preventing unintended side effects and conforming to modern JavaScript standards with clean syntax.",
-      "seniorLevelExpectations": "In production, Garbage Collection must be configured with awareness of memory lifecycle, browser runtime constraints, and team-wide conventions to prevent bugs.",
-      "expertLevelExpectations": "At high scale, it impacts compiler optimizations, cache invalidation, and runtime performance profiles across distributed client environments."
+      "minimumExpected": "Iterates and prints values.",
+      "strongAnswer": "Index pairing included.",
+      "seniorLevelExpectations": "Senior candidates contrast for...in.",
+      "expertLevelExpectations": "Expert candidates mention iterator protocol."
     }
   },
   {
-    "id": "JS-0062",
+    "id": "JS-B049",
     "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Symbol.iterator",
+    "topic": "Arrays",
+    "subtopic": "isArray",
     "difficulty": "Basic",
-    "question": "[Q062] In JavaScript, focusing on Error Boundaries & Graceful Degradation inside an embedded financial analytics dashboard processing live WebSockets: Explain how \"Symbol.iterator\" (Object Prototypes & Inheritance) functions. What fundamental problem does it solve, and how do you implement it correctly?",
-    "questionType": "Scenario Based",
-    "experienceLevels": [
-      "0-1",
-      "1-2",
-      "2-4"
-    ],
-    "expectedConcepts": [
-      "Symbol.iterator",
-      "Object Prototypes & Inheritance",
-      "JavaScript",
-      "Error Boundaries & Graceful Degradation",
-      "Runtime Execution",
-      "Best Practices"
-    ],
-    "idealAnswerPoints": [
-      "State clear definition and primary purpose of Symbol.iterator",
-      "Provide concrete syntax or architectural example",
-      "Contrast with legacy or alternative approaches"
-    ],
-    "commonMistakes": [
-      "Confusing Symbol.iterator with adjacent mechanics",
-      "Overlooking basic edge cases and browser support"
-    ],
-    "followUpTopics": [
-      "Can you illustrate a real-world bug caused by improper use of Symbol.iterator?",
-      "How does this behave under strict mode or modern build targets?"
-    ],
-    "estimatedTimeMinutes": 3,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "symbol-iterator",
-      "basic"
-    ],
+    "question": "How do you check if a value is really an array? Compare typeof [] with Array.isArray([]).",
+    "questionType": "Theory",
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["Reliable check", "typeof limits"],
+    "idealAnswerPoints": ["typeof gives object; isArray gives true", "Always prefer Array.isArray"],
+    "commonMistakes": ["Relying on typeof for arrays"],
+    "followUpTopics": ["Why does typeof fail here?"],
+    "estimatedTimeMinutes": 2,
+    "tags": ["javascript", "isarray", "basic"],
     "status": "APPROVED",
-    "qualityScore": 96,
+    "qualityScore": 94,
     "reviewStatus": "APPROVED",
     "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
     "rubric": {
-      "minimumExpected": "Symbol.iterator provides a core mechanism in JavaScript to handle object prototypes & inheritance, ensuring predictable behavior and cleaner code structure.",
-      "strongAnswer": "It establishes explicit control over symbol.iterator, preventing unintended side effects and conforming to modern JavaScript standards with clean syntax.",
-      "seniorLevelExpectations": "In production, Symbol.iterator must be configured with awareness of memory lifecycle, browser runtime constraints, and team-wide conventions to prevent bugs.",
-      "expertLevelExpectations": "At high scale, it impacts compiler optimizations, cache invalidation, and runtime performance profiles across distributed client environments."
+      "minimumExpected": "Uses Array.isArray correctly.",
+      "strongAnswer": "Contrast with typeof shown.",
+      "seniorLevelExpectations": "Senior candidates note cross-realm safety.",
+      "expertLevelExpectations": "Expert candidates mention Symbol checks."
     }
   },
   {
-    "id": "JS-0063",
+    "id": "JS-B050",
     "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Eval & Function Constructor",
+    "topic": "Arrays",
+    "subtopic": "Nested Access",
     "difficulty": "Basic",
-    "question": "[Q063] In JavaScript, focusing on Observability, Telemetry & Real User Monitoring when integrating third-party untrusted scripts without compromising security: Explain how \"Eval & Function Constructor\" (Language Mechanics & Coercion) functions. What fundamental problem does it solve, and how do you implement it correctly?",
-    "questionType": "System Design",
-    "experienceLevels": [
-      "0-1",
-      "1-2",
-      "2-4"
-    ],
-    "expectedConcepts": [
-      "Eval & Function Constructor",
-      "Language Mechanics & Coercion",
-      "JavaScript",
-      "Observability, Telemetry & Real User Monitoring",
-      "Runtime Execution",
-      "Best Practices"
-    ],
-    "idealAnswerPoints": [
-      "State clear definition and primary purpose of Eval & Function Constructor",
-      "Provide concrete syntax or architectural example",
-      "Contrast with legacy or alternative approaches"
-    ],
-    "commonMistakes": [
-      "Confusing Eval & Function Constructor with adjacent mechanics",
-      "Overlooking basic edge cases and browser support"
-    ],
-    "followUpTopics": [
-      "Can you illustrate a real-world bug caused by improper use of Eval & Function Constructor?",
-      "How does this behave under strict mode or modern build targets?"
-    ],
-    "estimatedTimeMinutes": 3,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "eval---function-constructor",
-      "basic"
-    ],
+    "question": "How do you read 8 from [[1, 2], [7, 8]]? Explain chained indexes step by step.",
+    "questionType": "Practical",
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["Nested indexing", "Row-column reading"],
+    "idealAnswerPoints": ["Uses matrix[1][1]", "Explains inner then outer step"],
+    "commonMistakes": ["Reversing the index order"],
+    "followUpTopics": ["How to guard missing rows?"],
+    "estimatedTimeMinutes": 2,
+    "tags": ["javascript", "nested-arrays", "basic"],
     "status": "APPROVED",
-    "qualityScore": 97,
+    "qualityScore": 94,
     "reviewStatus": "APPROVED",
     "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
     "rubric": {
-      "minimumExpected": "Eval & Function Constructor provides a core mechanism in JavaScript to handle language mechanics & coercion, ensuring predictable behavior and cleaner code structure.",
-      "strongAnswer": "It establishes explicit control over eval & function constructor, preventing unintended side effects and conforming to modern JavaScript standards with clean syntax.",
-      "seniorLevelExpectations": "In production, Eval & Function Constructor must be configured with awareness of memory lifecycle, browser runtime constraints, and team-wide conventions to prevent bugs.",
-      "expertLevelExpectations": "At high scale, it impacts compiler optimizations, cache invalidation, and runtime performance profiles across distributed client environments."
+      "minimumExpected": "Reads the nested value.",
+      "strongAnswer": "Steps explained in order.",
+      "seniorLevelExpectations": "Senior candidates add safety checks.",
+      "expertLevelExpectations": "Expert candidates generalize to deep paths."
     }
   },
   {
-    "id": "JS-0064",
+    "id": "JS-B051",
     "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Garbage Collection",
+    "topic": "Objects",
+    "subtopic": "Literals",
     "difficulty": "Basic",
-    "question": "[Q064] In JavaScript, focusing on Scalability Tradeoffs under High Traffic in an offline-first enterprise mobile web application: Explain how \"Garbage Collection\" (Closures & Memory) functions. What fundamental problem does it solve, and how do you implement it correctly?",
-    "questionType": "Problem Solving",
-    "experienceLevels": [
-      "0-1",
-      "1-2",
-      "2-4"
-    ],
-    "expectedConcepts": [
-      "Garbage Collection",
-      "Closures & Memory",
-      "JavaScript",
-      "Scalability Tradeoffs under High Traffic",
-      "Runtime Execution",
-      "Best Practices"
-    ],
-    "idealAnswerPoints": [
-      "State clear definition and primary purpose of Garbage Collection",
-      "Provide concrete syntax or architectural example",
-      "Contrast with legacy or alternative approaches"
-    ],
-    "commonMistakes": [
-      "Confusing Garbage Collection with adjacent mechanics",
-      "Overlooking basic edge cases and browser support"
-    ],
-    "followUpTopics": [
-      "Can you illustrate a real-world bug caused by improper use of Garbage Collection?",
-      "How does this behave under strict mode or modern build targets?"
-    ],
-    "estimatedTimeMinutes": 3,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "garbage-collection",
-      "basic"
-    ],
+    "question": "How do you create an object and read its properties? Build a book object with title and pages, then log both.",
+    "questionType": "Practical",
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["Object literals", "Property reads"],
+    "idealAnswerPoints": ["Literal with two keys", "Both values logged"],
+    "commonMistakes": ["Using = instead of : inside literals"],
+    "followUpTopics": ["How to add a new key later?"],
+    "estimatedTimeMinutes": 2,
+    "tags": ["javascript", "objects", "basic"],
     "status": "APPROVED",
-    "qualityScore": 98,
+    "qualityScore": 94,
     "reviewStatus": "APPROVED",
     "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
     "rubric": {
-      "minimumExpected": "Garbage Collection provides a core mechanism in JavaScript to handle closures & memory, ensuring predictable behavior and cleaner code structure.",
-      "strongAnswer": "It establishes explicit control over garbage collection, preventing unintended side effects and conforming to modern JavaScript standards with clean syntax.",
-      "seniorLevelExpectations": "In production, Garbage Collection must be configured with awareness of memory lifecycle, browser runtime constraints, and team-wide conventions to prevent bugs.",
-      "expertLevelExpectations": "At high scale, it impacts compiler optimizations, cache invalidation, and runtime performance profiles across distributed client environments."
+      "minimumExpected": "Creates and reads the object.",
+      "strongAnswer": "Clean literal with both logs.",
+      "seniorLevelExpectations": "Senior candidates use shorthand forms.",
+      "expertLevelExpectations": "Expert candidates note key coercion."
     }
   },
   {
-    "id": "JS-0065",
+    "id": "JS-B052",
     "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Symbol.iterator",
+    "topic": "Objects",
+    "subtopic": "Dot vs Bracket",
     "difficulty": "Basic",
-    "question": "[Q065] In JavaScript, focusing on Implementation Mechanics & Internal Execution when refactoring a legacy monolithic codebase with zero automated regression tests: Explain how \"Symbol.iterator\" (Object Prototypes & Inheritance) functions. What fundamental problem does it solve, and how do you implement it correctly?",
-    "questionType": "Debugging",
-    "experienceLevels": [
-      "0-1",
-      "1-2",
-      "2-4"
-    ],
-    "expectedConcepts": [
-      "Symbol.iterator",
-      "Object Prototypes & Inheritance",
-      "JavaScript",
-      "Implementation Mechanics & Internal Execution",
-      "Runtime Execution",
-      "Best Practices"
-    ],
-    "idealAnswerPoints": [
-      "State clear definition and primary purpose of Symbol.iterator",
-      "Provide concrete syntax or architectural example",
-      "Contrast with legacy or alternative approaches"
-    ],
-    "commonMistakes": [
-      "Confusing Symbol.iterator with adjacent mechanics",
-      "Overlooking basic edge cases and browser support"
-    ],
-    "followUpTopics": [
-      "Can you illustrate a real-world bug caused by improper use of Symbol.iterator?",
-      "How does this behave under strict mode or modern build targets?"
-    ],
+    "question": "When must you use brackets instead of dots? Show user['first name'] working where user.first name fails.",
+    "questionType": "Practical",
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["Dynamic keys", "Identifier limits"],
+    "idealAnswerPoints": ["Brackets for spaces, variables, dynamic keys", "Working contrast demo"],
+    "commonMistakes": ["Dotting a variable-held key"],
+    "followUpTopics": ["How to loop all keys?"],
     "estimatedTimeMinutes": 3,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "symbol-iterator",
-      "basic"
-    ],
+    "tags": ["javascript", "objects", "basic"],
     "status": "APPROVED",
-    "qualityScore": 99,
+    "qualityScore": 95,
     "reviewStatus": "APPROVED",
     "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
     "rubric": {
-      "minimumExpected": "Symbol.iterator provides a core mechanism in JavaScript to handle object prototypes & inheritance, ensuring predictable behavior and cleaner code structure.",
-      "strongAnswer": "It establishes explicit control over symbol.iterator, preventing unintended side effects and conforming to modern JavaScript standards with clean syntax.",
-      "seniorLevelExpectations": "In production, Symbol.iterator must be configured with awareness of memory lifecycle, browser runtime constraints, and team-wide conventions to prevent bugs.",
-      "expertLevelExpectations": "At high scale, it impacts compiler optimizations, cache invalidation, and runtime performance profiles across distributed client environments."
+      "minimumExpected": "Shows the bracket requirement.",
+      "strongAnswer": "Contrast demo correct.",
+      "seniorLevelExpectations": "Senior candidates cover computed keys.",
+      "expertLevelExpectations": "Expert candidates discuss identifier grammar."
     }
   },
   {
-    "id": "JS-0066",
+    "id": "JS-B053",
     "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Eval & Function Constructor",
+    "topic": "Objects",
+    "subtopic": "Add and Delete",
     "difficulty": "Basic",
-    "question": "[Q066] In JavaScript, focusing on Debugging & Production Failure Analysis within a real-time collaborative whiteboarding canvas: Explain how \"Eval & Function Constructor\" (Language Mechanics & Coercion) functions. What fundamental problem does it solve, and how do you implement it correctly?",
+    "question": "How do you add a new property and delete an existing one? Add email to a user, then remove age.",
     "questionType": "Practical",
-    "experienceLevels": [
-      "0-1",
-      "1-2",
-      "2-4"
-    ],
-    "expectedConcepts": [
-      "Eval & Function Constructor",
-      "Language Mechanics & Coercion",
-      "JavaScript",
-      "Debugging & Production Failure Analysis",
-      "Runtime Execution",
-      "Best Practices"
-    ],
-    "idealAnswerPoints": [
-      "State clear definition and primary purpose of Eval & Function Constructor",
-      "Provide concrete syntax or architectural example",
-      "Contrast with legacy or alternative approaches"
-    ],
-    "commonMistakes": [
-      "Confusing Eval & Function Constructor with adjacent mechanics",
-      "Overlooking basic edge cases and browser support"
-    ],
-    "followUpTopics": [
-      "Can you illustrate a real-world bug caused by improper use of Eval & Function Constructor?",
-      "How does this behave under strict mode or modern build targets?"
-    ],
-    "estimatedTimeMinutes": 3,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "eval---function-constructor",
-      "basic"
-    ],
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["Assignment extension", "delete operator"],
+    "idealAnswerPoints": ["Assigns new key directly", "Deletes with delete operator"],
+    "commonMistakes": ["Setting to undefined instead of deleting"],
+    "followUpTopics": ["delete vs undefined difference?"],
+    "estimatedTimeMinutes": 2,
+    "tags": ["javascript", "objects", "basic"],
     "status": "APPROVED",
     "qualityScore": 94,
     "reviewStatus": "APPROVED",
     "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
     "rubric": {
-      "minimumExpected": "Eval & Function Constructor provides a core mechanism in JavaScript to handle language mechanics & coercion, ensuring predictable behavior and cleaner code structure.",
-      "strongAnswer": "It establishes explicit control over eval & function constructor, preventing unintended side effects and conforming to modern JavaScript standards with clean syntax.",
-      "seniorLevelExpectations": "In production, Eval & Function Constructor must be configured with awareness of memory lifecycle, browser runtime constraints, and team-wide conventions to prevent bugs.",
-      "expertLevelExpectations": "At high scale, it impacts compiler optimizations, cache invalidation, and runtime performance profiles across distributed client environments."
+      "minimumExpected": "Adds and deletes correctly.",
+      "strongAnswer": "Both operations verified.",
+      "seniorLevelExpectations": "Senior candidates note delete performance.",
+      "expertLevelExpectations": "Expert candidates mention configurability."
     }
   },
   {
-    "id": "JS-0067",
+    "id": "JS-B054",
     "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Garbage Collection",
+    "topic": "Objects",
+    "subtopic": "Object.keys",
     "difficulty": "Basic",
-    "question": "[Q067] In JavaScript, focusing on Performance Optimization & Latency Bottlenecks during a live zero-downtime database and schema migration: Explain how \"Garbage Collection\" (Closures & Memory) functions. What fundamental problem does it solve, and how do you implement it correctly?",
-    "questionType": "Scenario Based",
-    "experienceLevels": [
-      "0-1",
-      "1-2",
-      "2-4"
-    ],
-    "expectedConcepts": [
-      "Garbage Collection",
-      "Closures & Memory",
-      "JavaScript",
-      "Performance Optimization & Latency Bottlenecks",
-      "Runtime Execution",
-      "Best Practices"
-    ],
-    "idealAnswerPoints": [
-      "State clear definition and primary purpose of Garbage Collection",
-      "Provide concrete syntax or architectural example",
-      "Contrast with legacy or alternative approaches"
-    ],
-    "commonMistakes": [
-      "Confusing Garbage Collection with adjacent mechanics",
-      "Overlooking basic edge cases and browser support"
-    ],
-    "followUpTopics": [
-      "Can you illustrate a real-world bug caused by improper use of Garbage Collection?",
-      "How does this behave under strict mode or modern build targets?"
-    ],
+    "question": "How do you list all keys of an object? Show Object.keys on {a: 1, b: 2} and loop the result.",
+    "questionType": "Practical",
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["Key enumeration", "String array"],
+    "idealAnswerPoints": ["Returns ['a', 'b']", "Loops keys to read values"],
+    "commonMistakes": ["Expecting values instead of keys"],
+    "followUpTopics": ["keys vs values vs entries?"],
     "estimatedTimeMinutes": 3,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "garbage-collection",
-      "basic"
-    ],
+    "tags": ["javascript", "object-keys", "basic"],
     "status": "APPROVED",
-    "qualityScore": 95,
+    "qualityScore": 94,
     "reviewStatus": "APPROVED",
     "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
     "rubric": {
-      "minimumExpected": "Garbage Collection provides a core mechanism in JavaScript to handle closures & memory, ensuring predictable behavior and cleaner code structure.",
-      "strongAnswer": "It establishes explicit control over garbage collection, preventing unintended side effects and conforming to modern JavaScript standards with clean syntax.",
-      "seniorLevelExpectations": "In production, Garbage Collection must be configured with awareness of memory lifecycle, browser runtime constraints, and team-wide conventions to prevent bugs.",
-      "expertLevelExpectations": "At high scale, it impacts compiler optimizations, cache invalidation, and runtime performance profiles across distributed client environments."
+      "minimumExpected": "Lists keys correctly.",
+      "strongAnswer": "Loop over keys shown.",
+      "seniorLevelExpectations": "Senior candidates note ordering rules.",
+      "expertLevelExpectations": "Expert candidates contrast for-in."
     }
   },
   {
-    "id": "JS-0068",
+    "id": "JS-B055",
     "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Symbol.iterator",
+    "topic": "Objects",
+    "subtopic": "Object.values",
     "difficulty": "Basic",
-    "question": "[Q068] In JavaScript, focusing on Architecture & Modularity Design in an executive architectural review evaluating long-term technical debt: Explain how \"Symbol.iterator\" (Object Prototypes & Inheritance) functions. What fundamental problem does it solve, and how do you implement it correctly?",
-    "questionType": "System Design",
-    "experienceLevels": [
-      "0-1",
-      "1-2",
-      "2-4"
-    ],
-    "expectedConcepts": [
-      "Symbol.iterator",
-      "Object Prototypes & Inheritance",
-      "JavaScript",
-      "Architecture & Modularity Design",
-      "Runtime Execution",
-      "Best Practices"
-    ],
-    "idealAnswerPoints": [
-      "State clear definition and primary purpose of Symbol.iterator",
-      "Provide concrete syntax or architectural example",
-      "Contrast with legacy or alternative approaches"
-    ],
-    "commonMistakes": [
-      "Confusing Symbol.iterator with adjacent mechanics",
-      "Overlooking basic edge cases and browser support"
-    ],
-    "followUpTopics": [
-      "Can you illustrate a real-world bug caused by improper use of Symbol.iterator?",
-      "How does this behave under strict mode or modern build targets?"
-    ],
-    "estimatedTimeMinutes": 3,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "symbol-iterator",
-      "basic"
-    ],
+    "question": "How do you get all values of an object? Show Object.values on {a: 1, b: 2}.",
+    "questionType": "Practical",
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["Value extraction", "Array result"],
+    "idealAnswerPoints": ["Returns [1, 2]", "Order follows keys"],
+    "commonMistakes": ["Expecting keys back"],
+    "followUpTopics": ["When are entries better?"],
+    "estimatedTimeMinutes": 2,
+    "tags": ["javascript", "object-values", "basic"],
     "status": "APPROVED",
-    "qualityScore": 96,
+    "qualityScore": 94,
     "reviewStatus": "APPROVED",
     "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
     "rubric": {
-      "minimumExpected": "Symbol.iterator provides a core mechanism in JavaScript to handle object prototypes & inheritance, ensuring predictable behavior and cleaner code structure.",
-      "strongAnswer": "It establishes explicit control over symbol.iterator, preventing unintended side effects and conforming to modern JavaScript standards with clean syntax.",
-      "seniorLevelExpectations": "In production, Symbol.iterator must be configured with awareness of memory lifecycle, browser runtime constraints, and team-wide conventions to prevent bugs.",
-      "expertLevelExpectations": "At high scale, it impacts compiler optimizations, cache invalidation, and runtime performance profiles across distributed client environments."
+      "minimumExpected": "Extracts values correctly.",
+      "strongAnswer": "Result and order explained.",
+      "seniorLevelExpectations": "Senior candidates combine with keys.",
+      "expertLevelExpectations": "Expert candidates note non-enumerable skips."
     }
   },
   {
-    "id": "JS-0069",
+    "id": "JS-B056",
     "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Eval & Function Constructor",
+    "topic": "Objects",
+    "subtopic": "JSON",
     "difficulty": "Basic",
-    "question": "[Q069] In JavaScript, focusing on Edge Case Handling & Defensive Validation in a mission-critical healthcare portal with strict latency SLAs: Explain how \"Eval & Function Constructor\" (Language Mechanics & Coercion) functions. What fundamental problem does it solve, and how do you implement it correctly?",
-    "questionType": "Problem Solving",
-    "experienceLevels": [
-      "0-1",
-      "1-2",
-      "2-4"
-    ],
-    "expectedConcepts": [
-      "Eval & Function Constructor",
-      "Language Mechanics & Coercion",
-      "JavaScript",
-      "Edge Case Handling & Defensive Validation",
-      "Runtime Execution",
-      "Best Practices"
-    ],
-    "idealAnswerPoints": [
-      "State clear definition and primary purpose of Eval & Function Constructor",
-      "Provide concrete syntax or architectural example",
-      "Contrast with legacy or alternative approaches"
-    ],
-    "commonMistakes": [
-      "Confusing Eval & Function Constructor with adjacent mechanics",
-      "Overlooking basic edge cases and browser support"
-    ],
-    "followUpTopics": [
-      "Can you illustrate a real-world bug caused by improper use of Eval & Function Constructor?",
-      "How does this behave under strict mode or modern build targets?"
-    ],
+    "question": "How do you convert between objects and JSON strings? Stringify {x: 1} then parse it back.",
+    "questionType": "Practical",
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["Serialization", "Deserialization"],
+    "idealAnswerPoints": ["JSON.stringify then JSON.parse round-trip", "Notes functions are dropped"],
+    "commonMistakes": ["Parsing already-parsed objects"],
+    "followUpTopics": ["What values does JSON drop?"],
     "estimatedTimeMinutes": 3,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "eval---function-constructor",
-      "basic"
-    ],
+    "tags": ["javascript", "json", "basic"],
     "status": "APPROVED",
-    "qualityScore": 97,
+    "qualityScore": 95,
     "reviewStatus": "APPROVED",
     "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
     "rubric": {
-      "minimumExpected": "Eval & Function Constructor provides a core mechanism in JavaScript to handle language mechanics & coercion, ensuring predictable behavior and cleaner code structure.",
-      "strongAnswer": "It establishes explicit control over eval & function constructor, preventing unintended side effects and conforming to modern JavaScript standards with clean syntax.",
-      "seniorLevelExpectations": "In production, Eval & Function Constructor must be configured with awareness of memory lifecycle, browser runtime constraints, and team-wide conventions to prevent bugs.",
-      "expertLevelExpectations": "At high scale, it impacts compiler optimizations, cache invalidation, and runtime performance profiles across distributed client environments."
+      "minimumExpected": "Round-trips correctly.",
+      "strongAnswer": "Plus the function-drop caveat.",
+      "seniorLevelExpectations": "Senior candidates handle parse errors.",
+      "expertLevelExpectations": "Expert candidates discuss revivers and cycles."
     }
   },
   {
-    "id": "JS-0070",
+    "id": "JS-B057",
     "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Garbage Collection",
+    "topic": "Objects",
+    "subtopic": "Destructuring",
     "difficulty": "Basic",
-    "question": "[Q070] In JavaScript, focusing on Memory Lifecycle & Garbage Collection Pressure in a design system adopted across 12 distinct product platforms: Explain how \"Garbage Collection\" (Closures & Memory) functions. What fundamental problem does it solve, and how do you implement it correctly?",
-    "questionType": "Debugging",
-    "experienceLevels": [
-      "0-1",
-      "1-2",
-      "2-4"
-    ],
-    "expectedConcepts": [
-      "Garbage Collection",
-      "Closures & Memory",
-      "JavaScript",
-      "Memory Lifecycle & Garbage Collection Pressure",
-      "Runtime Execution",
-      "Best Practices"
-    ],
-    "idealAnswerPoints": [
-      "State clear definition and primary purpose of Garbage Collection",
-      "Provide concrete syntax or architectural example",
-      "Contrast with legacy or alternative approaches"
-    ],
-    "commonMistakes": [
-      "Confusing Garbage Collection with adjacent mechanics",
-      "Overlooking basic edge cases and browser support"
-    ],
-    "followUpTopics": [
-      "Can you illustrate a real-world bug caused by improper use of Garbage Collection?",
-      "How does this behave under strict mode or modern build targets?"
-    ],
+    "question": "How does object destructuring work? Pull name and age out of a user object in one line.",
+    "questionType": "Practical",
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["Binding shorthand", "Property matching"],
+    "idealAnswerPoints": ["One-line const { name, age } = user", "Both variables correct"],
+    "commonMistakes": ["Mismatching property names"],
+    "followUpTopics": ["How to rename while destructuring?"],
     "estimatedTimeMinutes": 3,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "garbage-collection",
-      "basic"
-    ],
+    "tags": ["javascript", "destructuring", "basic"],
     "status": "APPROVED",
-    "qualityScore": 98,
+    "qualityScore": 95,
     "reviewStatus": "APPROVED",
     "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
     "rubric": {
-      "minimumExpected": "Garbage Collection provides a core mechanism in JavaScript to handle closures & memory, ensuring predictable behavior and cleaner code structure.",
-      "strongAnswer": "It establishes explicit control over garbage collection, preventing unintended side effects and conforming to modern JavaScript standards with clean syntax.",
-      "seniorLevelExpectations": "In production, Garbage Collection must be configured with awareness of memory lifecycle, browser runtime constraints, and team-wide conventions to prevent bugs.",
-      "expertLevelExpectations": "At high scale, it impacts compiler optimizations, cache invalidation, and runtime performance profiles across distributed client environments."
+      "minimumExpected": "Destructures both fields.",
+      "strongAnswer": "Clean one-liner explained.",
+      "seniorLevelExpectations": "Senior candidates add defaults.",
+      "expertLevelExpectations": "Expert candidates nest destructuring."
     }
   },
   {
-    "id": "JS-0071",
+    "id": "JS-B058",
     "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Symbol.iterator",
+    "topic": "Objects",
+    "subtopic": "Spread Merge",
     "difficulty": "Basic",
-    "question": "[Q071] In JavaScript, focusing on Security Hardening & Threat Mitigation across a distributed micro-frontend monorepo with 40+ engineering squads: Explain how \"Symbol.iterator\" (Object Prototypes & Inheritance) functions. What fundamental problem does it solve, and how do you implement it correctly?",
+    "question": "How do you merge two objects with spread? Combine {a: 1} and {b: 2} and show which key wins on conflict.",
     "questionType": "Practical",
-    "experienceLevels": [
-      "0-1",
-      "1-2",
-      "2-4"
-    ],
-    "expectedConcepts": [
-      "Symbol.iterator",
-      "Object Prototypes & Inheritance",
-      "JavaScript",
-      "Security Hardening & Threat Mitigation",
-      "Runtime Execution",
-      "Best Practices"
-    ],
-    "idealAnswerPoints": [
-      "State clear definition and primary purpose of Symbol.iterator",
-      "Provide concrete syntax or architectural example",
-      "Contrast with legacy or alternative approaches"
-    ],
-    "commonMistakes": [
-      "Confusing Symbol.iterator with adjacent mechanics",
-      "Overlooking basic edge cases and browser support"
-    ],
-    "followUpTopics": [
-      "Can you illustrate a real-world bug caused by improper use of Symbol.iterator?",
-      "How does this behave under strict mode or modern build targets?"
-    ],
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["Shallow merge", "Later-wins rule"],
+    "idealAnswerPoints": ["Uses {...o1, ...o2}", "Later object wins conflicts"],
+    "commonMistakes": ["Expecting deep merge of nested objects"],
+    "followUpTopics": ["Shallow vs deep copy?"],
     "estimatedTimeMinutes": 3,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "symbol-iterator",
-      "basic"
-    ],
+    "tags": ["javascript", "spread", "basic"],
     "status": "APPROVED",
-    "qualityScore": 99,
+    "qualityScore": 95,
     "reviewStatus": "APPROVED",
     "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
     "rubric": {
-      "minimumExpected": "Symbol.iterator provides a core mechanism in JavaScript to handle object prototypes & inheritance, ensuring predictable behavior and cleaner code structure.",
-      "strongAnswer": "It establishes explicit control over symbol.iterator, preventing unintended side effects and conforming to modern JavaScript standards with clean syntax.",
-      "seniorLevelExpectations": "In production, Symbol.iterator must be configured with awareness of memory lifecycle, browser runtime constraints, and team-wide conventions to prevent bugs.",
-      "expertLevelExpectations": "At high scale, it impacts compiler optimizations, cache invalidation, and runtime performance profiles across distributed client environments."
+      "minimumExpected": "Merges with spread.",
+      "strongAnswer": "Conflict rule demonstrated.",
+      "seniorLevelExpectations": "Senior candidates warn on nesting.",
+      "expertLevelExpectations": "Expert candidates compare assign semantics."
     }
   },
   {
-    "id": "JS-0072",
+    "id": "JS-B059",
     "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Eval & Function Constructor",
+    "topic": "Objects",
+    "subtopic": "Shorthand Props",
     "difficulty": "Basic",
-    "question": "[Q072] In JavaScript, focusing on Testing Strategy & Flakiness Elimination inside a multi-tenant SaaS application with strict client-side data isolation: Explain how \"Eval & Function Constructor\" (Language Mechanics & Coercion) functions. What fundamental problem does it solve, and how do you implement it correctly?",
-    "questionType": "Scenario Based",
-    "experienceLevels": [
-      "0-1",
-      "1-2",
-      "2-4"
-    ],
-    "expectedConcepts": [
-      "Eval & Function Constructor",
-      "Language Mechanics & Coercion",
-      "JavaScript",
-      "Testing Strategy & Flakiness Elimination",
-      "Runtime Execution",
-      "Best Practices"
-    ],
-    "idealAnswerPoints": [
-      "State clear definition and primary purpose of Eval & Function Constructor",
-      "Provide concrete syntax or architectural example",
-      "Contrast with legacy or alternative approaches"
-    ],
-    "commonMistakes": [
-      "Confusing Eval & Function Constructor with adjacent mechanics",
-      "Overlooking basic edge cases and browser support"
-    ],
-    "followUpTopics": [
-      "Can you illustrate a real-world bug caused by improper use of Eval & Function Constructor?",
-      "How does this behave under strict mode or modern build targets?"
-    ],
-    "estimatedTimeMinutes": 3,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "eval---function-constructor",
-      "basic"
-    ],
+    "question": "What is property shorthand? Build {name, age} from existing variables without repeating keys.",
+    "questionType": "Practical",
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["Shorthand syntax", "Variable-key match"],
+    "idealAnswerPoints": ["Single mention creates both key and value", "Output object correct"],
+    "commonMistakes": ["Writing name: name out of habit is fine but verbose"],
+    "followUpTopics": ["How do methods shorthand work?"],
+    "estimatedTimeMinutes": 2,
+    "tags": ["javascript", "shorthand", "basic"],
     "status": "APPROVED",
     "qualityScore": 94,
     "reviewStatus": "APPROVED",
     "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
     "rubric": {
-      "minimumExpected": "Eval & Function Constructor provides a core mechanism in JavaScript to handle language mechanics & coercion, ensuring predictable behavior and cleaner code structure.",
-      "strongAnswer": "It establishes explicit control over eval & function constructor, preventing unintended side effects and conforming to modern JavaScript standards with clean syntax.",
-      "seniorLevelExpectations": "In production, Eval & Function Constructor must be configured with awareness of memory lifecycle, browser runtime constraints, and team-wide conventions to prevent bugs.",
-      "expertLevelExpectations": "At high scale, it impacts compiler optimizations, cache invalidation, and runtime performance profiles across distributed client environments."
+      "minimumExpected": "Builds with shorthand.",
+      "strongAnswer": "Rule explained.",
+      "seniorLevelExpectations": "Senior candidates mix computed keys.",
+      "expertLevelExpectations": "Expert candidates note evaluation order."
     }
   },
   {
-    "id": "JS-0073",
+    "id": "JS-B060",
     "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Garbage Collection",
+    "topic": "Objects",
+    "subtopic": "Methods",
     "difficulty": "Basic",
-    "question": "[Q073] In JavaScript, focusing on Cross-Browser Consistency & Standards Compliance during high-concurrency peak retail traffic (e.g. Cyber Monday): Explain how \"Garbage Collection\" (Closures & Memory) functions. What fundamental problem does it solve, and how do you implement it correctly?",
-    "questionType": "System Design",
-    "experienceLevels": [
-      "0-1",
-      "1-2",
-      "2-4"
-    ],
-    "expectedConcepts": [
-      "Garbage Collection",
-      "Closures & Memory",
-      "JavaScript",
-      "Cross-Browser Consistency & Standards Compliance",
-      "Runtime Execution",
-      "Best Practices"
-    ],
-    "idealAnswerPoints": [
-      "State clear definition and primary purpose of Garbage Collection",
-      "Provide concrete syntax or architectural example",
-      "Contrast with legacy or alternative approaches"
-    ],
-    "commonMistakes": [
-      "Confusing Garbage Collection with adjacent mechanics",
-      "Overlooking basic edge cases and browser support"
-    ],
-    "followUpTopics": [
-      "Can you illustrate a real-world bug caused by improper use of Garbage Collection?",
-      "How does this behave under strict mode or modern build targets?"
-    ],
+    "question": "How do you add a method to an object that uses this? Build a user with greet() saying its own name.",
+    "questionType": "Practical",
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["Method syntax", "this binding"],
+    "idealAnswerPoints": ["Method defined with shorthand or function", "this.name resolves correctly"],
+    "commonMistakes": ["Using arrow so this breaks"],
+    "followUpTopics": ["Why do arrows break here?"],
     "estimatedTimeMinutes": 3,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "garbage-collection",
-      "basic"
-    ],
+    "tags": ["javascript", "methods", "basic"],
     "status": "APPROVED",
     "qualityScore": 95,
     "reviewStatus": "APPROVED",
     "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
     "rubric": {
-      "minimumExpected": "Garbage Collection provides a core mechanism in JavaScript to handle closures & memory, ensuring predictable behavior and cleaner code structure.",
-      "strongAnswer": "It establishes explicit control over garbage collection, preventing unintended side effects and conforming to modern JavaScript standards with clean syntax.",
-      "seniorLevelExpectations": "In production, Garbage Collection must be configured with awareness of memory lifecycle, browser runtime constraints, and team-wide conventions to prevent bugs.",
-      "expertLevelExpectations": "At high scale, it impacts compiler optimizations, cache invalidation, and runtime performance profiles across distributed client environments."
+      "minimumExpected": "Method greets by name.",
+      "strongAnswer": "this rule explained.",
+      "seniorLevelExpectations": "Senior candidates contrast arrow methods.",
+      "expertLevelExpectations": "Expert candidates note method definitions semantics."
     }
   },
   {
-    "id": "JS-0074",
+    "id": "JS-B061",
     "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Symbol.iterator",
+    "topic": "Strings",
+    "subtopic": "Length and Index",
     "difficulty": "Basic",
-    "question": "[Q074] In JavaScript, focusing on Developer Experience & API Ergonomics in a low-bandwidth, high-latency global mobile environment: Explain how \"Symbol.iterator\" (Object Prototypes & Inheritance) functions. What fundamental problem does it solve, and how do you implement it correctly?",
-    "questionType": "Problem Solving",
-    "experienceLevels": [
-      "0-1",
-      "1-2",
-      "2-4"
-    ],
-    "expectedConcepts": [
-      "Symbol.iterator",
-      "Object Prototypes & Inheritance",
-      "JavaScript",
-      "Developer Experience & API Ergonomics",
-      "Runtime Execution",
-      "Best Practices"
-    ],
-    "idealAnswerPoints": [
-      "State clear definition and primary purpose of Symbol.iterator",
-      "Provide concrete syntax or architectural example",
-      "Contrast with legacy or alternative approaches"
-    ],
-    "commonMistakes": [
-      "Confusing Symbol.iterator with adjacent mechanics",
-      "Overlooking basic edge cases and browser support"
-    ],
-    "followUpTopics": [
-      "Can you illustrate a real-world bug caused by improper use of Symbol.iterator?",
-      "How does this behave under strict mode or modern build targets?"
-    ],
-    "estimatedTimeMinutes": 3,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "symbol-iterator",
-      "basic"
-    ],
+    "question": "How do you get a string's length and its first character? Show with 'hello'.",
+    "questionType": "Practical",
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["length property", "Bracket indexing"],
+    "idealAnswerPoints": ["length 5 and 'h' shown", "Zero-based index noted"],
+    "commonMistakes": ["Calling length as a function"],
+    "followUpTopics": ["How to get the last character?"],
+    "estimatedTimeMinutes": 2,
+    "tags": ["javascript", "strings", "basic"],
     "status": "APPROVED",
-    "qualityScore": 96,
+    "qualityScore": 94,
     "reviewStatus": "APPROVED",
     "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
     "rubric": {
-      "minimumExpected": "Symbol.iterator provides a core mechanism in JavaScript to handle object prototypes & inheritance, ensuring predictable behavior and cleaner code structure.",
-      "strongAnswer": "It establishes explicit control over symbol.iterator, preventing unintended side effects and conforming to modern JavaScript standards with clean syntax.",
-      "seniorLevelExpectations": "In production, Symbol.iterator must be configured with awareness of memory lifecycle, browser runtime constraints, and team-wide conventions to prevent bugs.",
-      "expertLevelExpectations": "At high scale, it impacts compiler optimizations, cache invalidation, and runtime performance profiles across distributed client environments."
+      "minimumExpected": "Gets length and first char.",
+      "strongAnswer": "Both correct with indexing note.",
+      "seniorLevelExpectations": "Senior candidates warn on emoji lengths.",
+      "expertLevelExpectations": "Expert candidates mention UTF-16 units."
     }
   },
   {
-    "id": "JS-0075",
+    "id": "JS-B062",
     "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Eval & Function Constructor",
+    "topic": "Strings",
+    "subtopic": "slice",
     "difficulty": "Basic",
-    "question": "[Q075] In JavaScript, focusing on Concurrency & Asynchronous Race Conditions in a high-throughput fintech checkout system: Explain how \"Eval & Function Constructor\" (Language Mechanics & Coercion) functions. What fundamental problem does it solve, and how do you implement it correctly?",
-    "questionType": "Debugging",
-    "experienceLevels": [
-      "0-1",
-      "1-2",
-      "2-4"
-    ],
-    "expectedConcepts": [
-      "Eval & Function Constructor",
-      "Language Mechanics & Coercion",
-      "JavaScript",
-      "Concurrency & Asynchronous Race Conditions",
-      "Runtime Execution",
-      "Best Practices"
-    ],
-    "idealAnswerPoints": [
-      "State clear definition and primary purpose of Eval & Function Constructor",
-      "Provide concrete syntax or architectural example",
-      "Contrast with legacy or alternative approaches"
-    ],
-    "commonMistakes": [
-      "Confusing Eval & Function Constructor with adjacent mechanics",
-      "Overlooking basic edge cases and browser support"
-    ],
-    "followUpTopics": [
-      "Can you illustrate a real-world bug caused by improper use of Eval & Function Constructor?",
-      "How does this behave under strict mode or modern build targets?"
-    ],
-    "estimatedTimeMinutes": 3,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "eval---function-constructor",
-      "basic"
-    ],
+    "question": "How do you extract 'ell' from 'hello' with slice? Explain the start and end indexes.",
+    "questionType": "Practical",
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["Substring range", "End-exclusive"],
+    "idealAnswerPoints": ["Uses slice(1, 4)", "End index excluded"],
+    "commonMistakes": ["Including the end index"],
+    "followUpTopics": ["Negative indexes?"],
+    "estimatedTimeMinutes": 2,
+    "tags": ["javascript", "slice", "basic"],
     "status": "APPROVED",
-    "qualityScore": 97,
+    "qualityScore": 94,
     "reviewStatus": "APPROVED",
     "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
     "rubric": {
-      "minimumExpected": "Eval & Function Constructor provides a core mechanism in JavaScript to handle language mechanics & coercion, ensuring predictable behavior and cleaner code structure.",
-      "strongAnswer": "It establishes explicit control over eval & function constructor, preventing unintended side effects and conforming to modern JavaScript standards with clean syntax.",
-      "seniorLevelExpectations": "In production, Eval & Function Constructor must be configured with awareness of memory lifecycle, browser runtime constraints, and team-wide conventions to prevent bugs.",
-      "expertLevelExpectations": "At high scale, it impacts compiler optimizations, cache invalidation, and runtime performance profiles across distributed client environments."
+      "minimumExpected": "Extracts correctly.",
+      "strongAnswer": "Index logic explained.",
+      "seniorLevelExpectations": "Senior candidates contrast substring.",
+      "expertLevelExpectations": "Expert candidates note negative handling."
     }
   },
   {
-    "id": "JS-0076",
+    "id": "JS-B063",
     "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Garbage Collection",
+    "topic": "Strings",
+    "subtopic": "Case Methods",
     "difficulty": "Basic",
-    "question": "[Q076] In JavaScript, focusing on Refactoring & Safe Legacy Migration within a media streaming player handling adaptive bitrate switching: Explain how \"Garbage Collection\" (Closures & Memory) functions. What fundamental problem does it solve, and how do you implement it correctly?",
+    "question": "How do toUpperCase and toLowerCase work? Normalize 'HeLLo' both ways.",
     "questionType": "Practical",
-    "experienceLevels": [
-      "0-1",
-      "1-2",
-      "2-4"
-    ],
-    "expectedConcepts": [
-      "Garbage Collection",
-      "Closures & Memory",
-      "JavaScript",
-      "Refactoring & Safe Legacy Migration",
-      "Runtime Execution",
-      "Best Practices"
-    ],
-    "idealAnswerPoints": [
-      "State clear definition and primary purpose of Garbage Collection",
-      "Provide concrete syntax or architectural example",
-      "Contrast with legacy or alternative approaches"
-    ],
-    "commonMistakes": [
-      "Confusing Garbage Collection with adjacent mechanics",
-      "Overlooking basic edge cases and browser support"
-    ],
-    "followUpTopics": [
-      "Can you illustrate a real-world bug caused by improper use of Garbage Collection?",
-      "How does this behave under strict mode or modern build targets?"
-    ],
-    "estimatedTimeMinutes": 3,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "garbage-collection",
-      "basic"
-    ],
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["Case conversion", "New strings"],
+    "idealAnswerPoints": ["Both outputs correct", "Original unchanged"],
+    "commonMistakes": ["Expecting in-place change"],
+    "followUpTopics": ["Case-insensitive compare pattern?"],
+    "estimatedTimeMinutes": 2,
+    "tags": ["javascript", "strings", "basic"],
     "status": "APPROVED",
-    "qualityScore": 98,
+    "qualityScore": 94,
     "reviewStatus": "APPROVED",
     "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
     "rubric": {
-      "minimumExpected": "Garbage Collection provides a core mechanism in JavaScript to handle closures & memory, ensuring predictable behavior and cleaner code structure.",
-      "strongAnswer": "It establishes explicit control over garbage collection, preventing unintended side effects and conforming to modern JavaScript standards with clean syntax.",
-      "seniorLevelExpectations": "In production, Garbage Collection must be configured with awareness of memory lifecycle, browser runtime constraints, and team-wide conventions to prevent bugs.",
-      "expertLevelExpectations": "At high scale, it impacts compiler optimizations, cache invalidation, and runtime performance profiles across distributed client environments."
+      "minimumExpected": "Converts both ways.",
+      "strongAnswer": "Immutability noted.",
+      "seniorLevelExpectations": "Senior candidates use for comparisons.",
+      "expertLevelExpectations": "Expert candidates mention locale variants."
     }
   },
   {
-    "id": "JS-0077",
+    "id": "JS-B064",
     "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Symbol.iterator",
+    "topic": "Strings",
+    "subtopic": "trim",
     "difficulty": "Basic",
-    "question": "[Q077] In JavaScript, focusing on State Synchronization & Boundary Isolation during a high-severity production outage requiring immediate triage: Explain how \"Symbol.iterator\" (Object Prototypes & Inheritance) functions. What fundamental problem does it solve, and how do you implement it correctly?",
-    "questionType": "Scenario Based",
-    "experienceLevels": [
-      "0-1",
-      "1-2",
-      "2-4"
-    ],
-    "expectedConcepts": [
-      "Symbol.iterator",
-      "Object Prototypes & Inheritance",
-      "JavaScript",
-      "State Synchronization & Boundary Isolation",
-      "Runtime Execution",
-      "Best Practices"
-    ],
-    "idealAnswerPoints": [
-      "State clear definition and primary purpose of Symbol.iterator",
-      "Provide concrete syntax or architectural example",
-      "Contrast with legacy or alternative approaches"
-    ],
-    "commonMistakes": [
-      "Confusing Symbol.iterator with adjacent mechanics",
-      "Overlooking basic edge cases and browser support"
-    ],
-    "followUpTopics": [
-      "Can you illustrate a real-world bug caused by improper use of Symbol.iterator?",
-      "How does this behave under strict mode or modern build targets?"
-    ],
-    "estimatedTimeMinutes": 3,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "symbol-iterator",
-      "basic"
-    ],
+    "question": "What does trim do? Clean up '  hi  ' and show the before/after lengths.",
+    "questionType": "Practical",
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["Whitespace removal", "Edge-only"],
+    "idealAnswerPoints": ["Removes surrounding spaces only", "Lengths 7 then 2"],
+    "commonMistakes": ["Expecting inner spaces removed"],
+    "followUpTopics": ["trimStart vs trimEnd?"],
+    "estimatedTimeMinutes": 2,
+    "tags": ["javascript", "trim", "basic"],
     "status": "APPROVED",
-    "qualityScore": 99,
+    "qualityScore": 94,
     "reviewStatus": "APPROVED",
     "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
     "rubric": {
-      "minimumExpected": "Symbol.iterator provides a core mechanism in JavaScript to handle object prototypes & inheritance, ensuring predictable behavior and cleaner code structure.",
-      "strongAnswer": "It establishes explicit control over symbol.iterator, preventing unintended side effects and conforming to modern JavaScript standards with clean syntax.",
-      "seniorLevelExpectations": "In production, Symbol.iterator must be configured with awareness of memory lifecycle, browser runtime constraints, and team-wide conventions to prevent bugs.",
-      "expertLevelExpectations": "At high scale, it impacts compiler optimizations, cache invalidation, and runtime performance profiles across distributed client environments."
+      "minimumExpected": "Trims correctly.",
+      "strongAnswer": "Edge-only rule stated.",
+      "seniorLevelExpectations": "Senior candidates chain on inputs.",
+      "expertLevelExpectations": "Expert candidates list stripped characters."
     }
   },
   {
-    "id": "JS-0078",
+    "id": "JS-B065",
     "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Eval & Function Constructor",
+    "topic": "Strings",
+    "subtopic": "replace",
     "difficulty": "Basic",
-    "question": "[Q078] In JavaScript, focusing on Error Boundaries & Graceful Degradation inside an embedded financial analytics dashboard processing live WebSockets: Explain how \"Eval & Function Constructor\" (Language Mechanics & Coercion) functions. What fundamental problem does it solve, and how do you implement it correctly?",
-    "questionType": "System Design",
-    "experienceLevels": [
-      "0-1",
-      "1-2",
-      "2-4"
-    ],
-    "expectedConcepts": [
-      "Eval & Function Constructor",
-      "Language Mechanics & Coercion",
-      "JavaScript",
-      "Error Boundaries & Graceful Degradation",
-      "Runtime Execution",
-      "Best Practices"
-    ],
-    "idealAnswerPoints": [
-      "State clear definition and primary purpose of Eval & Function Constructor",
-      "Provide concrete syntax or architectural example",
-      "Contrast with legacy or alternative approaches"
-    ],
-    "commonMistakes": [
-      "Confusing Eval & Function Constructor with adjacent mechanics",
-      "Overlooking basic edge cases and browser support"
-    ],
-    "followUpTopics": [
-      "Can you illustrate a real-world bug caused by improper use of Eval & Function Constructor?",
-      "How does this behave under strict mode or modern build targets?"
-    ],
-    "estimatedTimeMinutes": 3,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "eval---function-constructor",
-      "basic"
-    ],
+    "question": "How do you replace part of a string? Change 'I like cats' to 'I like dogs'.",
+    "questionType": "Practical",
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["Single replacement", "New string"],
+    "idealAnswerPoints": ["Correct replace call", "Notes only first match replaced"],
+    "commonMistakes": ["Expecting all matches replaced"],
+    "followUpTopics": ["How to replace all?"],
+    "estimatedTimeMinutes": 2,
+    "tags": ["javascript", "replace", "basic"],
     "status": "APPROVED",
     "qualityScore": 94,
     "reviewStatus": "APPROVED",
     "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
     "rubric": {
-      "minimumExpected": "Eval & Function Constructor provides a core mechanism in JavaScript to handle language mechanics & coercion, ensuring predictable behavior and cleaner code structure.",
-      "strongAnswer": "It establishes explicit control over eval & function constructor, preventing unintended side effects and conforming to modern JavaScript standards with clean syntax.",
-      "seniorLevelExpectations": "In production, Eval & Function Constructor must be configured with awareness of memory lifecycle, browser runtime constraints, and team-wide conventions to prevent bugs.",
-      "expertLevelExpectations": "At high scale, it impacts compiler optimizations, cache invalidation, and runtime performance profiles across distributed client environments."
+      "minimumExpected": "Replaces correctly.",
+      "strongAnswer": "First-only rule stated.",
+      "seniorLevelExpectations": "Senior candidates use replaceAll/regex.",
+      "expertLevelExpectations": "Expert candidates cover replacer functions."
     }
   },
   {
-    "id": "JS-0079",
+    "id": "JS-B066",
     "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Garbage Collection",
+    "topic": "Numbers",
+    "subtopic": "toFixed",
     "difficulty": "Basic",
-    "question": "[Q079] In JavaScript, focusing on Observability, Telemetry & Real User Monitoring when integrating third-party untrusted scripts without compromising security: Explain how \"Garbage Collection\" (Closures & Memory) functions. What fundamental problem does it solve, and how do you implement it correctly?",
-    "questionType": "Problem Solving",
-    "experienceLevels": [
-      "0-1",
-      "1-2",
-      "2-4"
-    ],
-    "expectedConcepts": [
-      "Garbage Collection",
-      "Closures & Memory",
-      "JavaScript",
-      "Observability, Telemetry & Real User Monitoring",
-      "Runtime Execution",
-      "Best Practices"
-    ],
-    "idealAnswerPoints": [
-      "State clear definition and primary purpose of Garbage Collection",
-      "Provide concrete syntax or architectural example",
-      "Contrast with legacy or alternative approaches"
-    ],
-    "commonMistakes": [
-      "Confusing Garbage Collection with adjacent mechanics",
-      "Overlooking basic edge cases and browser support"
-    ],
-    "followUpTopics": [
-      "Can you illustrate a real-world bug caused by improper use of Garbage Collection?",
-      "How does this behave under strict mode or modern build targets?"
-    ],
-    "estimatedTimeMinutes": 3,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "garbage-collection",
-      "basic"
-    ],
+    "question": "How do you round 3.14159 to two decimals for display? Show toFixed and its return type.",
+    "questionType": "Practical",
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["Decimal formatting", "String result"],
+    "idealAnswerPoints": ["toFixed(2) gives '3.14'", "Result is a string, not number"],
+    "commonMistakes": ["Doing math on the string result"],
+    "followUpTopics": ["How to get a number back?"],
+    "estimatedTimeMinutes": 2,
+    "tags": ["javascript", "numbers", "basic"],
     "status": "APPROVED",
-    "qualityScore": 95,
+    "qualityScore": 94,
     "reviewStatus": "APPROVED",
     "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
     "rubric": {
-      "minimumExpected": "Garbage Collection provides a core mechanism in JavaScript to handle closures & memory, ensuring predictable behavior and cleaner code structure.",
-      "strongAnswer": "It establishes explicit control over garbage collection, preventing unintended side effects and conforming to modern JavaScript standards with clean syntax.",
-      "seniorLevelExpectations": "In production, Garbage Collection must be configured with awareness of memory lifecycle, browser runtime constraints, and team-wide conventions to prevent bugs.",
-      "expertLevelExpectations": "At high scale, it impacts compiler optimizations, cache invalidation, and runtime performance profiles across distributed client environments."
+      "minimumExpected": "Formats correctly.",
+      "strongAnswer": "String-type gotcha stated.",
+      "seniorLevelExpectations": "Senior candidates convert back safely.",
+      "expertLevelExpectations": "Expert candidates note rounding modes."
     }
   },
   {
-    "id": "JS-0080",
+    "id": "JS-B067",
     "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Symbol.iterator",
+    "topic": "Numbers",
+    "subtopic": "parseInt",
     "difficulty": "Basic",
-    "question": "[Q080] In JavaScript, focusing on Scalability Tradeoffs under High Traffic in an offline-first enterprise mobile web application: Explain how \"Symbol.iterator\" (Object Prototypes & Inheritance) functions. What fundamental problem does it solve, and how do you implement it correctly?",
-    "questionType": "Debugging",
-    "experienceLevels": [
-      "0-1",
-      "1-2",
-      "2-4"
-    ],
-    "expectedConcepts": [
-      "Symbol.iterator",
-      "Object Prototypes & Inheritance",
-      "JavaScript",
-      "Scalability Tradeoffs under High Traffic",
-      "Runtime Execution",
-      "Best Practices"
-    ],
-    "idealAnswerPoints": [
-      "State clear definition and primary purpose of Symbol.iterator",
-      "Provide concrete syntax or architectural example",
-      "Contrast with legacy or alternative approaches"
-    ],
-    "commonMistakes": [
-      "Confusing Symbol.iterator with adjacent mechanics",
-      "Overlooking basic edge cases and browser support"
-    ],
-    "followUpTopics": [
-      "Can you illustrate a real-world bug caused by improper use of Symbol.iterator?",
-      "How does this behave under strict mode or modern build targets?"
-    ],
+    "question": "What is the difference between parseInt('42px') and Number('42px')? Show both outputs.",
+    "questionType": "Theory",
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["Lenient parsing", "Strict conversion"],
+    "idealAnswerPoints": ["parseInt gives 42; Number gives NaN", "Explains leading-parse vs whole-string rule"],
+    "commonMistakes": ["Expecting identical results"],
+    "followUpTopics": ["Why add radix to parseInt?"],
     "estimatedTimeMinutes": 3,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "symbol-iterator",
-      "basic"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 96,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Symbol.iterator provides a core mechanism in JavaScript to handle object prototypes & inheritance, ensuring predictable behavior and cleaner code structure.",
-      "strongAnswer": "It establishes explicit control over symbol.iterator, preventing unintended side effects and conforming to modern JavaScript standards with clean syntax.",
-      "seniorLevelExpectations": "In production, Symbol.iterator must be configured with awareness of memory lifecycle, browser runtime constraints, and team-wide conventions to prevent bugs.",
-      "expertLevelExpectations": "At high scale, it impacts compiler optimizations, cache invalidation, and runtime performance profiles across distributed client environments."
-    }
-  },
-  {
-    "id": "JS-0081",
-    "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Prototype Pollution",
-    "difficulty": "Intermediate",
-    "question": "[Q081] Analyzing Implementation Mechanics & Internal Execution when refactoring a legacy monolithic codebase with zero automated regression tests: How does \"Prototype Pollution\" in JavaScript (Object Prototypes & Inheritance) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "Practical",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Prototype Pollution",
-      "Object Prototypes & Inheritance",
-      "Implementation Mechanics & Internal Execution",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Prototype Pollution?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "prototype-pollution",
-      "intermediate"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 97,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Under the hood, Prototype Pollution executes according to object prototypes & inheritance specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Prototype Pollution.",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Prototype Pollution."
-    }
-  },
-  {
-    "id": "JS-0082",
-    "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Equality Algorithms (== vs === vs Object.is)",
-    "difficulty": "Intermediate",
-    "question": "[Q082] Analyzing Debugging & Production Failure Analysis within a real-time collaborative whiteboarding canvas: How does \"Equality Algorithms (== vs === vs Object.is)\" in JavaScript (Language Mechanics & Coercion) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "Scenario Based",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Equality Algorithms (== vs === vs Object.is)",
-      "Language Mechanics & Coercion",
-      "Debugging & Production Failure Analysis",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Equality Algorithms (== vs === vs Object.is)?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "equality-algorithms-----vs-----vs-object-is-",
-      "intermediate"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 98,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Under the hood, Equality Algorithms (== vs === vs Object.is) executes according to language mechanics & coercion specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Equality Algorithms (== vs === vs Object.is).",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Equality Algorithms (== vs === vs Object.is)."
-    }
-  },
-  {
-    "id": "JS-0083",
-    "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Function Currying",
-    "difficulty": "Intermediate",
-    "question": "[Q083] Analyzing Performance Optimization & Latency Bottlenecks during a live zero-downtime database and schema migration: How does \"Function Currying\" in JavaScript (Closures & Memory) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "System Design",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Function Currying",
-      "Closures & Memory",
-      "Performance Optimization & Latency Bottlenecks",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Function Currying?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "function-currying",
-      "intermediate"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 99,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Under the hood, Function Currying executes according to closures & memory specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Function Currying.",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Function Currying."
-    }
-  },
-  {
-    "id": "JS-0084",
-    "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Prototype Pollution",
-    "difficulty": "Intermediate",
-    "question": "[Q084] Analyzing Architecture & Modularity Design in an executive architectural review evaluating long-term technical debt: How does \"Prototype Pollution\" in JavaScript (Object Prototypes & Inheritance) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "Problem Solving",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Prototype Pollution",
-      "Object Prototypes & Inheritance",
-      "Architecture & Modularity Design",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Prototype Pollution?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "prototype-pollution",
-      "intermediate"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 94,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Under the hood, Prototype Pollution executes according to object prototypes & inheritance specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Prototype Pollution.",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Prototype Pollution."
-    }
-  },
-  {
-    "id": "JS-0085",
-    "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Equality Algorithms (== vs === vs Object.is)",
-    "difficulty": "Intermediate",
-    "question": "[Q085] Analyzing Edge Case Handling & Defensive Validation in a mission-critical healthcare portal with strict latency SLAs: How does \"Equality Algorithms (== vs === vs Object.is)\" in JavaScript (Language Mechanics & Coercion) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "Debugging",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Equality Algorithms (== vs === vs Object.is)",
-      "Language Mechanics & Coercion",
-      "Edge Case Handling & Defensive Validation",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Equality Algorithms (== vs === vs Object.is)?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "equality-algorithms-----vs-----vs-object-is-",
-      "intermediate"
-    ],
+    "tags": ["javascript", "parseint", "basic"],
     "status": "APPROVED",
     "qualityScore": 95,
     "reviewStatus": "APPROVED",
     "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
     "rubric": {
-      "minimumExpected": "Under the hood, Equality Algorithms (== vs === vs Object.is) executes according to language mechanics & coercion specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Equality Algorithms (== vs === vs Object.is).",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Equality Algorithms (== vs === vs Object.is)."
+      "minimumExpected": "Both outputs correct.",
+      "strongAnswer": "Parsing rules explained.",
+      "seniorLevelExpectations": "Senior candidates always pass radix.",
+      "expertLevelExpectations": "Expert candidates detail grammar differences."
     }
   },
   {
-    "id": "JS-0086",
+    "id": "JS-B068",
     "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Function Currying",
-    "difficulty": "Intermediate",
-    "question": "[Q086] Analyzing Memory Lifecycle & Garbage Collection Pressure in a design system adopted across 12 distinct product platforms: How does \"Function Currying\" in JavaScript (Closures & Memory) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
+    "topic": "Numbers",
+    "subtopic": "Math Basics",
+    "difficulty": "Basic",
+    "question": "How do you get a random integer from 1 to 10? Combine Math.random and Math.floor and explain each part.",
     "questionType": "Practical",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Function Currying",
-      "Closures & Memory",
-      "Memory Lifecycle & Garbage Collection Pressure",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Function Currying?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "function-currying",
-      "intermediate"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 96,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Under the hood, Function Currying executes according to closures & memory specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Function Currying.",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Function Currying."
-    }
-  },
-  {
-    "id": "JS-0087",
-    "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Prototype Pollution",
-    "difficulty": "Intermediate",
-    "question": "[Q087] Analyzing Security Hardening & Threat Mitigation across a distributed micro-frontend monorepo with 40+ engineering squads: How does \"Prototype Pollution\" in JavaScript (Object Prototypes & Inheritance) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "Scenario Based",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Prototype Pollution",
-      "Object Prototypes & Inheritance",
-      "Security Hardening & Threat Mitigation",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Prototype Pollution?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "prototype-pollution",
-      "intermediate"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 97,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Under the hood, Prototype Pollution executes according to object prototypes & inheritance specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Prototype Pollution.",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Prototype Pollution."
-    }
-  },
-  {
-    "id": "JS-0088",
-    "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Equality Algorithms (== vs === vs Object.is)",
-    "difficulty": "Intermediate",
-    "question": "[Q088] Analyzing Testing Strategy & Flakiness Elimination inside a multi-tenant SaaS application with strict client-side data isolation: How does \"Equality Algorithms (== vs === vs Object.is)\" in JavaScript (Language Mechanics & Coercion) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "System Design",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Equality Algorithms (== vs === vs Object.is)",
-      "Language Mechanics & Coercion",
-      "Testing Strategy & Flakiness Elimination",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Equality Algorithms (== vs === vs Object.is)?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "equality-algorithms-----vs-----vs-object-is-",
-      "intermediate"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 98,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Under the hood, Equality Algorithms (== vs === vs Object.is) executes according to language mechanics & coercion specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Equality Algorithms (== vs === vs Object.is).",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Equality Algorithms (== vs === vs Object.is)."
-    }
-  },
-  {
-    "id": "JS-0089",
-    "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Function Currying",
-    "difficulty": "Intermediate",
-    "question": "[Q089] Analyzing Cross-Browser Consistency & Standards Compliance during high-concurrency peak retail traffic (e.g. Cyber Monday): How does \"Function Currying\" in JavaScript (Closures & Memory) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "Problem Solving",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Function Currying",
-      "Closures & Memory",
-      "Cross-Browser Consistency & Standards Compliance",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Function Currying?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "function-currying",
-      "intermediate"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 99,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Under the hood, Function Currying executes according to closures & memory specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Function Currying.",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Function Currying."
-    }
-  },
-  {
-    "id": "JS-0090",
-    "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Prototype Pollution",
-    "difficulty": "Intermediate",
-    "question": "[Q090] Analyzing Developer Experience & API Ergonomics in a low-bandwidth, high-latency global mobile environment: How does \"Prototype Pollution\" in JavaScript (Object Prototypes & Inheritance) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "Debugging",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Prototype Pollution",
-      "Object Prototypes & Inheritance",
-      "Developer Experience & API Ergonomics",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Prototype Pollution?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "prototype-pollution",
-      "intermediate"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 94,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Under the hood, Prototype Pollution executes according to object prototypes & inheritance specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Prototype Pollution.",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Prototype Pollution."
-    }
-  },
-  {
-    "id": "JS-0091",
-    "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Equality Algorithms (== vs === vs Object.is)",
-    "difficulty": "Intermediate",
-    "question": "[Q091] Analyzing Concurrency & Asynchronous Race Conditions in a high-throughput fintech checkout system: How does \"Equality Algorithms (== vs === vs Object.is)\" in JavaScript (Language Mechanics & Coercion) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "Practical",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Equality Algorithms (== vs === vs Object.is)",
-      "Language Mechanics & Coercion",
-      "Concurrency & Asynchronous Race Conditions",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Equality Algorithms (== vs === vs Object.is)?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "equality-algorithms-----vs-----vs-object-is-",
-      "intermediate"
-    ],
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["Random range", "Floor shift"],
+    "idealAnswerPoints": ["Formula Math.floor(Math.random() * 10) + 1", "Explains scaling then shifting"],
+    "commonMistakes": ["Using round and skewing distribution"],
+    "followUpTopics": ["Why not Math.round here?"],
+    "estimatedTimeMinutes": 3,
+    "tags": ["javascript", "math", "basic"],
     "status": "APPROVED",
     "qualityScore": 95,
     "reviewStatus": "APPROVED",
     "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
     "rubric": {
-      "minimumExpected": "Under the hood, Equality Algorithms (== vs === vs Object.is) executes according to language mechanics & coercion specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Equality Algorithms (== vs === vs Object.is).",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Equality Algorithms (== vs === vs Object.is)."
+      "minimumExpected": "Produces 1-10 correctly.",
+      "strongAnswer": "Each part explained.",
+      "seniorLevelExpectations": "Senior candidates generalize the range formula.",
+      "expertLevelExpectations": "Expert candidates note crypto alternatives."
     }
   },
   {
-    "id": "JS-0092",
+    "id": "JS-B069",
     "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Function Currying",
-    "difficulty": "Intermediate",
-    "question": "[Q092] Analyzing Refactoring & Safe Legacy Migration within a media streaming player handling adaptive bitrate switching: How does \"Function Currying\" in JavaScript (Closures & Memory) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "Scenario Based",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Function Currying",
-      "Closures & Memory",
-      "Refactoring & Safe Legacy Migration",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Function Currying?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "function-currying",
-      "intermediate"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 96,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Under the hood, Function Currying executes according to closures & memory specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Function Currying.",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Function Currying."
-    }
-  },
-  {
-    "id": "JS-0093",
-    "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Prototype Pollution",
-    "difficulty": "Intermediate",
-    "question": "[Q093] Analyzing State Synchronization & Boundary Isolation during a high-severity production outage requiring immediate triage: How does \"Prototype Pollution\" in JavaScript (Object Prototypes & Inheritance) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "System Design",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Prototype Pollution",
-      "Object Prototypes & Inheritance",
-      "State Synchronization & Boundary Isolation",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Prototype Pollution?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "prototype-pollution",
-      "intermediate"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 97,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Under the hood, Prototype Pollution executes according to object prototypes & inheritance specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Prototype Pollution.",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Prototype Pollution."
-    }
-  },
-  {
-    "id": "JS-0094",
-    "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Equality Algorithms (== vs === vs Object.is)",
-    "difficulty": "Intermediate",
-    "question": "[Q094] Analyzing Error Boundaries & Graceful Degradation inside an embedded financial analytics dashboard processing live WebSockets: How does \"Equality Algorithms (== vs === vs Object.is)\" in JavaScript (Language Mechanics & Coercion) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "Problem Solving",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Equality Algorithms (== vs === vs Object.is)",
-      "Language Mechanics & Coercion",
-      "Error Boundaries & Graceful Degradation",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Equality Algorithms (== vs === vs Object.is)?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "equality-algorithms-----vs-----vs-object-is-",
-      "intermediate"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 98,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Under the hood, Equality Algorithms (== vs === vs Object.is) executes according to language mechanics & coercion specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Equality Algorithms (== vs === vs Object.is).",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Equality Algorithms (== vs === vs Object.is)."
-    }
-  },
-  {
-    "id": "JS-0095",
-    "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Function Currying",
-    "difficulty": "Intermediate",
-    "question": "[Q095] Analyzing Observability, Telemetry & Real User Monitoring when integrating third-party untrusted scripts without compromising security: How does \"Function Currying\" in JavaScript (Closures & Memory) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "Debugging",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Function Currying",
-      "Closures & Memory",
-      "Observability, Telemetry & Real User Monitoring",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Function Currying?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "function-currying",
-      "intermediate"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 99,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Under the hood, Function Currying executes according to closures & memory specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Function Currying.",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Function Currying."
-    }
-  },
-  {
-    "id": "JS-0096",
-    "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Prototype Pollution",
-    "difficulty": "Intermediate",
-    "question": "[Q096] Analyzing Scalability Tradeoffs under High Traffic in an offline-first enterprise mobile web application: How does \"Prototype Pollution\" in JavaScript (Object Prototypes & Inheritance) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "Practical",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Prototype Pollution",
-      "Object Prototypes & Inheritance",
-      "Scalability Tradeoffs under High Traffic",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Prototype Pollution?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "prototype-pollution",
-      "intermediate"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 94,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Under the hood, Prototype Pollution executes according to object prototypes & inheritance specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Prototype Pollution.",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Prototype Pollution."
-    }
-  },
-  {
-    "id": "JS-0097",
-    "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Equality Algorithms (== vs === vs Object.is)",
-    "difficulty": "Intermediate",
-    "question": "[Q097] Analyzing Implementation Mechanics & Internal Execution when refactoring a legacy monolithic codebase with zero automated regression tests: How does \"Equality Algorithms (== vs === vs Object.is)\" in JavaScript (Language Mechanics & Coercion) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "Scenario Based",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Equality Algorithms (== vs === vs Object.is)",
-      "Language Mechanics & Coercion",
-      "Implementation Mechanics & Internal Execution",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Equality Algorithms (== vs === vs Object.is)?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "equality-algorithms-----vs-----vs-object-is-",
-      "intermediate"
-    ],
+    "topic": "Async Basics",
+    "subtopic": "setTimeout",
+    "difficulty": "Basic",
+    "question": "How does setTimeout work? Log First, schedule Second after 0ms, and predict the print order.",
+    "questionType": "Theory",
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["Deferred execution", "Sync-first ordering"],
+    "idealAnswerPoints": ["First prints before Second despite 0ms", "Timer waits for current code to finish"],
+    "commonMistakes": ["Expecting Second first"],
+    "followUpTopics": ["Where do timer callbacks wait?"],
+    "estimatedTimeMinutes": 3,
+    "tags": ["javascript", "settimeout", "basic"],
     "status": "APPROVED",
     "qualityScore": 95,
     "reviewStatus": "APPROVED",
     "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
     "rubric": {
-      "minimumExpected": "Under the hood, Equality Algorithms (== vs === vs Object.is) executes according to language mechanics & coercion specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Equality Algorithms (== vs === vs Object.is).",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Equality Algorithms (== vs === vs Object.is)."
+      "minimumExpected": "Predicts the order.",
+      "strongAnswer": "Ordering rule explained.",
+      "seniorLevelExpectations": "Senior candidates name the task queue.",
+      "expertLevelExpectations": "Expert candidates note minimum delays."
     }
   },
   {
-    "id": "JS-0098",
+    "id": "JS-B070",
     "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Function Currying",
-    "difficulty": "Intermediate",
-    "question": "[Q098] Analyzing Debugging & Production Failure Analysis within a real-time collaborative whiteboarding canvas: How does \"Function Currying\" in JavaScript (Closures & Memory) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "System Design",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Function Currying",
-      "Closures & Memory",
-      "Debugging & Production Failure Analysis",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Function Currying?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "function-currying",
-      "intermediate"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 96,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Under the hood, Function Currying executes according to closures & memory specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Function Currying.",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Function Currying."
-    }
-  },
-  {
-    "id": "JS-0099",
-    "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Prototype Pollution",
-    "difficulty": "Intermediate",
-    "question": "[Q099] Analyzing Performance Optimization & Latency Bottlenecks during a live zero-downtime database and schema migration: How does \"Prototype Pollution\" in JavaScript (Object Prototypes & Inheritance) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "Problem Solving",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Prototype Pollution",
-      "Object Prototypes & Inheritance",
-      "Performance Optimization & Latency Bottlenecks",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Prototype Pollution?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "prototype-pollution",
-      "intermediate"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 97,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Under the hood, Prototype Pollution executes according to object prototypes & inheritance specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Prototype Pollution.",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Prototype Pollution."
-    }
-  },
-  {
-    "id": "JS-0100",
-    "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Equality Algorithms (== vs === vs Object.is)",
-    "difficulty": "Intermediate",
-    "question": "[Q100] Analyzing Architecture & Modularity Design in an executive architectural review evaluating long-term technical debt: How does \"Equality Algorithms (== vs === vs Object.is)\" in JavaScript (Language Mechanics & Coercion) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "Debugging",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Equality Algorithms (== vs === vs Object.is)",
-      "Language Mechanics & Coercion",
-      "Architecture & Modularity Design",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Equality Algorithms (== vs === vs Object.is)?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "equality-algorithms-----vs-----vs-object-is-",
-      "intermediate"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 98,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Under the hood, Equality Algorithms (== vs === vs Object.is) executes according to language mechanics & coercion specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Equality Algorithms (== vs === vs Object.is).",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Equality Algorithms (== vs === vs Object.is)."
-    }
-  },
-  {
-    "id": "JS-0101",
-    "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Function Currying",
-    "difficulty": "Intermediate",
-    "question": "[Q101] Analyzing Edge Case Handling & Defensive Validation in a mission-critical healthcare portal with strict latency SLAs: How does \"Function Currying\" in JavaScript (Closures & Memory) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
+    "topic": "Async Basics",
+    "subtopic": "setInterval",
+    "difficulty": "Basic",
+    "question": "How do setInterval and clearInterval work together? Log a tick 3 times, once per second, then stop.",
     "questionType": "Practical",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Function Currying",
-      "Closures & Memory",
-      "Edge Case Handling & Defensive Validation",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Function Currying?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "function-currying",
-      "intermediate"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 99,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Under the hood, Function Currying executes according to closures & memory specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Function Currying.",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Function Currying."
-    }
-  },
-  {
-    "id": "JS-0102",
-    "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Prototype Pollution",
-    "difficulty": "Intermediate",
-    "question": "[Q102] Analyzing Memory Lifecycle & Garbage Collection Pressure in a design system adopted across 12 distinct product platforms: How does \"Prototype Pollution\" in JavaScript (Object Prototypes & Inheritance) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "Scenario Based",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Prototype Pollution",
-      "Object Prototypes & Inheritance",
-      "Memory Lifecycle & Garbage Collection Pressure",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Prototype Pollution?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "prototype-pollution",
-      "intermediate"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 94,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Under the hood, Prototype Pollution executes according to object prototypes & inheritance specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Prototype Pollution.",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Prototype Pollution."
-    }
-  },
-  {
-    "id": "JS-0103",
-    "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Equality Algorithms (== vs === vs Object.is)",
-    "difficulty": "Intermediate",
-    "question": "[Q103] Analyzing Security Hardening & Threat Mitigation across a distributed micro-frontend monorepo with 40+ engineering squads: How does \"Equality Algorithms (== vs === vs Object.is)\" in JavaScript (Language Mechanics & Coercion) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "System Design",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Equality Algorithms (== vs === vs Object.is)",
-      "Language Mechanics & Coercion",
-      "Security Hardening & Threat Mitigation",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Equality Algorithms (== vs === vs Object.is)?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "equality-algorithms-----vs-----vs-object-is-",
-      "intermediate"
-    ],
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["Repeated scheduling", "Timer handle"],
+    "idealAnswerPoints": ["Stores the interval id", "Clears after third tick"],
+    "commonMistakes": ["Never clearing and leaking the timer"],
+    "followUpTopics": ["setInterval vs repeated setTimeout?"],
+    "estimatedTimeMinutes": 3,
+    "tags": ["javascript", "setinterval", "basic"],
     "status": "APPROVED",
     "qualityScore": 95,
     "reviewStatus": "APPROVED",
     "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
     "rubric": {
-      "minimumExpected": "Under the hood, Equality Algorithms (== vs === vs Object.is) executes according to language mechanics & coercion specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Equality Algorithms (== vs === vs Object.is).",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Equality Algorithms (== vs === vs Object.is)."
+      "minimumExpected": "Ticks and stops correctly.",
+      "strongAnswer": "Handle usage explained.",
+      "seniorLevelExpectations": "Senior candidates warn on overlap drift.",
+      "expertLevelExpectations": "Expert candidates compare scheduling guarantees."
     }
   },
   {
-    "id": "JS-0104",
+    "id": "JS-B071",
     "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Function Currying",
-    "difficulty": "Intermediate",
-    "question": "[Q104] Analyzing Testing Strategy & Flakiness Elimination inside a multi-tenant SaaS application with strict client-side data isolation: How does \"Function Currying\" in JavaScript (Closures & Memory) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "Problem Solving",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Function Currying",
-      "Closures & Memory",
-      "Testing Strategy & Flakiness Elimination",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Function Currying?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "function-currying",
-      "intermediate"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 96,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Under the hood, Function Currying executes according to closures & memory specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Function Currying.",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Function Currying."
-    }
-  },
-  {
-    "id": "JS-0105",
-    "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Prototype Pollution",
-    "difficulty": "Intermediate",
-    "question": "[Q105] Analyzing Cross-Browser Consistency & Standards Compliance during high-concurrency peak retail traffic (e.g. Cyber Monday): How does \"Prototype Pollution\" in JavaScript (Object Prototypes & Inheritance) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "Debugging",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Prototype Pollution",
-      "Object Prototypes & Inheritance",
-      "Cross-Browser Consistency & Standards Compliance",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Prototype Pollution?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "prototype-pollution",
-      "intermediate"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 97,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Under the hood, Prototype Pollution executes according to object prototypes & inheritance specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Prototype Pollution.",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Prototype Pollution."
-    }
-  },
-  {
-    "id": "JS-0106",
-    "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Equality Algorithms (== vs === vs Object.is)",
-    "difficulty": "Intermediate",
-    "question": "[Q106] Analyzing Developer Experience & API Ergonomics in a low-bandwidth, high-latency global mobile environment: How does \"Equality Algorithms (== vs === vs Object.is)\" in JavaScript (Language Mechanics & Coercion) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "Practical",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Equality Algorithms (== vs === vs Object.is)",
-      "Language Mechanics & Coercion",
-      "Developer Experience & API Ergonomics",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Equality Algorithms (== vs === vs Object.is)?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "equality-algorithms-----vs-----vs-object-is-",
-      "intermediate"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 98,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Under the hood, Equality Algorithms (== vs === vs Object.is) executes according to language mechanics & coercion specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Equality Algorithms (== vs === vs Object.is).",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Equality Algorithms (== vs === vs Object.is)."
-    }
-  },
-  {
-    "id": "JS-0107",
-    "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Function Currying",
-    "difficulty": "Intermediate",
-    "question": "[Q107] Analyzing Concurrency & Asynchronous Race Conditions in a high-throughput fintech checkout system: How does \"Function Currying\" in JavaScript (Closures & Memory) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "Scenario Based",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Function Currying",
-      "Closures & Memory",
-      "Concurrency & Asynchronous Race Conditions",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Function Currying?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "function-currying",
-      "intermediate"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 99,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Under the hood, Function Currying executes according to closures & memory specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Function Currying.",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Function Currying."
-    }
-  },
-  {
-    "id": "JS-0108",
-    "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Prototype Pollution",
-    "difficulty": "Intermediate",
-    "question": "[Q108] Analyzing Refactoring & Safe Legacy Migration within a media streaming player handling adaptive bitrate switching: How does \"Prototype Pollution\" in JavaScript (Object Prototypes & Inheritance) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "System Design",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Prototype Pollution",
-      "Object Prototypes & Inheritance",
-      "Refactoring & Safe Legacy Migration",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Prototype Pollution?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "prototype-pollution",
-      "intermediate"
-    ],
+    "topic": "Async Basics",
+    "subtopic": "Callback Order",
+    "difficulty": "Basic",
+    "question": "In this code, what prints first and why? fetchData(function(data) { console.log(data); }); console.log('requested');",
+    "questionType": "Theory",
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["Non-blocking calls", "Later callbacks"],
+    "idealAnswerPoints": ["requested prints first", "Callback runs when data arrives"],
+    "commonMistakes": ["Expecting data first"],
+    "followUpTopics": ["How would you wait for the data?"],
+    "estimatedTimeMinutes": 3,
+    "tags": ["javascript", "async", "basic"],
     "status": "APPROVED",
     "qualityScore": 94,
     "reviewStatus": "APPROVED",
     "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
     "rubric": {
-      "minimumExpected": "Under the hood, Prototype Pollution executes according to object prototypes & inheritance specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Prototype Pollution.",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Prototype Pollution."
+      "minimumExpected": "Predicts requested first.",
+      "strongAnswer": "Non-blocking reason given.",
+      "seniorLevelExpectations": "Senior candidates sketch promise upgrade.",
+      "expertLevelExpectations": "Expert candidates trace event-loop phases."
     }
   },
   {
-    "id": "JS-0109",
+    "id": "JS-B072",
     "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Equality Algorithms (== vs === vs Object.is)",
-    "difficulty": "Intermediate",
-    "question": "[Q109] Analyzing State Synchronization & Boundary Isolation during a high-severity production outage requiring immediate triage: How does \"Equality Algorithms (== vs === vs Object.is)\" in JavaScript (Language Mechanics & Coercion) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "Problem Solving",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Equality Algorithms (== vs === vs Object.is)",
-      "Language Mechanics & Coercion",
-      "State Synchronization & Boundary Isolation",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Equality Algorithms (== vs === vs Object.is)?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "equality-algorithms-----vs-----vs-object-is-",
-      "intermediate"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 95,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Under the hood, Equality Algorithms (== vs === vs Object.is) executes according to language mechanics & coercion specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Equality Algorithms (== vs === vs Object.is).",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Equality Algorithms (== vs === vs Object.is)."
-    }
-  },
-  {
-    "id": "JS-0110",
-    "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Function Currying",
-    "difficulty": "Intermediate",
-    "question": "[Q110] Analyzing Error Boundaries & Graceful Degradation inside an embedded financial analytics dashboard processing live WebSockets: How does \"Function Currying\" in JavaScript (Closures & Memory) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "Debugging",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Function Currying",
-      "Closures & Memory",
-      "Error Boundaries & Graceful Degradation",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Function Currying?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "function-currying",
-      "intermediate"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 96,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Under the hood, Function Currying executes according to closures & memory specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Function Currying.",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Function Currying."
-    }
-  },
-  {
-    "id": "JS-0111",
-    "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Prototype Pollution",
-    "difficulty": "Intermediate",
-    "question": "[Q111] Analyzing Observability, Telemetry & Real User Monitoring when integrating third-party untrusted scripts without compromising security: How does \"Prototype Pollution\" in JavaScript (Object Prototypes & Inheritance) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "Practical",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Prototype Pollution",
-      "Object Prototypes & Inheritance",
-      "Observability, Telemetry & Real User Monitoring",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Prototype Pollution?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "prototype-pollution",
-      "intermediate"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 97,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Under the hood, Prototype Pollution executes according to object prototypes & inheritance specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Prototype Pollution.",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Prototype Pollution."
-    }
-  },
-  {
-    "id": "JS-0112",
-    "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Equality Algorithms (== vs === vs Object.is)",
-    "difficulty": "Intermediate",
-    "question": "[Q112] Analyzing Scalability Tradeoffs under High Traffic in an offline-first enterprise mobile web application: How does \"Equality Algorithms (== vs === vs Object.is)\" in JavaScript (Language Mechanics & Coercion) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "Scenario Based",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Equality Algorithms (== vs === vs Object.is)",
-      "Language Mechanics & Coercion",
-      "Scalability Tradeoffs under High Traffic",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Equality Algorithms (== vs === vs Object.is)?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "equality-algorithms-----vs-----vs-object-is-",
-      "intermediate"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 98,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Under the hood, Equality Algorithms (== vs === vs Object.is) executes according to language mechanics & coercion specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Equality Algorithms (== vs === vs Object.is).",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Equality Algorithms (== vs === vs Object.is)."
-    }
-  },
-  {
-    "id": "JS-0113",
-    "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Function Currying",
-    "difficulty": "Intermediate",
-    "question": "[Q113] Analyzing Implementation Mechanics & Internal Execution when refactoring a legacy monolithic codebase with zero automated regression tests: How does \"Function Currying\" in JavaScript (Closures & Memory) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "System Design",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Function Currying",
-      "Closures & Memory",
-      "Implementation Mechanics & Internal Execution",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Function Currying?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "function-currying",
-      "intermediate"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 99,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Under the hood, Function Currying executes according to closures & memory specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Function Currying.",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Function Currying."
-    }
-  },
-  {
-    "id": "JS-0114",
-    "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Prototype Pollution",
-    "difficulty": "Intermediate",
-    "question": "[Q114] Analyzing Debugging & Production Failure Analysis within a real-time collaborative whiteboarding canvas: How does \"Prototype Pollution\" in JavaScript (Object Prototypes & Inheritance) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "Problem Solving",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Prototype Pollution",
-      "Object Prototypes & Inheritance",
-      "Debugging & Production Failure Analysis",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Prototype Pollution?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "prototype-pollution",
-      "intermediate"
-    ],
+    "topic": "Async Basics",
+    "subtopic": "Promise States",
+    "difficulty": "Basic",
+    "question": "What are the three states of a Promise? Describe what moves a promise from pending to settled.",
+    "questionType": "Theory",
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["Pending/fulfilled/rejected", "One-way settlement"],
+    "idealAnswerPoints": ["Names all three states", "resolve/reject settle it exactly once"],
+    "commonMistakes": ["Thinking settled promises can change again"],
+    "followUpTopics": ["How do you observe each state?"],
+    "estimatedTimeMinutes": 2,
+    "tags": ["javascript", "promises", "basic"],
     "status": "APPROVED",
     "qualityScore": 94,
     "reviewStatus": "APPROVED",
     "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
     "rubric": {
-      "minimumExpected": "Under the hood, Prototype Pollution executes according to object prototypes & inheritance specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Prototype Pollution.",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Prototype Pollution."
+      "minimumExpected": "Names the three states.",
+      "strongAnswer": "Settlement rules correct.",
+      "seniorLevelExpectations": "Senior candidates note single-settlement.",
+      "expertLevelExpectations": "Expert candidates mention thenable assimilation."
     }
   },
   {
-    "id": "JS-0115",
+    "id": "JS-B073",
     "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Equality Algorithms (== vs === vs Object.is)",
-    "difficulty": "Intermediate",
-    "question": "[Q115] Analyzing Performance Optimization & Latency Bottlenecks during a live zero-downtime database and schema migration: How does \"Equality Algorithms (== vs === vs Object.is)\" in JavaScript (Language Mechanics & Coercion) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "Debugging",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Equality Algorithms (== vs === vs Object.is)",
-      "Language Mechanics & Coercion",
-      "Performance Optimization & Latency Bottlenecks",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Equality Algorithms (== vs === vs Object.is)?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "equality-algorithms-----vs-----vs-object-is-",
-      "intermediate"
-    ],
+    "topic": "Async Basics",
+    "subtopic": "new Promise",
+    "difficulty": "Basic",
+    "question": "Write a promise that resolves with 'done' after 500ms. Then log the value with .then().",
+    "questionType": "Practical",
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["Executor", "Resolution value"],
+    "idealAnswerPoints": ["Executor calls resolve('done')", ".then logs done"],
+    "commonMistakes": ["Never calling resolve"],
+    "followUpTopics": ["How to reject instead?"],
+    "estimatedTimeMinutes": 3,
+    "tags": ["javascript", "promises", "basic"],
     "status": "APPROVED",
     "qualityScore": 95,
     "reviewStatus": "APPROVED",
     "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
     "rubric": {
-      "minimumExpected": "Under the hood, Equality Algorithms (== vs === vs Object.is) executes according to language mechanics & coercion specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Equality Algorithms (== vs === vs Object.is).",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Equality Algorithms (== vs === vs Object.is)."
+      "minimumExpected": "Resolves and logs done.",
+      "strongAnswer": "Executor roles clear.",
+      "seniorLevelExpectations": "Senior candidates add rejection path.",
+      "expertLevelExpectations": "Expert candidates note sync executor run."
     }
   },
   {
-    "id": "JS-0116",
+    "id": "JS-B074",
     "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Function Currying",
-    "difficulty": "Intermediate",
-    "question": "[Q116] Analyzing Architecture & Modularity Design in an executive architectural review evaluating long-term technical debt: How does \"Function Currying\" in JavaScript (Closures & Memory) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
+    "topic": "Async Basics",
+    "subtopic": "then catch",
+    "difficulty": "Basic",
+    "question": "How do .then() and .catch() divide success and failure handling? Show both branches with a random-resolve promise.",
     "questionType": "Practical",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Function Currying",
-      "Closures & Memory",
-      "Architecture & Modularity Design",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Function Currying?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "function-currying",
-      "intermediate"
-    ],
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["Success path", "Failure path"],
+    "idealAnswerPoints": ["then handles value; catch handles rejection", "Both branches reachable in demo"],
+    "commonMistakes": ["Putting error logic only in then"],
+    "followUpTopics": ["What does catch return for chaining?"],
+    "estimatedTimeMinutes": 3,
+    "tags": ["javascript", "promises", "basic"],
     "status": "APPROVED",
-    "qualityScore": 96,
+    "qualityScore": 95,
     "reviewStatus": "APPROVED",
     "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
     "rubric": {
-      "minimumExpected": "Under the hood, Function Currying executes according to closures & memory specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Function Currying.",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Function Currying."
+      "minimumExpected": "Both handlers wired.",
+      "strongAnswer": "Branch roles explained.",
+      "seniorLevelExpectations": "Senior candidates chain after catch.",
+      "expertLevelExpectations": "Expert candidates compare then-null patterns."
     }
   },
   {
-    "id": "JS-0117",
+    "id": "JS-B075",
     "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Prototype Pollution",
-    "difficulty": "Intermediate",
-    "question": "[Q117] Analyzing Edge Case Handling & Defensive Validation in a mission-critical healthcare portal with strict latency SLAs: How does \"Prototype Pollution\" in JavaScript (Object Prototypes & Inheritance) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "Scenario Based",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Prototype Pollution",
-      "Object Prototypes & Inheritance",
-      "Edge Case Handling & Defensive Validation",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Prototype Pollution?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "prototype-pollution",
-      "intermediate"
-    ],
+    "topic": "Async Basics",
+    "subtopic": "async await",
+    "difficulty": "Basic",
+    "question": "How do async and await simplify promise code? Rewrite a .then() chain fetching a username using async/await.",
+    "questionType": "Practical",
+    "experienceLevels": ["0-1", "1-2", "2-4"],
+    "expectedConcepts": ["Async functions", "Await pausing"],
+    "idealAnswerPoints": ["await waits for the value inline", "Same result with flatter code"],
+    "commonMistakes": ["Using await outside async"],
+    "followUpTopics": ["How do you catch async errors?"],
+    "estimatedTimeMinutes": 4,
+    "tags": ["javascript", "async-await", "basic"],
     "status": "APPROVED",
-    "qualityScore": 97,
+    "qualityScore": 95,
     "reviewStatus": "APPROVED",
     "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
     "rubric": {
-      "minimumExpected": "Under the hood, Prototype Pollution executes according to object prototypes & inheritance specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Prototype Pollution.",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Prototype Pollution."
+      "minimumExpected": "Rewrites with async/await.",
+      "strongAnswer": "Flat equivalent correct.",
+      "seniorLevelExpectations": "Senior candidates add try/catch.",
+      "expertLevelExpectations": "Expert candidates note promise return."
     }
   },
   {
-    "id": "JS-0118",
+    "id": "JS-B076",
     "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Equality Algorithms (== vs === vs Object.is)",
-    "difficulty": "Intermediate",
-    "question": "[Q118] Analyzing Memory Lifecycle & Garbage Collection Pressure in a design system adopted across 12 distinct product platforms: How does \"Equality Algorithms (== vs === vs Object.is)\" in JavaScript (Language Mechanics & Coercion) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "System Design",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Equality Algorithms (== vs === vs Object.is)",
-      "Language Mechanics & Coercion",
-      "Memory Lifecycle & Garbage Collection Pressure",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Equality Algorithms (== vs === vs Object.is)?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "equality-algorithms-----vs-----vs-object-is-",
-      "intermediate"
-    ],
+    "topic": "Async Basics",
+    "subtopic": "try catch",
+    "difficulty": "Basic",
+    "question": "How do you handle a failing await safely? Wrap it in try/catch and log a friendly message on failure.",
+    "questionType": "Practical",
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["Rejection capture", "Graceful fallback"],
+    "idealAnswerPoints": ["try holds await; catch logs fallback", "App continues instead of crashing"],
+    "commonMistakes": ["Leaving awaits unwrapped"],
+    "followUpTopics": ["try/catch vs .catch()?"],
+    "estimatedTimeMinutes": 3,
+    "tags": ["javascript", "try-catch", "basic"],
     "status": "APPROVED",
-    "qualityScore": 98,
+    "qualityScore": 95,
     "reviewStatus": "APPROVED",
     "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
     "rubric": {
-      "minimumExpected": "Under the hood, Equality Algorithms (== vs === vs Object.is) executes according to language mechanics & coercion specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Equality Algorithms (== vs === vs Object.is).",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Equality Algorithms (== vs === vs Object.is)."
+      "minimumExpected": "Catches the failure.",
+      "strongAnswer": "Friendly fallback shown.",
+      "seniorLevelExpectations": "Senior candidates discuss both styles.",
+      "expertLevelExpectations": "Expert candidates note finally usage."
     }
   },
   {
-    "id": "JS-0119",
+    "id": "JS-B077",
     "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Function Currying",
-    "difficulty": "Intermediate",
-    "question": "[Q119] Analyzing Security Hardening & Threat Mitigation across a distributed micro-frontend monorepo with 40+ engineering squads: How does \"Function Currying\" in JavaScript (Closures & Memory) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "Problem Solving",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Function Currying",
-      "Closures & Memory",
-      "Security Hardening & Threat Mitigation",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Function Currying?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "function-currying",
-      "intermediate"
-    ],
+    "topic": "Async Basics",
+    "subtopic": "fetch Intro",
+    "difficulty": "Basic",
+    "question": "How do you fetch JSON from an API? Show fetch with await, .json(), and logging one field.",
+    "questionType": "Practical",
+    "experienceLevels": ["0-1", "1-2", "2-4"],
+    "expectedConcepts": ["Request promise", "JSON parsing"],
+    "idealAnswerPoints": ["Awaits fetch then response.json()", "Logs one real field"],
+    "commonMistakes": ["Forgetting the second await on json()"],
+    "followUpTopics": ["How to handle HTTP errors?"],
+    "estimatedTimeMinutes": 4,
+    "tags": ["javascript", "fetch", "basic"],
     "status": "APPROVED",
-    "qualityScore": 99,
+    "qualityScore": 95,
     "reviewStatus": "APPROVED",
     "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
     "rubric": {
-      "minimumExpected": "Under the hood, Function Currying executes according to closures & memory specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Function Currying.",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Function Currying."
+      "minimumExpected": "Fetches and logs a field.",
+      "strongAnswer": "Double-await explained.",
+      "seniorLevelExpectations": "Senior candidates check response.ok.",
+      "expertLevelExpectations": "Expert candidates add abort control."
     }
   },
   {
-    "id": "JS-0120",
+    "id": "JS-B078",
     "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Prototype Pollution",
-    "difficulty": "Intermediate",
-    "question": "[Q120] Analyzing Testing Strategy & Flakiness Elimination inside a multi-tenant SaaS application with strict client-side data isolation: How does \"Prototype Pollution\" in JavaScript (Object Prototypes & Inheritance) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "Debugging",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Prototype Pollution",
-      "Object Prototypes & Inheritance",
-      "Testing Strategy & Flakiness Elimination",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Prototype Pollution?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "prototype-pollution",
-      "intermediate"
-    ],
+    "topic": "Async Basics",
+    "subtopic": "Micro vs Macro",
+    "difficulty": "Basic",
+    "question": "In: setTimeout(() => console.log('t')); Promise.resolve().then(() => console.log('p')); which logs first and why?",
+    "questionType": "Theory",
+    "experienceLevels": ["0-1", "1-2", "2-4"],
+    "expectedConcepts": ["Microtask priority", "Queue order"],
+    "idealAnswerPoints": ["p before t", "Microtasks drain before timers"],
+    "commonMistakes": ["Expecting timer first"],
+    "followUpTopics": ["Name two microtask sources."],
+    "estimatedTimeMinutes": 3,
+    "tags": ["javascript", "event-loop", "basic"],
+    "status": "APPROVED",
+    "qualityScore": 95,
+    "reviewStatus": "APPROVED",
+    "version": 1,
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
+    "rubric": {
+      "minimumExpected": "Predicts p first.",
+      "strongAnswer": "Queue priority explained.",
+      "seniorLevelExpectations": "Senior candidates generalize the rule.",
+      "expertLevelExpectations": "Expert candidates detail drain phases."
+    }
+  },
+  {
+    "id": "JS-B079",
+    "technology": "javascript",
+    "topic": "Async Basics",
+    "subtopic": "Promise.all Intro",
+    "difficulty": "Basic",
+    "question": "How do you wait for two promises at once? Show Promise.all on two delayed values and log both results.",
+    "questionType": "Practical",
+    "experienceLevels": ["0-1", "1-2", "2-4"],
+    "expectedConcepts": ["Parallel waiting", "Ordered results"],
+    "idealAnswerPoints": ["Passes array of promises", "Logs results in input order"],
+    "commonMistakes": ["Awaiting sequentially instead"],
+    "followUpTopics": ["What if one rejects?"],
+    "estimatedTimeMinutes": 4,
+    "tags": ["javascript", "promise-all", "basic"],
+    "status": "APPROVED",
+    "qualityScore": 95,
+    "reviewStatus": "APPROVED",
+    "version": 1,
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
+    "rubric": {
+      "minimumExpected": "Waits for both together.",
+      "strongAnswer": "Ordered results shown.",
+      "seniorLevelExpectations": "Senior candidates note fail-fast.",
+      "expertLevelExpectations": "Expert candidates compare allSettled."
+    }
+  },
+  {
+    "id": "JS-B080",
+    "technology": "javascript",
+    "topic": "Async Basics",
+    "subtopic": "Blocking Demo",
+    "difficulty": "Basic",
+    "question": "Why does a long loop freeze button clicks? Explain blocking versus async work with a fix idea.",
+    "questionType": "Theory",
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["Single thread", "Chunking work"],
+    "idealAnswerPoints": ["One thread handles UI and JS", "Fix by chunking or deferring work"],
+    "commonMistakes": ["Blaming the browser only"],
+    "followUpTopics": ["How do workers help?"],
+    "estimatedTimeMinutes": 3,
+    "tags": ["javascript", "blocking", "basic"],
     "status": "APPROVED",
     "qualityScore": 94,
     "reviewStatus": "APPROVED",
     "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
     "rubric": {
-      "minimumExpected": "Under the hood, Prototype Pollution executes according to object prototypes & inheritance specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Prototype Pollution.",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Prototype Pollution."
+      "minimumExpected": "Explains the freeze cause.",
+      "strongAnswer": "Fix idea included.",
+      "seniorLevelExpectations": "Senior candidates chunk correctly.",
+      "expertLevelExpectations": "Expert candidates quantify frame budgets."
     }
   },
   {
-    "id": "JS-0121",
+    "id": "JS-B081",
     "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Equality Algorithms (== vs === vs Object.is)",
-    "difficulty": "Intermediate",
-    "question": "[Q121] Analyzing Cross-Browser Consistency & Standards Compliance during high-concurrency peak retail traffic (e.g. Cyber Monday): How does \"Equality Algorithms (== vs === vs Object.is)\" in JavaScript (Language Mechanics & Coercion) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
+    "topic": "DOM Basics",
+    "subtopic": "getElementById",
+    "difficulty": "Basic",
+    "question": "How do you grab an element by id and change its text? Update #title to say Hello.",
     "questionType": "Practical",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Equality Algorithms (== vs === vs Object.is)",
-      "Language Mechanics & Coercion",
-      "Cross-Browser Consistency & Standards Compliance",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Equality Algorithms (== vs === vs Object.is)?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "equality-algorithms-----vs-----vs-object-is-",
-      "intermediate"
-    ],
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["Element lookup", "textContent"],
+    "idealAnswerPoints": ["Uses getElementById correctly", "Text updates on the page"],
+    "commonMistakes": ["Forgetting the element may be null"],
+    "followUpTopics": ["What if the id is missing?"],
+    "estimatedTimeMinutes": 3,
+    "tags": ["javascript", "dom", "basic"],
     "status": "APPROVED",
     "qualityScore": 95,
     "reviewStatus": "APPROVED",
     "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
     "rubric": {
-      "minimumExpected": "Under the hood, Equality Algorithms (== vs === vs Object.is) executes according to language mechanics & coercion specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Equality Algorithms (== vs === vs Object.is).",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Equality Algorithms (== vs === vs Object.is)."
+      "minimumExpected": "Selects and updates the element.",
+      "strongAnswer": "Correct lookup plus text set.",
+      "seniorLevelExpectations": "Senior candidates null-check first.",
+      "expertLevelExpectations": "Expert candidates note lookup cost."
     }
   },
   {
-    "id": "JS-0122",
+    "id": "JS-B082",
     "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Function Currying",
-    "difficulty": "Intermediate",
-    "question": "[Q122] Analyzing Developer Experience & API Ergonomics in a low-bandwidth, high-latency global mobile environment: How does \"Function Currying\" in JavaScript (Closures & Memory) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "Scenario Based",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Function Currying",
-      "Closures & Memory",
-      "Developer Experience & API Ergonomics",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Function Currying?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "function-currying",
-      "intermediate"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 96,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Under the hood, Function Currying executes according to closures & memory specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Function Currying.",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Function Currying."
-    }
-  },
-  {
-    "id": "JS-0123",
-    "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Prototype Pollution",
-    "difficulty": "Intermediate",
-    "question": "[Q123] Analyzing Concurrency & Asynchronous Race Conditions in a high-throughput fintech checkout system: How does \"Prototype Pollution\" in JavaScript (Object Prototypes & Inheritance) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "System Design",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Prototype Pollution",
-      "Object Prototypes & Inheritance",
-      "Concurrency & Asynchronous Race Conditions",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Prototype Pollution?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "prototype-pollution",
-      "intermediate"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 97,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Under the hood, Prototype Pollution executes according to object prototypes & inheritance specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Prototype Pollution.",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Prototype Pollution."
-    }
-  },
-  {
-    "id": "JS-0124",
-    "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Equality Algorithms (== vs === vs Object.is)",
-    "difficulty": "Intermediate",
-    "question": "[Q124] Analyzing Refactoring & Safe Legacy Migration within a media streaming player handling adaptive bitrate switching: How does \"Equality Algorithms (== vs === vs Object.is)\" in JavaScript (Language Mechanics & Coercion) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "Problem Solving",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Equality Algorithms (== vs === vs Object.is)",
-      "Language Mechanics & Coercion",
-      "Refactoring & Safe Legacy Migration",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Equality Algorithms (== vs === vs Object.is)?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "equality-algorithms-----vs-----vs-object-is-",
-      "intermediate"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 98,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Under the hood, Equality Algorithms (== vs === vs Object.is) executes according to language mechanics & coercion specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Equality Algorithms (== vs === vs Object.is).",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Equality Algorithms (== vs === vs Object.is)."
-    }
-  },
-  {
-    "id": "JS-0125",
-    "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Function Currying",
-    "difficulty": "Intermediate",
-    "question": "[Q125] Analyzing State Synchronization & Boundary Isolation during a high-severity production outage requiring immediate triage: How does \"Function Currying\" in JavaScript (Closures & Memory) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "Debugging",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Function Currying",
-      "Closures & Memory",
-      "State Synchronization & Boundary Isolation",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Function Currying?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "function-currying",
-      "intermediate"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 99,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Under the hood, Function Currying executes according to closures & memory specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Function Currying.",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Function Currying."
-    }
-  },
-  {
-    "id": "JS-0126",
-    "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Prototype Pollution",
-    "difficulty": "Intermediate",
-    "question": "[Q126] Analyzing Error Boundaries & Graceful Degradation inside an embedded financial analytics dashboard processing live WebSockets: How does \"Prototype Pollution\" in JavaScript (Object Prototypes & Inheritance) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
+    "topic": "DOM Basics",
+    "subtopic": "querySelector",
+    "difficulty": "Basic",
+    "question": "How does querySelector differ from getElementById? Select the first .item and log it.",
     "questionType": "Practical",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Prototype Pollution",
-      "Object Prototypes & Inheritance",
-      "Error Boundaries & Graceful Degradation",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Prototype Pollution?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "prototype-pollution",
-      "intermediate"
-    ],
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["CSS selectors", "First match"],
+    "idealAnswerPoints": ["Uses any CSS selector", "Returns first match only"],
+    "commonMistakes": ["Expecting all matches back"],
+    "followUpTopics": ["How to get all matches?"],
+    "estimatedTimeMinutes": 3,
+    "tags": ["javascript", "dom", "basic"],
+    "status": "APPROVED",
+    "qualityScore": 95,
+    "reviewStatus": "APPROVED",
+    "version": 1,
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
+    "rubric": {
+      "minimumExpected": "Selects with a CSS selector.",
+      "strongAnswer": "First-match rule stated.",
+      "seniorLevelExpectations": "Senior candidates use querySelectorAll.",
+      "expertLevelExpectations": "Expert candidates compare live lists."
+    }
+  },
+  {
+    "id": "JS-B083",
+    "technology": "javascript",
+    "topic": "DOM Basics",
+    "subtopic": "textContent",
+    "difficulty": "Basic",
+    "question": "How do you safely set an element's text? Replace a div's content with user input using textContent.",
+    "questionType": "Practical",
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["Safe text injection", "No HTML parsing"],
+    "idealAnswerPoints": ["Assigns textContent correctly", "Explains tags render as text"],
+    "commonMistakes": ["Using innerHTML with user input"],
+    "followUpTopics": ["textContent vs innerText?"],
+    "estimatedTimeMinutes": 3,
+    "tags": ["javascript", "dom", "basic"],
+    "status": "APPROVED",
+    "qualityScore": 95,
+    "reviewStatus": "APPROVED",
+    "version": 1,
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
+    "rubric": {
+      "minimumExpected": "Sets text safely.",
+      "strongAnswer": "XSS-safe reasoning included.",
+      "seniorLevelExpectations": "Senior candidates contrast innerText.",
+      "expertLevelExpectations": "Expert candidates note hidden-text handling."
+    }
+  },
+  {
+    "id": "JS-B084",
+    "technology": "javascript",
+    "topic": "DOM Basics",
+    "subtopic": "innerHTML Risk",
+    "difficulty": "Basic",
+    "question": "Why is innerHTML risky with user data? Show the danger with an img onerror example and the safe fix.",
+    "questionType": "Theory",
+    "experienceLevels": ["0-1", "1-2", "2-4"],
+    "expectedConcepts": ["XSS basics", "Safe alternatives"],
+    "idealAnswerPoints": ["Malicious markup executes", "Fix with textContent or sanitizing"],
+    "commonMistakes": ["Sanitizing by hand with regex"],
+    "followUpTopics": ["What libraries sanitize HTML?"],
+    "estimatedTimeMinutes": 4,
+    "tags": ["javascript", "xss", "basic"],
+    "status": "APPROVED",
+    "qualityScore": 95,
+    "reviewStatus": "APPROVED",
+    "version": 1,
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
+    "rubric": {
+      "minimumExpected": "Names the XSS risk.",
+      "strongAnswer": "Danger demo plus safe fix.",
+      "seniorLevelExpectations": "Senior candidates enforce safe defaults.",
+      "expertLevelExpectations": "Expert candidates add CSP context."
+    }
+  },
+  {
+    "id": "JS-B085",
+    "technology": "javascript",
+    "topic": "DOM Basics",
+    "subtopic": "createElement",
+    "difficulty": "Basic",
+    "question": "How do you create an element and add it to the page? Build an li with 'Milk' and append it to #list.",
+    "questionType": "Practical",
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["Node creation", "Appending"],
+    "idealAnswerPoints": ["createElement plus textContent", "appendChild places it"],
+    "commonMistakes": ["Forgetting to append after creating"],
+    "followUpTopics": ["append vs appendChild?"],
+    "estimatedTimeMinutes": 3,
+    "tags": ["javascript", "dom", "basic"],
+    "status": "APPROVED",
+    "qualityScore": 95,
+    "reviewStatus": "APPROVED",
+    "version": 1,
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
+    "rubric": {
+      "minimumExpected": "Creates and appends the item.",
+      "strongAnswer": "Both steps correct.",
+      "seniorLevelExpectations": "Senior candidates batch inserts.",
+      "expertLevelExpectations": "Expert candidates use fragments."
+    }
+  },
+  {
+    "id": "JS-B086",
+    "technology": "javascript",
+    "topic": "DOM Basics",
+    "subtopic": "Styling",
+    "difficulty": "Basic",
+    "question": "How do you change an element's style from JavaScript? Turn #box background red via the style property.",
+    "questionType": "Practical",
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["Inline styles", "camelCase props"],
+    "idealAnswerPoints": ["Uses style.backgroundColor correctly", "Change visible on page"],
+    "commonMistakes": ["Using background-color with a dash"],
+    "followUpTopics": ["Inline style vs classes?"],
+    "estimatedTimeMinutes": 2,
+    "tags": ["javascript", "dom-style", "basic"],
     "status": "APPROVED",
     "qualityScore": 94,
     "reviewStatus": "APPROVED",
     "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
     "rubric": {
-      "minimumExpected": "Under the hood, Prototype Pollution executes according to object prototypes & inheritance specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Prototype Pollution.",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Prototype Pollution."
+      "minimumExpected": "Changes the style.",
+      "strongAnswer": "camelCase rule stated.",
+      "seniorLevelExpectations": "Senior candidates prefer classes.",
+      "expertLevelExpectations": "Expert candidates note specificity effects."
     }
   },
   {
-    "id": "JS-0127",
+    "id": "JS-B087",
     "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Equality Algorithms (== vs === vs Object.is)",
-    "difficulty": "Intermediate",
-    "question": "[Q127] Analyzing Observability, Telemetry & Real User Monitoring when integrating third-party untrusted scripts without compromising security: How does \"Equality Algorithms (== vs === vs Object.is)\" in JavaScript (Language Mechanics & Coercion) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "Scenario Based",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Equality Algorithms (== vs === vs Object.is)",
-      "Language Mechanics & Coercion",
-      "Observability, Telemetry & Real User Monitoring",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Equality Algorithms (== vs === vs Object.is)?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "equality-algorithms-----vs-----vs-object-is-",
-      "intermediate"
-    ],
+    "topic": "DOM Basics",
+    "subtopic": "classList",
+    "difficulty": "Basic",
+    "question": "How do you toggle a CSS class on click? Add and remove 'dark' on body with classList.toggle.",
+    "questionType": "Practical",
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["Class toggling", "State-free UI switch"],
+    "idealAnswerPoints": ["toggle flips the class each click", "Theme visibly switches"],
+    "commonMistakes": ["Rewriting className strings manually"],
+    "followUpTopics": ["add/remove vs toggle?"],
+    "estimatedTimeMinutes": 3,
+    "tags": ["javascript", "classlist", "basic"],
     "status": "APPROVED",
     "qualityScore": 95,
     "reviewStatus": "APPROVED",
     "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
     "rubric": {
-      "minimumExpected": "Under the hood, Equality Algorithms (== vs === vs Object.is) executes according to language mechanics & coercion specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Equality Algorithms (== vs === vs Object.is).",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Equality Algorithms (== vs === vs Object.is)."
+      "minimumExpected": "Toggles the class.",
+      "strongAnswer": "Flip behavior explained.",
+      "seniorLevelExpectations": "Senior candidates use forced toggle arg.",
+      "expertLevelExpectations": "Expert candidates note reflow costs."
     }
   },
   {
-    "id": "JS-0128",
+    "id": "JS-B088",
     "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Function Currying",
-    "difficulty": "Intermediate",
-    "question": "[Q128] Analyzing Scalability Tradeoffs under High Traffic in an offline-first enterprise mobile web application: How does \"Function Currying\" in JavaScript (Closures & Memory) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "System Design",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Function Currying",
-      "Closures & Memory",
-      "Scalability Tradeoffs under High Traffic",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Function Currying?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "function-currying",
-      "intermediate"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 96,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Under the hood, Function Currying executes according to closures & memory specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Function Currying.",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Function Currying."
-    }
-  },
-  {
-    "id": "JS-0129",
-    "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Prototype Pollution",
-    "difficulty": "Intermediate",
-    "question": "[Q129] Analyzing Implementation Mechanics & Internal Execution when refactoring a legacy monolithic codebase with zero automated regression tests: How does \"Prototype Pollution\" in JavaScript (Object Prototypes & Inheritance) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "Problem Solving",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Prototype Pollution",
-      "Object Prototypes & Inheritance",
-      "Implementation Mechanics & Internal Execution",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Prototype Pollution?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "prototype-pollution",
-      "intermediate"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 97,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Under the hood, Prototype Pollution executes according to object prototypes & inheritance specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Prototype Pollution.",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Prototype Pollution."
-    }
-  },
-  {
-    "id": "JS-0130",
-    "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Equality Algorithms (== vs === vs Object.is)",
-    "difficulty": "Intermediate",
-    "question": "[Q130] Analyzing Debugging & Production Failure Analysis within a real-time collaborative whiteboarding canvas: How does \"Equality Algorithms (== vs === vs Object.is)\" in JavaScript (Language Mechanics & Coercion) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "Debugging",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Equality Algorithms (== vs === vs Object.is)",
-      "Language Mechanics & Coercion",
-      "Debugging & Production Failure Analysis",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Equality Algorithms (== vs === vs Object.is)?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "equality-algorithms-----vs-----vs-object-is-",
-      "intermediate"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 98,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Under the hood, Equality Algorithms (== vs === vs Object.is) executes according to language mechanics & coercion specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Equality Algorithms (== vs === vs Object.is).",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Equality Algorithms (== vs === vs Object.is)."
-    }
-  },
-  {
-    "id": "JS-0131",
-    "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Function Currying",
-    "difficulty": "Intermediate",
-    "question": "[Q131] Analyzing Performance Optimization & Latency Bottlenecks during a live zero-downtime database and schema migration: How does \"Function Currying\" in JavaScript (Closures & Memory) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
+    "topic": "Events",
+    "subtopic": "Click Listener",
+    "difficulty": "Basic",
+    "question": "How do you run code when a button is clicked? Attach a listener that logs Clicked with the count.",
     "questionType": "Practical",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Function Currying",
-      "Closures & Memory",
-      "Performance Optimization & Latency Bottlenecks",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Function Currying?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "function-currying",
-      "intermediate"
-    ],
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["Event registration", "Handler functions"],
+    "idealAnswerPoints": ["addEventListener click wired", "Count increments per click"],
+    "commonMistakes": ["Assigning onclick and wiping other handlers"],
+    "followUpTopics": ["How to remove the listener?"],
+    "estimatedTimeMinutes": 3,
+    "tags": ["javascript", "events", "basic"],
     "status": "APPROVED",
-    "qualityScore": 99,
+    "qualityScore": 95,
     "reviewStatus": "APPROVED",
     "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
     "rubric": {
-      "minimumExpected": "Under the hood, Function Currying executes according to closures & memory specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Function Currying.",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Function Currying."
+      "minimumExpected": "Click logs correctly.",
+      "strongAnswer": "Listener pattern explained.",
+      "seniorLevelExpectations": "Senior candidates prefer addEventListener.",
+      "expertLevelExpectations": "Expert candidates cover listener options."
     }
   },
   {
-    "id": "JS-0132",
+    "id": "JS-B089",
     "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Prototype Pollution",
-    "difficulty": "Intermediate",
-    "question": "[Q132] Analyzing Architecture & Modularity Design in an executive architectural review evaluating long-term technical debt: How does \"Prototype Pollution\" in JavaScript (Object Prototypes & Inheritance) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "Scenario Based",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Prototype Pollution",
-      "Object Prototypes & Inheritance",
-      "Architecture & Modularity Design",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Prototype Pollution?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "prototype-pollution",
-      "intermediate"
-    ],
+    "topic": "Events",
+    "subtopic": "Input Value",
+    "difficulty": "Basic",
+    "question": "How do you read what a user typed? Log an input's value live on every keystroke.",
+    "questionType": "Practical",
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["Input events", "value property"],
+    "idealAnswerPoints": ["Listens to input event", "Logs current value each time"],
+    "commonMistakes": ["Reading once instead of on events"],
+    "followUpTopics": ["input vs change events?"],
+    "estimatedTimeMinutes": 3,
+    "tags": ["javascript", "events", "basic"],
+    "status": "APPROVED",
+    "qualityScore": 95,
+    "reviewStatus": "APPROVED",
+    "version": 1,
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
+    "rubric": {
+      "minimumExpected": "Logs live values.",
+      "strongAnswer": "Event choice justified.",
+      "seniorLevelExpectations": "Senior candidates debounce rapid input.",
+      "expertLevelExpectations": "Expert candidates compare event kinds."
+    }
+  },
+  {
+    "id": "JS-B090",
+    "technology": "javascript",
+    "topic": "Events",
+    "subtopic": "preventDefault",
+    "difficulty": "Basic",
+    "question": "What does preventDefault do? Stop a form from reloading the page and log the submitted name instead.",
+    "questionType": "Practical",
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["Default actions", "SPA forms"],
+    "idealAnswerPoints": ["Prevents the reload", "Reads and logs the name"],
+    "commonMistakes": ["Forgetting the event parameter"],
+    "followUpTopics": ["preventDefault vs stopPropagation?"],
+    "estimatedTimeMinutes": 3,
+    "tags": ["javascript", "events", "basic"],
+    "status": "APPROVED",
+    "qualityScore": 95,
+    "reviewStatus": "APPROVED",
+    "version": 1,
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
+    "rubric": {
+      "minimumExpected": "Stops the reload.",
+      "strongAnswer": "Name logged correctly.",
+      "seniorLevelExpectations": "Senior candidates contrast propagation.",
+      "expertLevelExpectations": "Expert candidates note passive listeners."
+    }
+  },
+  {
+    "id": "JS-B091",
+    "technology": "javascript",
+    "topic": "Modern JavaScript",
+    "subtopic": "Array Destructuring",
+    "difficulty": "Basic",
+    "question": "How do you unpack array items into variables? Get first and second from [10, 20, 30] in one line.",
+    "questionType": "Practical",
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["Positional binding", "Skipping"],
+    "idealAnswerPoints": ["const [a, b] = arr works", "Values 10 and 20 bound"],
+    "commonMistakes": ["Expecting key-based matching like objects"],
+    "followUpTopics": ["How to skip an item?"],
+    "estimatedTimeMinutes": 2,
+    "tags": ["javascript", "destructuring", "basic"],
     "status": "APPROVED",
     "qualityScore": 94,
     "reviewStatus": "APPROVED",
     "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
     "rubric": {
-      "minimumExpected": "Under the hood, Prototype Pollution executes according to object prototypes & inheritance specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Prototype Pollution.",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Prototype Pollution."
+      "minimumExpected": "Unpacks both values.",
+      "strongAnswer": "Positional rule stated.",
+      "seniorLevelExpectations": "Senior candidates add defaults.",
+      "expertLevelExpectations": "Expert candidates destructure iterables."
     }
   },
   {
-    "id": "JS-0133",
+    "id": "JS-B092",
     "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Equality Algorithms (== vs === vs Object.is)",
-    "difficulty": "Intermediate",
-    "question": "[Q133] Analyzing Edge Case Handling & Defensive Validation in a mission-critical healthcare portal with strict latency SLAs: How does \"Equality Algorithms (== vs === vs Object.is)\" in JavaScript (Language Mechanics & Coercion) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "System Design",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Equality Algorithms (== vs === vs Object.is)",
-      "Language Mechanics & Coercion",
-      "Edge Case Handling & Defensive Validation",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Equality Algorithms (== vs === vs Object.is)?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "equality-algorithms-----vs-----vs-object-is-",
-      "intermediate"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 95,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Under the hood, Equality Algorithms (== vs === vs Object.is) executes according to language mechanics & coercion specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Equality Algorithms (== vs === vs Object.is).",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Equality Algorithms (== vs === vs Object.is)."
-    }
-  },
-  {
-    "id": "JS-0134",
-    "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Function Currying",
-    "difficulty": "Intermediate",
-    "question": "[Q134] Analyzing Memory Lifecycle & Garbage Collection Pressure in a design system adopted across 12 distinct product platforms: How does \"Function Currying\" in JavaScript (Closures & Memory) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "Problem Solving",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Function Currying",
-      "Closures & Memory",
-      "Memory Lifecycle & Garbage Collection Pressure",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Function Currying?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "function-currying",
-      "intermediate"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 96,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Under the hood, Function Currying executes according to closures & memory specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Function Currying.",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Function Currying."
-    }
-  },
-  {
-    "id": "JS-0135",
-    "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Prototype Pollution",
-    "difficulty": "Intermediate",
-    "question": "[Q135] Analyzing Security Hardening & Threat Mitigation across a distributed micro-frontend monorepo with 40+ engineering squads: How does \"Prototype Pollution\" in JavaScript (Object Prototypes & Inheritance) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "Debugging",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Prototype Pollution",
-      "Object Prototypes & Inheritance",
-      "Security Hardening & Threat Mitigation",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Prototype Pollution?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "prototype-pollution",
-      "intermediate"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 97,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Under the hood, Prototype Pollution executes according to object prototypes & inheritance specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Prototype Pollution.",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Prototype Pollution."
-    }
-  },
-  {
-    "id": "JS-0136",
-    "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Equality Algorithms (== vs === vs Object.is)",
-    "difficulty": "Intermediate",
-    "question": "[Q136] Analyzing Testing Strategy & Flakiness Elimination inside a multi-tenant SaaS application with strict client-side data isolation: How does \"Equality Algorithms (== vs === vs Object.is)\" in JavaScript (Language Mechanics & Coercion) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
+    "topic": "Modern JavaScript",
+    "subtopic": "Object Destructuring",
+    "difficulty": "Basic",
+    "question": "How do you pull fields from an object? Extract title and price from a product in one line.",
     "questionType": "Practical",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Equality Algorithms (== vs === vs Object.is)",
-      "Language Mechanics & Coercion",
-      "Testing Strategy & Flakiness Elimination",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Equality Algorithms (== vs === vs Object.is)?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "equality-algorithms-----vs-----vs-object-is-",
-      "intermediate"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 98,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Under the hood, Equality Algorithms (== vs === vs Object.is) executes according to language mechanics & coercion specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Equality Algorithms (== vs === vs Object.is).",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Equality Algorithms (== vs === vs Object.is)."
-    }
-  },
-  {
-    "id": "JS-0137",
-    "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Function Currying",
-    "difficulty": "Intermediate",
-    "question": "[Q137] Analyzing Cross-Browser Consistency & Standards Compliance during high-concurrency peak retail traffic (e.g. Cyber Monday): How does \"Function Currying\" in JavaScript (Closures & Memory) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "Scenario Based",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Function Currying",
-      "Closures & Memory",
-      "Cross-Browser Consistency & Standards Compliance",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Function Currying?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "function-currying",
-      "intermediate"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 99,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Under the hood, Function Currying executes according to closures & memory specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Function Currying.",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Function Currying."
-    }
-  },
-  {
-    "id": "JS-0138",
-    "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Prototype Pollution",
-    "difficulty": "Intermediate",
-    "question": "[Q138] Analyzing Developer Experience & API Ergonomics in a low-bandwidth, high-latency global mobile environment: How does \"Prototype Pollution\" in JavaScript (Object Prototypes & Inheritance) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "System Design",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Prototype Pollution",
-      "Object Prototypes & Inheritance",
-      "Developer Experience & API Ergonomics",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Prototype Pollution?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "prototype-pollution",
-      "intermediate"
-    ],
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["Name matching", "Concise access"],
+    "idealAnswerPoints": ["const { title, price } works", "Both values correct"],
+    "commonMistakes": ["Using array brackets for objects"],
+    "followUpTopics": ["How to rename a field?"],
+    "estimatedTimeMinutes": 2,
+    "tags": ["javascript", "destructuring", "basic"],
     "status": "APPROVED",
     "qualityScore": 94,
     "reviewStatus": "APPROVED",
     "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
     "rubric": {
-      "minimumExpected": "Under the hood, Prototype Pollution executes according to object prototypes & inheritance specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Prototype Pollution.",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Prototype Pollution."
+      "minimumExpected": "Extracts both fields.",
+      "strongAnswer": "Matching rule explained.",
+      "seniorLevelExpectations": "Senior candidates rename inline.",
+      "expertLevelExpectations": "Expert candidates nest patterns."
     }
   },
   {
-    "id": "JS-0139",
+    "id": "JS-B093",
     "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Equality Algorithms (== vs === vs Object.is)",
-    "difficulty": "Intermediate",
-    "question": "[Q139] Analyzing Concurrency & Asynchronous Race Conditions in a high-throughput fintech checkout system: How does \"Equality Algorithms (== vs === vs Object.is)\" in JavaScript (Language Mechanics & Coercion) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "Problem Solving",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Equality Algorithms (== vs === vs Object.is)",
-      "Language Mechanics & Coercion",
-      "Concurrency & Asynchronous Race Conditions",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Equality Algorithms (== vs === vs Object.is)?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "equality-algorithms-----vs-----vs-object-is-",
-      "intermediate"
-    ],
+    "topic": "Modern JavaScript",
+    "subtopic": "Optional Chaining",
+    "difficulty": "Basic",
+    "question": "How does ?. prevent crashes on missing data? Safely read user.address.city when address may be missing.",
+    "questionType": "Practical",
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["Short-circuit undefined", "Safe navigation"],
+    "idealAnswerPoints": ["Uses user.address?.city", "Returns undefined instead of throwing"],
+    "commonMistakes": ["Chaining everything blindly"],
+    "followUpTopics": ["Combine with ?? for defaults?"],
+    "estimatedTimeMinutes": 3,
+    "tags": ["javascript", "optional-chaining", "basic"],
     "status": "APPROVED",
     "qualityScore": 95,
     "reviewStatus": "APPROVED",
     "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
     "rubric": {
-      "minimumExpected": "Under the hood, Equality Algorithms (== vs === vs Object.is) executes according to language mechanics & coercion specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Equality Algorithms (== vs === vs Object.is).",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Equality Algorithms (== vs === vs Object.is)."
+      "minimumExpected": "Reads safely with ?.",
+      "strongAnswer": "Short-circuit rule stated.",
+      "seniorLevelExpectations": "Senior candidates pair with ??.",
+      "expertLevelExpectations": "Expert candidates note call variants."
     }
   },
   {
-    "id": "JS-0140",
+    "id": "JS-B094",
     "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Function Currying",
-    "difficulty": "Intermediate",
-    "question": "[Q140] Analyzing Refactoring & Safe Legacy Migration within a media streaming player handling adaptive bitrate switching: How does \"Function Currying\" in JavaScript (Closures & Memory) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "Debugging",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Function Currying",
-      "Closures & Memory",
-      "Refactoring & Safe Legacy Migration",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Function Currying?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "function-currying",
-      "intermediate"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 96,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Under the hood, Function Currying executes according to closures & memory specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Function Currying.",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Function Currying."
-    }
-  },
-  {
-    "id": "JS-0141",
-    "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Prototype Pollution",
-    "difficulty": "Intermediate",
-    "question": "[Q141] Analyzing State Synchronization & Boundary Isolation during a high-severity production outage requiring immediate triage: How does \"Prototype Pollution\" in JavaScript (Object Prototypes & Inheritance) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
+    "topic": "Modern JavaScript",
+    "subtopic": "Nullish Coalescing",
+    "difficulty": "Basic",
+    "question": "What does ?? do differently from ||? Show a port default that keeps 0 valid but replaces null.",
     "questionType": "Practical",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Prototype Pollution",
-      "Object Prototypes & Inheritance",
-      "State Synchronization & Boundary Isolation",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Prototype Pollution?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "prototype-pollution",
-      "intermediate"
-    ],
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["Nullish check", "Zero preservation"],
+    "idealAnswerPoints": ["?? falls back only on null/undefined", "0 survives while null defaults"],
+    "commonMistakes": ["Using || and losing valid zeros"],
+    "followUpTopics": ["Can ?? mix with &&?"],
+    "estimatedTimeMinutes": 3,
+    "tags": ["javascript", "nullish", "basic"],
     "status": "APPROVED",
-    "qualityScore": 97,
+    "qualityScore": 95,
     "reviewStatus": "APPROVED",
     "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
     "rubric": {
-      "minimumExpected": "Under the hood, Prototype Pollution executes according to object prototypes & inheritance specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Prototype Pollution.",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Prototype Pollution."
+      "minimumExpected": "Defaults correctly.",
+      "strongAnswer": "|| contrast demonstrated.",
+      "seniorLevelExpectations": "Senior candidates pick ?? for configs.",
+      "expertLevelExpectations": "Expert candidates cite mixing restrictions."
     }
   },
   {
-    "id": "JS-0142",
+    "id": "JS-B095",
     "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Equality Algorithms (== vs === vs Object.is)",
-    "difficulty": "Intermediate",
-    "question": "[Q142] Analyzing Error Boundaries & Graceful Degradation inside an embedded financial analytics dashboard processing live WebSockets: How does \"Equality Algorithms (== vs === vs Object.is)\" in JavaScript (Language Mechanics & Coercion) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "Scenario Based",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Equality Algorithms (== vs === vs Object.is)",
-      "Language Mechanics & Coercion",
-      "Error Boundaries & Graceful Degradation",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Equality Algorithms (== vs === vs Object.is)?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "equality-algorithms-----vs-----vs-object-is-",
-      "intermediate"
-    ],
+    "topic": "Modern JavaScript",
+    "subtopic": "Modules",
+    "difficulty": "Basic",
+    "question": "How do import and export share code between files? Export add from math.js and use it in app.js.",
+    "questionType": "Practical",
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["Named exports", "Module imports"],
+    "idealAnswerPoints": ["Exports the function", "Imports and calls it correctly"],
+    "commonMistakes": ["Missing type=module in plain pages"],
+    "followUpTopics": ["Default vs named exports?"],
+    "estimatedTimeMinutes": 3,
+    "tags": ["javascript", "modules", "basic"],
     "status": "APPROVED",
-    "qualityScore": 98,
+    "qualityScore": 95,
     "reviewStatus": "APPROVED",
     "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
     "rubric": {
-      "minimumExpected": "Under the hood, Equality Algorithms (== vs === vs Object.is) executes according to language mechanics & coercion specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Equality Algorithms (== vs === vs Object.is).",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Equality Algorithms (== vs === vs Object.is)."
+      "minimumExpected": "Shares code across files.",
+      "strongAnswer": "Both sides correct.",
+      "seniorLevelExpectations": "Senior candidates contrast export kinds.",
+      "expertLevelExpectations": "Expert candidates note live bindings."
     }
   },
   {
-    "id": "JS-0143",
+    "id": "JS-B096",
     "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Function Currying",
-    "difficulty": "Intermediate",
-    "question": "[Q143] Analyzing Observability, Telemetry & Real User Monitoring when integrating third-party untrusted scripts without compromising security: How does \"Function Currying\" in JavaScript (Closures & Memory) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "System Design",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Function Currying",
-      "Closures & Memory",
-      "Observability, Telemetry & Real User Monitoring",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Function Currying?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "function-currying",
-      "intermediate"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 99,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Under the hood, Function Currying executes according to closures & memory specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Function Currying.",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Function Currying."
-    }
-  },
-  {
-    "id": "JS-0144",
-    "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Prototype Pollution",
-    "difficulty": "Intermediate",
-    "question": "[Q144] Analyzing Scalability Tradeoffs under High Traffic in an offline-first enterprise mobile web application: How does \"Prototype Pollution\" in JavaScript (Object Prototypes & Inheritance) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "Problem Solving",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Prototype Pollution",
-      "Object Prototypes & Inheritance",
-      "Scalability Tradeoffs under High Traffic",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Prototype Pollution?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "prototype-pollution",
-      "intermediate"
-    ],
+    "topic": "Modern JavaScript",
+    "subtopic": "Set Basics",
+    "difficulty": "Basic",
+    "question": "What is a Set and how does it remove duplicates? Dedupe [1, 2, 2, 3] with a Set.",
+    "questionType": "Practical",
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["Unique collection", "Spread back"],
+    "idealAnswerPoints": ["Wraps array in new Set", "Spreads back to [1, 2, 3]"],
+    "commonMistakes": ["Forgetting to convert back to array"],
+    "followUpTopics": ["How to check membership?"],
+    "estimatedTimeMinutes": 3,
+    "tags": ["javascript", "set", "basic"],
     "status": "APPROVED",
     "qualityScore": 94,
     "reviewStatus": "APPROVED",
     "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
     "rubric": {
-      "minimumExpected": "Under the hood, Prototype Pollution executes according to object prototypes & inheritance specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Prototype Pollution.",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Prototype Pollution."
+      "minimumExpected": "Dedupes with Set.",
+      "strongAnswer": "Round-trip shown.",
+      "seniorLevelExpectations": "Senior candidates use has() checks.",
+      "expertLevelExpectations": "Expert candidates note SameValueZero."
     }
   },
   {
-    "id": "JS-0145",
+    "id": "JS-B097",
     "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Equality Algorithms (== vs === vs Object.is)",
-    "difficulty": "Intermediate",
-    "question": "[Q145] Analyzing Implementation Mechanics & Internal Execution when refactoring a legacy monolithic codebase with zero automated regression tests: How does \"Equality Algorithms (== vs === vs Object.is)\" in JavaScript (Language Mechanics & Coercion) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "Debugging",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Equality Algorithms (== vs === vs Object.is)",
-      "Language Mechanics & Coercion",
-      "Implementation Mechanics & Internal Execution",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Equality Algorithms (== vs === vs Object.is)?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "equality-algorithms-----vs-----vs-object-is-",
-      "intermediate"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 95,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Under the hood, Equality Algorithms (== vs === vs Object.is) executes according to language mechanics & coercion specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Equality Algorithms (== vs === vs Object.is).",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Equality Algorithms (== vs === vs Object.is)."
-    }
-  },
-  {
-    "id": "JS-0146",
-    "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Function Currying",
-    "difficulty": "Intermediate",
-    "question": "[Q146] Analyzing Debugging & Production Failure Analysis within a real-time collaborative whiteboarding canvas: How does \"Function Currying\" in JavaScript (Closures & Memory) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
+    "topic": "Modern JavaScript",
+    "subtopic": "Map Basics",
+    "difficulty": "Basic",
+    "question": "How is a Map different from a plain object? Store a user by numeric id and retrieve it.",
     "questionType": "Practical",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Function Currying",
-      "Closures & Memory",
-      "Debugging & Production Failure Analysis",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Function Currying?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "function-currying",
-      "intermediate"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 96,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Under the hood, Function Currying executes according to closures & memory specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Function Currying.",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Function Currying."
-    }
-  },
-  {
-    "id": "JS-0147",
-    "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Prototype Pollution",
-    "difficulty": "Intermediate",
-    "question": "[Q147] Analyzing Performance Optimization & Latency Bottlenecks during a live zero-downtime database and schema migration: How does \"Prototype Pollution\" in JavaScript (Object Prototypes & Inheritance) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "Scenario Based",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Prototype Pollution",
-      "Object Prototypes & Inheritance",
-      "Performance Optimization & Latency Bottlenecks",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Prototype Pollution?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "prototype-pollution",
-      "intermediate"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 97,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Under the hood, Prototype Pollution executes according to object prototypes & inheritance specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Prototype Pollution.",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Prototype Pollution."
-    }
-  },
-  {
-    "id": "JS-0148",
-    "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Equality Algorithms (== vs === vs Object.is)",
-    "difficulty": "Intermediate",
-    "question": "[Q148] Analyzing Architecture & Modularity Design in an executive architectural review evaluating long-term technical debt: How does \"Equality Algorithms (== vs === vs Object.is)\" in JavaScript (Language Mechanics & Coercion) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "System Design",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Equality Algorithms (== vs === vs Object.is)",
-      "Language Mechanics & Coercion",
-      "Architecture & Modularity Design",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Equality Algorithms (== vs === vs Object.is)?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "equality-algorithms-----vs-----vs-object-is-",
-      "intermediate"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 98,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Under the hood, Equality Algorithms (== vs === vs Object.is) executes according to language mechanics & coercion specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Equality Algorithms (== vs === vs Object.is).",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Equality Algorithms (== vs === vs Object.is)."
-    }
-  },
-  {
-    "id": "JS-0149",
-    "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Function Currying",
-    "difficulty": "Intermediate",
-    "question": "[Q149] Analyzing Edge Case Handling & Defensive Validation in a mission-critical healthcare portal with strict latency SLAs: How does \"Function Currying\" in JavaScript (Closures & Memory) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "Problem Solving",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Function Currying",
-      "Closures & Memory",
-      "Edge Case Handling & Defensive Validation",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Function Currying?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "function-currying",
-      "intermediate"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 99,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Under the hood, Function Currying executes according to closures & memory specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Function Currying.",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Function Currying."
-    }
-  },
-  {
-    "id": "JS-0150",
-    "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Prototype Pollution",
-    "difficulty": "Intermediate",
-    "question": "[Q150] Analyzing Memory Lifecycle & Garbage Collection Pressure in a design system adopted across 12 distinct product platforms: How does \"Prototype Pollution\" in JavaScript (Object Prototypes & Inheritance) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "Debugging",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Prototype Pollution",
-      "Object Prototypes & Inheritance",
-      "Memory Lifecycle & Garbage Collection Pressure",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Prototype Pollution?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "prototype-pollution",
-      "intermediate"
-    ],
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["Any-type keys", "set/get API"],
+    "idealAnswerPoints": ["Uses set and get correctly", "Notes any key type allowed"],
+    "commonMistakes": ["Using object syntax on Maps"],
+    "followUpTopics": ["When to prefer Map?"],
+    "estimatedTimeMinutes": 3,
+    "tags": ["javascript", "map", "basic"],
     "status": "APPROVED",
     "qualityScore": 94,
     "reviewStatus": "APPROVED",
     "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
     "rubric": {
-      "minimumExpected": "Under the hood, Prototype Pollution executes according to object prototypes & inheritance specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Prototype Pollution.",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Prototype Pollution."
+      "minimumExpected": "Stores and retrieves.",
+      "strongAnswer": "Key-type advantage stated.",
+      "seniorLevelExpectations": "Senior candidates compare ordering.",
+      "expertLevelExpectations": "Expert candidates discuss iteration."
     }
   },
   {
-    "id": "JS-0151",
+    "id": "JS-B098",
     "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Equality Algorithms (== vs === vs Object.is)",
-    "difficulty": "Intermediate",
-    "question": "[Q151] Analyzing Security Hardening & Threat Mitigation across a distributed micro-frontend monorepo with 40+ engineering squads: How does \"Equality Algorithms (== vs === vs Object.is)\" in JavaScript (Language Mechanics & Coercion) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
+    "topic": "Debugging",
+    "subtopic": "console Methods",
+    "difficulty": "Basic",
+    "question": "Which console methods help debugging beyond log? Show log, warn, error, and table on sample data.",
     "questionType": "Practical",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Equality Algorithms (== vs === vs Object.is)",
-      "Language Mechanics & Coercion",
-      "Security Hardening & Threat Mitigation",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Equality Algorithms (== vs === vs Object.is)?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "equality-algorithms-----vs-----vs-object-is-",
-      "intermediate"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 95,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Under the hood, Equality Algorithms (== vs === vs Object.is) executes according to language mechanics & coercion specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Equality Algorithms (== vs === vs Object.is).",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Equality Algorithms (== vs === vs Object.is)."
-    }
-  },
-  {
-    "id": "JS-0152",
-    "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Function Currying",
-    "difficulty": "Intermediate",
-    "question": "[Q152] Analyzing Testing Strategy & Flakiness Elimination inside a multi-tenant SaaS application with strict client-side data isolation: How does \"Function Currying\" in JavaScript (Closures & Memory) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "Scenario Based",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Function Currying",
-      "Closures & Memory",
-      "Testing Strategy & Flakiness Elimination",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Function Currying?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "function-currying",
-      "intermediate"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 96,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Under the hood, Function Currying executes according to closures & memory specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Function Currying.",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Function Currying."
-    }
-  },
-  {
-    "id": "JS-0153",
-    "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Prototype Pollution",
-    "difficulty": "Intermediate",
-    "question": "[Q153] Analyzing Cross-Browser Consistency & Standards Compliance during high-concurrency peak retail traffic (e.g. Cyber Monday): How does \"Prototype Pollution\" in JavaScript (Object Prototypes & Inheritance) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "System Design",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Prototype Pollution",
-      "Object Prototypes & Inheritance",
-      "Cross-Browser Consistency & Standards Compliance",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Prototype Pollution?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "prototype-pollution",
-      "intermediate"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 97,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Under the hood, Prototype Pollution executes according to object prototypes & inheritance specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Prototype Pollution.",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Prototype Pollution."
-    }
-  },
-  {
-    "id": "JS-0154",
-    "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Equality Algorithms (== vs === vs Object.is)",
-    "difficulty": "Intermediate",
-    "question": "[Q154] Analyzing Developer Experience & API Ergonomics in a low-bandwidth, high-latency global mobile environment: How does \"Equality Algorithms (== vs === vs Object.is)\" in JavaScript (Language Mechanics & Coercion) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "Problem Solving",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Equality Algorithms (== vs === vs Object.is)",
-      "Language Mechanics & Coercion",
-      "Developer Experience & API Ergonomics",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Equality Algorithms (== vs === vs Object.is)?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "equality-algorithms-----vs-----vs-object-is-",
-      "intermediate"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 98,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Under the hood, Equality Algorithms (== vs === vs Object.is) executes according to language mechanics & coercion specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Equality Algorithms (== vs === vs Object.is).",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Equality Algorithms (== vs === vs Object.is)."
-    }
-  },
-  {
-    "id": "JS-0155",
-    "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Function Currying",
-    "difficulty": "Intermediate",
-    "question": "[Q155] Analyzing Concurrency & Asynchronous Race Conditions in a high-throughput fintech checkout system: How does \"Function Currying\" in JavaScript (Closures & Memory) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "Debugging",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Function Currying",
-      "Closures & Memory",
-      "Concurrency & Asynchronous Race Conditions",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Function Currying?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "function-currying",
-      "intermediate"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 99,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Under the hood, Function Currying executes according to closures & memory specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Function Currying.",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Function Currying."
-    }
-  },
-  {
-    "id": "JS-0156",
-    "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Prototype Pollution",
-    "difficulty": "Intermediate",
-    "question": "[Q156] Analyzing Refactoring & Safe Legacy Migration within a media streaming player handling adaptive bitrate switching: How does \"Prototype Pollution\" in JavaScript (Object Prototypes & Inheritance) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "Practical",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Prototype Pollution",
-      "Object Prototypes & Inheritance",
-      "Refactoring & Safe Legacy Migration",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Prototype Pollution?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "prototype-pollution",
-      "intermediate"
-    ],
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["Severity levels", "Tabular view"],
+    "idealAnswerPoints": ["All four demonstrated", "Explains when each fits"],
+    "commonMistakes": ["Leaving logs in shipped code"],
+    "followUpTopics": ["How to remove logs for prod?"],
+    "estimatedTimeMinutes": 2,
+    "tags": ["javascript", "console", "basic"],
     "status": "APPROVED",
     "qualityScore": 94,
     "reviewStatus": "APPROVED",
     "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
     "rubric": {
-      "minimumExpected": "Under the hood, Prototype Pollution executes according to object prototypes & inheritance specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Prototype Pollution.",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Prototype Pollution."
+      "minimumExpected": "Demos all four.",
+      "strongAnswer": "Use-case per method.",
+      "seniorLevelExpectations": "Senior candidates strip logs in builds.",
+      "expertLevelExpectations": "Expert candidates use groups/timers."
     }
   },
   {
-    "id": "JS-0157",
+    "id": "JS-B099",
     "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Equality Algorithms (== vs === vs Object.is)",
-    "difficulty": "Intermediate",
-    "question": "[Q157] Analyzing State Synchronization & Boundary Isolation during a high-severity production outage requiring immediate triage: How does \"Equality Algorithms (== vs === vs Object.is)\" in JavaScript (Language Mechanics & Coercion) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "Scenario Based",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Equality Algorithms (== vs === vs Object.is)",
-      "Language Mechanics & Coercion",
-      "State Synchronization & Boundary Isolation",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Equality Algorithms (== vs === vs Object.is)?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "equality-algorithms-----vs-----vs-object-is-",
-      "intermediate"
-    ],
+    "topic": "Debugging",
+    "subtopic": "Reading Errors",
+    "difficulty": "Basic",
+    "question": "How do you read 'TypeError: Cannot read properties of undefined'? Reproduce it and fix the root cause.",
+    "questionType": "Debugging",
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["Stack messages", "Guard fixes"],
+    "idealAnswerPoints": ["Reproduces with missing object", "Fixes with a guard or ?."],
+    "commonMistakes": ["Patching symptoms not sources"],
+    "followUpTopics": ["How does the stack trace help?"],
+    "estimatedTimeMinutes": 4,
+    "tags": ["javascript", "debugging", "basic"],
     "status": "APPROVED",
     "qualityScore": 95,
     "reviewStatus": "APPROVED",
     "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
     "rubric": {
-      "minimumExpected": "Under the hood, Equality Algorithms (== vs === vs Object.is) executes according to language mechanics & coercion specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Equality Algorithms (== vs === vs Object.is).",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Equality Algorithms (== vs === vs Object.is)."
+      "minimumExpected": "Reproduces the error.",
+      "strongAnswer": "Root cause fixed.",
+      "seniorLevelExpectations": "Senior candidates read stacks.",
+      "expertLevelExpectations": "Expert candidates add regression tests."
     }
   },
   {
-    "id": "JS-0158",
+    "id": "JS-B100",
     "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Function Currying",
-    "difficulty": "Intermediate",
-    "question": "[Q158] Analyzing Error Boundaries & Graceful Degradation inside an embedded financial analytics dashboard processing live WebSockets: How does \"Function Currying\" in JavaScript (Closures & Memory) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "System Design",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Function Currying",
-      "Closures & Memory",
-      "Error Boundaries & Graceful Degradation",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Function Currying?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "function-currying",
-      "intermediate"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 96,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Under the hood, Function Currying executes according to closures & memory specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Function Currying.",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Function Currying."
-    }
-  },
-  {
-    "id": "JS-0159",
-    "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Prototype Pollution",
-    "difficulty": "Intermediate",
-    "question": "[Q159] Analyzing Observability, Telemetry & Real User Monitoring when integrating third-party untrusted scripts without compromising security: How does \"Prototype Pollution\" in JavaScript (Object Prototypes & Inheritance) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "Problem Solving",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Prototype Pollution",
-      "Object Prototypes & Inheritance",
-      "Observability, Telemetry & Real User Monitoring",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Prototype Pollution?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "prototype-pollution",
-      "intermediate"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 97,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Under the hood, Prototype Pollution executes according to object prototypes & inheritance specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Prototype Pollution.",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Prototype Pollution."
-    }
-  },
-  {
-    "id": "JS-0160",
-    "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Equality Algorithms (== vs === vs Object.is)",
-    "difficulty": "Intermediate",
-    "question": "[Q160] Analyzing Scalability Tradeoffs under High Traffic in an offline-first enterprise mobile web application: How does \"Equality Algorithms (== vs === vs Object.is)\" in JavaScript (Language Mechanics & Coercion) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
+    "topic": "Debugging",
+    "subtopic": "debugger Statement",
+    "difficulty": "Basic",
+    "question": "How does the debugger statement help? Place one in a loop and describe what the browser shows when it pauses.",
     "questionType": "Debugging",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Equality Algorithms (== vs === vs Object.is)",
-      "Language Mechanics & Coercion",
-      "Scalability Tradeoffs under High Traffic",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Equality Algorithms (== vs === vs Object.is)?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "equality-algorithms-----vs-----vs-object-is-",
-      "intermediate"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 98,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Under the hood, Equality Algorithms (== vs === vs Object.is) executes according to language mechanics & coercion specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Equality Algorithms (== vs === vs Object.is).",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Equality Algorithms (== vs === vs Object.is)."
-    }
-  },
-  {
-    "id": "JS-0161",
-    "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Function Currying",
-    "difficulty": "Intermediate",
-    "question": "[Q161] Analyzing Implementation Mechanics & Internal Execution when refactoring a legacy monolithic codebase with zero automated regression tests: How does \"Function Currying\" in JavaScript (Closures & Memory) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "Practical",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Function Currying",
-      "Closures & Memory",
-      "Implementation Mechanics & Internal Execution",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Function Currying?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "function-currying",
-      "intermediate"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 99,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Under the hood, Function Currying executes according to closures & memory specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Function Currying.",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Function Currying."
-    }
-  },
-  {
-    "id": "JS-0162",
-    "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Prototype Pollution",
-    "difficulty": "Intermediate",
-    "question": "[Q162] Analyzing Debugging & Production Failure Analysis within a real-time collaborative whiteboarding canvas: How does \"Prototype Pollution\" in JavaScript (Object Prototypes & Inheritance) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "Scenario Based",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Prototype Pollution",
-      "Object Prototypes & Inheritance",
-      "Debugging & Production Failure Analysis",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Prototype Pollution?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "prototype-pollution",
-      "intermediate"
-    ],
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["Breakpoints", "Scope inspection"],
+    "idealAnswerPoints": ["Pauses with DevTools open", "Inspects variables and call stack"],
+    "commonMistakes": ["Shipping debugger statements"],
+    "followUpTopics": ["Breakpoints vs debugger keyword?"],
+    "estimatedTimeMinutes": 3,
+    "tags": ["javascript", "debugger", "basic"],
     "status": "APPROVED",
     "qualityScore": 94,
     "reviewStatus": "APPROVED",
     "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Under the hood, Prototype Pollution executes according to object prototypes & inheritance specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Prototype Pollution.",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Prototype Pollution."
-    }
-  },
-  {
-    "id": "JS-0163",
-    "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Equality Algorithms (== vs === vs Object.is)",
-    "difficulty": "Intermediate",
-    "question": "[Q163] Analyzing Performance Optimization & Latency Bottlenecks during a live zero-downtime database and schema migration: How does \"Equality Algorithms (== vs === vs Object.is)\" in JavaScript (Language Mechanics & Coercion) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "System Design",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Equality Algorithms (== vs === vs Object.is)",
-      "Language Mechanics & Coercion",
-      "Performance Optimization & Latency Bottlenecks",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Equality Algorithms (== vs === vs Object.is)?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "equality-algorithms-----vs-----vs-object-is-",
-      "intermediate"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 95,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Under the hood, Equality Algorithms (== vs === vs Object.is) executes according to language mechanics & coercion specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Equality Algorithms (== vs === vs Object.is).",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Equality Algorithms (== vs === vs Object.is)."
-    }
-  },
-  {
-    "id": "JS-0164",
-    "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Function Currying",
-    "difficulty": "Intermediate",
-    "question": "[Q164] Analyzing Architecture & Modularity Design in an executive architectural review evaluating long-term technical debt: How does \"Function Currying\" in JavaScript (Closures & Memory) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "Problem Solving",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Function Currying",
-      "Closures & Memory",
-      "Architecture & Modularity Design",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Function Currying?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "function-currying",
-      "intermediate"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 96,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Under the hood, Function Currying executes according to closures & memory specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Function Currying.",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Function Currying."
-    }
-  },
-  {
-    "id": "JS-0165",
-    "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Prototype Pollution",
-    "difficulty": "Intermediate",
-    "question": "[Q165] Analyzing Edge Case Handling & Defensive Validation in a mission-critical healthcare portal with strict latency SLAs: How does \"Prototype Pollution\" in JavaScript (Object Prototypes & Inheritance) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "Debugging",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Prototype Pollution",
-      "Object Prototypes & Inheritance",
-      "Edge Case Handling & Defensive Validation",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Prototype Pollution?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "prototype-pollution",
-      "intermediate"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 97,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Under the hood, Prototype Pollution executes according to object prototypes & inheritance specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Prototype Pollution.",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Prototype Pollution."
-    }
-  },
-  {
-    "id": "JS-0166",
-    "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Equality Algorithms (== vs === vs Object.is)",
-    "difficulty": "Intermediate",
-    "question": "[Q166] Analyzing Memory Lifecycle & Garbage Collection Pressure in a design system adopted across 12 distinct product platforms: How does \"Equality Algorithms (== vs === vs Object.is)\" in JavaScript (Language Mechanics & Coercion) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "Practical",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Equality Algorithms (== vs === vs Object.is)",
-      "Language Mechanics & Coercion",
-      "Memory Lifecycle & Garbage Collection Pressure",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Equality Algorithms (== vs === vs Object.is)?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "equality-algorithms-----vs-----vs-object-is-",
-      "intermediate"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 98,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Under the hood, Equality Algorithms (== vs === vs Object.is) executes according to language mechanics & coercion specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Equality Algorithms (== vs === vs Object.is).",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Equality Algorithms (== vs === vs Object.is)."
-    }
-  },
-  {
-    "id": "JS-0167",
-    "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Function Currying",
-    "difficulty": "Intermediate",
-    "question": "[Q167] Analyzing Security Hardening & Threat Mitigation across a distributed micro-frontend monorepo with 40+ engineering squads: How does \"Function Currying\" in JavaScript (Closures & Memory) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "Scenario Based",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Function Currying",
-      "Closures & Memory",
-      "Security Hardening & Threat Mitigation",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Function Currying?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "function-currying",
-      "intermediate"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 99,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Under the hood, Function Currying executes according to closures & memory specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Function Currying.",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Function Currying."
-    }
-  },
-  {
-    "id": "JS-0168",
-    "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Prototype Pollution",
-    "difficulty": "Intermediate",
-    "question": "[Q168] Analyzing Testing Strategy & Flakiness Elimination inside a multi-tenant SaaS application with strict client-side data isolation: How does \"Prototype Pollution\" in JavaScript (Object Prototypes & Inheritance) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "System Design",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Prototype Pollution",
-      "Object Prototypes & Inheritance",
-      "Testing Strategy & Flakiness Elimination",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Prototype Pollution?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "prototype-pollution",
-      "intermediate"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 94,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Under the hood, Prototype Pollution executes according to object prototypes & inheritance specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Prototype Pollution.",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Prototype Pollution."
-    }
-  },
-  {
-    "id": "JS-0169",
-    "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Equality Algorithms (== vs === vs Object.is)",
-    "difficulty": "Intermediate",
-    "question": "[Q169] Analyzing Cross-Browser Consistency & Standards Compliance during high-concurrency peak retail traffic (e.g. Cyber Monday): How does \"Equality Algorithms (== vs === vs Object.is)\" in JavaScript (Language Mechanics & Coercion) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "Problem Solving",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Equality Algorithms (== vs === vs Object.is)",
-      "Language Mechanics & Coercion",
-      "Cross-Browser Consistency & Standards Compliance",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Equality Algorithms (== vs === vs Object.is)?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "equality-algorithms-----vs-----vs-object-is-",
-      "intermediate"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 95,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Under the hood, Equality Algorithms (== vs === vs Object.is) executes according to language mechanics & coercion specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Equality Algorithms (== vs === vs Object.is).",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Equality Algorithms (== vs === vs Object.is)."
-    }
-  },
-  {
-    "id": "JS-0170",
-    "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Function Currying",
-    "difficulty": "Intermediate",
-    "question": "[Q170] Analyzing Developer Experience & API Ergonomics in a low-bandwidth, high-latency global mobile environment: How does \"Function Currying\" in JavaScript (Closures & Memory) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "Debugging",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Function Currying",
-      "Closures & Memory",
-      "Developer Experience & API Ergonomics",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Function Currying?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "function-currying",
-      "intermediate"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 96,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Under the hood, Function Currying executes according to closures & memory specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Function Currying.",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Function Currying."
-    }
-  },
-  {
-    "id": "JS-0171",
-    "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Prototype Pollution",
-    "difficulty": "Intermediate",
-    "question": "[Q171] Analyzing Concurrency & Asynchronous Race Conditions in a high-throughput fintech checkout system: How does \"Prototype Pollution\" in JavaScript (Object Prototypes & Inheritance) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "Practical",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Prototype Pollution",
-      "Object Prototypes & Inheritance",
-      "Concurrency & Asynchronous Race Conditions",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Prototype Pollution?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "prototype-pollution",
-      "intermediate"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 97,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Under the hood, Prototype Pollution executes according to object prototypes & inheritance specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Prototype Pollution.",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Prototype Pollution."
-    }
-  },
-  {
-    "id": "JS-0172",
-    "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Equality Algorithms (== vs === vs Object.is)",
-    "difficulty": "Intermediate",
-    "question": "[Q172] Analyzing Refactoring & Safe Legacy Migration within a media streaming player handling adaptive bitrate switching: How does \"Equality Algorithms (== vs === vs Object.is)\" in JavaScript (Language Mechanics & Coercion) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "Scenario Based",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Equality Algorithms (== vs === vs Object.is)",
-      "Language Mechanics & Coercion",
-      "Refactoring & Safe Legacy Migration",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Equality Algorithms (== vs === vs Object.is)?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "equality-algorithms-----vs-----vs-object-is-",
-      "intermediate"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 98,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Under the hood, Equality Algorithms (== vs === vs Object.is) executes according to language mechanics & coercion specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Equality Algorithms (== vs === vs Object.is).",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Equality Algorithms (== vs === vs Object.is)."
-    }
-  },
-  {
-    "id": "JS-0173",
-    "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Function Currying",
-    "difficulty": "Intermediate",
-    "question": "[Q173] Analyzing State Synchronization & Boundary Isolation during a high-severity production outage requiring immediate triage: How does \"Function Currying\" in JavaScript (Closures & Memory) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "System Design",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Function Currying",
-      "Closures & Memory",
-      "State Synchronization & Boundary Isolation",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Function Currying?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "function-currying",
-      "intermediate"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 99,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Under the hood, Function Currying executes according to closures & memory specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Function Currying.",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Function Currying."
-    }
-  },
-  {
-    "id": "JS-0174",
-    "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Prototype Pollution",
-    "difficulty": "Intermediate",
-    "question": "[Q174] Analyzing Error Boundaries & Graceful Degradation inside an embedded financial analytics dashboard processing live WebSockets: How does \"Prototype Pollution\" in JavaScript (Object Prototypes & Inheritance) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "Problem Solving",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Prototype Pollution",
-      "Object Prototypes & Inheritance",
-      "Error Boundaries & Graceful Degradation",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Prototype Pollution?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "prototype-pollution",
-      "intermediate"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 94,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Under the hood, Prototype Pollution executes according to object prototypes & inheritance specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Prototype Pollution.",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Prototype Pollution."
-    }
-  },
-  {
-    "id": "JS-0175",
-    "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Equality Algorithms (== vs === vs Object.is)",
-    "difficulty": "Intermediate",
-    "question": "[Q175] Analyzing Observability, Telemetry & Real User Monitoring when integrating third-party untrusted scripts without compromising security: How does \"Equality Algorithms (== vs === vs Object.is)\" in JavaScript (Language Mechanics & Coercion) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "Debugging",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Equality Algorithms (== vs === vs Object.is)",
-      "Language Mechanics & Coercion",
-      "Observability, Telemetry & Real User Monitoring",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Equality Algorithms (== vs === vs Object.is)?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "equality-algorithms-----vs-----vs-object-is-",
-      "intermediate"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 95,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Under the hood, Equality Algorithms (== vs === vs Object.is) executes according to language mechanics & coercion specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Equality Algorithms (== vs === vs Object.is).",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Equality Algorithms (== vs === vs Object.is)."
-    }
-  },
-  {
-    "id": "JS-0176",
-    "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Function Currying",
-    "difficulty": "Intermediate",
-    "question": "[Q176] Analyzing Scalability Tradeoffs under High Traffic in an offline-first enterprise mobile web application: How does \"Function Currying\" in JavaScript (Closures & Memory) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "Practical",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Function Currying",
-      "Closures & Memory",
-      "Scalability Tradeoffs under High Traffic",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Function Currying?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "function-currying",
-      "intermediate"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 96,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Under the hood, Function Currying executes according to closures & memory specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Function Currying.",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Function Currying."
-    }
-  },
-  {
-    "id": "JS-0177",
-    "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Prototype Pollution",
-    "difficulty": "Intermediate",
-    "question": "[Q177] Analyzing Implementation Mechanics & Internal Execution when refactoring a legacy monolithic codebase with zero automated regression tests: How does \"Prototype Pollution\" in JavaScript (Object Prototypes & Inheritance) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "Scenario Based",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Prototype Pollution",
-      "Object Prototypes & Inheritance",
-      "Implementation Mechanics & Internal Execution",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Prototype Pollution?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "prototype-pollution",
-      "intermediate"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 97,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Under the hood, Prototype Pollution executes according to object prototypes & inheritance specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Prototype Pollution.",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Prototype Pollution."
-    }
-  },
-  {
-    "id": "JS-0178",
-    "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Equality Algorithms (== vs === vs Object.is)",
-    "difficulty": "Intermediate",
-    "question": "[Q178] Analyzing Debugging & Production Failure Analysis within a real-time collaborative whiteboarding canvas: How does \"Equality Algorithms (== vs === vs Object.is)\" in JavaScript (Language Mechanics & Coercion) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "System Design",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Equality Algorithms (== vs === vs Object.is)",
-      "Language Mechanics & Coercion",
-      "Debugging & Production Failure Analysis",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Equality Algorithms (== vs === vs Object.is)?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "equality-algorithms-----vs-----vs-object-is-",
-      "intermediate"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 98,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Under the hood, Equality Algorithms (== vs === vs Object.is) executes according to language mechanics & coercion specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Equality Algorithms (== vs === vs Object.is).",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Equality Algorithms (== vs === vs Object.is)."
-    }
-  },
-  {
-    "id": "JS-0179",
-    "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Function Currying",
-    "difficulty": "Intermediate",
-    "question": "[Q179] Analyzing Performance Optimization & Latency Bottlenecks during a live zero-downtime database and schema migration: How does \"Function Currying\" in JavaScript (Closures & Memory) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "Problem Solving",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Function Currying",
-      "Closures & Memory",
-      "Performance Optimization & Latency Bottlenecks",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Function Currying?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "function-currying",
-      "intermediate"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 99,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Under the hood, Function Currying executes according to closures & memory specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Function Currying.",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Function Currying."
-    }
-  },
-  {
-    "id": "JS-0180",
-    "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Prototype Pollution",
-    "difficulty": "Intermediate",
-    "question": "[Q180] Analyzing Architecture & Modularity Design in an executive architectural review evaluating long-term technical debt: How does \"Prototype Pollution\" in JavaScript (Object Prototypes & Inheritance) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "Debugging",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Prototype Pollution",
-      "Object Prototypes & Inheritance",
-      "Architecture & Modularity Design",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Prototype Pollution?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "prototype-pollution",
-      "intermediate"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 94,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Under the hood, Prototype Pollution executes according to object prototypes & inheritance specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Prototype Pollution.",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Prototype Pollution."
-    }
-  },
-  {
-    "id": "JS-0181",
-    "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Equality Algorithms (== vs === vs Object.is)",
-    "difficulty": "Intermediate",
-    "question": "[Q181] Analyzing Edge Case Handling & Defensive Validation in a mission-critical healthcare portal with strict latency SLAs: How does \"Equality Algorithms (== vs === vs Object.is)\" in JavaScript (Language Mechanics & Coercion) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "Practical",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Equality Algorithms (== vs === vs Object.is)",
-      "Language Mechanics & Coercion",
-      "Edge Case Handling & Defensive Validation",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Equality Algorithms (== vs === vs Object.is)?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "equality-algorithms-----vs-----vs-object-is-",
-      "intermediate"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 95,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Under the hood, Equality Algorithms (== vs === vs Object.is) executes according to language mechanics & coercion specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Equality Algorithms (== vs === vs Object.is).",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Equality Algorithms (== vs === vs Object.is)."
-    }
-  },
-  {
-    "id": "JS-0182",
-    "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Function Currying",
-    "difficulty": "Intermediate",
-    "question": "[Q182] Analyzing Memory Lifecycle & Garbage Collection Pressure in a design system adopted across 12 distinct product platforms: How does \"Function Currying\" in JavaScript (Closures & Memory) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "Scenario Based",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Function Currying",
-      "Closures & Memory",
-      "Memory Lifecycle & Garbage Collection Pressure",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Function Currying?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "function-currying",
-      "intermediate"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 96,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Under the hood, Function Currying executes according to closures & memory specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Function Currying.",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Function Currying."
-    }
-  },
-  {
-    "id": "JS-0183",
-    "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Prototype Pollution",
-    "difficulty": "Intermediate",
-    "question": "[Q183] Analyzing Security Hardening & Threat Mitigation across a distributed micro-frontend monorepo with 40+ engineering squads: How does \"Prototype Pollution\" in JavaScript (Object Prototypes & Inheritance) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "System Design",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Prototype Pollution",
-      "Object Prototypes & Inheritance",
-      "Security Hardening & Threat Mitigation",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Prototype Pollution?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "prototype-pollution",
-      "intermediate"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 97,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Under the hood, Prototype Pollution executes according to object prototypes & inheritance specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Prototype Pollution.",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Prototype Pollution."
-    }
-  },
-  {
-    "id": "JS-0184",
-    "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Equality Algorithms (== vs === vs Object.is)",
-    "difficulty": "Intermediate",
-    "question": "[Q184] Analyzing Testing Strategy & Flakiness Elimination inside a multi-tenant SaaS application with strict client-side data isolation: How does \"Equality Algorithms (== vs === vs Object.is)\" in JavaScript (Language Mechanics & Coercion) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "Problem Solving",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Equality Algorithms (== vs === vs Object.is)",
-      "Language Mechanics & Coercion",
-      "Testing Strategy & Flakiness Elimination",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Equality Algorithms (== vs === vs Object.is)?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "equality-algorithms-----vs-----vs-object-is-",
-      "intermediate"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 98,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Under the hood, Equality Algorithms (== vs === vs Object.is) executes according to language mechanics & coercion specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Equality Algorithms (== vs === vs Object.is).",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Equality Algorithms (== vs === vs Object.is)."
-    }
-  },
-  {
-    "id": "JS-0185",
-    "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Function Currying",
-    "difficulty": "Intermediate",
-    "question": "[Q185] Analyzing Cross-Browser Consistency & Standards Compliance during high-concurrency peak retail traffic (e.g. Cyber Monday): How does \"Function Currying\" in JavaScript (Closures & Memory) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "Debugging",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Function Currying",
-      "Closures & Memory",
-      "Cross-Browser Consistency & Standards Compliance",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Function Currying?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "function-currying",
-      "intermediate"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 99,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Under the hood, Function Currying executes according to closures & memory specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Function Currying.",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Function Currying."
-    }
-  },
-  {
-    "id": "JS-0186",
-    "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Prototype Pollution",
-    "difficulty": "Intermediate",
-    "question": "[Q186] Analyzing Developer Experience & API Ergonomics in a low-bandwidth, high-latency global mobile environment: How does \"Prototype Pollution\" in JavaScript (Object Prototypes & Inheritance) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "Practical",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Prototype Pollution",
-      "Object Prototypes & Inheritance",
-      "Developer Experience & API Ergonomics",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Prototype Pollution?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "prototype-pollution",
-      "intermediate"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 94,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Under the hood, Prototype Pollution executes according to object prototypes & inheritance specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Prototype Pollution.",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Prototype Pollution."
-    }
-  },
-  {
-    "id": "JS-0187",
-    "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Equality Algorithms (== vs === vs Object.is)",
-    "difficulty": "Intermediate",
-    "question": "[Q187] Analyzing Concurrency & Asynchronous Race Conditions in a high-throughput fintech checkout system: How does \"Equality Algorithms (== vs === vs Object.is)\" in JavaScript (Language Mechanics & Coercion) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "Scenario Based",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Equality Algorithms (== vs === vs Object.is)",
-      "Language Mechanics & Coercion",
-      "Concurrency & Asynchronous Race Conditions",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Equality Algorithms (== vs === vs Object.is)?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "equality-algorithms-----vs-----vs-object-is-",
-      "intermediate"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 95,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Under the hood, Equality Algorithms (== vs === vs Object.is) executes according to language mechanics & coercion specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Equality Algorithms (== vs === vs Object.is).",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Equality Algorithms (== vs === vs Object.is)."
-    }
-  },
-  {
-    "id": "JS-0188",
-    "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Function Currying",
-    "difficulty": "Intermediate",
-    "question": "[Q188] Analyzing Refactoring & Safe Legacy Migration within a media streaming player handling adaptive bitrate switching: How does \"Function Currying\" in JavaScript (Closures & Memory) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "System Design",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Function Currying",
-      "Closures & Memory",
-      "Refactoring & Safe Legacy Migration",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Function Currying?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "function-currying",
-      "intermediate"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 96,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Under the hood, Function Currying executes according to closures & memory specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Function Currying.",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Function Currying."
-    }
-  },
-  {
-    "id": "JS-0189",
-    "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Prototype Pollution",
-    "difficulty": "Intermediate",
-    "question": "[Q189] Analyzing State Synchronization & Boundary Isolation during a high-severity production outage requiring immediate triage: How does \"Prototype Pollution\" in JavaScript (Object Prototypes & Inheritance) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "Problem Solving",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Prototype Pollution",
-      "Object Prototypes & Inheritance",
-      "State Synchronization & Boundary Isolation",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Prototype Pollution?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "prototype-pollution",
-      "intermediate"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 97,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Under the hood, Prototype Pollution executes according to object prototypes & inheritance specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Prototype Pollution.",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Prototype Pollution."
-    }
-  },
-  {
-    "id": "JS-0190",
-    "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Equality Algorithms (== vs === vs Object.is)",
-    "difficulty": "Intermediate",
-    "question": "[Q190] Analyzing Error Boundaries & Graceful Degradation inside an embedded financial analytics dashboard processing live WebSockets: How does \"Equality Algorithms (== vs === vs Object.is)\" in JavaScript (Language Mechanics & Coercion) execute under the hood? Detail the lifecycle, runtime behavior, and failure modes engineers must safeguard against.",
-    "questionType": "Debugging",
-    "experienceLevels": [
-      "2-4",
-      "4-6"
-    ],
-    "expectedConcepts": [
-      "Equality Algorithms (== vs === vs Object.is)",
-      "Language Mechanics & Coercion",
-      "Error Boundaries & Graceful Degradation",
-      "Internal Lifecycle",
-      "Performance Optimization",
-      "Memory Management",
-      "Edge Cases"
-    ],
-    "idealAnswerPoints": [
-      "Break down step-by-step internal execution mechanism",
-      "Explain memory and rendering performance implications",
-      "Identify specific production failure modes and preventive measures"
-    ],
-    "commonMistakes": [
-      "Assuming synchronous execution when async scheduling occurs",
-      "Neglecting cleanup and memory leak prevention"
-    ],
-    "followUpTopics": [
-      "How would you debug a performance regression tied to Equality Algorithms (== vs === vs Object.is)?",
-      "What architectural pattern mitigates the complexity of this feature?"
-    ],
-    "estimatedTimeMinutes": 5,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "equality-algorithms-----vs-----vs-object-is-",
-      "intermediate"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 98,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Under the hood, Equality Algorithms (== vs === vs Object.is) executes according to language mechanics & coercion specifications, managing state transitions and updates.",
-      "strongAnswer": "It interacts directly with the runtime engine, optimizing data structures and scheduling tasks while maintaining immutability and predictable flow.",
-      "seniorLevelExpectations": "A senior engineer accounts for memory allocation, garbage collection pressure, referential equality, and asynchronous boundaries when designing systems around Equality Algorithms (== vs === vs Object.is).",
-      "expertLevelExpectations": "Architects optimize V8 hidden classes, bytecode generation, microtask queues, and cross-boundary serialization overhead for Equality Algorithms (== vs === vs Object.is)."
-    }
-  },
-  {
-    "id": "JS-0191",
-    "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Tail Call Optimization",
-    "difficulty": "Advanced",
-    "question": "[Q191] Addressing Observability, Telemetry & Real User Monitoring when integrating third-party untrusted scripts without compromising security: Deep-dive into the architectural tradeoffs of \"Tail Call Optimization\" (Language Mechanics & Coercion) in JavaScript. How do you engineer resilience, maintain testability, and avoid regressions at scale?",
-    "questionType": "Practical",
-    "experienceLevels": [
-      "4-6",
-      "6-8",
-      "8-12"
-    ],
-    "expectedConcepts": [
-      "Tail Call Optimization",
-      "Language Mechanics & Coercion",
-      "Observability, Telemetry & Real User Monitoring",
-      "System Architecture",
-      "Scalability",
-      "Resilience",
-      "Tradeoff Analysis"
-    ],
-    "idealAnswerPoints": [
-      "Analyze architectural tradeoffs with explicit pros and cons",
-      "Provide robust pattern for enterprise isolation and testability",
-      "Discuss telemetry, metrics, and incident recovery strategies"
-    ],
-    "commonMistakes": [
-      "Premature optimization that harms maintainability",
-      "Failing to isolate external side effects and boundaries"
-    ],
-    "followUpTopics": [
-      "What happens when this system encounters network partitioning or heavy main-thread saturation?",
-      "How do you version and migrate this pattern without breaking downstream micro-apps?"
-    ],
-    "estimatedTimeMinutes": 7,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "tail-call-optimization",
-      "advanced"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 99,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Design clean abstractions around Tail Call Optimization with automated test suites and structured separation of concerns.",
-      "strongAnswer": "Decouple business logic from framework bindings, introduce defensive error boundaries, monitor Core Web Vitals, and ensure thread safety and predictability.",
-      "seniorLevelExpectations": "Establish robust design contracts, apply dependency injection or inversion of control, implement comprehensive telemetry, and benchmark memory footprint.",
-      "expertLevelExpectations": "Engineer distributed client resilience, compile-time AST transforms, micro-frontend boundary isolation, and zero-runtime overhead abstractions for Tail Call Optimization."
-    }
-  },
-  {
-    "id": "JS-0192",
-    "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Memory Leaks",
-    "difficulty": "Advanced",
-    "question": "[Q192] Addressing Scalability Tradeoffs under High Traffic in an offline-first enterprise mobile web application: Deep-dive into the architectural tradeoffs of \"Memory Leaks\" (Closures & Memory) in JavaScript. How do you engineer resilience, maintain testability, and avoid regressions at scale?",
-    "questionType": "Scenario Based",
-    "experienceLevels": [
-      "4-6",
-      "6-8",
-      "8-12"
-    ],
-    "expectedConcepts": [
-      "Memory Leaks",
-      "Closures & Memory",
-      "Scalability Tradeoffs under High Traffic",
-      "System Architecture",
-      "Scalability",
-      "Resilience",
-      "Tradeoff Analysis"
-    ],
-    "idealAnswerPoints": [
-      "Analyze architectural tradeoffs with explicit pros and cons",
-      "Provide robust pattern for enterprise isolation and testability",
-      "Discuss telemetry, metrics, and incident recovery strategies"
-    ],
-    "commonMistakes": [
-      "Premature optimization that harms maintainability",
-      "Failing to isolate external side effects and boundaries"
-    ],
-    "followUpTopics": [
-      "What happens when this system encounters network partitioning or heavy main-thread saturation?",
-      "How do you version and migrate this pattern without breaking downstream micro-apps?"
-    ],
-    "estimatedTimeMinutes": 7,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "memory-leaks",
-      "advanced"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 94,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Design clean abstractions around Memory Leaks with automated test suites and structured separation of concerns.",
-      "strongAnswer": "Decouple business logic from framework bindings, introduce defensive error boundaries, monitor Core Web Vitals, and ensure thread safety and predictability.",
-      "seniorLevelExpectations": "Establish robust design contracts, apply dependency injection or inversion of control, implement comprehensive telemetry, and benchmark memory footprint.",
-      "expertLevelExpectations": "Engineer distributed client resilience, compile-time AST transforms, micro-frontend boundary isolation, and zero-runtime overhead abstractions for Memory Leaks."
-    }
-  },
-  {
-    "id": "JS-0193",
-    "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Object.create",
-    "difficulty": "Advanced",
-    "question": "[Q193] Addressing Implementation Mechanics & Internal Execution when refactoring a legacy monolithic codebase with zero automated regression tests: Deep-dive into the architectural tradeoffs of \"Object.create\" (Object Prototypes & Inheritance) in JavaScript. How do you engineer resilience, maintain testability, and avoid regressions at scale?",
-    "questionType": "System Design",
-    "experienceLevels": [
-      "4-6",
-      "6-8",
-      "8-12"
-    ],
-    "expectedConcepts": [
-      "Object.create",
-      "Object Prototypes & Inheritance",
-      "Implementation Mechanics & Internal Execution",
-      "System Architecture",
-      "Scalability",
-      "Resilience",
-      "Tradeoff Analysis"
-    ],
-    "idealAnswerPoints": [
-      "Analyze architectural tradeoffs with explicit pros and cons",
-      "Provide robust pattern for enterprise isolation and testability",
-      "Discuss telemetry, metrics, and incident recovery strategies"
-    ],
-    "commonMistakes": [
-      "Premature optimization that harms maintainability",
-      "Failing to isolate external side effects and boundaries"
-    ],
-    "followUpTopics": [
-      "What happens when this system encounters network partitioning or heavy main-thread saturation?",
-      "How do you version and migrate this pattern without breaking downstream micro-apps?"
-    ],
-    "estimatedTimeMinutes": 7,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "object-create",
-      "advanced"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 95,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Design clean abstractions around Object.create with automated test suites and structured separation of concerns.",
-      "strongAnswer": "Decouple business logic from framework bindings, introduce defensive error boundaries, monitor Core Web Vitals, and ensure thread safety and predictability.",
-      "seniorLevelExpectations": "Establish robust design contracts, apply dependency injection or inversion of control, implement comprehensive telemetry, and benchmark memory footprint.",
-      "expertLevelExpectations": "Engineer distributed client resilience, compile-time AST transforms, micro-frontend boundary isolation, and zero-runtime overhead abstractions for Object.create."
-    }
-  },
-  {
-    "id": "JS-0194",
-    "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Tail Call Optimization",
-    "difficulty": "Advanced",
-    "question": "[Q194] Addressing Debugging & Production Failure Analysis within a real-time collaborative whiteboarding canvas: Deep-dive into the architectural tradeoffs of \"Tail Call Optimization\" (Language Mechanics & Coercion) in JavaScript. How do you engineer resilience, maintain testability, and avoid regressions at scale?",
-    "questionType": "Problem Solving",
-    "experienceLevels": [
-      "4-6",
-      "6-8",
-      "8-12"
-    ],
-    "expectedConcepts": [
-      "Tail Call Optimization",
-      "Language Mechanics & Coercion",
-      "Debugging & Production Failure Analysis",
-      "System Architecture",
-      "Scalability",
-      "Resilience",
-      "Tradeoff Analysis"
-    ],
-    "idealAnswerPoints": [
-      "Analyze architectural tradeoffs with explicit pros and cons",
-      "Provide robust pattern for enterprise isolation and testability",
-      "Discuss telemetry, metrics, and incident recovery strategies"
-    ],
-    "commonMistakes": [
-      "Premature optimization that harms maintainability",
-      "Failing to isolate external side effects and boundaries"
-    ],
-    "followUpTopics": [
-      "What happens when this system encounters network partitioning or heavy main-thread saturation?",
-      "How do you version and migrate this pattern without breaking downstream micro-apps?"
-    ],
-    "estimatedTimeMinutes": 7,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "tail-call-optimization",
-      "advanced"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 96,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Design clean abstractions around Tail Call Optimization with automated test suites and structured separation of concerns.",
-      "strongAnswer": "Decouple business logic from framework bindings, introduce defensive error boundaries, monitor Core Web Vitals, and ensure thread safety and predictability.",
-      "seniorLevelExpectations": "Establish robust design contracts, apply dependency injection or inversion of control, implement comprehensive telemetry, and benchmark memory footprint.",
-      "expertLevelExpectations": "Engineer distributed client resilience, compile-time AST transforms, micro-frontend boundary isolation, and zero-runtime overhead abstractions for Tail Call Optimization."
-    }
-  },
-  {
-    "id": "JS-0195",
-    "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Memory Leaks",
-    "difficulty": "Advanced",
-    "question": "[Q195] Addressing Performance Optimization & Latency Bottlenecks during a live zero-downtime database and schema migration: Deep-dive into the architectural tradeoffs of \"Memory Leaks\" (Closures & Memory) in JavaScript. How do you engineer resilience, maintain testability, and avoid regressions at scale?",
-    "questionType": "Debugging",
-    "experienceLevels": [
-      "4-6",
-      "6-8",
-      "8-12"
-    ],
-    "expectedConcepts": [
-      "Memory Leaks",
-      "Closures & Memory",
-      "Performance Optimization & Latency Bottlenecks",
-      "System Architecture",
-      "Scalability",
-      "Resilience",
-      "Tradeoff Analysis"
-    ],
-    "idealAnswerPoints": [
-      "Analyze architectural tradeoffs with explicit pros and cons",
-      "Provide robust pattern for enterprise isolation and testability",
-      "Discuss telemetry, metrics, and incident recovery strategies"
-    ],
-    "commonMistakes": [
-      "Premature optimization that harms maintainability",
-      "Failing to isolate external side effects and boundaries"
-    ],
-    "followUpTopics": [
-      "What happens when this system encounters network partitioning or heavy main-thread saturation?",
-      "How do you version and migrate this pattern without breaking downstream micro-apps?"
-    ],
-    "estimatedTimeMinutes": 7,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "memory-leaks",
-      "advanced"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 97,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Design clean abstractions around Memory Leaks with automated test suites and structured separation of concerns.",
-      "strongAnswer": "Decouple business logic from framework bindings, introduce defensive error boundaries, monitor Core Web Vitals, and ensure thread safety and predictability.",
-      "seniorLevelExpectations": "Establish robust design contracts, apply dependency injection or inversion of control, implement comprehensive telemetry, and benchmark memory footprint.",
-      "expertLevelExpectations": "Engineer distributed client resilience, compile-time AST transforms, micro-frontend boundary isolation, and zero-runtime overhead abstractions for Memory Leaks."
-    }
-  },
-  {
-    "id": "JS-0196",
-    "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Object.create",
-    "difficulty": "Advanced",
-    "question": "[Q196] Addressing Architecture & Modularity Design in an executive architectural review evaluating long-term technical debt: Deep-dive into the architectural tradeoffs of \"Object.create\" (Object Prototypes & Inheritance) in JavaScript. How do you engineer resilience, maintain testability, and avoid regressions at scale?",
-    "questionType": "Practical",
-    "experienceLevels": [
-      "4-6",
-      "6-8",
-      "8-12"
-    ],
-    "expectedConcepts": [
-      "Object.create",
-      "Object Prototypes & Inheritance",
-      "Architecture & Modularity Design",
-      "System Architecture",
-      "Scalability",
-      "Resilience",
-      "Tradeoff Analysis"
-    ],
-    "idealAnswerPoints": [
-      "Analyze architectural tradeoffs with explicit pros and cons",
-      "Provide robust pattern for enterprise isolation and testability",
-      "Discuss telemetry, metrics, and incident recovery strategies"
-    ],
-    "commonMistakes": [
-      "Premature optimization that harms maintainability",
-      "Failing to isolate external side effects and boundaries"
-    ],
-    "followUpTopics": [
-      "What happens when this system encounters network partitioning or heavy main-thread saturation?",
-      "How do you version and migrate this pattern without breaking downstream micro-apps?"
-    ],
-    "estimatedTimeMinutes": 7,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "object-create",
-      "advanced"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 98,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Design clean abstractions around Object.create with automated test suites and structured separation of concerns.",
-      "strongAnswer": "Decouple business logic from framework bindings, introduce defensive error boundaries, monitor Core Web Vitals, and ensure thread safety and predictability.",
-      "seniorLevelExpectations": "Establish robust design contracts, apply dependency injection or inversion of control, implement comprehensive telemetry, and benchmark memory footprint.",
-      "expertLevelExpectations": "Engineer distributed client resilience, compile-time AST transforms, micro-frontend boundary isolation, and zero-runtime overhead abstractions for Object.create."
-    }
-  },
-  {
-    "id": "JS-0197",
-    "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Tail Call Optimization",
-    "difficulty": "Advanced",
-    "question": "[Q197] Addressing Edge Case Handling & Defensive Validation in a mission-critical healthcare portal with strict latency SLAs: Deep-dive into the architectural tradeoffs of \"Tail Call Optimization\" (Language Mechanics & Coercion) in JavaScript. How do you engineer resilience, maintain testability, and avoid regressions at scale?",
-    "questionType": "Scenario Based",
-    "experienceLevels": [
-      "4-6",
-      "6-8",
-      "8-12"
-    ],
-    "expectedConcepts": [
-      "Tail Call Optimization",
-      "Language Mechanics & Coercion",
-      "Edge Case Handling & Defensive Validation",
-      "System Architecture",
-      "Scalability",
-      "Resilience",
-      "Tradeoff Analysis"
-    ],
-    "idealAnswerPoints": [
-      "Analyze architectural tradeoffs with explicit pros and cons",
-      "Provide robust pattern for enterprise isolation and testability",
-      "Discuss telemetry, metrics, and incident recovery strategies"
-    ],
-    "commonMistakes": [
-      "Premature optimization that harms maintainability",
-      "Failing to isolate external side effects and boundaries"
-    ],
-    "followUpTopics": [
-      "What happens when this system encounters network partitioning or heavy main-thread saturation?",
-      "How do you version and migrate this pattern without breaking downstream micro-apps?"
-    ],
-    "estimatedTimeMinutes": 7,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "tail-call-optimization",
-      "advanced"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 99,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Design clean abstractions around Tail Call Optimization with automated test suites and structured separation of concerns.",
-      "strongAnswer": "Decouple business logic from framework bindings, introduce defensive error boundaries, monitor Core Web Vitals, and ensure thread safety and predictability.",
-      "seniorLevelExpectations": "Establish robust design contracts, apply dependency injection or inversion of control, implement comprehensive telemetry, and benchmark memory footprint.",
-      "expertLevelExpectations": "Engineer distributed client resilience, compile-time AST transforms, micro-frontend boundary isolation, and zero-runtime overhead abstractions for Tail Call Optimization."
-    }
-  },
-  {
-    "id": "JS-0198",
-    "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Memory Leaks",
-    "difficulty": "Advanced",
-    "question": "[Q198] Addressing Memory Lifecycle & Garbage Collection Pressure in a design system adopted across 12 distinct product platforms: Deep-dive into the architectural tradeoffs of \"Memory Leaks\" (Closures & Memory) in JavaScript. How do you engineer resilience, maintain testability, and avoid regressions at scale?",
-    "questionType": "System Design",
-    "experienceLevels": [
-      "4-6",
-      "6-8",
-      "8-12"
-    ],
-    "expectedConcepts": [
-      "Memory Leaks",
-      "Closures & Memory",
-      "Memory Lifecycle & Garbage Collection Pressure",
-      "System Architecture",
-      "Scalability",
-      "Resilience",
-      "Tradeoff Analysis"
-    ],
-    "idealAnswerPoints": [
-      "Analyze architectural tradeoffs with explicit pros and cons",
-      "Provide robust pattern for enterprise isolation and testability",
-      "Discuss telemetry, metrics, and incident recovery strategies"
-    ],
-    "commonMistakes": [
-      "Premature optimization that harms maintainability",
-      "Failing to isolate external side effects and boundaries"
-    ],
-    "followUpTopics": [
-      "What happens when this system encounters network partitioning or heavy main-thread saturation?",
-      "How do you version and migrate this pattern without breaking downstream micro-apps?"
-    ],
-    "estimatedTimeMinutes": 7,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "memory-leaks",
-      "advanced"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 94,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Design clean abstractions around Memory Leaks with automated test suites and structured separation of concerns.",
-      "strongAnswer": "Decouple business logic from framework bindings, introduce defensive error boundaries, monitor Core Web Vitals, and ensure thread safety and predictability.",
-      "seniorLevelExpectations": "Establish robust design contracts, apply dependency injection or inversion of control, implement comprehensive telemetry, and benchmark memory footprint.",
-      "expertLevelExpectations": "Engineer distributed client resilience, compile-time AST transforms, micro-frontend boundary isolation, and zero-runtime overhead abstractions for Memory Leaks."
-    }
-  },
-  {
-    "id": "JS-0199",
-    "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Object.create",
-    "difficulty": "Advanced",
-    "question": "[Q199] Addressing Security Hardening & Threat Mitigation across a distributed micro-frontend monorepo with 40+ engineering squads: Deep-dive into the architectural tradeoffs of \"Object.create\" (Object Prototypes & Inheritance) in JavaScript. How do you engineer resilience, maintain testability, and avoid regressions at scale?",
-    "questionType": "Problem Solving",
-    "experienceLevels": [
-      "4-6",
-      "6-8",
-      "8-12"
-    ],
-    "expectedConcepts": [
-      "Object.create",
-      "Object Prototypes & Inheritance",
-      "Security Hardening & Threat Mitigation",
-      "System Architecture",
-      "Scalability",
-      "Resilience",
-      "Tradeoff Analysis"
-    ],
-    "idealAnswerPoints": [
-      "Analyze architectural tradeoffs with explicit pros and cons",
-      "Provide robust pattern for enterprise isolation and testability",
-      "Discuss telemetry, metrics, and incident recovery strategies"
-    ],
-    "commonMistakes": [
-      "Premature optimization that harms maintainability",
-      "Failing to isolate external side effects and boundaries"
-    ],
-    "followUpTopics": [
-      "What happens when this system encounters network partitioning or heavy main-thread saturation?",
-      "How do you version and migrate this pattern without breaking downstream micro-apps?"
-    ],
-    "estimatedTimeMinutes": 7,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "object-create",
-      "advanced"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 95,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Design clean abstractions around Object.create with automated test suites and structured separation of concerns.",
-      "strongAnswer": "Decouple business logic from framework bindings, introduce defensive error boundaries, monitor Core Web Vitals, and ensure thread safety and predictability.",
-      "seniorLevelExpectations": "Establish robust design contracts, apply dependency injection or inversion of control, implement comprehensive telemetry, and benchmark memory footprint.",
-      "expertLevelExpectations": "Engineer distributed client resilience, compile-time AST transforms, micro-frontend boundary isolation, and zero-runtime overhead abstractions for Object.create."
-    }
-  },
-  {
-    "id": "JS-0200",
-    "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Tail Call Optimization",
-    "difficulty": "Advanced",
-    "question": "[Q200] Addressing Testing Strategy & Flakiness Elimination inside a multi-tenant SaaS application with strict client-side data isolation: Deep-dive into the architectural tradeoffs of \"Tail Call Optimization\" (Language Mechanics & Coercion) in JavaScript. How do you engineer resilience, maintain testability, and avoid regressions at scale?",
-    "questionType": "Debugging",
-    "experienceLevels": [
-      "4-6",
-      "6-8",
-      "8-12"
-    ],
-    "expectedConcepts": [
-      "Tail Call Optimization",
-      "Language Mechanics & Coercion",
-      "Testing Strategy & Flakiness Elimination",
-      "System Architecture",
-      "Scalability",
-      "Resilience",
-      "Tradeoff Analysis"
-    ],
-    "idealAnswerPoints": [
-      "Analyze architectural tradeoffs with explicit pros and cons",
-      "Provide robust pattern for enterprise isolation and testability",
-      "Discuss telemetry, metrics, and incident recovery strategies"
-    ],
-    "commonMistakes": [
-      "Premature optimization that harms maintainability",
-      "Failing to isolate external side effects and boundaries"
-    ],
-    "followUpTopics": [
-      "What happens when this system encounters network partitioning or heavy main-thread saturation?",
-      "How do you version and migrate this pattern without breaking downstream micro-apps?"
-    ],
-    "estimatedTimeMinutes": 7,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "tail-call-optimization",
-      "advanced"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 96,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Design clean abstractions around Tail Call Optimization with automated test suites and structured separation of concerns.",
-      "strongAnswer": "Decouple business logic from framework bindings, introduce defensive error boundaries, monitor Core Web Vitals, and ensure thread safety and predictability.",
-      "seniorLevelExpectations": "Establish robust design contracts, apply dependency injection or inversion of control, implement comprehensive telemetry, and benchmark memory footprint.",
-      "expertLevelExpectations": "Engineer distributed client resilience, compile-time AST transforms, micro-frontend boundary isolation, and zero-runtime overhead abstractions for Tail Call Optimization."
-    }
-  },
-  {
-    "id": "JS-0201",
-    "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Memory Leaks",
-    "difficulty": "Advanced",
-    "question": "[Q201] Addressing Cross-Browser Consistency & Standards Compliance during high-concurrency peak retail traffic (e.g. Cyber Monday): Deep-dive into the architectural tradeoffs of \"Memory Leaks\" (Closures & Memory) in JavaScript. How do you engineer resilience, maintain testability, and avoid regressions at scale?",
-    "questionType": "Practical",
-    "experienceLevels": [
-      "4-6",
-      "6-8",
-      "8-12"
-    ],
-    "expectedConcepts": [
-      "Memory Leaks",
-      "Closures & Memory",
-      "Cross-Browser Consistency & Standards Compliance",
-      "System Architecture",
-      "Scalability",
-      "Resilience",
-      "Tradeoff Analysis"
-    ],
-    "idealAnswerPoints": [
-      "Analyze architectural tradeoffs with explicit pros and cons",
-      "Provide robust pattern for enterprise isolation and testability",
-      "Discuss telemetry, metrics, and incident recovery strategies"
-    ],
-    "commonMistakes": [
-      "Premature optimization that harms maintainability",
-      "Failing to isolate external side effects and boundaries"
-    ],
-    "followUpTopics": [
-      "What happens when this system encounters network partitioning or heavy main-thread saturation?",
-      "How do you version and migrate this pattern without breaking downstream micro-apps?"
-    ],
-    "estimatedTimeMinutes": 7,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "memory-leaks",
-      "advanced"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 97,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Design clean abstractions around Memory Leaks with automated test suites and structured separation of concerns.",
-      "strongAnswer": "Decouple business logic from framework bindings, introduce defensive error boundaries, monitor Core Web Vitals, and ensure thread safety and predictability.",
-      "seniorLevelExpectations": "Establish robust design contracts, apply dependency injection or inversion of control, implement comprehensive telemetry, and benchmark memory footprint.",
-      "expertLevelExpectations": "Engineer distributed client resilience, compile-time AST transforms, micro-frontend boundary isolation, and zero-runtime overhead abstractions for Memory Leaks."
-    }
-  },
-  {
-    "id": "JS-0202",
-    "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Object.create",
-    "difficulty": "Advanced",
-    "question": "[Q202] Addressing Developer Experience & API Ergonomics in a low-bandwidth, high-latency global mobile environment: Deep-dive into the architectural tradeoffs of \"Object.create\" (Object Prototypes & Inheritance) in JavaScript. How do you engineer resilience, maintain testability, and avoid regressions at scale?",
-    "questionType": "Scenario Based",
-    "experienceLevels": [
-      "4-6",
-      "6-8",
-      "8-12"
-    ],
-    "expectedConcepts": [
-      "Object.create",
-      "Object Prototypes & Inheritance",
-      "Developer Experience & API Ergonomics",
-      "System Architecture",
-      "Scalability",
-      "Resilience",
-      "Tradeoff Analysis"
-    ],
-    "idealAnswerPoints": [
-      "Analyze architectural tradeoffs with explicit pros and cons",
-      "Provide robust pattern for enterprise isolation and testability",
-      "Discuss telemetry, metrics, and incident recovery strategies"
-    ],
-    "commonMistakes": [
-      "Premature optimization that harms maintainability",
-      "Failing to isolate external side effects and boundaries"
-    ],
-    "followUpTopics": [
-      "What happens when this system encounters network partitioning or heavy main-thread saturation?",
-      "How do you version and migrate this pattern without breaking downstream micro-apps?"
-    ],
-    "estimatedTimeMinutes": 7,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "object-create",
-      "advanced"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 98,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Design clean abstractions around Object.create with automated test suites and structured separation of concerns.",
-      "strongAnswer": "Decouple business logic from framework bindings, introduce defensive error boundaries, monitor Core Web Vitals, and ensure thread safety and predictability.",
-      "seniorLevelExpectations": "Establish robust design contracts, apply dependency injection or inversion of control, implement comprehensive telemetry, and benchmark memory footprint.",
-      "expertLevelExpectations": "Engineer distributed client resilience, compile-time AST transforms, micro-frontend boundary isolation, and zero-runtime overhead abstractions for Object.create."
-    }
-  },
-  {
-    "id": "JS-0203",
-    "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Tail Call Optimization",
-    "difficulty": "Advanced",
-    "question": "[Q203] Addressing Concurrency & Asynchronous Race Conditions in a high-throughput fintech checkout system: Deep-dive into the architectural tradeoffs of \"Tail Call Optimization\" (Language Mechanics & Coercion) in JavaScript. How do you engineer resilience, maintain testability, and avoid regressions at scale?",
-    "questionType": "System Design",
-    "experienceLevels": [
-      "4-6",
-      "6-8",
-      "8-12"
-    ],
-    "expectedConcepts": [
-      "Tail Call Optimization",
-      "Language Mechanics & Coercion",
-      "Concurrency & Asynchronous Race Conditions",
-      "System Architecture",
-      "Scalability",
-      "Resilience",
-      "Tradeoff Analysis"
-    ],
-    "idealAnswerPoints": [
-      "Analyze architectural tradeoffs with explicit pros and cons",
-      "Provide robust pattern for enterprise isolation and testability",
-      "Discuss telemetry, metrics, and incident recovery strategies"
-    ],
-    "commonMistakes": [
-      "Premature optimization that harms maintainability",
-      "Failing to isolate external side effects and boundaries"
-    ],
-    "followUpTopics": [
-      "What happens when this system encounters network partitioning or heavy main-thread saturation?",
-      "How do you version and migrate this pattern without breaking downstream micro-apps?"
-    ],
-    "estimatedTimeMinutes": 7,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "tail-call-optimization",
-      "advanced"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 99,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Design clean abstractions around Tail Call Optimization with automated test suites and structured separation of concerns.",
-      "strongAnswer": "Decouple business logic from framework bindings, introduce defensive error boundaries, monitor Core Web Vitals, and ensure thread safety and predictability.",
-      "seniorLevelExpectations": "Establish robust design contracts, apply dependency injection or inversion of control, implement comprehensive telemetry, and benchmark memory footprint.",
-      "expertLevelExpectations": "Engineer distributed client resilience, compile-time AST transforms, micro-frontend boundary isolation, and zero-runtime overhead abstractions for Tail Call Optimization."
-    }
-  },
-  {
-    "id": "JS-0204",
-    "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Memory Leaks",
-    "difficulty": "Advanced",
-    "question": "[Q204] Addressing Refactoring & Safe Legacy Migration within a media streaming player handling adaptive bitrate switching: Deep-dive into the architectural tradeoffs of \"Memory Leaks\" (Closures & Memory) in JavaScript. How do you engineer resilience, maintain testability, and avoid regressions at scale?",
-    "questionType": "Problem Solving",
-    "experienceLevels": [
-      "4-6",
-      "6-8",
-      "8-12"
-    ],
-    "expectedConcepts": [
-      "Memory Leaks",
-      "Closures & Memory",
-      "Refactoring & Safe Legacy Migration",
-      "System Architecture",
-      "Scalability",
-      "Resilience",
-      "Tradeoff Analysis"
-    ],
-    "idealAnswerPoints": [
-      "Analyze architectural tradeoffs with explicit pros and cons",
-      "Provide robust pattern for enterprise isolation and testability",
-      "Discuss telemetry, metrics, and incident recovery strategies"
-    ],
-    "commonMistakes": [
-      "Premature optimization that harms maintainability",
-      "Failing to isolate external side effects and boundaries"
-    ],
-    "followUpTopics": [
-      "What happens when this system encounters network partitioning or heavy main-thread saturation?",
-      "How do you version and migrate this pattern without breaking downstream micro-apps?"
-    ],
-    "estimatedTimeMinutes": 7,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "memory-leaks",
-      "advanced"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 94,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Design clean abstractions around Memory Leaks with automated test suites and structured separation of concerns.",
-      "strongAnswer": "Decouple business logic from framework bindings, introduce defensive error boundaries, monitor Core Web Vitals, and ensure thread safety and predictability.",
-      "seniorLevelExpectations": "Establish robust design contracts, apply dependency injection or inversion of control, implement comprehensive telemetry, and benchmark memory footprint.",
-      "expertLevelExpectations": "Engineer distributed client resilience, compile-time AST transforms, micro-frontend boundary isolation, and zero-runtime overhead abstractions for Memory Leaks."
-    }
-  },
-  {
-    "id": "JS-0205",
-    "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Object.create",
-    "difficulty": "Advanced",
-    "question": "[Q205] Addressing State Synchronization & Boundary Isolation during a high-severity production outage requiring immediate triage: Deep-dive into the architectural tradeoffs of \"Object.create\" (Object Prototypes & Inheritance) in JavaScript. How do you engineer resilience, maintain testability, and avoid regressions at scale?",
-    "questionType": "Debugging",
-    "experienceLevels": [
-      "4-6",
-      "6-8",
-      "8-12"
-    ],
-    "expectedConcepts": [
-      "Object.create",
-      "Object Prototypes & Inheritance",
-      "State Synchronization & Boundary Isolation",
-      "System Architecture",
-      "Scalability",
-      "Resilience",
-      "Tradeoff Analysis"
-    ],
-    "idealAnswerPoints": [
-      "Analyze architectural tradeoffs with explicit pros and cons",
-      "Provide robust pattern for enterprise isolation and testability",
-      "Discuss telemetry, metrics, and incident recovery strategies"
-    ],
-    "commonMistakes": [
-      "Premature optimization that harms maintainability",
-      "Failing to isolate external side effects and boundaries"
-    ],
-    "followUpTopics": [
-      "What happens when this system encounters network partitioning or heavy main-thread saturation?",
-      "How do you version and migrate this pattern without breaking downstream micro-apps?"
-    ],
-    "estimatedTimeMinutes": 7,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "object-create",
-      "advanced"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 95,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Design clean abstractions around Object.create with automated test suites and structured separation of concerns.",
-      "strongAnswer": "Decouple business logic from framework bindings, introduce defensive error boundaries, monitor Core Web Vitals, and ensure thread safety and predictability.",
-      "seniorLevelExpectations": "Establish robust design contracts, apply dependency injection or inversion of control, implement comprehensive telemetry, and benchmark memory footprint.",
-      "expertLevelExpectations": "Engineer distributed client resilience, compile-time AST transforms, micro-frontend boundary isolation, and zero-runtime overhead abstractions for Object.create."
-    }
-  },
-  {
-    "id": "JS-0206",
-    "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Tail Call Optimization",
-    "difficulty": "Advanced",
-    "question": "[Q206] Addressing Error Boundaries & Graceful Degradation inside an embedded financial analytics dashboard processing live WebSockets: Deep-dive into the architectural tradeoffs of \"Tail Call Optimization\" (Language Mechanics & Coercion) in JavaScript. How do you engineer resilience, maintain testability, and avoid regressions at scale?",
-    "questionType": "Practical",
-    "experienceLevels": [
-      "4-6",
-      "6-8",
-      "8-12"
-    ],
-    "expectedConcepts": [
-      "Tail Call Optimization",
-      "Language Mechanics & Coercion",
-      "Error Boundaries & Graceful Degradation",
-      "System Architecture",
-      "Scalability",
-      "Resilience",
-      "Tradeoff Analysis"
-    ],
-    "idealAnswerPoints": [
-      "Analyze architectural tradeoffs with explicit pros and cons",
-      "Provide robust pattern for enterprise isolation and testability",
-      "Discuss telemetry, metrics, and incident recovery strategies"
-    ],
-    "commonMistakes": [
-      "Premature optimization that harms maintainability",
-      "Failing to isolate external side effects and boundaries"
-    ],
-    "followUpTopics": [
-      "What happens when this system encounters network partitioning or heavy main-thread saturation?",
-      "How do you version and migrate this pattern without breaking downstream micro-apps?"
-    ],
-    "estimatedTimeMinutes": 7,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "tail-call-optimization",
-      "advanced"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 96,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Design clean abstractions around Tail Call Optimization with automated test suites and structured separation of concerns.",
-      "strongAnswer": "Decouple business logic from framework bindings, introduce defensive error boundaries, monitor Core Web Vitals, and ensure thread safety and predictability.",
-      "seniorLevelExpectations": "Establish robust design contracts, apply dependency injection or inversion of control, implement comprehensive telemetry, and benchmark memory footprint.",
-      "expertLevelExpectations": "Engineer distributed client resilience, compile-time AST transforms, micro-frontend boundary isolation, and zero-runtime overhead abstractions for Tail Call Optimization."
-    }
-  },
-  {
-    "id": "JS-0207",
-    "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Memory Leaks",
-    "difficulty": "Advanced",
-    "question": "[Q207] Addressing Observability, Telemetry & Real User Monitoring when integrating third-party untrusted scripts without compromising security: Deep-dive into the architectural tradeoffs of \"Memory Leaks\" (Closures & Memory) in JavaScript. How do you engineer resilience, maintain testability, and avoid regressions at scale?",
-    "questionType": "Scenario Based",
-    "experienceLevels": [
-      "4-6",
-      "6-8",
-      "8-12"
-    ],
-    "expectedConcepts": [
-      "Memory Leaks",
-      "Closures & Memory",
-      "Observability, Telemetry & Real User Monitoring",
-      "System Architecture",
-      "Scalability",
-      "Resilience",
-      "Tradeoff Analysis"
-    ],
-    "idealAnswerPoints": [
-      "Analyze architectural tradeoffs with explicit pros and cons",
-      "Provide robust pattern for enterprise isolation and testability",
-      "Discuss telemetry, metrics, and incident recovery strategies"
-    ],
-    "commonMistakes": [
-      "Premature optimization that harms maintainability",
-      "Failing to isolate external side effects and boundaries"
-    ],
-    "followUpTopics": [
-      "What happens when this system encounters network partitioning or heavy main-thread saturation?",
-      "How do you version and migrate this pattern without breaking downstream micro-apps?"
-    ],
-    "estimatedTimeMinutes": 7,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "memory-leaks",
-      "advanced"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 97,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Design clean abstractions around Memory Leaks with automated test suites and structured separation of concerns.",
-      "strongAnswer": "Decouple business logic from framework bindings, introduce defensive error boundaries, monitor Core Web Vitals, and ensure thread safety and predictability.",
-      "seniorLevelExpectations": "Establish robust design contracts, apply dependency injection or inversion of control, implement comprehensive telemetry, and benchmark memory footprint.",
-      "expertLevelExpectations": "Engineer distributed client resilience, compile-time AST transforms, micro-frontend boundary isolation, and zero-runtime overhead abstractions for Memory Leaks."
-    }
-  },
-  {
-    "id": "JS-0208",
-    "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Object.create",
-    "difficulty": "Advanced",
-    "question": "[Q208] Addressing Scalability Tradeoffs under High Traffic in an offline-first enterprise mobile web application: Deep-dive into the architectural tradeoffs of \"Object.create\" (Object Prototypes & Inheritance) in JavaScript. How do you engineer resilience, maintain testability, and avoid regressions at scale?",
-    "questionType": "System Design",
-    "experienceLevels": [
-      "4-6",
-      "6-8",
-      "8-12"
-    ],
-    "expectedConcepts": [
-      "Object.create",
-      "Object Prototypes & Inheritance",
-      "Scalability Tradeoffs under High Traffic",
-      "System Architecture",
-      "Scalability",
-      "Resilience",
-      "Tradeoff Analysis"
-    ],
-    "idealAnswerPoints": [
-      "Analyze architectural tradeoffs with explicit pros and cons",
-      "Provide robust pattern for enterprise isolation and testability",
-      "Discuss telemetry, metrics, and incident recovery strategies"
-    ],
-    "commonMistakes": [
-      "Premature optimization that harms maintainability",
-      "Failing to isolate external side effects and boundaries"
-    ],
-    "followUpTopics": [
-      "What happens when this system encounters network partitioning or heavy main-thread saturation?",
-      "How do you version and migrate this pattern without breaking downstream micro-apps?"
-    ],
-    "estimatedTimeMinutes": 7,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "object-create",
-      "advanced"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 98,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Design clean abstractions around Object.create with automated test suites and structured separation of concerns.",
-      "strongAnswer": "Decouple business logic from framework bindings, introduce defensive error boundaries, monitor Core Web Vitals, and ensure thread safety and predictability.",
-      "seniorLevelExpectations": "Establish robust design contracts, apply dependency injection or inversion of control, implement comprehensive telemetry, and benchmark memory footprint.",
-      "expertLevelExpectations": "Engineer distributed client resilience, compile-time AST transforms, micro-frontend boundary isolation, and zero-runtime overhead abstractions for Object.create."
-    }
-  },
-  {
-    "id": "JS-0209",
-    "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Tail Call Optimization",
-    "difficulty": "Advanced",
-    "question": "[Q209] Addressing Implementation Mechanics & Internal Execution when refactoring a legacy monolithic codebase with zero automated regression tests: Deep-dive into the architectural tradeoffs of \"Tail Call Optimization\" (Language Mechanics & Coercion) in JavaScript. How do you engineer resilience, maintain testability, and avoid regressions at scale?",
-    "questionType": "Problem Solving",
-    "experienceLevels": [
-      "4-6",
-      "6-8",
-      "8-12"
-    ],
-    "expectedConcepts": [
-      "Tail Call Optimization",
-      "Language Mechanics & Coercion",
-      "Implementation Mechanics & Internal Execution",
-      "System Architecture",
-      "Scalability",
-      "Resilience",
-      "Tradeoff Analysis"
-    ],
-    "idealAnswerPoints": [
-      "Analyze architectural tradeoffs with explicit pros and cons",
-      "Provide robust pattern for enterprise isolation and testability",
-      "Discuss telemetry, metrics, and incident recovery strategies"
-    ],
-    "commonMistakes": [
-      "Premature optimization that harms maintainability",
-      "Failing to isolate external side effects and boundaries"
-    ],
-    "followUpTopics": [
-      "What happens when this system encounters network partitioning or heavy main-thread saturation?",
-      "How do you version and migrate this pattern without breaking downstream micro-apps?"
-    ],
-    "estimatedTimeMinutes": 7,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "tail-call-optimization",
-      "advanced"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 99,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Design clean abstractions around Tail Call Optimization with automated test suites and structured separation of concerns.",
-      "strongAnswer": "Decouple business logic from framework bindings, introduce defensive error boundaries, monitor Core Web Vitals, and ensure thread safety and predictability.",
-      "seniorLevelExpectations": "Establish robust design contracts, apply dependency injection or inversion of control, implement comprehensive telemetry, and benchmark memory footprint.",
-      "expertLevelExpectations": "Engineer distributed client resilience, compile-time AST transforms, micro-frontend boundary isolation, and zero-runtime overhead abstractions for Tail Call Optimization."
-    }
-  },
-  {
-    "id": "JS-0210",
-    "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Memory Leaks",
-    "difficulty": "Advanced",
-    "question": "[Q210] Addressing Debugging & Production Failure Analysis within a real-time collaborative whiteboarding canvas: Deep-dive into the architectural tradeoffs of \"Memory Leaks\" (Closures & Memory) in JavaScript. How do you engineer resilience, maintain testability, and avoid regressions at scale?",
-    "questionType": "Debugging",
-    "experienceLevels": [
-      "4-6",
-      "6-8",
-      "8-12"
-    ],
-    "expectedConcepts": [
-      "Memory Leaks",
-      "Closures & Memory",
-      "Debugging & Production Failure Analysis",
-      "System Architecture",
-      "Scalability",
-      "Resilience",
-      "Tradeoff Analysis"
-    ],
-    "idealAnswerPoints": [
-      "Analyze architectural tradeoffs with explicit pros and cons",
-      "Provide robust pattern for enterprise isolation and testability",
-      "Discuss telemetry, metrics, and incident recovery strategies"
-    ],
-    "commonMistakes": [
-      "Premature optimization that harms maintainability",
-      "Failing to isolate external side effects and boundaries"
-    ],
-    "followUpTopics": [
-      "What happens when this system encounters network partitioning or heavy main-thread saturation?",
-      "How do you version and migrate this pattern without breaking downstream micro-apps?"
-    ],
-    "estimatedTimeMinutes": 7,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "memory-leaks",
-      "advanced"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 94,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Design clean abstractions around Memory Leaks with automated test suites and structured separation of concerns.",
-      "strongAnswer": "Decouple business logic from framework bindings, introduce defensive error boundaries, monitor Core Web Vitals, and ensure thread safety and predictability.",
-      "seniorLevelExpectations": "Establish robust design contracts, apply dependency injection or inversion of control, implement comprehensive telemetry, and benchmark memory footprint.",
-      "expertLevelExpectations": "Engineer distributed client resilience, compile-time AST transforms, micro-frontend boundary isolation, and zero-runtime overhead abstractions for Memory Leaks."
-    }
-  },
-  {
-    "id": "JS-0211",
-    "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Object.create",
-    "difficulty": "Advanced",
-    "question": "[Q211] Addressing Performance Optimization & Latency Bottlenecks during a live zero-downtime database and schema migration: Deep-dive into the architectural tradeoffs of \"Object.create\" (Object Prototypes & Inheritance) in JavaScript. How do you engineer resilience, maintain testability, and avoid regressions at scale?",
-    "questionType": "Practical",
-    "experienceLevels": [
-      "4-6",
-      "6-8",
-      "8-12"
-    ],
-    "expectedConcepts": [
-      "Object.create",
-      "Object Prototypes & Inheritance",
-      "Performance Optimization & Latency Bottlenecks",
-      "System Architecture",
-      "Scalability",
-      "Resilience",
-      "Tradeoff Analysis"
-    ],
-    "idealAnswerPoints": [
-      "Analyze architectural tradeoffs with explicit pros and cons",
-      "Provide robust pattern for enterprise isolation and testability",
-      "Discuss telemetry, metrics, and incident recovery strategies"
-    ],
-    "commonMistakes": [
-      "Premature optimization that harms maintainability",
-      "Failing to isolate external side effects and boundaries"
-    ],
-    "followUpTopics": [
-      "What happens when this system encounters network partitioning or heavy main-thread saturation?",
-      "How do you version and migrate this pattern without breaking downstream micro-apps?"
-    ],
-    "estimatedTimeMinutes": 7,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "object-create",
-      "advanced"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 95,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Design clean abstractions around Object.create with automated test suites and structured separation of concerns.",
-      "strongAnswer": "Decouple business logic from framework bindings, introduce defensive error boundaries, monitor Core Web Vitals, and ensure thread safety and predictability.",
-      "seniorLevelExpectations": "Establish robust design contracts, apply dependency injection or inversion of control, implement comprehensive telemetry, and benchmark memory footprint.",
-      "expertLevelExpectations": "Engineer distributed client resilience, compile-time AST transforms, micro-frontend boundary isolation, and zero-runtime overhead abstractions for Object.create."
-    }
-  },
-  {
-    "id": "JS-0212",
-    "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Tail Call Optimization",
-    "difficulty": "Advanced",
-    "question": "[Q212] Addressing Architecture & Modularity Design in an executive architectural review evaluating long-term technical debt: Deep-dive into the architectural tradeoffs of \"Tail Call Optimization\" (Language Mechanics & Coercion) in JavaScript. How do you engineer resilience, maintain testability, and avoid regressions at scale?",
-    "questionType": "Scenario Based",
-    "experienceLevels": [
-      "4-6",
-      "6-8",
-      "8-12"
-    ],
-    "expectedConcepts": [
-      "Tail Call Optimization",
-      "Language Mechanics & Coercion",
-      "Architecture & Modularity Design",
-      "System Architecture",
-      "Scalability",
-      "Resilience",
-      "Tradeoff Analysis"
-    ],
-    "idealAnswerPoints": [
-      "Analyze architectural tradeoffs with explicit pros and cons",
-      "Provide robust pattern for enterprise isolation and testability",
-      "Discuss telemetry, metrics, and incident recovery strategies"
-    ],
-    "commonMistakes": [
-      "Premature optimization that harms maintainability",
-      "Failing to isolate external side effects and boundaries"
-    ],
-    "followUpTopics": [
-      "What happens when this system encounters network partitioning or heavy main-thread saturation?",
-      "How do you version and migrate this pattern without breaking downstream micro-apps?"
-    ],
-    "estimatedTimeMinutes": 7,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "tail-call-optimization",
-      "advanced"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 96,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Design clean abstractions around Tail Call Optimization with automated test suites and structured separation of concerns.",
-      "strongAnswer": "Decouple business logic from framework bindings, introduce defensive error boundaries, monitor Core Web Vitals, and ensure thread safety and predictability.",
-      "seniorLevelExpectations": "Establish robust design contracts, apply dependency injection or inversion of control, implement comprehensive telemetry, and benchmark memory footprint.",
-      "expertLevelExpectations": "Engineer distributed client resilience, compile-time AST transforms, micro-frontend boundary isolation, and zero-runtime overhead abstractions for Tail Call Optimization."
-    }
-  },
-  {
-    "id": "JS-0213",
-    "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Memory Leaks",
-    "difficulty": "Advanced",
-    "question": "[Q213] Addressing Edge Case Handling & Defensive Validation in a mission-critical healthcare portal with strict latency SLAs: Deep-dive into the architectural tradeoffs of \"Memory Leaks\" (Closures & Memory) in JavaScript. How do you engineer resilience, maintain testability, and avoid regressions at scale?",
-    "questionType": "System Design",
-    "experienceLevels": [
-      "4-6",
-      "6-8",
-      "8-12"
-    ],
-    "expectedConcepts": [
-      "Memory Leaks",
-      "Closures & Memory",
-      "Edge Case Handling & Defensive Validation",
-      "System Architecture",
-      "Scalability",
-      "Resilience",
-      "Tradeoff Analysis"
-    ],
-    "idealAnswerPoints": [
-      "Analyze architectural tradeoffs with explicit pros and cons",
-      "Provide robust pattern for enterprise isolation and testability",
-      "Discuss telemetry, metrics, and incident recovery strategies"
-    ],
-    "commonMistakes": [
-      "Premature optimization that harms maintainability",
-      "Failing to isolate external side effects and boundaries"
-    ],
-    "followUpTopics": [
-      "What happens when this system encounters network partitioning or heavy main-thread saturation?",
-      "How do you version and migrate this pattern without breaking downstream micro-apps?"
-    ],
-    "estimatedTimeMinutes": 7,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "memory-leaks",
-      "advanced"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 97,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Design clean abstractions around Memory Leaks with automated test suites and structured separation of concerns.",
-      "strongAnswer": "Decouple business logic from framework bindings, introduce defensive error boundaries, monitor Core Web Vitals, and ensure thread safety and predictability.",
-      "seniorLevelExpectations": "Establish robust design contracts, apply dependency injection or inversion of control, implement comprehensive telemetry, and benchmark memory footprint.",
-      "expertLevelExpectations": "Engineer distributed client resilience, compile-time AST transforms, micro-frontend boundary isolation, and zero-runtime overhead abstractions for Memory Leaks."
-    }
-  },
-  {
-    "id": "JS-0214",
-    "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Object.create",
-    "difficulty": "Advanced",
-    "question": "[Q214] Addressing Memory Lifecycle & Garbage Collection Pressure in a design system adopted across 12 distinct product platforms: Deep-dive into the architectural tradeoffs of \"Object.create\" (Object Prototypes & Inheritance) in JavaScript. How do you engineer resilience, maintain testability, and avoid regressions at scale?",
-    "questionType": "Problem Solving",
-    "experienceLevels": [
-      "4-6",
-      "6-8",
-      "8-12"
-    ],
-    "expectedConcepts": [
-      "Object.create",
-      "Object Prototypes & Inheritance",
-      "Memory Lifecycle & Garbage Collection Pressure",
-      "System Architecture",
-      "Scalability",
-      "Resilience",
-      "Tradeoff Analysis"
-    ],
-    "idealAnswerPoints": [
-      "Analyze architectural tradeoffs with explicit pros and cons",
-      "Provide robust pattern for enterprise isolation and testability",
-      "Discuss telemetry, metrics, and incident recovery strategies"
-    ],
-    "commonMistakes": [
-      "Premature optimization that harms maintainability",
-      "Failing to isolate external side effects and boundaries"
-    ],
-    "followUpTopics": [
-      "What happens when this system encounters network partitioning or heavy main-thread saturation?",
-      "How do you version and migrate this pattern without breaking downstream micro-apps?"
-    ],
-    "estimatedTimeMinutes": 7,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "object-create",
-      "advanced"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 98,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Design clean abstractions around Object.create with automated test suites and structured separation of concerns.",
-      "strongAnswer": "Decouple business logic from framework bindings, introduce defensive error boundaries, monitor Core Web Vitals, and ensure thread safety and predictability.",
-      "seniorLevelExpectations": "Establish robust design contracts, apply dependency injection or inversion of control, implement comprehensive telemetry, and benchmark memory footprint.",
-      "expertLevelExpectations": "Engineer distributed client resilience, compile-time AST transforms, micro-frontend boundary isolation, and zero-runtime overhead abstractions for Object.create."
-    }
-  },
-  {
-    "id": "JS-0215",
-    "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Tail Call Optimization",
-    "difficulty": "Advanced",
-    "question": "[Q215] Addressing Security Hardening & Threat Mitigation across a distributed micro-frontend monorepo with 40+ engineering squads: Deep-dive into the architectural tradeoffs of \"Tail Call Optimization\" (Language Mechanics & Coercion) in JavaScript. How do you engineer resilience, maintain testability, and avoid regressions at scale?",
-    "questionType": "Debugging",
-    "experienceLevels": [
-      "4-6",
-      "6-8",
-      "8-12"
-    ],
-    "expectedConcepts": [
-      "Tail Call Optimization",
-      "Language Mechanics & Coercion",
-      "Security Hardening & Threat Mitigation",
-      "System Architecture",
-      "Scalability",
-      "Resilience",
-      "Tradeoff Analysis"
-    ],
-    "idealAnswerPoints": [
-      "Analyze architectural tradeoffs with explicit pros and cons",
-      "Provide robust pattern for enterprise isolation and testability",
-      "Discuss telemetry, metrics, and incident recovery strategies"
-    ],
-    "commonMistakes": [
-      "Premature optimization that harms maintainability",
-      "Failing to isolate external side effects and boundaries"
-    ],
-    "followUpTopics": [
-      "What happens when this system encounters network partitioning or heavy main-thread saturation?",
-      "How do you version and migrate this pattern without breaking downstream micro-apps?"
-    ],
-    "estimatedTimeMinutes": 7,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "tail-call-optimization",
-      "advanced"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 99,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Design clean abstractions around Tail Call Optimization with automated test suites and structured separation of concerns.",
-      "strongAnswer": "Decouple business logic from framework bindings, introduce defensive error boundaries, monitor Core Web Vitals, and ensure thread safety and predictability.",
-      "seniorLevelExpectations": "Establish robust design contracts, apply dependency injection or inversion of control, implement comprehensive telemetry, and benchmark memory footprint.",
-      "expertLevelExpectations": "Engineer distributed client resilience, compile-time AST transforms, micro-frontend boundary isolation, and zero-runtime overhead abstractions for Tail Call Optimization."
-    }
-  },
-  {
-    "id": "JS-0216",
-    "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Memory Leaks",
-    "difficulty": "Advanced",
-    "question": "[Q216] Addressing Testing Strategy & Flakiness Elimination inside a multi-tenant SaaS application with strict client-side data isolation: Deep-dive into the architectural tradeoffs of \"Memory Leaks\" (Closures & Memory) in JavaScript. How do you engineer resilience, maintain testability, and avoid regressions at scale?",
-    "questionType": "Practical",
-    "experienceLevels": [
-      "4-6",
-      "6-8",
-      "8-12"
-    ],
-    "expectedConcepts": [
-      "Memory Leaks",
-      "Closures & Memory",
-      "Testing Strategy & Flakiness Elimination",
-      "System Architecture",
-      "Scalability",
-      "Resilience",
-      "Tradeoff Analysis"
-    ],
-    "idealAnswerPoints": [
-      "Analyze architectural tradeoffs with explicit pros and cons",
-      "Provide robust pattern for enterprise isolation and testability",
-      "Discuss telemetry, metrics, and incident recovery strategies"
-    ],
-    "commonMistakes": [
-      "Premature optimization that harms maintainability",
-      "Failing to isolate external side effects and boundaries"
-    ],
-    "followUpTopics": [
-      "What happens when this system encounters network partitioning or heavy main-thread saturation?",
-      "How do you version and migrate this pattern without breaking downstream micro-apps?"
-    ],
-    "estimatedTimeMinutes": 7,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "memory-leaks",
-      "advanced"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 94,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Design clean abstractions around Memory Leaks with automated test suites and structured separation of concerns.",
-      "strongAnswer": "Decouple business logic from framework bindings, introduce defensive error boundaries, monitor Core Web Vitals, and ensure thread safety and predictability.",
-      "seniorLevelExpectations": "Establish robust design contracts, apply dependency injection or inversion of control, implement comprehensive telemetry, and benchmark memory footprint.",
-      "expertLevelExpectations": "Engineer distributed client resilience, compile-time AST transforms, micro-frontend boundary isolation, and zero-runtime overhead abstractions for Memory Leaks."
-    }
-  },
-  {
-    "id": "JS-0217",
-    "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Object.create",
-    "difficulty": "Advanced",
-    "question": "[Q217] Addressing Cross-Browser Consistency & Standards Compliance during high-concurrency peak retail traffic (e.g. Cyber Monday): Deep-dive into the architectural tradeoffs of \"Object.create\" (Object Prototypes & Inheritance) in JavaScript. How do you engineer resilience, maintain testability, and avoid regressions at scale?",
-    "questionType": "Scenario Based",
-    "experienceLevels": [
-      "4-6",
-      "6-8",
-      "8-12"
-    ],
-    "expectedConcepts": [
-      "Object.create",
-      "Object Prototypes & Inheritance",
-      "Cross-Browser Consistency & Standards Compliance",
-      "System Architecture",
-      "Scalability",
-      "Resilience",
-      "Tradeoff Analysis"
-    ],
-    "idealAnswerPoints": [
-      "Analyze architectural tradeoffs with explicit pros and cons",
-      "Provide robust pattern for enterprise isolation and testability",
-      "Discuss telemetry, metrics, and incident recovery strategies"
-    ],
-    "commonMistakes": [
-      "Premature optimization that harms maintainability",
-      "Failing to isolate external side effects and boundaries"
-    ],
-    "followUpTopics": [
-      "What happens when this system encounters network partitioning or heavy main-thread saturation?",
-      "How do you version and migrate this pattern without breaking downstream micro-apps?"
-    ],
-    "estimatedTimeMinutes": 7,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "object-create",
-      "advanced"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 95,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Design clean abstractions around Object.create with automated test suites and structured separation of concerns.",
-      "strongAnswer": "Decouple business logic from framework bindings, introduce defensive error boundaries, monitor Core Web Vitals, and ensure thread safety and predictability.",
-      "seniorLevelExpectations": "Establish robust design contracts, apply dependency injection or inversion of control, implement comprehensive telemetry, and benchmark memory footprint.",
-      "expertLevelExpectations": "Engineer distributed client resilience, compile-time AST transforms, micro-frontend boundary isolation, and zero-runtime overhead abstractions for Object.create."
-    }
-  },
-  {
-    "id": "JS-0218",
-    "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Tail Call Optimization",
-    "difficulty": "Advanced",
-    "question": "[Q218] Addressing Developer Experience & API Ergonomics in a low-bandwidth, high-latency global mobile environment: Deep-dive into the architectural tradeoffs of \"Tail Call Optimization\" (Language Mechanics & Coercion) in JavaScript. How do you engineer resilience, maintain testability, and avoid regressions at scale?",
-    "questionType": "System Design",
-    "experienceLevels": [
-      "4-6",
-      "6-8",
-      "8-12"
-    ],
-    "expectedConcepts": [
-      "Tail Call Optimization",
-      "Language Mechanics & Coercion",
-      "Developer Experience & API Ergonomics",
-      "System Architecture",
-      "Scalability",
-      "Resilience",
-      "Tradeoff Analysis"
-    ],
-    "idealAnswerPoints": [
-      "Analyze architectural tradeoffs with explicit pros and cons",
-      "Provide robust pattern for enterprise isolation and testability",
-      "Discuss telemetry, metrics, and incident recovery strategies"
-    ],
-    "commonMistakes": [
-      "Premature optimization that harms maintainability",
-      "Failing to isolate external side effects and boundaries"
-    ],
-    "followUpTopics": [
-      "What happens when this system encounters network partitioning or heavy main-thread saturation?",
-      "How do you version and migrate this pattern without breaking downstream micro-apps?"
-    ],
-    "estimatedTimeMinutes": 7,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "tail-call-optimization",
-      "advanced"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 96,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Design clean abstractions around Tail Call Optimization with automated test suites and structured separation of concerns.",
-      "strongAnswer": "Decouple business logic from framework bindings, introduce defensive error boundaries, monitor Core Web Vitals, and ensure thread safety and predictability.",
-      "seniorLevelExpectations": "Establish robust design contracts, apply dependency injection or inversion of control, implement comprehensive telemetry, and benchmark memory footprint.",
-      "expertLevelExpectations": "Engineer distributed client resilience, compile-time AST transforms, micro-frontend boundary isolation, and zero-runtime overhead abstractions for Tail Call Optimization."
-    }
-  },
-  {
-    "id": "JS-0219",
-    "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Memory Leaks",
-    "difficulty": "Advanced",
-    "question": "[Q219] Addressing Concurrency & Asynchronous Race Conditions in a high-throughput fintech checkout system: Deep-dive into the architectural tradeoffs of \"Memory Leaks\" (Closures & Memory) in JavaScript. How do you engineer resilience, maintain testability, and avoid regressions at scale?",
-    "questionType": "Problem Solving",
-    "experienceLevels": [
-      "4-6",
-      "6-8",
-      "8-12"
-    ],
-    "expectedConcepts": [
-      "Memory Leaks",
-      "Closures & Memory",
-      "Concurrency & Asynchronous Race Conditions",
-      "System Architecture",
-      "Scalability",
-      "Resilience",
-      "Tradeoff Analysis"
-    ],
-    "idealAnswerPoints": [
-      "Analyze architectural tradeoffs with explicit pros and cons",
-      "Provide robust pattern for enterprise isolation and testability",
-      "Discuss telemetry, metrics, and incident recovery strategies"
-    ],
-    "commonMistakes": [
-      "Premature optimization that harms maintainability",
-      "Failing to isolate external side effects and boundaries"
-    ],
-    "followUpTopics": [
-      "What happens when this system encounters network partitioning or heavy main-thread saturation?",
-      "How do you version and migrate this pattern without breaking downstream micro-apps?"
-    ],
-    "estimatedTimeMinutes": 7,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "memory-leaks",
-      "advanced"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 97,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Design clean abstractions around Memory Leaks with automated test suites and structured separation of concerns.",
-      "strongAnswer": "Decouple business logic from framework bindings, introduce defensive error boundaries, monitor Core Web Vitals, and ensure thread safety and predictability.",
-      "seniorLevelExpectations": "Establish robust design contracts, apply dependency injection or inversion of control, implement comprehensive telemetry, and benchmark memory footprint.",
-      "expertLevelExpectations": "Engineer distributed client resilience, compile-time AST transforms, micro-frontend boundary isolation, and zero-runtime overhead abstractions for Memory Leaks."
-    }
-  },
-  {
-    "id": "JS-0220",
-    "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Object.create",
-    "difficulty": "Advanced",
-    "question": "[Q220] Addressing Refactoring & Safe Legacy Migration within a media streaming player handling adaptive bitrate switching: Deep-dive into the architectural tradeoffs of \"Object.create\" (Object Prototypes & Inheritance) in JavaScript. How do you engineer resilience, maintain testability, and avoid regressions at scale?",
-    "questionType": "Debugging",
-    "experienceLevels": [
-      "4-6",
-      "6-8",
-      "8-12"
-    ],
-    "expectedConcepts": [
-      "Object.create",
-      "Object Prototypes & Inheritance",
-      "Refactoring & Safe Legacy Migration",
-      "System Architecture",
-      "Scalability",
-      "Resilience",
-      "Tradeoff Analysis"
-    ],
-    "idealAnswerPoints": [
-      "Analyze architectural tradeoffs with explicit pros and cons",
-      "Provide robust pattern for enterprise isolation and testability",
-      "Discuss telemetry, metrics, and incident recovery strategies"
-    ],
-    "commonMistakes": [
-      "Premature optimization that harms maintainability",
-      "Failing to isolate external side effects and boundaries"
-    ],
-    "followUpTopics": [
-      "What happens when this system encounters network partitioning or heavy main-thread saturation?",
-      "How do you version and migrate this pattern without breaking downstream micro-apps?"
-    ],
-    "estimatedTimeMinutes": 7,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "object-create",
-      "advanced"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 98,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Design clean abstractions around Object.create with automated test suites and structured separation of concerns.",
-      "strongAnswer": "Decouple business logic from framework bindings, introduce defensive error boundaries, monitor Core Web Vitals, and ensure thread safety and predictability.",
-      "seniorLevelExpectations": "Establish robust design contracts, apply dependency injection or inversion of control, implement comprehensive telemetry, and benchmark memory footprint.",
-      "expertLevelExpectations": "Engineer distributed client resilience, compile-time AST transforms, micro-frontend boundary isolation, and zero-runtime overhead abstractions for Object.create."
-    }
-  },
-  {
-    "id": "JS-0221",
-    "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Tail Call Optimization",
-    "difficulty": "Advanced",
-    "question": "[Q221] Addressing State Synchronization & Boundary Isolation during a high-severity production outage requiring immediate triage: Deep-dive into the architectural tradeoffs of \"Tail Call Optimization\" (Language Mechanics & Coercion) in JavaScript. How do you engineer resilience, maintain testability, and avoid regressions at scale?",
-    "questionType": "Practical",
-    "experienceLevels": [
-      "4-6",
-      "6-8",
-      "8-12"
-    ],
-    "expectedConcepts": [
-      "Tail Call Optimization",
-      "Language Mechanics & Coercion",
-      "State Synchronization & Boundary Isolation",
-      "System Architecture",
-      "Scalability",
-      "Resilience",
-      "Tradeoff Analysis"
-    ],
-    "idealAnswerPoints": [
-      "Analyze architectural tradeoffs with explicit pros and cons",
-      "Provide robust pattern for enterprise isolation and testability",
-      "Discuss telemetry, metrics, and incident recovery strategies"
-    ],
-    "commonMistakes": [
-      "Premature optimization that harms maintainability",
-      "Failing to isolate external side effects and boundaries"
-    ],
-    "followUpTopics": [
-      "What happens when this system encounters network partitioning or heavy main-thread saturation?",
-      "How do you version and migrate this pattern without breaking downstream micro-apps?"
-    ],
-    "estimatedTimeMinutes": 7,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "tail-call-optimization",
-      "advanced"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 99,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Design clean abstractions around Tail Call Optimization with automated test suites and structured separation of concerns.",
-      "strongAnswer": "Decouple business logic from framework bindings, introduce defensive error boundaries, monitor Core Web Vitals, and ensure thread safety and predictability.",
-      "seniorLevelExpectations": "Establish robust design contracts, apply dependency injection or inversion of control, implement comprehensive telemetry, and benchmark memory footprint.",
-      "expertLevelExpectations": "Engineer distributed client resilience, compile-time AST transforms, micro-frontend boundary isolation, and zero-runtime overhead abstractions for Tail Call Optimization."
-    }
-  },
-  {
-    "id": "JS-0222",
-    "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Memory Leaks",
-    "difficulty": "Advanced",
-    "question": "[Q222] Addressing Error Boundaries & Graceful Degradation inside an embedded financial analytics dashboard processing live WebSockets: Deep-dive into the architectural tradeoffs of \"Memory Leaks\" (Closures & Memory) in JavaScript. How do you engineer resilience, maintain testability, and avoid regressions at scale?",
-    "questionType": "Scenario Based",
-    "experienceLevels": [
-      "4-6",
-      "6-8",
-      "8-12"
-    ],
-    "expectedConcepts": [
-      "Memory Leaks",
-      "Closures & Memory",
-      "Error Boundaries & Graceful Degradation",
-      "System Architecture",
-      "Scalability",
-      "Resilience",
-      "Tradeoff Analysis"
-    ],
-    "idealAnswerPoints": [
-      "Analyze architectural tradeoffs with explicit pros and cons",
-      "Provide robust pattern for enterprise isolation and testability",
-      "Discuss telemetry, metrics, and incident recovery strategies"
-    ],
-    "commonMistakes": [
-      "Premature optimization that harms maintainability",
-      "Failing to isolate external side effects and boundaries"
-    ],
-    "followUpTopics": [
-      "What happens when this system encounters network partitioning or heavy main-thread saturation?",
-      "How do you version and migrate this pattern without breaking downstream micro-apps?"
-    ],
-    "estimatedTimeMinutes": 7,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "memory-leaks",
-      "advanced"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 94,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Design clean abstractions around Memory Leaks with automated test suites and structured separation of concerns.",
-      "strongAnswer": "Decouple business logic from framework bindings, introduce defensive error boundaries, monitor Core Web Vitals, and ensure thread safety and predictability.",
-      "seniorLevelExpectations": "Establish robust design contracts, apply dependency injection or inversion of control, implement comprehensive telemetry, and benchmark memory footprint.",
-      "expertLevelExpectations": "Engineer distributed client resilience, compile-time AST transforms, micro-frontend boundary isolation, and zero-runtime overhead abstractions for Memory Leaks."
-    }
-  },
-  {
-    "id": "JS-0223",
-    "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Object.create",
-    "difficulty": "Advanced",
-    "question": "[Q223] Addressing Observability, Telemetry & Real User Monitoring when integrating third-party untrusted scripts without compromising security: Deep-dive into the architectural tradeoffs of \"Object.create\" (Object Prototypes & Inheritance) in JavaScript. How do you engineer resilience, maintain testability, and avoid regressions at scale?",
-    "questionType": "System Design",
-    "experienceLevels": [
-      "4-6",
-      "6-8",
-      "8-12"
-    ],
-    "expectedConcepts": [
-      "Object.create",
-      "Object Prototypes & Inheritance",
-      "Observability, Telemetry & Real User Monitoring",
-      "System Architecture",
-      "Scalability",
-      "Resilience",
-      "Tradeoff Analysis"
-    ],
-    "idealAnswerPoints": [
-      "Analyze architectural tradeoffs with explicit pros and cons",
-      "Provide robust pattern for enterprise isolation and testability",
-      "Discuss telemetry, metrics, and incident recovery strategies"
-    ],
-    "commonMistakes": [
-      "Premature optimization that harms maintainability",
-      "Failing to isolate external side effects and boundaries"
-    ],
-    "followUpTopics": [
-      "What happens when this system encounters network partitioning or heavy main-thread saturation?",
-      "How do you version and migrate this pattern without breaking downstream micro-apps?"
-    ],
-    "estimatedTimeMinutes": 7,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "object-create",
-      "advanced"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 95,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Design clean abstractions around Object.create with automated test suites and structured separation of concerns.",
-      "strongAnswer": "Decouple business logic from framework bindings, introduce defensive error boundaries, monitor Core Web Vitals, and ensure thread safety and predictability.",
-      "seniorLevelExpectations": "Establish robust design contracts, apply dependency injection or inversion of control, implement comprehensive telemetry, and benchmark memory footprint.",
-      "expertLevelExpectations": "Engineer distributed client resilience, compile-time AST transforms, micro-frontend boundary isolation, and zero-runtime overhead abstractions for Object.create."
-    }
-  },
-  {
-    "id": "JS-0224",
-    "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Tail Call Optimization",
-    "difficulty": "Advanced",
-    "question": "[Q224] Addressing Scalability Tradeoffs under High Traffic in an offline-first enterprise mobile web application: Deep-dive into the architectural tradeoffs of \"Tail Call Optimization\" (Language Mechanics & Coercion) in JavaScript. How do you engineer resilience, maintain testability, and avoid regressions at scale?",
-    "questionType": "Problem Solving",
-    "experienceLevels": [
-      "4-6",
-      "6-8",
-      "8-12"
-    ],
-    "expectedConcepts": [
-      "Tail Call Optimization",
-      "Language Mechanics & Coercion",
-      "Scalability Tradeoffs under High Traffic",
-      "System Architecture",
-      "Scalability",
-      "Resilience",
-      "Tradeoff Analysis"
-    ],
-    "idealAnswerPoints": [
-      "Analyze architectural tradeoffs with explicit pros and cons",
-      "Provide robust pattern for enterprise isolation and testability",
-      "Discuss telemetry, metrics, and incident recovery strategies"
-    ],
-    "commonMistakes": [
-      "Premature optimization that harms maintainability",
-      "Failing to isolate external side effects and boundaries"
-    ],
-    "followUpTopics": [
-      "What happens when this system encounters network partitioning or heavy main-thread saturation?",
-      "How do you version and migrate this pattern without breaking downstream micro-apps?"
-    ],
-    "estimatedTimeMinutes": 7,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "tail-call-optimization",
-      "advanced"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 96,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Design clean abstractions around Tail Call Optimization with automated test suites and structured separation of concerns.",
-      "strongAnswer": "Decouple business logic from framework bindings, introduce defensive error boundaries, monitor Core Web Vitals, and ensure thread safety and predictability.",
-      "seniorLevelExpectations": "Establish robust design contracts, apply dependency injection or inversion of control, implement comprehensive telemetry, and benchmark memory footprint.",
-      "expertLevelExpectations": "Engineer distributed client resilience, compile-time AST transforms, micro-frontend boundary isolation, and zero-runtime overhead abstractions for Tail Call Optimization."
-    }
-  },
-  {
-    "id": "JS-0225",
-    "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Memory Leaks",
-    "difficulty": "Advanced",
-    "question": "[Q225] Addressing Implementation Mechanics & Internal Execution when refactoring a legacy monolithic codebase with zero automated regression tests: Deep-dive into the architectural tradeoffs of \"Memory Leaks\" (Closures & Memory) in JavaScript. How do you engineer resilience, maintain testability, and avoid regressions at scale?",
-    "questionType": "Debugging",
-    "experienceLevels": [
-      "4-6",
-      "6-8",
-      "8-12"
-    ],
-    "expectedConcepts": [
-      "Memory Leaks",
-      "Closures & Memory",
-      "Implementation Mechanics & Internal Execution",
-      "System Architecture",
-      "Scalability",
-      "Resilience",
-      "Tradeoff Analysis"
-    ],
-    "idealAnswerPoints": [
-      "Analyze architectural tradeoffs with explicit pros and cons",
-      "Provide robust pattern for enterprise isolation and testability",
-      "Discuss telemetry, metrics, and incident recovery strategies"
-    ],
-    "commonMistakes": [
-      "Premature optimization that harms maintainability",
-      "Failing to isolate external side effects and boundaries"
-    ],
-    "followUpTopics": [
-      "What happens when this system encounters network partitioning or heavy main-thread saturation?",
-      "How do you version and migrate this pattern without breaking downstream micro-apps?"
-    ],
-    "estimatedTimeMinutes": 7,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "memory-leaks",
-      "advanced"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 97,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Design clean abstractions around Memory Leaks with automated test suites and structured separation of concerns.",
-      "strongAnswer": "Decouple business logic from framework bindings, introduce defensive error boundaries, monitor Core Web Vitals, and ensure thread safety and predictability.",
-      "seniorLevelExpectations": "Establish robust design contracts, apply dependency injection or inversion of control, implement comprehensive telemetry, and benchmark memory footprint.",
-      "expertLevelExpectations": "Engineer distributed client resilience, compile-time AST transforms, micro-frontend boundary isolation, and zero-runtime overhead abstractions for Memory Leaks."
-    }
-  },
-  {
-    "id": "JS-0226",
-    "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Object.create",
-    "difficulty": "Advanced",
-    "question": "[Q226] Addressing Debugging & Production Failure Analysis within a real-time collaborative whiteboarding canvas: Deep-dive into the architectural tradeoffs of \"Object.create\" (Object Prototypes & Inheritance) in JavaScript. How do you engineer resilience, maintain testability, and avoid regressions at scale?",
-    "questionType": "Practical",
-    "experienceLevels": [
-      "4-6",
-      "6-8",
-      "8-12"
-    ],
-    "expectedConcepts": [
-      "Object.create",
-      "Object Prototypes & Inheritance",
-      "Debugging & Production Failure Analysis",
-      "System Architecture",
-      "Scalability",
-      "Resilience",
-      "Tradeoff Analysis"
-    ],
-    "idealAnswerPoints": [
-      "Analyze architectural tradeoffs with explicit pros and cons",
-      "Provide robust pattern for enterprise isolation and testability",
-      "Discuss telemetry, metrics, and incident recovery strategies"
-    ],
-    "commonMistakes": [
-      "Premature optimization that harms maintainability",
-      "Failing to isolate external side effects and boundaries"
-    ],
-    "followUpTopics": [
-      "What happens when this system encounters network partitioning or heavy main-thread saturation?",
-      "How do you version and migrate this pattern without breaking downstream micro-apps?"
-    ],
-    "estimatedTimeMinutes": 7,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "object-create",
-      "advanced"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 98,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Design clean abstractions around Object.create with automated test suites and structured separation of concerns.",
-      "strongAnswer": "Decouple business logic from framework bindings, introduce defensive error boundaries, monitor Core Web Vitals, and ensure thread safety and predictability.",
-      "seniorLevelExpectations": "Establish robust design contracts, apply dependency injection or inversion of control, implement comprehensive telemetry, and benchmark memory footprint.",
-      "expertLevelExpectations": "Engineer distributed client resilience, compile-time AST transforms, micro-frontend boundary isolation, and zero-runtime overhead abstractions for Object.create."
-    }
-  },
-  {
-    "id": "JS-0227",
-    "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Tail Call Optimization",
-    "difficulty": "Advanced",
-    "question": "[Q227] Addressing Performance Optimization & Latency Bottlenecks during a live zero-downtime database and schema migration: Deep-dive into the architectural tradeoffs of \"Tail Call Optimization\" (Language Mechanics & Coercion) in JavaScript. How do you engineer resilience, maintain testability, and avoid regressions at scale?",
-    "questionType": "Scenario Based",
-    "experienceLevels": [
-      "4-6",
-      "6-8",
-      "8-12"
-    ],
-    "expectedConcepts": [
-      "Tail Call Optimization",
-      "Language Mechanics & Coercion",
-      "Performance Optimization & Latency Bottlenecks",
-      "System Architecture",
-      "Scalability",
-      "Resilience",
-      "Tradeoff Analysis"
-    ],
-    "idealAnswerPoints": [
-      "Analyze architectural tradeoffs with explicit pros and cons",
-      "Provide robust pattern for enterprise isolation and testability",
-      "Discuss telemetry, metrics, and incident recovery strategies"
-    ],
-    "commonMistakes": [
-      "Premature optimization that harms maintainability",
-      "Failing to isolate external side effects and boundaries"
-    ],
-    "followUpTopics": [
-      "What happens when this system encounters network partitioning or heavy main-thread saturation?",
-      "How do you version and migrate this pattern without breaking downstream micro-apps?"
-    ],
-    "estimatedTimeMinutes": 7,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "tail-call-optimization",
-      "advanced"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 99,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Design clean abstractions around Tail Call Optimization with automated test suites and structured separation of concerns.",
-      "strongAnswer": "Decouple business logic from framework bindings, introduce defensive error boundaries, monitor Core Web Vitals, and ensure thread safety and predictability.",
-      "seniorLevelExpectations": "Establish robust design contracts, apply dependency injection or inversion of control, implement comprehensive telemetry, and benchmark memory footprint.",
-      "expertLevelExpectations": "Engineer distributed client resilience, compile-time AST transforms, micro-frontend boundary isolation, and zero-runtime overhead abstractions for Tail Call Optimization."
-    }
-  },
-  {
-    "id": "JS-0228",
-    "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Memory Leaks",
-    "difficulty": "Advanced",
-    "question": "[Q228] Addressing Architecture & Modularity Design in an executive architectural review evaluating long-term technical debt: Deep-dive into the architectural tradeoffs of \"Memory Leaks\" (Closures & Memory) in JavaScript. How do you engineer resilience, maintain testability, and avoid regressions at scale?",
-    "questionType": "System Design",
-    "experienceLevels": [
-      "4-6",
-      "6-8",
-      "8-12"
-    ],
-    "expectedConcepts": [
-      "Memory Leaks",
-      "Closures & Memory",
-      "Architecture & Modularity Design",
-      "System Architecture",
-      "Scalability",
-      "Resilience",
-      "Tradeoff Analysis"
-    ],
-    "idealAnswerPoints": [
-      "Analyze architectural tradeoffs with explicit pros and cons",
-      "Provide robust pattern for enterprise isolation and testability",
-      "Discuss telemetry, metrics, and incident recovery strategies"
-    ],
-    "commonMistakes": [
-      "Premature optimization that harms maintainability",
-      "Failing to isolate external side effects and boundaries"
-    ],
-    "followUpTopics": [
-      "What happens when this system encounters network partitioning or heavy main-thread saturation?",
-      "How do you version and migrate this pattern without breaking downstream micro-apps?"
-    ],
-    "estimatedTimeMinutes": 7,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "memory-leaks",
-      "advanced"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 94,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Design clean abstractions around Memory Leaks with automated test suites and structured separation of concerns.",
-      "strongAnswer": "Decouple business logic from framework bindings, introduce defensive error boundaries, monitor Core Web Vitals, and ensure thread safety and predictability.",
-      "seniorLevelExpectations": "Establish robust design contracts, apply dependency injection or inversion of control, implement comprehensive telemetry, and benchmark memory footprint.",
-      "expertLevelExpectations": "Engineer distributed client resilience, compile-time AST transforms, micro-frontend boundary isolation, and zero-runtime overhead abstractions for Memory Leaks."
-    }
-  },
-  {
-    "id": "JS-0229",
-    "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Object.create",
-    "difficulty": "Advanced",
-    "question": "[Q229] Addressing Edge Case Handling & Defensive Validation in a mission-critical healthcare portal with strict latency SLAs: Deep-dive into the architectural tradeoffs of \"Object.create\" (Object Prototypes & Inheritance) in JavaScript. How do you engineer resilience, maintain testability, and avoid regressions at scale?",
-    "questionType": "Problem Solving",
-    "experienceLevels": [
-      "4-6",
-      "6-8",
-      "8-12"
-    ],
-    "expectedConcepts": [
-      "Object.create",
-      "Object Prototypes & Inheritance",
-      "Edge Case Handling & Defensive Validation",
-      "System Architecture",
-      "Scalability",
-      "Resilience",
-      "Tradeoff Analysis"
-    ],
-    "idealAnswerPoints": [
-      "Analyze architectural tradeoffs with explicit pros and cons",
-      "Provide robust pattern for enterprise isolation and testability",
-      "Discuss telemetry, metrics, and incident recovery strategies"
-    ],
-    "commonMistakes": [
-      "Premature optimization that harms maintainability",
-      "Failing to isolate external side effects and boundaries"
-    ],
-    "followUpTopics": [
-      "What happens when this system encounters network partitioning or heavy main-thread saturation?",
-      "How do you version and migrate this pattern without breaking downstream micro-apps?"
-    ],
-    "estimatedTimeMinutes": 7,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "object-create",
-      "advanced"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 95,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Design clean abstractions around Object.create with automated test suites and structured separation of concerns.",
-      "strongAnswer": "Decouple business logic from framework bindings, introduce defensive error boundaries, monitor Core Web Vitals, and ensure thread safety and predictability.",
-      "seniorLevelExpectations": "Establish robust design contracts, apply dependency injection or inversion of control, implement comprehensive telemetry, and benchmark memory footprint.",
-      "expertLevelExpectations": "Engineer distributed client resilience, compile-time AST transforms, micro-frontend boundary isolation, and zero-runtime overhead abstractions for Object.create."
-    }
-  },
-  {
-    "id": "JS-0230",
-    "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Tail Call Optimization",
-    "difficulty": "Advanced",
-    "question": "[Q230] Addressing Memory Lifecycle & Garbage Collection Pressure in a design system adopted across 12 distinct product platforms: Deep-dive into the architectural tradeoffs of \"Tail Call Optimization\" (Language Mechanics & Coercion) in JavaScript. How do you engineer resilience, maintain testability, and avoid regressions at scale?",
-    "questionType": "Debugging",
-    "experienceLevels": [
-      "4-6",
-      "6-8",
-      "8-12"
-    ],
-    "expectedConcepts": [
-      "Tail Call Optimization",
-      "Language Mechanics & Coercion",
-      "Memory Lifecycle & Garbage Collection Pressure",
-      "System Architecture",
-      "Scalability",
-      "Resilience",
-      "Tradeoff Analysis"
-    ],
-    "idealAnswerPoints": [
-      "Analyze architectural tradeoffs with explicit pros and cons",
-      "Provide robust pattern for enterprise isolation and testability",
-      "Discuss telemetry, metrics, and incident recovery strategies"
-    ],
-    "commonMistakes": [
-      "Premature optimization that harms maintainability",
-      "Failing to isolate external side effects and boundaries"
-    ],
-    "followUpTopics": [
-      "What happens when this system encounters network partitioning or heavy main-thread saturation?",
-      "How do you version and migrate this pattern without breaking downstream micro-apps?"
-    ],
-    "estimatedTimeMinutes": 7,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "tail-call-optimization",
-      "advanced"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 96,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Design clean abstractions around Tail Call Optimization with automated test suites and structured separation of concerns.",
-      "strongAnswer": "Decouple business logic from framework bindings, introduce defensive error boundaries, monitor Core Web Vitals, and ensure thread safety and predictability.",
-      "seniorLevelExpectations": "Establish robust design contracts, apply dependency injection or inversion of control, implement comprehensive telemetry, and benchmark memory footprint.",
-      "expertLevelExpectations": "Engineer distributed client resilience, compile-time AST transforms, micro-frontend boundary isolation, and zero-runtime overhead abstractions for Tail Call Optimization."
-    }
-  },
-  {
-    "id": "JS-0231",
-    "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Memory Leaks",
-    "difficulty": "Advanced",
-    "question": "[Q231] Addressing Security Hardening & Threat Mitigation across a distributed micro-frontend monorepo with 40+ engineering squads: Deep-dive into the architectural tradeoffs of \"Memory Leaks\" (Closures & Memory) in JavaScript. How do you engineer resilience, maintain testability, and avoid regressions at scale?",
-    "questionType": "Practical",
-    "experienceLevels": [
-      "4-6",
-      "6-8",
-      "8-12"
-    ],
-    "expectedConcepts": [
-      "Memory Leaks",
-      "Closures & Memory",
-      "Security Hardening & Threat Mitigation",
-      "System Architecture",
-      "Scalability",
-      "Resilience",
-      "Tradeoff Analysis"
-    ],
-    "idealAnswerPoints": [
-      "Analyze architectural tradeoffs with explicit pros and cons",
-      "Provide robust pattern for enterprise isolation and testability",
-      "Discuss telemetry, metrics, and incident recovery strategies"
-    ],
-    "commonMistakes": [
-      "Premature optimization that harms maintainability",
-      "Failing to isolate external side effects and boundaries"
-    ],
-    "followUpTopics": [
-      "What happens when this system encounters network partitioning or heavy main-thread saturation?",
-      "How do you version and migrate this pattern without breaking downstream micro-apps?"
-    ],
-    "estimatedTimeMinutes": 7,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "memory-leaks",
-      "advanced"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 97,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Design clean abstractions around Memory Leaks with automated test suites and structured separation of concerns.",
-      "strongAnswer": "Decouple business logic from framework bindings, introduce defensive error boundaries, monitor Core Web Vitals, and ensure thread safety and predictability.",
-      "seniorLevelExpectations": "Establish robust design contracts, apply dependency injection or inversion of control, implement comprehensive telemetry, and benchmark memory footprint.",
-      "expertLevelExpectations": "Engineer distributed client resilience, compile-time AST transforms, micro-frontend boundary isolation, and zero-runtime overhead abstractions for Memory Leaks."
-    }
-  },
-  {
-    "id": "JS-0232",
-    "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Object.create",
-    "difficulty": "Advanced",
-    "question": "[Q232] Addressing Testing Strategy & Flakiness Elimination inside a multi-tenant SaaS application with strict client-side data isolation: Deep-dive into the architectural tradeoffs of \"Object.create\" (Object Prototypes & Inheritance) in JavaScript. How do you engineer resilience, maintain testability, and avoid regressions at scale?",
-    "questionType": "Scenario Based",
-    "experienceLevels": [
-      "4-6",
-      "6-8",
-      "8-12"
-    ],
-    "expectedConcepts": [
-      "Object.create",
-      "Object Prototypes & Inheritance",
-      "Testing Strategy & Flakiness Elimination",
-      "System Architecture",
-      "Scalability",
-      "Resilience",
-      "Tradeoff Analysis"
-    ],
-    "idealAnswerPoints": [
-      "Analyze architectural tradeoffs with explicit pros and cons",
-      "Provide robust pattern for enterprise isolation and testability",
-      "Discuss telemetry, metrics, and incident recovery strategies"
-    ],
-    "commonMistakes": [
-      "Premature optimization that harms maintainability",
-      "Failing to isolate external side effects and boundaries"
-    ],
-    "followUpTopics": [
-      "What happens when this system encounters network partitioning or heavy main-thread saturation?",
-      "How do you version and migrate this pattern without breaking downstream micro-apps?"
-    ],
-    "estimatedTimeMinutes": 7,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "object-create",
-      "advanced"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 98,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Design clean abstractions around Object.create with automated test suites and structured separation of concerns.",
-      "strongAnswer": "Decouple business logic from framework bindings, introduce defensive error boundaries, monitor Core Web Vitals, and ensure thread safety and predictability.",
-      "seniorLevelExpectations": "Establish robust design contracts, apply dependency injection or inversion of control, implement comprehensive telemetry, and benchmark memory footprint.",
-      "expertLevelExpectations": "Engineer distributed client resilience, compile-time AST transforms, micro-frontend boundary isolation, and zero-runtime overhead abstractions for Object.create."
-    }
-  },
-  {
-    "id": "JS-0233",
-    "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Tail Call Optimization",
-    "difficulty": "Advanced",
-    "question": "[Q233] Addressing Cross-Browser Consistency & Standards Compliance during high-concurrency peak retail traffic (e.g. Cyber Monday): Deep-dive into the architectural tradeoffs of \"Tail Call Optimization\" (Language Mechanics & Coercion) in JavaScript. How do you engineer resilience, maintain testability, and avoid regressions at scale?",
-    "questionType": "System Design",
-    "experienceLevels": [
-      "4-6",
-      "6-8",
-      "8-12"
-    ],
-    "expectedConcepts": [
-      "Tail Call Optimization",
-      "Language Mechanics & Coercion",
-      "Cross-Browser Consistency & Standards Compliance",
-      "System Architecture",
-      "Scalability",
-      "Resilience",
-      "Tradeoff Analysis"
-    ],
-    "idealAnswerPoints": [
-      "Analyze architectural tradeoffs with explicit pros and cons",
-      "Provide robust pattern for enterprise isolation and testability",
-      "Discuss telemetry, metrics, and incident recovery strategies"
-    ],
-    "commonMistakes": [
-      "Premature optimization that harms maintainability",
-      "Failing to isolate external side effects and boundaries"
-    ],
-    "followUpTopics": [
-      "What happens when this system encounters network partitioning or heavy main-thread saturation?",
-      "How do you version and migrate this pattern without breaking downstream micro-apps?"
-    ],
-    "estimatedTimeMinutes": 7,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "tail-call-optimization",
-      "advanced"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 99,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Design clean abstractions around Tail Call Optimization with automated test suites and structured separation of concerns.",
-      "strongAnswer": "Decouple business logic from framework bindings, introduce defensive error boundaries, monitor Core Web Vitals, and ensure thread safety and predictability.",
-      "seniorLevelExpectations": "Establish robust design contracts, apply dependency injection or inversion of control, implement comprehensive telemetry, and benchmark memory footprint.",
-      "expertLevelExpectations": "Engineer distributed client resilience, compile-time AST transforms, micro-frontend boundary isolation, and zero-runtime overhead abstractions for Tail Call Optimization."
-    }
-  },
-  {
-    "id": "JS-0234",
-    "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Memory Leaks",
-    "difficulty": "Advanced",
-    "question": "[Q234] Addressing Developer Experience & API Ergonomics in a low-bandwidth, high-latency global mobile environment: Deep-dive into the architectural tradeoffs of \"Memory Leaks\" (Closures & Memory) in JavaScript. How do you engineer resilience, maintain testability, and avoid regressions at scale?",
-    "questionType": "Problem Solving",
-    "experienceLevels": [
-      "4-6",
-      "6-8",
-      "8-12"
-    ],
-    "expectedConcepts": [
-      "Memory Leaks",
-      "Closures & Memory",
-      "Developer Experience & API Ergonomics",
-      "System Architecture",
-      "Scalability",
-      "Resilience",
-      "Tradeoff Analysis"
-    ],
-    "idealAnswerPoints": [
-      "Analyze architectural tradeoffs with explicit pros and cons",
-      "Provide robust pattern for enterprise isolation and testability",
-      "Discuss telemetry, metrics, and incident recovery strategies"
-    ],
-    "commonMistakes": [
-      "Premature optimization that harms maintainability",
-      "Failing to isolate external side effects and boundaries"
-    ],
-    "followUpTopics": [
-      "What happens when this system encounters network partitioning or heavy main-thread saturation?",
-      "How do you version and migrate this pattern without breaking downstream micro-apps?"
-    ],
-    "estimatedTimeMinutes": 7,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "memory-leaks",
-      "advanced"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 94,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Design clean abstractions around Memory Leaks with automated test suites and structured separation of concerns.",
-      "strongAnswer": "Decouple business logic from framework bindings, introduce defensive error boundaries, monitor Core Web Vitals, and ensure thread safety and predictability.",
-      "seniorLevelExpectations": "Establish robust design contracts, apply dependency injection or inversion of control, implement comprehensive telemetry, and benchmark memory footprint.",
-      "expertLevelExpectations": "Engineer distributed client resilience, compile-time AST transforms, micro-frontend boundary isolation, and zero-runtime overhead abstractions for Memory Leaks."
-    }
-  },
-  {
-    "id": "JS-0235",
-    "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Object.create",
-    "difficulty": "Advanced",
-    "question": "[Q235] Addressing Concurrency & Asynchronous Race Conditions in a high-throughput fintech checkout system: Deep-dive into the architectural tradeoffs of \"Object.create\" (Object Prototypes & Inheritance) in JavaScript. How do you engineer resilience, maintain testability, and avoid regressions at scale?",
-    "questionType": "Debugging",
-    "experienceLevels": [
-      "4-6",
-      "6-8",
-      "8-12"
-    ],
-    "expectedConcepts": [
-      "Object.create",
-      "Object Prototypes & Inheritance",
-      "Concurrency & Asynchronous Race Conditions",
-      "System Architecture",
-      "Scalability",
-      "Resilience",
-      "Tradeoff Analysis"
-    ],
-    "idealAnswerPoints": [
-      "Analyze architectural tradeoffs with explicit pros and cons",
-      "Provide robust pattern for enterprise isolation and testability",
-      "Discuss telemetry, metrics, and incident recovery strategies"
-    ],
-    "commonMistakes": [
-      "Premature optimization that harms maintainability",
-      "Failing to isolate external side effects and boundaries"
-    ],
-    "followUpTopics": [
-      "What happens when this system encounters network partitioning or heavy main-thread saturation?",
-      "How do you version and migrate this pattern without breaking downstream micro-apps?"
-    ],
-    "estimatedTimeMinutes": 7,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "object-create",
-      "advanced"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 95,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Design clean abstractions around Object.create with automated test suites and structured separation of concerns.",
-      "strongAnswer": "Decouple business logic from framework bindings, introduce defensive error boundaries, monitor Core Web Vitals, and ensure thread safety and predictability.",
-      "seniorLevelExpectations": "Establish robust design contracts, apply dependency injection or inversion of control, implement comprehensive telemetry, and benchmark memory footprint.",
-      "expertLevelExpectations": "Engineer distributed client resilience, compile-time AST transforms, micro-frontend boundary isolation, and zero-runtime overhead abstractions for Object.create."
-    }
-  },
-  {
-    "id": "JS-0236",
-    "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Tail Call Optimization",
-    "difficulty": "Advanced",
-    "question": "[Q236] Addressing Refactoring & Safe Legacy Migration within a media streaming player handling adaptive bitrate switching: Deep-dive into the architectural tradeoffs of \"Tail Call Optimization\" (Language Mechanics & Coercion) in JavaScript. How do you engineer resilience, maintain testability, and avoid regressions at scale?",
-    "questionType": "Practical",
-    "experienceLevels": [
-      "4-6",
-      "6-8",
-      "8-12"
-    ],
-    "expectedConcepts": [
-      "Tail Call Optimization",
-      "Language Mechanics & Coercion",
-      "Refactoring & Safe Legacy Migration",
-      "System Architecture",
-      "Scalability",
-      "Resilience",
-      "Tradeoff Analysis"
-    ],
-    "idealAnswerPoints": [
-      "Analyze architectural tradeoffs with explicit pros and cons",
-      "Provide robust pattern for enterprise isolation and testability",
-      "Discuss telemetry, metrics, and incident recovery strategies"
-    ],
-    "commonMistakes": [
-      "Premature optimization that harms maintainability",
-      "Failing to isolate external side effects and boundaries"
-    ],
-    "followUpTopics": [
-      "What happens when this system encounters network partitioning or heavy main-thread saturation?",
-      "How do you version and migrate this pattern without breaking downstream micro-apps?"
-    ],
-    "estimatedTimeMinutes": 7,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "tail-call-optimization",
-      "advanced"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 96,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Design clean abstractions around Tail Call Optimization with automated test suites and structured separation of concerns.",
-      "strongAnswer": "Decouple business logic from framework bindings, introduce defensive error boundaries, monitor Core Web Vitals, and ensure thread safety and predictability.",
-      "seniorLevelExpectations": "Establish robust design contracts, apply dependency injection or inversion of control, implement comprehensive telemetry, and benchmark memory footprint.",
-      "expertLevelExpectations": "Engineer distributed client resilience, compile-time AST transforms, micro-frontend boundary isolation, and zero-runtime overhead abstractions for Tail Call Optimization."
-    }
-  },
-  {
-    "id": "JS-0237",
-    "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Memory Leaks",
-    "difficulty": "Advanced",
-    "question": "[Q237] Addressing State Synchronization & Boundary Isolation during a high-severity production outage requiring immediate triage: Deep-dive into the architectural tradeoffs of \"Memory Leaks\" (Closures & Memory) in JavaScript. How do you engineer resilience, maintain testability, and avoid regressions at scale?",
-    "questionType": "Scenario Based",
-    "experienceLevels": [
-      "4-6",
-      "6-8",
-      "8-12"
-    ],
-    "expectedConcepts": [
-      "Memory Leaks",
-      "Closures & Memory",
-      "State Synchronization & Boundary Isolation",
-      "System Architecture",
-      "Scalability",
-      "Resilience",
-      "Tradeoff Analysis"
-    ],
-    "idealAnswerPoints": [
-      "Analyze architectural tradeoffs with explicit pros and cons",
-      "Provide robust pattern for enterprise isolation and testability",
-      "Discuss telemetry, metrics, and incident recovery strategies"
-    ],
-    "commonMistakes": [
-      "Premature optimization that harms maintainability",
-      "Failing to isolate external side effects and boundaries"
-    ],
-    "followUpTopics": [
-      "What happens when this system encounters network partitioning or heavy main-thread saturation?",
-      "How do you version and migrate this pattern without breaking downstream micro-apps?"
-    ],
-    "estimatedTimeMinutes": 7,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "memory-leaks",
-      "advanced"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 97,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Design clean abstractions around Memory Leaks with automated test suites and structured separation of concerns.",
-      "strongAnswer": "Decouple business logic from framework bindings, introduce defensive error boundaries, monitor Core Web Vitals, and ensure thread safety and predictability.",
-      "seniorLevelExpectations": "Establish robust design contracts, apply dependency injection or inversion of control, implement comprehensive telemetry, and benchmark memory footprint.",
-      "expertLevelExpectations": "Engineer distributed client resilience, compile-time AST transforms, micro-frontend boundary isolation, and zero-runtime overhead abstractions for Memory Leaks."
-    }
-  },
-  {
-    "id": "JS-0238",
-    "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Object.create",
-    "difficulty": "Advanced",
-    "question": "[Q238] Addressing Error Boundaries & Graceful Degradation inside an embedded financial analytics dashboard processing live WebSockets: Deep-dive into the architectural tradeoffs of \"Object.create\" (Object Prototypes & Inheritance) in JavaScript. How do you engineer resilience, maintain testability, and avoid regressions at scale?",
-    "questionType": "System Design",
-    "experienceLevels": [
-      "4-6",
-      "6-8",
-      "8-12"
-    ],
-    "expectedConcepts": [
-      "Object.create",
-      "Object Prototypes & Inheritance",
-      "Error Boundaries & Graceful Degradation",
-      "System Architecture",
-      "Scalability",
-      "Resilience",
-      "Tradeoff Analysis"
-    ],
-    "idealAnswerPoints": [
-      "Analyze architectural tradeoffs with explicit pros and cons",
-      "Provide robust pattern for enterprise isolation and testability",
-      "Discuss telemetry, metrics, and incident recovery strategies"
-    ],
-    "commonMistakes": [
-      "Premature optimization that harms maintainability",
-      "Failing to isolate external side effects and boundaries"
-    ],
-    "followUpTopics": [
-      "What happens when this system encounters network partitioning or heavy main-thread saturation?",
-      "How do you version and migrate this pattern without breaking downstream micro-apps?"
-    ],
-    "estimatedTimeMinutes": 7,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "object-create",
-      "advanced"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 98,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Design clean abstractions around Object.create with automated test suites and structured separation of concerns.",
-      "strongAnswer": "Decouple business logic from framework bindings, introduce defensive error boundaries, monitor Core Web Vitals, and ensure thread safety and predictability.",
-      "seniorLevelExpectations": "Establish robust design contracts, apply dependency injection or inversion of control, implement comprehensive telemetry, and benchmark memory footprint.",
-      "expertLevelExpectations": "Engineer distributed client resilience, compile-time AST transforms, micro-frontend boundary isolation, and zero-runtime overhead abstractions for Object.create."
-    }
-  },
-  {
-    "id": "JS-0239",
-    "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Tail Call Optimization",
-    "difficulty": "Advanced",
-    "question": "[Q239] Addressing Observability, Telemetry & Real User Monitoring when integrating third-party untrusted scripts without compromising security: Deep-dive into the architectural tradeoffs of \"Tail Call Optimization\" (Language Mechanics & Coercion) in JavaScript. How do you engineer resilience, maintain testability, and avoid regressions at scale?",
-    "questionType": "Problem Solving",
-    "experienceLevels": [
-      "4-6",
-      "6-8",
-      "8-12"
-    ],
-    "expectedConcepts": [
-      "Tail Call Optimization",
-      "Language Mechanics & Coercion",
-      "Observability, Telemetry & Real User Monitoring",
-      "System Architecture",
-      "Scalability",
-      "Resilience",
-      "Tradeoff Analysis"
-    ],
-    "idealAnswerPoints": [
-      "Analyze architectural tradeoffs with explicit pros and cons",
-      "Provide robust pattern for enterprise isolation and testability",
-      "Discuss telemetry, metrics, and incident recovery strategies"
-    ],
-    "commonMistakes": [
-      "Premature optimization that harms maintainability",
-      "Failing to isolate external side effects and boundaries"
-    ],
-    "followUpTopics": [
-      "What happens when this system encounters network partitioning or heavy main-thread saturation?",
-      "How do you version and migrate this pattern without breaking downstream micro-apps?"
-    ],
-    "estimatedTimeMinutes": 7,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "tail-call-optimization",
-      "advanced"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 99,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Design clean abstractions around Tail Call Optimization with automated test suites and structured separation of concerns.",
-      "strongAnswer": "Decouple business logic from framework bindings, introduce defensive error boundaries, monitor Core Web Vitals, and ensure thread safety and predictability.",
-      "seniorLevelExpectations": "Establish robust design contracts, apply dependency injection or inversion of control, implement comprehensive telemetry, and benchmark memory footprint.",
-      "expertLevelExpectations": "Engineer distributed client resilience, compile-time AST transforms, micro-frontend boundary isolation, and zero-runtime overhead abstractions for Tail Call Optimization."
-    }
-  },
-  {
-    "id": "JS-0240",
-    "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Memory Leaks",
-    "difficulty": "Advanced",
-    "question": "[Q240] Addressing Scalability Tradeoffs under High Traffic in an offline-first enterprise mobile web application: Deep-dive into the architectural tradeoffs of \"Memory Leaks\" (Closures & Memory) in JavaScript. How do you engineer resilience, maintain testability, and avoid regressions at scale?",
-    "questionType": "Debugging",
-    "experienceLevels": [
-      "4-6",
-      "6-8",
-      "8-12"
-    ],
-    "expectedConcepts": [
-      "Memory Leaks",
-      "Closures & Memory",
-      "Scalability Tradeoffs under High Traffic",
-      "System Architecture",
-      "Scalability",
-      "Resilience",
-      "Tradeoff Analysis"
-    ],
-    "idealAnswerPoints": [
-      "Analyze architectural tradeoffs with explicit pros and cons",
-      "Provide robust pattern for enterprise isolation and testability",
-      "Discuss telemetry, metrics, and incident recovery strategies"
-    ],
-    "commonMistakes": [
-      "Premature optimization that harms maintainability",
-      "Failing to isolate external side effects and boundaries"
-    ],
-    "followUpTopics": [
-      "What happens when this system encounters network partitioning or heavy main-thread saturation?",
-      "How do you version and migrate this pattern without breaking downstream micro-apps?"
-    ],
-    "estimatedTimeMinutes": 7,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "memory-leaks",
-      "advanced"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 94,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Design clean abstractions around Memory Leaks with automated test suites and structured separation of concerns.",
-      "strongAnswer": "Decouple business logic from framework bindings, introduce defensive error boundaries, monitor Core Web Vitals, and ensure thread safety and predictability.",
-      "seniorLevelExpectations": "Establish robust design contracts, apply dependency injection or inversion of control, implement comprehensive telemetry, and benchmark memory footprint.",
-      "expertLevelExpectations": "Engineer distributed client resilience, compile-time AST transforms, micro-frontend boundary isolation, and zero-runtime overhead abstractions for Memory Leaks."
-    }
-  },
-  {
-    "id": "JS-0241",
-    "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Object.create",
-    "difficulty": "Advanced",
-    "question": "[Q241] Addressing Implementation Mechanics & Internal Execution when refactoring a legacy monolithic codebase with zero automated regression tests: Deep-dive into the architectural tradeoffs of \"Object.create\" (Object Prototypes & Inheritance) in JavaScript. How do you engineer resilience, maintain testability, and avoid regressions at scale?",
-    "questionType": "Practical",
-    "experienceLevels": [
-      "4-6",
-      "6-8",
-      "8-12"
-    ],
-    "expectedConcepts": [
-      "Object.create",
-      "Object Prototypes & Inheritance",
-      "Implementation Mechanics & Internal Execution",
-      "System Architecture",
-      "Scalability",
-      "Resilience",
-      "Tradeoff Analysis"
-    ],
-    "idealAnswerPoints": [
-      "Analyze architectural tradeoffs with explicit pros and cons",
-      "Provide robust pattern for enterprise isolation and testability",
-      "Discuss telemetry, metrics, and incident recovery strategies"
-    ],
-    "commonMistakes": [
-      "Premature optimization that harms maintainability",
-      "Failing to isolate external side effects and boundaries"
-    ],
-    "followUpTopics": [
-      "What happens when this system encounters network partitioning or heavy main-thread saturation?",
-      "How do you version and migrate this pattern without breaking downstream micro-apps?"
-    ],
-    "estimatedTimeMinutes": 7,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "object-create",
-      "advanced"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 95,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Design clean abstractions around Object.create with automated test suites and structured separation of concerns.",
-      "strongAnswer": "Decouple business logic from framework bindings, introduce defensive error boundaries, monitor Core Web Vitals, and ensure thread safety and predictability.",
-      "seniorLevelExpectations": "Establish robust design contracts, apply dependency injection or inversion of control, implement comprehensive telemetry, and benchmark memory footprint.",
-      "expertLevelExpectations": "Engineer distributed client resilience, compile-time AST transforms, micro-frontend boundary isolation, and zero-runtime overhead abstractions for Object.create."
-    }
-  },
-  {
-    "id": "JS-0242",
-    "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Tail Call Optimization",
-    "difficulty": "Advanced",
-    "question": "[Q242] Addressing Debugging & Production Failure Analysis within a real-time collaborative whiteboarding canvas: Deep-dive into the architectural tradeoffs of \"Tail Call Optimization\" (Language Mechanics & Coercion) in JavaScript. How do you engineer resilience, maintain testability, and avoid regressions at scale?",
-    "questionType": "Scenario Based",
-    "experienceLevels": [
-      "4-6",
-      "6-8",
-      "8-12"
-    ],
-    "expectedConcepts": [
-      "Tail Call Optimization",
-      "Language Mechanics & Coercion",
-      "Debugging & Production Failure Analysis",
-      "System Architecture",
-      "Scalability",
-      "Resilience",
-      "Tradeoff Analysis"
-    ],
-    "idealAnswerPoints": [
-      "Analyze architectural tradeoffs with explicit pros and cons",
-      "Provide robust pattern for enterprise isolation and testability",
-      "Discuss telemetry, metrics, and incident recovery strategies"
-    ],
-    "commonMistakes": [
-      "Premature optimization that harms maintainability",
-      "Failing to isolate external side effects and boundaries"
-    ],
-    "followUpTopics": [
-      "What happens when this system encounters network partitioning or heavy main-thread saturation?",
-      "How do you version and migrate this pattern without breaking downstream micro-apps?"
-    ],
-    "estimatedTimeMinutes": 7,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "tail-call-optimization",
-      "advanced"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 96,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Design clean abstractions around Tail Call Optimization with automated test suites and structured separation of concerns.",
-      "strongAnswer": "Decouple business logic from framework bindings, introduce defensive error boundaries, monitor Core Web Vitals, and ensure thread safety and predictability.",
-      "seniorLevelExpectations": "Establish robust design contracts, apply dependency injection or inversion of control, implement comprehensive telemetry, and benchmark memory footprint.",
-      "expertLevelExpectations": "Engineer distributed client resilience, compile-time AST transforms, micro-frontend boundary isolation, and zero-runtime overhead abstractions for Tail Call Optimization."
-    }
-  },
-  {
-    "id": "JS-0243",
-    "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Memory Leaks",
-    "difficulty": "Advanced",
-    "question": "[Q243] Addressing Performance Optimization & Latency Bottlenecks during a live zero-downtime database and schema migration: Deep-dive into the architectural tradeoffs of \"Memory Leaks\" (Closures & Memory) in JavaScript. How do you engineer resilience, maintain testability, and avoid regressions at scale?",
-    "questionType": "System Design",
-    "experienceLevels": [
-      "4-6",
-      "6-8",
-      "8-12"
-    ],
-    "expectedConcepts": [
-      "Memory Leaks",
-      "Closures & Memory",
-      "Performance Optimization & Latency Bottlenecks",
-      "System Architecture",
-      "Scalability",
-      "Resilience",
-      "Tradeoff Analysis"
-    ],
-    "idealAnswerPoints": [
-      "Analyze architectural tradeoffs with explicit pros and cons",
-      "Provide robust pattern for enterprise isolation and testability",
-      "Discuss telemetry, metrics, and incident recovery strategies"
-    ],
-    "commonMistakes": [
-      "Premature optimization that harms maintainability",
-      "Failing to isolate external side effects and boundaries"
-    ],
-    "followUpTopics": [
-      "What happens when this system encounters network partitioning or heavy main-thread saturation?",
-      "How do you version and migrate this pattern without breaking downstream micro-apps?"
-    ],
-    "estimatedTimeMinutes": 7,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "memory-leaks",
-      "advanced"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 97,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Design clean abstractions around Memory Leaks with automated test suites and structured separation of concerns.",
-      "strongAnswer": "Decouple business logic from framework bindings, introduce defensive error boundaries, monitor Core Web Vitals, and ensure thread safety and predictability.",
-      "seniorLevelExpectations": "Establish robust design contracts, apply dependency injection or inversion of control, implement comprehensive telemetry, and benchmark memory footprint.",
-      "expertLevelExpectations": "Engineer distributed client resilience, compile-time AST transforms, micro-frontend boundary isolation, and zero-runtime overhead abstractions for Memory Leaks."
-    }
-  },
-  {
-    "id": "JS-0244",
-    "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Object.create",
-    "difficulty": "Advanced",
-    "question": "[Q244] Addressing Architecture & Modularity Design in an executive architectural review evaluating long-term technical debt: Deep-dive into the architectural tradeoffs of \"Object.create\" (Object Prototypes & Inheritance) in JavaScript. How do you engineer resilience, maintain testability, and avoid regressions at scale?",
-    "questionType": "Problem Solving",
-    "experienceLevels": [
-      "4-6",
-      "6-8",
-      "8-12"
-    ],
-    "expectedConcepts": [
-      "Object.create",
-      "Object Prototypes & Inheritance",
-      "Architecture & Modularity Design",
-      "System Architecture",
-      "Scalability",
-      "Resilience",
-      "Tradeoff Analysis"
-    ],
-    "idealAnswerPoints": [
-      "Analyze architectural tradeoffs with explicit pros and cons",
-      "Provide robust pattern for enterprise isolation and testability",
-      "Discuss telemetry, metrics, and incident recovery strategies"
-    ],
-    "commonMistakes": [
-      "Premature optimization that harms maintainability",
-      "Failing to isolate external side effects and boundaries"
-    ],
-    "followUpTopics": [
-      "What happens when this system encounters network partitioning or heavy main-thread saturation?",
-      "How do you version and migrate this pattern without breaking downstream micro-apps?"
-    ],
-    "estimatedTimeMinutes": 7,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "object-create",
-      "advanced"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 98,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Design clean abstractions around Object.create with automated test suites and structured separation of concerns.",
-      "strongAnswer": "Decouple business logic from framework bindings, introduce defensive error boundaries, monitor Core Web Vitals, and ensure thread safety and predictability.",
-      "seniorLevelExpectations": "Establish robust design contracts, apply dependency injection or inversion of control, implement comprehensive telemetry, and benchmark memory footprint.",
-      "expertLevelExpectations": "Engineer distributed client resilience, compile-time AST transforms, micro-frontend boundary isolation, and zero-runtime overhead abstractions for Object.create."
-    }
-  },
-  {
-    "id": "JS-0245",
-    "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Tail Call Optimization",
-    "difficulty": "Advanced",
-    "question": "[Q245] Addressing Edge Case Handling & Defensive Validation in a mission-critical healthcare portal with strict latency SLAs: Deep-dive into the architectural tradeoffs of \"Tail Call Optimization\" (Language Mechanics & Coercion) in JavaScript. How do you engineer resilience, maintain testability, and avoid regressions at scale?",
-    "questionType": "Debugging",
-    "experienceLevels": [
-      "4-6",
-      "6-8",
-      "8-12"
-    ],
-    "expectedConcepts": [
-      "Tail Call Optimization",
-      "Language Mechanics & Coercion",
-      "Edge Case Handling & Defensive Validation",
-      "System Architecture",
-      "Scalability",
-      "Resilience",
-      "Tradeoff Analysis"
-    ],
-    "idealAnswerPoints": [
-      "Analyze architectural tradeoffs with explicit pros and cons",
-      "Provide robust pattern for enterprise isolation and testability",
-      "Discuss telemetry, metrics, and incident recovery strategies"
-    ],
-    "commonMistakes": [
-      "Premature optimization that harms maintainability",
-      "Failing to isolate external side effects and boundaries"
-    ],
-    "followUpTopics": [
-      "What happens when this system encounters network partitioning or heavy main-thread saturation?",
-      "How do you version and migrate this pattern without breaking downstream micro-apps?"
-    ],
-    "estimatedTimeMinutes": 7,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "tail-call-optimization",
-      "advanced"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 99,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Design clean abstractions around Tail Call Optimization with automated test suites and structured separation of concerns.",
-      "strongAnswer": "Decouple business logic from framework bindings, introduce defensive error boundaries, monitor Core Web Vitals, and ensure thread safety and predictability.",
-      "seniorLevelExpectations": "Establish robust design contracts, apply dependency injection or inversion of control, implement comprehensive telemetry, and benchmark memory footprint.",
-      "expertLevelExpectations": "Engineer distributed client resilience, compile-time AST transforms, micro-frontend boundary isolation, and zero-runtime overhead abstractions for Tail Call Optimization."
-    }
-  },
-  {
-    "id": "JS-0246",
-    "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Memory Leaks",
-    "difficulty": "Advanced",
-    "question": "[Q246] Addressing Memory Lifecycle & Garbage Collection Pressure in a design system adopted across 12 distinct product platforms: Deep-dive into the architectural tradeoffs of \"Memory Leaks\" (Closures & Memory) in JavaScript. How do you engineer resilience, maintain testability, and avoid regressions at scale?",
-    "questionType": "Practical",
-    "experienceLevels": [
-      "4-6",
-      "6-8",
-      "8-12"
-    ],
-    "expectedConcepts": [
-      "Memory Leaks",
-      "Closures & Memory",
-      "Memory Lifecycle & Garbage Collection Pressure",
-      "System Architecture",
-      "Scalability",
-      "Resilience",
-      "Tradeoff Analysis"
-    ],
-    "idealAnswerPoints": [
-      "Analyze architectural tradeoffs with explicit pros and cons",
-      "Provide robust pattern for enterprise isolation and testability",
-      "Discuss telemetry, metrics, and incident recovery strategies"
-    ],
-    "commonMistakes": [
-      "Premature optimization that harms maintainability",
-      "Failing to isolate external side effects and boundaries"
-    ],
-    "followUpTopics": [
-      "What happens when this system encounters network partitioning or heavy main-thread saturation?",
-      "How do you version and migrate this pattern without breaking downstream micro-apps?"
-    ],
-    "estimatedTimeMinutes": 7,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "memory-leaks",
-      "advanced"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 94,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Design clean abstractions around Memory Leaks with automated test suites and structured separation of concerns.",
-      "strongAnswer": "Decouple business logic from framework bindings, introduce defensive error boundaries, monitor Core Web Vitals, and ensure thread safety and predictability.",
-      "seniorLevelExpectations": "Establish robust design contracts, apply dependency injection or inversion of control, implement comprehensive telemetry, and benchmark memory footprint.",
-      "expertLevelExpectations": "Engineer distributed client resilience, compile-time AST transforms, micro-frontend boundary isolation, and zero-runtime overhead abstractions for Memory Leaks."
-    }
-  },
-  {
-    "id": "JS-0247",
-    "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Object.create",
-    "difficulty": "Advanced",
-    "question": "[Q247] Addressing Security Hardening & Threat Mitigation across a distributed micro-frontend monorepo with 40+ engineering squads: Deep-dive into the architectural tradeoffs of \"Object.create\" (Object Prototypes & Inheritance) in JavaScript. How do you engineer resilience, maintain testability, and avoid regressions at scale?",
-    "questionType": "Scenario Based",
-    "experienceLevels": [
-      "4-6",
-      "6-8",
-      "8-12"
-    ],
-    "expectedConcepts": [
-      "Object.create",
-      "Object Prototypes & Inheritance",
-      "Security Hardening & Threat Mitigation",
-      "System Architecture",
-      "Scalability",
-      "Resilience",
-      "Tradeoff Analysis"
-    ],
-    "idealAnswerPoints": [
-      "Analyze architectural tradeoffs with explicit pros and cons",
-      "Provide robust pattern for enterprise isolation and testability",
-      "Discuss telemetry, metrics, and incident recovery strategies"
-    ],
-    "commonMistakes": [
-      "Premature optimization that harms maintainability",
-      "Failing to isolate external side effects and boundaries"
-    ],
-    "followUpTopics": [
-      "What happens when this system encounters network partitioning or heavy main-thread saturation?",
-      "How do you version and migrate this pattern without breaking downstream micro-apps?"
-    ],
-    "estimatedTimeMinutes": 7,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "object-create",
-      "advanced"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 95,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Design clean abstractions around Object.create with automated test suites and structured separation of concerns.",
-      "strongAnswer": "Decouple business logic from framework bindings, introduce defensive error boundaries, monitor Core Web Vitals, and ensure thread safety and predictability.",
-      "seniorLevelExpectations": "Establish robust design contracts, apply dependency injection or inversion of control, implement comprehensive telemetry, and benchmark memory footprint.",
-      "expertLevelExpectations": "Engineer distributed client resilience, compile-time AST transforms, micro-frontend boundary isolation, and zero-runtime overhead abstractions for Object.create."
-    }
-  },
-  {
-    "id": "JS-0248",
-    "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Tail Call Optimization",
-    "difficulty": "Advanced",
-    "question": "[Q248] Addressing Testing Strategy & Flakiness Elimination inside a multi-tenant SaaS application with strict client-side data isolation: Deep-dive into the architectural tradeoffs of \"Tail Call Optimization\" (Language Mechanics & Coercion) in JavaScript. How do you engineer resilience, maintain testability, and avoid regressions at scale?",
-    "questionType": "System Design",
-    "experienceLevels": [
-      "4-6",
-      "6-8",
-      "8-12"
-    ],
-    "expectedConcepts": [
-      "Tail Call Optimization",
-      "Language Mechanics & Coercion",
-      "Testing Strategy & Flakiness Elimination",
-      "System Architecture",
-      "Scalability",
-      "Resilience",
-      "Tradeoff Analysis"
-    ],
-    "idealAnswerPoints": [
-      "Analyze architectural tradeoffs with explicit pros and cons",
-      "Provide robust pattern for enterprise isolation and testability",
-      "Discuss telemetry, metrics, and incident recovery strategies"
-    ],
-    "commonMistakes": [
-      "Premature optimization that harms maintainability",
-      "Failing to isolate external side effects and boundaries"
-    ],
-    "followUpTopics": [
-      "What happens when this system encounters network partitioning or heavy main-thread saturation?",
-      "How do you version and migrate this pattern without breaking downstream micro-apps?"
-    ],
-    "estimatedTimeMinutes": 7,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "tail-call-optimization",
-      "advanced"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 96,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Design clean abstractions around Tail Call Optimization with automated test suites and structured separation of concerns.",
-      "strongAnswer": "Decouple business logic from framework bindings, introduce defensive error boundaries, monitor Core Web Vitals, and ensure thread safety and predictability.",
-      "seniorLevelExpectations": "Establish robust design contracts, apply dependency injection or inversion of control, implement comprehensive telemetry, and benchmark memory footprint.",
-      "expertLevelExpectations": "Engineer distributed client resilience, compile-time AST transforms, micro-frontend boundary isolation, and zero-runtime overhead abstractions for Tail Call Optimization."
-    }
-  },
-  {
-    "id": "JS-0249",
-    "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Memory Leaks",
-    "difficulty": "Advanced",
-    "question": "[Q249] Addressing Cross-Browser Consistency & Standards Compliance during high-concurrency peak retail traffic (e.g. Cyber Monday): Deep-dive into the architectural tradeoffs of \"Memory Leaks\" (Closures & Memory) in JavaScript. How do you engineer resilience, maintain testability, and avoid regressions at scale?",
-    "questionType": "Problem Solving",
-    "experienceLevels": [
-      "4-6",
-      "6-8",
-      "8-12"
-    ],
-    "expectedConcepts": [
-      "Memory Leaks",
-      "Closures & Memory",
-      "Cross-Browser Consistency & Standards Compliance",
-      "System Architecture",
-      "Scalability",
-      "Resilience",
-      "Tradeoff Analysis"
-    ],
-    "idealAnswerPoints": [
-      "Analyze architectural tradeoffs with explicit pros and cons",
-      "Provide robust pattern for enterprise isolation and testability",
-      "Discuss telemetry, metrics, and incident recovery strategies"
-    ],
-    "commonMistakes": [
-      "Premature optimization that harms maintainability",
-      "Failing to isolate external side effects and boundaries"
-    ],
-    "followUpTopics": [
-      "What happens when this system encounters network partitioning or heavy main-thread saturation?",
-      "How do you version and migrate this pattern without breaking downstream micro-apps?"
-    ],
-    "estimatedTimeMinutes": 7,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "memory-leaks",
-      "advanced"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 97,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Design clean abstractions around Memory Leaks with automated test suites and structured separation of concerns.",
-      "strongAnswer": "Decouple business logic from framework bindings, introduce defensive error boundaries, monitor Core Web Vitals, and ensure thread safety and predictability.",
-      "seniorLevelExpectations": "Establish robust design contracts, apply dependency injection or inversion of control, implement comprehensive telemetry, and benchmark memory footprint.",
-      "expertLevelExpectations": "Engineer distributed client resilience, compile-time AST transforms, micro-frontend boundary isolation, and zero-runtime overhead abstractions for Memory Leaks."
-    }
-  },
-  {
-    "id": "JS-0250",
-    "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Object.create",
-    "difficulty": "Advanced",
-    "question": "[Q250] Addressing Developer Experience & API Ergonomics in a low-bandwidth, high-latency global mobile environment: Deep-dive into the architectural tradeoffs of \"Object.create\" (Object Prototypes & Inheritance) in JavaScript. How do you engineer resilience, maintain testability, and avoid regressions at scale?",
-    "questionType": "Debugging",
-    "experienceLevels": [
-      "4-6",
-      "6-8",
-      "8-12"
-    ],
-    "expectedConcepts": [
-      "Object.create",
-      "Object Prototypes & Inheritance",
-      "Developer Experience & API Ergonomics",
-      "System Architecture",
-      "Scalability",
-      "Resilience",
-      "Tradeoff Analysis"
-    ],
-    "idealAnswerPoints": [
-      "Analyze architectural tradeoffs with explicit pros and cons",
-      "Provide robust pattern for enterprise isolation and testability",
-      "Discuss telemetry, metrics, and incident recovery strategies"
-    ],
-    "commonMistakes": [
-      "Premature optimization that harms maintainability",
-      "Failing to isolate external side effects and boundaries"
-    ],
-    "followUpTopics": [
-      "What happens when this system encounters network partitioning or heavy main-thread saturation?",
-      "How do you version and migrate this pattern without breaking downstream micro-apps?"
-    ],
-    "estimatedTimeMinutes": 7,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "object-create",
-      "advanced"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 98,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Design clean abstractions around Object.create with automated test suites and structured separation of concerns.",
-      "strongAnswer": "Decouple business logic from framework bindings, introduce defensive error boundaries, monitor Core Web Vitals, and ensure thread safety and predictability.",
-      "seniorLevelExpectations": "Establish robust design contracts, apply dependency injection or inversion of control, implement comprehensive telemetry, and benchmark memory footprint.",
-      "expertLevelExpectations": "Engineer distributed client resilience, compile-time AST transforms, micro-frontend boundary isolation, and zero-runtime overhead abstractions for Object.create."
-    }
-  },
-  {
-    "id": "JS-0251",
-    "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Tail Call Optimization",
-    "difficulty": "Advanced",
-    "question": "[Q251] Addressing Concurrency & Asynchronous Race Conditions in a high-throughput fintech checkout system: Deep-dive into the architectural tradeoffs of \"Tail Call Optimization\" (Language Mechanics & Coercion) in JavaScript. How do you engineer resilience, maintain testability, and avoid regressions at scale?",
-    "questionType": "Practical",
-    "experienceLevels": [
-      "4-6",
-      "6-8",
-      "8-12"
-    ],
-    "expectedConcepts": [
-      "Tail Call Optimization",
-      "Language Mechanics & Coercion",
-      "Concurrency & Asynchronous Race Conditions",
-      "System Architecture",
-      "Scalability",
-      "Resilience",
-      "Tradeoff Analysis"
-    ],
-    "idealAnswerPoints": [
-      "Analyze architectural tradeoffs with explicit pros and cons",
-      "Provide robust pattern for enterprise isolation and testability",
-      "Discuss telemetry, metrics, and incident recovery strategies"
-    ],
-    "commonMistakes": [
-      "Premature optimization that harms maintainability",
-      "Failing to isolate external side effects and boundaries"
-    ],
-    "followUpTopics": [
-      "What happens when this system encounters network partitioning or heavy main-thread saturation?",
-      "How do you version and migrate this pattern without breaking downstream micro-apps?"
-    ],
-    "estimatedTimeMinutes": 7,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "tail-call-optimization",
-      "advanced"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 99,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Design clean abstractions around Tail Call Optimization with automated test suites and structured separation of concerns.",
-      "strongAnswer": "Decouple business logic from framework bindings, introduce defensive error boundaries, monitor Core Web Vitals, and ensure thread safety and predictability.",
-      "seniorLevelExpectations": "Establish robust design contracts, apply dependency injection or inversion of control, implement comprehensive telemetry, and benchmark memory footprint.",
-      "expertLevelExpectations": "Engineer distributed client resilience, compile-time AST transforms, micro-frontend boundary isolation, and zero-runtime overhead abstractions for Tail Call Optimization."
-    }
-  },
-  {
-    "id": "JS-0252",
-    "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Memory Leaks",
-    "difficulty": "Advanced",
-    "question": "[Q252] Addressing Refactoring & Safe Legacy Migration within a media streaming player handling adaptive bitrate switching: Deep-dive into the architectural tradeoffs of \"Memory Leaks\" (Closures & Memory) in JavaScript. How do you engineer resilience, maintain testability, and avoid regressions at scale?",
-    "questionType": "Scenario Based",
-    "experienceLevels": [
-      "4-6",
-      "6-8",
-      "8-12"
-    ],
-    "expectedConcepts": [
-      "Memory Leaks",
-      "Closures & Memory",
-      "Refactoring & Safe Legacy Migration",
-      "System Architecture",
-      "Scalability",
-      "Resilience",
-      "Tradeoff Analysis"
-    ],
-    "idealAnswerPoints": [
-      "Analyze architectural tradeoffs with explicit pros and cons",
-      "Provide robust pattern for enterprise isolation and testability",
-      "Discuss telemetry, metrics, and incident recovery strategies"
-    ],
-    "commonMistakes": [
-      "Premature optimization that harms maintainability",
-      "Failing to isolate external side effects and boundaries"
-    ],
-    "followUpTopics": [
-      "What happens when this system encounters network partitioning or heavy main-thread saturation?",
-      "How do you version and migrate this pattern without breaking downstream micro-apps?"
-    ],
-    "estimatedTimeMinutes": 7,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "memory-leaks",
-      "advanced"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 94,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Design clean abstractions around Memory Leaks with automated test suites and structured separation of concerns.",
-      "strongAnswer": "Decouple business logic from framework bindings, introduce defensive error boundaries, monitor Core Web Vitals, and ensure thread safety and predictability.",
-      "seniorLevelExpectations": "Establish robust design contracts, apply dependency injection or inversion of control, implement comprehensive telemetry, and benchmark memory footprint.",
-      "expertLevelExpectations": "Engineer distributed client resilience, compile-time AST transforms, micro-frontend boundary isolation, and zero-runtime overhead abstractions for Memory Leaks."
-    }
-  },
-  {
-    "id": "JS-0253",
-    "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Object.create",
-    "difficulty": "Advanced",
-    "question": "[Q253] Addressing State Synchronization & Boundary Isolation during a high-severity production outage requiring immediate triage: Deep-dive into the architectural tradeoffs of \"Object.create\" (Object Prototypes & Inheritance) in JavaScript. How do you engineer resilience, maintain testability, and avoid regressions at scale?",
-    "questionType": "System Design",
-    "experienceLevels": [
-      "4-6",
-      "6-8",
-      "8-12"
-    ],
-    "expectedConcepts": [
-      "Object.create",
-      "Object Prototypes & Inheritance",
-      "State Synchronization & Boundary Isolation",
-      "System Architecture",
-      "Scalability",
-      "Resilience",
-      "Tradeoff Analysis"
-    ],
-    "idealAnswerPoints": [
-      "Analyze architectural tradeoffs with explicit pros and cons",
-      "Provide robust pattern for enterprise isolation and testability",
-      "Discuss telemetry, metrics, and incident recovery strategies"
-    ],
-    "commonMistakes": [
-      "Premature optimization that harms maintainability",
-      "Failing to isolate external side effects and boundaries"
-    ],
-    "followUpTopics": [
-      "What happens when this system encounters network partitioning or heavy main-thread saturation?",
-      "How do you version and migrate this pattern without breaking downstream micro-apps?"
-    ],
-    "estimatedTimeMinutes": 7,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "object-create",
-      "advanced"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 95,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Design clean abstractions around Object.create with automated test suites and structured separation of concerns.",
-      "strongAnswer": "Decouple business logic from framework bindings, introduce defensive error boundaries, monitor Core Web Vitals, and ensure thread safety and predictability.",
-      "seniorLevelExpectations": "Establish robust design contracts, apply dependency injection or inversion of control, implement comprehensive telemetry, and benchmark memory footprint.",
-      "expertLevelExpectations": "Engineer distributed client resilience, compile-time AST transforms, micro-frontend boundary isolation, and zero-runtime overhead abstractions for Object.create."
-    }
-  },
-  {
-    "id": "JS-0254",
-    "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Tail Call Optimization",
-    "difficulty": "Advanced",
-    "question": "[Q254] Addressing Error Boundaries & Graceful Degradation inside an embedded financial analytics dashboard processing live WebSockets: Deep-dive into the architectural tradeoffs of \"Tail Call Optimization\" (Language Mechanics & Coercion) in JavaScript. How do you engineer resilience, maintain testability, and avoid regressions at scale?",
-    "questionType": "Problem Solving",
-    "experienceLevels": [
-      "4-6",
-      "6-8",
-      "8-12"
-    ],
-    "expectedConcepts": [
-      "Tail Call Optimization",
-      "Language Mechanics & Coercion",
-      "Error Boundaries & Graceful Degradation",
-      "System Architecture",
-      "Scalability",
-      "Resilience",
-      "Tradeoff Analysis"
-    ],
-    "idealAnswerPoints": [
-      "Analyze architectural tradeoffs with explicit pros and cons",
-      "Provide robust pattern for enterprise isolation and testability",
-      "Discuss telemetry, metrics, and incident recovery strategies"
-    ],
-    "commonMistakes": [
-      "Premature optimization that harms maintainability",
-      "Failing to isolate external side effects and boundaries"
-    ],
-    "followUpTopics": [
-      "What happens when this system encounters network partitioning or heavy main-thread saturation?",
-      "How do you version and migrate this pattern without breaking downstream micro-apps?"
-    ],
-    "estimatedTimeMinutes": 7,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "tail-call-optimization",
-      "advanced"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 96,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Design clean abstractions around Tail Call Optimization with automated test suites and structured separation of concerns.",
-      "strongAnswer": "Decouple business logic from framework bindings, introduce defensive error boundaries, monitor Core Web Vitals, and ensure thread safety and predictability.",
-      "seniorLevelExpectations": "Establish robust design contracts, apply dependency injection or inversion of control, implement comprehensive telemetry, and benchmark memory footprint.",
-      "expertLevelExpectations": "Engineer distributed client resilience, compile-time AST transforms, micro-frontend boundary isolation, and zero-runtime overhead abstractions for Tail Call Optimization."
-    }
-  },
-  {
-    "id": "JS-0255",
-    "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Memory Leaks",
-    "difficulty": "Advanced",
-    "question": "[Q255] Addressing Observability, Telemetry & Real User Monitoring when integrating third-party untrusted scripts without compromising security: Deep-dive into the architectural tradeoffs of \"Memory Leaks\" (Closures & Memory) in JavaScript. How do you engineer resilience, maintain testability, and avoid regressions at scale?",
-    "questionType": "Debugging",
-    "experienceLevels": [
-      "4-6",
-      "6-8",
-      "8-12"
-    ],
-    "expectedConcepts": [
-      "Memory Leaks",
-      "Closures & Memory",
-      "Observability, Telemetry & Real User Monitoring",
-      "System Architecture",
-      "Scalability",
-      "Resilience",
-      "Tradeoff Analysis"
-    ],
-    "idealAnswerPoints": [
-      "Analyze architectural tradeoffs with explicit pros and cons",
-      "Provide robust pattern for enterprise isolation and testability",
-      "Discuss telemetry, metrics, and incident recovery strategies"
-    ],
-    "commonMistakes": [
-      "Premature optimization that harms maintainability",
-      "Failing to isolate external side effects and boundaries"
-    ],
-    "followUpTopics": [
-      "What happens when this system encounters network partitioning or heavy main-thread saturation?",
-      "How do you version and migrate this pattern without breaking downstream micro-apps?"
-    ],
-    "estimatedTimeMinutes": 7,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "memory-leaks",
-      "advanced"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 97,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Design clean abstractions around Memory Leaks with automated test suites and structured separation of concerns.",
-      "strongAnswer": "Decouple business logic from framework bindings, introduce defensive error boundaries, monitor Core Web Vitals, and ensure thread safety and predictability.",
-      "seniorLevelExpectations": "Establish robust design contracts, apply dependency injection or inversion of control, implement comprehensive telemetry, and benchmark memory footprint.",
-      "expertLevelExpectations": "Engineer distributed client resilience, compile-time AST transforms, micro-frontend boundary isolation, and zero-runtime overhead abstractions for Memory Leaks."
-    }
-  },
-  {
-    "id": "JS-0256",
-    "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Object.create",
-    "difficulty": "Advanced",
-    "question": "[Q256] Addressing Scalability Tradeoffs under High Traffic in an offline-first enterprise mobile web application: Deep-dive into the architectural tradeoffs of \"Object.create\" (Object Prototypes & Inheritance) in JavaScript. How do you engineer resilience, maintain testability, and avoid regressions at scale?",
-    "questionType": "Practical",
-    "experienceLevels": [
-      "4-6",
-      "6-8",
-      "8-12"
-    ],
-    "expectedConcepts": [
-      "Object.create",
-      "Object Prototypes & Inheritance",
-      "Scalability Tradeoffs under High Traffic",
-      "System Architecture",
-      "Scalability",
-      "Resilience",
-      "Tradeoff Analysis"
-    ],
-    "idealAnswerPoints": [
-      "Analyze architectural tradeoffs with explicit pros and cons",
-      "Provide robust pattern for enterprise isolation and testability",
-      "Discuss telemetry, metrics, and incident recovery strategies"
-    ],
-    "commonMistakes": [
-      "Premature optimization that harms maintainability",
-      "Failing to isolate external side effects and boundaries"
-    ],
-    "followUpTopics": [
-      "What happens when this system encounters network partitioning or heavy main-thread saturation?",
-      "How do you version and migrate this pattern without breaking downstream micro-apps?"
-    ],
-    "estimatedTimeMinutes": 7,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "object-create",
-      "advanced"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 98,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Design clean abstractions around Object.create with automated test suites and structured separation of concerns.",
-      "strongAnswer": "Decouple business logic from framework bindings, introduce defensive error boundaries, monitor Core Web Vitals, and ensure thread safety and predictability.",
-      "seniorLevelExpectations": "Establish robust design contracts, apply dependency injection or inversion of control, implement comprehensive telemetry, and benchmark memory footprint.",
-      "expertLevelExpectations": "Engineer distributed client resilience, compile-time AST transforms, micro-frontend boundary isolation, and zero-runtime overhead abstractions for Object.create."
-    }
-  },
-  {
-    "id": "JS-0257",
-    "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Tail Call Optimization",
-    "difficulty": "Advanced",
-    "question": "[Q257] Addressing Implementation Mechanics & Internal Execution when refactoring a legacy monolithic codebase with zero automated regression tests: Deep-dive into the architectural tradeoffs of \"Tail Call Optimization\" (Language Mechanics & Coercion) in JavaScript. How do you engineer resilience, maintain testability, and avoid regressions at scale?",
-    "questionType": "Scenario Based",
-    "experienceLevels": [
-      "4-6",
-      "6-8",
-      "8-12"
-    ],
-    "expectedConcepts": [
-      "Tail Call Optimization",
-      "Language Mechanics & Coercion",
-      "Implementation Mechanics & Internal Execution",
-      "System Architecture",
-      "Scalability",
-      "Resilience",
-      "Tradeoff Analysis"
-    ],
-    "idealAnswerPoints": [
-      "Analyze architectural tradeoffs with explicit pros and cons",
-      "Provide robust pattern for enterprise isolation and testability",
-      "Discuss telemetry, metrics, and incident recovery strategies"
-    ],
-    "commonMistakes": [
-      "Premature optimization that harms maintainability",
-      "Failing to isolate external side effects and boundaries"
-    ],
-    "followUpTopics": [
-      "What happens when this system encounters network partitioning or heavy main-thread saturation?",
-      "How do you version and migrate this pattern without breaking downstream micro-apps?"
-    ],
-    "estimatedTimeMinutes": 7,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "tail-call-optimization",
-      "advanced"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 99,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Design clean abstractions around Tail Call Optimization with automated test suites and structured separation of concerns.",
-      "strongAnswer": "Decouple business logic from framework bindings, introduce defensive error boundaries, monitor Core Web Vitals, and ensure thread safety and predictability.",
-      "seniorLevelExpectations": "Establish robust design contracts, apply dependency injection or inversion of control, implement comprehensive telemetry, and benchmark memory footprint.",
-      "expertLevelExpectations": "Engineer distributed client resilience, compile-time AST transforms, micro-frontend boundary isolation, and zero-runtime overhead abstractions for Tail Call Optimization."
-    }
-  },
-  {
-    "id": "JS-0258",
-    "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Memory Leaks",
-    "difficulty": "Advanced",
-    "question": "[Q258] Addressing Debugging & Production Failure Analysis within a real-time collaborative whiteboarding canvas: Deep-dive into the architectural tradeoffs of \"Memory Leaks\" (Closures & Memory) in JavaScript. How do you engineer resilience, maintain testability, and avoid regressions at scale?",
-    "questionType": "System Design",
-    "experienceLevels": [
-      "4-6",
-      "6-8",
-      "8-12"
-    ],
-    "expectedConcepts": [
-      "Memory Leaks",
-      "Closures & Memory",
-      "Debugging & Production Failure Analysis",
-      "System Architecture",
-      "Scalability",
-      "Resilience",
-      "Tradeoff Analysis"
-    ],
-    "idealAnswerPoints": [
-      "Analyze architectural tradeoffs with explicit pros and cons",
-      "Provide robust pattern for enterprise isolation and testability",
-      "Discuss telemetry, metrics, and incident recovery strategies"
-    ],
-    "commonMistakes": [
-      "Premature optimization that harms maintainability",
-      "Failing to isolate external side effects and boundaries"
-    ],
-    "followUpTopics": [
-      "What happens when this system encounters network partitioning or heavy main-thread saturation?",
-      "How do you version and migrate this pattern without breaking downstream micro-apps?"
-    ],
-    "estimatedTimeMinutes": 7,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "memory-leaks",
-      "advanced"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 94,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Design clean abstractions around Memory Leaks with automated test suites and structured separation of concerns.",
-      "strongAnswer": "Decouple business logic from framework bindings, introduce defensive error boundaries, monitor Core Web Vitals, and ensure thread safety and predictability.",
-      "seniorLevelExpectations": "Establish robust design contracts, apply dependency injection or inversion of control, implement comprehensive telemetry, and benchmark memory footprint.",
-      "expertLevelExpectations": "Engineer distributed client resilience, compile-time AST transforms, micro-frontend boundary isolation, and zero-runtime overhead abstractions for Memory Leaks."
-    }
-  },
-  {
-    "id": "JS-0259",
-    "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Object.create",
-    "difficulty": "Advanced",
-    "question": "[Q259] Addressing Performance Optimization & Latency Bottlenecks during a live zero-downtime database and schema migration: Deep-dive into the architectural tradeoffs of \"Object.create\" (Object Prototypes & Inheritance) in JavaScript. How do you engineer resilience, maintain testability, and avoid regressions at scale?",
-    "questionType": "Problem Solving",
-    "experienceLevels": [
-      "4-6",
-      "6-8",
-      "8-12"
-    ],
-    "expectedConcepts": [
-      "Object.create",
-      "Object Prototypes & Inheritance",
-      "Performance Optimization & Latency Bottlenecks",
-      "System Architecture",
-      "Scalability",
-      "Resilience",
-      "Tradeoff Analysis"
-    ],
-    "idealAnswerPoints": [
-      "Analyze architectural tradeoffs with explicit pros and cons",
-      "Provide robust pattern for enterprise isolation and testability",
-      "Discuss telemetry, metrics, and incident recovery strategies"
-    ],
-    "commonMistakes": [
-      "Premature optimization that harms maintainability",
-      "Failing to isolate external side effects and boundaries"
-    ],
-    "followUpTopics": [
-      "What happens when this system encounters network partitioning or heavy main-thread saturation?",
-      "How do you version and migrate this pattern without breaking downstream micro-apps?"
-    ],
-    "estimatedTimeMinutes": 7,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "object-create",
-      "advanced"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 95,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Design clean abstractions around Object.create with automated test suites and structured separation of concerns.",
-      "strongAnswer": "Decouple business logic from framework bindings, introduce defensive error boundaries, monitor Core Web Vitals, and ensure thread safety and predictability.",
-      "seniorLevelExpectations": "Establish robust design contracts, apply dependency injection or inversion of control, implement comprehensive telemetry, and benchmark memory footprint.",
-      "expertLevelExpectations": "Engineer distributed client resilience, compile-time AST transforms, micro-frontend boundary isolation, and zero-runtime overhead abstractions for Object.create."
-    }
-  },
-  {
-    "id": "JS-0260",
-    "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Tail Call Optimization",
-    "difficulty": "Advanced",
-    "question": "[Q260] Addressing Architecture & Modularity Design in an executive architectural review evaluating long-term technical debt: Deep-dive into the architectural tradeoffs of \"Tail Call Optimization\" (Language Mechanics & Coercion) in JavaScript. How do you engineer resilience, maintain testability, and avoid regressions at scale?",
-    "questionType": "Debugging",
-    "experienceLevels": [
-      "4-6",
-      "6-8",
-      "8-12"
-    ],
-    "expectedConcepts": [
-      "Tail Call Optimization",
-      "Language Mechanics & Coercion",
-      "Architecture & Modularity Design",
-      "System Architecture",
-      "Scalability",
-      "Resilience",
-      "Tradeoff Analysis"
-    ],
-    "idealAnswerPoints": [
-      "Analyze architectural tradeoffs with explicit pros and cons",
-      "Provide robust pattern for enterprise isolation and testability",
-      "Discuss telemetry, metrics, and incident recovery strategies"
-    ],
-    "commonMistakes": [
-      "Premature optimization that harms maintainability",
-      "Failing to isolate external side effects and boundaries"
-    ],
-    "followUpTopics": [
-      "What happens when this system encounters network partitioning or heavy main-thread saturation?",
-      "How do you version and migrate this pattern without breaking downstream micro-apps?"
-    ],
-    "estimatedTimeMinutes": 7,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "tail-call-optimization",
-      "advanced"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 96,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Design clean abstractions around Tail Call Optimization with automated test suites and structured separation of concerns.",
-      "strongAnswer": "Decouple business logic from framework bindings, introduce defensive error boundaries, monitor Core Web Vitals, and ensure thread safety and predictability.",
-      "seniorLevelExpectations": "Establish robust design contracts, apply dependency injection or inversion of control, implement comprehensive telemetry, and benchmark memory footprint.",
-      "expertLevelExpectations": "Engineer distributed client resilience, compile-time AST transforms, micro-frontend boundary isolation, and zero-runtime overhead abstractions for Tail Call Optimization."
-    }
-  },
-  {
-    "id": "JS-0261",
-    "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Memory Leaks",
-    "difficulty": "Advanced",
-    "question": "[Q261] Addressing Edge Case Handling & Defensive Validation in a mission-critical healthcare portal with strict latency SLAs: Deep-dive into the architectural tradeoffs of \"Memory Leaks\" (Closures & Memory) in JavaScript. How do you engineer resilience, maintain testability, and avoid regressions at scale?",
-    "questionType": "Practical",
-    "experienceLevels": [
-      "4-6",
-      "6-8",
-      "8-12"
-    ],
-    "expectedConcepts": [
-      "Memory Leaks",
-      "Closures & Memory",
-      "Edge Case Handling & Defensive Validation",
-      "System Architecture",
-      "Scalability",
-      "Resilience",
-      "Tradeoff Analysis"
-    ],
-    "idealAnswerPoints": [
-      "Analyze architectural tradeoffs with explicit pros and cons",
-      "Provide robust pattern for enterprise isolation and testability",
-      "Discuss telemetry, metrics, and incident recovery strategies"
-    ],
-    "commonMistakes": [
-      "Premature optimization that harms maintainability",
-      "Failing to isolate external side effects and boundaries"
-    ],
-    "followUpTopics": [
-      "What happens when this system encounters network partitioning or heavy main-thread saturation?",
-      "How do you version and migrate this pattern without breaking downstream micro-apps?"
-    ],
-    "estimatedTimeMinutes": 7,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "memory-leaks",
-      "advanced"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 97,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Design clean abstractions around Memory Leaks with automated test suites and structured separation of concerns.",
-      "strongAnswer": "Decouple business logic from framework bindings, introduce defensive error boundaries, monitor Core Web Vitals, and ensure thread safety and predictability.",
-      "seniorLevelExpectations": "Establish robust design contracts, apply dependency injection or inversion of control, implement comprehensive telemetry, and benchmark memory footprint.",
-      "expertLevelExpectations": "Engineer distributed client resilience, compile-time AST transforms, micro-frontend boundary isolation, and zero-runtime overhead abstractions for Memory Leaks."
-    }
-  },
-  {
-    "id": "JS-0262",
-    "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Object.create",
-    "difficulty": "Advanced",
-    "question": "[Q262] Addressing Memory Lifecycle & Garbage Collection Pressure in a design system adopted across 12 distinct product platforms: Deep-dive into the architectural tradeoffs of \"Object.create\" (Object Prototypes & Inheritance) in JavaScript. How do you engineer resilience, maintain testability, and avoid regressions at scale?",
-    "questionType": "Scenario Based",
-    "experienceLevels": [
-      "4-6",
-      "6-8",
-      "8-12"
-    ],
-    "expectedConcepts": [
-      "Object.create",
-      "Object Prototypes & Inheritance",
-      "Memory Lifecycle & Garbage Collection Pressure",
-      "System Architecture",
-      "Scalability",
-      "Resilience",
-      "Tradeoff Analysis"
-    ],
-    "idealAnswerPoints": [
-      "Analyze architectural tradeoffs with explicit pros and cons",
-      "Provide robust pattern for enterprise isolation and testability",
-      "Discuss telemetry, metrics, and incident recovery strategies"
-    ],
-    "commonMistakes": [
-      "Premature optimization that harms maintainability",
-      "Failing to isolate external side effects and boundaries"
-    ],
-    "followUpTopics": [
-      "What happens when this system encounters network partitioning or heavy main-thread saturation?",
-      "How do you version and migrate this pattern without breaking downstream micro-apps?"
-    ],
-    "estimatedTimeMinutes": 7,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "object-create",
-      "advanced"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 98,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Design clean abstractions around Object.create with automated test suites and structured separation of concerns.",
-      "strongAnswer": "Decouple business logic from framework bindings, introduce defensive error boundaries, monitor Core Web Vitals, and ensure thread safety and predictability.",
-      "seniorLevelExpectations": "Establish robust design contracts, apply dependency injection or inversion of control, implement comprehensive telemetry, and benchmark memory footprint.",
-      "expertLevelExpectations": "Engineer distributed client resilience, compile-time AST transforms, micro-frontend boundary isolation, and zero-runtime overhead abstractions for Object.create."
-    }
-  },
-  {
-    "id": "JS-0263",
-    "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Tail Call Optimization",
-    "difficulty": "Advanced",
-    "question": "[Q263] Addressing Security Hardening & Threat Mitigation across a distributed micro-frontend monorepo with 40+ engineering squads: Deep-dive into the architectural tradeoffs of \"Tail Call Optimization\" (Language Mechanics & Coercion) in JavaScript. How do you engineer resilience, maintain testability, and avoid regressions at scale?",
-    "questionType": "System Design",
-    "experienceLevels": [
-      "4-6",
-      "6-8",
-      "8-12"
-    ],
-    "expectedConcepts": [
-      "Tail Call Optimization",
-      "Language Mechanics & Coercion",
-      "Security Hardening & Threat Mitigation",
-      "System Architecture",
-      "Scalability",
-      "Resilience",
-      "Tradeoff Analysis"
-    ],
-    "idealAnswerPoints": [
-      "Analyze architectural tradeoffs with explicit pros and cons",
-      "Provide robust pattern for enterprise isolation and testability",
-      "Discuss telemetry, metrics, and incident recovery strategies"
-    ],
-    "commonMistakes": [
-      "Premature optimization that harms maintainability",
-      "Failing to isolate external side effects and boundaries"
-    ],
-    "followUpTopics": [
-      "What happens when this system encounters network partitioning or heavy main-thread saturation?",
-      "How do you version and migrate this pattern without breaking downstream micro-apps?"
-    ],
-    "estimatedTimeMinutes": 7,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "tail-call-optimization",
-      "advanced"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 99,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Design clean abstractions around Tail Call Optimization with automated test suites and structured separation of concerns.",
-      "strongAnswer": "Decouple business logic from framework bindings, introduce defensive error boundaries, monitor Core Web Vitals, and ensure thread safety and predictability.",
-      "seniorLevelExpectations": "Establish robust design contracts, apply dependency injection or inversion of control, implement comprehensive telemetry, and benchmark memory footprint.",
-      "expertLevelExpectations": "Engineer distributed client resilience, compile-time AST transforms, micro-frontend boundary isolation, and zero-runtime overhead abstractions for Tail Call Optimization."
-    }
-  },
-  {
-    "id": "JS-0264",
-    "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Memory Leaks",
-    "difficulty": "Advanced",
-    "question": "[Q264] Addressing Testing Strategy & Flakiness Elimination inside a multi-tenant SaaS application with strict client-side data isolation: Deep-dive into the architectural tradeoffs of \"Memory Leaks\" (Closures & Memory) in JavaScript. How do you engineer resilience, maintain testability, and avoid regressions at scale?",
-    "questionType": "Problem Solving",
-    "experienceLevels": [
-      "4-6",
-      "6-8",
-      "8-12"
-    ],
-    "expectedConcepts": [
-      "Memory Leaks",
-      "Closures & Memory",
-      "Testing Strategy & Flakiness Elimination",
-      "System Architecture",
-      "Scalability",
-      "Resilience",
-      "Tradeoff Analysis"
-    ],
-    "idealAnswerPoints": [
-      "Analyze architectural tradeoffs with explicit pros and cons",
-      "Provide robust pattern for enterprise isolation and testability",
-      "Discuss telemetry, metrics, and incident recovery strategies"
-    ],
-    "commonMistakes": [
-      "Premature optimization that harms maintainability",
-      "Failing to isolate external side effects and boundaries"
-    ],
-    "followUpTopics": [
-      "What happens when this system encounters network partitioning or heavy main-thread saturation?",
-      "How do you version and migrate this pattern without breaking downstream micro-apps?"
-    ],
-    "estimatedTimeMinutes": 7,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "memory-leaks",
-      "advanced"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 94,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Design clean abstractions around Memory Leaks with automated test suites and structured separation of concerns.",
-      "strongAnswer": "Decouple business logic from framework bindings, introduce defensive error boundaries, monitor Core Web Vitals, and ensure thread safety and predictability.",
-      "seniorLevelExpectations": "Establish robust design contracts, apply dependency injection or inversion of control, implement comprehensive telemetry, and benchmark memory footprint.",
-      "expertLevelExpectations": "Engineer distributed client resilience, compile-time AST transforms, micro-frontend boundary isolation, and zero-runtime overhead abstractions for Memory Leaks."
-    }
-  },
-  {
-    "id": "JS-0265",
-    "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Object.create",
-    "difficulty": "Advanced",
-    "question": "[Q265] Addressing Cross-Browser Consistency & Standards Compliance during high-concurrency peak retail traffic (e.g. Cyber Monday): Deep-dive into the architectural tradeoffs of \"Object.create\" (Object Prototypes & Inheritance) in JavaScript. How do you engineer resilience, maintain testability, and avoid regressions at scale?",
-    "questionType": "Debugging",
-    "experienceLevels": [
-      "4-6",
-      "6-8",
-      "8-12"
-    ],
-    "expectedConcepts": [
-      "Object.create",
-      "Object Prototypes & Inheritance",
-      "Cross-Browser Consistency & Standards Compliance",
-      "System Architecture",
-      "Scalability",
-      "Resilience",
-      "Tradeoff Analysis"
-    ],
-    "idealAnswerPoints": [
-      "Analyze architectural tradeoffs with explicit pros and cons",
-      "Provide robust pattern for enterprise isolation and testability",
-      "Discuss telemetry, metrics, and incident recovery strategies"
-    ],
-    "commonMistakes": [
-      "Premature optimization that harms maintainability",
-      "Failing to isolate external side effects and boundaries"
-    ],
-    "followUpTopics": [
-      "What happens when this system encounters network partitioning or heavy main-thread saturation?",
-      "How do you version and migrate this pattern without breaking downstream micro-apps?"
-    ],
-    "estimatedTimeMinutes": 7,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "object-create",
-      "advanced"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 95,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Design clean abstractions around Object.create with automated test suites and structured separation of concerns.",
-      "strongAnswer": "Decouple business logic from framework bindings, introduce defensive error boundaries, monitor Core Web Vitals, and ensure thread safety and predictability.",
-      "seniorLevelExpectations": "Establish robust design contracts, apply dependency injection or inversion of control, implement comprehensive telemetry, and benchmark memory footprint.",
-      "expertLevelExpectations": "Engineer distributed client resilience, compile-time AST transforms, micro-frontend boundary isolation, and zero-runtime overhead abstractions for Object.create."
-    }
-  },
-  {
-    "id": "JS-0266",
-    "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Tail Call Optimization",
-    "difficulty": "Advanced",
-    "question": "[Q266] Addressing Developer Experience & API Ergonomics in a low-bandwidth, high-latency global mobile environment: Deep-dive into the architectural tradeoffs of \"Tail Call Optimization\" (Language Mechanics & Coercion) in JavaScript. How do you engineer resilience, maintain testability, and avoid regressions at scale?",
-    "questionType": "Practical",
-    "experienceLevels": [
-      "4-6",
-      "6-8",
-      "8-12"
-    ],
-    "expectedConcepts": [
-      "Tail Call Optimization",
-      "Language Mechanics & Coercion",
-      "Developer Experience & API Ergonomics",
-      "System Architecture",
-      "Scalability",
-      "Resilience",
-      "Tradeoff Analysis"
-    ],
-    "idealAnswerPoints": [
-      "Analyze architectural tradeoffs with explicit pros and cons",
-      "Provide robust pattern for enterprise isolation and testability",
-      "Discuss telemetry, metrics, and incident recovery strategies"
-    ],
-    "commonMistakes": [
-      "Premature optimization that harms maintainability",
-      "Failing to isolate external side effects and boundaries"
-    ],
-    "followUpTopics": [
-      "What happens when this system encounters network partitioning or heavy main-thread saturation?",
-      "How do you version and migrate this pattern without breaking downstream micro-apps?"
-    ],
-    "estimatedTimeMinutes": 7,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "tail-call-optimization",
-      "advanced"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 96,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Design clean abstractions around Tail Call Optimization with automated test suites and structured separation of concerns.",
-      "strongAnswer": "Decouple business logic from framework bindings, introduce defensive error boundaries, monitor Core Web Vitals, and ensure thread safety and predictability.",
-      "seniorLevelExpectations": "Establish robust design contracts, apply dependency injection or inversion of control, implement comprehensive telemetry, and benchmark memory footprint.",
-      "expertLevelExpectations": "Engineer distributed client resilience, compile-time AST transforms, micro-frontend boundary isolation, and zero-runtime overhead abstractions for Tail Call Optimization."
-    }
-  },
-  {
-    "id": "JS-0267",
-    "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Memory Leaks",
-    "difficulty": "Advanced",
-    "question": "[Q267] Addressing Concurrency & Asynchronous Race Conditions in a high-throughput fintech checkout system: Deep-dive into the architectural tradeoffs of \"Memory Leaks\" (Closures & Memory) in JavaScript. How do you engineer resilience, maintain testability, and avoid regressions at scale?",
-    "questionType": "Scenario Based",
-    "experienceLevels": [
-      "4-6",
-      "6-8",
-      "8-12"
-    ],
-    "expectedConcepts": [
-      "Memory Leaks",
-      "Closures & Memory",
-      "Concurrency & Asynchronous Race Conditions",
-      "System Architecture",
-      "Scalability",
-      "Resilience",
-      "Tradeoff Analysis"
-    ],
-    "idealAnswerPoints": [
-      "Analyze architectural tradeoffs with explicit pros and cons",
-      "Provide robust pattern for enterprise isolation and testability",
-      "Discuss telemetry, metrics, and incident recovery strategies"
-    ],
-    "commonMistakes": [
-      "Premature optimization that harms maintainability",
-      "Failing to isolate external side effects and boundaries"
-    ],
-    "followUpTopics": [
-      "What happens when this system encounters network partitioning or heavy main-thread saturation?",
-      "How do you version and migrate this pattern without breaking downstream micro-apps?"
-    ],
-    "estimatedTimeMinutes": 7,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "memory-leaks",
-      "advanced"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 97,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Design clean abstractions around Memory Leaks with automated test suites and structured separation of concerns.",
-      "strongAnswer": "Decouple business logic from framework bindings, introduce defensive error boundaries, monitor Core Web Vitals, and ensure thread safety and predictability.",
-      "seniorLevelExpectations": "Establish robust design contracts, apply dependency injection or inversion of control, implement comprehensive telemetry, and benchmark memory footprint.",
-      "expertLevelExpectations": "Engineer distributed client resilience, compile-time AST transforms, micro-frontend boundary isolation, and zero-runtime overhead abstractions for Memory Leaks."
-    }
-  },
-  {
-    "id": "JS-0268",
-    "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Object.create",
-    "difficulty": "Advanced",
-    "question": "[Q268] Addressing Refactoring & Safe Legacy Migration within a media streaming player handling adaptive bitrate switching: Deep-dive into the architectural tradeoffs of \"Object.create\" (Object Prototypes & Inheritance) in JavaScript. How do you engineer resilience, maintain testability, and avoid regressions at scale?",
-    "questionType": "System Design",
-    "experienceLevels": [
-      "4-6",
-      "6-8",
-      "8-12"
-    ],
-    "expectedConcepts": [
-      "Object.create",
-      "Object Prototypes & Inheritance",
-      "Refactoring & Safe Legacy Migration",
-      "System Architecture",
-      "Scalability",
-      "Resilience",
-      "Tradeoff Analysis"
-    ],
-    "idealAnswerPoints": [
-      "Analyze architectural tradeoffs with explicit pros and cons",
-      "Provide robust pattern for enterprise isolation and testability",
-      "Discuss telemetry, metrics, and incident recovery strategies"
-    ],
-    "commonMistakes": [
-      "Premature optimization that harms maintainability",
-      "Failing to isolate external side effects and boundaries"
-    ],
-    "followUpTopics": [
-      "What happens when this system encounters network partitioning or heavy main-thread saturation?",
-      "How do you version and migrate this pattern without breaking downstream micro-apps?"
-    ],
-    "estimatedTimeMinutes": 7,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "object-create",
-      "advanced"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 98,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Design clean abstractions around Object.create with automated test suites and structured separation of concerns.",
-      "strongAnswer": "Decouple business logic from framework bindings, introduce defensive error boundaries, monitor Core Web Vitals, and ensure thread safety and predictability.",
-      "seniorLevelExpectations": "Establish robust design contracts, apply dependency injection or inversion of control, implement comprehensive telemetry, and benchmark memory footprint.",
-      "expertLevelExpectations": "Engineer distributed client resilience, compile-time AST transforms, micro-frontend boundary isolation, and zero-runtime overhead abstractions for Object.create."
-    }
-  },
-  {
-    "id": "JS-0269",
-    "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Tail Call Optimization",
-    "difficulty": "Advanced",
-    "question": "[Q269] Addressing State Synchronization & Boundary Isolation during a high-severity production outage requiring immediate triage: Deep-dive into the architectural tradeoffs of \"Tail Call Optimization\" (Language Mechanics & Coercion) in JavaScript. How do you engineer resilience, maintain testability, and avoid regressions at scale?",
-    "questionType": "Problem Solving",
-    "experienceLevels": [
-      "4-6",
-      "6-8",
-      "8-12"
-    ],
-    "expectedConcepts": [
-      "Tail Call Optimization",
-      "Language Mechanics & Coercion",
-      "State Synchronization & Boundary Isolation",
-      "System Architecture",
-      "Scalability",
-      "Resilience",
-      "Tradeoff Analysis"
-    ],
-    "idealAnswerPoints": [
-      "Analyze architectural tradeoffs with explicit pros and cons",
-      "Provide robust pattern for enterprise isolation and testability",
-      "Discuss telemetry, metrics, and incident recovery strategies"
-    ],
-    "commonMistakes": [
-      "Premature optimization that harms maintainability",
-      "Failing to isolate external side effects and boundaries"
-    ],
-    "followUpTopics": [
-      "What happens when this system encounters network partitioning or heavy main-thread saturation?",
-      "How do you version and migrate this pattern without breaking downstream micro-apps?"
-    ],
-    "estimatedTimeMinutes": 7,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "tail-call-optimization",
-      "advanced"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 99,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Design clean abstractions around Tail Call Optimization with automated test suites and structured separation of concerns.",
-      "strongAnswer": "Decouple business logic from framework bindings, introduce defensive error boundaries, monitor Core Web Vitals, and ensure thread safety and predictability.",
-      "seniorLevelExpectations": "Establish robust design contracts, apply dependency injection or inversion of control, implement comprehensive telemetry, and benchmark memory footprint.",
-      "expertLevelExpectations": "Engineer distributed client resilience, compile-time AST transforms, micro-frontend boundary isolation, and zero-runtime overhead abstractions for Tail Call Optimization."
-    }
-  },
-  {
-    "id": "JS-0270",
-    "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Memory Leaks",
-    "difficulty": "Advanced",
-    "question": "[Q270] Addressing Error Boundaries & Graceful Degradation inside an embedded financial analytics dashboard processing live WebSockets: Deep-dive into the architectural tradeoffs of \"Memory Leaks\" (Closures & Memory) in JavaScript. How do you engineer resilience, maintain testability, and avoid regressions at scale?",
-    "questionType": "Debugging",
-    "experienceLevels": [
-      "4-6",
-      "6-8",
-      "8-12"
-    ],
-    "expectedConcepts": [
-      "Memory Leaks",
-      "Closures & Memory",
-      "Error Boundaries & Graceful Degradation",
-      "System Architecture",
-      "Scalability",
-      "Resilience",
-      "Tradeoff Analysis"
-    ],
-    "idealAnswerPoints": [
-      "Analyze architectural tradeoffs with explicit pros and cons",
-      "Provide robust pattern for enterprise isolation and testability",
-      "Discuss telemetry, metrics, and incident recovery strategies"
-    ],
-    "commonMistakes": [
-      "Premature optimization that harms maintainability",
-      "Failing to isolate external side effects and boundaries"
-    ],
-    "followUpTopics": [
-      "What happens when this system encounters network partitioning or heavy main-thread saturation?",
-      "How do you version and migrate this pattern without breaking downstream micro-apps?"
-    ],
-    "estimatedTimeMinutes": 7,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "memory-leaks",
-      "advanced"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 94,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Design clean abstractions around Memory Leaks with automated test suites and structured separation of concerns.",
-      "strongAnswer": "Decouple business logic from framework bindings, introduce defensive error boundaries, monitor Core Web Vitals, and ensure thread safety and predictability.",
-      "seniorLevelExpectations": "Establish robust design contracts, apply dependency injection or inversion of control, implement comprehensive telemetry, and benchmark memory footprint.",
-      "expertLevelExpectations": "Engineer distributed client resilience, compile-time AST transforms, micro-frontend boundary isolation, and zero-runtime overhead abstractions for Memory Leaks."
-    }
-  },
-  {
-    "id": "JS-0271",
-    "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Object.create",
-    "difficulty": "Advanced",
-    "question": "[Q271] Addressing Observability, Telemetry & Real User Monitoring when integrating third-party untrusted scripts without compromising security: Deep-dive into the architectural tradeoffs of \"Object.create\" (Object Prototypes & Inheritance) in JavaScript. How do you engineer resilience, maintain testability, and avoid regressions at scale?",
-    "questionType": "Practical",
-    "experienceLevels": [
-      "4-6",
-      "6-8",
-      "8-12"
-    ],
-    "expectedConcepts": [
-      "Object.create",
-      "Object Prototypes & Inheritance",
-      "Observability, Telemetry & Real User Monitoring",
-      "System Architecture",
-      "Scalability",
-      "Resilience",
-      "Tradeoff Analysis"
-    ],
-    "idealAnswerPoints": [
-      "Analyze architectural tradeoffs with explicit pros and cons",
-      "Provide robust pattern for enterprise isolation and testability",
-      "Discuss telemetry, metrics, and incident recovery strategies"
-    ],
-    "commonMistakes": [
-      "Premature optimization that harms maintainability",
-      "Failing to isolate external side effects and boundaries"
-    ],
-    "followUpTopics": [
-      "What happens when this system encounters network partitioning or heavy main-thread saturation?",
-      "How do you version and migrate this pattern without breaking downstream micro-apps?"
-    ],
-    "estimatedTimeMinutes": 7,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "object-create",
-      "advanced"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 95,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Design clean abstractions around Object.create with automated test suites and structured separation of concerns.",
-      "strongAnswer": "Decouple business logic from framework bindings, introduce defensive error boundaries, monitor Core Web Vitals, and ensure thread safety and predictability.",
-      "seniorLevelExpectations": "Establish robust design contracts, apply dependency injection or inversion of control, implement comprehensive telemetry, and benchmark memory footprint.",
-      "expertLevelExpectations": "Engineer distributed client resilience, compile-time AST transforms, micro-frontend boundary isolation, and zero-runtime overhead abstractions for Object.create."
-    }
-  },
-  {
-    "id": "JS-0272",
-    "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Tail Call Optimization",
-    "difficulty": "Advanced",
-    "question": "[Q272] Addressing Scalability Tradeoffs under High Traffic in an offline-first enterprise mobile web application: Deep-dive into the architectural tradeoffs of \"Tail Call Optimization\" (Language Mechanics & Coercion) in JavaScript. How do you engineer resilience, maintain testability, and avoid regressions at scale?",
-    "questionType": "Scenario Based",
-    "experienceLevels": [
-      "4-6",
-      "6-8",
-      "8-12"
-    ],
-    "expectedConcepts": [
-      "Tail Call Optimization",
-      "Language Mechanics & Coercion",
-      "Scalability Tradeoffs under High Traffic",
-      "System Architecture",
-      "Scalability",
-      "Resilience",
-      "Tradeoff Analysis"
-    ],
-    "idealAnswerPoints": [
-      "Analyze architectural tradeoffs with explicit pros and cons",
-      "Provide robust pattern for enterprise isolation and testability",
-      "Discuss telemetry, metrics, and incident recovery strategies"
-    ],
-    "commonMistakes": [
-      "Premature optimization that harms maintainability",
-      "Failing to isolate external side effects and boundaries"
-    ],
-    "followUpTopics": [
-      "What happens when this system encounters network partitioning or heavy main-thread saturation?",
-      "How do you version and migrate this pattern without breaking downstream micro-apps?"
-    ],
-    "estimatedTimeMinutes": 7,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "tail-call-optimization",
-      "advanced"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 96,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Design clean abstractions around Tail Call Optimization with automated test suites and structured separation of concerns.",
-      "strongAnswer": "Decouple business logic from framework bindings, introduce defensive error boundaries, monitor Core Web Vitals, and ensure thread safety and predictability.",
-      "seniorLevelExpectations": "Establish robust design contracts, apply dependency injection or inversion of control, implement comprehensive telemetry, and benchmark memory footprint.",
-      "expertLevelExpectations": "Engineer distributed client resilience, compile-time AST transforms, micro-frontend boundary isolation, and zero-runtime overhead abstractions for Tail Call Optimization."
-    }
-  },
-  {
-    "id": "JS-0273",
-    "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Memory Leaks",
-    "difficulty": "Advanced",
-    "question": "[Q273] Addressing Implementation Mechanics & Internal Execution when refactoring a legacy monolithic codebase with zero automated regression tests: Deep-dive into the architectural tradeoffs of \"Memory Leaks\" (Closures & Memory) in JavaScript. How do you engineer resilience, maintain testability, and avoid regressions at scale?",
-    "questionType": "System Design",
-    "experienceLevels": [
-      "4-6",
-      "6-8",
-      "8-12"
-    ],
-    "expectedConcepts": [
-      "Memory Leaks",
-      "Closures & Memory",
-      "Implementation Mechanics & Internal Execution",
-      "System Architecture",
-      "Scalability",
-      "Resilience",
-      "Tradeoff Analysis"
-    ],
-    "idealAnswerPoints": [
-      "Analyze architectural tradeoffs with explicit pros and cons",
-      "Provide robust pattern for enterprise isolation and testability",
-      "Discuss telemetry, metrics, and incident recovery strategies"
-    ],
-    "commonMistakes": [
-      "Premature optimization that harms maintainability",
-      "Failing to isolate external side effects and boundaries"
-    ],
-    "followUpTopics": [
-      "What happens when this system encounters network partitioning or heavy main-thread saturation?",
-      "How do you version and migrate this pattern without breaking downstream micro-apps?"
-    ],
-    "estimatedTimeMinutes": 7,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "memory-leaks",
-      "advanced"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 97,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Design clean abstractions around Memory Leaks with automated test suites and structured separation of concerns.",
-      "strongAnswer": "Decouple business logic from framework bindings, introduce defensive error boundaries, monitor Core Web Vitals, and ensure thread safety and predictability.",
-      "seniorLevelExpectations": "Establish robust design contracts, apply dependency injection or inversion of control, implement comprehensive telemetry, and benchmark memory footprint.",
-      "expertLevelExpectations": "Engineer distributed client resilience, compile-time AST transforms, micro-frontend boundary isolation, and zero-runtime overhead abstractions for Memory Leaks."
-    }
-  },
-  {
-    "id": "JS-0274",
-    "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Object.create",
-    "difficulty": "Advanced",
-    "question": "[Q274] Addressing Debugging & Production Failure Analysis within a real-time collaborative whiteboarding canvas: Deep-dive into the architectural tradeoffs of \"Object.create\" (Object Prototypes & Inheritance) in JavaScript. How do you engineer resilience, maintain testability, and avoid regressions at scale?",
-    "questionType": "Problem Solving",
-    "experienceLevels": [
-      "4-6",
-      "6-8",
-      "8-12"
-    ],
-    "expectedConcepts": [
-      "Object.create",
-      "Object Prototypes & Inheritance",
-      "Debugging & Production Failure Analysis",
-      "System Architecture",
-      "Scalability",
-      "Resilience",
-      "Tradeoff Analysis"
-    ],
-    "idealAnswerPoints": [
-      "Analyze architectural tradeoffs with explicit pros and cons",
-      "Provide robust pattern for enterprise isolation and testability",
-      "Discuss telemetry, metrics, and incident recovery strategies"
-    ],
-    "commonMistakes": [
-      "Premature optimization that harms maintainability",
-      "Failing to isolate external side effects and boundaries"
-    ],
-    "followUpTopics": [
-      "What happens when this system encounters network partitioning or heavy main-thread saturation?",
-      "How do you version and migrate this pattern without breaking downstream micro-apps?"
-    ],
-    "estimatedTimeMinutes": 7,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "object-create",
-      "advanced"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 98,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Design clean abstractions around Object.create with automated test suites and structured separation of concerns.",
-      "strongAnswer": "Decouple business logic from framework bindings, introduce defensive error boundaries, monitor Core Web Vitals, and ensure thread safety and predictability.",
-      "seniorLevelExpectations": "Establish robust design contracts, apply dependency injection or inversion of control, implement comprehensive telemetry, and benchmark memory footprint.",
-      "expertLevelExpectations": "Engineer distributed client resilience, compile-time AST transforms, micro-frontend boundary isolation, and zero-runtime overhead abstractions for Object.create."
-    }
-  },
-  {
-    "id": "JS-0275",
-    "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Tail Call Optimization",
-    "difficulty": "Advanced",
-    "question": "[Q275] Addressing Performance Optimization & Latency Bottlenecks during a live zero-downtime database and schema migration: Deep-dive into the architectural tradeoffs of \"Tail Call Optimization\" (Language Mechanics & Coercion) in JavaScript. How do you engineer resilience, maintain testability, and avoid regressions at scale?",
-    "questionType": "Debugging",
-    "experienceLevels": [
-      "4-6",
-      "6-8",
-      "8-12"
-    ],
-    "expectedConcepts": [
-      "Tail Call Optimization",
-      "Language Mechanics & Coercion",
-      "Performance Optimization & Latency Bottlenecks",
-      "System Architecture",
-      "Scalability",
-      "Resilience",
-      "Tradeoff Analysis"
-    ],
-    "idealAnswerPoints": [
-      "Analyze architectural tradeoffs with explicit pros and cons",
-      "Provide robust pattern for enterprise isolation and testability",
-      "Discuss telemetry, metrics, and incident recovery strategies"
-    ],
-    "commonMistakes": [
-      "Premature optimization that harms maintainability",
-      "Failing to isolate external side effects and boundaries"
-    ],
-    "followUpTopics": [
-      "What happens when this system encounters network partitioning or heavy main-thread saturation?",
-      "How do you version and migrate this pattern without breaking downstream micro-apps?"
-    ],
-    "estimatedTimeMinutes": 7,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "tail-call-optimization",
-      "advanced"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 99,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Design clean abstractions around Tail Call Optimization with automated test suites and structured separation of concerns.",
-      "strongAnswer": "Decouple business logic from framework bindings, introduce defensive error boundaries, monitor Core Web Vitals, and ensure thread safety and predictability.",
-      "seniorLevelExpectations": "Establish robust design contracts, apply dependency injection or inversion of control, implement comprehensive telemetry, and benchmark memory footprint.",
-      "expertLevelExpectations": "Engineer distributed client resilience, compile-time AST transforms, micro-frontend boundary isolation, and zero-runtime overhead abstractions for Tail Call Optimization."
-    }
-  },
-  {
-    "id": "JS-0276",
-    "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Memory Leaks",
-    "difficulty": "Advanced",
-    "question": "[Q276] Addressing Architecture & Modularity Design in an executive architectural review evaluating long-term technical debt: Deep-dive into the architectural tradeoffs of \"Memory Leaks\" (Closures & Memory) in JavaScript. How do you engineer resilience, maintain testability, and avoid regressions at scale?",
-    "questionType": "Practical",
-    "experienceLevels": [
-      "4-6",
-      "6-8",
-      "8-12"
-    ],
-    "expectedConcepts": [
-      "Memory Leaks",
-      "Closures & Memory",
-      "Architecture & Modularity Design",
-      "System Architecture",
-      "Scalability",
-      "Resilience",
-      "Tradeoff Analysis"
-    ],
-    "idealAnswerPoints": [
-      "Analyze architectural tradeoffs with explicit pros and cons",
-      "Provide robust pattern for enterprise isolation and testability",
-      "Discuss telemetry, metrics, and incident recovery strategies"
-    ],
-    "commonMistakes": [
-      "Premature optimization that harms maintainability",
-      "Failing to isolate external side effects and boundaries"
-    ],
-    "followUpTopics": [
-      "What happens when this system encounters network partitioning or heavy main-thread saturation?",
-      "How do you version and migrate this pattern without breaking downstream micro-apps?"
-    ],
-    "estimatedTimeMinutes": 7,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "memory-leaks",
-      "advanced"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 94,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Design clean abstractions around Memory Leaks with automated test suites and structured separation of concerns.",
-      "strongAnswer": "Decouple business logic from framework bindings, introduce defensive error boundaries, monitor Core Web Vitals, and ensure thread safety and predictability.",
-      "seniorLevelExpectations": "Establish robust design contracts, apply dependency injection or inversion of control, implement comprehensive telemetry, and benchmark memory footprint.",
-      "expertLevelExpectations": "Engineer distributed client resilience, compile-time AST transforms, micro-frontend boundary isolation, and zero-runtime overhead abstractions for Memory Leaks."
-    }
-  },
-  {
-    "id": "JS-0277",
-    "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Object.create",
-    "difficulty": "Advanced",
-    "question": "[Q277] Addressing Edge Case Handling & Defensive Validation in a mission-critical healthcare portal with strict latency SLAs: Deep-dive into the architectural tradeoffs of \"Object.create\" (Object Prototypes & Inheritance) in JavaScript. How do you engineer resilience, maintain testability, and avoid regressions at scale?",
-    "questionType": "Scenario Based",
-    "experienceLevels": [
-      "4-6",
-      "6-8",
-      "8-12"
-    ],
-    "expectedConcepts": [
-      "Object.create",
-      "Object Prototypes & Inheritance",
-      "Edge Case Handling & Defensive Validation",
-      "System Architecture",
-      "Scalability",
-      "Resilience",
-      "Tradeoff Analysis"
-    ],
-    "idealAnswerPoints": [
-      "Analyze architectural tradeoffs with explicit pros and cons",
-      "Provide robust pattern for enterprise isolation and testability",
-      "Discuss telemetry, metrics, and incident recovery strategies"
-    ],
-    "commonMistakes": [
-      "Premature optimization that harms maintainability",
-      "Failing to isolate external side effects and boundaries"
-    ],
-    "followUpTopics": [
-      "What happens when this system encounters network partitioning or heavy main-thread saturation?",
-      "How do you version and migrate this pattern without breaking downstream micro-apps?"
-    ],
-    "estimatedTimeMinutes": 7,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "object-create",
-      "advanced"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 95,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Design clean abstractions around Object.create with automated test suites and structured separation of concerns.",
-      "strongAnswer": "Decouple business logic from framework bindings, introduce defensive error boundaries, monitor Core Web Vitals, and ensure thread safety and predictability.",
-      "seniorLevelExpectations": "Establish robust design contracts, apply dependency injection or inversion of control, implement comprehensive telemetry, and benchmark memory footprint.",
-      "expertLevelExpectations": "Engineer distributed client resilience, compile-time AST transforms, micro-frontend boundary isolation, and zero-runtime overhead abstractions for Object.create."
-    }
-  },
-  {
-    "id": "JS-0278",
-    "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Tail Call Optimization",
-    "difficulty": "Advanced",
-    "question": "[Q278] Addressing Memory Lifecycle & Garbage Collection Pressure in a design system adopted across 12 distinct product platforms: Deep-dive into the architectural tradeoffs of \"Tail Call Optimization\" (Language Mechanics & Coercion) in JavaScript. How do you engineer resilience, maintain testability, and avoid regressions at scale?",
-    "questionType": "System Design",
-    "experienceLevels": [
-      "4-6",
-      "6-8",
-      "8-12"
-    ],
-    "expectedConcepts": [
-      "Tail Call Optimization",
-      "Language Mechanics & Coercion",
-      "Memory Lifecycle & Garbage Collection Pressure",
-      "System Architecture",
-      "Scalability",
-      "Resilience",
-      "Tradeoff Analysis"
-    ],
-    "idealAnswerPoints": [
-      "Analyze architectural tradeoffs with explicit pros and cons",
-      "Provide robust pattern for enterprise isolation and testability",
-      "Discuss telemetry, metrics, and incident recovery strategies"
-    ],
-    "commonMistakes": [
-      "Premature optimization that harms maintainability",
-      "Failing to isolate external side effects and boundaries"
-    ],
-    "followUpTopics": [
-      "What happens when this system encounters network partitioning or heavy main-thread saturation?",
-      "How do you version and migrate this pattern without breaking downstream micro-apps?"
-    ],
-    "estimatedTimeMinutes": 7,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "tail-call-optimization",
-      "advanced"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 96,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Design clean abstractions around Tail Call Optimization with automated test suites and structured separation of concerns.",
-      "strongAnswer": "Decouple business logic from framework bindings, introduce defensive error boundaries, monitor Core Web Vitals, and ensure thread safety and predictability.",
-      "seniorLevelExpectations": "Establish robust design contracts, apply dependency injection or inversion of control, implement comprehensive telemetry, and benchmark memory footprint.",
-      "expertLevelExpectations": "Engineer distributed client resilience, compile-time AST transforms, micro-frontend boundary isolation, and zero-runtime overhead abstractions for Tail Call Optimization."
-    }
-  },
-  {
-    "id": "JS-0279",
-    "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Memory Leaks",
-    "difficulty": "Advanced",
-    "question": "[Q279] Addressing Security Hardening & Threat Mitigation across a distributed micro-frontend monorepo with 40+ engineering squads: Deep-dive into the architectural tradeoffs of \"Memory Leaks\" (Closures & Memory) in JavaScript. How do you engineer resilience, maintain testability, and avoid regressions at scale?",
-    "questionType": "Problem Solving",
-    "experienceLevels": [
-      "4-6",
-      "6-8",
-      "8-12"
-    ],
-    "expectedConcepts": [
-      "Memory Leaks",
-      "Closures & Memory",
-      "Security Hardening & Threat Mitigation",
-      "System Architecture",
-      "Scalability",
-      "Resilience",
-      "Tradeoff Analysis"
-    ],
-    "idealAnswerPoints": [
-      "Analyze architectural tradeoffs with explicit pros and cons",
-      "Provide robust pattern for enterprise isolation and testability",
-      "Discuss telemetry, metrics, and incident recovery strategies"
-    ],
-    "commonMistakes": [
-      "Premature optimization that harms maintainability",
-      "Failing to isolate external side effects and boundaries"
-    ],
-    "followUpTopics": [
-      "What happens when this system encounters network partitioning or heavy main-thread saturation?",
-      "How do you version and migrate this pattern without breaking downstream micro-apps?"
-    ],
-    "estimatedTimeMinutes": 7,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "memory-leaks",
-      "advanced"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 97,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Design clean abstractions around Memory Leaks with automated test suites and structured separation of concerns.",
-      "strongAnswer": "Decouple business logic from framework bindings, introduce defensive error boundaries, monitor Core Web Vitals, and ensure thread safety and predictability.",
-      "seniorLevelExpectations": "Establish robust design contracts, apply dependency injection or inversion of control, implement comprehensive telemetry, and benchmark memory footprint.",
-      "expertLevelExpectations": "Engineer distributed client resilience, compile-time AST transforms, micro-frontend boundary isolation, and zero-runtime overhead abstractions for Memory Leaks."
-    }
-  },
-  {
-    "id": "JS-0280",
-    "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Object.create",
-    "difficulty": "Advanced",
-    "question": "[Q280] Addressing Testing Strategy & Flakiness Elimination inside a multi-tenant SaaS application with strict client-side data isolation: Deep-dive into the architectural tradeoffs of \"Object.create\" (Object Prototypes & Inheritance) in JavaScript. How do you engineer resilience, maintain testability, and avoid regressions at scale?",
-    "questionType": "Debugging",
-    "experienceLevels": [
-      "4-6",
-      "6-8",
-      "8-12"
-    ],
-    "expectedConcepts": [
-      "Object.create",
-      "Object Prototypes & Inheritance",
-      "Testing Strategy & Flakiness Elimination",
-      "System Architecture",
-      "Scalability",
-      "Resilience",
-      "Tradeoff Analysis"
-    ],
-    "idealAnswerPoints": [
-      "Analyze architectural tradeoffs with explicit pros and cons",
-      "Provide robust pattern for enterprise isolation and testability",
-      "Discuss telemetry, metrics, and incident recovery strategies"
-    ],
-    "commonMistakes": [
-      "Premature optimization that harms maintainability",
-      "Failing to isolate external side effects and boundaries"
-    ],
-    "followUpTopics": [
-      "What happens when this system encounters network partitioning or heavy main-thread saturation?",
-      "How do you version and migrate this pattern without breaking downstream micro-apps?"
-    ],
-    "estimatedTimeMinutes": 7,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "object-create",
-      "advanced"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 98,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Design clean abstractions around Object.create with automated test suites and structured separation of concerns.",
-      "strongAnswer": "Decouple business logic from framework bindings, introduce defensive error boundaries, monitor Core Web Vitals, and ensure thread safety and predictability.",
-      "seniorLevelExpectations": "Establish robust design contracts, apply dependency injection or inversion of control, implement comprehensive telemetry, and benchmark memory footprint.",
-      "expertLevelExpectations": "Engineer distributed client resilience, compile-time AST transforms, micro-frontend boundary isolation, and zero-runtime overhead abstractions for Object.create."
-    }
-  },
-  {
-    "id": "JS-0281",
-    "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Tail Call Optimization",
-    "difficulty": "Expert",
-    "question": "[Q281] From the perspective of Cross-Browser Consistency & Standards Compliance during high-concurrency peak retail traffic (e.g. Cyber Monday): You are the Principal Architect redesigning \"Tail Call Optimization\" (Language Mechanics & Coercion) across JavaScript. Present your comprehensive architecture blueprint covering fault tolerance, security, and developer enablement.",
-    "questionType": "Practical",
-    "experienceLevels": [
-      "8-12",
-      "12+"
-    ],
-    "expectedConcepts": [
-      "Tail Call Optimization",
-      "Language Mechanics & Coercion",
-      "Cross-Browser Consistency & Standards Compliance",
-      "Principal Architecture",
-      "High Availability",
-      "Concurrency",
-      "Edge Infrastructure"
-    ],
-    "idealAnswerPoints": [
-      "Present comprehensive architectural RFC and system topology",
-      "Detail fault tolerance, disaster recovery, and edge synchronization",
-      "Map organizational rollout, canary gates, and developer enablement"
-    ],
-    "commonMistakes": [
-      "Focusing solely on code without addressing organizational rollout and observability",
-      "Underestimating security attack vectors and edge anomalies"
-    ],
-    "followUpTopics": [
-      "How does your design gracefully degrade when global CDNs or edge runtimes suffer complete outages?",
-      "What formal verification or fuzzing strategies guarantee correctness at this scale?"
-    ],
-    "estimatedTimeMinutes": 10,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "tail-call-optimization",
-      "expert"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 99,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Formulate an enterprise RFC establishing clear interface boundaries, progressive rollout stages, and automated verification suites.",
-      "strongAnswer": "Architect modular, framework-agnostic core engines with multi-region synchronization, automated fallback mechanisms, and strict security compliance.",
-      "seniorLevelExpectations": "Deliver end-to-end blueprint spanning telemetry, zero-downtime canary deployments, synthetic load tests, and cross-team developer experience standards.",
-      "expertLevelExpectations": "Pioneer next-generation primitives that set industry benchmarks, eliminate entire classes of runtime bugs through static analysis, and unlock 10x throughput gains."
-    }
-  },
-  {
-    "id": "JS-0282",
-    "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Memory Leaks",
-    "difficulty": "Expert",
-    "question": "[Q282] From the perspective of Developer Experience & API Ergonomics in a low-bandwidth, high-latency global mobile environment: You are the Principal Architect redesigning \"Memory Leaks\" (Closures & Memory) across JavaScript. Present your comprehensive architecture blueprint covering fault tolerance, security, and developer enablement.",
-    "questionType": "Scenario Based",
-    "experienceLevels": [
-      "8-12",
-      "12+"
-    ],
-    "expectedConcepts": [
-      "Memory Leaks",
-      "Closures & Memory",
-      "Developer Experience & API Ergonomics",
-      "Principal Architecture",
-      "High Availability",
-      "Concurrency",
-      "Edge Infrastructure"
-    ],
-    "idealAnswerPoints": [
-      "Present comprehensive architectural RFC and system topology",
-      "Detail fault tolerance, disaster recovery, and edge synchronization",
-      "Map organizational rollout, canary gates, and developer enablement"
-    ],
-    "commonMistakes": [
-      "Focusing solely on code without addressing organizational rollout and observability",
-      "Underestimating security attack vectors and edge anomalies"
-    ],
-    "followUpTopics": [
-      "How does your design gracefully degrade when global CDNs or edge runtimes suffer complete outages?",
-      "What formal verification or fuzzing strategies guarantee correctness at this scale?"
-    ],
-    "estimatedTimeMinutes": 10,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "memory-leaks",
-      "expert"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 94,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Formulate an enterprise RFC establishing clear interface boundaries, progressive rollout stages, and automated verification suites.",
-      "strongAnswer": "Architect modular, framework-agnostic core engines with multi-region synchronization, automated fallback mechanisms, and strict security compliance.",
-      "seniorLevelExpectations": "Deliver end-to-end blueprint spanning telemetry, zero-downtime canary deployments, synthetic load tests, and cross-team developer experience standards.",
-      "expertLevelExpectations": "Pioneer next-generation primitives that set industry benchmarks, eliminate entire classes of runtime bugs through static analysis, and unlock 10x throughput gains."
-    }
-  },
-  {
-    "id": "JS-0283",
-    "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Object.create",
-    "difficulty": "Expert",
-    "question": "[Q283] From the perspective of Concurrency & Asynchronous Race Conditions in a high-throughput fintech checkout system: You are the Principal Architect redesigning \"Object.create\" (Object Prototypes & Inheritance) across JavaScript. Present your comprehensive architecture blueprint covering fault tolerance, security, and developer enablement.",
-    "questionType": "System Design",
-    "experienceLevels": [
-      "8-12",
-      "12+"
-    ],
-    "expectedConcepts": [
-      "Object.create",
-      "Object Prototypes & Inheritance",
-      "Concurrency & Asynchronous Race Conditions",
-      "Principal Architecture",
-      "High Availability",
-      "Concurrency",
-      "Edge Infrastructure"
-    ],
-    "idealAnswerPoints": [
-      "Present comprehensive architectural RFC and system topology",
-      "Detail fault tolerance, disaster recovery, and edge synchronization",
-      "Map organizational rollout, canary gates, and developer enablement"
-    ],
-    "commonMistakes": [
-      "Focusing solely on code without addressing organizational rollout and observability",
-      "Underestimating security attack vectors and edge anomalies"
-    ],
-    "followUpTopics": [
-      "How does your design gracefully degrade when global CDNs or edge runtimes suffer complete outages?",
-      "What formal verification or fuzzing strategies guarantee correctness at this scale?"
-    ],
-    "estimatedTimeMinutes": 10,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "object-create",
-      "expert"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 95,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Formulate an enterprise RFC establishing clear interface boundaries, progressive rollout stages, and automated verification suites.",
-      "strongAnswer": "Architect modular, framework-agnostic core engines with multi-region synchronization, automated fallback mechanisms, and strict security compliance.",
-      "seniorLevelExpectations": "Deliver end-to-end blueprint spanning telemetry, zero-downtime canary deployments, synthetic load tests, and cross-team developer experience standards.",
-      "expertLevelExpectations": "Pioneer next-generation primitives that set industry benchmarks, eliminate entire classes of runtime bugs through static analysis, and unlock 10x throughput gains."
-    }
-  },
-  {
-    "id": "JS-0284",
-    "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Tail Call Optimization",
-    "difficulty": "Expert",
-    "question": "[Q284] From the perspective of Refactoring & Safe Legacy Migration within a media streaming player handling adaptive bitrate switching: You are the Principal Architect redesigning \"Tail Call Optimization\" (Language Mechanics & Coercion) across JavaScript. Present your comprehensive architecture blueprint covering fault tolerance, security, and developer enablement.",
-    "questionType": "Problem Solving",
-    "experienceLevels": [
-      "8-12",
-      "12+"
-    ],
-    "expectedConcepts": [
-      "Tail Call Optimization",
-      "Language Mechanics & Coercion",
-      "Refactoring & Safe Legacy Migration",
-      "Principal Architecture",
-      "High Availability",
-      "Concurrency",
-      "Edge Infrastructure"
-    ],
-    "idealAnswerPoints": [
-      "Present comprehensive architectural RFC and system topology",
-      "Detail fault tolerance, disaster recovery, and edge synchronization",
-      "Map organizational rollout, canary gates, and developer enablement"
-    ],
-    "commonMistakes": [
-      "Focusing solely on code without addressing organizational rollout and observability",
-      "Underestimating security attack vectors and edge anomalies"
-    ],
-    "followUpTopics": [
-      "How does your design gracefully degrade when global CDNs or edge runtimes suffer complete outages?",
-      "What formal verification or fuzzing strategies guarantee correctness at this scale?"
-    ],
-    "estimatedTimeMinutes": 10,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "tail-call-optimization",
-      "expert"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 96,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Formulate an enterprise RFC establishing clear interface boundaries, progressive rollout stages, and automated verification suites.",
-      "strongAnswer": "Architect modular, framework-agnostic core engines with multi-region synchronization, automated fallback mechanisms, and strict security compliance.",
-      "seniorLevelExpectations": "Deliver end-to-end blueprint spanning telemetry, zero-downtime canary deployments, synthetic load tests, and cross-team developer experience standards.",
-      "expertLevelExpectations": "Pioneer next-generation primitives that set industry benchmarks, eliminate entire classes of runtime bugs through static analysis, and unlock 10x throughput gains."
-    }
-  },
-  {
-    "id": "JS-0285",
-    "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Memory Leaks",
-    "difficulty": "Expert",
-    "question": "[Q285] From the perspective of State Synchronization & Boundary Isolation during a high-severity production outage requiring immediate triage: You are the Principal Architect redesigning \"Memory Leaks\" (Closures & Memory) across JavaScript. Present your comprehensive architecture blueprint covering fault tolerance, security, and developer enablement.",
-    "questionType": "Debugging",
-    "experienceLevels": [
-      "8-12",
-      "12+"
-    ],
-    "expectedConcepts": [
-      "Memory Leaks",
-      "Closures & Memory",
-      "State Synchronization & Boundary Isolation",
-      "Principal Architecture",
-      "High Availability",
-      "Concurrency",
-      "Edge Infrastructure"
-    ],
-    "idealAnswerPoints": [
-      "Present comprehensive architectural RFC and system topology",
-      "Detail fault tolerance, disaster recovery, and edge synchronization",
-      "Map organizational rollout, canary gates, and developer enablement"
-    ],
-    "commonMistakes": [
-      "Focusing solely on code without addressing organizational rollout and observability",
-      "Underestimating security attack vectors and edge anomalies"
-    ],
-    "followUpTopics": [
-      "How does your design gracefully degrade when global CDNs or edge runtimes suffer complete outages?",
-      "What formal verification or fuzzing strategies guarantee correctness at this scale?"
-    ],
-    "estimatedTimeMinutes": 10,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "memory-leaks",
-      "expert"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 97,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Formulate an enterprise RFC establishing clear interface boundaries, progressive rollout stages, and automated verification suites.",
-      "strongAnswer": "Architect modular, framework-agnostic core engines with multi-region synchronization, automated fallback mechanisms, and strict security compliance.",
-      "seniorLevelExpectations": "Deliver end-to-end blueprint spanning telemetry, zero-downtime canary deployments, synthetic load tests, and cross-team developer experience standards.",
-      "expertLevelExpectations": "Pioneer next-generation primitives that set industry benchmarks, eliminate entire classes of runtime bugs through static analysis, and unlock 10x throughput gains."
-    }
-  },
-  {
-    "id": "JS-0286",
-    "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Object.create",
-    "difficulty": "Expert",
-    "question": "[Q286] From the perspective of Error Boundaries & Graceful Degradation inside an embedded financial analytics dashboard processing live WebSockets: You are the Principal Architect redesigning \"Object.create\" (Object Prototypes & Inheritance) across JavaScript. Present your comprehensive architecture blueprint covering fault tolerance, security, and developer enablement.",
-    "questionType": "Practical",
-    "experienceLevels": [
-      "8-12",
-      "12+"
-    ],
-    "expectedConcepts": [
-      "Object.create",
-      "Object Prototypes & Inheritance",
-      "Error Boundaries & Graceful Degradation",
-      "Principal Architecture",
-      "High Availability",
-      "Concurrency",
-      "Edge Infrastructure"
-    ],
-    "idealAnswerPoints": [
-      "Present comprehensive architectural RFC and system topology",
-      "Detail fault tolerance, disaster recovery, and edge synchronization",
-      "Map organizational rollout, canary gates, and developer enablement"
-    ],
-    "commonMistakes": [
-      "Focusing solely on code without addressing organizational rollout and observability",
-      "Underestimating security attack vectors and edge anomalies"
-    ],
-    "followUpTopics": [
-      "How does your design gracefully degrade when global CDNs or edge runtimes suffer complete outages?",
-      "What formal verification or fuzzing strategies guarantee correctness at this scale?"
-    ],
-    "estimatedTimeMinutes": 10,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "object-create",
-      "expert"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 98,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Formulate an enterprise RFC establishing clear interface boundaries, progressive rollout stages, and automated verification suites.",
-      "strongAnswer": "Architect modular, framework-agnostic core engines with multi-region synchronization, automated fallback mechanisms, and strict security compliance.",
-      "seniorLevelExpectations": "Deliver end-to-end blueprint spanning telemetry, zero-downtime canary deployments, synthetic load tests, and cross-team developer experience standards.",
-      "expertLevelExpectations": "Pioneer next-generation primitives that set industry benchmarks, eliminate entire classes of runtime bugs through static analysis, and unlock 10x throughput gains."
-    }
-  },
-  {
-    "id": "JS-0287",
-    "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Tail Call Optimization",
-    "difficulty": "Expert",
-    "question": "[Q287] From the perspective of Observability, Telemetry & Real User Monitoring when integrating third-party untrusted scripts without compromising security: You are the Principal Architect redesigning \"Tail Call Optimization\" (Language Mechanics & Coercion) across JavaScript. Present your comprehensive architecture blueprint covering fault tolerance, security, and developer enablement.",
-    "questionType": "Scenario Based",
-    "experienceLevels": [
-      "8-12",
-      "12+"
-    ],
-    "expectedConcepts": [
-      "Tail Call Optimization",
-      "Language Mechanics & Coercion",
-      "Observability, Telemetry & Real User Monitoring",
-      "Principal Architecture",
-      "High Availability",
-      "Concurrency",
-      "Edge Infrastructure"
-    ],
-    "idealAnswerPoints": [
-      "Present comprehensive architectural RFC and system topology",
-      "Detail fault tolerance, disaster recovery, and edge synchronization",
-      "Map organizational rollout, canary gates, and developer enablement"
-    ],
-    "commonMistakes": [
-      "Focusing solely on code without addressing organizational rollout and observability",
-      "Underestimating security attack vectors and edge anomalies"
-    ],
-    "followUpTopics": [
-      "How does your design gracefully degrade when global CDNs or edge runtimes suffer complete outages?",
-      "What formal verification or fuzzing strategies guarantee correctness at this scale?"
-    ],
-    "estimatedTimeMinutes": 10,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "tail-call-optimization",
-      "expert"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 99,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Formulate an enterprise RFC establishing clear interface boundaries, progressive rollout stages, and automated verification suites.",
-      "strongAnswer": "Architect modular, framework-agnostic core engines with multi-region synchronization, automated fallback mechanisms, and strict security compliance.",
-      "seniorLevelExpectations": "Deliver end-to-end blueprint spanning telemetry, zero-downtime canary deployments, synthetic load tests, and cross-team developer experience standards.",
-      "expertLevelExpectations": "Pioneer next-generation primitives that set industry benchmarks, eliminate entire classes of runtime bugs through static analysis, and unlock 10x throughput gains."
-    }
-  },
-  {
-    "id": "JS-0288",
-    "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Memory Leaks",
-    "difficulty": "Expert",
-    "question": "[Q288] From the perspective of Scalability Tradeoffs under High Traffic in an offline-first enterprise mobile web application: You are the Principal Architect redesigning \"Memory Leaks\" (Closures & Memory) across JavaScript. Present your comprehensive architecture blueprint covering fault tolerance, security, and developer enablement.",
-    "questionType": "System Design",
-    "experienceLevels": [
-      "8-12",
-      "12+"
-    ],
-    "expectedConcepts": [
-      "Memory Leaks",
-      "Closures & Memory",
-      "Scalability Tradeoffs under High Traffic",
-      "Principal Architecture",
-      "High Availability",
-      "Concurrency",
-      "Edge Infrastructure"
-    ],
-    "idealAnswerPoints": [
-      "Present comprehensive architectural RFC and system topology",
-      "Detail fault tolerance, disaster recovery, and edge synchronization",
-      "Map organizational rollout, canary gates, and developer enablement"
-    ],
-    "commonMistakes": [
-      "Focusing solely on code without addressing organizational rollout and observability",
-      "Underestimating security attack vectors and edge anomalies"
-    ],
-    "followUpTopics": [
-      "How does your design gracefully degrade when global CDNs or edge runtimes suffer complete outages?",
-      "What formal verification or fuzzing strategies guarantee correctness at this scale?"
-    ],
-    "estimatedTimeMinutes": 10,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "memory-leaks",
-      "expert"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 94,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Formulate an enterprise RFC establishing clear interface boundaries, progressive rollout stages, and automated verification suites.",
-      "strongAnswer": "Architect modular, framework-agnostic core engines with multi-region synchronization, automated fallback mechanisms, and strict security compliance.",
-      "seniorLevelExpectations": "Deliver end-to-end blueprint spanning telemetry, zero-downtime canary deployments, synthetic load tests, and cross-team developer experience standards.",
-      "expertLevelExpectations": "Pioneer next-generation primitives that set industry benchmarks, eliminate entire classes of runtime bugs through static analysis, and unlock 10x throughput gains."
-    }
-  },
-  {
-    "id": "JS-0289",
-    "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Object.create",
-    "difficulty": "Expert",
-    "question": "[Q289] From the perspective of Implementation Mechanics & Internal Execution when refactoring a legacy monolithic codebase with zero automated regression tests: You are the Principal Architect redesigning \"Object.create\" (Object Prototypes & Inheritance) across JavaScript. Present your comprehensive architecture blueprint covering fault tolerance, security, and developer enablement.",
-    "questionType": "Problem Solving",
-    "experienceLevels": [
-      "8-12",
-      "12+"
-    ],
-    "expectedConcepts": [
-      "Object.create",
-      "Object Prototypes & Inheritance",
-      "Implementation Mechanics & Internal Execution",
-      "Principal Architecture",
-      "High Availability",
-      "Concurrency",
-      "Edge Infrastructure"
-    ],
-    "idealAnswerPoints": [
-      "Present comprehensive architectural RFC and system topology",
-      "Detail fault tolerance, disaster recovery, and edge synchronization",
-      "Map organizational rollout, canary gates, and developer enablement"
-    ],
-    "commonMistakes": [
-      "Focusing solely on code without addressing organizational rollout and observability",
-      "Underestimating security attack vectors and edge anomalies"
-    ],
-    "followUpTopics": [
-      "How does your design gracefully degrade when global CDNs or edge runtimes suffer complete outages?",
-      "What formal verification or fuzzing strategies guarantee correctness at this scale?"
-    ],
-    "estimatedTimeMinutes": 10,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "object-create",
-      "expert"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 95,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Formulate an enterprise RFC establishing clear interface boundaries, progressive rollout stages, and automated verification suites.",
-      "strongAnswer": "Architect modular, framework-agnostic core engines with multi-region synchronization, automated fallback mechanisms, and strict security compliance.",
-      "seniorLevelExpectations": "Deliver end-to-end blueprint spanning telemetry, zero-downtime canary deployments, synthetic load tests, and cross-team developer experience standards.",
-      "expertLevelExpectations": "Pioneer next-generation primitives that set industry benchmarks, eliminate entire classes of runtime bugs through static analysis, and unlock 10x throughput gains."
-    }
-  },
-  {
-    "id": "JS-0290",
-    "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Tail Call Optimization",
-    "difficulty": "Expert",
-    "question": "[Q290] From the perspective of Debugging & Production Failure Analysis within a real-time collaborative whiteboarding canvas: You are the Principal Architect redesigning \"Tail Call Optimization\" (Language Mechanics & Coercion) across JavaScript. Present your comprehensive architecture blueprint covering fault tolerance, security, and developer enablement.",
-    "questionType": "Debugging",
-    "experienceLevels": [
-      "8-12",
-      "12+"
-    ],
-    "expectedConcepts": [
-      "Tail Call Optimization",
-      "Language Mechanics & Coercion",
-      "Debugging & Production Failure Analysis",
-      "Principal Architecture",
-      "High Availability",
-      "Concurrency",
-      "Edge Infrastructure"
-    ],
-    "idealAnswerPoints": [
-      "Present comprehensive architectural RFC and system topology",
-      "Detail fault tolerance, disaster recovery, and edge synchronization",
-      "Map organizational rollout, canary gates, and developer enablement"
-    ],
-    "commonMistakes": [
-      "Focusing solely on code without addressing organizational rollout and observability",
-      "Underestimating security attack vectors and edge anomalies"
-    ],
-    "followUpTopics": [
-      "How does your design gracefully degrade when global CDNs or edge runtimes suffer complete outages?",
-      "What formal verification or fuzzing strategies guarantee correctness at this scale?"
-    ],
-    "estimatedTimeMinutes": 10,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "tail-call-optimization",
-      "expert"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 96,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Formulate an enterprise RFC establishing clear interface boundaries, progressive rollout stages, and automated verification suites.",
-      "strongAnswer": "Architect modular, framework-agnostic core engines with multi-region synchronization, automated fallback mechanisms, and strict security compliance.",
-      "seniorLevelExpectations": "Deliver end-to-end blueprint spanning telemetry, zero-downtime canary deployments, synthetic load tests, and cross-team developer experience standards.",
-      "expertLevelExpectations": "Pioneer next-generation primitives that set industry benchmarks, eliminate entire classes of runtime bugs through static analysis, and unlock 10x throughput gains."
-    }
-  },
-  {
-    "id": "JS-0291",
-    "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Memory Leaks",
-    "difficulty": "Expert",
-    "question": "[Q291] From the perspective of Performance Optimization & Latency Bottlenecks during a live zero-downtime database and schema migration: You are the Principal Architect redesigning \"Memory Leaks\" (Closures & Memory) across JavaScript. Present your comprehensive architecture blueprint covering fault tolerance, security, and developer enablement.",
-    "questionType": "Practical",
-    "experienceLevels": [
-      "8-12",
-      "12+"
-    ],
-    "expectedConcepts": [
-      "Memory Leaks",
-      "Closures & Memory",
-      "Performance Optimization & Latency Bottlenecks",
-      "Principal Architecture",
-      "High Availability",
-      "Concurrency",
-      "Edge Infrastructure"
-    ],
-    "idealAnswerPoints": [
-      "Present comprehensive architectural RFC and system topology",
-      "Detail fault tolerance, disaster recovery, and edge synchronization",
-      "Map organizational rollout, canary gates, and developer enablement"
-    ],
-    "commonMistakes": [
-      "Focusing solely on code without addressing organizational rollout and observability",
-      "Underestimating security attack vectors and edge anomalies"
-    ],
-    "followUpTopics": [
-      "How does your design gracefully degrade when global CDNs or edge runtimes suffer complete outages?",
-      "What formal verification or fuzzing strategies guarantee correctness at this scale?"
-    ],
-    "estimatedTimeMinutes": 10,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "memory-leaks",
-      "expert"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 97,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Formulate an enterprise RFC establishing clear interface boundaries, progressive rollout stages, and automated verification suites.",
-      "strongAnswer": "Architect modular, framework-agnostic core engines with multi-region synchronization, automated fallback mechanisms, and strict security compliance.",
-      "seniorLevelExpectations": "Deliver end-to-end blueprint spanning telemetry, zero-downtime canary deployments, synthetic load tests, and cross-team developer experience standards.",
-      "expertLevelExpectations": "Pioneer next-generation primitives that set industry benchmarks, eliminate entire classes of runtime bugs through static analysis, and unlock 10x throughput gains."
-    }
-  },
-  {
-    "id": "JS-0292",
-    "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Object.create",
-    "difficulty": "Expert",
-    "question": "[Q292] From the perspective of Architecture & Modularity Design in an executive architectural review evaluating long-term technical debt: You are the Principal Architect redesigning \"Object.create\" (Object Prototypes & Inheritance) across JavaScript. Present your comprehensive architecture blueprint covering fault tolerance, security, and developer enablement.",
-    "questionType": "Scenario Based",
-    "experienceLevels": [
-      "8-12",
-      "12+"
-    ],
-    "expectedConcepts": [
-      "Object.create",
-      "Object Prototypes & Inheritance",
-      "Architecture & Modularity Design",
-      "Principal Architecture",
-      "High Availability",
-      "Concurrency",
-      "Edge Infrastructure"
-    ],
-    "idealAnswerPoints": [
-      "Present comprehensive architectural RFC and system topology",
-      "Detail fault tolerance, disaster recovery, and edge synchronization",
-      "Map organizational rollout, canary gates, and developer enablement"
-    ],
-    "commonMistakes": [
-      "Focusing solely on code without addressing organizational rollout and observability",
-      "Underestimating security attack vectors and edge anomalies"
-    ],
-    "followUpTopics": [
-      "How does your design gracefully degrade when global CDNs or edge runtimes suffer complete outages?",
-      "What formal verification or fuzzing strategies guarantee correctness at this scale?"
-    ],
-    "estimatedTimeMinutes": 10,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "object-create",
-      "expert"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 98,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Formulate an enterprise RFC establishing clear interface boundaries, progressive rollout stages, and automated verification suites.",
-      "strongAnswer": "Architect modular, framework-agnostic core engines with multi-region synchronization, automated fallback mechanisms, and strict security compliance.",
-      "seniorLevelExpectations": "Deliver end-to-end blueprint spanning telemetry, zero-downtime canary deployments, synthetic load tests, and cross-team developer experience standards.",
-      "expertLevelExpectations": "Pioneer next-generation primitives that set industry benchmarks, eliminate entire classes of runtime bugs through static analysis, and unlock 10x throughput gains."
-    }
-  },
-  {
-    "id": "JS-0293",
-    "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Tail Call Optimization",
-    "difficulty": "Expert",
-    "question": "[Q293] From the perspective of Edge Case Handling & Defensive Validation in a mission-critical healthcare portal with strict latency SLAs: You are the Principal Architect redesigning \"Tail Call Optimization\" (Language Mechanics & Coercion) across JavaScript. Present your comprehensive architecture blueprint covering fault tolerance, security, and developer enablement.",
-    "questionType": "System Design",
-    "experienceLevels": [
-      "8-12",
-      "12+"
-    ],
-    "expectedConcepts": [
-      "Tail Call Optimization",
-      "Language Mechanics & Coercion",
-      "Edge Case Handling & Defensive Validation",
-      "Principal Architecture",
-      "High Availability",
-      "Concurrency",
-      "Edge Infrastructure"
-    ],
-    "idealAnswerPoints": [
-      "Present comprehensive architectural RFC and system topology",
-      "Detail fault tolerance, disaster recovery, and edge synchronization",
-      "Map organizational rollout, canary gates, and developer enablement"
-    ],
-    "commonMistakes": [
-      "Focusing solely on code without addressing organizational rollout and observability",
-      "Underestimating security attack vectors and edge anomalies"
-    ],
-    "followUpTopics": [
-      "How does your design gracefully degrade when global CDNs or edge runtimes suffer complete outages?",
-      "What formal verification or fuzzing strategies guarantee correctness at this scale?"
-    ],
-    "estimatedTimeMinutes": 10,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "tail-call-optimization",
-      "expert"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 99,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Formulate an enterprise RFC establishing clear interface boundaries, progressive rollout stages, and automated verification suites.",
-      "strongAnswer": "Architect modular, framework-agnostic core engines with multi-region synchronization, automated fallback mechanisms, and strict security compliance.",
-      "seniorLevelExpectations": "Deliver end-to-end blueprint spanning telemetry, zero-downtime canary deployments, synthetic load tests, and cross-team developer experience standards.",
-      "expertLevelExpectations": "Pioneer next-generation primitives that set industry benchmarks, eliminate entire classes of runtime bugs through static analysis, and unlock 10x throughput gains."
-    }
-  },
-  {
-    "id": "JS-0294",
-    "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Memory Leaks",
-    "difficulty": "Expert",
-    "question": "[Q294] From the perspective of Memory Lifecycle & Garbage Collection Pressure in a design system adopted across 12 distinct product platforms: You are the Principal Architect redesigning \"Memory Leaks\" (Closures & Memory) across JavaScript. Present your comprehensive architecture blueprint covering fault tolerance, security, and developer enablement.",
-    "questionType": "Problem Solving",
-    "experienceLevels": [
-      "8-12",
-      "12+"
-    ],
-    "expectedConcepts": [
-      "Memory Leaks",
-      "Closures & Memory",
-      "Memory Lifecycle & Garbage Collection Pressure",
-      "Principal Architecture",
-      "High Availability",
-      "Concurrency",
-      "Edge Infrastructure"
-    ],
-    "idealAnswerPoints": [
-      "Present comprehensive architectural RFC and system topology",
-      "Detail fault tolerance, disaster recovery, and edge synchronization",
-      "Map organizational rollout, canary gates, and developer enablement"
-    ],
-    "commonMistakes": [
-      "Focusing solely on code without addressing organizational rollout and observability",
-      "Underestimating security attack vectors and edge anomalies"
-    ],
-    "followUpTopics": [
-      "How does your design gracefully degrade when global CDNs or edge runtimes suffer complete outages?",
-      "What formal verification or fuzzing strategies guarantee correctness at this scale?"
-    ],
-    "estimatedTimeMinutes": 10,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "memory-leaks",
-      "expert"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 94,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Formulate an enterprise RFC establishing clear interface boundaries, progressive rollout stages, and automated verification suites.",
-      "strongAnswer": "Architect modular, framework-agnostic core engines with multi-region synchronization, automated fallback mechanisms, and strict security compliance.",
-      "seniorLevelExpectations": "Deliver end-to-end blueprint spanning telemetry, zero-downtime canary deployments, synthetic load tests, and cross-team developer experience standards.",
-      "expertLevelExpectations": "Pioneer next-generation primitives that set industry benchmarks, eliminate entire classes of runtime bugs through static analysis, and unlock 10x throughput gains."
-    }
-  },
-  {
-    "id": "JS-0295",
-    "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Object.create",
-    "difficulty": "Expert",
-    "question": "[Q295] From the perspective of Security Hardening & Threat Mitigation across a distributed micro-frontend monorepo with 40+ engineering squads: You are the Principal Architect redesigning \"Object.create\" (Object Prototypes & Inheritance) across JavaScript. Present your comprehensive architecture blueprint covering fault tolerance, security, and developer enablement.",
-    "questionType": "Debugging",
-    "experienceLevels": [
-      "8-12",
-      "12+"
-    ],
-    "expectedConcepts": [
-      "Object.create",
-      "Object Prototypes & Inheritance",
-      "Security Hardening & Threat Mitigation",
-      "Principal Architecture",
-      "High Availability",
-      "Concurrency",
-      "Edge Infrastructure"
-    ],
-    "idealAnswerPoints": [
-      "Present comprehensive architectural RFC and system topology",
-      "Detail fault tolerance, disaster recovery, and edge synchronization",
-      "Map organizational rollout, canary gates, and developer enablement"
-    ],
-    "commonMistakes": [
-      "Focusing solely on code without addressing organizational rollout and observability",
-      "Underestimating security attack vectors and edge anomalies"
-    ],
-    "followUpTopics": [
-      "How does your design gracefully degrade when global CDNs or edge runtimes suffer complete outages?",
-      "What formal verification or fuzzing strategies guarantee correctness at this scale?"
-    ],
-    "estimatedTimeMinutes": 10,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "object-create",
-      "expert"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 95,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Formulate an enterprise RFC establishing clear interface boundaries, progressive rollout stages, and automated verification suites.",
-      "strongAnswer": "Architect modular, framework-agnostic core engines with multi-region synchronization, automated fallback mechanisms, and strict security compliance.",
-      "seniorLevelExpectations": "Deliver end-to-end blueprint spanning telemetry, zero-downtime canary deployments, synthetic load tests, and cross-team developer experience standards.",
-      "expertLevelExpectations": "Pioneer next-generation primitives that set industry benchmarks, eliminate entire classes of runtime bugs through static analysis, and unlock 10x throughput gains."
-    }
-  },
-  {
-    "id": "JS-0296",
-    "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Tail Call Optimization",
-    "difficulty": "Expert",
-    "question": "[Q296] From the perspective of Testing Strategy & Flakiness Elimination inside a multi-tenant SaaS application with strict client-side data isolation: You are the Principal Architect redesigning \"Tail Call Optimization\" (Language Mechanics & Coercion) across JavaScript. Present your comprehensive architecture blueprint covering fault tolerance, security, and developer enablement.",
-    "questionType": "Practical",
-    "experienceLevels": [
-      "8-12",
-      "12+"
-    ],
-    "expectedConcepts": [
-      "Tail Call Optimization",
-      "Language Mechanics & Coercion",
-      "Testing Strategy & Flakiness Elimination",
-      "Principal Architecture",
-      "High Availability",
-      "Concurrency",
-      "Edge Infrastructure"
-    ],
-    "idealAnswerPoints": [
-      "Present comprehensive architectural RFC and system topology",
-      "Detail fault tolerance, disaster recovery, and edge synchronization",
-      "Map organizational rollout, canary gates, and developer enablement"
-    ],
-    "commonMistakes": [
-      "Focusing solely on code without addressing organizational rollout and observability",
-      "Underestimating security attack vectors and edge anomalies"
-    ],
-    "followUpTopics": [
-      "How does your design gracefully degrade when global CDNs or edge runtimes suffer complete outages?",
-      "What formal verification or fuzzing strategies guarantee correctness at this scale?"
-    ],
-    "estimatedTimeMinutes": 10,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "tail-call-optimization",
-      "expert"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 96,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Formulate an enterprise RFC establishing clear interface boundaries, progressive rollout stages, and automated verification suites.",
-      "strongAnswer": "Architect modular, framework-agnostic core engines with multi-region synchronization, automated fallback mechanisms, and strict security compliance.",
-      "seniorLevelExpectations": "Deliver end-to-end blueprint spanning telemetry, zero-downtime canary deployments, synthetic load tests, and cross-team developer experience standards.",
-      "expertLevelExpectations": "Pioneer next-generation primitives that set industry benchmarks, eliminate entire classes of runtime bugs through static analysis, and unlock 10x throughput gains."
-    }
-  },
-  {
-    "id": "JS-0297",
-    "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Memory Leaks",
-    "difficulty": "Expert",
-    "question": "[Q297] From the perspective of Cross-Browser Consistency & Standards Compliance during high-concurrency peak retail traffic (e.g. Cyber Monday): You are the Principal Architect redesigning \"Memory Leaks\" (Closures & Memory) across JavaScript. Present your comprehensive architecture blueprint covering fault tolerance, security, and developer enablement.",
-    "questionType": "Scenario Based",
-    "experienceLevels": [
-      "8-12",
-      "12+"
-    ],
-    "expectedConcepts": [
-      "Memory Leaks",
-      "Closures & Memory",
-      "Cross-Browser Consistency & Standards Compliance",
-      "Principal Architecture",
-      "High Availability",
-      "Concurrency",
-      "Edge Infrastructure"
-    ],
-    "idealAnswerPoints": [
-      "Present comprehensive architectural RFC and system topology",
-      "Detail fault tolerance, disaster recovery, and edge synchronization",
-      "Map organizational rollout, canary gates, and developer enablement"
-    ],
-    "commonMistakes": [
-      "Focusing solely on code without addressing organizational rollout and observability",
-      "Underestimating security attack vectors and edge anomalies"
-    ],
-    "followUpTopics": [
-      "How does your design gracefully degrade when global CDNs or edge runtimes suffer complete outages?",
-      "What formal verification or fuzzing strategies guarantee correctness at this scale?"
-    ],
-    "estimatedTimeMinutes": 10,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "memory-leaks",
-      "expert"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 97,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Formulate an enterprise RFC establishing clear interface boundaries, progressive rollout stages, and automated verification suites.",
-      "strongAnswer": "Architect modular, framework-agnostic core engines with multi-region synchronization, automated fallback mechanisms, and strict security compliance.",
-      "seniorLevelExpectations": "Deliver end-to-end blueprint spanning telemetry, zero-downtime canary deployments, synthetic load tests, and cross-team developer experience standards.",
-      "expertLevelExpectations": "Pioneer next-generation primitives that set industry benchmarks, eliminate entire classes of runtime bugs through static analysis, and unlock 10x throughput gains."
-    }
-  },
-  {
-    "id": "JS-0298",
-    "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Object.create",
-    "difficulty": "Expert",
-    "question": "[Q298] From the perspective of Developer Experience & API Ergonomics in a low-bandwidth, high-latency global mobile environment: You are the Principal Architect redesigning \"Object.create\" (Object Prototypes & Inheritance) across JavaScript. Present your comprehensive architecture blueprint covering fault tolerance, security, and developer enablement.",
-    "questionType": "System Design",
-    "experienceLevels": [
-      "8-12",
-      "12+"
-    ],
-    "expectedConcepts": [
-      "Object.create",
-      "Object Prototypes & Inheritance",
-      "Developer Experience & API Ergonomics",
-      "Principal Architecture",
-      "High Availability",
-      "Concurrency",
-      "Edge Infrastructure"
-    ],
-    "idealAnswerPoints": [
-      "Present comprehensive architectural RFC and system topology",
-      "Detail fault tolerance, disaster recovery, and edge synchronization",
-      "Map organizational rollout, canary gates, and developer enablement"
-    ],
-    "commonMistakes": [
-      "Focusing solely on code without addressing organizational rollout and observability",
-      "Underestimating security attack vectors and edge anomalies"
-    ],
-    "followUpTopics": [
-      "How does your design gracefully degrade when global CDNs or edge runtimes suffer complete outages?",
-      "What formal verification or fuzzing strategies guarantee correctness at this scale?"
-    ],
-    "estimatedTimeMinutes": 10,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "object-create",
-      "expert"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 98,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Formulate an enterprise RFC establishing clear interface boundaries, progressive rollout stages, and automated verification suites.",
-      "strongAnswer": "Architect modular, framework-agnostic core engines with multi-region synchronization, automated fallback mechanisms, and strict security compliance.",
-      "seniorLevelExpectations": "Deliver end-to-end blueprint spanning telemetry, zero-downtime canary deployments, synthetic load tests, and cross-team developer experience standards.",
-      "expertLevelExpectations": "Pioneer next-generation primitives that set industry benchmarks, eliminate entire classes of runtime bugs through static analysis, and unlock 10x throughput gains."
-    }
-  },
-  {
-    "id": "JS-0299",
-    "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Tail Call Optimization",
-    "difficulty": "Expert",
-    "question": "[Q299] From the perspective of Concurrency & Asynchronous Race Conditions in a high-throughput fintech checkout system: You are the Principal Architect redesigning \"Tail Call Optimization\" (Language Mechanics & Coercion) across JavaScript. Present your comprehensive architecture blueprint covering fault tolerance, security, and developer enablement.",
-    "questionType": "Problem Solving",
-    "experienceLevels": [
-      "8-12",
-      "12+"
-    ],
-    "expectedConcepts": [
-      "Tail Call Optimization",
-      "Language Mechanics & Coercion",
-      "Concurrency & Asynchronous Race Conditions",
-      "Principal Architecture",
-      "High Availability",
-      "Concurrency",
-      "Edge Infrastructure"
-    ],
-    "idealAnswerPoints": [
-      "Present comprehensive architectural RFC and system topology",
-      "Detail fault tolerance, disaster recovery, and edge synchronization",
-      "Map organizational rollout, canary gates, and developer enablement"
-    ],
-    "commonMistakes": [
-      "Focusing solely on code without addressing organizational rollout and observability",
-      "Underestimating security attack vectors and edge anomalies"
-    ],
-    "followUpTopics": [
-      "How does your design gracefully degrade when global CDNs or edge runtimes suffer complete outages?",
-      "What formal verification or fuzzing strategies guarantee correctness at this scale?"
-    ],
-    "estimatedTimeMinutes": 10,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "tail-call-optimization",
-      "expert"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 99,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Formulate an enterprise RFC establishing clear interface boundaries, progressive rollout stages, and automated verification suites.",
-      "strongAnswer": "Architect modular, framework-agnostic core engines with multi-region synchronization, automated fallback mechanisms, and strict security compliance.",
-      "seniorLevelExpectations": "Deliver end-to-end blueprint spanning telemetry, zero-downtime canary deployments, synthetic load tests, and cross-team developer experience standards.",
-      "expertLevelExpectations": "Pioneer next-generation primitives that set industry benchmarks, eliminate entire classes of runtime bugs through static analysis, and unlock 10x throughput gains."
-    }
-  },
-  {
-    "id": "JS-0300",
-    "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Memory Leaks",
-    "difficulty": "Expert",
-    "question": "[Q300] From the perspective of Refactoring & Safe Legacy Migration within a media streaming player handling adaptive bitrate switching: You are the Principal Architect redesigning \"Memory Leaks\" (Closures & Memory) across JavaScript. Present your comprehensive architecture blueprint covering fault tolerance, security, and developer enablement.",
-    "questionType": "Debugging",
-    "experienceLevels": [
-      "8-12",
-      "12+"
-    ],
-    "expectedConcepts": [
-      "Memory Leaks",
-      "Closures & Memory",
-      "Refactoring & Safe Legacy Migration",
-      "Principal Architecture",
-      "High Availability",
-      "Concurrency",
-      "Edge Infrastructure"
-    ],
-    "idealAnswerPoints": [
-      "Present comprehensive architectural RFC and system topology",
-      "Detail fault tolerance, disaster recovery, and edge synchronization",
-      "Map organizational rollout, canary gates, and developer enablement"
-    ],
-    "commonMistakes": [
-      "Focusing solely on code without addressing organizational rollout and observability",
-      "Underestimating security attack vectors and edge anomalies"
-    ],
-    "followUpTopics": [
-      "How does your design gracefully degrade when global CDNs or edge runtimes suffer complete outages?",
-      "What formal verification or fuzzing strategies guarantee correctness at this scale?"
-    ],
-    "estimatedTimeMinutes": 10,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "memory-leaks",
-      "expert"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 94,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Formulate an enterprise RFC establishing clear interface boundaries, progressive rollout stages, and automated verification suites.",
-      "strongAnswer": "Architect modular, framework-agnostic core engines with multi-region synchronization, automated fallback mechanisms, and strict security compliance.",
-      "seniorLevelExpectations": "Deliver end-to-end blueprint spanning telemetry, zero-downtime canary deployments, synthetic load tests, and cross-team developer experience standards.",
-      "expertLevelExpectations": "Pioneer next-generation primitives that set industry benchmarks, eliminate entire classes of runtime bugs through static analysis, and unlock 10x throughput gains."
-    }
-  },
-  {
-    "id": "JS-0301",
-    "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Object.create",
-    "difficulty": "Expert",
-    "question": "[Q301] From the perspective of State Synchronization & Boundary Isolation during a high-severity production outage requiring immediate triage: You are the Principal Architect redesigning \"Object.create\" (Object Prototypes & Inheritance) across JavaScript. Present your comprehensive architecture blueprint covering fault tolerance, security, and developer enablement.",
-    "questionType": "Practical",
-    "experienceLevels": [
-      "8-12",
-      "12+"
-    ],
-    "expectedConcepts": [
-      "Object.create",
-      "Object Prototypes & Inheritance",
-      "State Synchronization & Boundary Isolation",
-      "Principal Architecture",
-      "High Availability",
-      "Concurrency",
-      "Edge Infrastructure"
-    ],
-    "idealAnswerPoints": [
-      "Present comprehensive architectural RFC and system topology",
-      "Detail fault tolerance, disaster recovery, and edge synchronization",
-      "Map organizational rollout, canary gates, and developer enablement"
-    ],
-    "commonMistakes": [
-      "Focusing solely on code without addressing organizational rollout and observability",
-      "Underestimating security attack vectors and edge anomalies"
-    ],
-    "followUpTopics": [
-      "How does your design gracefully degrade when global CDNs or edge runtimes suffer complete outages?",
-      "What formal verification or fuzzing strategies guarantee correctness at this scale?"
-    ],
-    "estimatedTimeMinutes": 10,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "object-create",
-      "expert"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 95,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Formulate an enterprise RFC establishing clear interface boundaries, progressive rollout stages, and automated verification suites.",
-      "strongAnswer": "Architect modular, framework-agnostic core engines with multi-region synchronization, automated fallback mechanisms, and strict security compliance.",
-      "seniorLevelExpectations": "Deliver end-to-end blueprint spanning telemetry, zero-downtime canary deployments, synthetic load tests, and cross-team developer experience standards.",
-      "expertLevelExpectations": "Pioneer next-generation primitives that set industry benchmarks, eliminate entire classes of runtime bugs through static analysis, and unlock 10x throughput gains."
-    }
-  },
-  {
-    "id": "JS-0302",
-    "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Tail Call Optimization",
-    "difficulty": "Expert",
-    "question": "[Q302] From the perspective of Error Boundaries & Graceful Degradation inside an embedded financial analytics dashboard processing live WebSockets: You are the Principal Architect redesigning \"Tail Call Optimization\" (Language Mechanics & Coercion) across JavaScript. Present your comprehensive architecture blueprint covering fault tolerance, security, and developer enablement.",
-    "questionType": "Scenario Based",
-    "experienceLevels": [
-      "8-12",
-      "12+"
-    ],
-    "expectedConcepts": [
-      "Tail Call Optimization",
-      "Language Mechanics & Coercion",
-      "Error Boundaries & Graceful Degradation",
-      "Principal Architecture",
-      "High Availability",
-      "Concurrency",
-      "Edge Infrastructure"
-    ],
-    "idealAnswerPoints": [
-      "Present comprehensive architectural RFC and system topology",
-      "Detail fault tolerance, disaster recovery, and edge synchronization",
-      "Map organizational rollout, canary gates, and developer enablement"
-    ],
-    "commonMistakes": [
-      "Focusing solely on code without addressing organizational rollout and observability",
-      "Underestimating security attack vectors and edge anomalies"
-    ],
-    "followUpTopics": [
-      "How does your design gracefully degrade when global CDNs or edge runtimes suffer complete outages?",
-      "What formal verification or fuzzing strategies guarantee correctness at this scale?"
-    ],
-    "estimatedTimeMinutes": 10,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "tail-call-optimization",
-      "expert"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 96,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Formulate an enterprise RFC establishing clear interface boundaries, progressive rollout stages, and automated verification suites.",
-      "strongAnswer": "Architect modular, framework-agnostic core engines with multi-region synchronization, automated fallback mechanisms, and strict security compliance.",
-      "seniorLevelExpectations": "Deliver end-to-end blueprint spanning telemetry, zero-downtime canary deployments, synthetic load tests, and cross-team developer experience standards.",
-      "expertLevelExpectations": "Pioneer next-generation primitives that set industry benchmarks, eliminate entire classes of runtime bugs through static analysis, and unlock 10x throughput gains."
-    }
-  },
-  {
-    "id": "JS-0303",
-    "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Memory Leaks",
-    "difficulty": "Expert",
-    "question": "[Q303] From the perspective of Observability, Telemetry & Real User Monitoring when integrating third-party untrusted scripts without compromising security: You are the Principal Architect redesigning \"Memory Leaks\" (Closures & Memory) across JavaScript. Present your comprehensive architecture blueprint covering fault tolerance, security, and developer enablement.",
-    "questionType": "System Design",
-    "experienceLevels": [
-      "8-12",
-      "12+"
-    ],
-    "expectedConcepts": [
-      "Memory Leaks",
-      "Closures & Memory",
-      "Observability, Telemetry & Real User Monitoring",
-      "Principal Architecture",
-      "High Availability",
-      "Concurrency",
-      "Edge Infrastructure"
-    ],
-    "idealAnswerPoints": [
-      "Present comprehensive architectural RFC and system topology",
-      "Detail fault tolerance, disaster recovery, and edge synchronization",
-      "Map organizational rollout, canary gates, and developer enablement"
-    ],
-    "commonMistakes": [
-      "Focusing solely on code without addressing organizational rollout and observability",
-      "Underestimating security attack vectors and edge anomalies"
-    ],
-    "followUpTopics": [
-      "How does your design gracefully degrade when global CDNs or edge runtimes suffer complete outages?",
-      "What formal verification or fuzzing strategies guarantee correctness at this scale?"
-    ],
-    "estimatedTimeMinutes": 10,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "memory-leaks",
-      "expert"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 97,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Formulate an enterprise RFC establishing clear interface boundaries, progressive rollout stages, and automated verification suites.",
-      "strongAnswer": "Architect modular, framework-agnostic core engines with multi-region synchronization, automated fallback mechanisms, and strict security compliance.",
-      "seniorLevelExpectations": "Deliver end-to-end blueprint spanning telemetry, zero-downtime canary deployments, synthetic load tests, and cross-team developer experience standards.",
-      "expertLevelExpectations": "Pioneer next-generation primitives that set industry benchmarks, eliminate entire classes of runtime bugs through static analysis, and unlock 10x throughput gains."
-    }
-  },
-  {
-    "id": "JS-0304",
-    "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Object.create",
-    "difficulty": "Expert",
-    "question": "[Q304] From the perspective of Scalability Tradeoffs under High Traffic in an offline-first enterprise mobile web application: You are the Principal Architect redesigning \"Object.create\" (Object Prototypes & Inheritance) across JavaScript. Present your comprehensive architecture blueprint covering fault tolerance, security, and developer enablement.",
-    "questionType": "Problem Solving",
-    "experienceLevels": [
-      "8-12",
-      "12+"
-    ],
-    "expectedConcepts": [
-      "Object.create",
-      "Object Prototypes & Inheritance",
-      "Scalability Tradeoffs under High Traffic",
-      "Principal Architecture",
-      "High Availability",
-      "Concurrency",
-      "Edge Infrastructure"
-    ],
-    "idealAnswerPoints": [
-      "Present comprehensive architectural RFC and system topology",
-      "Detail fault tolerance, disaster recovery, and edge synchronization",
-      "Map organizational rollout, canary gates, and developer enablement"
-    ],
-    "commonMistakes": [
-      "Focusing solely on code without addressing organizational rollout and observability",
-      "Underestimating security attack vectors and edge anomalies"
-    ],
-    "followUpTopics": [
-      "How does your design gracefully degrade when global CDNs or edge runtimes suffer complete outages?",
-      "What formal verification or fuzzing strategies guarantee correctness at this scale?"
-    ],
-    "estimatedTimeMinutes": 10,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "object-create",
-      "expert"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 98,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Formulate an enterprise RFC establishing clear interface boundaries, progressive rollout stages, and automated verification suites.",
-      "strongAnswer": "Architect modular, framework-agnostic core engines with multi-region synchronization, automated fallback mechanisms, and strict security compliance.",
-      "seniorLevelExpectations": "Deliver end-to-end blueprint spanning telemetry, zero-downtime canary deployments, synthetic load tests, and cross-team developer experience standards.",
-      "expertLevelExpectations": "Pioneer next-generation primitives that set industry benchmarks, eliminate entire classes of runtime bugs through static analysis, and unlock 10x throughput gains."
-    }
-  },
-  {
-    "id": "JS-0305",
-    "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Tail Call Optimization",
-    "difficulty": "Expert",
-    "question": "[Q305] From the perspective of Implementation Mechanics & Internal Execution when refactoring a legacy monolithic codebase with zero automated regression tests: You are the Principal Architect redesigning \"Tail Call Optimization\" (Language Mechanics & Coercion) across JavaScript. Present your comprehensive architecture blueprint covering fault tolerance, security, and developer enablement.",
-    "questionType": "Debugging",
-    "experienceLevels": [
-      "8-12",
-      "12+"
-    ],
-    "expectedConcepts": [
-      "Tail Call Optimization",
-      "Language Mechanics & Coercion",
-      "Implementation Mechanics & Internal Execution",
-      "Principal Architecture",
-      "High Availability",
-      "Concurrency",
-      "Edge Infrastructure"
-    ],
-    "idealAnswerPoints": [
-      "Present comprehensive architectural RFC and system topology",
-      "Detail fault tolerance, disaster recovery, and edge synchronization",
-      "Map organizational rollout, canary gates, and developer enablement"
-    ],
-    "commonMistakes": [
-      "Focusing solely on code without addressing organizational rollout and observability",
-      "Underestimating security attack vectors and edge anomalies"
-    ],
-    "followUpTopics": [
-      "How does your design gracefully degrade when global CDNs or edge runtimes suffer complete outages?",
-      "What formal verification or fuzzing strategies guarantee correctness at this scale?"
-    ],
-    "estimatedTimeMinutes": 10,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "tail-call-optimization",
-      "expert"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 99,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Formulate an enterprise RFC establishing clear interface boundaries, progressive rollout stages, and automated verification suites.",
-      "strongAnswer": "Architect modular, framework-agnostic core engines with multi-region synchronization, automated fallback mechanisms, and strict security compliance.",
-      "seniorLevelExpectations": "Deliver end-to-end blueprint spanning telemetry, zero-downtime canary deployments, synthetic load tests, and cross-team developer experience standards.",
-      "expertLevelExpectations": "Pioneer next-generation primitives that set industry benchmarks, eliminate entire classes of runtime bugs through static analysis, and unlock 10x throughput gains."
-    }
-  },
-  {
-    "id": "JS-0306",
-    "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Memory Leaks",
-    "difficulty": "Expert",
-    "question": "[Q306] From the perspective of Debugging & Production Failure Analysis within a real-time collaborative whiteboarding canvas: You are the Principal Architect redesigning \"Memory Leaks\" (Closures & Memory) across JavaScript. Present your comprehensive architecture blueprint covering fault tolerance, security, and developer enablement.",
-    "questionType": "Practical",
-    "experienceLevels": [
-      "8-12",
-      "12+"
-    ],
-    "expectedConcepts": [
-      "Memory Leaks",
-      "Closures & Memory",
-      "Debugging & Production Failure Analysis",
-      "Principal Architecture",
-      "High Availability",
-      "Concurrency",
-      "Edge Infrastructure"
-    ],
-    "idealAnswerPoints": [
-      "Present comprehensive architectural RFC and system topology",
-      "Detail fault tolerance, disaster recovery, and edge synchronization",
-      "Map organizational rollout, canary gates, and developer enablement"
-    ],
-    "commonMistakes": [
-      "Focusing solely on code without addressing organizational rollout and observability",
-      "Underestimating security attack vectors and edge anomalies"
-    ],
-    "followUpTopics": [
-      "How does your design gracefully degrade when global CDNs or edge runtimes suffer complete outages?",
-      "What formal verification or fuzzing strategies guarantee correctness at this scale?"
-    ],
-    "estimatedTimeMinutes": 10,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "memory-leaks",
-      "expert"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 94,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Formulate an enterprise RFC establishing clear interface boundaries, progressive rollout stages, and automated verification suites.",
-      "strongAnswer": "Architect modular, framework-agnostic core engines with multi-region synchronization, automated fallback mechanisms, and strict security compliance.",
-      "seniorLevelExpectations": "Deliver end-to-end blueprint spanning telemetry, zero-downtime canary deployments, synthetic load tests, and cross-team developer experience standards.",
-      "expertLevelExpectations": "Pioneer next-generation primitives that set industry benchmarks, eliminate entire classes of runtime bugs through static analysis, and unlock 10x throughput gains."
-    }
-  },
-  {
-    "id": "JS-0307",
-    "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Object.create",
-    "difficulty": "Expert",
-    "question": "[Q307] From the perspective of Performance Optimization & Latency Bottlenecks during a live zero-downtime database and schema migration: You are the Principal Architect redesigning \"Object.create\" (Object Prototypes & Inheritance) across JavaScript. Present your comprehensive architecture blueprint covering fault tolerance, security, and developer enablement.",
-    "questionType": "Scenario Based",
-    "experienceLevels": [
-      "8-12",
-      "12+"
-    ],
-    "expectedConcepts": [
-      "Object.create",
-      "Object Prototypes & Inheritance",
-      "Performance Optimization & Latency Bottlenecks",
-      "Principal Architecture",
-      "High Availability",
-      "Concurrency",
-      "Edge Infrastructure"
-    ],
-    "idealAnswerPoints": [
-      "Present comprehensive architectural RFC and system topology",
-      "Detail fault tolerance, disaster recovery, and edge synchronization",
-      "Map organizational rollout, canary gates, and developer enablement"
-    ],
-    "commonMistakes": [
-      "Focusing solely on code without addressing organizational rollout and observability",
-      "Underestimating security attack vectors and edge anomalies"
-    ],
-    "followUpTopics": [
-      "How does your design gracefully degrade when global CDNs or edge runtimes suffer complete outages?",
-      "What formal verification or fuzzing strategies guarantee correctness at this scale?"
-    ],
-    "estimatedTimeMinutes": 10,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "object-create",
-      "expert"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 95,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Formulate an enterprise RFC establishing clear interface boundaries, progressive rollout stages, and automated verification suites.",
-      "strongAnswer": "Architect modular, framework-agnostic core engines with multi-region synchronization, automated fallback mechanisms, and strict security compliance.",
-      "seniorLevelExpectations": "Deliver end-to-end blueprint spanning telemetry, zero-downtime canary deployments, synthetic load tests, and cross-team developer experience standards.",
-      "expertLevelExpectations": "Pioneer next-generation primitives that set industry benchmarks, eliminate entire classes of runtime bugs through static analysis, and unlock 10x throughput gains."
-    }
-  },
-  {
-    "id": "JS-0308",
-    "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Tail Call Optimization",
-    "difficulty": "Expert",
-    "question": "[Q308] From the perspective of Architecture & Modularity Design in an executive architectural review evaluating long-term technical debt: You are the Principal Architect redesigning \"Tail Call Optimization\" (Language Mechanics & Coercion) across JavaScript. Present your comprehensive architecture blueprint covering fault tolerance, security, and developer enablement.",
-    "questionType": "System Design",
-    "experienceLevels": [
-      "8-12",
-      "12+"
-    ],
-    "expectedConcepts": [
-      "Tail Call Optimization",
-      "Language Mechanics & Coercion",
-      "Architecture & Modularity Design",
-      "Principal Architecture",
-      "High Availability",
-      "Concurrency",
-      "Edge Infrastructure"
-    ],
-    "idealAnswerPoints": [
-      "Present comprehensive architectural RFC and system topology",
-      "Detail fault tolerance, disaster recovery, and edge synchronization",
-      "Map organizational rollout, canary gates, and developer enablement"
-    ],
-    "commonMistakes": [
-      "Focusing solely on code without addressing organizational rollout and observability",
-      "Underestimating security attack vectors and edge anomalies"
-    ],
-    "followUpTopics": [
-      "How does your design gracefully degrade when global CDNs or edge runtimes suffer complete outages?",
-      "What formal verification or fuzzing strategies guarantee correctness at this scale?"
-    ],
-    "estimatedTimeMinutes": 10,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "tail-call-optimization",
-      "expert"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 96,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Formulate an enterprise RFC establishing clear interface boundaries, progressive rollout stages, and automated verification suites.",
-      "strongAnswer": "Architect modular, framework-agnostic core engines with multi-region synchronization, automated fallback mechanisms, and strict security compliance.",
-      "seniorLevelExpectations": "Deliver end-to-end blueprint spanning telemetry, zero-downtime canary deployments, synthetic load tests, and cross-team developer experience standards.",
-      "expertLevelExpectations": "Pioneer next-generation primitives that set industry benchmarks, eliminate entire classes of runtime bugs through static analysis, and unlock 10x throughput gains."
-    }
-  },
-  {
-    "id": "JS-0309",
-    "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Memory Leaks",
-    "difficulty": "Expert",
-    "question": "[Q309] From the perspective of Edge Case Handling & Defensive Validation in a mission-critical healthcare portal with strict latency SLAs: You are the Principal Architect redesigning \"Memory Leaks\" (Closures & Memory) across JavaScript. Present your comprehensive architecture blueprint covering fault tolerance, security, and developer enablement.",
-    "questionType": "Problem Solving",
-    "experienceLevels": [
-      "8-12",
-      "12+"
-    ],
-    "expectedConcepts": [
-      "Memory Leaks",
-      "Closures & Memory",
-      "Edge Case Handling & Defensive Validation",
-      "Principal Architecture",
-      "High Availability",
-      "Concurrency",
-      "Edge Infrastructure"
-    ],
-    "idealAnswerPoints": [
-      "Present comprehensive architectural RFC and system topology",
-      "Detail fault tolerance, disaster recovery, and edge synchronization",
-      "Map organizational rollout, canary gates, and developer enablement"
-    ],
-    "commonMistakes": [
-      "Focusing solely on code without addressing organizational rollout and observability",
-      "Underestimating security attack vectors and edge anomalies"
-    ],
-    "followUpTopics": [
-      "How does your design gracefully degrade when global CDNs or edge runtimes suffer complete outages?",
-      "What formal verification or fuzzing strategies guarantee correctness at this scale?"
-    ],
-    "estimatedTimeMinutes": 10,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "memory-leaks",
-      "expert"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 97,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Formulate an enterprise RFC establishing clear interface boundaries, progressive rollout stages, and automated verification suites.",
-      "strongAnswer": "Architect modular, framework-agnostic core engines with multi-region synchronization, automated fallback mechanisms, and strict security compliance.",
-      "seniorLevelExpectations": "Deliver end-to-end blueprint spanning telemetry, zero-downtime canary deployments, synthetic load tests, and cross-team developer experience standards.",
-      "expertLevelExpectations": "Pioneer next-generation primitives that set industry benchmarks, eliminate entire classes of runtime bugs through static analysis, and unlock 10x throughput gains."
-    }
-  },
-  {
-    "id": "JS-0310",
-    "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Object.create",
-    "difficulty": "Expert",
-    "question": "[Q310] From the perspective of Memory Lifecycle & Garbage Collection Pressure in a design system adopted across 12 distinct product platforms: You are the Principal Architect redesigning \"Object.create\" (Object Prototypes & Inheritance) across JavaScript. Present your comprehensive architecture blueprint covering fault tolerance, security, and developer enablement.",
-    "questionType": "Debugging",
-    "experienceLevels": [
-      "8-12",
-      "12+"
-    ],
-    "expectedConcepts": [
-      "Object.create",
-      "Object Prototypes & Inheritance",
-      "Memory Lifecycle & Garbage Collection Pressure",
-      "Principal Architecture",
-      "High Availability",
-      "Concurrency",
-      "Edge Infrastructure"
-    ],
-    "idealAnswerPoints": [
-      "Present comprehensive architectural RFC and system topology",
-      "Detail fault tolerance, disaster recovery, and edge synchronization",
-      "Map organizational rollout, canary gates, and developer enablement"
-    ],
-    "commonMistakes": [
-      "Focusing solely on code without addressing organizational rollout and observability",
-      "Underestimating security attack vectors and edge anomalies"
-    ],
-    "followUpTopics": [
-      "How does your design gracefully degrade when global CDNs or edge runtimes suffer complete outages?",
-      "What formal verification or fuzzing strategies guarantee correctness at this scale?"
-    ],
-    "estimatedTimeMinutes": 10,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "object-create",
-      "expert"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 98,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Formulate an enterprise RFC establishing clear interface boundaries, progressive rollout stages, and automated verification suites.",
-      "strongAnswer": "Architect modular, framework-agnostic core engines with multi-region synchronization, automated fallback mechanisms, and strict security compliance.",
-      "seniorLevelExpectations": "Deliver end-to-end blueprint spanning telemetry, zero-downtime canary deployments, synthetic load tests, and cross-team developer experience standards.",
-      "expertLevelExpectations": "Pioneer next-generation primitives that set industry benchmarks, eliminate entire classes of runtime bugs through static analysis, and unlock 10x throughput gains."
-    }
-  },
-  {
-    "id": "JS-0311",
-    "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Tail Call Optimization",
-    "difficulty": "Expert",
-    "question": "[Q311] From the perspective of Security Hardening & Threat Mitigation across a distributed micro-frontend monorepo with 40+ engineering squads: You are the Principal Architect redesigning \"Tail Call Optimization\" (Language Mechanics & Coercion) across JavaScript. Present your comprehensive architecture blueprint covering fault tolerance, security, and developer enablement.",
-    "questionType": "Practical",
-    "experienceLevels": [
-      "8-12",
-      "12+"
-    ],
-    "expectedConcepts": [
-      "Tail Call Optimization",
-      "Language Mechanics & Coercion",
-      "Security Hardening & Threat Mitigation",
-      "Principal Architecture",
-      "High Availability",
-      "Concurrency",
-      "Edge Infrastructure"
-    ],
-    "idealAnswerPoints": [
-      "Present comprehensive architectural RFC and system topology",
-      "Detail fault tolerance, disaster recovery, and edge synchronization",
-      "Map organizational rollout, canary gates, and developer enablement"
-    ],
-    "commonMistakes": [
-      "Focusing solely on code without addressing organizational rollout and observability",
-      "Underestimating security attack vectors and edge anomalies"
-    ],
-    "followUpTopics": [
-      "How does your design gracefully degrade when global CDNs or edge runtimes suffer complete outages?",
-      "What formal verification or fuzzing strategies guarantee correctness at this scale?"
-    ],
-    "estimatedTimeMinutes": 10,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "tail-call-optimization",
-      "expert"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 99,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Formulate an enterprise RFC establishing clear interface boundaries, progressive rollout stages, and automated verification suites.",
-      "strongAnswer": "Architect modular, framework-agnostic core engines with multi-region synchronization, automated fallback mechanisms, and strict security compliance.",
-      "seniorLevelExpectations": "Deliver end-to-end blueprint spanning telemetry, zero-downtime canary deployments, synthetic load tests, and cross-team developer experience standards.",
-      "expertLevelExpectations": "Pioneer next-generation primitives that set industry benchmarks, eliminate entire classes of runtime bugs through static analysis, and unlock 10x throughput gains."
-    }
-  },
-  {
-    "id": "JS-0312",
-    "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Memory Leaks",
-    "difficulty": "Expert",
-    "question": "[Q312] From the perspective of Testing Strategy & Flakiness Elimination inside a multi-tenant SaaS application with strict client-side data isolation: You are the Principal Architect redesigning \"Memory Leaks\" (Closures & Memory) across JavaScript. Present your comprehensive architecture blueprint covering fault tolerance, security, and developer enablement.",
-    "questionType": "Scenario Based",
-    "experienceLevels": [
-      "8-12",
-      "12+"
-    ],
-    "expectedConcepts": [
-      "Memory Leaks",
-      "Closures & Memory",
-      "Testing Strategy & Flakiness Elimination",
-      "Principal Architecture",
-      "High Availability",
-      "Concurrency",
-      "Edge Infrastructure"
-    ],
-    "idealAnswerPoints": [
-      "Present comprehensive architectural RFC and system topology",
-      "Detail fault tolerance, disaster recovery, and edge synchronization",
-      "Map organizational rollout, canary gates, and developer enablement"
-    ],
-    "commonMistakes": [
-      "Focusing solely on code without addressing organizational rollout and observability",
-      "Underestimating security attack vectors and edge anomalies"
-    ],
-    "followUpTopics": [
-      "How does your design gracefully degrade when global CDNs or edge runtimes suffer complete outages?",
-      "What formal verification or fuzzing strategies guarantee correctness at this scale?"
-    ],
-    "estimatedTimeMinutes": 10,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "memory-leaks",
-      "expert"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 94,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Formulate an enterprise RFC establishing clear interface boundaries, progressive rollout stages, and automated verification suites.",
-      "strongAnswer": "Architect modular, framework-agnostic core engines with multi-region synchronization, automated fallback mechanisms, and strict security compliance.",
-      "seniorLevelExpectations": "Deliver end-to-end blueprint spanning telemetry, zero-downtime canary deployments, synthetic load tests, and cross-team developer experience standards.",
-      "expertLevelExpectations": "Pioneer next-generation primitives that set industry benchmarks, eliminate entire classes of runtime bugs through static analysis, and unlock 10x throughput gains."
-    }
-  },
-  {
-    "id": "JS-0313",
-    "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Object.create",
-    "difficulty": "Expert",
-    "question": "[Q313] From the perspective of Cross-Browser Consistency & Standards Compliance during high-concurrency peak retail traffic (e.g. Cyber Monday): You are the Principal Architect redesigning \"Object.create\" (Object Prototypes & Inheritance) across JavaScript. Present your comprehensive architecture blueprint covering fault tolerance, security, and developer enablement.",
-    "questionType": "System Design",
-    "experienceLevels": [
-      "8-12",
-      "12+"
-    ],
-    "expectedConcepts": [
-      "Object.create",
-      "Object Prototypes & Inheritance",
-      "Cross-Browser Consistency & Standards Compliance",
-      "Principal Architecture",
-      "High Availability",
-      "Concurrency",
-      "Edge Infrastructure"
-    ],
-    "idealAnswerPoints": [
-      "Present comprehensive architectural RFC and system topology",
-      "Detail fault tolerance, disaster recovery, and edge synchronization",
-      "Map organizational rollout, canary gates, and developer enablement"
-    ],
-    "commonMistakes": [
-      "Focusing solely on code without addressing organizational rollout and observability",
-      "Underestimating security attack vectors and edge anomalies"
-    ],
-    "followUpTopics": [
-      "How does your design gracefully degrade when global CDNs or edge runtimes suffer complete outages?",
-      "What formal verification or fuzzing strategies guarantee correctness at this scale?"
-    ],
-    "estimatedTimeMinutes": 10,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "object-create",
-      "expert"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 95,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Formulate an enterprise RFC establishing clear interface boundaries, progressive rollout stages, and automated verification suites.",
-      "strongAnswer": "Architect modular, framework-agnostic core engines with multi-region synchronization, automated fallback mechanisms, and strict security compliance.",
-      "seniorLevelExpectations": "Deliver end-to-end blueprint spanning telemetry, zero-downtime canary deployments, synthetic load tests, and cross-team developer experience standards.",
-      "expertLevelExpectations": "Pioneer next-generation primitives that set industry benchmarks, eliminate entire classes of runtime bugs through static analysis, and unlock 10x throughput gains."
-    }
-  },
-  {
-    "id": "JS-0314",
-    "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Tail Call Optimization",
-    "difficulty": "Expert",
-    "question": "[Q314] From the perspective of Developer Experience & API Ergonomics in a low-bandwidth, high-latency global mobile environment: You are the Principal Architect redesigning \"Tail Call Optimization\" (Language Mechanics & Coercion) across JavaScript. Present your comprehensive architecture blueprint covering fault tolerance, security, and developer enablement.",
-    "questionType": "Problem Solving",
-    "experienceLevels": [
-      "8-12",
-      "12+"
-    ],
-    "expectedConcepts": [
-      "Tail Call Optimization",
-      "Language Mechanics & Coercion",
-      "Developer Experience & API Ergonomics",
-      "Principal Architecture",
-      "High Availability",
-      "Concurrency",
-      "Edge Infrastructure"
-    ],
-    "idealAnswerPoints": [
-      "Present comprehensive architectural RFC and system topology",
-      "Detail fault tolerance, disaster recovery, and edge synchronization",
-      "Map organizational rollout, canary gates, and developer enablement"
-    ],
-    "commonMistakes": [
-      "Focusing solely on code without addressing organizational rollout and observability",
-      "Underestimating security attack vectors and edge anomalies"
-    ],
-    "followUpTopics": [
-      "How does your design gracefully degrade when global CDNs or edge runtimes suffer complete outages?",
-      "What formal verification or fuzzing strategies guarantee correctness at this scale?"
-    ],
-    "estimatedTimeMinutes": 10,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "tail-call-optimization",
-      "expert"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 96,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Formulate an enterprise RFC establishing clear interface boundaries, progressive rollout stages, and automated verification suites.",
-      "strongAnswer": "Architect modular, framework-agnostic core engines with multi-region synchronization, automated fallback mechanisms, and strict security compliance.",
-      "seniorLevelExpectations": "Deliver end-to-end blueprint spanning telemetry, zero-downtime canary deployments, synthetic load tests, and cross-team developer experience standards.",
-      "expertLevelExpectations": "Pioneer next-generation primitives that set industry benchmarks, eliminate entire classes of runtime bugs through static analysis, and unlock 10x throughput gains."
-    }
-  },
-  {
-    "id": "JS-0315",
-    "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Memory Leaks",
-    "difficulty": "Expert",
-    "question": "[Q315] From the perspective of Concurrency & Asynchronous Race Conditions in a high-throughput fintech checkout system: You are the Principal Architect redesigning \"Memory Leaks\" (Closures & Memory) across JavaScript. Present your comprehensive architecture blueprint covering fault tolerance, security, and developer enablement.",
-    "questionType": "Debugging",
-    "experienceLevels": [
-      "8-12",
-      "12+"
-    ],
-    "expectedConcepts": [
-      "Memory Leaks",
-      "Closures & Memory",
-      "Concurrency & Asynchronous Race Conditions",
-      "Principal Architecture",
-      "High Availability",
-      "Concurrency",
-      "Edge Infrastructure"
-    ],
-    "idealAnswerPoints": [
-      "Present comprehensive architectural RFC and system topology",
-      "Detail fault tolerance, disaster recovery, and edge synchronization",
-      "Map organizational rollout, canary gates, and developer enablement"
-    ],
-    "commonMistakes": [
-      "Focusing solely on code without addressing organizational rollout and observability",
-      "Underestimating security attack vectors and edge anomalies"
-    ],
-    "followUpTopics": [
-      "How does your design gracefully degrade when global CDNs or edge runtimes suffer complete outages?",
-      "What formal verification or fuzzing strategies guarantee correctness at this scale?"
-    ],
-    "estimatedTimeMinutes": 10,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "memory-leaks",
-      "expert"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 97,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Formulate an enterprise RFC establishing clear interface boundaries, progressive rollout stages, and automated verification suites.",
-      "strongAnswer": "Architect modular, framework-agnostic core engines with multi-region synchronization, automated fallback mechanisms, and strict security compliance.",
-      "seniorLevelExpectations": "Deliver end-to-end blueprint spanning telemetry, zero-downtime canary deployments, synthetic load tests, and cross-team developer experience standards.",
-      "expertLevelExpectations": "Pioneer next-generation primitives that set industry benchmarks, eliminate entire classes of runtime bugs through static analysis, and unlock 10x throughput gains."
-    }
-  },
-  {
-    "id": "JS-0316",
-    "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Object.create",
-    "difficulty": "Expert",
-    "question": "[Q316] From the perspective of Refactoring & Safe Legacy Migration within a media streaming player handling adaptive bitrate switching: You are the Principal Architect redesigning \"Object.create\" (Object Prototypes & Inheritance) across JavaScript. Present your comprehensive architecture blueprint covering fault tolerance, security, and developer enablement.",
-    "questionType": "Practical",
-    "experienceLevels": [
-      "8-12",
-      "12+"
-    ],
-    "expectedConcepts": [
-      "Object.create",
-      "Object Prototypes & Inheritance",
-      "Refactoring & Safe Legacy Migration",
-      "Principal Architecture",
-      "High Availability",
-      "Concurrency",
-      "Edge Infrastructure"
-    ],
-    "idealAnswerPoints": [
-      "Present comprehensive architectural RFC and system topology",
-      "Detail fault tolerance, disaster recovery, and edge synchronization",
-      "Map organizational rollout, canary gates, and developer enablement"
-    ],
-    "commonMistakes": [
-      "Focusing solely on code without addressing organizational rollout and observability",
-      "Underestimating security attack vectors and edge anomalies"
-    ],
-    "followUpTopics": [
-      "How does your design gracefully degrade when global CDNs or edge runtimes suffer complete outages?",
-      "What formal verification or fuzzing strategies guarantee correctness at this scale?"
-    ],
-    "estimatedTimeMinutes": 10,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "object-create",
-      "expert"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 98,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Formulate an enterprise RFC establishing clear interface boundaries, progressive rollout stages, and automated verification suites.",
-      "strongAnswer": "Architect modular, framework-agnostic core engines with multi-region synchronization, automated fallback mechanisms, and strict security compliance.",
-      "seniorLevelExpectations": "Deliver end-to-end blueprint spanning telemetry, zero-downtime canary deployments, synthetic load tests, and cross-team developer experience standards.",
-      "expertLevelExpectations": "Pioneer next-generation primitives that set industry benchmarks, eliminate entire classes of runtime bugs through static analysis, and unlock 10x throughput gains."
-    }
-  },
-  {
-    "id": "JS-0317",
-    "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Tail Call Optimization",
-    "difficulty": "Expert",
-    "question": "[Q317] From the perspective of State Synchronization & Boundary Isolation during a high-severity production outage requiring immediate triage: You are the Principal Architect redesigning \"Tail Call Optimization\" (Language Mechanics & Coercion) across JavaScript. Present your comprehensive architecture blueprint covering fault tolerance, security, and developer enablement.",
-    "questionType": "Scenario Based",
-    "experienceLevels": [
-      "8-12",
-      "12+"
-    ],
-    "expectedConcepts": [
-      "Tail Call Optimization",
-      "Language Mechanics & Coercion",
-      "State Synchronization & Boundary Isolation",
-      "Principal Architecture",
-      "High Availability",
-      "Concurrency",
-      "Edge Infrastructure"
-    ],
-    "idealAnswerPoints": [
-      "Present comprehensive architectural RFC and system topology",
-      "Detail fault tolerance, disaster recovery, and edge synchronization",
-      "Map organizational rollout, canary gates, and developer enablement"
-    ],
-    "commonMistakes": [
-      "Focusing solely on code without addressing organizational rollout and observability",
-      "Underestimating security attack vectors and edge anomalies"
-    ],
-    "followUpTopics": [
-      "How does your design gracefully degrade when global CDNs or edge runtimes suffer complete outages?",
-      "What formal verification or fuzzing strategies guarantee correctness at this scale?"
-    ],
-    "estimatedTimeMinutes": 10,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "tail-call-optimization",
-      "expert"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 99,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Formulate an enterprise RFC establishing clear interface boundaries, progressive rollout stages, and automated verification suites.",
-      "strongAnswer": "Architect modular, framework-agnostic core engines with multi-region synchronization, automated fallback mechanisms, and strict security compliance.",
-      "seniorLevelExpectations": "Deliver end-to-end blueprint spanning telemetry, zero-downtime canary deployments, synthetic load tests, and cross-team developer experience standards.",
-      "expertLevelExpectations": "Pioneer next-generation primitives that set industry benchmarks, eliminate entire classes of runtime bugs through static analysis, and unlock 10x throughput gains."
-    }
-  },
-  {
-    "id": "JS-0318",
-    "technology": "javascript",
-    "topic": "Closures & Memory",
-    "subtopic": "Memory Leaks",
-    "difficulty": "Expert",
-    "question": "[Q318] From the perspective of Error Boundaries & Graceful Degradation inside an embedded financial analytics dashboard processing live WebSockets: You are the Principal Architect redesigning \"Memory Leaks\" (Closures & Memory) across JavaScript. Present your comprehensive architecture blueprint covering fault tolerance, security, and developer enablement.",
-    "questionType": "System Design",
-    "experienceLevels": [
-      "8-12",
-      "12+"
-    ],
-    "expectedConcepts": [
-      "Memory Leaks",
-      "Closures & Memory",
-      "Error Boundaries & Graceful Degradation",
-      "Principal Architecture",
-      "High Availability",
-      "Concurrency",
-      "Edge Infrastructure"
-    ],
-    "idealAnswerPoints": [
-      "Present comprehensive architectural RFC and system topology",
-      "Detail fault tolerance, disaster recovery, and edge synchronization",
-      "Map organizational rollout, canary gates, and developer enablement"
-    ],
-    "commonMistakes": [
-      "Focusing solely on code without addressing organizational rollout and observability",
-      "Underestimating security attack vectors and edge anomalies"
-    ],
-    "followUpTopics": [
-      "How does your design gracefully degrade when global CDNs or edge runtimes suffer complete outages?",
-      "What formal verification or fuzzing strategies guarantee correctness at this scale?"
-    ],
-    "estimatedTimeMinutes": 10,
-    "tags": [
-      "javascript",
-      "closures---memory",
-      "memory-leaks",
-      "expert"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 94,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Formulate an enterprise RFC establishing clear interface boundaries, progressive rollout stages, and automated verification suites.",
-      "strongAnswer": "Architect modular, framework-agnostic core engines with multi-region synchronization, automated fallback mechanisms, and strict security compliance.",
-      "seniorLevelExpectations": "Deliver end-to-end blueprint spanning telemetry, zero-downtime canary deployments, synthetic load tests, and cross-team developer experience standards.",
-      "expertLevelExpectations": "Pioneer next-generation primitives that set industry benchmarks, eliminate entire classes of runtime bugs through static analysis, and unlock 10x throughput gains."
-    }
-  },
-  {
-    "id": "JS-0319",
-    "technology": "javascript",
-    "topic": "Object Prototypes & Inheritance",
-    "subtopic": "Object.create",
-    "difficulty": "Expert",
-    "question": "[Q319] From the perspective of Observability, Telemetry & Real User Monitoring when integrating third-party untrusted scripts without compromising security: You are the Principal Architect redesigning \"Object.create\" (Object Prototypes & Inheritance) across JavaScript. Present your comprehensive architecture blueprint covering fault tolerance, security, and developer enablement.",
-    "questionType": "Problem Solving",
-    "experienceLevels": [
-      "8-12",
-      "12+"
-    ],
-    "expectedConcepts": [
-      "Object.create",
-      "Object Prototypes & Inheritance",
-      "Observability, Telemetry & Real User Monitoring",
-      "Principal Architecture",
-      "High Availability",
-      "Concurrency",
-      "Edge Infrastructure"
-    ],
-    "idealAnswerPoints": [
-      "Present comprehensive architectural RFC and system topology",
-      "Detail fault tolerance, disaster recovery, and edge synchronization",
-      "Map organizational rollout, canary gates, and developer enablement"
-    ],
-    "commonMistakes": [
-      "Focusing solely on code without addressing organizational rollout and observability",
-      "Underestimating security attack vectors and edge anomalies"
-    ],
-    "followUpTopics": [
-      "How does your design gracefully degrade when global CDNs or edge runtimes suffer complete outages?",
-      "What formal verification or fuzzing strategies guarantee correctness at this scale?"
-    ],
-    "estimatedTimeMinutes": 10,
-    "tags": [
-      "javascript",
-      "object-prototypes---inheritance",
-      "object-create",
-      "expert"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 95,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Formulate an enterprise RFC establishing clear interface boundaries, progressive rollout stages, and automated verification suites.",
-      "strongAnswer": "Architect modular, framework-agnostic core engines with multi-region synchronization, automated fallback mechanisms, and strict security compliance.",
-      "seniorLevelExpectations": "Deliver end-to-end blueprint spanning telemetry, zero-downtime canary deployments, synthetic load tests, and cross-team developer experience standards.",
-      "expertLevelExpectations": "Pioneer next-generation primitives that set industry benchmarks, eliminate entire classes of runtime bugs through static analysis, and unlock 10x throughput gains."
-    }
-  },
-  {
-    "id": "JS-0320",
-    "technology": "javascript",
-    "topic": "Language Mechanics & Coercion",
-    "subtopic": "Tail Call Optimization",
-    "difficulty": "Expert",
-    "question": "[Q320] From the perspective of Scalability Tradeoffs under High Traffic in an offline-first enterprise mobile web application: You are the Principal Architect redesigning \"Tail Call Optimization\" (Language Mechanics & Coercion) across JavaScript. Present your comprehensive architecture blueprint covering fault tolerance, security, and developer enablement.",
-    "questionType": "Debugging",
-    "experienceLevels": [
-      "8-12",
-      "12+"
-    ],
-    "expectedConcepts": [
-      "Tail Call Optimization",
-      "Language Mechanics & Coercion",
-      "Scalability Tradeoffs under High Traffic",
-      "Principal Architecture",
-      "High Availability",
-      "Concurrency",
-      "Edge Infrastructure"
-    ],
-    "idealAnswerPoints": [
-      "Present comprehensive architectural RFC and system topology",
-      "Detail fault tolerance, disaster recovery, and edge synchronization",
-      "Map organizational rollout, canary gates, and developer enablement"
-    ],
-    "commonMistakes": [
-      "Focusing solely on code without addressing organizational rollout and observability",
-      "Underestimating security attack vectors and edge anomalies"
-    ],
-    "followUpTopics": [
-      "How does your design gracefully degrade when global CDNs or edge runtimes suffer complete outages?",
-      "What formal verification or fuzzing strategies guarantee correctness at this scale?"
-    ],
-    "estimatedTimeMinutes": 10,
-    "tags": [
-      "javascript",
-      "language-mechanics---coercion",
-      "tail-call-optimization",
-      "expert"
-    ],
-    "status": "APPROVED",
-    "qualityScore": 96,
-    "reviewStatus": "APPROVED",
-    "version": 1,
-    "createdAt": "2026-09-10T10:00:00.000Z",
-    "updatedAt": "2026-09-10T10:00:00.000Z",
-    "rubric": {
-      "minimumExpected": "Formulate an enterprise RFC establishing clear interface boundaries, progressive rollout stages, and automated verification suites.",
-      "strongAnswer": "Architect modular, framework-agnostic core engines with multi-region synchronization, automated fallback mechanisms, and strict security compliance.",
-      "seniorLevelExpectations": "Deliver end-to-end blueprint spanning telemetry, zero-downtime canary deployments, synthetic load tests, and cross-team developer experience standards.",
-      "expertLevelExpectations": "Pioneer next-generation primitives that set industry benchmarks, eliminate entire classes of runtime bugs through static analysis, and unlock 10x throughput gains."
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
+    "rubric": {
+      "minimumExpected": "Pauses execution correctly.",
+      "strongAnswer": "Inspection workflow described.",
+      "seniorLevelExpectations": "Senior candidates step efficiently.",
+      "expertLevelExpectations": "Expert candidates use conditional breaks."
     }
   }
 ];

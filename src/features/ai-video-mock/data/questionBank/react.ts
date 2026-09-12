@@ -17371,5 +17371,233 @@ export const react_questions: MockQuestion[] = [
       "seniorLevelExpectations": "Deliver end-to-end blueprint spanning telemetry, zero-downtime canary deployments, synthetic load tests, and cross-team developer experience standards.",
       "expertLevelExpectations": "Pioneer next-generation primitives that set industry benchmarks, eliminate entire classes of runtime bugs through static analysis, and unlock 10x throughput gains."
     }
+  },
+  {
+    "id": "RCT-0321",
+    "technology": "react",
+    "topic": "Components & JSX",
+    "subtopic": "Components",
+    "difficulty": "Basic",
+    "question": "What is a React component? Write a simple functional component that displays a greeting message.",
+    "questionType": "Practical",
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["Functional components", "JSX return", "Reusability"],
+    "idealAnswerPoints": [
+      "A component is a reusable function returning UI",
+      "Example: function Greeting() { return <h1>Hello</h1>; }",
+      "Component names start with a capital letter"
+    ],
+    "commonMistakes": [
+      "Naming components with lowercase so React treats them as HTML tags",
+      "Forgetting to return JSX from the function"
+    ],
+    "followUpTopics": [
+      "How do components receive data?",
+      "What is the difference between components and plain functions?"
+    ],
+    "estimatedTimeMinutes": 3,
+    "tags": ["react", "components", "jsx", "basic"],
+    "status": "APPROVED",
+    "qualityScore": 95,
+    "reviewStatus": "APPROVED",
+    "version": 1,
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
+    "rubric": {
+      "minimumExpected": "Candidate defines a component as a reusable UI function.",
+      "strongAnswer": "Candidate writes a correct greeting component with capital naming.",
+      "seniorLevelExpectations": "Senior candidates explain composition and purity expectations.",
+      "expertLevelExpectations": "Expert candidates discuss element versus component identity and reconciliation."
+    }
+  },
+  {
+    "id": "RCT-0322",
+    "technology": "react",
+    "topic": "Components & JSX",
+    "subtopic": "Props",
+    "difficulty": "Basic",
+    "question": "What are props in React? Show a parent passing a name to a child component that displays it.",
+    "questionType": "Practical",
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["One-way data flow", "Read-only props", "Parent-child communication"],
+    "idealAnswerPoints": [
+      "Props pass data from parent to child",
+      "Example: <Greeting name='Asha' /> with props.name inside",
+      "Props are read-only; the child must not modify them"
+    ],
+    "commonMistakes": [
+      "Mutating props inside the child component",
+      "Confusing props with state"
+    ],
+    "followUpTopics": [
+      "How does a child send data back to the parent?",
+      "What are default props?"
+    ],
+    "estimatedTimeMinutes": 3,
+    "tags": ["react", "props", "data-flow", "basic"],
+    "status": "APPROVED",
+    "qualityScore": 95,
+    "reviewStatus": "APPROVED",
+    "version": 1,
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
+    "rubric": {
+      "minimumExpected": "Candidate describes props as parent-to-child inputs.",
+      "strongAnswer": "Candidate writes a correct parent-child props example.",
+      "seniorLevelExpectations": "Senior candidates explain one-way flow and prop drilling tradeoffs.",
+      "expertLevelExpectations": "Expert candidates discuss referential stability of props and memoization."
+    }
+  },
+  {
+    "id": "RCT-0323",
+    "technology": "react",
+    "topic": "State Management",
+    "subtopic": "useState",
+    "difficulty": "Basic",
+    "question": "What is state in React and how does useState work? Build a button that shows how many times it was clicked.",
+    "questionType": "Practical",
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["State variable", "Setter function", "Re-render trigger"],
+    "idealAnswerPoints": [
+      "useState returns the current value and a setter",
+      "Calling the setter re-renders the component with the new value",
+      "Counter example with onClick incrementing count"
+    ],
+    "commonMistakes": [
+      "Mutating state directly instead of using the setter",
+      "Expecting the new state value immediately after calling the setter"
+    ],
+    "followUpTopics": [
+      "Why must state updates be immutable?",
+      "How does useState differ from a plain variable?"
+    ],
+    "estimatedTimeMinutes": 4,
+    "tags": ["react", "state", "usestate", "basic"],
+    "status": "APPROVED",
+    "qualityScore": 96,
+    "reviewStatus": "APPROVED",
+    "version": 1,
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
+    "rubric": {
+      "minimumExpected": "Candidate explains useState holds data that re-renders on change.",
+      "strongAnswer": "Candidate builds a working click counter.",
+      "seniorLevelExpectations": "Senior candidates explain batching and functional updates.",
+      "expertLevelExpectations": "Expert candidates discuss hook call order and fiber state storage."
+    }
+  },
+  {
+    "id": "RCT-0324",
+    "technology": "react",
+    "topic": "Patterns",
+    "subtopic": "Higher-Order Components",
+    "difficulty": "Basic",
+    "question": "What is a Higher-Order Component (HOC) in React? Write a simple withLogger HOC that logs props before rendering the wrapped component.",
+    "questionType": "Practical",
+    "experienceLevels": ["0-1", "1-2", "2-4"],
+    "expectedConcepts": ["Function returning component", "Cross-cutting concerns", "Props forwarding"],
+    "idealAnswerPoints": [
+      "An HOC is a function taking a component and returning an enhanced component",
+      "withLogger logs props then renders the wrapped component with all props",
+      "Used for logging, auth checks, and shared behavior"
+    ],
+    "commonMistakes": [
+      "Mutating the wrapped component instead of composing around it",
+      "Forgetting to forward props to the inner component"
+    ],
+    "followUpTopics": [
+      "How do hooks replace most HOC use cases?",
+      "What naming convention keeps HOCs debuggable?"
+    ],
+    "estimatedTimeMinutes": 5,
+    "tags": ["react", "hoc", "patterns", "basic"],
+    "status": "APPROVED",
+    "qualityScore": 95,
+    "reviewStatus": "APPROVED",
+    "version": 1,
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
+    "rubric": {
+      "minimumExpected": "Candidate defines an HOC as a component-enhancing function.",
+      "strongAnswer": "Candidate writes a working withLogger with prop forwarding.",
+      "seniorLevelExpectations": "Senior candidates compare HOCs against hooks and render props.",
+      "expertLevelExpectations": "Expert candidates discuss static hoisting and ref forwarding edge cases."
+    }
+  },
+  {
+    "id": "RCT-0325",
+    "technology": "react",
+    "topic": "Rendering",
+    "subtopic": "Lists and Keys",
+    "difficulty": "Basic",
+    "question": "How do you render a list of items in React, and why does each item need a key? Show an example with a list of names.",
+    "questionType": "Practical",
+    "experienceLevels": ["0-1", "1-2"],
+    "expectedConcepts": ["map rendering", "Stable keys", "Reconciliation"],
+    "idealAnswerPoints": [
+      "Use map to turn each item into an element",
+      "Keys help React match items across renders",
+      "Use stable ids, not array indexes, when the list can change"
+    ],
+    "commonMistakes": [
+      "Omitting keys and ignoring the console warning",
+      "Using array index as key for reorderable lists"
+    ],
+    "followUpTopics": [
+      "What goes wrong with index keys on reorder?",
+      "Where should the key go on fragments?"
+    ],
+    "estimatedTimeMinutes": 3,
+    "tags": ["react", "lists", "keys", "basic"],
+    "status": "APPROVED",
+    "qualityScore": 95,
+    "reviewStatus": "APPROVED",
+    "version": 1,
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
+    "rubric": {
+      "minimumExpected": "Candidate renders a list with map and adds keys.",
+      "strongAnswer": "Candidate explains keys help reconciliation and uses stable ids.",
+      "seniorLevelExpectations": "Senior candidates explain index-key reorder bugs concretely.",
+      "expertLevelExpectations": "Expert candidates describe the diffing algorithm's key matching."
+    }
+  },
+  {
+    "id": "RCT-0326",
+    "technology": "react",
+    "topic": "Hooks",
+    "subtopic": "useEffect",
+    "difficulty": "Basic",
+    "question": "What is useEffect used for in React? Write an example that updates the page title whenever a count state changes.",
+    "questionType": "Practical",
+    "experienceLevels": ["0-1", "1-2", "2-4"],
+    "expectedConcepts": ["Side effects", "Dependency array", "Effect timing"],
+    "idealAnswerPoints": [
+      "useEffect runs side effects like title updates or data fetching",
+      "Dependency array [count] reruns the effect when count changes",
+      "Empty array runs once; missing array runs after every render"
+    ],
+    "commonMistakes": [
+      "Forgetting the dependency array and causing infinite loops with state",
+      "Putting side effects directly in the render body"
+    ],
+    "followUpTopics": [
+      "How do you clean up subscriptions in useEffect?",
+      "What causes the infinite loop mistake?"
+    ],
+    "estimatedTimeMinutes": 4,
+    "tags": ["react", "useeffect", "hooks", "basic"],
+    "status": "APPROVED",
+    "qualityScore": 95,
+    "reviewStatus": "APPROVED",
+    "version": 1,
+    "createdAt": "2026-09-11T10:00:00.000Z",
+    "updatedAt": "2026-09-11T10:00:00.000Z",
+    "rubric": {
+      "minimumExpected": "Candidate describes useEffect for side effects with an example.",
+      "strongAnswer": "Candidate writes the title example with a correct dependency array.",
+      "seniorLevelExpectations": "Senior candidates explain cleanup and dependency reasoning.",
+      "expertLevelExpectations": "Expert candidates discuss effect scheduling and StrictMode double-invoke."
+    }
   }
 ];

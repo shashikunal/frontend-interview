@@ -19,12 +19,26 @@ export interface TranscriptionResult {
   confidence: number;
   language: string;
   durationSeconds: number;
+  provider: string;
+  model: string;
+  timestamp: string;
+  version: number;
+}
+
+export interface TranscriptionHealth {
+  status: 'connected' | 'offline';
+  endpoint: string;
+  model: string;
+  latencyMs: number | null;
+  message: string;
+  checkedAt: string;
 }
 
 export interface TranscriptionProvider {
   name: string;
   isAvailable(): Promise<boolean>;
   transcribeAudio(audioBlob: Blob): Promise<TranscriptionResult>;
+  healthCheck(): Promise<TranscriptionHealth>;
 }
 
 export interface VideoProcessorResult {

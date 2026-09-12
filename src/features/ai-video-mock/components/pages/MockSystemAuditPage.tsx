@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { runQuestionBankAudit, type TrackAuditReport } from '../../data/questionBankRegistry';
 import { ollamaProvider } from '../../services/providers/ollamaProvider';
 import { whisperProvider } from '../../services/providers/whisperProvider';
+import type { TranscriptionHealth } from '../../types/provider.types';
 import { sandboxProvider } from '../../services/providers/sandboxProvider';
 
 export default function MockSystemAuditPage() {
@@ -14,7 +15,7 @@ export default function MockSystemAuditPage() {
     generationLatencyMs?: number;
   }>({ available: false, message: 'Checking...', generationTest: 'PENDING' });
 
-  const [whisperAvailable, setWhisperAvailable] = useState<boolean>(false);
+  const [whisperHealth, setWhisperHealth] = useState<TranscriptionHealth | null>(null);
   const [sandboxWorking, setSandboxWorking] = useState<boolean>(false);
   const [activeTab, setActiveTab] = useState<'overview' | 'question-bank'>('overview');
 
@@ -46,8 +47,8 @@ export default function MockSystemAuditPage() {
       }
     });
 
-    // 3. Test Whisper
-    whisperProvider.isAvailable().then(setWhisperAvailable);
+    // 3. Whisper health (honest: Connected vs Offline, never faked)
+    whisperProvider.healthCheck().then(setWhisperHealth);
 
     // 4. Test Sandbox execution
     sandboxProvider.execute({
@@ -134,20 +135,29 @@ export default function MockSystemAuditPage() {
               </div>
             </div>
 
-            {/* 3. Speech Recognition Diagnostic */}
+            {/* 3. Speech Recognition Diagnostic (honest health, never faked) */}
             <div className="ai-vm-card">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
                 <span style={{ fontSize: '1.4rem' }}>🎙️</span>
-                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#10b981', background: 'rgba(16, 185, 129, 0.1)', padding: '2px 8px', borderRadius: 4 }}>
-                  {whisperAvailable ? 'LOCAL WHISPER' : 'WEB SPEECH API (PASS)'}
+                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: whisperHealth?.status === 'connected' ? '#10b981' : '#f59e0b', background: whisperHealth?.status === 'connected' ? 'rgba(16, 185, 129, 0.1)' : 'rgba(245, 158, 11, 0.1)', padding: '2px 8px', borderRadius: 4 }}>
+                  {!whisperHealth ? 'CHECKING…' : whisperHealth.status === 'connected' ? 'LOCAL WHISPER · CONNECTED' : 'LOCAL WHISPER · OFFLINE'}
                 </span>
               </div>
               <h3 style={{ fontSize: '1.05rem', margin: '0 0 6px' }}>Speech Engine (STT)</h3>
+              <div style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', marginBottom: 8 }}>
+                <div>Endpoint: <code>{whisperHealth?.endpoint || '…'}</code></div>
+                <div>Model: <strong>{whisperHealth?.model || '…'}</strong></div>
+                <div>Transcription Test: <strong>{!whisperHealth ? 'PENDING' : whisperHealth.status === 'connected' ? 'PASS' : 'FAIL'}</strong>{whisperHealth?.latencyMs != null ? ` (${whisperHealth.latencyMs}ms)` : ''}</div>
+              </div>
               <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', margin: '0 0 12px' }}>
-                {whisperAvailable ? 'Local Whisper backend connected.' : 'Browser Web Speech API active with transcript cleaning.'}
+                {!whisperHealth
+                  ? 'Probing the local faster-whisper sidecar…'
+                  : whisperHealth.status === 'connected'
+                    ? whisperHealth.message
+                    : `${whisperHealth.message} Fallback order: Web Speech API → typed answer. Start the sidecar: uvicorn faster_whisper_server:app --host 127.0.0.1 --port 9000`}
               </p>
               <div style={{ fontSize: '0.78rem', color: '#10b981' }}>
-                ✓ Transcript cleaning, WPM calculation, and filler word detection operational.
+                ✓ Transcript cleaning, provider stamping, and raw-text preservation operational.
               </div>
             </div>
 
@@ -178,7 +188,7 @@ export default function MockSystemAuditPage() {
               </div>
               <h3 style={{ fontSize: '1.05rem', margin: '0 0 6px' }}>Video Storage &amp; Streaming</h3>
               <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', margin: '0 0 12px' }}>
-                480p 24fps MediaRecorder recording saved to <code>storage/interviews/...</code> with HTTP 206 Range streaming.
+                480p 24fps MediaRecorder recording saved to <code>storage/interviews/...</code> with HTTP 206 Range streaming (dev server; IndexedDB fallback elsewhere).
               </p>
               <div style={{ fontSize: '0.78rem', color: '#10b981' }}>
                 ✓ Zero cloud storage dependency for local development.
@@ -199,6 +209,103 @@ export default function MockSystemAuditPage() {
               </p>
               <div style={{ fontSize: '0.78rem', color: '#10b981' }}>
                 ✓ Verified execution of deterministic assertions.
+              </div>
+            </div>
+
+            {/* 7. Environment Configuration (presence only — never secret values) */}
+            <div className="ai-vm-card">
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                <span style={{ fontSize: '1.4rem' }}>⚙️</span>
+                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#10b981', background: 'rgba(16, 185, 129, 0.1)', padding: '2px 8px', borderRadius: 4 }}>
+                  CONFIGURED
+                </span>
+              </div>
+              <h3 style={{ fontSize: '1.05rem', margin: '0 0 6px' }}>Environment</h3>
+              <div style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', marginBottom: 8 }}>
+                <div>Mode: <strong>{import.meta.env.MODE}</strong></div>
+                <div>Supabase URL: <strong>{import.meta.env.VITE_SUPABASE_URL ? 'SET' : 'MISSING'}</strong></div>
+                <div>Supabase Anon Key: <strong>{import.meta.env.VITE_SUPABASE_ANON_KEY ? 'SET (public-safe)' : 'MISSING'}</strong></div>
+                <div>Transcription Provider: <strong>{import.meta.env.VITE_TRANSCRIPTION_PROVIDER || 'local-whisper (default)'}</strong></div>
+                <div>Whisper Endpoint: <strong>{import.meta.env.VITE_WHISPER_BASE_URL || 'http://localhost:9000 (default)'}</strong></div>
+                <div>Whisper Model: <strong>{import.meta.env.VITE_WHISPER_MODEL || 'not-configured'}</strong></div>
+              </div>
+              <div style={{ fontSize: '0.78rem', color: 'var(--text-secondary)' }}>
+                Values are never displayed — presence only. See .env.example for the full list.
+              </div>
+            </div>
+
+            {/* 8. Object Storage / MinIO (honest: not integrated yet) */}
+            <div className="ai-vm-card">
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                <span style={{ fontSize: '1.4rem' }}>🗄️</span>
+                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#f59e0b', background: 'rgba(245, 158, 11, 0.1)', padding: '2px 8px', borderRadius: 4 }}>
+                  NOT CONFIGURED
+                </span>
+              </div>
+              <h3 style={{ fontSize: '1.05rem', margin: '0 0 6px' }}>Object Storage (MinIO)</h3>
+              <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', margin: '0 0 12px' }}>
+                No MinIO/S3 integration in this build. Videos persist via dev-server disk (localhost only) + browser IndexedDB; metadata in Supabase. Planned: MinIO API <code>:9001</code>, console <code>:9002</code>, bucket <code>mock-interviews</code>.
+              </p>
+              <div style={{ fontSize: '0.78rem', color: '#f59e0b' }}>
+                ⚠ Production video needs the MinIO provider + signed-URL playback (not built yet).
+              </div>
+            </div>
+
+            {/* 9. FFmpeg (honest: absent) */}
+            <div className="ai-vm-card">
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                <span style={{ fontSize: '1.4rem' }}>🎬</span>
+                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#f59e0b', background: 'rgba(245, 158, 11, 0.1)', padding: '2px 8px', borderRadius: 4 }}>
+                  NOT PRESENT
+                </span>
+              </div>
+              <h3 style={{ fontSize: '1.05rem', margin: '0 0 6px' }}>FFmpeg Processing</h3>
+              <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', margin: '0 0 12px' }}>
+                No ffmpeg binary on this machine and no transcoding step in code — recordings are stored raw (webm) with no compression, checksum, or 480p normalization.
+              </p>
+              <div style={{ fontSize: '0.78rem', color: '#f59e0b' }}>
+                ⚠ Install FFmpeg and wire compression before claiming processed-video compliance.
+              </div>
+            </div>
+
+            {/* 10. Security posture (presence only) */}
+            <div className="ai-vm-card">
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                <span style={{ fontSize: '1.4rem' }}>🔒</span>
+                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: import.meta.env.VITE_ADMIN_PASSWORD ? '#10b981' : '#ef4444', background: 'rgba(239, 68, 68, 0.1)', padding: '2px 8px', borderRadius: 4 }}>
+                  {import.meta.env.VITE_ADMIN_PASSWORD ? 'ENV-CONTROLLED' : 'FALLBACK ACTIVE'}
+                </span>
+              </div>
+              <h3 style={{ fontSize: '1.05rem', margin: '0 0 6px' }}>Security</h3>
+              <div style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', marginBottom: 8 }}>
+                <div>Admin credentials: <strong>{import.meta.env.VITE_ADMIN_PASSWORD ? 'from environment' : 'compiled-in fallback — rotate to env immediately'}</strong></div>
+                <div>Service-role key in bundle: <strong>ABSENT ✓</strong></div>
+                <div>OpenAI key: <strong>server-side only ✓</strong></div>
+                <div>Mock-table RLS: <strong>enforced (owner-only + admin review)</strong></div>
+              </div>
+              <div style={{ fontSize: '0.78rem', color: 'var(--text-secondary)' }}>
+                Admin login is client-compared; move to server-checked role auth before external launch.
+              </div>
+            </div>
+
+            {/* 11. Production readiness */}
+            <div className="ai-vm-card">
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                <span style={{ fontSize: '1.4rem' }}>🚀</span>
+                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#f59e0b', background: 'rgba(245, 158, 11, 0.1)', padding: '2px 8px', borderRadius: 4 }}>
+                  DEV-ONLY GAPS
+                </span>
+              </div>
+              <h3 style={{ fontSize: '1.05rem', margin: '0 0 6px' }}>Production Readiness</h3>
+              <div style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', marginBottom: 8 }}>
+                <div><code>/api/ollama</code> proxy: <strong>dev server only</strong> — production needs CloudAIProvider</div>
+                <div><code>/api/video/*</code> disk endpoints: <strong>dev server only</strong> — production keeps IndexedDB only</div>
+                <div>Cloud AI: <strong>NOT CONFIGURED</strong></div>
+                <div>MinIO: <strong>NOT CONFIGURED</strong></div>
+                <div>FFmpeg: <strong>NOT PRESENT</strong></div>
+              </div>
+              <div style={{ fontSize: '0.78rem', color: '#f59e0b' }}>
+                ⚠ Ship to production only after Cloud AI + object storage land.
               </div>
             </div>
           </div>

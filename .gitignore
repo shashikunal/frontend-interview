@@ -41,3 +41,8 @@ scripts/.topbrains-token
 nul
 /nul
 .env*.local
+
+# Local dumps and temp data
+db-backup-*.json
+cp-full-extract.json
+storage/

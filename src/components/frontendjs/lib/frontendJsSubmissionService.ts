@@ -26,6 +26,7 @@ export class FrontendJsSubmissionService {
       // 2. Sync to Tracking Service for candidate telemetry, streaks & canonical submissions
       try {
         await trackingService.recordSubmission({
+          id: submission.id,
           questionId: submission.questionId,
           category: 'FRONTEND_JS',
           userId: user?.id,
@@ -42,88 +43,69 @@ export class FrontendJsSubmissionService {
         console.debug('Frontend JS tracking sync notice:', trackErr)
       }
 
-      // 3. Sync to Supabase canonical submissions table if authenticated
+      // 3. Mirror to dedicated frontend_js_submissions & question_attempts when authenticated with valid UUID
       const userId = user?.id
-      if (userId && supabase) {
+      const isValidUuid = (val?: string | null): boolean =>
+        Boolean(val && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(val))
+      if (isValidUuid(userId) && supabase) {
         try {
-          const { error } = await supabase.from('submissions').insert({
+          // 3b. Best-effort mirror into dedicated frontend_js_submissions.
+          const { error: fjsErr } = await supabase.from('frontend_js_submissions').insert({
             user_id: userId,
             question_id: submission.questionId,
+            question_version: submission.questionVersion || 1,
             code: submission.code,
-            language: 'javascript',
             status: submission.status === 'Accepted' ? 'accepted' : 'wrong_answer',
             score: submission.score,
-            execution_time: submission.runtimeMs ? Math.max(1, Math.round(submission.runtimeMs / 1000)) : 1,
+            tests_passed: submission.testsPassed,
+            tests_total: submission.testsTotal,
+            execution_time_ms: submission.runtimeMs || 0,
+            hints_used: submission.hintsUsed || 0,
+            solution_viewed: submission.solutionViewed || false,
+            time_spent_seconds: submission.timeSpentSeconds || 0,
+            idempotency_key: idempotencyKey,
             created_at: submission.timestamp,
           })
-
-          if (error && !error.message.includes('duplicate')) {
-            console.debug('Frontend JS Supabase canonical submission notice:', error.message)
+          if (fjsErr && !fjsErr.message.includes('duplicate') && !fjsErr.message.includes('schema cache')) {
+            console.debug('Frontend JS dedicated table sync notice:', fjsErr.message)
           }
+        } catch {
+          // ignore — canonical insert above already succeeded
+        }
 
-          // 3b. Best-effort mirror into dedicated frontend_js_submissions.
-          // Never send client `sub_xxx` id (column is UUID with DB default).
-          try {
-            const { error: fjsErr } = await supabase.from('frontend_js_submissions').insert({
+        // 3c. Best-effort attempt ledger so Attempt sections + Tracks pick up
+        try {
+          const nowIso = new Date().toISOString()
+          const accepted = submission.status === 'Accepted'
+          const { data: existing } = await supabase
+            .from('question_attempts')
+            .select('id, attempt_count')
+            .eq('user_id', userId)
+            .eq('question_id', submission.questionId)
+            .order('updated_at', { ascending: false })
+            .limit(1)
+            .maybeSingle()
+          if (existing?.id) {
+            await supabase.from('question_attempts').update({
+              status: accepted ? 'completed' : 'in_progress',
+              attempt_count: Number(existing.attempt_count || 0) + 1,
+              completed_at: accepted ? nowIso : null,
+              last_activity_at: nowIso,
+              updated_at: nowIso,
+            }).eq('id', existing.id)
+          } else {
+            await supabase.from('question_attempts').insert({
               user_id: userId,
               question_id: submission.questionId,
-              question_version: submission.questionVersion || 1,
-              code: submission.code,
-              status: submission.status === 'Accepted' ? 'accepted' : 'wrong_answer',
-              score: submission.score,
-              tests_passed: submission.testsPassed,
-              tests_total: submission.testsTotal,
-              execution_time_ms: submission.runtimeMs || 0,
-              hints_used: submission.hintsUsed || 0,
-              solution_viewed: submission.solutionViewed || false,
-              time_spent_seconds: submission.timeSpentSeconds || 0,
-              idempotency_key: idempotencyKey,
-              created_at: submission.timestamp,
+              status: accepted ? 'completed' : 'in_progress',
+              attempt_count: 1,
+              started_at: nowIso,
+              last_activity_at: nowIso,
+              completed_at: accepted ? nowIso : null,
             })
-            if (fjsErr && !fjsErr.message.includes('duplicate') && !fjsErr.message.includes('schema cache')) {
-              console.debug('Frontend JS dedicated table sync notice:', fjsErr.message)
-            }
-          } catch {
-            // ignore — canonical insert above already succeeded
           }
-
-          // 3c. Best-effort attempt ledger so Attempt sections + Tracks pick up
-          // Frontend JS (submits otherwise bypass question_attempts entirely).
-          try {
-            const nowIso = new Date().toISOString()
-            const accepted = submission.status === 'Accepted'
-            const { data: existing } = await supabase
-              .from('question_attempts')
-              .select('id, attempt_count')
-              .eq('user_id', userId)
-              .eq('question_id', submission.questionId)
-              .order('updated_at', { ascending: false })
-              .limit(1)
-              .maybeSingle()
-            if (existing?.id) {
-              await supabase.from('question_attempts').update({
-                status: accepted ? 'completed' : 'in_progress',
-                attempt_count: Number(existing.attempt_count || 0) + 1,
-                completed_at: accepted ? nowIso : null,
-                last_activity_at: nowIso,
-                updated_at: nowIso,
-              }).eq('id', existing.id)
-            } else {
-              await supabase.from('question_attempts').insert({
-                user_id: userId,
-                question_id: submission.questionId,
-                status: accepted ? 'completed' : 'in_progress',
-                attempt_count: 1,
-                started_at: nowIso,
-                last_activity_at: nowIso,
-                completed_at: accepted ? nowIso : null,
-              })
-            }
-          } catch {
-            // ignore — submissions above are the source of truth
-          }
-        } catch (dbErr) {
-          console.debug('Frontend JS Supabase submission sync skipped:', dbErr)
+        } catch {
+          // ignore — submissions above are the source of truth
         }
       }
 
@@ -137,10 +119,10 @@ export class FrontendJsSubmissionService {
 
   async recordAttempt(attempt: FrontendJsAttempt, user?: { id?: string } | null): Promise<void> {
     const userId = user?.id
-    if (userId && supabase) {
+    const isValidUuid = Boolean(userId && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(userId))
+    if (isValidUuid && supabase) {
       try {
-        // Never send client `att_xxx` id — column is UUID with DB default.
-        await supabase.from('frontend_js_attempts').insert({
+        const { error } = await supabase.from('frontend_js_attempts').insert({
           user_id: userId,
           question_id: attempt.questionId,
           code: attempt.code,
@@ -150,15 +132,19 @@ export class FrontendJsSubmissionService {
           runtime_ms: attempt.runtimeMs,
           created_at: attempt.timestamp,
         })
-      } catch (err) {
-        console.debug('Frontend JS attempt sync skipped:', err)
+        if (error && !error.message.includes('schema cache')) {
+          console.debug('Frontend JS attempt sync notice:', error.message)
+        }
+      } catch {
+        // ignore — local storage already recorded
       }
     }
   }
 
   async fetchUserSubmissions(userId?: string, questionId?: string): Promise<FrontendJsSubmission[]> {
     const local = frontendJsProgressService.getSubmissions(questionId)
-    if (!userId || !supabase) return local
+    const isValidUuid = Boolean(userId && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(userId))
+    if (!userId || !isValidUuid || !supabase) return local
 
     try {
       let query = supabase
@@ -193,15 +179,35 @@ export class FrontendJsSubmissionService {
         timestamp: String(row.created_at),
       }))
 
-      const seen = new Set<string>()
       const merged: FrontendJsSubmission[] = []
       for (const item of [...local, ...remote]) {
-        if (!seen.has(item.id)) {
-          seen.add(item.id)
+        const itemTime = new Date(item.timestamp).getTime()
+        const duplicateIdx = merged.findIndex(existing => {
+          if (existing.id === item.id) return true
+          if (existing.questionId === item.questionId && existing.code === item.code) {
+            const existingTime = new Date(existing.timestamp).getTime()
+            if (!isNaN(itemTime) && !isNaN(existingTime) && Math.abs(itemTime - existingTime) < 15000) {
+              return true
+            }
+          }
+          return false
+        })
+
+        if (duplicateIdx === -1) {
           merged.push(item)
+        } else {
+          const existing = merged[duplicateIdx]
+          const preferItem = (item.testsTotal || 0) > (existing.testsTotal || 0) || Boolean(item.runtimeMs && !existing.runtimeMs)
+          merged[duplicateIdx] = {
+            ...(preferItem ? item : existing),
+            testsPassed: Math.max(existing.testsPassed ?? 0, item.testsPassed ?? 0),
+            testsTotal: Math.max(existing.testsTotal ?? 0, item.testsTotal ?? 0),
+            runtimeMs: existing.runtimeMs || item.runtimeMs,
+            score: Math.max(existing.score ?? 0, item.score ?? 0),
+          }
         }
       }
-      return merged
+      return merged.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
     } catch {
       return local
     }

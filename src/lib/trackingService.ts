@@ -636,6 +636,7 @@ export const trackingService = {
    * that key, the existing submission is returned without creating a duplicate.
    */
   recordSubmission: async (params: {
+    id?: string
     questionId: string | number
     category?: TrackCategory
     attemptId?: string | null
@@ -656,13 +657,16 @@ export const trackingService = {
     idempotencyKey?: string
   }): Promise<SubmissionRecord> => {
     const strQId = String(params.questionId)
-    const userId = params.userId || await getAuthUserId()
+    const rawUserId = params.userId || await getAuthUserId()
+    const isValidUuid = (val?: string | null): boolean =>
+      Boolean(val && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(val))
+    const validDbUserId = isValidUuid(rawUserId) ? rawUserId : null
     const now = new Date().toISOString()
     const score = params.score ?? (params.status === 'accepted' ? 100 : 0)
     const category: TrackCategory = params.category ?? 'MACHINE_CODING'
 
     // --- Idempotency check ---
-    if (params.idempotencyKey && userId) {
+    if (params.idempotencyKey && validDbUserId) {
       try {
         const { data: existing } = await supabase
           .from('submissions')
@@ -693,19 +697,23 @@ export const trackingService = {
       }
     }
 
-    const subId = `sub_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`
+    const subId = params.id || `sub_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`
     const submission: SubmissionRecord = {
       id: subId,
-      userId: userId || 'guest',
+      userId: rawUserId || 'guest',
       questionId: strQId,
+      category,
       attemptId: params.attemptId || null,
       answer: params.answer || '',
       code: params.code || '',
       language: params.language || 'javascript',
       status: params.status,
       score,
+      passedTests: params.passedTests,
+      totalTests: params.totalTests,
       executionTime: params.executionTime || 0,
       memoryUsed: params.memoryUsed || 0,
+      idempotencyKey: params.idempotencyKey,
       createdAt: now,
     }
 
@@ -736,10 +744,10 @@ export const trackingService = {
     }
 
     // 3. Insert into Supabase submissions table
-    if (userId) {
+    if (validDbUserId) {
       try {
         const payload: Record<string, unknown> = {
-          user_id: userId,
+          user_id: validDbUserId,
           question_id: strQId,
           attempt_id: params.attemptId && !params.attemptId.startsWith('att_') ? params.attemptId : null,
           code: params.code,
@@ -759,7 +767,7 @@ export const trackingService = {
         // Fallback: if category or audit columns are not yet in live schema, retry with base columns
         if (error && (error.message.includes('column') || error.message.includes('schema cache'))) {
           await supabase.from('submissions').insert({
-            user_id: userId,
+            user_id: validDbUserId,
             question_id: strQId,
             attempt_id: params.attemptId && !params.attemptId.startsWith('att_') ? params.attemptId : null,
             code: params.code,
@@ -771,54 +779,53 @@ export const trackingService = {
             memory_used: params.memoryUsed || 0,
           })
         }
+        // 4. Update user_question_progress
+        try {
+          const { data: existingProgress } = await supabase
+            .from('user_question_progress')
+            .select('*')
+            .eq('user_id', validDbUserId)
+            .eq('question_id', strQId)
+            .maybeSingle()
+
+          const currentAttempts = (existingProgress?.attempt_count || 0) + 1
+          const bestScore = Math.max(existingProgress?.best_score || 0, score)
+          const isNowAccepted = params.status === 'accepted'
+          const isPreviouslyCompleted = existingProgress?.status === 'completed'
+          const progressStatus = isNowAccepted || isPreviouslyCompleted ? 'completed' : 'in_progress'
+
+          await supabase.from('user_question_progress').upsert({
+            user_id: validDbUserId,
+            question_id: strQId,
+            status: progressStatus,
+            best_score: bestScore,
+            attempt_count: currentAttempts,
+            last_attempt_at: now,
+            completed_at: isNowAccepted ? now : existingProgress?.completed_at,
+            updated_at: now,
+          })
+        } catch (err) {
+          console.warn('[TrackingService] Failed updating user_question_progress in Supabase:', err)
+        }
+
+        // 5. Update question_attempts status
+        if (params.attemptId && !params.attemptId.startsWith('att_')) {
+          const isAccepted = params.status === 'accepted'
+          await trackingService.updateQuestionAttempt(params.attemptId, {
+            status: isAccepted ? 'completed' : 'in_progress',
+            completedAt: isAccepted ? now : null,
+            lastActivityAt: now,
+          })
+
+          if (isAccepted) {
+            await trackingService.trackActivity('question_completed', 'question', strQId, {
+              score,
+              attemptId: params.attemptId,
+            })
+          }
+        }
       } catch (err) {
         console.warn('[TrackingService] Failed writing submission to Supabase:', err)
-      }
-
-      // 4. Update user_question_progress
-      try {
-        const { data: existingProgress } = await supabase
-          .from('user_question_progress')
-          .select('*')
-          .eq('user_id', userId)
-          .eq('question_id', strQId)
-          .maybeSingle()
-
-        const currentAttempts = (existingProgress?.attempt_count || 0) + 1
-        const bestScore = Math.max(existingProgress?.best_score || 0, score)
-        const isNowAccepted = params.status === 'accepted'
-        const isPreviouslyCompleted = existingProgress?.status === 'completed'
-        const progressStatus = isNowAccepted || isPreviouslyCompleted ? 'completed' : 'in_progress'
-
-        await supabase.from('user_question_progress').upsert({
-          user_id: userId,
-          question_id: strQId,
-          status: progressStatus,
-          best_score: bestScore,
-          attempt_count: currentAttempts,
-          last_attempt_at: now,
-          completed_at: isNowAccepted ? now : existingProgress?.completed_at,
-          updated_at: now,
-        })
-      } catch (err) {
-        console.warn('[TrackingService] Failed updating user_question_progress in Supabase:', err)
-      }
-
-      // 5. Update question_attempts status
-      if (params.attemptId && !params.attemptId.startsWith('att_')) {
-        const isAccepted = params.status === 'accepted'
-        await trackingService.updateQuestionAttempt(params.attemptId, {
-          status: isAccepted ? 'completed' : 'in_progress',
-          completedAt: isAccepted ? now : null,
-          lastActivityAt: now,
-        })
-
-        if (isAccepted) {
-          await trackingService.trackActivity('question_completed', 'question', strQId, {
-            score,
-            attemptId: params.attemptId,
-          })
-        }
       }
     }
 
