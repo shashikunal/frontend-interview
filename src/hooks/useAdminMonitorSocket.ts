@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
+import * as Y from 'yjs';
 import { getSharedInterviewSocket, type TypedSocket } from '../lib/realtime/socketClient';
+import { toUint8Array, getOrCreateSessionYDoc } from '../lib/realtime/yjsSync';
 import type { SessionStatePayload, PresenceStatus } from '../../server/socket/types';
 
 export interface LiveTelemetryItem {
@@ -17,6 +19,7 @@ export interface LiveTelemetryItem {
     passed?: number;
     total?: number;
     runtimeMs?: number;
+    output?: string;
     error?: string;
     timestamp: number;
   } | null;
@@ -271,6 +274,72 @@ export function useAdminMonitorSocket(sessionIds: string[], user?: any) {
       socket.on('student:activity', (data) => {
         pushActivity(data.sessionId, data.type, data.message, data.timestamp);
       });
+
+      // 11. yjs:update (Live binary CRDT keystrokes into local Y.Doc)
+      socket.on('yjs:update', (data: any) => {
+        if (!data?.sessionId || !data?.update) return;
+        const ydoc = getOrCreateSessionYDoc(data.sessionId);
+        try {
+          Y.applyUpdate(ydoc, toUint8Array(data.update), 'remote');
+        } catch (err) {
+          console.warn(`[Admin Monitor Yjs] Failed to apply update for ${data.sessionId}:`, err);
+        }
+
+        const file = data.fileId || 'solution.js';
+        const liveCode = ydoc.getText(file).toString();
+
+        setTelemetryMap(prev => {
+          const cur = prev[data.sessionId];
+          if (!cur) return prev;
+          return {
+            ...prev,
+            [data.sessionId]: {
+              ...cur,
+              code: liveCode,
+              activeFile: file,
+              lineCount: liveCode ? liveCode.split('\n').length : 1,
+              isTyping: true,
+              presence: 'online',
+              lastSeenAt: data.timestamp || Date.now(),
+            },
+          };
+        });
+
+        // Auto clear typing state after 1.8s
+        const t = typingTimersRef.current.get(data.sessionId);
+        if (t) clearTimeout(t);
+        typingTimersRef.current.set(
+          data.sessionId,
+          setTimeout(() => {
+            setTelemetryMap(prev => prev[data.sessionId] ? { ...prev, [data.sessionId]: { ...prev[data.sessionId], isTyping: false } } : prev);
+          }, 1800)
+        );
+      });
+
+      // 12. yjs:sync-response (Full Y.Doc recovery on reconnect / first subscribe)
+      socket.on('yjs:sync-response', (data: any) => {
+        if (!data?.sessionId || !data?.docState) return;
+        const ydoc = getOrCreateSessionYDoc(data.sessionId);
+        try {
+          Y.applyUpdate(ydoc, toUint8Array(data.docState), 'remote');
+        } catch (err) {
+          console.warn(`[Admin Monitor Yjs] Failed to apply sync for ${data.sessionId}:`, err);
+        }
+
+        setTelemetryMap(prev => {
+          const cur = prev[data.sessionId];
+          if (!cur) return prev;
+          const liveCode = ydoc.getText(cur.activeFile || 'solution.js').toString();
+          return {
+            ...prev,
+            [data.sessionId]: {
+              ...cur,
+              code: liveCode || cur.code,
+              lineCount: (liveCode || cur.code).split('\n').length,
+            },
+          };
+        });
+      });
     }
 
     void init();
@@ -287,8 +356,13 @@ export function useAdminMonitorSocket(sessionIds: string[], user?: any) {
     };
   }, [sessionIds.join(','), pushActivity, user]);
 
+  const getYDoc = useCallback((sessionId: string) => {
+    return getOrCreateSessionYDoc(sessionId);
+  }, []);
+
   return {
     isConnected,
     telemetryMap,
+    getYDoc,
   };
 }

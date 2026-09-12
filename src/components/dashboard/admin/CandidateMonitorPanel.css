@@ -1,0 +1,472 @@
+/* CandidateMonitorPanel.css — Compact Glassmorphic Tabbed Monitor Panel */
+
+.candidate-monitor-panel {
+  display: flex;
+  flex-direction: column;
+  background: rgba(15, 23, 42, 0.82);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(56, 189, 248, 0.22);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  min-width: 420px;
+  max-width: 100%;
+}
+
+.candidate-monitor-panel:hover {
+  border-color: rgba(56, 189, 248, 0.45);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+}
+
+.candidate-monitor-panel.status-live {
+  border-left: 3px solid #10b981;
+}
+
+.candidate-monitor-panel.status-idle {
+  border-left: 3px solid #f59e0b;
+}
+
+.candidate-monitor-panel.status-disconnected {
+  border-left: 3px solid #ef4444;
+}
+
+.candidate-monitor-panel.status-reconnecting {
+  border-left: 3px solid #8b5cf6;
+}
+
+/* ── PANEL HEADER ─────────────────────────────────────────────────────────── */
+.cmp-header {
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(30, 41, 59, 0.65);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  gap: 10px;
+}
+
+.cmp-user-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.cmp-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #0284c7, #6366f1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 14px;
+  color: #fff;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.cmp-avatar.typing::after {
+  content: '';
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #38bdf8;
+  box-shadow: 0 0 8px #38bdf8;
+  animation: cmp-pulse 1s infinite;
+}
+
+.cmp-names {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.cmp-name-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cmp-candidate-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #f8fafc;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cmp-session-badge {
+  font-size: 10px;
+  font-family: 'JetBrains Mono', monospace;
+  background: rgba(255, 255, 255, 0.06);
+  padding: 1px 5px;
+  border-radius: 4px;
+  color: #94a3b8;
+}
+
+.cmp-subtext-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: #64748b;
+}
+
+.cmp-header-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.cmp-presence-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 12px;
+  letter-spacing: 0.03em;
+}
+
+.cmp-presence-badge.online {
+  background: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.35);
+}
+
+.cmp-presence-badge.idle {
+  background: rgba(245, 158, 11, 0.15);
+  color: #fbbf24;
+  border: 1px solid rgba(245, 158, 11, 0.35);
+}
+
+.cmp-presence-badge.disconnected {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.35);
+}
+
+.cmp-presence-badge.reconnecting {
+  background: rgba(139, 92, 246, 0.15);
+  color: #a78bfa;
+  border: 1px solid rgba(139, 92, 246, 0.35);
+}
+
+.cmp-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.cmp-presence-badge.online .cmp-dot {
+  animation: cmp-pulse 2s infinite;
+}
+
+@keyframes cmp-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.85); }
+}
+
+.cmp-track-badge {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 4px;
+  background: rgba(56, 189, 248, 0.12);
+  color: #38bdf8;
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  text-transform: uppercase;
+}
+
+/* ── PANEL TABS ───────────────────────────────────────────────────────────── */
+.cmp-tabs-bar {
+  display: flex;
+  align-items: center;
+  background: rgba(15, 23, 42, 0.95);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 0 8px;
+  gap: 4px;
+}
+
+.cmp-tab-btn {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 8px 12px;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.cmp-tab-btn:hover {
+  color: #f1f5f9;
+}
+
+.cmp-tab-btn.active {
+  color: #38bdf8;
+  border-bottom-color: #38bdf8;
+  font-weight: 600;
+  background: rgba(56, 189, 248, 0.06);
+}
+
+.cmp-tab-badge {
+  font-size: 9px;
+  padding: 1px 5px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #e2e8f0;
+}
+
+/* ── TAB CONTENT ─────────────────────────────────────────────────────────── */
+.cmp-tab-content {
+  flex: 1;
+  background: #090d16;
+  min-height: 280px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── 1. CODE TAB ─────────────────────────────────────────────────────────── */
+.cmp-code-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 12px;
+  background: rgba(30, 41, 59, 0.45);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  font-size: 11px;
+}
+
+.cmp-code-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cmp-file-select {
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #38bdf8;
+  font-size: 11px;
+  font-family: 'JetBrains Mono', monospace;
+  padding: 2px 6px;
+  border-radius: 4px;
+  outline: none;
+}
+
+.cmp-live-sync-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: #34d399;
+  font-weight: 600;
+  font-size: 10px;
+}
+
+.cmp-code-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #64748b;
+}
+
+.cmp-cursor-pos {
+  font-family: 'JetBrains Mono', monospace;
+  color: #94a3b8;
+}
+
+.cmp-monaco-wrapper {
+  height: 270px;
+  width: 100%;
+  position: relative;
+}
+
+/* ── 2. ACTIVITY TAB ─────────────────────────────────────────────────────── */
+.cmp-activity-feed {
+  padding: 12px;
+  overflow-y: auto;
+  max-height: 280px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cmp-activity-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 12px;
+  padding: 6px 8px;
+  background: rgba(30, 41, 59, 0.3);
+  border-radius: 6px;
+  border-left: 2px solid #0284c7;
+}
+
+.cmp-activity-time {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: #64748b;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.cmp-activity-msg {
+  color: #cbd5e1;
+  word-break: break-word;
+}
+
+.cmp-empty-list {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  color: #64748b;
+  font-size: 13px;
+  font-style: italic;
+}
+
+/* ── 3. INTERVIEW TAB ─────────────────────────────────────────────────────── */
+.cmp-interview-pane {
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  font-size: 13px;
+  color: #e2e8f0;
+}
+
+.cmp-q-card {
+  background: rgba(30, 41, 59, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.cmp-q-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #38bdf8;
+  margin-bottom: 4px;
+}
+
+.cmp-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.cmp-stat-box {
+  background: rgba(15, 23, 42, 0.6);
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  display: flex;
+  flex-direction: column;
+}
+
+.cmp-stat-lbl {
+  font-size: 10px;
+  color: #64748b;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.cmp-stat-val {
+  font-size: 16px;
+  font-weight: 700;
+  color: #f1f5f9;
+  margin-top: 2px;
+}
+
+/* ── 4. EXECUTION TAB ─────────────────────────────────────────────────────── */
+.cmp-exec-pane {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  height: 100%;
+}
+
+.cmp-exec-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cmp-exec-status-pill {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 6px;
+  letter-spacing: 0.04em;
+}
+
+.cmp-exec-status-pill.success {
+  background: rgba(16, 185, 129, 0.2);
+  color: #34d399;
+  border: 1px solid #10b981;
+}
+
+.cmp-exec-status-pill.failed, .cmp-exec-status-pill.error {
+  background: rgba(239, 68, 68, 0.2);
+  color: #f87171;
+  border: 1px solid #ef4444;
+}
+
+.cmp-exec-status-pill.running {
+  background: rgba(56, 189, 248, 0.2);
+  color: #38bdf8;
+  border: 1px solid #38bdf8;
+  animation: cmp-pulse 1.2s infinite;
+}
+
+.cmp-exec-output {
+  flex: 1;
+  background: #020617;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  padding: 10px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: #a5f3fc;
+  overflow-y: auto;
+  max-height: 200px;
+  white-space: pre-wrap;
+}
+
+/* ── 5. DETAILS TAB ───────────────────────────────────────────────────────── */
+.cmp-details-table {
+  padding: 12px;
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  row-gap: 8px;
+  font-size: 12px;
+}
+
+.cmp-dt-label {
+  color: #64748b;
+  font-weight: 500;
+}
+
+.cmp-dt-val {
+  color: #f1f5f9;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  word-break: break-all;
+}

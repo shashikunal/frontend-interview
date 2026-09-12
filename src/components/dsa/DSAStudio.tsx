@@ -143,6 +143,7 @@ function DSAStudioWorkspace({ questionId }: WorkspaceProps) {
     emitCursorMove,
     emitFocus,
     emitCodeRun,
+    bindMonacoEditor,
   } = useInterviewSocket({
     sessionId: liveSessionId,
     questionId: question.id,
@@ -648,6 +649,7 @@ function DSAStudioWorkspace({ questionId }: WorkspaceProps) {
               onChange={handleCodeChange}
               onMount={(editor) => {
                 editorRef.current = editor
+                bindMonacoEditor(editor, fileName)
                 editor.onDidChangeCursorPosition(e => {
                   emitCursorMove(e.position.lineNumber, e.position.column)
                 })

@@ -1,12 +1,32 @@
+import * as Y from 'yjs';
 import { supabase } from '../../src/lib/supabase/client.js';
 import type { SessionStatePayload, StudentCodeChangeEvent } from './types.js';
 
 // In-memory ephemeral state cache (for fast sub-millisecond keystroke relays)
 const sessionStateCache = new Map<string, SessionStatePayload>();
 
+// In-memory Yjs Documents per session room
+const sessionYDocs = new Map<string, Y.Doc>();
+
 // Debounced database snapshot timers
 const dbCheckpointTimers = new Map<string, ReturnType<typeof setTimeout>>();
 const CHECKPOINT_DELAY_MS = 10 * 1000; // 10s debounced DB save
+
+function toUint8Array(data: any): Uint8Array {
+  if (data instanceof Uint8Array) return data;
+  if (data instanceof ArrayBuffer) return new Uint8Array(data);
+  if (data?.buffer instanceof ArrayBuffer) {
+    return new Uint8Array(data.buffer, data.byteOffset || 0, data.byteLength || data.buffer.byteLength);
+  }
+  if (Array.isArray(data)) return new Uint8Array(data);
+  if (typeof data === 'string') {
+    try {
+      const bin = Buffer.from(data, 'base64');
+      return new Uint8Array(bin.buffer, bin.byteOffset, bin.byteLength);
+    } catch (_) {}
+  }
+  return new Uint8Array(data || []);
+}
 
 export const sessionStateManager = {
   /**
@@ -170,5 +190,67 @@ export const sessionStateManager = {
       current.presence = presence;
       current.lastActivityAt = Date.now();
     }
+  },
+
+  /**
+   * Retrieves or initializes the Y.Doc for a given session room
+   */
+  getOrCreateYDoc(sessionId: string, initialCode?: string, activeFile: string = 'solution.js'): Y.Doc {
+    let ydoc = sessionYDocs.get(sessionId);
+    if (!ydoc) {
+      ydoc = new Y.Doc();
+      sessionYDocs.set(sessionId, ydoc);
+
+      if (initialCode && initialCode.trim().length > 0) {
+        const ytext = ydoc.getText(activeFile);
+        if (ytext.length === 0) {
+          ytext.insert(0, initialCode);
+        }
+      }
+    }
+    return ydoc;
+  },
+
+  /**
+   * Applies an incremental Yjs binary update received from a client to the server Y.Doc
+   */
+  applyYjsUpdate(sessionId: string, update: Uint8Array | number[], fileId: string = 'solution.js'): { code: string; length: number } {
+    const ydoc = this.getOrCreateYDoc(sessionId);
+    const uint8 = toUint8Array(update);
+    try {
+      Y.applyUpdate(ydoc, uint8, 'remote');
+    } catch (err) {
+      console.warn(`[Yjs Server] Error applying update on session ${sessionId}:`, err);
+    }
+
+    const currentCode = ydoc.getText(fileId).toString();
+    const current = sessionStateCache.get(sessionId);
+    if (current) {
+      current.code = currentCode;
+      current.activeFile = fileId;
+      current.isTyping = true;
+      current.lastActivityAt = Date.now();
+      current.codeVersion = (current.codeVersion || 0) + 1;
+      this.scheduleCheckpoint(sessionId, current);
+    }
+
+    return { code: currentCode, length: currentCode.length };
+  },
+
+  /**
+   * Encodes the full current Y.Doc state as a single update for initial synchronization
+   */
+  getYDocState(sessionId: string, initialCode?: string, activeFile: string = 'solution.js'): Uint8Array {
+    const ydoc = this.getOrCreateYDoc(sessionId, initialCode, activeFile);
+    return Y.encodeStateAsUpdate(ydoc);
+  },
+
+  /**
+   * Reads the current string content of a file from the session's Y.Doc
+   */
+  getYDocText(sessionId: string, fileId: string = 'solution.js'): string {
+    const ydoc = sessionYDocs.get(sessionId);
+    if (!ydoc) return '';
+    return ydoc.getText(fileId).toString();
   },
 };

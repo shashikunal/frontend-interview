@@ -223,6 +223,7 @@ function CoreProgrammingWorkspace({
     emitCursorMove,
     emitFocus,
     emitCodeRun,
+    bindMonacoEditor,
   } = useInterviewSocket({
     sessionId: liveSessionId,
     questionId: question.id,
@@ -850,6 +851,7 @@ function CoreProgrammingWorkspace({
               onChange={handleCodeChange}
               onMount={(ed) => {
                 editorRef.current = ed;
+                bindMonacoEditor(ed, 'solution.js');
                 ed.onDidChangeCursorPosition(e => {
                   emitCursorMove(e.position.lineNumber, e.position.column);
                 });

@@ -110,6 +110,22 @@ export interface SessionStatePayload {
   lastActivityAt: number;
 }
 
+export interface YjsUpdateEvent {
+  sessionId: string;
+  update: Uint8Array | number[];
+  fileId?: string;
+  timestamp?: number;
+}
+
+export interface YjsSyncRequestEvent {
+  sessionId: string;
+}
+
+export interface YjsSyncResponseEvent {
+  sessionId: string;
+  docState: Uint8Array | number[];
+}
+
 export interface ClientToServerEvents {
   'session:join': (data: { sessionId: string; questionId?: string; questionTitle?: string; language?: string; initialCode?: string }, callback?: (ack: { success: boolean; state?: SessionStatePayload; error?: string }) => void) => void;
   'session:leave': (data: { sessionId: string }) => void;
@@ -122,8 +138,10 @@ export interface ClientToServerEvents {
   'student:run-start': (data: StudentRunStartEvent) => void;
   'student:run-result': (data: StudentRunResultEvent) => void;
   'student:activity': (data: StudentActivityEvent) => void;
-  'monitor:subscribe': (data: { sessionId: string }, callback?: (ack: { success: boolean; state?: SessionStatePayload; error?: string }) => void) => void;
+  'monitor:subscribe': (data: { sessionId: string }, callback?: (ack: { success: boolean; state?: SessionStatePayload; docState?: Uint8Array | number[]; error?: string }) => void) => void;
   'monitor:unsubscribe': (data: { sessionId: string }) => void;
+  'yjs:update': (data: YjsUpdateEvent) => void;
+  'yjs:sync-request': (data: YjsSyncRequestEvent, callback?: (res: YjsSyncResponseEvent) => void) => void;
 }
 
 export interface ServerToClientEvents {
@@ -138,6 +156,8 @@ export interface ServerToClientEvents {
   'student:status': (data: { sessionId: string; presence: PresenceStatus; timestamp: number }) => void;
   'student:activity': (data: StudentActivityEvent) => void;
   'monitor:ack': (data: { sessionId: string; connectedAt: number }) => void;
+  'yjs:update': (data: YjsUpdateEvent) => void;
+  'yjs:sync-response': (data: YjsSyncResponseEvent) => void;
   'error': (data: { message: string; code?: string }) => void;
 }
 

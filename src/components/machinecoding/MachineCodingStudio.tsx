@@ -881,6 +881,7 @@ export default function MachineCodingStudio() {
     emitFocus,
     emitCodeRun,
     emitFileSwitch,
+    bindMonacoEditor,
   } = useInterviewSocket({
     sessionId: collabSession?.id,
     questionId: activeQuestion?.id || 'Q001',
@@ -907,6 +908,13 @@ export default function MachineCodingStudio() {
 
     return () => clearInterval(heartbeat);
   }, [collabSession?.id]);
+
+  // Re-bind Monaco editor model to corresponding file in Y.Doc on file switch
+  useEffect(() => {
+    if (editorRef.current && collabSession?.id) {
+      bindMonacoEditor(editorRef.current, activeFileName);
+    }
+  }, [activeFileName, collabSession?.id, bindMonacoEditor]);
 
   // Handle iframe messages (console logs, runtime errors, and test results)
   useEffect(() => {
@@ -3504,6 +3512,7 @@ export default function MachineCodingStudio() {
                       }}
                       onMount={(editor, monaco) => {
                         editorRef.current = editor;
+                        bindMonacoEditor(editor, activeFileName);
                         editor.onDidChangeCursorPosition((e: any) => {
                           emitCursorMove(e.position.lineNumber, e.position.column);
                         });

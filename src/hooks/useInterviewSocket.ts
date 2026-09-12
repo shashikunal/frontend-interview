@@ -1,5 +1,7 @@
 import { useEffect, useRef, useCallback, useState } from 'react';
 import { getSharedInterviewSocket, type TypedSocket } from '../lib/realtime/socketClient';
+import { getOrCreateSessionYDoc, bridgeYDocWithSocket, bindMonacoToYDoc } from '../lib/realtime/yjsSync';
+import type { MonacoBinding } from 'y-monaco';
 import type { PresenceStatus } from '../../server/socket/types';
 
 export interface UseInterviewSocketOptions {
@@ -45,15 +47,19 @@ export function useInterviewSocket({
   const typingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastCursorEmitRef = useRef<number>(0);
   const isTypingRef = useRef<boolean>(false);
+  const monacoBindingRef = useRef<MonacoBinding | null>(null);
 
   const latestCodeRef = useRef(code);
   latestCodeRef.current = code;
   const latestFileRef = useRef(activeFile);
   latestFileRef.current = activeFile;
 
+  // Initialize or get Yjs Document for this session
+  const ydoc = sessionId ? getOrCreateSessionYDoc(sessionId) : null;
+
   // Initialize socket and join room
   useEffect(() => {
-    if (!sessionId) {
+    if (!sessionId || !ydoc) {
       setIsConnected(false);
       setPresenceStatus('disconnected');
       return;
@@ -61,11 +67,15 @@ export function useInterviewSocket({
 
     let isMounted = true;
     let heartbeatInterval: ReturnType<typeof setInterval> | null = null;
+    let unbridgeYDoc: (() => void) | null = null;
 
     async function init() {
       const socket = await getSharedInterviewSocket(user);
       if (!isMounted) return;
       socketRef.current = socket;
+
+      // Bridge Yjs document updates with Socket.IO room
+      unbridgeYDoc = bridgeYDocWithSocket(sessionId!, ydoc!, socket, () => latestFileRef.current);
 
       function join() {
         if (!sessionId) return;
@@ -115,6 +125,7 @@ export function useInterviewSocket({
       if (heartbeatInterval) clearInterval(heartbeatInterval);
       if (codeDebounceTimerRef.current) clearTimeout(codeDebounceTimerRef.current);
       if (typingTimerRef.current) clearTimeout(typingTimerRef.current);
+      if (unbridgeYDoc) unbridgeYDoc();
 
       const s = socketRef.current;
       if (s && sessionId) {
@@ -125,7 +136,7 @@ export function useInterviewSocket({
       setIsConnected(false);
       setPresenceStatus('disconnected');
     };
-  }, [sessionId, questionId, questionTitle, language, user]);
+  }, [sessionId, questionId, questionTitle, language, user, ydoc]);
 
   // ── Emit Code Change (with typing indicator) ──────────────────────────────
   const emitCodeChange = useCallback(
@@ -295,9 +306,37 @@ export function useInterviewSocket({
     [sessionId]
   );
 
+  // ── Bind Monaco Editor to Yjs Document ────────────────────────────────────
+  const bindMonacoEditor = useCallback(
+    (editorInstance: any, fileOverride?: string) => {
+      if (!ydoc || !editorInstance) return;
+      const targetFile = fileOverride || latestFileRef.current;
+
+      // Clean up previous binding if existing
+      if (monacoBindingRef.current) {
+        try {
+          monacoBindingRef.current.destroy();
+        } catch (_) {}
+        monacoBindingRef.current = null;
+      }
+
+      const binding = bindMonacoToYDoc(
+        ydoc,
+        targetFile,
+        editorInstance,
+        latestCodeRef.current
+      );
+      monacoBindingRef.current = binding;
+      return binding;
+    },
+    [ydoc]
+  );
+
   return {
     isConnected,
     presenceStatus,
+    ydoc,
+    bindMonacoEditor,
     emitCodeChange,
     emitCursorMove,
     emitFocus,

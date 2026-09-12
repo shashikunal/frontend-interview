@@ -80,6 +80,9 @@ export function initSocketServer(server: HTTPServer | Http2SecureServer): Socket
         if (questionTitle) state.questionTitle = questionTitle;
       }
 
+      // Initialize server-side Yjs document
+      sessionStateManager.getOrCreateYDoc(sessionId, initialCode || state.code, 'solution.js');
+
       sessionStateManager.recordActivity(sessionId, 'SESSION_STARTED', `${user.name} joined session`);
 
       // Notify monitors in this room
@@ -233,18 +236,48 @@ export function initSocketServer(server: HTTPServer | Http2SecureServer): Socket
       await socket.join(room);
       socket.data.subscribedSessions.add(sessionId);
 
-      // Hydrate / retrieve latest session state
+      // Hydrate / retrieve latest session state and Yjs document state
       const state = await sessionStateManager.getState(sessionId);
+      const docState = sessionStateManager.getYDocState(sessionId, state?.code, state?.activeFile || 'solution.js');
 
       socket.emit('monitor:ack', { sessionId, connectedAt: Date.now() });
       if (state) {
         socket.emit('session:state', state);
       }
-      callback?.({ success: true, state: state || undefined });
+      socket.emit('yjs:sync-response', { sessionId, docState });
+      callback?.({ success: true, state: state || undefined, docState });
 
       if (process.env.NODE_ENV !== 'production') {
-        console.log(`[Socket.IO Monitor] Admin ${user.name} subscribed to room ${room}`);
+        console.log(`[Socket.IO Monitor] Admin ${user.name} subscribed to room ${room} (Yjs docState size: ${docState.length} bytes)`);
       }
+    });
+
+    // ── Yjs: yjs:update (Incremental Binary Relay) ────────────────────────
+    socket.on('yjs:update', (data: any) => {
+      if (!data?.sessionId || !data?.update) return;
+      const room = getInterviewRoom(data.sessionId);
+
+      // Apply update to server in-memory Y.Doc (updates internal code text & schedules debounced checkpoint)
+      const res = sessionStateManager.applyYjsUpdate(data.sessionId, data.update, data.fileId || 'solution.js');
+
+      // Relay strictly within this session room
+      socket.to(room).emit('yjs:update', data);
+
+      if (process.env.NODE_ENV !== 'production') {
+        // Sample logging to avoid spam
+        if (Math.random() < 0.1) {
+          console.log(`[Yjs Relay] Session ${data.sessionId} (${res.length} chars)`);
+        }
+      }
+    });
+
+    // ── Yjs: yjs:sync-request (Full State Resync) ─────────────────────────
+    socket.on('yjs:sync-request', (data: any, callback?: any) => {
+      if (!data?.sessionId) return;
+      const docState = sessionStateManager.getYDocState(data.sessionId);
+      const response = { sessionId: data.sessionId, docState };
+      callback?.(response);
+      socket.emit('yjs:sync-response', response);
     });
 
     // ── Admin: monitor:unsubscribe ────────────────────────────────────────

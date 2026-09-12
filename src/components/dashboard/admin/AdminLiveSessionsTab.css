@@ -1519,3 +1519,11 @@
   transform: translateY(-1px);
 }
 
+.candidate-monitors-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(460px, 1fr));
+  gap: 18px;
+  width: 100%;
+}
+
+

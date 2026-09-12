@@ -247,6 +247,7 @@ function FrontendJsWorkspace({
     emitCursorMove,
     emitFocus,
     emitCodeRun,
+    bindMonacoEditor,
   } = useInterviewSocket({
     sessionId: liveSessionId,
     questionId: question.id,
@@ -986,6 +987,7 @@ function FrontendJsWorkspace({
                   onChange={handleCodeChange}
                   onMount={(editor, monaco) => {
                     editorRef.current = editor
+                    bindMonacoEditor(editor, 'solution.js')
                     editor.onDidChangeCursorPosition(e => {
                       emitCursorMove(e.position.lineNumber, e.position.column)
                     })

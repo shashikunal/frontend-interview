@@ -298,5 +298,10 @@ function localAIVideoMockPlugin(): Plugin {
 
 // https://vite.dev/config/
 export default defineConfig({
+  resolve: {
+    alias: {
+      'monaco-editor/esm/vs/editor/editor.api.js': 'monaco-editor',
+    },
+  },
   plugins: [react(), localEmailPlugin(), localAIVideoMockPlugin(), localSocketIOPlugin()],
 })
