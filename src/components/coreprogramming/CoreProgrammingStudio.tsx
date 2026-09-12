@@ -197,7 +197,7 @@ function CoreProgrammingWorkspace({
   // Candidates only; one row per candidate+question via getOrCreateSession.
   useEffect(() => {
     if (!user?.id) return;
-    if (role === 'admin' || role === 'observer' || role === 'interviewer') return;
+    if (role === 'observer') return;
     if (autoSessionRef.current === `${user.id}:${question.id}`) return;
     autoSessionRef.current = `${user.id}:${question.id}`;
     setLiveSessionId(null);
@@ -844,10 +844,11 @@ function CoreProgrammingWorkspace({
             }}
           >
             <Editor
+              key={question.id}
               height="100%"
               language="javascript"
               theme={editorTheme}
-              value={currentCode}
+              defaultValue={currentCode}
               onChange={handleCodeChange}
               onMount={(ed) => {
                 editorRef.current = ed;

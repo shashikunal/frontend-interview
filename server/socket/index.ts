@@ -57,9 +57,11 @@ export function initSocketServer(server: HTTPServer | Http2SecureServer): Socket
         return;
       }
 
+      console.log(`[SOCKET-SERVER] session authorized for session ${sessionId} by user ${user?.name}`);
       const room = getInterviewRoom(sessionId);
       await socket.join(room);
       socket.data.sessionId = sessionId;
+      console.log(`[SOCKET-SERVER] room joined: ${room}`);
 
       // Initialize or get current session state
       let state = await sessionStateManager.getState(sessionId);
@@ -256,19 +258,14 @@ export function initSocketServer(server: HTTPServer | Http2SecureServer): Socket
     socket.on('yjs:update', (data: any) => {
       if (!data?.sessionId || !data?.update) return;
       const room = getInterviewRoom(data.sessionId);
+      console.log(`[SOCKET-SERVER] Yjs update received for session ${data.sessionId} (${data.fileId})`);
 
       // Apply update to server in-memory Y.Doc (updates internal code text & schedules debounced checkpoint)
       const res = sessionStateManager.applyYjsUpdate(data.sessionId, data.update, data.fileId || 'solution.js');
 
       // Relay strictly within this session room
       socket.to(room).emit('yjs:update', data);
-
-      if (process.env.NODE_ENV !== 'production') {
-        // Sample logging to avoid spam
-        if (Math.random() < 0.1) {
-          console.log(`[Yjs Relay] Session ${data.sessionId} (${res.length} chars)`);
-        }
-      }
+      console.log(`[SOCKET-SERVER] Yjs update forwarded to room ${room} (${res.length} chars)`);
     });
 
     // ── Yjs: yjs:sync-request (Full State Resync) ─────────────────────────

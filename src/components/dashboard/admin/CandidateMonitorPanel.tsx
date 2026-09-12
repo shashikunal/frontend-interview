@@ -39,6 +39,7 @@ export const CandidateMonitorPanel: React.FC<CandidateMonitorPanelProps> = ({
   const [selectedFile, setSelectedFile] = useState<string>(
     telemetry?.activeFile || session.active_file || 'solution.js'
   );
+  const [isBound, setIsBound] = useState(false);
 
   const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
   const bindingRef = useRef<MonacoBinding | null>(null);
@@ -70,11 +71,11 @@ export const CandidateMonitorPanel: React.FC<CandidateMonitorPanelProps> = ({
     return Array.from(files);
   }, [session.files_snapshot, selectedFile]);
 
-  // Bind Monaco to Yjs on mount or file switch
+  // Bind Monaco to Yjs on mount
   const handleEditorMount = useCallback((editorInstance: editor.IStandaloneCodeEditor) => {
     editorRef.current = editorInstance;
     const ydoc = getYDoc(session.id);
-    const initialCode = telemetry?.code || session.current_code_snapshot || '';
+    const initialCode = session.current_code_snapshot || '';
 
     if (bindingRef.current) {
       try { bindingRef.current.destroy(); } catch (_) {}
@@ -85,9 +86,12 @@ export const CandidateMonitorPanel: React.FC<CandidateMonitorPanelProps> = ({
       ydoc,
       selectedFile,
       editorInstance,
-      initialCode
+      initialCode,
+      true // isReadOnly = true: Never mutate student Y.Doc with snapshot
     );
-  }, [session.id, selectedFile, getYDoc, telemetry?.code, session.current_code_snapshot]);
+    setIsBound(Boolean(bindingRef.current));
+    console.log(`[YJS-ADMIN] Monaco binding active for session ${session.id}, file ${selectedFile}`);
+  }, [session.id, selectedFile, getYDoc, session.current_code_snapshot]);
 
   // Re-bind when selectedFile changes
   useEffect(() => {
@@ -101,8 +105,10 @@ export const CandidateMonitorPanel: React.FC<CandidateMonitorPanelProps> = ({
         ydoc,
         selectedFile,
         editorRef.current,
-        telemetry?.code || ''
+        '',
+        true // isReadOnly = true
       );
+      setIsBound(Boolean(bindingRef.current));
     }
   }, [selectedFile, session.id, getYDoc]);
 
@@ -149,6 +155,32 @@ export const CandidateMonitorPanel: React.FC<CandidateMonitorPanelProps> = ({
             {session.question_id.startsWith('DSA') ? 'DSA' : session.question_id.startsWith('FJP') ? 'FRONTEND' : 'CORE PROG'}
           </span>
         </div>
+      </div>
+
+      {/* ── LOCAL REALTIME DIAGNOSTIC STRIP (Requirement 26) ───────────── */}
+      <div className="cmp-diag-strip" style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: '6px',
+        padding: '3px 12px',
+        backgroundColor: '#0c0f14',
+        borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
+        fontSize: '10px',
+        fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
+        color: '#94a3b8',
+        flexWrap: 'wrap',
+      }}>
+        <span style={{ color: '#38bdf8' }}>⚡ Realtime: {presence === 'online' ? 'CONNECTED' : 'STANDBY'}</span>
+        <span>•</span>
+        <span style={{ color: '#34d399' }}>Socket: {presence === 'online' ? 'CONNECTED' : 'DISCONNECTED'}</span>
+        <span>•</span>
+        <span>Session: {session.id.slice(0, 8)}</span>
+        <span>•</span>
+        <span style={{ color: '#a78bfa' }}>Yjs: ACTIVE</span>
+        <span>•</span>
+        <span style={{ color: isBound ? '#34d399' : '#f59e0b' }}>Monaco: {isBound ? 'BOUND' : 'CONNECTING'}</span>
+        <span>•</span>
+        <span>Last update: {telemetry?.lastSeenAt ? formatClock(telemetry.lastSeenAt) : 'None'}</span>
       </div>
 
       {/* ── TABS BAR ─────────────────────────────────────────────────────── */}
@@ -199,68 +231,66 @@ export const CandidateMonitorPanel: React.FC<CandidateMonitorPanelProps> = ({
         </button>
       </div>
 
-      {/* ── TAB CONTENT ─────────────────────────────────────────────────── */}
+      {/* ── TAB CONTENT (All panes stay mounted to preserve Monaco & Yjs state across tab switching) ── */}
       <div className="cmp-tab-content">
         {/* 1. CODE TAB */}
-        {activeTab === 'code' && (
-          <>
-            <div className="cmp-code-toolbar">
-              <div className="cmp-code-left">
-                {availableFiles.length > 1 ? (
-                  <select
-                    className="cmp-file-select"
-                    value={selectedFile}
-                    onChange={e => setSelectedFile(e.target.value)}
-                  >
-                    {availableFiles.map(f => (
-                      <option key={f} value={f}>{f}</option>
-                    ))}
-                  </select>
-                ) : (
-                  <code style={{ color: '#38bdf8', fontSize: 11 }}>{selectedFile}</code>
-                )}
-                <span className="cmp-live-sync-indicator">
-                  <span className="cmp-dot" /> LIVE SYNC (YJS)
+        <div style={{ display: activeTab === 'code' ? 'flex' : 'none', flexDirection: 'column', height: '100%', width: '100%' }}>
+          <div className="cmp-code-toolbar">
+            <div className="cmp-code-left">
+              {availableFiles.length > 1 ? (
+                <select
+                  className="cmp-file-select"
+                  value={selectedFile}
+                  onChange={e => setSelectedFile(e.target.value)}
+                >
+                  {availableFiles.map(f => (
+                    <option key={f} value={f}>{f}</option>
+                  ))}
+                </select>
+              ) : (
+                <code style={{ color: '#38bdf8', fontSize: 11 }}>{selectedFile}</code>
+              )}
+              <span className="cmp-live-sync-indicator">
+                <span className="cmp-dot" /> LIVE SYNC (YJS)
+              </span>
+            </div>
+            <div className="cmp-code-right">
+              {telemetry?.cursor ? (
+                <span className="cmp-cursor-pos">
+                  Ln {telemetry.cursor.line}, Col {telemetry.cursor.column}
                 </span>
-              </div>
-              <div className="cmp-code-right">
-                {telemetry?.cursor ? (
-                  <span className="cmp-cursor-pos">
-                    Ln {telemetry.cursor.line}, Col {telemetry.cursor.column}
-                  </span>
-                ) : (
-                  <span className="cmp-cursor-pos">Editor Active</span>
-                )}
-              </div>
+              ) : (
+                <span className="cmp-cursor-pos">Editor Active</span>
+              )}
             </div>
+          </div>
 
-            <div className="cmp-monaco-wrapper">
-              <Editor
-                height="100%"
-                language={session.language || 'javascript'}
-                theme="vs-dark"
-                value={telemetry?.code || session.current_code_snapshot || ''}
-                onMount={handleEditorMount}
-                options={{
-                  readOnly: true,
-                  minimap: { enabled: false },
-                  scrollBeyondLastLine: false,
-                  lineNumbers: 'on',
-                  automaticLayout: true,
-                  tabSize: 2,
-                  folding: true,
-                  fontSize: 12,
-                  fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
-                  renderLineHighlight: 'all',
-                  domReadOnly: true,
-                }}
-              />
-            </div>
-          </>
-        )}
+          <div className="cmp-monaco-wrapper">
+            <Editor
+              height="100%"
+              language={session.language || 'javascript'}
+              theme="vs-dark"
+              defaultValue={session.current_code_snapshot || ''}
+              onMount={handleEditorMount}
+              options={{
+                readOnly: true,
+                minimap: { enabled: false },
+                scrollBeyondLastLine: false,
+                lineNumbers: 'on',
+                automaticLayout: true,
+                tabSize: 2,
+                folding: true,
+                fontSize: 12,
+                fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
+                renderLineHighlight: 'all',
+                domReadOnly: true,
+              }}
+            />
+          </div>
+        </div>
 
         {/* 2. ACTIVITY TAB */}
-        {activeTab === 'activity' && (
+        <div style={{ display: activeTab === 'activity' ? 'block' : 'none', height: '100%', overflowY: 'auto' }}>
           <div className="cmp-activity-feed">
             {telemetry?.activityHistory && telemetry.activityHistory.length > 0 ? (
               telemetry.activityHistory.map(item => (
@@ -273,10 +303,10 @@ export const CandidateMonitorPanel: React.FC<CandidateMonitorPanelProps> = ({
               <div className="cmp-empty-list">No activity recorded yet for this session.</div>
             )}
           </div>
-        )}
+        </div>
 
         {/* 3. INTERVIEW TAB */}
-        {activeTab === 'interview' && (
+        <div style={{ display: activeTab === 'interview' ? 'block' : 'none', height: '100%', overflowY: 'auto' }}>
           <div className="cmp-interview-pane">
             <div className="cmp-q-card">
               <div className="cmp-q-title">{questionTitle}</div>
@@ -306,10 +336,10 @@ export const CandidateMonitorPanel: React.FC<CandidateMonitorPanelProps> = ({
               </div>
             </div>
           </div>
-        )}
+        </div>
 
         {/* 4. EXECUTION TAB */}
-        {activeTab === 'execution' && (
+        <div style={{ display: activeTab === 'execution' ? 'block' : 'none', height: '100%', overflowY: 'auto' }}>
           <div className="cmp-exec-pane">
             <div className="cmp-exec-header">
               <span className="cmp-stat-lbl">Test Execution Engine</span>
@@ -336,10 +366,10 @@ export const CandidateMonitorPanel: React.FC<CandidateMonitorPanelProps> = ({
               <div className="cmp-empty-list">Student has not run code tests yet.</div>
             )}
           </div>
-        )}
+        </div>
 
         {/* 5. DETAILS TAB */}
-        {activeTab === 'details' && (
+        <div style={{ display: activeTab === 'details' ? 'block' : 'none', height: '100%', overflowY: 'auto' }}>
           <div className="cmp-details-table">
             <span className="cmp-dt-label">Student Name:</span>
             <span className="cmp-dt-val">{candidateName}</span>
@@ -368,7 +398,7 @@ export const CandidateMonitorPanel: React.FC<CandidateMonitorPanelProps> = ({
               Socket.IO + Yjs Active
             </span>
           </div>
-        )}
+        </div>
       </div>
     </div>
   );

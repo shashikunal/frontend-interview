@@ -28,12 +28,47 @@ export default function AdminLiveSessionsTab() {
   const [searchQuery, setSearchQuery] = useState('');
   const [, setTick] = useState(0); // clock tick for relTime and idle checks
 
-  // Extract all active session IDs for Socket.IO multi-session room subscription
+  // ── Canonical Candidate Store: Exactly ONE session panel per candidate ──────────
+  // Deduplicates multiple historical active sessions for the same student
+  const canonicalCandidates = useMemo(() => {
+    const candidateMap = new Map<string, InterviewSession>();
+
+    for (const session of sessions) {
+      const candidateKey = session.candidate_id || session.candidate_email || session.id;
+      const existing = candidateMap.get(candidateKey);
+      if (!existing) {
+        candidateMap.set(candidateKey, session);
+        continue;
+      }
+
+      // 1. Prefer active session over submitted/completed
+      const isCurActive = session.status === 'active' || session.status === 'in_progress';
+      const isExistingActive = existing.status === 'active' || existing.status === 'in_progress';
+      if (isCurActive && !isExistingActive) {
+        candidateMap.set(candidateKey, session);
+        continue;
+      }
+      if (!isCurActive && isExistingActive) {
+        continue;
+      }
+
+      // 2. Prefer most recent activity
+      const curTime = new Date(session.last_activity_at || session.started_at || session.created_at).getTime();
+      const existingTime = new Date(existing.last_activity_at || existing.started_at || existing.created_at).getTime();
+      if (curTime > existingTime) {
+        candidateMap.set(candidateKey, session);
+      }
+    }
+
+    return Array.from(candidateMap.values());
+  }, [sessions]);
+
+  // Extract canonical active session IDs for Socket.IO room subscription
   const activeSessionIds = useMemo(() => {
-    return sessions
+    return canonicalCandidates
       .filter(s => s.status === 'active' || s.status === 'in_progress')
       .map(s => s.id);
-  }, [sessions]);
+  }, [canonicalCandidates]);
 
   // Two-way Realtime Socket.IO connection for admin live monitoring
   const { isConnected: isRealtimeConnected, telemetryMap: socketTelemetryMap, getYDoc } = useAdminMonitorSocket(activeSessionIds, user);
@@ -41,7 +76,7 @@ export default function AdminLiveSessionsTab() {
   // Merge persistent Supabase session data with live Socket.IO telemetry stream
   const telemetryMap = useMemo<Record<string, LiveTelemetryItem>>(() => {
     const map: Record<string, LiveTelemetryItem> = {};
-    for (const s of sessions) {
+    for (const s of canonicalCandidates) {
       const initCode = s.current_code_snapshot ||
         (s.files_snapshot ? (s.files_snapshot[s.active_file || ''] || Object.values(s.files_snapshot)[0] || '') : '');
       map[s.id] = {
@@ -80,7 +115,7 @@ export default function AdminLiveSessionsTab() {
       }
     }
     return map;
-  }, [sessions, socketTelemetryMap]);
+  }, [canonicalCandidates, socketTelemetryMap]);
 
   /* ── Initial Load Sessions ─────────────────────────────────────────────── */
   const loadSessions = useCallback(() => {
@@ -131,18 +166,9 @@ export default function AdminLiveSessionsTab() {
     return () => clearInterval(interval);
   }, []);
 
-  /* ── Heartbeat & Idle Checker (every 10s) ──────────────────────────────── */
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setTick(n => n + 1);
-    }, 10000);
-
-    return () => clearInterval(interval);
-  }, []);
-
-  /* ── Filtered Sessions Computation ─────────────────────────────────────── */
+  /* ── Filtered Sessions Computation (from Canonical Candidates) ────────── */
   const filteredSessions = useMemo(() => {
-    return sessions.filter(s => {
+    return canonicalCandidates.filter(s => {
       const tel = telemetryMap[s.id];
       const presence = tel?.presence || (s.status === 'active' || s.status === 'in_progress' ? 'online' : 'disconnected');
       const track = trackOf(s.question_id);
@@ -175,15 +201,15 @@ export default function AdminLiveSessionsTab() {
       }
       return true;
     });
-  }, [sessions, telemetryMap, filterStatus, filterTrack, searchQuery]);
+  }, [canonicalCandidates, telemetryMap, filterStatus, filterTrack, searchQuery]);
 
   /* ── KPI metrics ───────────────────────────────────────────────────────── */
-  const onlineCount = sessions.filter(s => telemetryMap[s.id]?.presence === 'online').length;
-  const typingCount = sessions.filter(s => telemetryMap[s.id]?.isTyping).length;
-  const idleCount = sessions.filter(s => telemetryMap[s.id]?.presence === 'idle').length;
-  const activeCount = sessions.filter(s => s.status === 'active' || s.status === 'in_progress').length;
-  const submittedCount = sessions.filter(s => s.status === 'submitted' || s.status === 'completed').length;
-  const disconnectedCount = sessions.filter(s => telemetryMap[s.id]?.presence === 'disconnected').length;
+  const onlineCount = canonicalCandidates.filter(s => telemetryMap[s.id]?.presence === 'online').length;
+  const typingCount = canonicalCandidates.filter(s => telemetryMap[s.id]?.isTyping).length;
+  const idleCount = canonicalCandidates.filter(s => telemetryMap[s.id]?.presence === 'idle').length;
+  const activeCount = canonicalCandidates.filter(s => s.status === 'active' || s.status === 'in_progress').length;
+  const submittedCount = canonicalCandidates.filter(s => s.status === 'submitted' || s.status === 'completed').length;
+  const disconnectedCount = canonicalCandidates.filter(s => telemetryMap[s.id]?.presence === 'disconnected').length;
 
   return (
     <div className="admin-live-sessions-tab page-enter">

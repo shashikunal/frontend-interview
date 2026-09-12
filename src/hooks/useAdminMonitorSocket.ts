@@ -278,9 +278,11 @@ export function useAdminMonitorSocket(sessionIds: string[], user?: any) {
       // 11. yjs:update (Live binary CRDT keystrokes into local Y.Doc)
       socket.on('yjs:update', (data: any) => {
         if (!data?.sessionId || !data?.update) return;
+        console.log(`[YJS-ADMIN] Yjs update received for session ${data.sessionId}`);
         const ydoc = getOrCreateSessionYDoc(data.sessionId);
         try {
           Y.applyUpdate(ydoc, toUint8Array(data.update), 'remote');
+          console.log(`[YJS-ADMIN] Y.applyUpdate completed for session ${data.sessionId}`);
         } catch (err) {
           console.warn(`[Admin Monitor Yjs] Failed to apply update for ${data.sessionId}:`, err);
         }

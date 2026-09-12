@@ -221,7 +221,7 @@ function FrontendJsWorkspace({
   // Candidates only; one row per candidate+question via getOrCreateSession.
   useEffect(() => {
     if (!user?.id) return
-    if (role === 'admin' || role === 'observer' || role === 'interviewer') return
+    if (role === 'observer') return
     if (autoSessionRef.current === `${user.id}:${question.id}`) return
     autoSessionRef.current = `${user.id}:${question.id}`
     setLiveSessionId(null)
@@ -979,11 +979,12 @@ function FrontendJsWorkspace({
 
               <div className="mc-monaco-wrapper">
                 <Editor
+                  key={question.id}
                   height="100%"
                   path={`fjs/${question.id}/${question.functionName}.js`}
                   language="javascript"
                   theme={resolvedTheme === 'light' ? 'light' : 'vs-dark'}
-                  value={currentCode}
+                  defaultValue={currentCode}
                   onChange={handleCodeChange}
                   onMount={(editor, monaco) => {
                     editorRef.current = editor

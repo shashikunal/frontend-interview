@@ -59,6 +59,7 @@ export function bridgeYDocWithSocket(
   // 1. Local changes produce Yjs binary updates -> emit to Socket.IO room
   const handleDocUpdate = (update: Uint8Array, origin: any) => {
     if (origin === 'remote') return;
+    console.log(`[YJS-STUDENT] Yjs update generated for session ${sessionId} (${update.length} bytes)`);
     if (socket.connected) {
       socket.emit('yjs:update', {
         sessionId,
@@ -66,6 +67,7 @@ export function bridgeYDocWithSocket(
         fileId: getActiveFile(),
         timestamp: Date.now(),
       });
+      console.log(`[YJS-STUDENT] Socket.IO update emitted for session ${sessionId}`);
     }
   };
 
@@ -115,16 +117,27 @@ export function bindMonacoToYDoc(
   ydoc: Y.Doc,
   fileId: string,
   editorInstance: editor.IStandaloneCodeEditor,
-  initialContent?: string
+  initialContent?: string,
+  isReadOnly: boolean = false
 ): MonacoBinding | null {
   const model = editorInstance.getModel();
   if (!model) return null;
 
   const ytext = ydoc.getText(fileId);
 
-  // If ytext is empty and initialContent is provided, populate it
-  if (ytext.length === 0 && initialContent && initialContent.trim().length > 0) {
-    ytext.insert(0, initialContent);
+  if (!isReadOnly) {
+    // Student side: if ytext is empty and initialContent is provided, populate it
+    if (ytext.length === 0 && initialContent && initialContent.trim().length > 0) {
+      ytext.insert(0, initialContent);
+      console.log(`[YJS-STUDENT] Y.Text initialized for ${fileId} (${initialContent.length} chars)`);
+    }
+  } else {
+    // Admin side: if ytext is currently empty, show snapshot in model without mutating Y.Doc
+    if (ytext.length === 0 && initialContent && initialContent.trim().length > 0) {
+      if (model.getValue() !== initialContent) {
+        model.setValue(initialContent);
+      }
+    }
   }
 
   try {
@@ -133,6 +146,11 @@ export function bindMonacoToYDoc(
       model,
       new Set([editorInstance])
     );
+    if (isReadOnly) {
+      console.log(`[YJS-ADMIN] Monaco binding active for file ${fileId}`);
+    } else {
+      console.log(`[YJS-STUDENT] Binding initialized for file ${fileId}`);
+    }
     return binding;
   } catch (err) {
     console.warn('[Yjs Monaco] Failed to bind Monaco editor to Y.Text:', err);

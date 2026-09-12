@@ -642,10 +642,11 @@ function DSAStudioWorkspace({ questionId }: WorkspaceProps) {
             }}
           >
             <Editor
+              key={`${question.id}_${language}`}
               height="100%"
               language={language === 'typescript' ? 'typescript' : 'javascript'}
               theme={editorTheme}
-              value={code}
+              defaultValue={code}
               onChange={handleCodeChange}
               onMount={(editor) => {
                 editorRef.current = editor
