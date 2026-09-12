@@ -101,13 +101,6 @@ export function useInterviewSocket({
           if (ack?.success) {
             setIsConnected(true);
             setPresenceStatus('online');
-            if (ack.docState && ydoc) {
-              try {
-                Y.applyUpdate(ydoc, toUint8Array(ack.docState), 'remote');
-              } catch (err) {
-                console.warn('[useInterviewSocket] Failed applying initial docState from server:', err);
-              }
-            }
           }
         });
       }

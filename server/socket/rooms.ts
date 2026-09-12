@@ -49,7 +49,7 @@ export async function canMonitorSession(user: AuthenticatedUser, _sessionId: str
 
   // Development fallback for admin testing
   if (process.env.NODE_ENV !== 'production') {
-    if (user.role === 'admin' || user.id?.includes('admin')) {
+    if (user.id?.includes('admin')) {
       return true;
     }
   }

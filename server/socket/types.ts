@@ -119,6 +119,7 @@ export interface YjsUpdateEvent {
 
 export interface YjsSyncRequestEvent {
   sessionId: string;
+  stateVector?: Uint8Array | number[];
 }
 
 export interface YjsSyncResponseEvent {
@@ -138,7 +139,7 @@ export interface StudentKeystrokeEvent {
 }
 
 export interface ClientToServerEvents {
-  'session:join': (data: { sessionId: string; questionId?: string; questionTitle?: string; language?: string; initialCode?: string }, callback?: (ack: { success: boolean; state?: SessionStatePayload; error?: string }) => void) => void;
+  'session:join': (data: { sessionId: string; questionId?: string; questionTitle?: string; language?: string; initialCode?: string }, callback?: (ack: { success: boolean; state?: SessionStatePayload; docState?: Uint8Array | number[]; error?: string }) => void) => void;
   'session:leave': (data: { sessionId: string }) => void;
   'session:heartbeat': (data: { sessionId: string; status?: 'online' | 'idle' }) => void;
   'student:typing': (data: StudentTypingEvent) => void;

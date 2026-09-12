@@ -4,7 +4,6 @@ import type { ClientToServerEvents, ServerToClientEvents } from '../../../server
 
 export type TypedSocket = Socket<ServerToClientEvents, ClientToServerEvents>;
 
-let sharedSocket: TypedSocket | null = null;
 let currentToken: string | null = null;
 
 export async function getSupabaseToken(): Promise<string | null> {
