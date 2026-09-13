@@ -541,7 +541,7 @@ export default function AdminCandidatePerformancePage({ isEmbedded = false }: Ad
           status: a.status,
           code: a.code,
           language: a.language || 'typescript',
-          timeSpentSeconds: a.timeSpentSeconds,
+          timeSpentSeconds: a.durationSeconds,
         }));
 
       const report = await candidateAiEvaluationService.generateEvaluation({
@@ -549,23 +549,23 @@ export default function AdminCandidatePerformancePage({ isEmbedded = false }: Ad
         candidateName: candidateProfile.name || 'Candidate',
         candidateEmail: candidateProfile.email,
         metrics: {
-          uniqueSolved: summary?.uniqueProblemsSolved ?? 0,
-          uniqueAttempted: summary?.uniqueProblemsAttempted ?? 0,
+          uniqueSolved: summary?.uniqueSolved ?? 0,
+          uniqueAttempted: summary?.uniqueAttempted ?? 0,
           successRate: summary?.successRate ?? 0,
           totalAttempts: summary?.totalAttempts ?? 0,
-          totalTimeMinutes: summary?.totalTimeSpentMinutes ?? 0,
+          totalTimeMinutes: summary?.totalCodingTimeSeconds ? Math.round(summary.totalCodingTimeSeconds / 60) : 0,
         },
         categoryBreakdown: {
           machineCoding: {
-            uniqueSolved: summary?.categoryStats?.MACHINE_CODING?.solved ?? 0,
+            uniqueSolved: summary?.categoryStats?.MACHINE_CODING?.questionsSolved ?? 0,
             avgScore: summary?.categoryStats?.MACHINE_CODING?.averageScore ?? 0,
           },
           coreProgramming: {
-            uniqueSolved: summary?.categoryStats?.CORE_PROGRAMMING?.solved ?? 0,
+            uniqueSolved: summary?.categoryStats?.CORE_PROGRAMMING?.questionsSolved ?? 0,
             avgScore: summary?.categoryStats?.CORE_PROGRAMMING?.averageScore ?? 0,
           },
           dsa: {
-            uniqueSolved: summary?.categoryStats?.DSA?.solved ?? 0,
+            uniqueSolved: summary?.categoryStats?.DSA?.questionsSolved ?? 0,
             avgScore: summary?.categoryStats?.DSA?.averageScore ?? 0,
           },
         },
