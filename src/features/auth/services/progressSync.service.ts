@@ -104,7 +104,7 @@ export const progressSyncService = {
         supabase.from('user_question_progress').select('user_id, question_id, status, best_score'),
         supabase.from('core_programming_submissions').select('user_id, question_id, status, score, created_at').then(res => res, () => ({ data: [] })),
         supabase.from('frontend_js_submissions').select('user_id, question_id, status, score, created_at').then(res => res, () => ({ data: [] })),
-        supabase.from('dsa_submissions').select('user_id, question_id, status, score, created_at').then(res => res, () => ({ data: [] })),
+        supabase.from('dsa_submissions').select('user_id, question_id, status, tests_passed, tests_total, created_at').then(res => res, () => ({ data: [] })),
       ])
 
       // 3. Read local storage tracking submissions and attempts (offline-first real data)
@@ -221,9 +221,10 @@ export const progressSyncService = {
         })
         ;(sbDSASubs || []).forEach((s: any) => {
           if (isUserRecord(s.user_id)) {
-            const isSolved = s.status === 'accepted' || s.status === 'Accepted' || (s.score !== undefined && Number(s.score) >= 70)
+            const calculatedScore = s.score !== undefined && s.score !== null ? Number(s.score) : (s.status === 'accepted' || s.status === 'Accepted' ? 100 : (s.tests_total ? Math.round((Number(s.tests_passed) / Number(s.tests_total)) * 100) : 0))
+            const isSolved = s.status === 'accepted' || s.status === 'Accepted' || calculatedScore >= 70
             if (isSolved && s.question_id) solvedQuestionIds.add(String(s.question_id))
-            if (s.score !== undefined && s.score !== null) candidateScores.push(Number(s.score))
+            candidateScores.push(calculatedScore)
           }
         })
 

@@ -918,11 +918,11 @@ class CodingHistoryService {
     try {
       const db = await getAuthenticatedHistoryClient();
       const [subsRes, cpRes, dsaRes, fjsRes, attRes] = await Promise.all([
-        db.from('submissions').select('user_id, question_id, status, score, percentage, created_at').then(r => r, () => ({ data: [] })),
-        db.from('core_programming_submissions').select('user_id, question_id, status, score, percentage, created_at').then(r => r, () => ({ data: [] })),
-        db.from('dsa_submissions').select('user_id, question_id, status, score, percentage, created_at').then(r => r, () => ({ data: [] })),
-        db.from('frontend_js_submissions').select('user_id, question_id, status, score, percentage, created_at').then(r => r, () => ({ data: [] })),
-        db.from('question_attempts').select('user_id, question_id, status, score, percentage, created_at').then(r => r, () => ({ data: [] })),
+        db.from('submissions').select('user_id, question_id, status, score, created_at').then(r => r, () => ({ data: [] })),
+        db.from('core_programming_submissions').select('user_id, question_id, status, score, created_at').then(r => r, () => ({ data: [] })),
+        db.from('dsa_submissions').select('user_id, question_id, status, tests_passed, tests_total, created_at').then(r => r, () => ({ data: [] })),
+        db.from('frontend_js_submissions').select('user_id, question_id, status, score, created_at').then(r => r, () => ({ data: [] })),
+        db.from('question_attempts').select('user_id, question_id, status, created_at').then(r => r, () => ({ data: [] })),
       ]);
 
       if (cpRes.data) {
@@ -933,7 +933,7 @@ class CodingHistoryService {
               questionId: String(item.question_id || ''),
               category: 'CORE_PROGRAMMING',
               status: String(item.status || ''),
-              score: Number(item.percentage ?? item.score ?? 0),
+              score: Number(item.score ?? (item.status === 'accepted' || item.status === 'Accepted' ? 100 : 0)),
               createdAt: item.created_at || new Date().toISOString(),
             });
           }
@@ -943,12 +943,15 @@ class CodingHistoryService {
       if (dsaRes.data) {
         dsaRes.data.forEach((item: any) => {
           if (item.user_id) {
+            const calculatedScore = item.tests_total
+              ? Math.round((Number(item.tests_passed || 0) / Number(item.tests_total)) * 100)
+              : item.status === 'accepted' || item.status === 'Accepted' ? 100 : 0;
             rawRecords.push({
               userId: String(item.user_id),
               questionId: String(item.question_id || ''),
               category: 'DSA',
               status: String(item.status || ''),
-              score: Number(item.percentage ?? item.score ?? 0),
+              score: calculatedScore,
               createdAt: item.created_at || new Date().toISOString(),
             });
           }
@@ -984,7 +987,7 @@ class CodingHistoryService {
               questionId: String(item.question_id || ''),
               category: cat,
               status: String(item.status || ''),
-              score: Number(item.percentage ?? item.score ?? 0),
+              score: Number(item.score ?? 0),
               createdAt: item.created_at || new Date().toISOString(),
             });
           }
@@ -1005,7 +1008,7 @@ class CodingHistoryService {
               questionId: q,
               category: cat,
               status: String(item.status || ''),
-              score: Number(item.percentage ?? item.score ?? 0),
+              score: item.status === 'completed' || item.status === 'accepted' ? 100 : 0,
               createdAt: item.created_at || new Date().toISOString(),
             });
           }

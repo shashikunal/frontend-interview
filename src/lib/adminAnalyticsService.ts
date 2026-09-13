@@ -1957,24 +1957,24 @@ export const adminAnalyticsService = {
         dsaSubRes,
         mockRes,
       ] = await Promise.allSettled([
-        supabase.from('question_attempts').select('id, question_id, status, time_spent, time_spent_seconds, category').eq('user_id', userId),
-        supabase.from('submissions').select('id, question_id, status, score, category').eq('user_id', userId),
-        supabase.from('core_programming_attempts').select('id, question_id, status, time_spent_seconds').eq('user_id', userId),
+        supabase.from('question_attempts').select('id, question_id, status, time_spent, time_spent_seconds').eq('user_id', userId),
+        supabase.from('submissions').select('id, question_id, status, score').eq('user_id', userId),
+        supabase.from('core_programming_attempts').select('id, question_id, status').eq('user_id', userId).then(r => r.error ? { data: [] } : r, () => ({ data: [] })),
         supabase.from('core_programming_submissions').select('id, question_id, status, score').eq('user_id', userId),
-        supabase.from('frontend_js_attempts').select('id, question_id, status, time_spent_seconds').eq('user_id', userId),
+        supabase.from('frontend_js_attempts').select('id, question_id, status').eq('user_id', userId).then(r => r.error ? { data: [] } : r, () => ({ data: [] })),
         supabase.from('frontend_js_submissions').select('id, question_id, status, score').eq('user_id', userId),
-        supabase.from('dsa_submissions').select('id, question_id, status, score').eq('user_id', userId),
+        supabase.from('dsa_submissions').select('id, question_id, status, tests_passed, tests_total').eq('user_id', userId),
         supabase.from('interview_sessions').select('id, status').eq('candidate_id', userId),
       ])
 
-      const mcAtts = mcAttRes.status === 'fulfilled' && Array.isArray(mcAttRes.value.data) ? mcAttRes.value.data : []
-      const mcSubs = mcSubRes.status === 'fulfilled' && Array.isArray(mcSubRes.value.data) ? mcSubRes.value.data : []
-      const cpAtts = cpAttRes.status === 'fulfilled' && Array.isArray(cpAttRes.value.data) ? cpAttRes.value.data : []
-      const cpSubs = cpSubRes.status === 'fulfilled' && Array.isArray(cpSubRes.value.data) ? cpSubRes.value.data : []
-      const fjsAtts = fjsAttRes.status === 'fulfilled' && Array.isArray(fjsAttRes.value.data) ? fjsAttRes.value.data : []
-      const fjsSubs = fjsSubRes.status === 'fulfilled' && Array.isArray(fjsSubRes.value.data) ? fjsSubRes.value.data : []
-      const dsaSubs = dsaSubRes.status === 'fulfilled' && Array.isArray(dsaSubRes.value.data) ? dsaSubRes.value.data : []
-      const mocks = mockRes.status === 'fulfilled' && Array.isArray(mockRes.value.data) ? mockRes.value.data : []
+      const mcAtts: any[] = mcAttRes.status === 'fulfilled' && !('error' in mcAttRes.value && (mcAttRes.value as any).error) && Array.isArray((mcAttRes.value as any).data) ? (mcAttRes.value as any).data : []
+      const mcSubs: any[] = mcSubRes.status === 'fulfilled' && !('error' in mcSubRes.value && (mcSubRes.value as any).error) && Array.isArray((mcSubRes.value as any).data) ? (mcSubRes.value as any).data : []
+      const cpAtts: any[] = cpAttRes.status === 'fulfilled' && !('error' in cpAttRes.value && (cpAttRes.value as any).error) && Array.isArray((cpAttRes.value as any).data) ? (cpAttRes.value as any).data : []
+      const cpSubs: any[] = cpSubRes.status === 'fulfilled' && !('error' in cpSubRes.value && (cpSubRes.value as any).error) && Array.isArray((cpSubRes.value as any).data) ? (cpSubRes.value as any).data : []
+      const fjsAtts: any[] = fjsAttRes.status === 'fulfilled' && !('error' in fjsAttRes.value && (fjsAttRes.value as any).error) && Array.isArray((fjsAttRes.value as any).data) ? (fjsAttRes.value as any).data : []
+      const fjsSubs: any[] = fjsSubRes.status === 'fulfilled' && !('error' in fjsSubRes.value && (fjsSubRes.value as any).error) && Array.isArray((fjsSubRes.value as any).data) ? (fjsSubRes.value as any).data : []
+      const dsaSubs: any[] = dsaSubRes.status === 'fulfilled' && !('error' in dsaSubRes.value && (dsaSubRes.value as any).error) && Array.isArray((dsaSubRes.value as any).data) ? (dsaSubRes.value as any).data : []
+      const mocks: any[] = mockRes.status === 'fulfilled' && !('error' in mockRes.value && (mockRes.value as any).error) && Array.isArray((mockRes.value as any).data) ? (mockRes.value as any).data : []
 
       // Track-specific sets of solved questions
       const mcSolved = new Set<string>()
@@ -1994,9 +1994,9 @@ export const adminAnalyticsService = {
         totalScoreSum += score
         const qid = String(s.question_id || '')
         const qUpper = qid.toUpperCase()
-        const isCP = s.category === 'CORE_PROGRAMMING' || qUpper.startsWith('JS-P') || qUpper.startsWith('JSP') || qUpper.startsWith('CP')
-        const isDSA = s.category === 'DSA' || qUpper.startsWith('DSA')
-        const isFJS = s.category === 'FRONTEND_JS' || qUpper.startsWith('FJP')
+        const isCP = qUpper.startsWith('JS-P') || qUpper.startsWith('JSP') || qUpper.startsWith('CP')
+        const isDSA = qUpper.startsWith('DSA')
+        const isFJS = qUpper.startsWith('FJP')
 
         if (s.status === 'accepted' || score === 100) {
           acceptedSubmissions++
@@ -2032,9 +2032,11 @@ export const adminAnalyticsService = {
       // Process DSA submissions
       dsaSubs.forEach(s => {
         totalSubmissions++
-        const score = Number(s.score || 0)
+        const score = s.tests_total
+          ? Math.round((Number(s.tests_passed || 0) / Number(s.tests_total)) * 100)
+          : (s.status === 'accepted' || s.status === 'Accepted' ? 100 : 0)
         totalScoreSum += score
-        if (s.status === 'accepted' || score === 100) {
+        if (s.status === 'accepted' || s.status === 'Accepted' || score >= 70) {
           acceptedSubmissions++
           dsaSolved.add(String(s.question_id))
         }
@@ -2045,9 +2047,9 @@ export const adminAnalyticsService = {
         totalTimeSpentSeconds += Number(a.time_spent_seconds || a.time_spent || 0)
         const qid = String(a.question_id || '')
         const qUpper = qid.toUpperCase()
-        const isCP = a.category === 'CORE_PROGRAMMING' || qUpper.startsWith('JS-P') || qUpper.startsWith('JSP') || qUpper.startsWith('CP')
-        const isDSA = a.category === 'DSA' || qUpper.startsWith('DSA')
-        const isFJS = a.category === 'FRONTEND_JS' || qUpper.startsWith('FJP')
+        const isCP = qUpper.startsWith('JS-P') || qUpper.startsWith('JSP') || qUpper.startsWith('CP')
+        const isDSA = qUpper.startsWith('DSA')
+        const isFJS = qUpper.startsWith('FJP')
 
         if (a.status === 'completed') {
           if (isDSA) dsaSolved.add(qid)
@@ -2056,11 +2058,11 @@ export const adminAnalyticsService = {
           else mcSolved.add(qid)
         }
       })
-      cpAtts.forEach(a => {
+      cpAtts.forEach((a: any) => {
         totalTimeSpentSeconds += Number(a.time_spent_seconds || 0)
         if (a.status === 'completed') cpSolved.add(String(a.question_id))
       })
-      fjsAtts.forEach(a => {
+      fjsAtts.forEach((a: any) => {
         totalTimeSpentSeconds += Number(a.time_spent_seconds || 0)
         if (a.status === 'completed') fjsSolved.add(String(a.question_id))
       })
@@ -2084,29 +2086,29 @@ export const adminAnalyticsService = {
         totalTimeSpentSeconds,
         trackBreakdown: {
           machineCoding: {
-            attempts: mcAtts.filter(a => {
+            attempts: mcAtts.filter((a: any) => {
               const qUpper = String(a.question_id || '').toUpperCase()
               return (!a.category || a.category === 'MACHINE_CODING') && !qUpper.startsWith('JS-P') && !qUpper.startsWith('DSA') && !qUpper.startsWith('FJP')
             }).length,
-            submissions: mcSubs.filter(s => {
+            submissions: mcSubs.filter((s: any) => {
               const qUpper = String(s.question_id || '').toUpperCase()
               return (!s.category || s.category === 'MACHINE_CODING') && !qUpper.startsWith('JS-P') && !qUpper.startsWith('DSA') && !qUpper.startsWith('FJP')
             }).length,
             solved: mcSolved.size,
           },
           dsa: {
-            attempts: mcAtts.filter(a => a.category === 'DSA' || String(a.question_id || '').toUpperCase().startsWith('DSA')).length,
-            submissions: dsaSubs.length + mcSubs.filter(s => s.category === 'DSA' || String(s.question_id || '').toUpperCase().startsWith('DSA')).length,
+            attempts: mcAtts.filter((a: any) => a.category === 'DSA' || String(a.question_id || '').toUpperCase().startsWith('DSA')).length,
+            submissions: dsaSubs.length + mcSubs.filter((s: any) => s.category === 'DSA' || String(s.question_id || '').toUpperCase().startsWith('DSA')).length,
             solved: dsaSolved.size,
           },
           coreProgramming: {
-            attempts: cpAtts.length + mcAtts.filter(a => a.category === 'CORE_PROGRAMMING' || String(a.question_id || '').toUpperCase().startsWith('JS-P') || String(a.question_id || '').toUpperCase().startsWith('JSP')).length,
-            submissions: cpSubs.length + mcSubs.filter(s => s.category === 'CORE_PROGRAMMING' || String(s.question_id || '').toUpperCase().startsWith('JS-P') || String(s.question_id || '').toUpperCase().startsWith('JSP')).length,
+            attempts: cpAtts.length + mcAtts.filter((a: any) => a.category === 'CORE_PROGRAMMING' || String(a.question_id || '').toUpperCase().startsWith('JS-P') || String(a.question_id || '').toUpperCase().startsWith('JSP')).length,
+            submissions: cpSubs.length + mcSubs.filter((s: any) => s.category === 'CORE_PROGRAMMING' || String(s.question_id || '').toUpperCase().startsWith('JS-P') || String(s.question_id || '').toUpperCase().startsWith('JSP')).length,
             solved: cpSolved.size,
           },
           frontendJs: {
-            attempts: fjsAtts.length + mcAtts.filter(a => a.category === 'FRONTEND_JS' || String(a.question_id || '').toUpperCase().startsWith('FJP')).length,
-            submissions: fjsSubs.length + mcSubs.filter(s => s.category === 'FRONTEND_JS' || String(s.question_id || '').toUpperCase().startsWith('FJP')).length,
+            attempts: fjsAtts.length + mcAtts.filter((a: any) => a.category === 'FRONTEND_JS' || String(a.question_id || '').toUpperCase().startsWith('FJP')).length,
+            submissions: fjsSubs.length + mcSubs.filter((s: any) => s.category === 'FRONTEND_JS' || String(s.question_id || '').toUpperCase().startsWith('FJP')).length,
             solved: fjsSolved.size,
           },
           aiMock: {

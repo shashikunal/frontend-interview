@@ -437,7 +437,7 @@ export const leaderboardService = {
           .limit(2000),
         client
           .from('dsa_submissions')
-          .select('id, user_id, question_id, score, status, language, runtime_ms, created_at')
+          .select('id, user_id, question_id, status, language, runtime_ms, tests_passed, tests_total, created_at')
           .order('created_at', { ascending: false })
           .limit(2000),
         client
@@ -577,7 +577,9 @@ export const leaderboardService = {
         if (seenSubIds.has(id)) continue
         seenSubIds.add(id)
         const prof = profileMap.get(dsa.user_id)
-        const score = Number(dsa.score || (dsa.status === 'accepted' || dsa.status === 'Accepted' ? 100 : 0))
+        const score = Number(
+          dsa.tests_total ? Math.round((Number(dsa.tests_passed || 0) / Number(dsa.tests_total)) * 100) : (dsa.status === 'accepted' || dsa.status === 'Accepted' ? 100 : 0)
+        )
         allSubs.push({
           id,
           userId: String(dsa.user_id),
