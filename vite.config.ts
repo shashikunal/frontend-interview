@@ -74,6 +74,36 @@ function localAdminAuthPlugin(): Plugin {
           res.end(JSON.stringify({ error: err?.message || 'Server error' }))
         }
       })
+
+      // Local Dev Candidate AI Evaluation API Middleware
+      server.middlewares.use('/api/candidate-ai-evaluation', async (req: any, res: any) => {
+        try {
+          // @ts-ignore
+          const { default: handler } = await import('./api/candidate-ai-evaluation.js')
+          res.status = (code: number) => { res.statusCode = code; return res }
+          res.json = (data: any) => {
+            res.setHeader('Content-Type', 'application/json')
+            res.end(JSON.stringify(data))
+            return res
+          }
+
+          if (req.method === 'POST') {
+            let body = ''
+            req.on('data', (chunk: any) => { body += chunk })
+            req.on('end', async () => {
+              try { req.body = JSON.parse(body || '{}') } catch { req.body = {} }
+              await handler(req, res)
+            })
+            return
+          }
+
+          await handler(req, res)
+        } catch (err: any) {
+          res.statusCode = 500
+          res.setHeader('Content-Type', 'application/json')
+          res.end(JSON.stringify({ error: err?.message || 'Server error' }))
+        }
+      })
     },
   }
 }

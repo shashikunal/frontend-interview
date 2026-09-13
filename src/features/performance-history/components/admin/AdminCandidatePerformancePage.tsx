@@ -13,6 +13,10 @@ import {
   type ScheduledInterviewRound,
 } from '../../services/candidateHiringActionService';
 import QuestionHistoryDetailModal from '../student/QuestionHistoryDetailModal';
+import {
+  candidateAiEvaluationService,
+  type CandidateAiEvaluationReport,
+} from '../../services/candidateAiEvaluationService';
 import type {
   CodingAttempt,
   UserPerformanceSummary,
@@ -205,6 +209,12 @@ export default function AdminCandidatePerformancePage({ isEmbedded = false }: Ad
   const [evaluationHistory, setEvaluationHistory] = useState<HiringEvaluationHistoryItem[]>([]);
   const [savingEvaluation, setSavingEvaluation] = useState(false);
   const [evaluationSaveMessage, setEvaluationSaveMessage] = useState<string | null>(null);
+
+  // Automated AI Candidate Evaluation & Hiring Intelligence State
+  const [aiEvaluation, setAiEvaluation] = useState<CandidateAiEvaluationReport | null>(null);
+  const [isGeneratingAi, setIsGeneratingAi] = useState(false);
+  const [aiError, setAiError] = useState<string | null>(null);
+  const [aiSuccessMsg, setAiSuccessMsg] = useState<string | null>(null);
 
   // Password Reset Action State
   const [resettingPassword, setResettingPassword] = useState(false);
@@ -431,6 +441,12 @@ export default function AdminCandidatePerformancePage({ isEmbedded = false }: Ad
           setAttempts(history);
           setEvaluationHistory(evalHist);
 
+          // Restore cached AI synthesis if available
+          const cachedAi = candidateAiEvaluationService.getCachedEvaluation(userId!);
+          if (cachedAi) {
+            setAiEvaluation(cachedAi);
+          }
+
           if (currentEval) {
             setHiringStatus(currentEval.status);
             setOverallRating(currentEval.overallRating);
@@ -505,6 +521,111 @@ export default function AdminCandidatePerformancePage({ isEmbedded = false }: Ad
     } finally {
       setSavingEvaluation(false);
     }
+  };
+
+  // Trigger automated AI evaluation synthesis
+  const handleGenerateAiSynthesis = async () => {
+    if (!userId || !candidateProfile) return;
+    setIsGeneratingAi(true);
+    setAiError(null);
+    setAiSuccessMsg(null);
+    try {
+      const topSubmissions = attempts
+        .filter(a => a.code && a.code.trim().length > 0)
+        .slice(0, 5)
+        .map(a => ({
+          questionId: a.questionId,
+          title: a.questionTitle,
+          category: a.category,
+          score: a.score,
+          status: a.status,
+          code: a.code,
+          language: a.language || 'typescript',
+          timeSpentSeconds: a.timeSpentSeconds,
+        }));
+
+      const report = await candidateAiEvaluationService.generateEvaluation({
+        candidateId: userId,
+        candidateName: candidateProfile.name || 'Candidate',
+        candidateEmail: candidateProfile.email,
+        metrics: {
+          uniqueSolved: summary?.uniqueProblemsSolved ?? 0,
+          uniqueAttempted: summary?.uniqueProblemsAttempted ?? 0,
+          successRate: summary?.successRate ?? 0,
+          totalAttempts: summary?.totalAttempts ?? 0,
+          totalTimeMinutes: summary?.totalTimeSpentMinutes ?? 0,
+        },
+        categoryBreakdown: {
+          machineCoding: {
+            uniqueSolved: summary?.categoryStats?.MACHINE_CODING?.solved ?? 0,
+            avgScore: summary?.categoryStats?.MACHINE_CODING?.averageScore ?? 0,
+          },
+          coreProgramming: {
+            uniqueSolved: summary?.categoryStats?.CORE_PROGRAMMING?.solved ?? 0,
+            avgScore: summary?.categoryStats?.CORE_PROGRAMMING?.averageScore ?? 0,
+          },
+          dsa: {
+            uniqueSolved: summary?.categoryStats?.DSA?.solved ?? 0,
+            avgScore: summary?.categoryStats?.DSA?.averageScore ?? 0,
+          },
+        },
+        topSubmissions,
+      });
+
+      setAiEvaluation(report);
+      setAiSuccessMsg('✨ AI Candidate Evaluation successfully synthesized!');
+      setTimeout(() => setAiSuccessMsg(null), 5000);
+    } catch (err: any) {
+      console.error('Failed to generate AI evaluation:', err);
+      setAiError(err.message || 'Failed to synthesize AI evaluation.');
+    } finally {
+      setIsGeneratingAi(false);
+    }
+  };
+
+  // Apply AI evaluation recommendations directly to the hiring form
+  const handleApplyAiToEvaluation = () => {
+    if (!aiEvaluation) return;
+
+    // Map recommendation verdict
+    if (aiEvaluation.recommendation === 'STRONG_HIRE' || aiEvaluation.recommendation === 'HIRE') {
+      setHiringStatus('Hire');
+    } else if (aiEvaluation.recommendation === 'LEAN_HIRE' || aiEvaluation.recommendation === 'LEAN_REJECT') {
+      setHiringStatus('Consider');
+    } else {
+      setHiringStatus('Reject');
+    }
+
+    // Rubric scores
+    setOverallRating(Math.round(aiEvaluation.rubricSuggestions.problemSolving));
+    setRubricProblemSolving(Math.round(aiEvaluation.rubricSuggestions.problemSolving));
+    setRubricCodeQuality(Math.round(aiEvaluation.rubricSuggestions.codeQuality));
+    setRubricArchitecture(Math.round(aiEvaluation.rubricSuggestions.architecture));
+
+    // Summary & notes
+    setRecommendation(aiEvaluation.executiveSummary);
+
+    if (aiEvaluation.strengths && aiEvaluation.strengths.length > 0) {
+      setStrengths(aiEvaluation.strengths.map(s => `• ${s}`).join('\n'));
+    }
+
+    if (aiEvaluation.areasToProbe && aiEvaluation.areasToProbe.length > 0) {
+      setWeaknesses(aiEvaluation.areasToProbe.map(w => `• ${w}`).join('\n'));
+    }
+
+    let interviewNotes = `[AI Hiring Intelligence Synthesis - Assessed Seniority: ${aiEvaluation.seniorityLevel} (Confidence: ${aiEvaluation.confidenceScore}%)]\n\n`;
+    if (aiEvaluation.tailoredInterviewQuestions && aiEvaluation.tailoredInterviewQuestions.length > 0) {
+      interviewNotes += `Recommended Interview Panel Probing Questions:\n`;
+      aiEvaluation.tailoredInterviewQuestions.forEach((q, idx) => {
+        interviewNotes += `${idx + 1}. "${q.question}"\n   Rationale: ${q.rationale}\n\n`;
+      });
+    }
+    setNotes(prev => (prev ? `${prev}\n\n${interviewNotes}` : interviewNotes));
+
+    setFinalComments(`Leveling Recommendation: ${aiEvaluation.seniorityLevel}\nSeniority Rationale: ${aiEvaluation.seniorityRationale}`);
+
+    setEvaluationSaveMessage('✨ AI recommendations successfully applied to rubric and notes! Review and persist changes.');
+    setTimeout(() => setEvaluationSaveMessage(null), 6000);
   };
 
   // Trigger Supabase authenticated password reset
@@ -1216,6 +1337,22 @@ export default function AdminCandidatePerformancePage({ isEmbedded = false }: Ad
                   ⚖️ Compare Candidate
                 </button>
               </>
+            )}
+            {isAdmin && (
+              <button
+                type="button"
+                className="admin-perf-btn-dossier admin-perf-btn-ai-magic"
+                onClick={() => {
+                  setActiveTab('hiring');
+                  if (!aiEvaluation && !isGeneratingAi) {
+                    handleGenerateAiSynthesis();
+                  }
+                }}
+                disabled={isGeneratingAi}
+                title="Synthesize automated AI candidate evaluation report & hiring intelligence"
+              >
+                {isGeneratingAi ? '✨ Synthesizing AI...' : '✨ AI Hiring Evaluation'}
+              </button>
             )}
             <button
               type="button"
@@ -2282,6 +2419,169 @@ export default function AdminCandidatePerformancePage({ isEmbedded = false }: Ad
       {/* TAB 2: HIRING EVALUATION & RUBRIC */}
       {isAdmin && !activeTrackCategory && activeTab === 'hiring' && (
         <div className="admin-perf-content">
+          {/* AI HIRING INTELLIGENCE & EVALUATION MODULE */}
+          <div className="admin-perf-ai-card">
+            <div className="admin-perf-ai-header">
+              <div className="admin-perf-ai-title-group">
+                <div className="admin-perf-ai-badge">✨ AI Hiring Intelligence</div>
+                <h3 className="admin-perf-ai-title">Automated Candidate Synthesis &amp; Evaluation</h3>
+                <span className="admin-perf-ai-engine-tag">
+                  {aiEvaluation
+                    ? `Engine: ${aiEvaluation.engine} • Analyzed ${new Date(aiEvaluation.generatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`
+                    : 'Deep AST Static Analysis & LLM Hiring Synthesis'}
+                </span>
+              </div>
+              <div className="admin-perf-ai-actions">
+                <button
+                  type="button"
+                  className="admin-perf-ai-btn-generate"
+                  onClick={handleGenerateAiSynthesis}
+                  disabled={isGeneratingAi}
+                  title="Run automated code inspection and hiring synthesis"
+                >
+                  {isGeneratingAi ? (
+                    <>
+                      <span className="admin-perf-ai-spinner" /> Synthesizing Analysis...
+                    </>
+                  ) : (
+                    <>
+                      <span>⚡</span> {aiEvaluation ? 'Regenerate AI Analysis' : 'Generate AI Evaluation'}
+                    </>
+                  )}
+                </button>
+                {aiEvaluation && (
+                  <button
+                    type="button"
+                    className="admin-perf-ai-btn-apply"
+                    onClick={handleApplyAiToEvaluation}
+                    title="Auto-populate the evaluation rubric, verdict, strengths, weaknesses, and interview questions below"
+                  >
+                    <span>🎯</span> Apply AI Summary to Rubric &amp; Notes
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {aiError && (
+              <div className="admin-perf-ai-error-banner">
+                ⚠️ {aiError}
+              </div>
+            )}
+
+            {aiSuccessMsg && (
+              <div className="admin-perf-ai-success-banner">
+                ✅ {aiSuccessMsg}
+              </div>
+            )}
+
+            {isGeneratingAi && (
+              <div className="admin-perf-ai-loading-state">
+                <div className="ai-scanner-line" />
+                <p>Analyzing candidate coding submissions, execution metrics, React patterns, and algorithmic complexity...</p>
+              </div>
+            )}
+
+            {!isGeneratingAi && !aiEvaluation && (
+              <div className="admin-perf-ai-empty-state">
+                <div className="ai-empty-icon">🤖</div>
+                <h4>No AI Evaluation Generated Yet</h4>
+                <p>
+                  Click <strong>"Generate AI Evaluation"</strong> to trigger deep AST inspection of this candidate's code submissions, assess seniority leveling, recommend rubric ratings, and formulate tailored interview questions.
+                </p>
+              </div>
+            )}
+
+            {!isGeneratingAi && aiEvaluation && (
+              <div className="admin-perf-ai-body">
+                {/* Top Level Summary Row */}
+                <div className="admin-perf-ai-top-row">
+                  <div className={`admin-perf-ai-verdict-pill verdict-${aiEvaluation.recommendation.toLowerCase().replace('_', '-')}`}>
+                    <span className="verdict-label">RECOMMENDATION</span>
+                    <span className="verdict-value">{aiEvaluation.recommendation.replace(/_/g, ' ')}</span>
+                  </div>
+                  <div className="admin-perf-ai-metric-pill">
+                    <span className="metric-label">CONFIDENCE</span>
+                    <span className="metric-value">{aiEvaluation.confidenceScore}%</span>
+                  </div>
+                  <div className="admin-perf-ai-seniority-pill">
+                    <span className="metric-label">ASSESSED SENIORITY</span>
+                    <span className="metric-value">{aiEvaluation.seniorityLevel}</span>
+                  </div>
+                </div>
+
+                <div className="admin-perf-ai-seniority-rationale">
+                  <strong>Leveling Justification:</strong> {aiEvaluation.seniorityRationale}
+                </div>
+
+                <div className="admin-perf-ai-exec-summary">
+                  <h4>Executive Synthesis</h4>
+                  <p>{aiEvaluation.executiveSummary}</p>
+                </div>
+
+                {/* Suggested Rubric Scores */}
+                <div className="admin-perf-ai-rubric-section">
+                  <h4>Suggested Rubric Ratings (1 - 5 Scale)</h4>
+                  <div className="admin-perf-ai-rubric-grid">
+                    <div className="ai-rubric-chip">
+                      <span className="chip-name">Problem Solving</span>
+                      <span className="chip-val">{aiEvaluation.rubricSuggestions.problemSolving.toFixed(1)} / 5</span>
+                    </div>
+                    <div className="ai-rubric-chip">
+                      <span className="chip-name">Code Quality</span>
+                      <span className="chip-val">{aiEvaluation.rubricSuggestions.codeQuality.toFixed(1)} / 5</span>
+                    </div>
+                    <div className="ai-rubric-chip">
+                      <span className="chip-name">Architecture</span>
+                      <span className="chip-val">{aiEvaluation.rubricSuggestions.architecture.toFixed(1)} / 5</span>
+                    </div>
+                    <div className="ai-rubric-chip">
+                      <span className="chip-name">Speed &amp; Efficiency</span>
+                      <span className="chip-val">{aiEvaluation.rubricSuggestions.speedEfficiency.toFixed(1)} / 5</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Strengths & Weaknesses */}
+                <div className="admin-perf-ai-insights-grid">
+                  <div className="ai-insight-box strengths">
+                    <h5>⭐ Verified Technical Strengths</h5>
+                    <ul>
+                      {aiEvaluation.strengths.map((s, idx) => (
+                        <li key={idx}>{s}</li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div className="ai-insight-box weaknesses">
+                    <h5>🔍 Areas to Probe in Interview</h5>
+                    <ul>
+                      {aiEvaluation.areasToProbe.map((w, idx) => (
+                        <li key={idx}>{w}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+
+                {/* Tailored Interview Questions */}
+                {aiEvaluation.tailoredInterviewQuestions && aiEvaluation.tailoredInterviewQuestions.length > 0 && (
+                  <div className="admin-perf-ai-questions-box">
+                    <h5>🎯 Tailored Technical Interview Questions &amp; Discussion Topics</h5>
+                    <div className="ai-questions-list">
+                      {aiEvaluation.tailoredInterviewQuestions.map((q, idx) => (
+                        <div key={idx} className="ai-question-item">
+                          <div className="ai-question-badge">Question {idx + 1}</div>
+                          <div className="ai-question-text">"{q.question}"</div>
+                          <div className="ai-question-rationale">
+                            <strong>Interviewer Rationale:</strong> {q.rationale}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
           <div className="admin-perf-evaluation-layout">
             <form onSubmit={handleSaveEvaluation} className="admin-perf-eval-form">
               <div className="admin-perf-form-section">
