@@ -195,19 +195,19 @@ export const sessionStateManager = {
   /**
    * Retrieves or initializes the Y.Doc for a given session room
    */
-  getOrCreateYDoc(sessionId: string, initialCode?: string, activeFile: string = 'solution.js'): Y.Doc {
+  getOrCreateYDoc(sessionId: string, _initialCode?: string, _activeFile: string = 'solution.js'): Y.Doc {
     let ydoc = sessionYDocs.get(sessionId);
     if (!ydoc) {
       ydoc = new Y.Doc();
       sessionYDocs.set(sessionId, ydoc);
     }
 
-    if (initialCode && initialCode.trim().length > 0) {
-      const ytext = ydoc.getText(activeFile);
-      if (ytext.length === 0) {
-        ytext.insert(0, initialCode);
-      }
-    }
+    // NOTE: the server intentionally does NOT seed initialCode into the Y.Doc.
+    // The student client is the single seeder of initial content. Seeding here
+    // too creates two concurrent inserts of identical text under different
+    // clientIDs, which CRDT keeps as duplicated content on every later sync
+    // (refresh showed the starter template twice). Monitor hydration uses the
+    // session state's `code` field, and the doc fills in from client updates.
 
     return ydoc;
   },

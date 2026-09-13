@@ -88,6 +88,18 @@ function saveLocalSessions(sessions: Record<string, InterviewSession>) {
   } catch (_) {}
 }
 
+// UUID guard shared by all session writers: only real auth UUIDs may hit
+// UUID-typed columns (candidate_id, user_id, sender_id); anything else must
+// use NULL/local-only or the DB rejects it with 403.
+export function isSessionUuid(value: unknown): value is string {
+  return typeof value === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value);
+}
+
+// In-flight session creations keyed by identity+question+language. The service
+// itself dedups so every caller (all studios) is safe under StrictMode
+// double-effects without each needing its own guard.
+const sessionCreateInflight = new Map<string, Promise<InterviewSession>>();
+
 export const interviewSessionService = {
   /**
    * Creates or returns an existing active session for candidate & question
@@ -104,10 +116,40 @@ export const interviewSessionService = {
     // candidate_id is UUID FK to auth.users: only real UUIDs may be persisted.
     // Guests fall back to NULL candidate_id (nullable) so their sessions save.
     const rawCandidateId = params.candidateId || null;
-    const isUuid = !!rawCandidateId && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(rawCandidateId);
+    const isUuid = isSessionUuid(rawCandidateId);
     const candidateId = params.candidateId || 'anon-candidate';
     const candidateName = params.candidateName || 'Candidate';
     const candidateEmail = params.candidateEmail || 'candidate@platform.dev';
+
+    // In-flight dedup: check-then-insert races under StrictMode double-effects
+    // (two concurrent calls both see "no session" and INSERT duplicates).
+    // Keyed by identity+question+language; concurrent callers share one result.
+    const inflightKey = `${candidateId}:${params.questionId}:${params.language || 'react'}`;
+    const pending = sessionCreateInflight.get(inflightKey);
+    if (pending) return pending;
+    const task = this.runGetOrCreateSession({ rawCandidateId, isUuid, candidateId, candidateName, candidateEmail, params });
+    sessionCreateInflight.set(inflightKey, task);
+    try {
+      return await task;
+    } finally {
+      if (sessionCreateInflight.get(inflightKey) === task) sessionCreateInflight.delete(inflightKey);
+    }
+  },
+
+  async runGetOrCreateSession(args: {
+    rawCandidateId: string | null;
+    isUuid: boolean;
+    candidateId: string;
+    candidateName: string;
+    candidateEmail: string;
+    params: {
+      questionId: string;
+      questionTitle: string;
+      language?: string;
+      initialFiles?: Record<string, string>;
+    };
+  }): Promise<InterviewSession> {
+    const { rawCandidateId, isUuid, candidateId, candidateName, candidateEmail, params } = args;
 
     try {
       // 1. Check Supabase for existing active session
@@ -141,15 +183,17 @@ export const interviewSessionService = {
         last_activity_at: new Date().toISOString(),
       };
 
+      // maybeSingle: zero visible rows (RLS) is a normal outcome — a 406 here
+      // used to throw and fall through to a divergent local fallback session.
       const { data: created, error: insertError } = await supabase
         .from('interview_sessions')
         .insert([newSessionPayload])
         .select('*')
-        .single();
+        .maybeSingle();
 
       if (!insertError && created) {
         // Record participant entry (registered users only; guests have NULL user_id)
-        if (isUuid) {
+        if (isSessionUuid(rawCandidateId)) {
           await this.joinParticipant({
             sessionId: created.id,
             userId: rawCandidateId,
@@ -339,6 +383,9 @@ export const interviewSessionService = {
     name: string;
     canEdit: boolean;
   }): Promise<void> {
+    // UUID-typed user_id + conflict target: fake ids (and NULL, which breaks
+    // the onConflict target) are RLS-rejected — skip the write, not an error.
+    if (!isSessionUuid(params.userId)) return;
     try {
       await supabase.from('session_participants').upsert(
         {
@@ -408,7 +455,11 @@ export const interviewSessionService = {
    */
   async recordExecution(execution: SessionExecutionRecord): Promise<void> {
     try {
-      await supabase.from('session_executions').insert([execution]);
+      // candidate_id is UUID-typed: fake ids are RLS-rejected — persist NULL.
+      const payload = isSessionUuid(execution.candidate_id)
+        ? execution
+        : { ...execution, candidate_id: undefined };
+      await supabase.from('session_executions').insert([payload]);
     } catch (_) {}
   },
 
@@ -463,32 +514,35 @@ export const interviewSessionService = {
       created_at: new Date().toISOString(),
     };
 
+    // UUID-typed sender_id: persist NULL for guests/fake ids instead of a
+    // value the DB rejects with 403. maybeSingle: RLS-hidden rows are normal.
+    const senderId = isSessionUuid(params.senderId) ? params.senderId : null;
     try {
       const { data, error } = await supabase
         .from('session_messages')
         .insert([
           {
             session_id: params.sessionId,
-            sender_id: params.senderId,
+            sender_id: senderId,
             sender_name: params.senderName,
             sender_role: params.senderRole,
             message: params.message.trim(),
           },
         ])
         .select('*')
-        .single();
+        .maybeSingle();
 
       if (!error && data) {
         return data as SessionMessage;
       }
     } catch (_) {}
 
-    // Local fallback
+    // Local fallback (capped: per-session chat must not grow unbounded)
     try {
       const key = `${LOCAL_MESSAGES_KEY}_${params.sessionId}`;
       const list = JSON.parse(localStorage.getItem(key) || '[]');
       list.push(newMsg);
-      localStorage.setItem(key, JSON.stringify(list));
+      localStorage.setItem(key, JSON.stringify(list.slice(-200)));
     } catch (_) {}
 
     return newMsg;

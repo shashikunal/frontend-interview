@@ -4,8 +4,30 @@ import { dsaProgressService } from './dsaProgressService'
 import { leaderboardService } from '../../../lib/leaderboardService'
 import { trackingService } from '../../../lib/trackingService'
 
+// In-flight submissions by id: concurrent submit() calls for the same
+// submission (double-click) share one execution instead of duplicating
+// local mirrors, leaderboard rows, and tracking rows.
+const dsaSubmitInflight = new Map<string, Promise<void>>()
+
 export class DSASubmissionService {
   async submit(
+    submission: DSASubmission,
+    user?: { id?: string; name?: string; email?: string } | null
+  ): Promise<void> {
+    const pending = dsaSubmitInflight.get(submission.id)
+    if (pending) return pending
+    const task = this.runSubmit(submission, user)
+    dsaSubmitInflight.set(submission.id, task)
+    try {
+      await task
+    } finally {
+      if (dsaSubmitInflight.get(submission.id) === task) {
+        dsaSubmitInflight.delete(submission.id)
+      }
+    }
+  }
+
+  private async runSubmit(
     submission: DSASubmission,
     user?: { id?: string; name?: string; email?: string } | null
   ): Promise<void> {
@@ -40,12 +62,14 @@ export class DSASubmissionService {
         candidateName: userName,
         candidateEmail: userEmail,
         questionId: submission.questionId,
+        category: 'DSA',
         score,
         testsPassed: submission.testsPassed,
         testsTotal: submission.testsTotal,
         timeSpentSeconds: Math.max(5, Math.round(submission.runtimeMs / 1000)),
         code: submission.code,
         language: submission.language,
+        idempotencyKey: submission.id,
       })
     } catch (lbErr) {
       console.debug('Leaderboard sync notice:', lbErr)
@@ -66,6 +90,9 @@ export class DSASubmissionService {
         passedTests: submission.testsPassed,
         totalTests: submission.testsTotal,
         executionTime: submission.runtimeMs,
+        // Idempotency: double-clicks/retries with the same submission id must
+        // not create duplicate rows in the canonical submissions table.
+        idempotencyKey: submission.id,
       })
     } catch (trackErr) {
       console.debug('Tracking service sync notice:', trackErr)

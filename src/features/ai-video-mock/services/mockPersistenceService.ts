@@ -82,6 +82,39 @@ function errText(err: unknown): string {
   return anyErr.message || anyErr.error_description || JSON.stringify(anyErr).slice(0, 300);
 }
 
+// In-flight write dedup: concurrent saves for the same logical record share
+// one execution (double-click protection). Object-literal service below cannot
+// use `private` methods, so the runner is a module function.
+const mockWriteInflight = new Map<string, Promise<PersistResult>>();
+
+async function runSaveEvaluation(
+  sessionId: string,
+  userId: string | undefined | null,
+  answer: InterviewAnswer,
+  evaluation: AnswerEvaluation
+): Promise<PersistResult> {
+  if (!supabase) {
+    enqueue('evaluation', evaluationRow(sessionId, userId, answer, evaluation), 'supabase client unavailable');
+    return { ok: false, provider: 'local', error: 'supabase client unavailable' };
+  }
+  try {
+    const { data, error } = await supabase
+      .from('mock_answer_evaluations')
+      .insert(evaluationRow(sessionId, userId, answer, evaluation))
+      .select('id')
+      .maybeSingle();
+    if (error || !data?.id) {
+      enqueue('evaluation', evaluationRow(sessionId, userId, answer, evaluation), error ? errText(error) : 'no row returned');
+      return { ok: false, provider: 'local', error: `evaluations insert: ${error ? errText(error) : 'no row returned'}` };
+    }
+    return { ok: true, provider: 'cloud', recordId: data?.id };
+  } catch (e) {
+    const msg = errText(e);
+    enqueue('evaluation', evaluationRow(sessionId, userId, answer, evaluation), msg);
+    return { ok: false, provider: 'local', error: msg };
+  }
+}
+
 function sessionRow(session: MockInterviewSession): Record<string, any> {
   return {
     id: session.id,
@@ -247,25 +280,16 @@ export const mockPersistenceService = {
     if (!isUuid(sessionId) || !isUuid(answer.id)) {
       return { ok: false, provider: 'local', error: 'legacy non-UUID id; local-only' };
     }
-    if (!supabase) {
-      enqueue('evaluation', evaluationRow(sessionId, userId, answer, evaluation), 'supabase client unavailable');
-      return { ok: false, provider: 'local', error: 'supabase client unavailable' };
-    }
+    // Double-click guard: concurrent saves for the same answer share one insert.
+    const inflightKey = `evaluation:${answer.id}`;
+    const pending = mockWriteInflight.get(inflightKey);
+    if (pending) return pending;
+    const task = runSaveEvaluation(sessionId, userId, answer, evaluation);
+    mockWriteInflight.set(inflightKey, task);
     try {
-      const { data, error } = await supabase
-        .from('mock_answer_evaluations')
-        .insert(evaluationRow(sessionId, userId, answer, evaluation))
-        .select('id')
-        .single();
-      if (error) {
-        enqueue('evaluation', evaluationRow(sessionId, userId, answer, evaluation), errText(error));
-        return { ok: false, provider: 'local', error: `evaluations insert: ${errText(error)}` };
-      }
-      return { ok: true, provider: 'cloud', recordId: data?.id };
-    } catch (e) {
-      const msg = errText(e);
-      enqueue('evaluation', evaluationRow(sessionId, userId, answer, evaluation), msg);
-      return { ok: false, provider: 'local', error: msg };
+      return await task;
+    } finally {
+      if (mockWriteInflight.get(inflightKey) === task) mockWriteInflight.delete(inflightKey);
     }
   },
 
@@ -295,17 +319,29 @@ export const mockPersistenceService = {
 
   async saveFeedback(input: { question_id: string; user_id?: string | null; rating: string; comment?: string }): Promise<PersistResult> {
     if (!supabase) return { ok: false, provider: 'local', error: 'supabase client unavailable' };
+    // Double-click guard: same feedback content shares one insert.
+    const inflightKey = `feedback:${input.question_id}:${input.rating}:${input.comment || ''}`;
+    const pending = mockWriteInflight.get(inflightKey);
+    if (pending) return pending;
+    const task = (async (): Promise<PersistResult> => {
+      try {
+        const { error } = await supabase.from('mock_question_feedback').insert({
+          question_id: input.question_id,
+          user_id: userIdOrNull(input.user_id),
+          rating: input.rating,
+          comment: input.comment || null,
+        });
+        if (error) return { ok: false, provider: 'local', error: `feedback insert: ${errText(error)}` };
+        return { ok: true, provider: 'cloud' };
+      } catch (e) {
+        return { ok: false, provider: 'local', error: errText(e) };
+      }
+    })();
+    mockWriteInflight.set(inflightKey, task);
     try {
-      const { error } = await supabase.from('mock_question_feedback').insert({
-        question_id: input.question_id,
-        user_id: userIdOrNull(input.user_id),
-        rating: input.rating,
-        comment: input.comment || null,
-      });
-      if (error) return { ok: false, provider: 'local', error: `feedback insert: ${errText(error)}` };
-      return { ok: true, provider: 'cloud' };
-    } catch (e) {
-      return { ok: false, provider: 'local', error: errText(e) };
+      return await task;
+    } finally {
+      if (mockWriteInflight.get(inflightKey) === task) mockWriteInflight.delete(inflightKey);
     }
   },
 
@@ -316,17 +352,29 @@ export const mockPersistenceService = {
     reason: string;
   }): Promise<PersistResult> {
     if (!supabase) return { ok: false, provider: 'local', error: 'supabase client unavailable' };
+    // Double-click guard: same challenge shares one insert.
+    const inflightKey = `challenge:${input.evaluation_id}:${input.reason}`;
+    const pending = mockWriteInflight.get(inflightKey);
+    if (pending) return pending;
+    const task = (async (): Promise<PersistResult> => {
+      try {
+        const { error } = await supabase.from('mock_evaluation_challenges').insert({
+          evaluation_id: input.evaluation_id,
+          session_id: input.session_id,
+          user_id: userIdOrNull(input.user_id),
+          reason: input.reason,
+        });
+        if (error) return { ok: false, provider: 'local', error: `challenge insert: ${errText(error)}` };
+        return { ok: true, provider: 'cloud' };
+      } catch (e) {
+        return { ok: false, provider: 'local', error: errText(e) };
+      }
+    })();
+    mockWriteInflight.set(inflightKey, task);
     try {
-      const { error } = await supabase.from('mock_evaluation_challenges').insert({
-        evaluation_id: input.evaluation_id,
-        session_id: input.session_id,
-        user_id: userIdOrNull(input.user_id),
-        reason: input.reason,
-      });
-      if (error) return { ok: false, provider: 'local', error: `challenge insert: ${errText(error)}` };
-      return { ok: true, provider: 'cloud' };
-    } catch (e) {
-      return { ok: false, provider: 'local', error: errText(e) };
+      return await task;
+    } finally {
+      if (mockWriteInflight.get(inflightKey) === task) mockWriteInflight.delete(inflightKey);
     }
   },
 
@@ -349,7 +397,24 @@ export const mockPersistenceService = {
         } else if (item.kind === 'answer') {
           ({ error } = await supabase.from('mock_interview_answers').upsert(item.payload, { onConflict: 'id' }));
         } else if (item.kind === 'evaluation') {
-          ({ error } = await supabase.from('mock_answer_evaluations').insert(item.payload));
+          // Replay guard: one evaluation per answer — skip if already stored
+          // (otherwise each retry appends a duplicate scoring row).
+          const answerId = item.payload?.answer_id;
+          let alreadyStored = false;
+          if (answerId) {
+            try {
+              const { data: existing } = await supabase
+                .from('mock_answer_evaluations')
+                .select('id')
+                .eq('answer_id', answerId)
+                .limit(1)
+                .maybeSingle();
+              alreadyStored = Boolean(existing?.id);
+            } catch {}
+          }
+          if (!alreadyStored) {
+            ({ error } = await supabase.from('mock_answer_evaluations').insert(item.payload));
+          }
         } else if (item.kind === 'scorecard') {
           ({ error } = await supabase.from('mock_final_scorecards').upsert(item.payload, { onConflict: 'session_id' }));
         } else if (item.kind === 'feedback') {

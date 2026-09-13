@@ -15,7 +15,13 @@ export default function RoleGuard({
   fallbackTitle = 'Staff Access Required',
   fallbackMessage = 'Please sign in to your account to access this feature.',
 }: RoleGuardProps) {
-  const { isAuthenticated, hasPermission, openAuthModal, user } = useAuth()
+  const { isAuthenticated, isLoading, hasPermission, openAuthModal, user } = useAuth()
+
+  // While the session restores, render nothing instead of flashing the
+  // "access required" lock to legitimate admins.
+  if (isLoading) {
+    return null
+  }
 
   // If user meets permissions, render children normally
   if (isAuthenticated && hasPermission(minRole)) {

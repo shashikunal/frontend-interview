@@ -101,13 +101,14 @@ export const questionManagementService = {
     }
 
     try {
+      // maybeSingle: an RLS-hidden row is a normal outcome, not an exception.
       const { data, error } = await supabase
         .from('custom_mc_questions')
         .insert([payload])
         .select()
-        .single()
+        .maybeSingle()
 
-      if (error) throw error
+      if (error || !data) throw error || new Error('no row returned')
       return mapRow(data as Record<string, unknown>)
     } catch {
       // Fallback: store in memory
@@ -142,14 +143,15 @@ export const questionManagementService = {
     payload.updated_at = new Date().toISOString()
 
     try {
+      // maybeSingle: missing/soft-deleted/other-owner rows are normal, not 406.
       const { data, error } = await supabase
         .from('custom_mc_questions')
         .update(payload)
         .eq('id', id)
         .select()
-        .single()
+        .maybeSingle()
 
-      if (error) throw error
+      if (error || !data) throw error || new Error('no row returned')
       return mapRow(data as Record<string, unknown>)
     } catch {
       const idx = LOCAL_STORE.findIndex(q => q.id === id)

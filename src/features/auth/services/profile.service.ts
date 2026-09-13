@@ -52,13 +52,21 @@ export const profileService = {
     if (!userId) return null
 
     try {
+      // NOTE: .maybeSingle() intentionally (not .single()).
+      // .single() makes PostgREST request `Accept: application/vnd.pgrst.object+json`,
+      // so 0 visible rows (new user, trigger delay, or RLS denial) surfaces as HTTP 406
+      // (PGRST116). .maybeSingle() returns { data: null } for 0 rows instead.
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', userId)
-        .single()
+        .maybeSingle()
 
-      if (!error && data) {
+      if (error) {
+        if (import.meta.env?.DEV) {
+          console.warn('[CORE] profile lookup', { userId, code: (error as { code?: string }).code, message: error.message })
+        }
+      } else if (data) {
         const role = (data.role as UserRole) || 'candidate'
         const entitlements = data.feature_entitlements || DEFAULT_ENTITLEMENTS[role]
 
@@ -156,7 +164,7 @@ export const profileService = {
     let createdId = ''
     try {
       const isolatedClient = createClient(supabaseUrl, supabaseAnonKey, {
-        auth: { persistSession: false, autoRefreshToken: false },
+        auth: { persistSession: false, autoRefreshToken: false, storageKey: 'profile-admin-signup' },
       })
       const { data: authData } = await isolatedClient.auth.signUp({
         email: cleanEmail,
@@ -176,7 +184,14 @@ export const profileService = {
     }
 
     if (!createdId) {
-      createdId = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `usr_${Date.now()}`
+      // profiles.id is UUID-typed: a `usr_*` fallback could never match a row
+      // and every later `.eq('id', ...)` write would 403. Always mint a UUID.
+      createdId = typeof crypto !== 'undefined' && crypto.randomUUID
+        ? crypto.randomUUID()
+        : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+          const r = (Math.random() * 16) | 0
+          return (c === 'x' ? r : (r & 0x3) | 0x8).toString(16)
+        })
     }
 
     const createdUser: AuthUserProfile = {
@@ -198,13 +213,18 @@ export const profileService = {
       saveLocalProfiles(local)
     }
 
-    // 2. Update company, level, entitlements in Supabase profiles
+    // 2. Update company, level, entitlements in Supabase profiles.
+    // maybeSingle-style guard: only a real UUID row can be updated; anything
+    // else fails silently into the local mirror above (never a 403 crash).
     try {
-      await supabase.from('profiles').update({
-        target_company: params.targetCompany || 'Google',
-        experience_level: params.experienceLevel || 'L5 Senior',
-        feature_entitlements: entitlements,
-      }).eq('id', createdId)
+      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(createdId)
+      if (isUuid) {
+        await supabase.from('profiles').update({
+          target_company: params.targetCompany || 'Google',
+          experience_level: params.experienceLevel || 'L5 Senior',
+          feature_entitlements: entitlements,
+        }).eq('id', createdId)
+      }
     } catch {
       // ignore
     }

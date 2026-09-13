@@ -425,6 +425,29 @@ export default function MachineCodingStudio() {
   const handleRunTestsRef = useRef<() => void>(() => {});
   const handleFormatCodeRef = useRef<() => void>(() => {});
   const handleSaveAndFormatRef = useRef<() => void>(() => {});
+  const selectQuestionRef = useRef<(id: string) => void>(() => {});
+  const showToastRef = useRef<(msg: string) => void>(() => {});
+  const mcEditorDisposablesRef = useRef<Array<{ dispose: () => void }>>([]);
+  useEffect(() => {
+    return () => {
+      for (const d of mcEditorDisposablesRef.current) {
+        try {
+          d.dispose();
+        } catch (_) {}
+      }
+      mcEditorDisposablesRef.current = [];
+    };
+  }, []);
+  // Mutable keyboard-shortcut inputs mirrored per render so the global
+  // keydown listener registers once per question instead of per keystroke.
+  const mcKeyStateRef = useRef({
+    isCommandPaletteOpen: false,
+    filteredPaletteQuestions: [] as Array<{ id: string }>,
+    paletteSelectedIndex: 0,
+    fullscreenPanel: 'none' as string,
+    showShortcutsModal: false,
+    showSnapshotMenu: false,
+  });
 
   // Command Palette & Quick Switcher State
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
@@ -522,6 +545,7 @@ export default function MachineCodingStudio() {
   // User & Live Collaborative Session State
   const { user, role, hasFeature, hasPermission } = useAuth();
   const lastSubmitTimeRef = useRef<number>(0);
+  const submitInFlightRef = useRef<boolean>(false);
   const urlRole = searchParams.get('role');
   const userRole: 'candidate' | 'interviewer' | 'admin' | 'observer' = useMemo(() => {
     const effectiveRole = role || user?.role || 'candidate';
@@ -538,7 +562,10 @@ export default function MachineCodingStudio() {
     if (effectiveRole === 'admin') return 'admin';
     if (effectiveRole === 'interviewer') return 'interviewer';
     return 'candidate';
-  }, [urlRole, role, user, hasPermission]);
+    // Scalar deps: whole-`user` identity changes per render and refires
+    // every downstream effect that consumes userRole.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [urlRole, role, user?.id, user?.role, hasPermission]);
 
   const canViewSolution = useMemo(() => {
     return Boolean(hasFeature?.('questions_full') || userRole === 'admin' || role === 'admin' || user?.role === 'admin' || userRole === 'interviewer');
@@ -559,7 +586,8 @@ export default function MachineCodingStudio() {
     if (user?.email) return user.email.split('@')[0];
     if (userRole === 'admin') return 'Admin Interviewer';
     return 'Candidate';
-  }, [user, userRole]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id, user?.name, user?.email, userRole]);
 
   const [collabSession, setCollabSession] = useState<InterviewSession | null>(null);
   const [isCollabActive, setIsCollabActive] = useState<boolean>(false);
@@ -571,6 +599,16 @@ export default function MachineCodingStudio() {
   const [lastExecutionEvent, setLastExecutionEvent] = useState<SessionExecutionRecord | null>(null);
 
   const yDocRef = useRef<Y.Doc>(new Y.Doc());
+  // Per-mount Y.Doc must die with the mount, or every studio visit leaks a
+  // live doc (provider/binding above are already cleaned; the doc was not).
+  useEffect(() => {
+    const doc = yDocRef.current;
+    return () => {
+      try {
+        doc.destroy();
+      } catch (_) {}
+    };
+  }, []);
   const yjsProviderRef = useRef<SupabaseYjsProvider | null>(null);
   const monacoBindingRef = useRef<MonacoYjsBinding | null>(null);
   const lastSnapshotRef = useRef<string>('');
@@ -1527,7 +1565,7 @@ export default function MachineCodingStudio() {
   };
 
   const handleRunTests = async () => {
-    if (!activeQuestion) return;
+    if (!activeQuestion || isRunningTests) return;
     mcProgressService.markAttempted(activeQuestion.id);
     setIsRunningTests(true);
     emitCodeRun({ status: 'running' });
@@ -1556,8 +1594,16 @@ export default function MachineCodingStudio() {
       showToast('⏳ Submission rate limit: please wait 1.5s between evaluations.');
       return;
     }
+    // Synchronous in-flight lock: double-clicks before React re-renders must
+    // not start a second full evaluation (duplicate submissions/scores).
+    if (submitInFlightRef.current || isRunningTests) return;
+    submitInFlightRef.current = true;
     lastSubmitTimeRef.current = now;
+    // One idempotency id for this submit: shared by tracking + leaderboard so
+    // a retry/double-click converges instead of duplicating rows.
+    const submitId = `mc_sub_${activeQuestion.id}_${now}_${Math.random().toString(36).slice(2, 8)}`;
 
+    try {
     setIsRunningTests(true);
     setActiveTab('tests');
     showToast('🏁 Evaluating solution across full test suite...');
@@ -1585,6 +1631,7 @@ export default function MachineCodingStudio() {
     const submittedCode = curFiles[activeFileNameRef.current] || Object.values(curFiles)[0] || '';
     const executionDuration = isInterviewActive ? Math.max(1, interviewDuration - Math.max(0, interviewTimeLeft)) : 180;
     trackingService.recordSubmission({
+      id: submitId,
       questionId: qId,
       category: 'MACHINE_CODING',
       userId: user?.id,
@@ -1595,6 +1642,7 @@ export default function MachineCodingStudio() {
       passedTests: passed,
       totalTests: total,
       executionTime: executionDuration,
+      idempotencyKey: submitId,
     }).catch(err => console.debug('MC tracking submission notice:', err));
 
     leaderboardService.saveMachineCodingSubmission({
@@ -1608,11 +1656,12 @@ export default function MachineCodingStudio() {
       code: submittedCode,
       language: selectedLanguage,
       timeSpentSeconds: executionDuration,
+      idempotencyKey: submitId,
     }).catch(err => console.debug('MC leaderboard submission notice:', err));
 
     setScorecardData({
       question: activeQuestion,
-      timeSpentSeconds: isInterviewActive ? Math.max(1, interviewDuration - Math.max(0, interviewTimeLeft)) : 180,
+      timeSpentSeconds: isInterviewActive ? Math.max(1, interviewDuration - Math.max(0, interviewTimeLeft)) : 1800,
       totalDurationSeconds: isInterviewActive ? interviewDuration : 1800,
       testResults: results,
       passedTests: passed,
@@ -1620,6 +1669,9 @@ export default function MachineCodingStudio() {
       files: { ...curFiles }
     });
     setShowScorecard(true);
+    } finally {
+      submitInFlightRef.current = false;
+    }
   };
 
   const runTestsAsync = async (filesToTest?: Record<string, string>): Promise<MCTestResult[]> => {
@@ -2162,9 +2214,13 @@ export default function MachineCodingStudio() {
     }
   }, [paletteSelectedIndex, isCommandPaletteOpen]);
 
-  // Global Keyboard Shortcuts Listener
+  // Global Keyboard Shortcuts Listener.
+  // Registered ONCE per question: all mutable inputs are read via refs mirrored
+  // per render below, so typing (files/currentCode change per keystroke) does
+  // not tear down and re-add this window listener on every character.
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      const ks = mcKeyStateRef.current;
       // Command Palette (Ctrl+K or Cmd+K)
       if ((e.ctrlKey || e.metaKey) && (e.key === 'k' || e.key === 'K')) {
         e.preventDefault();
@@ -2173,7 +2229,7 @@ export default function MachineCodingStudio() {
       }
 
       // If Command Palette is open, handle navigation keys
-      if (isCommandPaletteOpen) {
+      if (ks.isCommandPaletteOpen) {
         if (e.key === 'Escape') {
           e.preventDefault();
           setIsCommandPaletteOpen(false);
@@ -2181,7 +2237,7 @@ export default function MachineCodingStudio() {
         }
         if (e.key === 'ArrowDown') {
           e.preventDefault();
-          setPaletteSelectedIndex(prev => Math.min(prev + 1, filteredPaletteQuestions.length - 1));
+          setPaletteSelectedIndex(prev => Math.min(prev + 1, ks.filteredPaletteQuestions.length - 1));
           return;
         }
         if (e.key === 'ArrowUp') {
@@ -2191,9 +2247,9 @@ export default function MachineCodingStudio() {
         }
         if (e.key === 'Enter') {
           e.preventDefault();
-          const target = filteredPaletteQuestions[paletteSelectedIndex];
+          const target = ks.filteredPaletteQuestions[ks.paletteSelectedIndex];
           if (target) {
-            selectQuestion(target.id);
+            selectQuestionRef.current(target.id);
             setIsCommandPaletteOpen(false);
           }
           return;
@@ -2202,15 +2258,15 @@ export default function MachineCodingStudio() {
 
       // Escape: exit any fullscreen panel or close modals
       if (e.key === 'Escape') {
-        if (showShortcutsModal) {
+        if (ks.showShortcutsModal) {
           setShowShortcutsModal(false);
           return;
         }
-        if (showSnapshotMenu) {
+        if (ks.showSnapshotMenu) {
           setShowSnapshotMenu(false);
           return;
         }
-        if (fullscreenPanel !== 'none') {
+        if (ks.fullscreenPanel !== 'none') {
           setFullscreenPanel('none');
           return;
         }
@@ -2229,22 +2285,22 @@ export default function MachineCodingStudio() {
       // BUG 3 FIX: Use filesRef.current (always fresh) instead of closed-over `files` state.
       if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
         e.preventDefault();
-        executeCode(filesRef.current);
-        showToast('⚡ Executing sandbox (Ctrl+Enter)');
+        executeCodeRef.current();
+        showToastRef.current('⚡ Executing sandbox (Ctrl+Enter)');
         return;
       }
 
       // Ctrl+Shift+T or Cmd+Shift+T: Run Test Suite
       if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'T' || e.key === 't')) {
         e.preventDefault();
-        handleRunTests();
+        handleRunTestsRef.current();
         return;
       }
 
       // Ctrl+S or Cmd+S: Save Draft & Format
       if ((e.ctrlKey || e.metaKey) && (e.key === 's' || e.key === 'S')) {
         e.preventDefault();
-        handleSaveAndFormat();
+        handleSaveAndFormatRef.current();
         return;
       }
 
@@ -2258,7 +2314,10 @@ export default function MachineCodingStudio() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [files, activeQuestion?.id, fullscreenPanel, showShortcutsModal, showSnapshotMenu, currentCode, isCommandPaletteOpen, filteredPaletteQuestions, paletteSelectedIndex]);
+    // Mutable inputs come from mcKeyStateRef/*Ref mirrors (assigned per render
+    // below), so this registers once per question, not once per keystroke.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeQuestion?.id]);
 
   const selectQuestion = (id: string) => {
     if (isInterviewActive) {
@@ -2276,6 +2335,18 @@ export default function MachineCodingStudio() {
         setSearchParams({ id, lang: currentLang });
       }
     }
+  };
+
+  // Mirror mutable keyboard-shortcut inputs per render (see listener above).
+  selectQuestionRef.current = selectQuestion;
+  showToastRef.current = showToast;
+  mcKeyStateRef.current = {
+    isCommandPaletteOpen,
+    filteredPaletteQuestions,
+    paletteSelectedIndex,
+    fullscreenPanel,
+    showShortcutsModal,
+    showSnapshotMenu,
   };
 
   const closeStudio = () => {
@@ -3512,12 +3583,17 @@ export default function MachineCodingStudio() {
                       }}
                       onMount={(editor, monaco) => {
                         editorRef.current = editor;
-                        bindMonacoEditor(editor, activeFileName);
-                        editor.onDidChangeCursorPosition((e: any) => {
-                          emitCursorMove(e.position.lineNumber, e.position.column);
-                        });
-                        editor.onDidFocusEditorWidget(() => emitFocus(true));
-                        editor.onDidBlurEditorWidget(() => emitFocus(false));
+                        // Deferred bind: the sync-gated auto-bind performs the
+                        // actual bind once the session doc is synced. Binding
+                        // immediately here could seed a stale session/code.
+                        bindMonacoEditor(editor, activeFileName, true);
+                        mcEditorDisposablesRef.current = [
+                          editor.onDidChangeCursorPosition((e: any) => {
+                            emitCursorMove(e.position.lineNumber, e.position.column);
+                          }),
+                          editor.onDidFocusEditorWidget(() => emitFocus(true)),
+                          editor.onDidBlurEditorWidget(() => emitFocus(false)),
+                        ];
 
                         if (monaco?.languages?.typescript) {
                           monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions({

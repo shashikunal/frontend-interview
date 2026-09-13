@@ -15,6 +15,23 @@ import { DSAQuestionList } from './components/DSAQuestionList'
 import { DSADashboard } from './DSADashboard'
 import './DSAStudio.css'
 
+// In-flight live-session creations keyed by candidate+question+language.
+// Makes the check-then-insert getOrCreateSession safe under StrictMode
+// double-effects: concurrent mounts share one promise, one session row.
+const dsaSessionInflight = new Map<string, Promise<{ id: string } | null>>()
+
+// Canonical code for a question+language: saved draft, else static starter.
+// Pure synchronous read so onMount can establish the exact model content
+// without depending on React state timing.
+function resolveDSACode(
+  question: { id: string; starterCodeJS: string; starterCodeTS: string },
+  language: 'javascript' | 'typescript',
+): string {
+  const saved = dsaProgressService.getCode(question.id, language)
+  if (saved !== null) return saved
+  return language === 'javascript' ? question.starterCodeJS : question.starterCodeTS
+}
+
 export default function DSAStudio() {
   const [searchParams] = useSearchParams()
   const { id: routeId } = useParams<{ id?: string }>()
@@ -34,6 +51,23 @@ export default function DSAStudio() {
         initialFilter={isBookmarks ? 'Bookmarked' : 'All'}
         initialFocusProgress={isProgress}
       />
+    )
+  }
+
+  // Unknown ids render an explicit error, never a silent wrong question:
+  // recording work against DSA_QUESTIONS[0] would corrupt attempts/history.
+  const known = DSA_QUESTIONS.some(q => q.id === qIdParam)
+  if (!known) {
+    return (
+      <div className="dsa-workspace">
+        <div style={{ margin: 'auto', textAlign: 'center', padding: 48 }}>
+          <h2>Question not found</h2>
+          <p>No DSA question matches “{qIdParam}”. Check the link or pick a question below.</p>
+          <button className="dsa-btn dsa-btn-run" onClick={() => window.history.back()}>
+            Go back
+          </button>
+        </div>
+      </div>
     )
   }
 
@@ -58,6 +92,9 @@ function DSAStudioWorkspace({ questionId }: WorkspaceProps) {
 
   // Code state
   const [code, setCode] = useState<string>('')
+  // Stable read of the latest code for session snapshots without retriggering effects
+  const codeRef = useRef(code)
+  codeRef.current = code
 
   // Editor configuration
   const [editorTheme, setEditorTheme] = useState<'vs-dark' | 'light'>('vs-dark')
@@ -65,6 +102,27 @@ function DSAStudioWorkspace({ questionId }: WorkspaceProps) {
   const editorRef = useRef<any>(null)
   const sessionIdRef = useRef<string | null>(null)
   const updateCodeTimeoutRef = useRef<number | null>(null)
+  const editorDisposablesRef = useRef<Array<{ dispose: () => void }>>([])
+
+  // Dispose per-editor listeners when the question/language changes or the
+  // workspace unmounts. (@monaco-editor/react disposes the editor itself;
+  // this covers the cursor/focus subscriptions registered in onMount.)
+  useEffect(() => {
+    const qid = question.id
+    const lang = language
+    return () => {
+      if (import.meta.env?.DEV) {
+        console.debug('[DSA033][MONACO] dispose', { questionId: qid, language: lang })
+      }
+      for (const d of editorDisposablesRef.current) {
+        try {
+          d.dispose()
+        } catch (_) {}
+      }
+      editorDisposablesRef.current = []
+      editorRef.current = null
+    }
+  }, [question.id, language])
 
   // Execution state
   const [isRunning, setIsRunning] = useState<boolean>(false)
@@ -102,26 +160,43 @@ function DSAStudioWorkspace({ questionId }: WorkspaceProps) {
   const [submissions, setSubmissions] = useState<DSASubmission[]>([])
   const [liveSessionId, setLiveSessionId] = useState<string | null>(null)
 
-  // Live session sync to Admin Real-time Candidate Monitor
+  // Live session sync to Admin Real-time Candidate Monitor.
+  // In-flight guard: getOrCreateSession is check-then-insert, so two concurrent
+  // calls (StrictMode setup/cleanup/setup) would both observe "no session" and
+  // INSERT duplicate interview_sessions rows. Concurrent callers share one promise.
+  // Deps are scalars: `user` object identity changes per render and must not retrigger.
+  const userId = user?.id
+  const userName = user?.name
+  const userEmail = user?.email
   useEffect(() => {
     let active = true
     // Guests pass no id: service persists NULL candidate_id (FK-safe) instead of fake ids
-    const candidateId = user?.id
-    const candidateName = user?.name || 'Candidate'
-    const candidateEmail = user?.email || 'candidate@faang.io'
-
-    interviewSessionService
-      .getOrCreateSession({
-        candidateId,
-        candidateName,
-        candidateEmail,
-        questionId: question.id,
-        questionTitle: `${question.number}. ${question.title}`,
-        language,
-        initialFiles: {
-          [language === 'typescript' ? 'solution.ts' : 'solution.js']: code,
-        },
+    const candidateId = userId
+    const candidateName = userName || 'Candidate'
+    const candidateEmail = userEmail || 'candidate@faang.io'
+    const inflightKey = `${candidateId || 'guest'}:${question.id}:${language}`
+    const pending = dsaSessionInflight.get(inflightKey)
+    const task = pending || interviewSessionService.getOrCreateSession({
+      candidateId,
+      candidateName,
+      candidateEmail,
+      questionId: question.id,
+      questionTitle: `${question.number}. ${question.title}`,
+      language,
+      initialFiles: {
+        [language === 'typescript' ? 'solution.ts' : 'solution.js']: codeRef.current,
+      },
+    })
+    if (!pending) {
+      dsaSessionInflight.set(inflightKey, task)
+      void task.finally(() => {
+        if (dsaSessionInflight.get(inflightKey) === task) {
+          dsaSessionInflight.delete(inflightKey)
+        }
       })
+    }
+
+    task
       .then(sess => {
         if (active && sess) {
           sessionIdRef.current = sess.id
@@ -133,7 +208,8 @@ function DSAStudioWorkspace({ questionId }: WorkspaceProps) {
     return () => {
       active = false
     }
-  }, [question.id, language, user])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [question.id, language, userId])
 
   const fileName = language === 'typescript' ? 'solution.ts' : 'solution.js'
 
@@ -165,14 +241,26 @@ function DSAStudioWorkspace({ questionId }: WorkspaceProps) {
     return () => window.clearInterval(heartbeat)
   }, [])
 
-  // Load code from localStorage on question / language change
+  // Load code from localStorage on question / language change.
+  // Editor binding is staged HERE (not in onMount): this effect is the single
+  // place where the authoritative code for this question is established, so
+  // any bind staged here necessarily carries the current question's code.
+  // Staging in onMount raced the load and bound stale (previous-question)
+  // code, permanently sticking the old template in the editor.
   useEffect(() => {
-    const saved = dsaProgressService.getCode(question.id, language)
-    if (saved !== null) {
-      setCode(saved)
-    } else {
-      setCode(language === 'javascript' ? question.starterCodeJS : question.starterCodeTS)
+    if (import.meta.env?.DEV) {
+      console.debug('[DSA033][PAGE] workspace effect', { questionId: question.id, language })
     }
+    const target = resolveDSACode(question, language)
+    if (import.meta.env?.DEV) {
+      console.debug('[DSA033][TEMPLATE] lookup result', {
+        questionId: question.id,
+        language,
+        source: dsaProgressService.getCode(question.id, language) !== null ? 'saved-draft' : 'starter',
+        len: target.length,
+      })
+    }
+    setCode(target)
     setRunResult(null)
     setActiveTestTab('testcase')
     setCustomInput(question.testCases[0]?.input || '[]')
@@ -180,6 +268,15 @@ function DSAStudioWorkspace({ questionId }: WorkspaceProps) {
 
     // Load submissions
     setSubmissions(dsaProgressService.getSubmissions(question.id))
+
+    // Stage the mounted editor for the sync-gated Yjs auto-bind. The editor
+    // (if mounted) belongs to this question, and this effect runs after the
+    // code state for this question is set, so the staged bind cannot carry
+    // stale previous-question code.
+    if (editorRef.current) {
+      bindMonacoEditor(editorRef.current, fileName, true)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [question.id, language])
 
   // Timer effect
@@ -235,7 +332,33 @@ function DSAStudioWorkspace({ questionId }: WorkspaceProps) {
   }
 
   // Handle code change with immediate cursor streaming
+  // Set when a model change originates from our own programmatic sync
+  // (question load, reset, submission view). The onChange echo of that sync
+  // must not re-save/re-emit, and must not disturb state.
+  const suppressNextChangeRef = useRef(false)
+  // A submission selected for viewing carries code that is neither draft nor
+  // starter. onMount consumes it for the remounted model, then clears it.
+  const pendingCodeRef = useRef<string | null>(null)
+
+  // Bring the live Monaco model to `next` without touching React state.
+  // Used for programmatic changes only; user typing flows through onChange.
+  const syncEditorModel = (next: string) => {
+    const ed = editorRef.current
+    const model = ed?.getModel?.()
+    if (!ed || !model || model.getValue() === next) return
+    suppressNextChangeRef.current = true
+    try {
+      ed.executeEdits('dsa-sync', [{ range: model.getFullModelRange(), text: next }])
+      ed.pushUndoStop?.()
+    } finally {
+      // onDidChangeModelContent fires synchronously inside executeEdits,
+      // so the flag is consumed by handleCodeChange below before we clear it.
+      suppressNextChangeRef.current = false
+    }
+  }
+
   const handleCodeChange = (newVal: string | undefined) => {
+    if (suppressNextChangeRef.current) return
     const val = newVal || ''
     setCode(val)
 
@@ -274,6 +397,7 @@ function DSAStudioWorkspace({ questionId }: WorkspaceProps) {
     if (window.confirm('Reset code to the original starter template for this problem?')) {
       const initial = language === 'javascript' ? question.starterCodeJS : question.starterCodeTS
       setCode(initial)
+      syncEditorModel(initial)
       emitCodeChange(initial, fileName)
       dsaProgressService.saveCode(question.id, language, initial)
     }
@@ -281,6 +405,7 @@ function DSAStudioWorkspace({ questionId }: WorkspaceProps) {
 
   // Run Code (Visible test cases or custom testcase)
   const handleRunCode = async () => {
+    if (isRunning || isSubmitting) return
     setIsRunning(true)
     emitCodeRun({ status: 'running' })
     setActiveTestTab('result')
@@ -330,6 +455,7 @@ function DSAStudioWorkspace({ questionId }: WorkspaceProps) {
 
   // Submit Solution (All test cases including hidden ones)
   const handleSubmitCode = async () => {
+    if (isSubmitting || isRunning) return
     setIsSubmitting(true)
     setIsRunning(true)
     emitCodeRun({ status: 'running' })
@@ -396,21 +522,28 @@ function DSAStudioWorkspace({ questionId }: WorkspaceProps) {
     }
   }
 
-  // Keyboard shortcut: Ctrl+Enter or Cmd+Enter to Run
+  // Keyboard shortcut: Ctrl+Enter or Cmd+Enter to Run.
+  // Registered ONCE per question/language: the handler reads mutable state via
+  // refs, so typing (setCode on every keystroke) does not tear down and re-add
+  // this window listener on every keypress.
+  const runCodeRef = useRef(handleRunCode)
+  runCodeRef.current = handleRunCode
+  const fullscreenRef = useRef(fullscreenPanel)
+  fullscreenRef.current = fullscreenPanel
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
         e.preventDefault()
-        handleRunCode()
+        runCodeRef.current()
       } else if (e.key === 'Escape') {
-        if (fullscreenPanel !== 'none') {
+        if (fullscreenRef.current !== 'none') {
           setFullscreenPanel('none')
         }
       }
     }
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [code, language, question, useCustomInput, customInput, fullscreenPanel])
+  }, [question.id, language])
 
   // Format timer
   const formatTimer = (totalSeconds: number) => {
@@ -556,6 +689,12 @@ function DSAStudioWorkspace({ questionId }: WorkspaceProps) {
               if (sub.code) {
                 setCode(sub.code)
                 setLanguage(sub.language)
+                // A viewed submission is neither draft nor starter: hand it
+                // to the (possibly remounting) editor explicitly so model and
+                // state cannot disagree. The remount path consumes it in
+                // onMount; the no-remount path applies it right away.
+                pendingCodeRef.current = sub.code
+                syncEditorModel(sub.code)
               }
             }}
             fullscreenPanel={fullscreenPanel}
@@ -653,16 +792,44 @@ function DSAStudioWorkspace({ questionId }: WorkspaceProps) {
               height="100%"
               language={language === 'typescript' ? 'typescript' : 'javascript'}
               theme={editorTheme}
+              // UNCONTROLLED on purpose: a controlled `value` made the lib
+              // re-apply lagging state over the live model during rapid typing
+              // (lost/interleaved keystrokes). defaultValue seeds the model at
+              // creation; the exact content is then enforced synchronously in
+              // onMount below, and user typing flows model->state via onChange.
               defaultValue={code}
               onChange={handleCodeChange}
               onMount={(editor) => {
+                // No binding here: binding is staged in the question-load
+                // effect above, which runs after this question's code is set.
+                // Binding here would capture stale previous-question code.
                 editorRef.current = editor
-                bindMonacoEditor(editor, fileName)
-                editor.onDidChangeCursorPosition(e => {
-                  emitCursorMove(e.position.lineNumber, e.position.column)
-                })
-                editor.onDidFocusEditorWidget(() => emitFocus(true))
-                editor.onDidBlurEditorWidget(() => emitFocus(false))
+                // The remounted model was created from the previous render's
+                // (stale) code. Establish this question's exact content now,
+                // computed synchronously (draft, viewed submission, or starter)
+                // so correctness never depends on state/effect timing.
+                const target = pendingCodeRef.current ?? resolveDSACode(question, language)
+                pendingCodeRef.current = null
+                syncEditorModel(target)
+                if (import.meta.env?.DEV) {
+                  const modelVal = editor.getModel()?.getValue() ?? ''
+                  console.debug('[DSA033][MONACO] create', {
+                    questionId: question.id,
+                    language,
+                    modelLen: modelVal.length,
+                    modelHead: modelVal.slice(0, 80),
+                    modelMatchesTarget: modelVal === target,
+                  })
+                }
+                // Every registration must be disposed on unmount/question
+                // change, or remounts stack duplicate cursor/focus listeners.
+                editorDisposablesRef.current = [
+                  editor.onDidChangeCursorPosition(e => {
+                    emitCursorMove(e.position.lineNumber, e.position.column)
+                  }),
+                  editor.onDidFocusEditorWidget(() => emitFocus(true)),
+                  editor.onDidBlurEditorWidget(() => emitFocus(false)),
+                ]
               }}
               options={{
                 fontSize: fontSize,

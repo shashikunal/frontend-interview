@@ -63,7 +63,8 @@ export default function MockEvaluationChallengeModal({
       const existing = localStorage.getItem(LOCAL_CHALLENGES_KEY);
       const list: EvaluationChallengeRecord[] = existing ? JSON.parse(existing) : [];
       list.unshift(challenge);
-      localStorage.setItem(LOCAL_CHALLENGES_KEY, JSON.stringify(list));
+      // Capped: challenge history must not grow localStorage unbounded.
+      localStorage.setItem(LOCAL_CHALLENGES_KEY, JSON.stringify(list.slice(0, 200)));
     } catch (err) {
       console.warn('Failed to save challenge locally:', err);
     }

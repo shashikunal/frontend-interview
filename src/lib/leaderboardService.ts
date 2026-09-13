@@ -59,6 +59,10 @@ export interface SaveSubmissionParams {
   code?: string
   files?: Record<string, string>
   language?: string
+  /** Track category (e.g. MACHINE_CODING, DSA). Persisted so per-track stats stay correct. */
+  category?: string
+  /** Idempotency key: retries/double-clicks with the same key must not duplicate rows. */
+  idempotencyKey?: string
 }
 
 export interface StoredCandidateSubmission {
@@ -216,27 +220,36 @@ function computeBadges(entry: {
   return badges.slice(0, 3)
 }
 
-// Dedicated isolated client for reading real system data without touching browser user session
+// Dedicated isolated client for reading real system data without touching browser user session.
+// Uses a unique storageKey to avoid the "Multiple GoTrueClient instances" warning.
 const isolatedReader = createClient(supabaseUrl, supabaseAnonKey, {
-  auth: { persistSession: false, autoRefreshToken: false },
+  auth: { persistSession: false, autoRefreshToken: false, storageKey: 'leaderboard-reader' },
 })
 
 let readerAuthenticated = false
+let readerAuthPromise: Promise<typeof isolatedReader> | null = null
 
 export async function ensureReaderAuth() {
   if (readerAuthenticated) return isolatedReader
-  try {
-    const { error } = await isolatedReader.auth.signInWithPassword({
-      email: 'admin@interviewprep.com',
-      password: 'Admin@9999',
-    })
-    if (!error) {
-      readerAuthenticated = true
+  if (readerAuthPromise) return readerAuthPromise
+
+  readerAuthPromise = (async () => {
+    try {
+      const adminPassword = import.meta.env.VITE_ADMIN_PASSWORD || 'Admin@9999'
+      const { error } = await isolatedReader.auth.signInWithPassword({
+        email: 'admin@interviewprep.com',
+        password: adminPassword,
+      })
+      if (!error) {
+        readerAuthenticated = true
+      }
+    } catch (err) {
+      console.warn('[Leaderboard] Reader auth error:', err)
     }
-  } catch (err) {
-    console.warn('[Leaderboard] Reader auth error:', err)
-  }
-  return isolatedReader
+    return isolatedReader
+  })()
+
+  return readerAuthPromise
 }
 
 export const leaderboardService = {
@@ -259,7 +272,7 @@ export const leaderboardService = {
     const candidateEmail = params.candidateEmail || `${candidateId}@interviewprep.com`
 
     const submissionRecord: StoredCandidateSubmission = {
-      id: `mc_sub_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+      id: params.idempotencyKey || `mc_sub_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
       userId: candidateId,
       userName: candidateName,
       userEmail: candidateEmail,
@@ -305,7 +318,7 @@ export const leaderboardService = {
         const email = candidateEmail.includes('@') ? candidateEmail : `${candidateId}@interviewprep.com`
         const password = 'Candidate@2026!'
         const isolated = createClient(supabaseUrl, supabaseAnonKey, {
-          auth: { persistSession: false, autoRefreshToken: false },
+          auth: { persistSession: false, autoRefreshToken: false, storageKey: `leaderboard-candidate-${candidateId.slice(0, 8)}` },
         })
 
         const signInRes = await isolated.auth.signInWithPassword({ email, password })
@@ -320,21 +333,31 @@ export const leaderboardService = {
         }
         if (authedUser?.id) {
           supabaseUserId = authedUser.id
-          // Insert using this candidate's authenticated client
+          // Insert using this candidate's authenticated client.
+          // maybeSingle: zero visible rows (RLS) is a normal outcome, not an
+          // exception — a 406 here used to masquerade as success/failure.
           const { data: inserted, error: insErr } = await isolated.from('submissions').insert({
             user_id: supabaseUserId,
             question_id: params.questionId,
+            category: params.category || 'MACHINE_CODING',
             status,
             score,
             language: params.language || 'react',
             code: codeContent,
             execution_time: executionTime,
-          }).select('id').single()
+            idempotency_key: params.idempotencyKey || submissionRecord.id,
+          }).select('id').maybeSingle()
 
           if (!insErr && inserted?.id) {
             submissionRecord.syncedToSupabase = true
             submissionRecord.id = String(inserted.id)
             submissionRecord.userId = supabaseUserId
+          } else if (insErr && (insErr as { code?: string }).code === '23505') {
+            // Unique-violation on idempotency_key: a retry/double-click already
+            // stored this submission. Treat as synced, do not duplicate.
+            submissionRecord.syncedToSupabase = true
+          } else if (insErr && import.meta.env?.DEV) {
+            console.warn('[Leaderboard] sync insert', { code: (insErr as { code?: string }).code, message: insErr.message })
           }
         }
       } else {
@@ -342,16 +365,23 @@ export const leaderboardService = {
         const { data: inserted, error: insErr } = await supabase.from('submissions').insert({
           user_id: supabaseUserId,
           question_id: params.questionId,
+          category: params.category || 'MACHINE_CODING',
           status,
           score,
           language: params.language || 'react',
           code: codeContent,
           execution_time: executionTime,
-        }).select('id').single()
+          idempotency_key: params.idempotencyKey || submissionRecord.id,
+        }).select('id').maybeSingle()
 
         if (!insErr && inserted?.id) {
           submissionRecord.syncedToSupabase = true
           submissionRecord.id = String(inserted.id)
+        } else if (insErr && (insErr as { code?: string }).code === '23505') {
+          // Unique-violation on idempotency_key: already stored, do not duplicate.
+          submissionRecord.syncedToSupabase = true
+        } else if (insErr && import.meta.env?.DEV) {
+          console.warn('[Leaderboard] sync insert', { code: (insErr as { code?: string }).code, message: insErr.message })
         }
       }
 

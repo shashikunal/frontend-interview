@@ -110,6 +110,8 @@ export class CoreProgrammingSubmissionService {
             await supabase.from('question_attempts').insert({
               user_id: userId,
               question_id: submission.questionId,
+              category: 'CORE_PROGRAMMING',
+              language: 'javascript',
               status: accepted ? 'completed' : 'in_progress',
               attempt_count: 1,
               started_at: nowIso,

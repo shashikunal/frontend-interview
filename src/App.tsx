@@ -133,49 +133,73 @@ export default function App() {
           <Route
             path="/admin/candidates/:userId/performance"
             element={
-              <ProtectedRoute>
+              <RoleGuard
+                minRole="admin"
+                fallbackTitle="🔒 Administrator Access Required"
+                fallbackMessage="Candidate Performance Dossier is restricted to Platform Administrators."
+              >
                 <AdminCandidatePerformancePage />
-              </ProtectedRoute>
+              </RoleGuard>
             }
           />
           <Route
             path="/admin/candidates/:userId/performance/track/:trackKey"
             element={
-              <ProtectedRoute>
+              <RoleGuard
+                minRole="admin"
+                fallbackTitle="🔒 Administrator Access Required"
+                fallbackMessage="Candidate Performance Dossier is restricted to Platform Administrators."
+              >
                 <AdminCandidatePerformancePage />
-              </ProtectedRoute>
+              </RoleGuard>
             }
           />
           <Route
             path="/admin/candidates/:userId/performance/coding/:attemptId"
             element={
-              <ProtectedRoute>
+              <RoleGuard
+                minRole="admin"
+                fallbackTitle="🔒 Administrator Access Required"
+                fallbackMessage="Candidate Performance Dossier is restricted to Platform Administrators."
+              >
                 <AdminCandidatePerformancePage />
-              </ProtectedRoute>
+              </RoleGuard>
             }
           />
           <Route
             path="/admin/candidates/:userId/performance/ai-mock/:sessionId"
             element={
-              <ProtectedRoute>
+              <RoleGuard
+                minRole="admin"
+                fallbackTitle="🔒 Administrator Access Required"
+                fallbackMessage="Candidate Performance Dossier is restricted to Platform Administrators."
+              >
                 <AdminCandidatePerformancePage />
-              </ProtectedRoute>
+              </RoleGuard>
             }
           />
           <Route
             path="/candidates/:userId/performance"
             element={
-              <ProtectedRoute>
+              <RoleGuard
+                minRole="admin"
+                fallbackTitle="🔒 Administrator Access Required"
+                fallbackMessage="Candidate Performance Dossier is restricted to Platform Administrators."
+              >
                 <AdminCandidatePerformancePage />
-              </ProtectedRoute>
+              </RoleGuard>
             }
           />
           <Route
             path="/candidates/:userId/performance/track/:trackKey"
             element={
-              <ProtectedRoute>
+              <RoleGuard
+                minRole="admin"
+                fallbackTitle="🔒 Administrator Access Required"
+                fallbackMessage="Candidate Performance Dossier is restricted to Platform Administrators."
+              >
                 <AdminCandidatePerformancePage />
-              </ProtectedRoute>
+              </RoleGuard>
             }
           />
           <Route

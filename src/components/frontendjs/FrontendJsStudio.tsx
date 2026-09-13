@@ -58,12 +58,18 @@ export default function FrontendJsStudio() {
   const [isAdminModalOpen, setIsAdminModalOpen] = useState<boolean>(isAdminTab)
   const [isLeaderboardOpen, setIsLeaderboardOpen] = useState<boolean>(isLeaderboardTab)
 
-  // Active question resolution
+  // Active question resolution. Unknown ids render an explicit error below —
+  // silently falling back to QUESTIONS[0] would record work against the
+  // wrong question and corrupt attempts/history.
+  const resolveFjsQuestion = (qid: string): FrontendJsQuestion | null => {
+    const direct = questionByIdMap.get(qid.toUpperCase())
+    if (direct) return direct
+    return FRONTEND_JS_QUESTIONS.find(q => q.id.toLowerCase() === qid.toLowerCase() || q.slug.toLowerCase() === qid.toLowerCase()) || null
+  }
+  const unknownQuestionId = Boolean(qIdParam && !resolveFjsQuestion(qIdParam))
   const activeQuestion = useMemo<FrontendJsQuestion | null>(() => {
     if (!qIdParam) return null
-    const direct = questionByIdMap.get(qIdParam.toUpperCase())
-    if (direct) return direct
-    return FRONTEND_JS_QUESTIONS.find(q => q.id.toLowerCase() === qIdParam.toLowerCase() || q.slug.toLowerCase() === qIdParam.toLowerCase()) || FRONTEND_JS_QUESTIONS[0]
+    return resolveFjsQuestion(qIdParam)
   }, [qIdParam])
 
   const handleSelectQuestion = useCallback((qid: string) => {
@@ -73,6 +79,19 @@ export default function FrontendJsStudio() {
   const handleBackToCatalog = useCallback(() => {
     navigate('/frontend-javascript')
   }, [navigate])
+
+  // Unknown id: explicit error, never a silent wrong question.
+  if (!activeQuestion && unknownQuestionId) {
+    return (
+      <div className="mc-studio-container">
+        <div style={{ margin: 'auto', textAlign: 'center', padding: 48 }}>
+          <h2>Question not found</h2>
+          <p>No Frontend JavaScript question matches “{qIdParam}”.</p>
+          <button onClick={handleBackToCatalog}>Back to catalog</button>
+        </div>
+      </div>
+    )
+  }
 
   // If no question is active, render the Canonical Machine-Level Coding Overview
   if (!activeQuestion) {
@@ -320,7 +339,42 @@ function FrontendJsWorkspace({
   }, [isInterviewActive])
 
   // Autosave code changes with debounce
+  const suppressNextChangeRef = useRef(false)
+  const editorDisposablesRef = useRef<Array<{ dispose: () => void }>>([])
+
+  // Bring the live Monaco model to `next` without touching React state.
+  const syncEditorModel = (next: string) => {
+    const ed = editorRef.current
+    const model = ed?.getModel?.()
+    if (!ed || !model || model.getValue() === next) return
+    suppressNextChangeRef.current = true
+    try {
+      ed.executeEdits('fjs-sync', [{ range: model.getFullModelRange(), text: next }])
+      ed.pushUndoStop?.()
+    } finally {
+      suppressNextChangeRef.current = false
+    }
+  }
+
+  // Dispose per-editor listeners + pending autosave on question change/unmount.
+  useEffect(() => {
+    return () => {
+      for (const d of editorDisposablesRef.current) {
+        try {
+          d.dispose()
+        } catch (_) {}
+      }
+      editorDisposablesRef.current = []
+      editorRef.current = null
+      if (autosaveTimeoutRef.current) {
+        clearTimeout(autosaveTimeoutRef.current)
+        autosaveTimeoutRef.current = null
+      }
+    }
+  }, [question.id])
+
   const handleCodeChange = (newVal: string | undefined) => {
+    if (suppressNextChangeRef.current) return
     const val = newVal || ''
     setCurrentCode(val)
     emitCodeChange(val, 'solution.js')
@@ -1005,12 +1059,19 @@ function FrontendJsWorkspace({
                   onChange={handleCodeChange}
                   onMount={(editor, monaco) => {
                     editorRef.current = editor
-                    bindMonacoEditor(editor, 'solution.js')
-                    editor.onDidChangeCursorPosition(e => {
-                      emitCursorMove(e.position.lineNumber, e.position.column)
-                    })
-                    editor.onDidFocusEditorWidget(() => emitFocus(true))
-                    editor.onDidBlurEditorWidget(() => emitFocus(false))
+                    // Deferred bind (sync-gated auto-bind handles the rest) +
+                    // exact model content computed synchronously, so a remount
+                    // can never bake the previous question's code in.
+                    bindMonacoEditor(editor, 'solution.js', true)
+                    const draft = frontendJsProgressService.getDraft(question.id)
+                    syncEditorModel(draft !== null ? draft : question.starterCode)
+                    editorDisposablesRef.current = [
+                      editor.onDidChangeCursorPosition(e => {
+                        emitCursorMove(e.position.lineNumber, e.position.column)
+                      }),
+                      editor.onDidFocusEditorWidget(() => emitFocus(true)),
+                      editor.onDidBlurEditorWidget(() => emitFocus(false)),
+                    ]
 
                     if (monaco?.languages?.typescript) {
                       monaco.languages.typescript.javascriptDefaults.setDiagnosticsOptions({

@@ -42,10 +42,13 @@ export default function CoreProgrammingStudio() {
 
   const [isDailyPracticeOpen, setIsDailyPracticeOpen] = useState(false);
 
-  // Active question lookup
+  // Active question lookup. Unknown ids render an explicit error below —
+  // silently falling back to QUESTIONS[0] would record work against the
+  // wrong question and corrupt attempts/history.
+  const unknownQuestionId = Boolean(qIdParam && !getCoreProgrammingQuestion(qIdParam));
   const activeQuestion = useMemo<CoreProgrammingQuestion | null>(() => {
     if (!qIdParam) return null;
-    return getCoreProgrammingQuestion(qIdParam) || CORE_PROGRAMMING_QUESTIONS[0];
+    return getCoreProgrammingQuestion(qIdParam) || null;
   }, [qIdParam]);
 
   const handleSelectQuestion = useCallback((qid: string) => {
@@ -57,6 +60,15 @@ export default function CoreProgrammingStudio() {
   }, [navigate]);
 
   if (!activeQuestion) {
+    if (unknownQuestionId) {
+      return (
+        <div style={{ margin: 'auto', textAlign: 'center', padding: 48 }}>
+          <h2>Question not found</h2>
+          <p>No Core Programming question matches “{qIdParam}”.</p>
+          <button onClick={handleBackToCatalog}>Back to catalog</button>
+        </div>
+      );
+    }
     return (
       <>
         <CoreProgrammingDashboard
@@ -107,6 +119,30 @@ function CoreProgrammingWorkspace({
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const autosaveTimeoutRef = useRef<number | null>(null);
   const editorRef = useRef<any>(null);
+  const editorDisposablesRef = useRef<Array<{ dispose: () => void }>>([]);
+
+  // Dispose per-editor listeners when the question changes or the workspace
+  // unmounts. (@monaco-editor/react disposes the editor itself; this covers
+  // the cursor/focus subscriptions registered in onMount.)
+  useEffect(() => {
+    const qid = question.id;
+    return () => {
+      if (import.meta.env?.DEV) {
+        console.debug('[CORE] Monaco dispose', { questionId: qid });
+      }
+      for (const d of editorDisposablesRef.current) {
+        try {
+          d.dispose();
+        } catch (_) {}
+      }
+      editorDisposablesRef.current = [];
+      editorRef.current = null;
+      if (autosaveTimeoutRef.current) {
+        clearTimeout(autosaveTimeoutRef.current);
+        autosaveTimeoutRef.current = null;
+      }
+    };
+  }, [question.id]);
 
   // Layout & Resizing
   const [leftPanelWidth, setLeftPanelWidth] = useState<number>(() => {
@@ -282,7 +318,26 @@ function CoreProgrammingWorkspace({
   }, [isTimerRunning, question.id]);
 
   // Autosave code changes with realtime broadcast & background draft save
+  // Set for programmatic model syncs (question load/reset): their onChange
+  // echo must not re-save/re-emit or disturb state.
+  const suppressNextChangeRef = useRef(false);
+
+  // Bring the live Monaco model to `next` without touching React state.
+  const syncEditorModel = (next: string) => {
+    const ed = editorRef.current;
+    const model = ed?.getModel?.();
+    if (!ed || !model || model.getValue() === next) return;
+    suppressNextChangeRef.current = true;
+    try {
+      ed.executeEdits('cp-sync', [{ range: model.getFullModelRange(), text: next }]);
+      ed.pushUndoStop?.();
+    } finally {
+      suppressNextChangeRef.current = false;
+    }
+  };
+
   const handleCodeChange = (newVal: string | undefined) => {
+    if (suppressNextChangeRef.current) return;
     const val = newVal || '';
     setCurrentCode(val);
 
@@ -529,17 +584,24 @@ function CoreProgrammingWorkspace({
     }
   };
 
-  // Global Keyboard Shortcuts (⌘K, ⌘Enter)
+  // Global Keyboard Shortcuts (⌘K, ⌘Enter).
+  // Registered ONCE per question: the handler reads mutable state via a ref, so
+  // typing (setCurrentCode on every keystroke) does not tear down and re-add
+  // this window listener on every keypress.
+  const runCodeRef = useRef(handleRunCode);
+  runCodeRef.current = handleRunCode;
+  const fullscreenRef = useRef(fullscreenPanel);
+  fullscreenRef.current = fullscreenPanel;
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
         e.preventDefault();
-        handleRunCode();
+        runCodeRef.current();
       } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
         e.preventDefault();
         setIsCommandPaletteOpen(prev => !prev);
       } else if (e.key === 'Escape') {
-        if (fullscreenPanel !== 'none') {
+        if (fullscreenRef.current !== 'none') {
           setFullscreenPanel('none');
           return;
         }
@@ -550,7 +612,7 @@ function CoreProgrammingWorkspace({
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [currentCode, isRunning, isSubmitting, useCustomInput, customInput, fullscreenPanel]);
+  }, [question.id]);
 
   // Command palette search
   const filteredPaletteQuestions = useMemo(() => {
@@ -875,12 +937,25 @@ function CoreProgrammingWorkspace({
               onChange={handleCodeChange}
               onMount={(ed) => {
                 editorRef.current = ed;
-                bindMonacoEditor(ed, 'solution.js');
-                ed.onDidChangeCursorPosition(e => {
-                  emitCursorMove(e.position.lineNumber, e.position.column);
-                });
-                ed.onDidFocusEditorWidget(() => emitFocus(true));
-                ed.onDidBlurEditorWidget(() => emitFocus(false));
+                if (import.meta.env?.DEV) {
+                  console.debug('[CORE] Monaco create', { questionId: question.id });
+                }
+                // Deferred bind (sync-gated auto-bind handles the rest) + exact
+                // model content computed synchronously, so a remount can never
+                // bake the previous question's code into the fresh model.
+                bindMonacoEditor(ed, 'solution.js', true);
+                const draft = coreProgrammingProgressService.getDraft(question.id);
+                syncEditorModel(draft !== null ? draft : question.starterCode);
+                // Every registration below MUST be disposed on unmount, otherwise
+                // each question switch / remount stacks duplicate cursor/focus
+                // listeners while the old editor lingers.
+                editorDisposablesRef.current = [
+                  ed.onDidChangeCursorPosition(e => {
+                    emitCursorMove(e.position.lineNumber, e.position.column);
+                  }),
+                  ed.onDidFocusEditorWidget(() => emitFocus(true)),
+                  ed.onDidBlurEditorWidget(() => emitFocus(false)),
+                ];
               }}
               options={{
                 fontSize: fontSize,

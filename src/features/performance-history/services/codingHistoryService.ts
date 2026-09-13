@@ -1156,18 +1156,29 @@ class CodingHistoryService {
         localStorage.setItem('user_coding_attempts_history_v1', JSON.stringify(parsed.slice(0, 500)));
       }
 
-      // 2. Best-effort Supabase insert
+      // 2. Best-effort Supabase insert.
+      // - Omit `id` (DB default; local `att_*` ids are not DB UUIDs).
+      // - Include `category` so rows don't collapse to MACHINE_CODING default.
+      // - UUID-guard user_id: guest/fake ids are RLS-rejected (403) — keep local only.
+      // - idempotency_key: rapid double-records converge instead of duplicating.
       try {
-        await supabase.from('submissions').insert({
-          id: record.id,
-          user_id: record.user_id,
-          question_id: record.question_id,
-          code: record.code,
-          language: record.language,
-          status: record.status.toLowerCase(),
-          score: record.score,
-          created_at: record.created_at,
-        });
+        const isUuid = typeof record.user_id === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(record.user_id);
+        // submissions.category has a DB CHECK constraint: only persist known
+        // values, otherwise omit so the DB default applies (never fail the write).
+        const allowed = ['MACHINE_CODING', 'DSA', 'CORE_PROGRAMMING', 'FRONTEND_JS', 'THEORY', 'AI_MOCK'];
+        if (isUuid) {
+          await supabase.from('submissions').insert({
+            user_id: record.user_id,
+            question_id: record.question_id,
+            ...(allowed.includes(record.category) ? { category: record.category } : {}),
+            code: record.code,
+            language: record.language,
+            status: record.status.toLowerCase(),
+            score: record.score,
+            created_at: record.created_at,
+            idempotency_key: record.id,
+          });
+        }
       } catch (_) {}
     } catch (err) {
       console.warn('[CodingHistoryService] Failed to record attempt:', err);

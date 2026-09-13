@@ -8,8 +8,9 @@ interface AdminLoginModalProps {
   onClose: () => void
 }
 
-const ADMIN_USERNAME = import.meta.env.VITE_ADMIN_USERNAME || 'shashi'
-const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD || 'Admin@9999'
+// Admin credentials must be set via VITE_ADMIN_USERNAME and VITE_ADMIN_PASSWORD env vars.
+// Do NOT define fallback literals here — any hardcoded value becomes visible in the JS bundle.
+
 
 export default function AdminLoginModal({ isOpen, onClose }: AdminLoginModalProps) {
   const { switchRole } = useAuth()
@@ -50,6 +51,15 @@ export default function AdminLoginModal({ isOpen, onClose }: AdminLoginModalProp
     // Simulate a short auth delay for UX
     await new Promise(r => setTimeout(r, 600))
 
+    const ADMIN_USERNAME = import.meta.env.VITE_ADMIN_USERNAME
+    const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD
+
+    if (!ADMIN_USERNAME || !ADMIN_PASSWORD) {
+      setError('Administrator access is not configured. Contact the platform administrator.')
+      setIsLoading(false)
+      return
+    }
+
     if (username.trim() === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
       // Authenticate with Supabase so Postgres RLS grants full permissions to fetch all real users
       try {
@@ -83,6 +93,7 @@ export default function AdminLoginModal({ isOpen, onClose }: AdminLoginModalProp
 
     setIsLoading(false)
   }
+
 
   return (
     <div className="adm-overlay" onClick={(e) => { if (e.target === e.currentTarget) onClose() }}>

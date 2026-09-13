@@ -269,7 +269,8 @@ class FrontendJsProgressService {
   addReport(report: FrontendJsReport): void {
     const reports = this.getReports()
     reports.unshift(report)
-    this.safeSave(STORAGE_KEYS.REPORTS, reports)
+    // Capped: reports must not grow localStorage unbounded.
+    this.safeSave(STORAGE_KEYS.REPORTS, reports.slice(0, 200))
   }
 
   // Streak Tracking

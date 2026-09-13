@@ -144,6 +144,10 @@ const VIEW_DEBOUNCE_MS = 60 * 1000 // 1 minute per question
 const draftSaveTimers = new Map<string, ReturnType<typeof setTimeout>>()
 const DRAFT_DEBOUNCE_MS = 1500
 
+// In-flight attempt initializations: `userId:questionId` -> promise.
+// Makes startOrResumeQuestionAttempt idempotent under StrictMode double-effects.
+const attemptInflight = new Map<string, Promise<string>>()
+
 function getLocalStore<T>(key: string): T[] {
   try {
     if (typeof localStorage === 'undefined') return []
@@ -252,7 +256,18 @@ export const trackingService = {
     const userId = await getAuthUserId()
     const now = new Date().toISOString()
     const sessionKey = `active_attempt_${strQId}`
+    // In-flight guard: StrictMode double-mounts effects, so two concurrent calls
+    // for the same user+question must share one promise instead of INSERTing twice.
+    const inflightKey = `${userId || 'guest'}:${strQId}`
+    const pending = attemptInflight.get(inflightKey)
+    if (pending) {
+      if (import.meta.env?.DEV) {
+        console.debug('[CORE] attempt init deduped (in-flight)', { questionId: strQId })
+      }
+      return pending
+    }
 
+    const run = (async (): Promise<string> => {
     // 1. Check current session storage first
     if (typeof sessionStorage !== 'undefined') {
       const existingSessionAttempt = sessionStorage.getItem(sessionKey)
@@ -346,23 +361,46 @@ export const trackingService = {
       startedAt: now,
     })
 
-    // Upsert into Supabase (only use columns that exist in the live schema)
+    // Insert into Supabase. category/language are part of the canonical contract
+    // (older code omitted them, so every CP/DSA/FJS row defaulted to MACHINE_CODING
+    // and Core Programming performance computed 0%). Fall back to base columns if
+    // the live schema predates the category migration.
     if (userId) {
       try {
-        const payload: Record<string, unknown> = {
+        const fullPayload: Record<string, unknown> = {
           user_id: userId,
           question_id: strQId,
+          category,
+          language: language || 'javascript',
           status: 'started',
           attempt_count: attemptNumber,
           started_at: now,
           last_activity_at: now,
         }
 
-        const { data, error } = await supabase
+        let { data, error } = await supabase
           .from('question_attempts')
-          .insert(payload)
+          .insert(fullPayload)
           .select('id')
-          .single()
+          .maybeSingle()
+
+        if (error && (error.message.includes('column') || error.message.includes('schema cache'))) {
+          const basePayload: Record<string, unknown> = {
+            user_id: userId,
+            question_id: strQId,
+            status: 'started',
+            attempt_count: attemptNumber,
+            started_at: now,
+            last_activity_at: now,
+          }
+          const retry = await supabase
+            .from('question_attempts')
+            .insert(basePayload)
+            .select('id')
+            .maybeSingle()
+          data = retry.data
+          error = retry.error
+        }
 
         if (!error && data?.id) {
           const actualId = String(data.id)
@@ -371,12 +409,23 @@ export const trackingService = {
           }
           return actualId
         }
+        if (error && import.meta.env?.DEV) {
+          console.warn('[CORE] attempt insert', { questionId: strQId, code: (error as { code?: string }).code, message: error.message })
+        }
       } catch (err) {
         console.warn('[TrackingService] Failed writing question_attempts to Supabase:', err)
       }
     }
 
     return attemptId
+    })()
+
+    attemptInflight.set(inflightKey, run)
+    try {
+      return await run
+    } finally {
+      attemptInflight.delete(inflightKey)
+    }
   },
 
   /**

@@ -32,9 +32,8 @@ export default function AIVideoMockApp() {
           <Route path="/" element={<AIVideoMockHome />} />
           <Route path="/setup" element={<MockSetupPage />} />
           <Route path="/session/:id" element={<MockSessionPage />} />
-          <Route path="/session/:sessionId" element={<MockSessionPage />} />
           <Route path="/result/:id" element={<MockFinalResultPage />} />
-          <Route path="/result/:sessionId" element={<MockFinalResultPage />} />
+
           <Route path="/history" element={<MockHistoryPage />} />
           <Route path="/practice" element={<MockPracticePage />} />
           <Route path="/job-interview" element={<MockJobInterviewPage />} />

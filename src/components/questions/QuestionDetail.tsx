@@ -135,16 +135,21 @@ export default function QuestionDetail() {
     }
   }
 
+  // runCode mirrored per render so the global listener registers once per
+  // question instead of on every keystroke.
+  const runCodeRef = useRef(runCode)
+  runCodeRef.current = runCode
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
         e.preventDefault()
-        runCode()
+        runCodeRef.current()
       }
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [code, question])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [question?.id])
 
   const handleCopyCode = () => {
     const textToCopy = code || question?.code || ''

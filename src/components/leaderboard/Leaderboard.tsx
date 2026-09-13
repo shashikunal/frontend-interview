@@ -306,6 +306,9 @@ export default function Leaderboard({ compact = false }: LeaderboardProps) {
     }
   }
 
+  const userId = user?.id
+  const userEmail = user?.email
+  const userName = user?.name
   const load = useCallback(async () => {
     setLoading(true)
     try {
@@ -313,18 +316,20 @@ export default function Leaderboard({ compact = false }: LeaderboardProps) {
       setEntries(data)
 
       // Identify the current active candidate
-      if (user) {
+      if (userId || userEmail || userName) {
         const me = data.find(e =>
-          (user.id && e.userId === user.id) ||
-          (user.email && e.userId.toLowerCase().includes(user.email.toLowerCase())) ||
-          (user.name && e.name.toLowerCase() === user.name.toLowerCase())
+          (userId && e.userId === userId) ||
+          (userEmail && e.userId.toLowerCase().includes(userEmail.toLowerCase())) ||
+          (userName && e.name.toLowerCase() === userName.toLowerCase())
         ) ?? null
         setMyEntry(me)
       }
     } finally {
       setLoading(false)
     }
-  }, [timeframe, category, compact, user])
+    // Scalar deps: whole-`user` identity changes per render and refetch loops.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [timeframe, category, compact, userId, userEmail, userName])
 
   useEffect(() => { void load() }, [load])
 

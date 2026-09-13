@@ -113,20 +113,33 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           createdAt: user.created_at || new Date().toISOString(),
         }
 
-        try {
-          await supabase.from('profiles').upsert({
-            id: user.id,
-            email: user.email || '',
-            full_name: name,
-            role,
-            target_company: profilePayload.targetCompany,
-            experience_level: profilePayload.experienceLevel,
-            feature_entitlements: profilePayload.entitlements,
-            is_active: true,
-            updated_at: new Date().toISOString(),
-          })
-        } catch (err) {
-          console.warn('[AuthProvider] Direct profile upsert error:', err)
+        // profiles.id is a UUID FK to auth.users(id) and RLS requires auth.uid() = id.
+        // Pseudo-ids (admin_super_user, usr_*, guest_*) are local-only: writing them
+        // would be rejected with 403, so keep them in memory/localStorage only.
+        const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(user.id)
+        if (!isUuid) {
+          if (import.meta.env?.DEV) {
+            console.warn('[CORE] profile upsert skipped (local-only id)', { id: user.id })
+          }
+        } else {
+          try {
+            const { error: upsertError } = await supabase.from('profiles').upsert({
+              id: user.id,
+              email: user.email || '',
+              full_name: name,
+              role,
+              target_company: profilePayload.targetCompany,
+              experience_level: profilePayload.experienceLevel,
+              feature_entitlements: profilePayload.entitlements,
+              is_active: true,
+              updated_at: new Date().toISOString(),
+            })
+            if (upsertError && import.meta.env?.DEV) {
+              console.warn('[CORE] profile upsert', { code: (upsertError as { code?: string }).code, message: upsertError.message })
+            }
+          } catch (err) {
+            console.warn('[AuthProvider] Direct profile upsert error:', err)
+          }
         }
 
         setUserProfile(profilePayload)
@@ -238,8 +251,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const loginAsAdmin = useCallback(
     async (usernameInput: string, passwordInput: string): Promise<{ success: boolean; message: string }> => {
-      const ADMIN_USERNAME = import.meta.env.VITE_ADMIN_USERNAME || 'shashi'
-      const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD || 'Admin@9999'
+      const ADMIN_USERNAME = import.meta.env.VITE_ADMIN_USERNAME
+      const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD
+
+      if (!ADMIN_USERNAME || !ADMIN_PASSWORD) {
+        return { success: false, message: 'Administrator access is not configured. Set VITE_ADMIN_USERNAME and VITE_ADMIN_PASSWORD environment variables.' }
+      }
 
       if (usernameInput.trim() !== ADMIN_USERNAME || passwordInput !== ADMIN_PASSWORD) {
         return { success: false, message: 'Invalid administrator credentials. Access denied.' }

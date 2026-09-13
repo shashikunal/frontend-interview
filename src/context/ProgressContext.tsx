@@ -215,6 +215,11 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
     })
   }, [])
 
+  // Scalar snapshot: whole-`authUser` identity changes per render and would
+  // force every consumer to re-render/re-subscribe on each auth change.
+  const authUserId = authUser?.id
+  const authUserName = authUser?.name || ''
+  const authUserEmail = authUser?.email || ''
   const toggleSolved = useCallback((id: number) => {
     recordActivity()
     setSolvedIds(prev => {
@@ -224,20 +229,20 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
       } else {
         next.add(id)
         trackingService.completeQuestionAttempt(id, 100)
-        const uid = authUser?.id || 'guest'
-        if (authUser) {
+        const uid = authUserId || 'guest'
+        if (authUserId) {
           dbActivityService.logActivity({
             userId: uid,
-            userName: authUser.name,
-            userEmail: authUser.email,
+            userName: authUserName,
+            userEmail: authUserEmail,
             type: 'QUESTION_SOLVED',
             title: `Solved Question #${id}`,
             details: `Completed review and verification of Question #${id}`,
           })
           progressSyncService.syncProgress({
             userId: uid,
-            userEmail: authUser.email,
-            userName: authUser.name,
+            userEmail: authUserEmail,
+            userName: authUserName,
             trackName: 'React 19 & Architecture',
             trackIcon: '⚛️',
             solvedCount: next.size,
@@ -256,7 +261,8 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
       }
       return next
     })
-  }, [recordActivity, streak, authUser])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [recordActivity, streak, authUserId, authUserName, authUserEmail])
 
   const markSolved = useCallback((id: number) => {
     recordActivity()
@@ -265,20 +271,20 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
       const next = new Set(prev)
       next.add(id)
       trackingService.completeQuestionAttempt(id, 100)
-      const uid = authUser?.id || 'guest'
-      if (authUser) {
+      const uid = authUserId || 'guest'
+      if (authUserId) {
         dbActivityService.logActivity({
           userId: uid,
-          userName: authUser.name,
-          userEmail: authUser.email,
+          userName: authUserName,
+          userEmail: authUserEmail,
           type: 'QUESTION_SOLVED',
           title: `Solved Question #${id}`,
           details: `Successfully completed Question #${id}`,
         })
         progressSyncService.syncProgress({
           userId: uid,
-          userEmail: authUser.email,
-          userName: authUser.name,
+          userEmail: authUserEmail,
+          userName: authUserName,
           trackName: 'React 19 & Architecture',
           trackIcon: '⚛️',
           solvedCount: next.size,
@@ -296,7 +302,8 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
       }
       return next
     })
-  }, [recordActivity, streak])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [recordActivity, streak, authUserId, authUserName, authUserEmail])
 
   const unmarkSolved = useCallback((id: number) => {
     setSolvedIds(prev => {

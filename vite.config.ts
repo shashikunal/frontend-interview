@@ -284,7 +284,7 @@ function localAIVideoMockPlugin(): Plugin {
             configuredModel: models.includes('llama3.2:latest') ? 'llama3.2:latest' : (models[0] || 'llama3.2:latest'),
           },
           storage: {
-            root: STORAGE_ROOT,
+            // Path intentionally omitted to avoid filesystem disclosure
             exists: fs.existsSync(STORAGE_ROOT),
           },
           nodeVersion: process.version,

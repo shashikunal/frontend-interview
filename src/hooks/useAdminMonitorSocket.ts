@@ -68,6 +68,9 @@ export function useAdminMonitorSocket(sessionIds: string[], user?: any) {
 
   useEffect(() => {
     let isMounted = true;
+    // Handlers registered by this effect run (populated inside init).
+    // Cleanup removes exactly these from the SHARED admin socket.
+    let attachedHandlers: Array<{ event: string; handler: (...args: any[]) => void }> = [];
 
     async function init() {
       const adminDevUser = {
@@ -79,6 +82,15 @@ export function useAdminMonitorSocket(sessionIds: string[], user?: any) {
       const socket = await getAdminInterviewSocket(adminDevUser);
       if (!isMounted) return;
       socketRef.current = socket;
+
+      // Tracked registration: every handler below is recorded in the
+      // effect-scope `attachedHandlers` so cleanup can socket.off exactly
+      // what this run added. The admin socket is SHARED, so a blanket
+      // removeAllListeners would break other consumers.
+      const on = (event: string, handler: (...args: any[]) => void) => {
+        (socket as any).on(event, handler);
+        attachedHandlers.push({ event, handler });
+      };
 
       function subscribeAll() {
         sessionIds.forEach(sid => {
@@ -120,12 +132,12 @@ export function useAdminMonitorSocket(sessionIds: string[], user?: any) {
         });
       }
 
-      socket.on('connect', () => {
+      on('connect', () => {
         setIsConnected(true);
         subscribeAll();
       });
 
-      socket.on('disconnect', () => {
+      on('disconnect', () => {
         setIsConnected(false);
       });
 
@@ -137,7 +149,7 @@ export function useAdminMonitorSocket(sessionIds: string[], user?: any) {
       // ── Event Handlers ───────────────────────────────────────────────────
 
       // 1. session:state (Full initial / resynchronized state)
-      socket.on('session:state', (state: SessionStatePayload) => {
+      on('session:state', (state: SessionStatePayload) => {
         setTelemetryMap(prev => ({
           ...prev,
           [state.sessionId]: {
@@ -157,7 +169,7 @@ export function useAdminMonitorSocket(sessionIds: string[], user?: any) {
       });
 
       // 2. student:code-change
-      socket.on('student:code-change', (data) => {
+      on('student:code-change', (data) => {
         if (data.sessionId && data.code !== undefined) {
           const ydoc = getOrCreateSessionYDoc(data.sessionId);
           const ytext = ydoc.getText(data.fileId || 'solution.js');
@@ -205,7 +217,7 @@ export function useAdminMonitorSocket(sessionIds: string[], user?: any) {
       });
 
       // 2b. student:keystroke (Zero-Latency Character-by-Character Fastpath)
-      socket.on('student:keystroke', (data: any) => {
+      on('student:keystroke', (data: any) => {
         if (data.sessionId && data.code !== undefined) {
           const ydoc = getOrCreateSessionYDoc(data.sessionId);
           const ytext = ydoc.getText(data.fileId || 'solution.js');
@@ -252,7 +264,7 @@ export function useAdminMonitorSocket(sessionIds: string[], user?: any) {
       });
 
       // 3. student:typing
-      socket.on('student:typing', (data) => {
+      on('student:typing', (data) => {
         setTelemetryMap(prev => prev[data.sessionId] ? {
           ...prev,
           [data.sessionId]: {
@@ -265,7 +277,7 @@ export function useAdminMonitorSocket(sessionIds: string[], user?: any) {
       });
 
       // 4. student:cursor-change
-      socket.on('student:cursor-change', (data) => {
+      on('student:cursor-change', (data) => {
         setTelemetryMap(prev => prev[data.sessionId] ? {
           ...prev,
           [data.sessionId]: {
@@ -279,7 +291,7 @@ export function useAdminMonitorSocket(sessionIds: string[], user?: any) {
       });
 
       // 5. student:file-change
-      socket.on('student:file-change', (data) => {
+      on('student:file-change', (data) => {
         setTelemetryMap(prev => prev[data.sessionId] ? {
           ...prev,
           [data.sessionId]: {
@@ -293,12 +305,12 @@ export function useAdminMonitorSocket(sessionIds: string[], user?: any) {
       });
 
       // 6. student:question-change
-      socket.on('student:question-change', (data) => {
+      on('student:question-change', (data) => {
         pushActivity(data.sessionId, 'QUESTION_CHANGED', `Opened ${data.questionTitle || data.questionId}`, data.timestamp);
       });
 
       // 7. student:run-start
-      socket.on('student:run-start', (data) => {
+      on('student:run-start', (data) => {
         setTelemetryMap(prev => prev[data.sessionId] ? {
           ...prev,
           [data.sessionId]: {
@@ -312,7 +324,7 @@ export function useAdminMonitorSocket(sessionIds: string[], user?: any) {
       });
 
       // 8. student:run-result
-      socket.on('student:run-result', (data) => {
+      on('student:run-result', (data) => {
         setTelemetryMap(prev => prev[data.sessionId] ? {
           ...prev,
           [data.sessionId]: {
@@ -336,7 +348,7 @@ export function useAdminMonitorSocket(sessionIds: string[], user?: any) {
       });
 
       // 9. student:status
-      socket.on('student:status', (data) => {
+      on('student:status', (data) => {
         setTelemetryMap(prev => prev[data.sessionId] ? {
           ...prev,
           [data.sessionId]: {
@@ -348,12 +360,12 @@ export function useAdminMonitorSocket(sessionIds: string[], user?: any) {
       });
 
       // 10. student:activity
-      socket.on('student:activity', (data) => {
+      on('student:activity', (data) => {
         pushActivity(data.sessionId, data.type, data.message, data.timestamp);
       });
 
       // 11. yjs:update (Live binary CRDT keystrokes into local Y.Doc)
-      socket.on('yjs:update', (data: any) => {
+      on('yjs:update', (data: any) => {
         if (!data?.sessionId || !data?.update) return;
         console.log(`[YJS-ADMIN] Yjs update received for session ${data.sessionId}`);
         const ydoc = getOrCreateSessionYDoc(data.sessionId);
@@ -396,7 +408,7 @@ export function useAdminMonitorSocket(sessionIds: string[], user?: any) {
       });
 
       // 12. yjs:sync-response (Full Y.Doc recovery on reconnect / first subscribe)
-      socket.on('yjs:sync-response', (data: any) => {
+      on('yjs:sync-response', (data: any) => {
         if (!data?.sessionId || !data?.docState) return;
         const ydoc = getOrCreateSessionYDoc(data.sessionId);
         try {
@@ -431,9 +443,16 @@ export function useAdminMonitorSocket(sessionIds: string[], user?: any) {
         sessionIds.forEach(sid => {
           try { s.emit('monitor:unsubscribe', { sessionId: sid }); } catch (_) {}
         });
+        for (const { event, handler } of attachedHandlers) {
+          try { (s as any).off(event, handler); } catch (_) {}
+        }
       }
+      attachedHandlers = [];
     };
-  }, [sessionIds.join(','), pushActivity, user]);
+    // Scalar user dep: whole-`user` identity changes per render and re-ran
+    // init, stacking handlers on the shared socket.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sessionIds.join(','), pushActivity, user?.id]);
 
   const getYDoc = useCallback((sessionId: string) => {
     return getOrCreateSessionYDoc(sessionId);

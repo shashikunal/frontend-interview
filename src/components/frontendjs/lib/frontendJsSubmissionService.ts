@@ -97,6 +97,8 @@ export class FrontendJsSubmissionService {
             await supabase.from('question_attempts').insert({
               user_id: userId,
               question_id: submission.questionId,
+              category: 'FRONTEND_JS',
+              language: 'javascript',
               status: accepted ? 'completed' : 'in_progress',
               attempt_count: 1,
               started_at: nowIso,

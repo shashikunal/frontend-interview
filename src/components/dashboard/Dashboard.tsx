@@ -320,7 +320,9 @@ function CandidateDashboard() {
     // Load Frontend JS Submissions and Solved Count
     frontendJsSubmissionService.fetchUserSubmissions(user?.id).then(setFjsSubmissions)
     setFjsSolvedCount(frontendJsProgressService.getSolvedIds().size)
-  }, [user])
+    // Scalar dep: whole-`user` identity changes per render and refetch storms.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id])
 
   // Live sync Core Programming progress
   useEffect(() => {
@@ -440,8 +442,9 @@ function CandidateDashboard() {
       }
     })
 
+    const userId = user.id
     const unsubscribe = progressSyncService.subscribeToProgress(updated => {
-      if (updated.userId === user.id) {
+      if (updated.userId === userId) {
         setAssignedTrack(updated)
         setTrackAlert(`🎯 Your learning track was updated by Platform Administrator to ${updated.trackName}!`)
         setTimeout(() => setTrackAlert(null), 6000)
@@ -449,7 +452,9 @@ function CandidateDashboard() {
     })
 
     return () => unsubscribe()
-  }, [user])
+    // Scalar dep: whole-`user` identity changes per render and resubscribes.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id])
 
   const categories = useMemo(() => getCategories(questions), [questions])
 
