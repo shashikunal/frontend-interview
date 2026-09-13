@@ -20,6 +20,7 @@ import AdminTelemetryTab from './admin/AdminTelemetryTab'
 import AdminTracksTab, { type TrackStat } from './admin/AdminTracksTab'
 import AdminLiveSessionsTab from './admin/AdminLiveSessionsTab'
 import AdminCandidateManagementTab from '../../features/performance-history/components/admin/AdminCandidateManagementTab'
+import AdminCandidatePerformancePage from '../../features/performance-history/components/admin/AdminCandidatePerformancePage'
 import AdminBackupButton from './admin/AdminBackupButton'
 import AdminUserDetailModal from './admin/AdminUserDetailModal'
 import AdminSubmissionCodeModal from './admin/AdminSubmissionCodeModal'
@@ -84,8 +85,13 @@ export default function AdminDashboard() {
   const location = useLocation()
   const basePath = location.pathname.startsWith('/admin') ? '/admin' : '/dashboard'
 
+  const isCandidatePerformanceRoute = useMemo(() => {
+    return location.pathname.includes('/performance') && (location.pathname.includes('/candidates/') || location.pathname.includes('/users/'))
+  }, [location.pathname])
+
   // Map query string (?tab=questions) OR path param (/dashboard/questions) to valid AdminTab
   const activeTab: AdminTab = useMemo(() => {
+    if (isCandidatePerformanceRoute) return 'candidates'
     const rawTab = searchParams.get('tab') || urlTab
     if (!rawTab) return 'overview'
     const clean = rawTab.toLowerCase()
@@ -104,7 +110,7 @@ export default function AdminDashboard() {
     if (clean === 'telemetry' || clean === 'audit') return 'audit'
     if (clean === 'profile') return 'profile'
     return 'overview'
-  }, [searchParams, urlTab])
+  }, [searchParams, urlTab, isCandidatePerformanceRoute])
 
   // Proper query string routing mechanism (preserves ?category= on rankings)
   const setActiveTab = useCallback((t: AdminTab) => {
@@ -940,26 +946,44 @@ export default function AdminDashboard() {
               </button>
               <span>Pages</span>
               <span>/</span>
-              <span>Dashboard</span>
-              <span>/</span>
-              <span className="h-breadcrumb-item active">
-                {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
-              </span>
+              {isCandidatePerformanceRoute ? (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => navigate('/admin?tab=candidates')}
+                    style={{ background: 'none', border: 'none', padding: 0, color: 'inherit', font: 'inherit', cursor: 'pointer' }}
+                  >
+                    Hiring Management
+                  </button>
+                  <span>/</span>
+                  <span className="h-breadcrumb-item active">Candidate Performance Dossier</span>
+                </>
+              ) : (
+                <>
+                  <span>Dashboard</span>
+                  <span>/</span>
+                  <span className="h-breadcrumb-item active">
+                    {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
+                  </span>
+                </>
+              )}
             </div>
             <h1 className="h-page-title">
-              {activeTab === 'overview' && 'System Operations'}
-              {activeTab === 'users' && 'Candidate Directory'}
-              {activeTab === 'live' && 'Live Machine Coding Sessions & Interviews'}
-              {activeTab === 'submissions' && 'Submissions Graded'}
-              {activeTab === 'attempts' && 'Problem Attempts'}
-              {activeTab === 'questions' && 'Question Performance'}
-              {activeTab === 'activity' && 'Real-Time Activity Feed'}
-              {activeTab === 'analytics' && 'Platform Analytics'}
-              {activeTab === 'requests' && 'Feature Access Requests'}
-              {activeTab === 'tracks' && 'Curriculum Tracks'}
-              {activeTab === 'audit' && 'Cloud Telemetry Stream'}
-              {activeTab === 'rankings' && '🏆 Candidate Rankings'}
-              {activeTab === 'profile' && 'Administrator Profile & Settings'}
+              {isCandidatePerformanceRoute && 'Candidate Performance Dossier'}
+              {!isCandidatePerformanceRoute && activeTab === 'overview' && 'System Operations'}
+              {!isCandidatePerformanceRoute && activeTab === 'candidates' && 'Candidate Hiring Management & Evaluations'}
+              {!isCandidatePerformanceRoute && activeTab === 'users' && 'Candidate Directory'}
+              {!isCandidatePerformanceRoute && activeTab === 'live' && 'Live Machine Coding Sessions & Interviews'}
+              {!isCandidatePerformanceRoute && activeTab === 'submissions' && 'Submissions Graded'}
+              {!isCandidatePerformanceRoute && activeTab === 'attempts' && 'Problem Attempts'}
+              {!isCandidatePerformanceRoute && activeTab === 'questions' && 'Question Performance'}
+              {!isCandidatePerformanceRoute && activeTab === 'activity' && 'Real-Time Activity Feed'}
+              {!isCandidatePerformanceRoute && activeTab === 'analytics' && 'Platform Analytics'}
+              {!isCandidatePerformanceRoute && activeTab === 'requests' && 'Feature Access Requests'}
+              {!isCandidatePerformanceRoute && activeTab === 'tracks' && 'Curriculum Tracks'}
+              {!isCandidatePerformanceRoute && activeTab === 'audit' && 'Cloud Telemetry Stream'}
+              {!isCandidatePerformanceRoute && activeTab === 'rankings' && '🏆 Candidate Rankings'}
+              {!isCandidatePerformanceRoute && activeTab === 'profile' && 'Administrator Profile & Settings'}
             </h1>
           </div>
 
@@ -1161,7 +1185,11 @@ export default function AdminDashboard() {
       {/* ================================================================ */}
       {activeTab === 'candidates' && (
         <div className="admin-tab-content">
-          <AdminCandidateManagementTab />
+          {isCandidatePerformanceRoute ? (
+            <AdminCandidatePerformancePage isEmbedded={true} />
+          ) : (
+            <AdminCandidateManagementTab />
+          )}
         </div>
       )}
 

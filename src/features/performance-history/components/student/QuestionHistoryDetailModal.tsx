@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
-import Editor from '@monaco-editor/react';
+import Editor, { DiffEditor } from '@monaco-editor/react';
 import type { CodingAttempt } from '../../types/history.types';
 import { codingHistoryService } from '../../services/codingHistoryService';
 import './QuestionHistoryDetailModal.css';
@@ -9,6 +9,33 @@ interface QuestionHistoryDetailModalProps {
   attempt: CodingAttempt;
   userId: string;
   onClose: () => void;
+}
+
+function computeLineDiff(prevCode?: string, currCode?: string) {
+  if (!prevCode) return { added: currCode ? currCode.split('\n').length : 0, removed: 0 };
+  const prevLines = new Set(prevCode.split('\n'));
+  const currLines = currCode ? currCode.split('\n') : [];
+  let added = 0;
+  for (const l of currLines) {
+    if (!prevLines.has(l)) added++;
+  }
+  const currSet = new Set(currLines);
+  let removed = 0;
+  for (const l of prevCode.split('\n')) {
+    if (!currSet.has(l)) removed++;
+  }
+  return { added, removed };
+}
+
+function formatTimeDelta(prevDateStr?: string, currDateStr?: string) {
+  if (!prevDateStr || !currDateStr) return null;
+  const diffMs = Math.max(0, new Date(currDateStr).getTime() - new Date(prevDateStr).getTime());
+  const diffSec = Math.floor(diffMs / 1000);
+  if (diffSec < 60) return `+${diffSec}s`;
+  const diffMin = Math.floor(diffSec / 60);
+  if (diffMin < 60) return `+${diffMin}m ${diffSec % 60}s`;
+  const diffHr = Math.floor(diffMin / 60);
+  return `+${diffHr}h ${diffMin % 60}m`;
 }
 
 export default function QuestionHistoryDetailModal({
@@ -20,6 +47,9 @@ export default function QuestionHistoryDetailModal({
   const [selectedAttemptNumber, setSelectedAttemptNumber] = useState<number>(attempt.attemptNumber);
   const [copied, setCopied] = useState(false);
   const [loadingAttempts, setLoadingAttempts] = useState(true);
+  const [viewMode, setViewMode] = useState<'single' | 'diff'>('single');
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [playbackSpeed, setPlaybackSpeed] = useState<number>(1500);
 
   // Prevent background page scrolling while modal is open
   useEffect(() => {
@@ -61,8 +91,46 @@ export default function QuestionHistoryDetailModal({
     };
   }, [userId, attempt.questionId, attempt.attemptNumber]);
 
+  const sortedAttempts = useMemo(() => {
+    const source = attemptsList.length > 0 ? attemptsList : [attempt];
+    return [...source].sort((a, b) => a.attemptNumber - b.attemptNumber);
+  }, [attemptsList, attempt]);
+
   const currentAttempt =
-    attemptsList.find(a => a.attemptNumber === selectedAttemptNumber) || attempt;
+    sortedAttempts.find(a => a.attemptNumber === selectedAttemptNumber) ||
+    sortedAttempts[0] ||
+    attempt;
+
+  const currentIndex = sortedAttempts.findIndex(
+    a => a.attemptNumber === currentAttempt.attemptNumber
+  );
+  const prevAttempt = currentIndex > 0 ? sortedAttempts[currentIndex - 1] : null;
+  const nextAttempt = currentIndex < sortedAttempts.length - 1 ? sortedAttempts[currentIndex + 1] : null;
+
+  const diffStats = useMemo(() => {
+    return computeLineDiff(prevAttempt?.code, currentAttempt.code);
+  }, [prevAttempt?.code, currentAttempt.code]);
+
+  // Playback timer
+  useEffect(() => {
+    if (!isPlaying) return;
+    if (sortedAttempts.length <= 1) {
+      setIsPlaying(false);
+      return;
+    }
+    const timer = setInterval(() => {
+      setSelectedAttemptNumber(prevNum => {
+        const curIdx = sortedAttempts.findIndex(a => a.attemptNumber === prevNum);
+        if (curIdx < sortedAttempts.length - 1) {
+          return sortedAttempts[curIdx + 1].attemptNumber;
+        } else {
+          setIsPlaying(false);
+          return prevNum;
+        }
+      });
+    }, playbackSpeed);
+    return () => clearInterval(timer);
+  }, [isPlaying, sortedAttempts, playbackSpeed]);
 
   const handleCopyCode = async () => {
     if (!currentAttempt.code) return;
@@ -124,33 +192,102 @@ export default function QuestionHistoryDetailModal({
         {/* Scrollable Modal Body */}
         <div className="perf-modal-body">
 
-        {/* Attempt Switcher Bar */}
-        <div className="perf-attempts-bar">
-          <div className="perf-attempts-label">
-            <span>Historical Attempts:</span>
-            <span className="perf-attempts-count">({attemptsList.length || 1} total)</span>
-          </div>
-          <div className="perf-attempts-selector">
-            {loadingAttempts ? (
-              <span className="perf-loading-attempts">Loading attempts...</span>
-            ) : attemptsList.length > 0 ? (
-              attemptsList.map(att => (
-                <button
-                  key={att.attemptNumber}
-                  type="button"
-                  className={`perf-attempt-pill ${
-                    att.attemptNumber === selectedAttemptNumber ? 'active' : ''
-                  }`}
-                  onClick={() => setSelectedAttemptNumber(att.attemptNumber)}
-                >
-                  Attempt {att.attemptNumber}
-                  <span className={`pill-dot ${getStatusBadgeClass(att.status)}`} />
-                </button>
-              ))
-            ) : (
-              <button type="button" className="perf-attempt-pill active">
-                Attempt 1
+        {/* Interactive Playback & Attempt Timeline */}
+        <div className="perf-playback-timeline-container">
+          <div className="perf-playback-toolbar">
+            <div className="perf-playback-nav">
+              <button
+                type="button"
+                className="perf-playback-btn"
+                disabled={!prevAttempt}
+                onClick={() => prevAttempt && setSelectedAttemptNumber(prevAttempt.attemptNumber)}
+                title="Step to Previous Attempt"
+              >
+                ◀ Prev
               </button>
+
+              <button
+                type="button"
+                className={`perf-playback-btn play-btn ${isPlaying ? 'playing' : ''}`}
+                disabled={sortedAttempts.length <= 1}
+                onClick={() => setIsPlaying(p => !p)}
+                title={isPlaying ? 'Pause Auto-Play' : 'Auto-Play Progression'}
+              >
+                {isPlaying ? '⏸ Pause' : '▶ Play'}
+              </button>
+
+              <button
+                type="button"
+                className="perf-playback-btn"
+                disabled={!nextAttempt}
+                onClick={() => nextAttempt && setSelectedAttemptNumber(nextAttempt.attemptNumber)}
+                title="Step to Next Attempt"
+              >
+                Next ▶
+              </button>
+
+              <div className="perf-speed-toggle">
+                <button
+                  type="button"
+                  className={`speed-pill ${playbackSpeed === 1500 ? 'active' : ''}`}
+                  onClick={() => setPlaybackSpeed(1500)}
+                >
+                  1x
+                </button>
+                <button
+                  type="button"
+                  className={`speed-pill ${playbackSpeed === 750 ? 'active' : ''}`}
+                  onClick={() => setPlaybackSpeed(750)}
+                >
+                  2x
+                </button>
+              </div>
+            </div>
+
+            <div className="perf-playback-counter">
+              <span>Attempt <strong>{currentIndex + 1}</strong> of <strong>{sortedAttempts.length}</strong></span>
+              {prevAttempt && (
+                <span className="perf-time-delta">
+                  ⏱ {formatTimeDelta(prevAttempt.createdAt, currentAttempt.createdAt)}
+                </span>
+              )}
+            </div>
+          </div>
+
+          {/* Horizontal Scrubber Track */}
+          <div className="perf-timeline-track">
+            {loadingAttempts ? (
+              <span className="perf-loading-attempts">Loading attempt timeline...</span>
+            ) : (
+              sortedAttempts.map((att, idx) => {
+                const isActive = att.attemptNumber === selectedAttemptNumber;
+                const prior = idx > 0 ? sortedAttempts[idx - 1] : null;
+                const scoreDelta = prior ? att.score - prior.score : null;
+                return (
+                  <button
+                    key={att.attemptNumber}
+                    type="button"
+                    className={`perf-timeline-step ${isActive ? 'active' : ''}`}
+                    onClick={() => {
+                      setIsPlaying(false);
+                      setSelectedAttemptNumber(att.attemptNumber);
+                    }}
+                  >
+                    <div className="perf-timeline-node">
+                      <span className={`node-dot ${getStatusBadgeClass(att.status)}`} />
+                      <span className="node-num">#{att.attemptNumber}</span>
+                    </div>
+                    <div className="perf-timeline-meta">
+                      <span className="meta-score">{att.score}%</span>
+                      {scoreDelta !== null && scoreDelta !== 0 && (
+                        <span className={`meta-delta ${scoreDelta > 0 ? 'pos' : 'neg'}`}>
+                          {scoreDelta > 0 ? `+${scoreDelta}%` : `${scoreDelta}%`}
+                        </span>
+                      )}
+                    </div>
+                  </button>
+                );
+              })
             )}
           </div>
         </div>
@@ -205,43 +342,102 @@ export default function QuestionHistoryDetailModal({
           </div>
         </div>
 
-        {/* Recorded Code Header */}
+        {/* Recorded Code Header & View Mode Switcher */}
         <div className="perf-code-section-header">
           <div className="perf-code-section-title">
-            <span>Recorded Code — Attempt #{currentAttempt.attemptNumber}</span>
+            <span>
+              {viewMode === 'diff' && prevAttempt
+                ? `Diff: Attempt #${prevAttempt.attemptNumber} → #${currentAttempt.attemptNumber}`
+                : `Recorded Code — Attempt #${currentAttempt.attemptNumber}`}
+            </span>
             <span className="perf-code-lines-count">
               ({currentAttempt.code ? currentAttempt.code.split('\n').length : 0} lines)
             </span>
           </div>
-          <button className="perf-copy-code-btn" onClick={handleCopyCode} type="button">
-            {copied ? '✓ Copied' : 'Copy Code'}
-          </button>
+
+          <div className="perf-code-controls-right">
+            {/* View Mode Switcher */}
+            <div className="perf-view-toggle">
+              <button
+                type="button"
+                className={`perf-view-tab ${viewMode === 'single' ? 'active' : ''}`}
+                onClick={() => setViewMode('single')}
+              >
+                📝 Full Code
+              </button>
+              <button
+                type="button"
+                className={`perf-view-tab ${viewMode === 'diff' ? 'active' : ''}`}
+                disabled={!prevAttempt}
+                onClick={() => setViewMode('diff')}
+                title={!prevAttempt ? 'No previous attempt to compare' : 'Compare diff with previous attempt'}
+              >
+                🔀 Diff with Prev
+              </button>
+            </div>
+
+            {viewMode === 'diff' && prevAttempt && (
+              <div className="perf-diff-chips">
+                <span className="chip-add">+{diffStats.added}</span>
+                <span className="chip-del">-{diffStats.removed}</span>
+              </div>
+            )}
+
+            <button className="perf-copy-code-btn" onClick={handleCopyCode} type="button">
+              {copied ? '✓ Copied' : 'Copy Code'}
+            </button>
+          </div>
         </div>
 
-        {/* Monaco Read-Only Code Viewer */}
+        {/* Monaco Read-Only Code Viewer or DiffEditor */}
         <div className="perf-modal-editor-wrap">
-          <Editor
-            height="320px"
-            language={
-              currentAttempt.language === 'typescript' || currentAttempt.language === 'tsx'
-                ? 'typescript'
-                : 'javascript'
-            }
-            value={currentAttempt.code || '// No code was captured for this attempt'}
-            theme="vs-dark"
-            options={{
-              readOnly: true,
-              domReadOnly: true,
-              fontSize: 13,
-              fontFamily: "'Fira Code', 'JetBrains Mono', Consolas, monospace",
-              minimap: { enabled: false },
-              scrollBeyondLastLine: false,
-              lineNumbers: 'on',
-              wordWrap: 'on',
-              renderLineHighlight: 'none',
-              automaticLayout: true,
-            }}
-          />
+          {viewMode === 'diff' && prevAttempt ? (
+            <DiffEditor
+              height="360px"
+              language={
+                currentAttempt.language === 'typescript' || currentAttempt.language === 'tsx'
+                  ? 'typescript'
+                  : 'javascript'
+              }
+              original={prevAttempt.code || '// Empty previous attempt'}
+              modified={currentAttempt.code || '// Empty current attempt'}
+              theme="vs-dark"
+              options={{
+                readOnly: true,
+                domReadOnly: true,
+                fontSize: 13,
+                fontFamily: "'Fira Code', 'JetBrains Mono', Consolas, monospace",
+                minimap: { enabled: false },
+                scrollBeyondLastLine: false,
+                lineNumbers: 'on',
+                renderSideBySide: true,
+                automaticLayout: true,
+              }}
+            />
+          ) : (
+            <Editor
+              height="360px"
+              language={
+                currentAttempt.language === 'typescript' || currentAttempt.language === 'tsx'
+                  ? 'typescript'
+                  : 'javascript'
+              }
+              value={currentAttempt.code || '// No code was captured for this attempt'}
+              theme="vs-dark"
+              options={{
+                readOnly: true,
+                domReadOnly: true,
+                fontSize: 13,
+                fontFamily: "'Fira Code', 'JetBrains Mono', Consolas, monospace",
+                minimap: { enabled: false },
+                scrollBeyondLastLine: false,
+                lineNumbers: 'on',
+                wordWrap: 'on',
+                renderLineHighlight: 'none',
+                automaticLayout: true,
+              }}
+            />
+          )}
         </div>
 
         {/* Execution Output or Compiler Errors (if present) */}

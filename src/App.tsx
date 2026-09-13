@@ -51,7 +51,6 @@ const AnalyticsDashboard = lazy(() => import('./components/analytics/AnalyticsDa
 const Leaderboard = lazy(() => import('./components/leaderboard/Leaderboard'))
 const AIVideoMockApp = lazy(() => import('./features/ai-video-mock/AIVideoMockApp'))
 const StudentPerformanceView = lazy(() => import('./features/performance-history/components/student/StudentPerformanceView'))
-const AdminCandidatePerformancePage = lazy(() => import('./features/performance-history/components/admin/AdminCandidatePerformancePage'))
 import RoleGuard from './components/auth/RoleGuard'
 import { useAuth } from './context/AuthContext'
 import FeatureGuard from './components/auth/FeatureGuard'
@@ -138,7 +137,7 @@ export default function App() {
                 fallbackTitle="🔒 Administrator Access Required"
                 fallbackMessage="Candidate Performance Dossier is restricted to Platform Administrators."
               >
-                <AdminCandidatePerformancePage />
+                <AdminDashboard />
               </RoleGuard>
             }
           />
@@ -150,7 +149,7 @@ export default function App() {
                 fallbackTitle="🔒 Administrator Access Required"
                 fallbackMessage="Candidate Performance Dossier is restricted to Platform Administrators."
               >
-                <AdminCandidatePerformancePage />
+                <AdminDashboard />
               </RoleGuard>
             }
           />
@@ -162,7 +161,7 @@ export default function App() {
                 fallbackTitle="🔒 Administrator Access Required"
                 fallbackMessage="Candidate Performance Dossier is restricted to Platform Administrators."
               >
-                <AdminCandidatePerformancePage />
+                <AdminDashboard />
               </RoleGuard>
             }
           />
@@ -174,7 +173,7 @@ export default function App() {
                 fallbackTitle="🔒 Administrator Access Required"
                 fallbackMessage="Candidate Performance Dossier is restricted to Platform Administrators."
               >
-                <AdminCandidatePerformancePage />
+                <AdminDashboard />
               </RoleGuard>
             }
           />
@@ -186,7 +185,7 @@ export default function App() {
                 fallbackTitle="🔒 Administrator Access Required"
                 fallbackMessage="Candidate Performance Dossier is restricted to Platform Administrators."
               >
-                <AdminCandidatePerformancePage />
+                <AdminDashboard />
               </RoleGuard>
             }
           />
@@ -198,7 +197,7 @@ export default function App() {
                 fallbackTitle="🔒 Administrator Access Required"
                 fallbackMessage="Candidate Performance Dossier is restricted to Platform Administrators."
               >
-                <AdminCandidatePerformancePage />
+                <AdminDashboard />
               </RoleGuard>
             }
           />
@@ -210,7 +209,7 @@ export default function App() {
                 fallbackTitle="🔒 Administrator Access Required"
                 fallbackMessage="Candidate Performance Dossier is restricted to Platform Administrators."
               >
-                <AdminCandidatePerformancePage />
+                <AdminDashboard />
               </RoleGuard>
             }
           />
@@ -222,7 +221,7 @@ export default function App() {
                 fallbackTitle="🔒 Administrator Access Required"
                 fallbackMessage="Candidate Performance Dossier is restricted to Platform Administrators."
               >
-                <AdminCandidatePerformancePage />
+                <AdminDashboard />
               </RoleGuard>
             }
           />
@@ -234,7 +233,7 @@ export default function App() {
                 fallbackTitle="🔒 Administrator Access Required"
                 fallbackMessage="Candidate Performance Dossier is restricted to Platform Administrators."
               >
-                <AdminCandidatePerformancePage />
+                <AdminDashboard />
               </RoleGuard>
             }
           />
@@ -246,7 +245,7 @@ export default function App() {
                 fallbackTitle="🔒 Administrator Access Required"
                 fallbackMessage="Candidate Performance Dossier is restricted to Platform Administrators."
               >
-                <AdminCandidatePerformancePage />
+                <AdminDashboard />
               </RoleGuard>
             }
           />
@@ -258,7 +257,7 @@ export default function App() {
                 fallbackTitle="🔒 Administrator Access Required"
                 fallbackMessage="Candidate Performance Dossier is restricted to Platform Administrators."
               >
-                <AdminCandidatePerformancePage />
+                <AdminDashboard />
               </RoleGuard>
             }
           />
@@ -270,7 +269,7 @@ export default function App() {
                 fallbackTitle="🔒 Administrator Access Required"
                 fallbackMessage="Candidate Performance Dossier is restricted to Platform Administrators."
               >
-                <AdminCandidatePerformancePage />
+                <AdminDashboard />
               </RoleGuard>
             }
           />

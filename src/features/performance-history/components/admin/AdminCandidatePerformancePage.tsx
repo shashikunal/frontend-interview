@@ -1,18 +1,24 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
-import Editor from '@monaco-editor/react';
+import Editor, { DiffEditor } from '@monaco-editor/react';
 import { useTheme } from '../../../../context/ThemeContext';
 import { useAuth } from '../../../../context/AuthContext';
 import { profileService } from '../../../auth/services/profile.service';
 import { authService } from '../../../auth/services/auth.service';
 import { codingHistoryService, formatDurationSec } from '../../services/codingHistoryService';
 import { hiringEvaluationService } from '../../services/hiringEvaluationService';
+import {
+  candidateHiringActionService,
+  type CandidateAssignment,
+  type ScheduledInterviewRound,
+} from '../../services/candidateHiringActionService';
 import QuestionHistoryDetailModal from '../student/QuestionHistoryDetailModal';
 import type {
   CodingAttempt,
   UserPerformanceSummary,
   HiringEvaluationHistoryItem,
   HiringStatus,
+  HiringEvaluation,
 } from '../../types/history.types';
 import './AdminCandidatePerformancePage.css';
 
@@ -65,12 +71,16 @@ const getTrackMeta = (categoryKey: string) => {
   };
 };
 
-export default function AdminCandidatePerformancePage() {
+interface AdminCandidatePerformancePageProps {
+  isEmbedded?: boolean;
+}
+
+export default function AdminCandidatePerformancePage({ isEmbedded = false }: AdminCandidatePerformancePageProps = {}) {
   const { userId, attemptId, trackKey } = useParams<{ userId: string; attemptId?: string; sessionId?: string; trackKey?: string }>();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { resolvedTheme, toggleTheme } = useTheme();
-  const { user } = useAuth();
+  const { user, getAllUsers } = useAuth();
   const isAdmin = user?.role === 'admin';
 
   const queryTrack = searchParams.get('track');
@@ -199,6 +209,188 @@ export default function AdminCandidatePerformancePage() {
   // Password Reset Action State
   const [resettingPassword, setResettingPassword] = useState(false);
   const [passwordResetToast, setPasswordResetToast] = useState<string | null>(null);
+
+  // Executive Dossier Export State
+  const [showDossierModal, setShowDossierModal] = useState(false);
+
+  // Candidate Comparison State
+  const [showCompareModal, setShowCompareModal] = useState(false);
+  const [compareRoster, setCompareRoster] = useState<{ id: string; name: string; email: string; role?: string }[]>([]);
+  const [selectedCompareId, setSelectedCompareId] = useState<string>('');
+  const [compareProfile, setCompareProfile] = useState<{
+    id: string;
+    name: string;
+    email: string;
+    role: string;
+    targetCompany?: string;
+    experienceLevel?: string;
+  } | null>(null);
+  const [compareSummary, setCompareSummary] = useState<UserPerformanceSummary | null>(null);
+  const [compareEval, setCompareEval] = useState<HiringEvaluation | null>(null);
+  const [loadingCompare, setLoadingCompare] = useState(false);
+  const [inPageViewMode, setInPageViewMode] = useState<'single' | 'diff'>('single');
+
+  // Candidate Assignments & Scheduled Interviews State
+  const [assignments, setAssignments] = useState<CandidateAssignment[]>([]);
+  const [interviews, setInterviews] = useState<ScheduledInterviewRound[]>([]);
+  const [showAssignModal, setShowAssignModal] = useState(false);
+  const [showScheduleModal, setShowScheduleModal] = useState(false);
+  const [actionSuccessMsg, setActionSuccessMsg] = useState<string | null>(null);
+
+  // Assignment Form State
+  const [assignTitle, setAssignTitle] = useState('Frontend Architecture & Complex State');
+  const [assignTrack, setAssignTrack] = useState<'MACHINE_CODING' | 'DSA' | 'CORE_PROGRAMMING' | 'FRONTEND_JS'>('MACHINE_CODING');
+  const [assignDifficulty, setAssignDifficulty] = useState<'easy' | 'medium' | 'hard' | 'mixed'>('hard');
+  const [assignCount, setAssignCount] = useState(2);
+  const [assignDeadlineDays, setAssignDeadlineDays] = useState(3);
+  const [assignInstructions, setAssignInstructions] = useState('Implement clean modular architecture, handle loading/error boundaries, and ensure unit test coverage.');
+
+  // Interview Form State
+  const [roundTitle, setRoundTitle] = useState('Senior Frontend Live Coding & Architecture Round');
+  const [roundType, setRoundType] = useState<'Technical Coding' | 'DSA & Algorithms' | 'System Design & Architecture' | 'Cultural & Behavioral'>('Technical Coding');
+  const [roundDate, setRoundDate] = useState(() => {
+    const d = new Date();
+    d.setDate(d.getDate() + 2);
+    return d.toISOString().slice(0, 10);
+  });
+  const [roundTime, setRoundTime] = useState('14:30');
+  const [roundDuration, setRoundDuration] = useState(60);
+  const [meetingLink, setMeetingLink] = useState('https://meet.google.com/xyz-prep-live');
+  const [interviewerNotes, setInterviewerNotes] = useState('Evaluate component modularity, state machines, and real-time algorithmic trade-offs.');
+
+  // Load assignments and interviews
+  useEffect(() => {
+    if (!userId) return;
+    let isMounted = true;
+    Promise.all([
+      candidateHiringActionService.getAssignments(userId),
+      candidateHiringActionService.getScheduledInterviews(userId),
+    ]).then(([assList, intList]) => {
+      if (isMounted) {
+        setAssignments(assList);
+        setInterviews(intList);
+      }
+    });
+    return () => { isMounted = false; };
+  }, [userId]);
+
+  const handleCreateAssignment = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!userId || !candidateProfile) return;
+    try {
+      const deadline = new Date(Date.now() + assignDeadlineDays * 24 * 60 * 60 * 1000).toISOString();
+      const created = await candidateHiringActionService.saveAssignment({
+        candidateId: userId,
+        title: assignTitle,
+        track: assignTrack,
+        difficulty: assignDifficulty,
+        questionsCount: assignCount,
+        deadline,
+        instructions: assignInstructions,
+        status: 'Assigned',
+        assignedBy: 'Staff Evaluation Committee',
+      });
+      setAssignments(prev => [created, ...prev]);
+      setShowAssignModal(false);
+      setActionSuccessMsg('Targeted Assessment assigned successfully!');
+      setTimeout(() => setActionSuccessMsg(null), 4000);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleScheduleInterview = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!userId || !candidateProfile) return;
+    try {
+      const scheduledDate = new Date(`${roundDate}T${roundTime}:00`).toISOString();
+      const scheduled = await candidateHiringActionService.scheduleInterview({
+        candidateId: userId,
+        roundTitle,
+        roundType,
+        scheduledDate,
+        durationMinutes: roundDuration,
+        meetingLink,
+        interviewerNotes,
+        status: 'Scheduled',
+        interviewerName: 'Staff Interview Panel',
+      });
+      setInterviews(prev => [...prev, scheduled]);
+      setShowScheduleModal(false);
+      setActionSuccessMsg('Live Technical Interview scheduled successfully!');
+      setTimeout(() => setActionSuccessMsg(null), 4000);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleToggleInterviewStatus = async (roundId: string, currentStatus: string) => {
+    const nextStatus = currentStatus === 'Scheduled' ? 'Completed' : currentStatus === 'Completed' ? 'Cancelled' : 'Scheduled';
+    await candidateHiringActionService.updateInterviewStatus(roundId, nextStatus as any);
+    setInterviews(prev => prev.map(i => i.id === roundId ? { ...i, status: nextStatus as any } : i));
+  };
+
+  // Load roster of other candidates when comparison modal opens
+  useEffect(() => {
+    if (!showCompareModal) return;
+    let isMounted = true;
+    getAllUsers().then(users => {
+      if (isMounted) {
+        const others = users
+          .filter(u => u.id !== userId)
+          .map(u => ({
+            id: u.id,
+            name: u.name || 'Candidate',
+            email: u.email || `${u.id.slice(0, 8)}@candidate.com`,
+            role: u.role,
+          }));
+        setCompareRoster(others);
+        if (others.length > 0 && (!selectedCompareId || selectedCompareId === userId)) {
+          setSelectedCompareId(others[0].id);
+        }
+      }
+    }).catch(err => console.warn('Failed to load comparison roster:', err));
+    return () => { isMounted = false; };
+  }, [showCompareModal, userId, getAllUsers, selectedCompareId]);
+
+  // Load selected comparison candidate performance and evaluation
+  useEffect(() => {
+    if (!showCompareModal || !selectedCompareId) return;
+    let isMounted = true;
+    setLoadingCompare(true);
+    Promise.all([
+      profileService.getProfile(selectedCompareId),
+      codingHistoryService.getUserPerformanceSummary(selectedCompareId),
+      hiringEvaluationService.getEvaluation(selectedCompareId),
+    ]).then(([p, s, e]) => {
+      if (isMounted) {
+        if (p) {
+          setCompareProfile({
+            id: p.id,
+            name: p.name,
+            email: p.email,
+            role: p.role,
+            targetCompany: p.targetCompany,
+            experienceLevel: p.experienceLevel,
+          });
+        } else {
+          setCompareProfile({
+            id: selectedCompareId,
+            name: 'Candidate',
+            email: `${selectedCompareId.slice(0, 8)}@candidate.com`,
+            role: 'candidate',
+          });
+        }
+        setCompareSummary(s);
+        setCompareEval(e);
+        setLoadingCompare(false);
+      }
+    }).catch(err => {
+      console.warn('Error loading candidate comparison:', err);
+      if (isMounted) setLoadingCompare(false);
+    });
+    return () => { isMounted = false; };
+  }, [showCompareModal, selectedCompareId]);
 
   useEffect(() => {
     if (!userId) return;
@@ -377,6 +569,25 @@ export default function AdminCandidatePerformancePage() {
     if (!activeTrackCategory) return null;
     return getTrackMeta(activeTrackCategory);
   }, [activeTrackCategory]);
+
+  // Top solved problems for executive dossier snapshot
+  const dossierTopSolved = useMemo(() => {
+    const solvedMap = new Map<string, CodingAttempt>();
+    attempts.forEach(att => {
+      const isSolved =
+        att.status?.toLowerCase() === 'accepted' ||
+        att.status?.toLowerCase() === 'completed' ||
+        att.score >= 70;
+      if (
+        isSolved &&
+        (!solvedMap.has(att.questionId) ||
+          att.score > (solvedMap.get(att.questionId)?.score || 0))
+      ) {
+        solvedMap.set(att.questionId, att);
+      }
+    });
+    return Array.from(solvedMap.values()).slice(0, 10);
+  }, [attempts]);
 
   const trackAttempts = useMemo(() => {
     if (!activeTrackCategory) return [];
@@ -924,7 +1135,7 @@ export default function AdminCandidatePerformancePage() {
     : `/admin/candidates/${userId}/performance`;
 
   return (
-    <div className={`admin-perf-page ${resolvedTheme === 'dark' ? 'dark-theme' : 'light-theme'}`}>
+    <div className={`admin-perf-page ${resolvedTheme === 'dark' ? 'dark-theme' : 'light-theme'} ${isEmbedded ? 'is-embedded' : ''}`}>
       {/* Top Header & Breadcrumbs */}
       <div className="admin-perf-header">
         <div className="admin-perf-breadcrumb">
@@ -979,6 +1190,42 @@ export default function AdminCandidatePerformancePage() {
 
           <div className="admin-perf-header-actions">
             {isAdmin && (
+              <>
+                <button
+                  type="button"
+                  className="admin-perf-btn-dossier"
+                  onClick={() => setShowAssignModal(true)}
+                  title="Assign a targeted challenge bundle to this candidate"
+                >
+                  📋 Assign Assessment
+                </button>
+                <button
+                  type="button"
+                  className="admin-perf-btn-dossier"
+                  onClick={() => setShowScheduleModal(true)}
+                  title="Schedule a live coding interview round with this candidate"
+                >
+                  📅 Schedule Interview
+                </button>
+                <button
+                  type="button"
+                  className="admin-perf-btn-dossier"
+                  onClick={() => setShowCompareModal(true)}
+                  title="Benchmark and compare this candidate with another candidate side-by-side"
+                >
+                  ⚖️ Compare Candidate
+                </button>
+              </>
+            )}
+            <button
+              type="button"
+              className="admin-perf-btn-dossier"
+              onClick={() => setShowDossierModal(true)}
+              title="Generate and print standardized executive hiring dossier (PDF)"
+            >
+              📄 Export Hiring Dossier (PDF)
+            </button>
+            {isAdmin && (
               <button
                 type="button"
                 className="admin-perf-btn-secondary"
@@ -988,15 +1235,17 @@ export default function AdminCandidatePerformancePage() {
                 {resettingPassword ? 'Sending Link...' : '🔑 Send Password Reset Link'}
               </button>
             )}
-            <button
-              type="button"
-              className="admin-perf-theme-toggle-btn"
-              onClick={toggleTheme}
-              title={resolvedTheme === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode'}
-              aria-label="Toggle Theme"
-            >
-              {resolvedTheme === 'light' ? '🌙' : '☀️'}
-            </button>
+            {!isEmbedded && (
+              <button
+                type="button"
+                className="admin-perf-theme-toggle-btn"
+                onClick={toggleTheme}
+                title={resolvedTheme === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode'}
+                aria-label="Toggle Theme"
+              >
+                {resolvedTheme === 'light' ? '🌙' : '☀️'}
+              </button>
+            )}
           </div>
         </div>
 
@@ -1669,6 +1918,183 @@ export default function AdminCandidatePerformancePage() {
             </div>
           </div>
 
+          {/* Targeted Assignments & Live Interviews Section */}
+          <div className="admin-perf-actions-section" style={{ marginTop: '36px' }}>
+            <div className="admin-perf-section-header-flex">
+              <div>
+                <h3 className="admin-perf-section-title" style={{ marginBottom: '4px' }}>
+                  🎯 Technical Assessment Bundles &amp; Scheduled Interview Rounds
+                </h3>
+                <p className="admin-perf-section-subtitle">
+                  Assign targeted challenges, track candidate take-home deadlines, and coordinate live interview panels.
+                </p>
+              </div>
+              <div className="admin-perf-actions-quick-btns">
+                <button
+                  type="button"
+                  className="admin-perf-action-btn primary"
+                  onClick={() => setShowAssignModal(true)}
+                >
+                  📋 + Assign Assessment
+                </button>
+                <button
+                  type="button"
+                  className="admin-perf-action-btn accent"
+                  onClick={() => setShowScheduleModal(true)}
+                >
+                  📅 + Schedule Interview
+                </button>
+              </div>
+            </div>
+
+            {actionSuccessMsg && (
+              <div className="admin-perf-success-toast">
+                ✓ {actionSuccessMsg}
+              </div>
+            )}
+
+            <div className="admin-hiring-dual-grid">
+              {/* Active Technical Assignments Card */}
+              <div className="admin-hiring-card">
+                <div className="admin-hiring-card-head">
+                  <div className="head-title">
+                    <span className="card-icon">📋</span>
+                    <div>
+                      <h4>Targeted Take-Home Assessments</h4>
+                      <p>{assignments.length} assigned challenge{assignments.length === 1 ? '' : 's'}</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="admin-hiring-card-body">
+                  {assignments.length === 0 ? (
+                    <div className="admin-hiring-empty">
+                      <span>📭</span>
+                      <p>No take-home challenges currently assigned to this candidate.</p>
+                      <button
+                        type="button"
+                        className="admin-hiring-empty-btn"
+                        onClick={() => setShowAssignModal(true)}
+                      >
+                        Assign First Challenge Bundle
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="admin-hiring-list">
+                      {assignments.map(ass => {
+                        const isPastDeadline = new Date(ass.deadline).getTime() < Date.now();
+                        return (
+                          <div key={ass.id} className="admin-assignment-item">
+                            <div className="item-top">
+                              <div className="item-title-group">
+                                <h5>{ass.title}</h5>
+                                <span className="item-track-tag">{ass.track.replace(/_/g, ' ')}</span>
+                                <span className={`item-diff-tag diff-${ass.difficulty}`}>
+                                  {ass.difficulty.toUpperCase()}
+                                </span>
+                              </div>
+                              <span className={`item-status-pill status-${ass.status.toLowerCase().replace(/\s+/g, '-')}`}>
+                                {ass.status}
+                              </span>
+                            </div>
+
+                            {ass.instructions && (
+                              <p className="item-instructions">{ass.instructions}</p>
+                            )}
+
+                            <div className="item-footer">
+                              <span className="item-meta">
+                                📊 <strong>{ass.questionsCount}</strong> questions
+                              </span>
+                              <span className={`item-deadline ${isPastDeadline ? 'expired' : ''}`}>
+                                ⏱ Deadline: {new Date(ass.deadline).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                                {isPastDeadline ? ' (Past Due)' : ''}
+                              </span>
+                              <span className="item-assigned-by">By: {ass.assignedBy}</span>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Scheduled Live Interviews Card */}
+              <div className="admin-hiring-card">
+                <div className="admin-hiring-card-head">
+                  <div className="head-title">
+                    <span className="card-icon">📅</span>
+                    <div>
+                      <h4>Live Technical Interview Rounds</h4>
+                      <p>{interviews.length} scheduled round{interviews.length === 1 ? '' : 's'}</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="admin-hiring-card-body">
+                  {interviews.length === 0 ? (
+                    <div className="admin-hiring-empty">
+                      <span>🗓️</span>
+                      <p>No live interview sessions currently scheduled.</p>
+                      <button
+                        type="button"
+                        className="admin-hiring-empty-btn"
+                        onClick={() => setShowScheduleModal(true)}
+                      >
+                        Schedule First Technical Round
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="admin-hiring-list">
+                      {interviews.map(round => (
+                        <div key={round.id} className="admin-interview-item">
+                          <div className="item-top">
+                            <div className="item-title-group">
+                              <h5>{round.roundTitle}</h5>
+                              <span className="item-round-type">{round.roundType}</span>
+                              <span className="item-duration-tag">⏱ {round.durationMinutes}m</span>
+                            </div>
+                            <button
+                              type="button"
+                              className={`item-status-btn status-${round.status.toLowerCase()}`}
+                              onClick={() => handleToggleInterviewStatus(round.id, round.status)}
+                              title="Click to toggle status (Scheduled → Completed → Cancelled)"
+                            >
+                              {round.status === 'Scheduled' && '🟢 Scheduled'}
+                              {round.status === 'Completed' && '✓ Completed'}
+                              {round.status === 'Cancelled' && '✕ Cancelled'}
+                            </button>
+                          </div>
+
+                          {round.interviewerNotes && (
+                            <p className="item-instructions">📝 {round.interviewerNotes}</p>
+                          )}
+
+                          <div className="item-footer">
+                            <span className="item-date">
+                              🗓️ {new Date(round.scheduledDate).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })} at {new Date(round.scheduledDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                            </span>
+                            {round.meetingLink && (
+                              <a
+                                href={round.meetingLink}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="item-join-link"
+                              >
+                                Join Meeting Room ↗
+                              </a>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+
           {/* Daily Activity & Time Log Section */}
           <div className="admin-perf-daily-section" style={{ marginTop: '36px' }}>
             <div className="admin-perf-section-header-flex">
@@ -2152,48 +2578,106 @@ export default function AdminCandidatePerformancePage() {
 
             {/* Right Monaco Code Inspector */}
             <div className="admin-perf-code-viewer-panel">
-              {selectedAttempt ? (
-                <div className="admin-perf-editor-container">
-                  <div className="admin-perf-editor-head">
-                    <div>
-                      <h2>
-                        {selectedAttempt.questionId}: {selectedAttempt.questionTitle}
-                      </h2>
-                      <p className="admin-perf-editor-sub">
-                        <span>Attempt #{selectedAttempt.attemptNumber}</span>
-                        <span>Language: {selectedAttempt.language}</span>
-                        <span>Score: {selectedAttempt.score}%</span>
-                        {selectedAttempt.durationSeconds > 0 && (
-                          <span>Duration: {selectedAttempt.durationSeconds}s</span>
-                        )}
-                        <span>Submitted: {new Date(selectedAttempt.createdAt).toLocaleString()}</span>
-                      </p>
-                    </div>
-                    <span className={`admin-perf-status-badge large ${selectedAttempt.status.toLowerCase()}`}>
-                      {selectedAttempt.status}
-                    </span>
-                  </div>
+              {selectedAttempt ? (() => {
+                const inPagePrevAttempt = attempts.find(
+                  (a: CodingAttempt) => a.questionId === selectedAttempt.questionId && a.attemptNumber === selectedAttempt.attemptNumber - 1
+                );
+                return (
+                  <div className="admin-perf-editor-container">
+                    <div className="admin-perf-editor-head">
+                      <div>
+                        <h2>
+                          {selectedAttempt.questionId}: {selectedAttempt.questionTitle}
+                        </h2>
+                        <p className="admin-perf-editor-sub">
+                          <span>Attempt #{selectedAttempt.attemptNumber}</span>
+                          <span>Language: {selectedAttempt.language}</span>
+                          <span>Score: {selectedAttempt.score}%</span>
+                          {selectedAttempt.durationSeconds > 0 && (
+                            <span>Duration: {selectedAttempt.durationSeconds}s</span>
+                          )}
+                          <span>Submitted: {new Date(selectedAttempt.createdAt).toLocaleString()}</span>
+                        </p>
+                      </div>
 
-                  <div className="admin-perf-monaco-wrap">
-                    <Editor
-                      height="460px"
-                      language={
-                        selectedAttempt.language === 'react' || selectedAttempt.language === 'typescript'
-                          ? 'typescript'
-                          : 'javascript'
-                      }
-                      value={selectedAttempt.code || '// No code recorded for this attempt.'}
-                      theme={resolvedTheme === 'dark' ? 'vs-dark' : 'light'}
-                      options={{
-                        readOnly: true,
-                        minimap: { enabled: false },
-                        fontSize: 13,
-                        scrollBeyondLastLine: false,
-                        automaticLayout: true,
-                        wordWrap: 'on',
-                      }}
-                    />
-                  </div>
+                      <div className="admin-perf-editor-actions">
+                        {/* View Mode Toggle */}
+                        <div className="admin-perf-diff-toggle">
+                          <button
+                            type="button"
+                            className={`diff-tab ${inPageViewMode === 'single' ? 'active' : ''}`}
+                            onClick={() => setInPageViewMode('single')}
+                          >
+                            📝 Full Code
+                          </button>
+                          <button
+                            type="button"
+                            className={`diff-tab ${inPageViewMode === 'diff' ? 'active' : ''}`}
+                            disabled={!inPagePrevAttempt}
+                            onClick={() => setInPageViewMode('diff')}
+                            title={!inPagePrevAttempt ? 'No previous attempt for diff' : `Diff with Attempt #${inPagePrevAttempt.attemptNumber}`}
+                          >
+                            🔀 Diff with Prev
+                          </button>
+                        </div>
+
+                        {/* Open Deep-Dive Playback Modal */}
+                        <button
+                          type="button"
+                          className="admin-perf-playback-launch-btn"
+                          onClick={() => setInspectingAttempt(selectedAttempt)}
+                          title="Open Interactive Attempt Timeline & Playback"
+                        >
+                          ▶ Interactive Playback
+                        </button>
+
+                        <span className={`admin-perf-status-badge large ${selectedAttempt.status.toLowerCase()}`}>
+                          {selectedAttempt.status}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="admin-perf-monaco-wrap">
+                      {inPageViewMode === 'diff' && inPagePrevAttempt ? (
+                        <DiffEditor
+                          height="460px"
+                          language={
+                            selectedAttempt.language === 'react' || selectedAttempt.language === 'typescript'
+                              ? 'typescript'
+                              : 'javascript'
+                          }
+                          original={inPagePrevAttempt.code || '// Empty previous code'}
+                          modified={selectedAttempt.code || '// Empty code'}
+                          theme={resolvedTheme === 'dark' ? 'vs-dark' : 'light'}
+                          options={{
+                            readOnly: true,
+                            minimap: { enabled: false },
+                            fontSize: 13,
+                            scrollBeyondLastLine: false,
+                            automaticLayout: true,
+                          }}
+                        />
+                      ) : (
+                        <Editor
+                          height="460px"
+                          language={
+                            selectedAttempt.language === 'react' || selectedAttempt.language === 'typescript'
+                              ? 'typescript'
+                              : 'javascript'
+                          }
+                          value={selectedAttempt.code || '// No code recorded for this attempt.'}
+                          theme={resolvedTheme === 'dark' ? 'vs-dark' : 'light'}
+                          options={{
+                            readOnly: true,
+                            minimap: { enabled: false },
+                            fontSize: 13,
+                            scrollBeyondLastLine: false,
+                            automaticLayout: true,
+                            wordWrap: 'on',
+                          }}
+                        />
+                      )}
+                    </div>
 
                   {/* Test case feedback */}
                   <div className="admin-perf-test-feedback">
@@ -2218,8 +2702,9 @@ export default function AdminCandidatePerformancePage() {
                       </div>
                     )}
                   </div>
-                </div>
-              ) : (
+                  </div>
+                );
+              })() : (
                 <div className="admin-perf-no-selection">
                   <p>Select an attempt from the left panel to inspect the submitted code in Monaco.</p>
                 </div>
@@ -2236,6 +2721,901 @@ export default function AdminCandidatePerformancePage() {
           userId={userId!}
           onClose={() => setInspectingAttempt(null)}
         />
+      )}
+
+      {/* Executive Candidate Hiring Dossier Modal (Print & PDF) */}
+      {showDossierModal && candidateProfile && summary && (
+        <div className="admin-dossier-modal-backdrop" onClick={() => setShowDossierModal(false)}>
+          <div className="admin-dossier-modal" onClick={e => e.stopPropagation()}>
+            {/* Modal Controls Bar */}
+            <div className="admin-dossier-modal-bar">
+              <div className="admin-dossier-modal-title">
+                <span className="dossier-icon">📄</span>
+                <div>
+                  <h3>Executive Candidate Hiring Dossier</h3>
+                  <p>Standardized Technical Interview Brief &amp; PDF Export</p>
+                </div>
+              </div>
+              <div className="admin-dossier-modal-actions">
+                <button
+                  type="button"
+                  className="admin-dossier-btn-print"
+                  onClick={() => window.print()}
+                  title="Print or Save as PDF"
+                >
+                  🖨️ Print / Save as PDF
+                </button>
+                <button
+                  type="button"
+                  className="admin-dossier-btn-close"
+                  onClick={() => setShowDossierModal(false)}
+                  title="Close Dossier Preview"
+                >
+                  ✕ Close
+                </button>
+              </div>
+            </div>
+
+            {/* Print-Ready Sheet */}
+            <div className="admin-dossier-sheet-wrapper">
+              <div className="admin-dossier-sheet" id="admin-candidate-dossier-sheet">
+                {/* Header Brand Banner */}
+                <div className="dossier-sheet-header">
+                  <div className="dossier-brand-left">
+                    <div className="dossier-logo">
+                      <span className="logo-spark">⚡</span>
+                      <span className="logo-name">React Interview Prep</span>
+                    </div>
+                    <span className="dossier-confidential-tag">CONFIDENTIAL • TECHNICAL HIRING DOSSIER</span>
+                  </div>
+                  <div className="dossier-brand-right">
+                    <span className="dossier-date">
+                      Report Date: {new Date().toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}
+                    </span>
+                    <div className={`dossier-status-badge status-${hiringStatus.toLowerCase()}`}>
+                      Recommendation: <strong>{hiringStatus.toUpperCase()}</strong>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Candidate Identity Strip */}
+                <div className="dossier-candidate-hero">
+                  <div className="dossier-candidate-primary">
+                    <h1 className="dossier-candidate-name">{candidateProfile.name}</h1>
+                    <div className="dossier-candidate-meta-grid">
+                      <div><span className="meta-lbl">Email:</span> <span className="meta-val">{candidateProfile.email}</span></div>
+                      <div><span className="meta-lbl">Target Role:</span> <span className="meta-val">{candidateProfile.role || 'Frontend Engineer'}</span></div>
+                      <div><span className="meta-lbl">Target Org:</span> <span className="meta-val">{candidateProfile.targetCompany || 'Tier-1 Tech'}</span></div>
+                      <div><span className="meta-lbl">Experience Level:</span> <span className="meta-val">{candidateProfile.experienceLevel || 'Mid - Senior'}</span></div>
+                      <div><span className="meta-lbl">Candidate ID:</span> <span className="meta-val font-mono">{candidateProfile.id}</span></div>
+                      <div><span className="meta-lbl">Evaluation Rating:</span> <span className="meta-val">⭐ {overallRating} / 5 Stars</span></div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Executive KPI Scorecard */}
+                <div className="dossier-section">
+                  <h3 className="dossier-section-title">1. Executive Performance Scorecard</h3>
+                  <div className="dossier-kpi-grid">
+                    <div className="dossier-kpi-card">
+                      <span className="kpi-num text-emerald">{summary.uniqueSolved}</span>
+                      <span className="kpi-lbl">Unique Solved</span>
+                      <span className="kpi-sub">out of {summary.uniqueAttempted} attempted</span>
+                    </div>
+                    <div className="dossier-kpi-card">
+                      <span className="kpi-num text-blue">{summary.uniqueAttempted > 0 ? `${summary.successRate}%` : '0%'}</span>
+                      <span className="kpi-lbl">Success Rate</span>
+                      <span className="kpi-sub">solved vs attempted</span>
+                    </div>
+                    <div className="dossier-kpi-card">
+                      <span className="kpi-num text-purple">{summary.totalAttempts}</span>
+                      <span className="kpi-lbl">Code Submissions</span>
+                      <span className="kpi-sub">across all categories</span>
+                    </div>
+                    <div className="dossier-kpi-card">
+                      <span className="kpi-num text-amber">
+                        {summary.totalCodingTimeSeconds > 0 ? formatDurationSec(summary.totalCodingTimeSeconds) : '0m'}
+                      </span>
+                      <span className="kpi-lbl">Active Coding Time</span>
+                      <span className="kpi-sub">across {summary.dailyActivity?.length || 0} active days</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Multi-Track Competency Matrix */}
+                <div className="dossier-section">
+                  <h3 className="dossier-section-title">2. Track Competency Breakdown</h3>
+                  <table className="dossier-table">
+                    <thead>
+                      <tr>
+                        <th>Technical Track</th>
+                        <th>Unique Solved</th>
+                        <th>Attempted</th>
+                        <th>Submissions</th>
+                        <th>Success Rate</th>
+                        <th>Average Score</th>
+                        <th>Proficiency Assessment</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {[
+                        { key: 'MACHINE_CODING', label: 'Machine Level Coding', icon: '⚡', stats: summary.categoryStats?.MACHINE_CODING },
+                        { key: 'DSA', label: 'LeetCode / DSA Algorithms', icon: '🧠', stats: summary.categoryStats?.DSA },
+                        { key: 'CORE_PROGRAMMING', label: 'Core JavaScript / TypeScript', icon: '💻', stats: summary.categoryStats?.CORE_PROGRAMMING },
+                        { key: 'FRONTEND_JS', label: 'Frontend JS Performance', icon: '⚛️', stats: summary.categoryStats?.FRONTEND_JS },
+                      ].map(t => {
+                        const s = t.stats;
+                        const solved = s?.questionsSolved || 0;
+                        const attempted = s?.questionsAttempted || 0;
+                        const submissions = s?.totalAttempts || 0;
+                        const rate = s?.successRate || 0;
+                        const avg = s?.averageScore || 0;
+                        const proficiency = !s?.hasActivity
+                          ? 'Not Attempted'
+                          : rate >= 75
+                          ? 'Advanced (High Accuracy)'
+                          : rate >= 40
+                          ? 'Competent (Solid Progress)'
+                          : 'Developing (Needs Iteration)';
+
+                        return (
+                          <tr key={t.key}>
+                            <td>
+                              <strong>{t.icon} {t.label}</strong>
+                            </td>
+                            <td>{solved}</td>
+                            <td>{attempted}</td>
+                            <td>{submissions}</td>
+                            <td>
+                              <span className={`rate-pill ${rate >= 70 ? 'high' : rate >= 40 ? 'mid' : 'low'}`}>
+                                {s?.hasActivity ? `${rate}%` : '—'}
+                              </span>
+                            </td>
+                            <td>{s?.hasActivity ? `${avg}%` : '—'}</td>
+                            <td>
+                              <span className={`proficiency-tag ${rate >= 75 ? 'adv' : rate >= 40 ? 'comp' : 'dev'}`}>
+                                {proficiency}
+                              </span>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Rubric Evaluation & Hiring Feedback */}
+                <div className="dossier-section">
+                  <h3 className="dossier-section-title">3. Hiring Committee Rubric &amp; Qualitative Assessment</h3>
+                  <div className="dossier-rubric-grid">
+                    <div className="dossier-rubric-box">
+                      <span className="rubric-lbl">Problem Solving &amp; Logic</span>
+                      <div className="rubric-bar-wrap">
+                        <div className="rubric-bar" style={{ width: `${(rubricProblemSolving / 5) * 100}%` }} />
+                      </div>
+                      <span className="rubric-score">{rubricProblemSolving} / 5</span>
+                    </div>
+                    <div className="dossier-rubric-box">
+                      <span className="rubric-lbl">Code Hygiene &amp; Cleanliness</span>
+                      <div className="rubric-bar-wrap">
+                        <div className="rubric-bar" style={{ width: `${(rubricCodeQuality / 5) * 100}%` }} />
+                      </div>
+                      <span className="rubric-score">{rubricCodeQuality} / 5</span>
+                    </div>
+                    <div className="dossier-rubric-box">
+                      <span className="rubric-lbl">Technical Communication</span>
+                      <div className="rubric-bar-wrap">
+                        <div className="rubric-bar" style={{ width: `${(rubricCommunication / 5) * 100}%` }} />
+                      </div>
+                      <span className="rubric-score">{rubricCommunication} / 5</span>
+                    </div>
+                    <div className="dossier-rubric-box">
+                      <span className="rubric-lbl">Architecture &amp; System Design</span>
+                      <div className="rubric-bar-wrap">
+                        <div className="rubric-bar" style={{ width: `${(rubricArchitecture / 5) * 100}%` }} />
+                      </div>
+                      <span className="rubric-score">{rubricArchitecture} / 5</span>
+                    </div>
+                  </div>
+
+                  <div className="dossier-notes-grid">
+                    <div className="dossier-notes-card strengths">
+                      <h4>⭐ Demonstrated Strengths</h4>
+                      <p>{strengths || 'Consistent multi-attempt iteration, solid problem comprehension, and sustained active coding duration.'}</p>
+                    </div>
+                    <div className="dossier-notes-card weaknesses">
+                      <h4>🎯 Growth &amp; Development Areas</h4>
+                      <p>{weaknesses || 'Opportunity to optimize algorithmic time/space complexity and expand LeetCode / DSA problem coverage.'}</p>
+                    </div>
+                  </div>
+
+                  <div className="dossier-evaluator-summary">
+                    <h4>📝 Evaluator Recommendation &amp; Committee Notes</h4>
+                    <p className="recommendation-text">
+                      <strong>Decision:</strong> {recommendation || `${hiringStatus.toUpperCase()} — Candidate demonstrated verifiable coding competency across technical benchmarks.`}
+                    </p>
+                    {notes && <p className="notes-text"><strong>Evaluator Notes:</strong> {notes}</p>}
+                    {finalComments && <p className="comments-text"><strong>Final Comments:</strong> {finalComments}</p>}
+                  </div>
+                </div>
+
+                {/* Verified Top Solved Problems Snapshot */}
+                {dossierTopSolved.length > 0 && (
+                  <div className="dossier-section">
+                    <h3 className="dossier-section-title">4. Verified Top Solved Questions (Sample)</h3>
+                    <table className="dossier-table compact">
+                      <thead>
+                        <tr>
+                          <th>Question</th>
+                          <th>Track</th>
+                          <th>Difficulty</th>
+                          <th>Score</th>
+                          <th>Status</th>
+                          <th>Attempt Date</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {dossierTopSolved.map(q => (
+                          <tr key={q.id}>
+                            <td>
+                              <strong>{q.questionTitle}</strong>
+                              <span className="dossier-qid font-mono"> ({q.questionId})</span>
+                            </td>
+                            <td>{q.category.replace(/_/g, ' ')}</td>
+                            <td>
+                              <span className={`diff-tag diff-${(q.difficulty || 'medium').toLowerCase()}`}>
+                                {q.difficulty || 'Medium'}
+                              </span>
+                            </td>
+                            <td><strong>{q.score}%</strong></td>
+                            <td><span className="status-tag-mini accepted">Solved</span></td>
+                            <td>{new Date(q.createdAt).toLocaleDateString()}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+
+                {/* Formal Verification Sign-off */}
+                <div className="dossier-signoff">
+                  <div className="signoff-box">
+                    <span className="signoff-title">Platform Evaluation Committee</span>
+                    <span className="signoff-line" />
+                    <span className="signoff-sub">Authorized Technical Reviewer</span>
+                  </div>
+                  <div className="signoff-box">
+                    <span className="signoff-title">Verification Hash</span>
+                    <span className="signoff-hash font-mono">{candidateProfile.id.replace(/-/g, '').slice(0, 16).toUpperCase()}</span>
+                    <span className="signoff-sub">Tamper-Proof Audit Record</span>
+                  </div>
+                  <div className="signoff-box">
+                    <span className="signoff-title">Audit Timestamp</span>
+                    <span className="signoff-val">{new Date().toISOString()}</span>
+                    <span className="signoff-sub">React Interview Prep Platform</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Assign Targeted Assessment Modal */}
+      {showAssignModal && candidateProfile && (
+        <div className="admin-dossier-modal-backdrop" onClick={() => setShowAssignModal(false)}>
+          <div className="admin-dossier-modal admin-action-form-modal" onClick={e => e.stopPropagation()}>
+            <div className="admin-dossier-modal-bar">
+              <div className="admin-dossier-modal-title">
+                <span className="dossier-icon">📋</span>
+                <div>
+                  <h3>Assign Targeted Assessment Bundle</h3>
+                  <p>Send a customized technical take-home assignment to {candidateProfile.name}</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                className="admin-dossier-btn-close"
+                onClick={() => setShowAssignModal(false)}
+              >
+                ✕ Close
+              </button>
+            </div>
+
+            <form onSubmit={handleCreateAssignment} className="admin-action-form">
+              <div className="form-row">
+                <label>Assessment Title</label>
+                <input
+                  type="text"
+                  required
+                  value={assignTitle}
+                  onChange={e => setAssignTitle(e.target.value)}
+                  placeholder="e.g. Frontend Architecture Challenge"
+                />
+              </div>
+
+              <div className="form-grid-2">
+                <div className="form-row">
+                  <label>Track Focus</label>
+                  <select
+                    value={assignTrack}
+                    onChange={e => setAssignTrack(e.target.value as any)}
+                  >
+                    <option value="MACHINE_CODING">⚡ Machine Level Coding</option>
+                    <option value="DSA">🧠 LeetCode / DSA Algorithms</option>
+                    <option value="CORE_PROGRAMMING">💻 Core JavaScript / TypeScript</option>
+                    <option value="FRONTEND_JS">⚛️ Frontend JS Performance</option>
+                  </select>
+                </div>
+
+                <div className="form-row">
+                  <label>Difficulty Target</label>
+                  <select
+                    value={assignDifficulty}
+                    onChange={e => setAssignDifficulty(e.target.value as any)}
+                  >
+                    <option value="easy">Easy (Fundamentals)</option>
+                    <option value="medium">Medium (Standard)</option>
+                    <option value="hard">Hard (Advanced / Senior)</option>
+                    <option value="mixed">Mixed Tier</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="form-grid-2">
+                <div className="form-row">
+                  <label>Questions Count</label>
+                  <input
+                    type="number"
+                    min={1}
+                    max={10}
+                    value={assignCount}
+                    onChange={e => setAssignCount(Number(e.target.value))}
+                  />
+                </div>
+
+                <div className="form-row">
+                  <label>Completion Window</label>
+                  <select
+                    value={assignDeadlineDays}
+                    onChange={e => setAssignDeadlineDays(Number(e.target.value))}
+                  >
+                    <option value={1}>24 Hours</option>
+                    <option value={2}>48 Hours</option>
+                    <option value={3}>3 Days</option>
+                    <option value={5}>5 Days</option>
+                    <option value={7}>1 Week</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="form-row">
+                <label>Special Candidate Guidelines / Instructions</label>
+                <textarea
+                  rows={3}
+                  value={assignInstructions}
+                  onChange={e => setAssignInstructions(e.target.value)}
+                  placeholder="Expected patterns, clean state isolation, performance criteria..."
+                />
+              </div>
+
+              <div className="admin-action-form-footer">
+                <button type="button" className="btn-cancel" onClick={() => setShowAssignModal(false)}>
+                  Cancel
+                </button>
+                <button type="submit" className="btn-confirm">
+                  Confirm &amp; Assign to Candidate
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Schedule Live Interview Modal */}
+      {showScheduleModal && candidateProfile && (
+        <div className="admin-dossier-modal-backdrop" onClick={() => setShowScheduleModal(false)}>
+          <div className="admin-dossier-modal admin-action-form-modal" onClick={e => e.stopPropagation()}>
+            <div className="admin-dossier-modal-bar">
+              <div className="admin-dossier-modal-title">
+                <span className="dossier-icon">📅</span>
+                <div>
+                  <h3>Schedule Live Technical Interview</h3>
+                  <p>Book a real-time coding or architecture round with {candidateProfile.name}</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                className="admin-dossier-btn-close"
+                onClick={() => setShowScheduleModal(false)}
+              >
+                ✕ Close
+              </button>
+            </div>
+
+            <form onSubmit={handleScheduleInterview} className="admin-action-form">
+              <div className="form-row">
+                <label>Round Title</label>
+                <input
+                  type="text"
+                  required
+                  value={roundTitle}
+                  onChange={e => setRoundTitle(e.target.value)}
+                  placeholder="e.g. Senior Frontend Live Coding Round"
+                />
+              </div>
+
+              <div className="form-grid-2">
+                <div className="form-row">
+                  <label>Round Evaluation Type</label>
+                  <select
+                    value={roundType}
+                    onChange={e => setRoundType(e.target.value as any)}
+                  >
+                    <option value="Technical Coding">Technical Coding &amp; Component Build</option>
+                    <option value="DSA & Algorithms">DSA &amp; Problem Solving</option>
+                    <option value="System Design & Architecture">System Design &amp; Architecture</option>
+                    <option value="Cultural & Behavioral">Cultural &amp; Engineering Values</option>
+                  </select>
+                </div>
+
+                <div className="form-row">
+                  <label>Duration</label>
+                  <select
+                    value={roundDuration}
+                    onChange={e => setRoundDuration(Number(e.target.value))}
+                  >
+                    <option value={45}>45 Minutes</option>
+                    <option value={60}>60 Minutes (Standard)</option>
+                    <option value={90}>90 Minutes (Deep Dive)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="form-grid-2">
+                <div className="form-row">
+                  <label>Scheduled Date</label>
+                  <input
+                    type="date"
+                    required
+                    value={roundDate}
+                    onChange={e => setRoundDate(e.target.value)}
+                  />
+                </div>
+
+                <div className="form-row">
+                  <label>Start Time</label>
+                  <input
+                    type="time"
+                    required
+                    value={roundTime}
+                    onChange={e => setRoundTime(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              <div className="form-row">
+                <label>Meeting Link / Live Room URL</label>
+                <input
+                  type="url"
+                  required
+                  value={meetingLink}
+                  onChange={e => setMeetingLink(e.target.value)}
+                  placeholder="https://meet.google.com/... or live room URL"
+                />
+              </div>
+
+              <div className="form-row">
+                <label>Interviewer Panel Briefing &amp; Focus Areas</label>
+                <textarea
+                  rows={3}
+                  value={interviewerNotes}
+                  onChange={e => setInterviewerNotes(e.target.value)}
+                  placeholder="Specific topics, past gaps to investigate, or architectural challenges..."
+                />
+              </div>
+
+              <div className="admin-action-form-footer">
+                <button type="button" className="btn-cancel" onClick={() => setShowScheduleModal(false)}>
+                  Cancel
+                </button>
+                <button type="submit" className="btn-confirm">
+                  Confirm &amp; Schedule Round
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Candidate Side-by-Side Comparison Modal */}
+      {showCompareModal && candidateProfile && summary && (
+        <div className="admin-dossier-modal-backdrop" onClick={() => setShowCompareModal(false)}>
+          <div className="admin-dossier-modal admin-compare-modal" onClick={e => e.stopPropagation()}>
+            {/* Top Bar */}
+            <div className="admin-dossier-modal-bar">
+              <div className="admin-dossier-modal-title">
+                <span className="dossier-icon">⚖️</span>
+                <div>
+                  <h3>Candidate Benchmarking &amp; Comparison</h3>
+                  <p>Side-by-side technical evaluation across multi-track metrics, KPIs, and rubrics</p>
+                </div>
+              </div>
+              <div className="admin-dossier-modal-actions">
+                <button
+                  type="button"
+                  className="admin-dossier-btn-close"
+                  onClick={() => setShowCompareModal(false)}
+                >
+                  ✕ Close
+                </button>
+              </div>
+            </div>
+
+            {/* Scrollable Sheet Content */}
+            <div className="admin-dossier-sheet-wrapper">
+              <div className="admin-compare-sheet">
+                {/* Candidate Selection Bar */}
+                <div className="compare-picker-bar">
+                  <div className="compare-picker-left">
+                    <span className="picker-lbl">Benchmark Candidate:</span>
+                    <div className="picker-current-tag">
+                      <strong>{candidateProfile.name}</strong>
+                      <span className="picker-email"> ({candidateProfile.email})</span>
+                    </div>
+                  </div>
+                  <div className="compare-vs-badge">VS</div>
+                  <div className="compare-picker-right">
+                    <span className="picker-lbl">Compare Against:</span>
+                    <select
+                      className="compare-select"
+                      value={selectedCompareId}
+                      onChange={e => setSelectedCompareId(e.target.value)}
+                    >
+                      {compareRoster.map(c => (
+                        <option key={c.id} value={c.id}>
+                          {c.name} ({c.email})
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                {loadingCompare ? (
+                  <div className="admin-compare-loading">
+                    <div className="admin-perf-spinner" />
+                    <p>Fetching competitor metrics and rubric breakdown...</p>
+                  </div>
+                ) : compareProfile && compareSummary ? (
+                  <div className="compare-body">
+                    {/* Split Profile Heroes */}
+                    <div className="compare-hero-grid">
+                      {/* Candidate A Card */}
+                      <div className="compare-hero-card primary">
+                        <div className="compare-hero-top">
+                          <div className="admin-perf-avatar sm">
+                            {candidateProfile.name.slice(0, 2).toUpperCase()}
+                          </div>
+                          <div>
+                            <span className="compare-candidate-tag">Candidate A (Viewing)</span>
+                            <h4 className="compare-hero-name">{candidateProfile.name}</h4>
+                            <span className="compare-hero-email">{candidateProfile.email}</span>
+                          </div>
+                          <div className="compare-hero-status">
+                            <span className={`admin-perf-status-tag status-${hiringStatus.toLowerCase()}`}>
+                              {hiringStatus}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="compare-hero-submeta">
+                          <span>🎯 {candidateProfile.targetCompany || 'Tier-1 Tech'}</span>
+                          <span>💼 {candidateProfile.experienceLevel || 'Mid - Senior'}</span>
+                          <span>⭐ {overallRating} / 5</span>
+                        </div>
+                      </div>
+
+                      {/* Candidate B Card */}
+                      <div className="compare-hero-card secondary">
+                        <div className="compare-hero-top">
+                          <div className="admin-perf-avatar sm secondary">
+                            {compareProfile.name.slice(0, 2).toUpperCase()}
+                          </div>
+                          <div>
+                            <span className="compare-candidate-tag">Candidate B (Benchmark)</span>
+                            <h4 className="compare-hero-name">{compareProfile.name}</h4>
+                            <span className="compare-hero-email">{compareProfile.email}</span>
+                          </div>
+                          <div className="compare-hero-status">
+                            <span className={`admin-perf-status-tag status-${(compareEval?.status || 'Pending').toLowerCase()}`}>
+                              {compareEval?.status || 'Pending'}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="compare-hero-submeta">
+                          <span>🎯 {compareProfile.targetCompany || 'Tier-1 Tech'}</span>
+                          <span>💼 {compareProfile.experienceLevel || 'Mid - Senior'}</span>
+                          <span>⭐ {compareEval?.overallRating || 3} / 5</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* 4-KPI Comparison Scorecard */}
+                    <div className="compare-section">
+                      <h3 className="dossier-section-title">1. Overall Key Performance Indicators</h3>
+                      <div className="compare-kpi-grid">
+                        {/* Solved */}
+                        <div className="compare-kpi-box">
+                          <span className="compare-kpi-title">Unique Solved</span>
+                          <div className="compare-kpi-split">
+                            <div className={`compare-val-col ${summary.uniqueSolved >= compareSummary.uniqueSolved ? 'leader' : ''}`}>
+                              <span className="cand-sublabel">{candidateProfile.name.split(' ')[0]}</span>
+                              <span className="val-num text-emerald">{summary.uniqueSolved}</span>
+                              <span className="val-sub">of {summary.uniqueAttempted} attempted</span>
+                            </div>
+                            <div className="compare-delta-wrap">
+                              {summary.uniqueSolved !== compareSummary.uniqueSolved ? (
+                                <span className={`compare-delta-badge ${summary.uniqueSolved > compareSummary.uniqueSolved ? 'delta-a' : 'delta-b'}`}>
+                                  {summary.uniqueSolved > compareSummary.uniqueSolved
+                                    ? `+${summary.uniqueSolved - compareSummary.uniqueSolved} (A)`
+                                    : `+${compareSummary.uniqueSolved - summary.uniqueSolved} (B)`}
+                                </span>
+                              ) : (
+                                <span className="compare-delta-badge neutral">Tied</span>
+                              )}
+                            </div>
+                            <div className={`compare-val-col ${compareSummary.uniqueSolved >= summary.uniqueSolved ? 'leader' : ''}`}>
+                              <span className="cand-sublabel">{compareProfile.name.split(' ')[0]}</span>
+                              <span className="val-num text-emerald">{compareSummary.uniqueSolved}</span>
+                              <span className="val-sub">of {compareSummary.uniqueAttempted} attempted</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Success Rate */}
+                        <div className="compare-kpi-box">
+                          <span className="compare-kpi-title">Success Rate</span>
+                          <div className="compare-kpi-split">
+                            <div className={`compare-val-col ${summary.successRate >= compareSummary.successRate ? 'leader' : ''}`}>
+                              <span className="cand-sublabel">{candidateProfile.name.split(' ')[0]}</span>
+                              <span className="val-num text-blue">{summary.successRate}%</span>
+                              <span className="val-sub">solved vs attempted</span>
+                            </div>
+                            <div className="compare-delta-wrap">
+                              {summary.successRate !== compareSummary.successRate ? (
+                                <span className={`compare-delta-badge ${summary.successRate > compareSummary.successRate ? 'delta-a' : 'delta-b'}`}>
+                                  {summary.successRate > compareSummary.successRate
+                                    ? `+${summary.successRate - compareSummary.successRate}% (A)`
+                                    : `+${compareSummary.successRate - summary.successRate}% (B)`}
+                                </span>
+                              ) : (
+                                <span className="compare-delta-badge neutral">Tied</span>
+                              )}
+                            </div>
+                            <div className={`compare-val-col ${compareSummary.successRate >= summary.successRate ? 'leader' : ''}`}>
+                              <span className="cand-sublabel">{compareProfile.name.split(' ')[0]}</span>
+                              <span className="val-num text-blue">{compareSummary.successRate}%</span>
+                              <span className="val-sub">solved vs attempted</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Submissions */}
+                        <div className="compare-kpi-box">
+                          <span className="compare-kpi-title">Code Submissions</span>
+                          <div className="compare-kpi-split">
+                            <div className={`compare-val-col ${summary.totalAttempts >= compareSummary.totalAttempts ? 'leader' : ''}`}>
+                              <span className="cand-sublabel">{candidateProfile.name.split(' ')[0]}</span>
+                              <span className="val-num text-purple">{summary.totalAttempts}</span>
+                              <span className="val-sub">attempts</span>
+                            </div>
+                            <div className="compare-delta-wrap">
+                              {summary.totalAttempts !== compareSummary.totalAttempts ? (
+                                <span className={`compare-delta-badge ${summary.totalAttempts > compareSummary.totalAttempts ? 'delta-a' : 'delta-b'}`}>
+                                  {summary.totalAttempts > compareSummary.totalAttempts
+                                    ? `+${summary.totalAttempts - compareSummary.totalAttempts} (A)`
+                                    : `+${compareSummary.totalAttempts - summary.totalAttempts} (B)`}
+                                </span>
+                              ) : (
+                                <span className="compare-delta-badge neutral">Tied</span>
+                              )}
+                            </div>
+                            <div className={`compare-val-col ${compareSummary.totalAttempts >= summary.totalAttempts ? 'leader' : ''}`}>
+                              <span className="cand-sublabel">{compareProfile.name.split(' ')[0]}</span>
+                              <span className="val-num text-purple">{compareSummary.totalAttempts}</span>
+                              <span className="val-sub">attempts</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Coding Time */}
+                        <div className="compare-kpi-box">
+                          <span className="compare-kpi-title">Active Coding Time</span>
+                          <div className="compare-kpi-split">
+                            <div className={`compare-val-col ${summary.totalCodingTimeSeconds >= compareSummary.totalCodingTimeSeconds ? 'leader' : ''}`}>
+                              <span className="cand-sublabel">{candidateProfile.name.split(' ')[0]}</span>
+                              <span className="val-num text-amber">{formatDurationSec(summary.totalCodingTimeSeconds)}</span>
+                              <span className="val-sub">{summary.dailyActivity?.length || 0} active days</span>
+                            </div>
+                            <div className="compare-delta-wrap">
+                              {summary.totalCodingTimeSeconds !== compareSummary.totalCodingTimeSeconds ? (
+                                <span className={`compare-delta-badge ${summary.totalCodingTimeSeconds > compareSummary.totalCodingTimeSeconds ? 'delta-a' : 'delta-b'}`}>
+                                  {summary.totalCodingTimeSeconds > compareSummary.totalCodingTimeSeconds ? 'More Active (A)' : 'More Active (B)'}
+                                </span>
+                              ) : (
+                                <span className="compare-delta-badge neutral">Equal</span>
+                              )}
+                            </div>
+                            <div className={`compare-val-col ${compareSummary.totalCodingTimeSeconds >= summary.totalCodingTimeSeconds ? 'leader' : ''}`}>
+                              <span className="cand-sublabel">{compareProfile.name.split(' ')[0]}</span>
+                              <span className="val-num text-amber">{formatDurationSec(compareSummary.totalCodingTimeSeconds)}</span>
+                              <span className="val-sub">{compareSummary.dailyActivity?.length || 0} active days</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Technical Track Performance Comparison */}
+                    <div className="compare-section">
+                      <h3 className="dossier-section-title">2. Technical Track Performance Comparison</h3>
+                      <table className="dossier-table compare-table">
+                        <thead>
+                          <tr>
+                            <th>Technical Track</th>
+                            <th>{candidateProfile.name.split(' ')[0]} (Solved / Rate / Avg)</th>
+                            <th>{compareProfile.name.split(' ')[0]} (Solved / Rate / Avg)</th>
+                            <th style={{ textAlign: 'center' }}>Track Comparison</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {[
+                            { key: 'MACHINE_CODING', label: 'Machine Level Coding', icon: '⚡' },
+                            { key: 'DSA', label: 'LeetCode / DSA Algorithms', icon: '🧠' },
+                            { key: 'CORE_PROGRAMMING', label: 'Core JavaScript / TypeScript', icon: '💻' },
+                            { key: 'FRONTEND_JS', label: 'Frontend JS Performance', icon: '⚛️' },
+                          ].map(t => {
+                            const aStats = summary.categoryStats?.[t.key];
+                            const bStats = compareSummary.categoryStats?.[t.key];
+
+                            const aSolved = aStats?.questionsSolved || 0;
+                            const aRate = aStats?.successRate || 0;
+                            const aAvg = aStats?.averageScore || 0;
+
+                            const bSolved = bStats?.questionsSolved || 0;
+                            const bRate = bStats?.successRate || 0;
+                            const bAvg = bStats?.averageScore || 0;
+
+                            const aHas = aStats?.hasActivity;
+                            const bHas = bStats?.hasActivity;
+
+                            let leaderText = 'Tied';
+                            let leaderClass = 'neutral';
+                            if (aSolved > bSolved || (aSolved === bSolved && aRate > bRate)) {
+                              leaderText = `🏆 ${candidateProfile.name.split(' ')[0]} Leading`;
+                              leaderClass = 'adv';
+                            } else if (bSolved > aSolved || (bSolved === aSolved && bRate > aRate)) {
+                              leaderText = `🏆 ${compareProfile.name.split(' ')[0]} Leading`;
+                              leaderClass = 'comp';
+                            }
+
+                            return (
+                              <tr key={t.key}>
+                                <td><strong>{t.icon} {t.label}</strong></td>
+                                <td>
+                                  {aHas ? (
+                                    <span className="track-compare-stat">
+                                      <strong>{aSolved} solved</strong> · <span className="rate-text">{aRate}% rate</span> · <span className="score-text">{aAvg}% avg</span>
+                                    </span>
+                                  ) : (
+                                    <span className="text-muted">No activity</span>
+                                  )}
+                                </td>
+                                <td>
+                                  {bHas ? (
+                                    <span className="track-compare-stat">
+                                      <strong>{bSolved} solved</strong> · <span className="rate-text">{bRate}% rate</span> · <span className="score-text">{bAvg}% avg</span>
+                                    </span>
+                                  ) : (
+                                    <span className="text-muted">No activity</span>
+                                  )}
+                                </td>
+                                <td style={{ textAlign: 'center' }}>
+                                  <span className={`proficiency-tag ${leaderClass}`}>{leaderText}</span>
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+
+                    {/* Rubric Side-by-Side */}
+                    <div className="compare-section">
+                      <h3 className="dossier-section-title">3. Committee Rubric Assessment Benchmarking</h3>
+                      <div className="compare-rubric-grid">
+                        {[
+                          { label: 'Problem Solving & Logic', a: rubricProblemSolving, b: compareEval?.rubricProblemSolving || 3 },
+                          { label: 'Code Hygiene & Cleanliness', a: rubricCodeQuality, b: compareEval?.rubricCodeQuality || 3 },
+                          { label: 'Technical Communication', a: rubricCommunication, b: compareEval?.rubricCommunication || 3 },
+                          { label: 'Architecture & System Design', a: rubricArchitecture, b: compareEval?.rubricArchitecture || 3 },
+                        ].map(r => (
+                          <div key={r.label} className="compare-rubric-card">
+                            <div className="compare-rubric-header">
+                              <strong>{r.label}</strong>
+                              <span className="compare-rubric-delta">
+                                {r.a > r.b
+                                  ? `${candidateProfile.name.split(' ')[0]} (+${r.a - r.b})`
+                                  : r.b > r.a
+                                  ? `${compareProfile.name.split(' ')[0]} (+${r.b - r.a})`
+                                  : 'Tied'}
+                              </span>
+                            </div>
+                            <div className="compare-rubric-dual-bars">
+                              <div className="dual-bar-item">
+                                <div className="dual-bar-label">
+                                  <span>{candidateProfile.name.split(' ')[0]}</span>
+                                  <span>{r.a} / 5</span>
+                                </div>
+                                <div className="rubric-bar-wrap">
+                                  <div className="rubric-bar" style={{ width: `${(r.a / 5) * 100}%` }} />
+                                </div>
+                              </div>
+                              <div className="dual-bar-item">
+                                <div className="dual-bar-label">
+                                  <span>{compareProfile.name.split(' ')[0]}</span>
+                                  <span>{r.b} / 5</span>
+                                </div>
+                                <div className="rubric-bar-wrap">
+                                  <div className="rubric-bar comp-bar" style={{ width: `${(r.b / 5) * 100}%` }} />
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Qualitative Notes & Recommendations */}
+                    <div className="compare-section">
+                      <h3 className="dossier-section-title">4. Qualitative Feedback &amp; Recommendations</h3>
+                      <div className="compare-notes-grid">
+                        <div className="compare-notes-col">
+                          <h4>{candidateProfile.name} Summary</h4>
+                          <div className="dossier-notes-card strengths">
+                            <h4>⭐ Strengths</h4>
+                            <p>{strengths || 'Consistent multi-attempt iteration, solid problem comprehension, and sustained active coding duration.'}</p>
+                          </div>
+                          <div className="dossier-notes-card weaknesses" style={{ marginTop: '10px' }}>
+                            <h4>🎯 Growth Areas</h4>
+                            <p>{weaknesses || 'Opportunity to optimize algorithmic time/space complexity and expand LeetCode / DSA problem coverage.'}</p>
+                          </div>
+                        </div>
+
+                        <div className="compare-notes-col">
+                          <h4>{compareProfile.name} Summary</h4>
+                          <div className="dossier-notes-card strengths">
+                            <h4>⭐ Strengths</h4>
+                            <p>{compareEval?.strengths || 'Active platform participation, consistent challenge engagement, and sound code modularity.'}</p>
+                          </div>
+                          <div className="dossier-notes-card weaknesses" style={{ marginTop: '10px' }}>
+                            <h4>🎯 Growth Areas</h4>
+                            <p>{compareEval?.weaknesses || 'Needs deeper practice in complex graph algorithms and asynchronous state edge cases.'}</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="admin-perf-empty-state">
+                    <span className="admin-perf-empty-icon">👥</span>
+                    <h4>No Benchmark Candidate Selected</h4>
+                    <p>Select another registered candidate above to inspect comparative metrics side-by-side.</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
