@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { useAuth } from '../../context/AuthContext'
-import { supabase } from '../../lib/supabase/client'
 import './AdminLoginModal.css'
 
 interface AdminLoginModalProps {
@@ -8,12 +7,11 @@ interface AdminLoginModalProps {
   onClose: () => void
 }
 
-// Admin credentials must be set via VITE_ADMIN_USERNAME and VITE_ADMIN_PASSWORD env vars.
-// Do NOT define fallback literals here — any hardcoded value becomes visible in the JS bundle.
+// Admin credentials are authenticated securely via /api/admin-auth on the server side.
 
 
 export default function AdminLoginModal({ isOpen, onClose }: AdminLoginModalProps) {
-  const { switchRole } = useAuth()
+  const { loginAsAdmin } = useAuth()
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
@@ -35,7 +33,7 @@ export default function AdminLoginModal({ isOpen, onClose }: AdminLoginModalProp
   // Close on Escape
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isOpen) onClose()
+      if (e.key === 'Escape') onClose()
     }
     window.addEventListener('keydown', handler)
     return () => window.removeEventListener('keydown', handler)
@@ -48,50 +46,16 @@ export default function AdminLoginModal({ isOpen, onClose }: AdminLoginModalProp
     setError('')
     setIsLoading(true)
 
-    // Simulate a short auth delay for UX
-    await new Promise(r => setTimeout(r, 600))
-
-    const ADMIN_USERNAME = import.meta.env.VITE_ADMIN_USERNAME
-    const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD
-
-    if (!ADMIN_USERNAME || !ADMIN_PASSWORD) {
-      setError('Administrator access is not configured. Contact the platform administrator.')
-      setIsLoading(false)
-      return
-    }
-
-    if (username.trim() === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
-      // Authenticate with Supabase so Postgres RLS grants full permissions to fetch all real users
-      try {
-        const adminEmail = 'admin@interviewprep.com'
-        const { error: signInErr } = await supabase.auth.signInWithPassword({
-          email: adminEmail,
-          password: ADMIN_PASSWORD,
-        })
-        if (signInErr) {
-          await supabase.auth.signUp({
-            email: adminEmail,
-            password: ADMIN_PASSWORD,
-            options: {
-              data: { full_name: 'Platform Administrator', role: 'admin' },
-            },
-          })
-        }
-      } catch (authErr) {
-        console.warn('[Admin Login] Supabase auth error:', authErr)
-      }
-
+    const res = await loginAsAdmin(username, password)
+    if (res.success) {
       setSuccess(true)
       setTimeout(() => {
-        switchRole('admin')
         onClose()
       }, 800)
     } else {
-      setError('Invalid username or password. Access denied.')
-      setPassword('')
+      setError(res.message || 'Invalid administrator credentials. Access denied.')
+      setIsLoading(false)
     }
-
-    setIsLoading(false)
   }
 
 

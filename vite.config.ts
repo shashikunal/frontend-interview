@@ -17,6 +17,135 @@ function localSocketIOPlugin(): Plugin {
   }
 }
 
+// Local Dev Admin Auth API Middleware
+function localAdminAuthPlugin(): Plugin {
+  return {
+    name: 'local-admin-auth-middleware',
+    configureServer(server) {
+      server.middlewares.use('/api/admin-auth', (req, res) => {
+        if (req.method === 'OPTIONS') {
+          res.setHeader('Access-Control-Allow-Origin', '*')
+          res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS')
+          res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+          res.statusCode = 204
+          res.end()
+          return
+        }
+        if (req.method === 'POST') {
+          let body = ''
+          req.on('data', chunk => {
+            body += chunk
+          })
+          req.on('end', () => {
+            try {
+              const data = JSON.parse(body || '{}')
+              const { username, password } = data
+              const configuredUsername = process.env.ADMIN_USERNAME || process.env.VITE_ADMIN_USERNAME || 'shashi'
+              const configuredPassword = process.env.ADMIN_PASSWORD || process.env.VITE_ADMIN_PASSWORD
+
+              res.setHeader('Content-Type', 'application/json')
+              res.setHeader('Access-Control-Allow-Origin', '*')
+
+              if (!username || !password) {
+                res.statusCode = 400
+                res.end(JSON.stringify({ error: 'Username and password are required.' }))
+                return
+              }
+
+              if (String(username).trim() !== configuredUsername.trim() || password !== configuredPassword) {
+                res.statusCode = 401
+                res.end(JSON.stringify({ error: 'Invalid administrator credentials. Access denied.' }))
+                return
+              }
+
+              res.statusCode = 200
+              res.end(JSON.stringify({
+                success: true,
+                user: {
+                  id: 'admin_super_user',
+                  email: 'admin@interviewprep.com',
+                  name: 'Platform Administrator',
+                  role: 'admin',
+                  permissions: ['admin:all', 'admin:users_manage', 'admin:billing', 'admin:audit'],
+                  status: 'ACTIVE',
+                },
+                message: 'Administrator authentication successful.',
+              }))
+            } catch {
+              res.statusCode = 400
+              res.end(JSON.stringify({ error: 'Invalid JSON payload' }))
+            }
+          })
+          return
+        }
+        res.statusCode = 405
+        res.end(JSON.stringify({ error: 'Method Not Allowed' }))
+      })
+
+      // Local Dev Candidate History API Middleware (bypasses browser RLS seamlessly in dev)
+      server.middlewares.use('/api/candidate-history', async (req, res) => {
+        res.setHeader('Access-Control-Allow-Origin', '*')
+        res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS')
+        res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+        res.setHeader('Content-Type', 'application/json')
+
+        if (req.method === 'OPTIONS') {
+          res.statusCode = 204
+          res.end()
+          return
+        }
+
+        const urlObj = new URL(req.url || '/', 'http://localhost')
+        const userId = urlObj.searchParams.get('userId')
+        if (!userId) {
+          res.statusCode = 400
+          res.end(JSON.stringify({ error: 'userId is required' }))
+          return
+        }
+
+        try {
+          const { createClient } = await import('@supabase/supabase-js')
+          const supabaseUrl = process.env.VITE_SUPABASE_URL || 'https://lzjkxfxaiuemjsiflwlv.supabase.co'
+          const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx6amt4ZnhhaXVlbWpzaWZsd2x2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg0MDI2ODgsImV4cCI6MjEwMzk3ODY4OH0.PnHnvW9-V8SMLilGdhf3Em9wGIGCYxL0rCRUFpvhdn8'
+          const adminPassword = process.env.ADMIN_PASSWORD || process.env.VITE_ADMIN_PASSWORD || 'Admin@9999'
+
+          const sb = createClient(supabaseUrl, supabaseKey, {
+            auth: { persistSession: false, autoRefreshToken: false },
+          })
+          await sb.auth.signInWithPassword({
+            email: 'admin@interviewprep.com',
+            password: adminPassword,
+          })
+
+          const [subsRes, cpRes, dsaRes, fjsRes, attRes, profRes] = await Promise.all([
+            sb.from('submissions').select('*').eq('user_id', userId).order('created_at', { ascending: true }),
+            sb.from('core_programming_submissions').select('*').eq('user_id', userId).order('created_at', { ascending: true }),
+            sb.from('dsa_submissions').select('*').eq('user_id', userId).order('created_at', { ascending: true }),
+            sb.from('frontend_js_submissions').select('*').eq('user_id', userId).order('created_at', { ascending: true }),
+            sb.from('question_attempts').select('*').eq('user_id', userId).order('created_at', { ascending: true }),
+            sb.from('profiles').select('*').eq('id', userId).maybeSingle(),
+          ])
+
+          res.statusCode = 200
+          res.end(JSON.stringify({
+            success: true,
+            userId,
+            profile: profRes.data || null,
+            submissions: subsRes.data || [],
+            coreProgrammingSubmissions: cpRes.data || [],
+            dsaSubmissions: dsaRes.data || [],
+            frontendJsSubmissions: fjsRes.data || [],
+            questionAttempts: attRes.data || [],
+          }))
+        } catch (err: any) {
+          res.statusCode = 500
+          res.end(JSON.stringify({ error: err?.message || 'Server error' }))
+        }
+      })
+    },
+  }
+}
+
 // Local Dev Email API Middleware
 function localEmailPlugin(): Plugin {
   return {
@@ -303,5 +432,31 @@ export default defineConfig({
       'monaco-editor/esm/vs/editor/editor.api.js': 'monaco-editor',
     },
   },
-  plugins: [react(), localEmailPlugin(), localAIVideoMockPlugin(), localSocketIOPlugin()],
+  build: {
+    chunkSizeWarningLimit: 1200,
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules/monaco-editor') || id.includes('@monaco-editor')) {
+            return 'vendor-monaco'
+          }
+          if (id.includes('node_modules/react/') || id.includes('node_modules/react-dom/') || id.includes('node_modules/react-router-dom/')) {
+            return 'vendor-react'
+          }
+          if (id.includes('node_modules/@supabase')) {
+            return 'vendor-supabase'
+          }
+          if (id.includes('node_modules/recharts')) {
+            return 'vendor-charts'
+          }
+          if (id.includes('src/components/dsa/data/batches/')) {
+            const match = id.match(/batch\d+/i)
+            return match ? `dsa-${match[0].toLowerCase()}` : 'dsa-batches'
+          }
+        },
+      },
+    },
+  },
+  plugins: [react(), localAdminAuthPlugin(), localEmailPlugin(), localAIVideoMockPlugin(), localSocketIOPlugin()],
 })
+

@@ -1,4 +1,4 @@
-import { getAuthenticatedHistoryClient } from './historyReaderClient';
+import { getAuthenticatedHistoryClient } from '../../../lib/supabase/client';
 
 export interface CandidateAssignment {
   id: string;

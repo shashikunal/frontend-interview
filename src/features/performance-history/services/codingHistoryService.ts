@@ -1,5 +1,4 @@
-import { getAuthenticatedHistoryClient } from './historyReaderClient';
-import { supabase } from '../../../lib/supabase/client';
+import { supabase, getAuthenticatedHistoryClient } from '../../../lib/supabase/client';
 import { MACHINE_CODING_CATALOG } from '../../../components/machinecoding/data/machineCodingCatalog';
 import { DSA_QUESTIONS } from '../../../components/dsa/data/dsaQuestions';
 import { CORE_PROGRAMMING_QUESTIONS } from '../../../components/coreprogramming/data/coreProgrammingQuestions';
@@ -301,6 +300,48 @@ class CodingHistoryService {
       }
     } catch (err) {
       console.warn('[CodingHistoryService] Supabase query notice:', err);
+    }
+
+    // 1b. Fallback to secure server-side gateway if direct client query returned zero records (due to Postgres RLS in unauthenticated browser sessions)
+    if (rawRecords.length === 0 && typeof fetch !== 'undefined') {
+      try {
+        const apiRes = await fetch(`/api/candidate-history?userId=${encodeURIComponent(userId)}`);
+        if (apiRes.ok) {
+          const apiData = await apiRes.json();
+          if (apiData && apiData.success) {
+            if (Array.isArray(apiData.coreProgrammingSubmissions)) {
+              apiData.coreProgrammingSubmissions.forEach((item: any) => rawRecords.push({ ...item, category: 'CORE_PROGRAMMING' }));
+            }
+            if (Array.isArray(apiData.dsaSubmissions)) {
+              apiData.dsaSubmissions.forEach((item: any) => rawRecords.push({ ...item, category: 'DSA' }));
+            }
+            if (Array.isArray(apiData.frontendJsSubmissions)) {
+              apiData.frontendJsSubmissions.forEach((item: any) => rawRecords.push({ ...item, category: 'CORE_PROGRAMMING' }));
+            }
+            if (Array.isArray(apiData.submissions)) {
+              apiData.submissions.forEach((item: any) => {
+                const q = String(item.question_id || '').toUpperCase();
+                let cat = 'CORE_PROGRAMMING';
+                if (q.startsWith('Q') || q.startsWith('MC-')) cat = 'MACHINE_CODING';
+                else if (q.startsWith('DSA') || /^\d+$/.test(q)) cat = 'DSA';
+                else if (q.startsWith('JS-P') || q.startsWith('JSP') || q.startsWith('CP')) cat = 'CORE_PROGRAMMING';
+                rawRecords.push({ ...item, category: cat });
+              });
+            }
+            const submittedQIds = new Set(rawRecords.map(r => String(r.question_id || r.questionId || '').toLowerCase()));
+            if (Array.isArray(apiData.questionAttempts)) {
+              apiData.questionAttempts.forEach((item: any) => {
+                const q = String(item.question_id || item.questionId || '').toLowerCase();
+                if (!submittedQIds.has(q)) {
+                  rawRecords.push(item);
+                }
+              });
+            }
+          }
+        }
+      } catch (gatewayErr) {
+        console.warn('[CodingHistoryService] Gateway fetch notice:', gatewayErr);
+      }
     }
 
     // 2. Read local storage caches (offline & browser sessions)

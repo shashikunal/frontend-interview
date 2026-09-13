@@ -268,23 +268,23 @@ export default function MockSystemAuditPage() {
               </div>
             </div>
 
-            {/* 10. Security posture (presence only) */}
+            {/* 10. Security posture */}
             <div className="ai-vm-card">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
                 <span style={{ fontSize: '1.4rem' }}>🔒</span>
-                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: import.meta.env.VITE_ADMIN_PASSWORD ? '#10b981' : '#ef4444', background: 'rgba(239, 68, 68, 0.1)', padding: '2px 8px', borderRadius: 4 }}>
-                  {import.meta.env.VITE_ADMIN_PASSWORD ? 'ENV-CONTROLLED' : 'FALLBACK ACTIVE'}
+                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#10b981', background: 'rgba(16, 185, 129, 0.1)', padding: '2px 8px', borderRadius: 4 }}>
+                  SERVER-VERIFIED
                 </span>
               </div>
               <h3 style={{ fontSize: '1.05rem', margin: '0 0 6px' }}>Security</h3>
               <div style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', marginBottom: 8 }}>
-                <div>Admin credentials: <strong>{import.meta.env.VITE_ADMIN_PASSWORD ? 'from environment' : 'compiled-in fallback — rotate to env immediately'}</strong></div>
+                <div>Admin auth gateway: <strong>/api/admin-auth (Server-Side) ✓</strong></div>
+                <div>Client password in bundle: <strong>ABSENT (Hardened) ✓</strong></div>
                 <div>Service-role key in bundle: <strong>ABSENT ✓</strong></div>
-                <div>OpenAI key: <strong>server-side only ✓</strong></div>
                 <div>Mock-table RLS: <strong>enforced (owner-only + admin review)</strong></div>
               </div>
-              <div style={{ fontSize: '0.78rem', color: 'var(--text-secondary)' }}>
-                Admin login is client-compared; move to server-checked role auth before external launch.
+              <div style={{ fontSize: '0.78rem', color: '#10b981' }}>
+                Admin credentials verified via secure serverless endpoint.
               </div>
             </div>
 

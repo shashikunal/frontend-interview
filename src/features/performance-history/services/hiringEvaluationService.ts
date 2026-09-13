@@ -1,4 +1,4 @@
-import { getAuthenticatedHistoryClient } from './historyReaderClient';
+import { getAuthenticatedHistoryClient } from '../../../lib/supabase/client';
 import type { HiringEvaluation, HiringEvaluationHistoryItem, HiringStatus } from '../types/history.types';
 
 const LOCAL_EVALUATIONS_KEY = 'candidate_hiring_evaluations_v1';

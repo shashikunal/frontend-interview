@@ -51,6 +51,7 @@ const AnalyticsDashboard = lazy(() => import('./components/analytics/AnalyticsDa
 const Leaderboard = lazy(() => import('./components/leaderboard/Leaderboard'))
 const AIVideoMockApp = lazy(() => import('./features/ai-video-mock/AIVideoMockApp'))
 const StudentPerformanceView = lazy(() => import('./features/performance-history/components/student/StudentPerformanceView'))
+const NotFoundPage = lazy(() => import('./components/common/NotFoundPage'))
 import RoleGuard from './components/auth/RoleGuard'
 import { useAuth } from './context/AuthContext'
 import FeatureGuard from './components/auth/FeatureGuard'
@@ -797,7 +798,7 @@ export default function App() {
 
           <Route path="/practice" element={<Navigate to="/questions" replace />} />
           <Route path="/practice/*" element={<Navigate to="/questions" replace />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
         </div>
         </Suspense>

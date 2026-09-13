@@ -220,36 +220,9 @@ function computeBadges(entry: {
   return badges.slice(0, 3)
 }
 
-// Dedicated isolated client for reading real system data without touching browser user session.
-// Uses a unique storageKey to avoid the "Multiple GoTrueClient instances" warning.
-const isolatedReader = createClient(supabaseUrl, supabaseAnonKey, {
-  auth: { persistSession: false, autoRefreshToken: false, storageKey: 'leaderboard-reader' },
-})
-
-let readerAuthenticated = false
-let readerAuthPromise: Promise<typeof isolatedReader> | null = null
-
+// Uses the primary unified Supabase client for reading database records cleanly
 export async function ensureReaderAuth() {
-  if (readerAuthenticated) return isolatedReader
-  if (readerAuthPromise) return readerAuthPromise
-
-  readerAuthPromise = (async () => {
-    try {
-      const adminPassword = import.meta.env.VITE_ADMIN_PASSWORD || 'Admin@9999'
-      const { error } = await isolatedReader.auth.signInWithPassword({
-        email: 'admin@interviewprep.com',
-        password: adminPassword,
-      })
-      if (!error) {
-        readerAuthenticated = true
-      }
-    } catch (err) {
-      console.warn('[Leaderboard] Reader auth error:', err)
-    }
-    return isolatedReader
-  })()
-
-  return readerAuthPromise
+  return supabase
 }
 
 export const leaderboardService = {

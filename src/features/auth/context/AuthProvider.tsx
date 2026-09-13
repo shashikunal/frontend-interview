@@ -251,73 +251,86 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const loginAsAdmin = useCallback(
     async (usernameInput: string, passwordInput: string): Promise<{ success: boolean; message: string }> => {
-      const ADMIN_USERNAME = import.meta.env.VITE_ADMIN_USERNAME
-      const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD
-
-      if (!ADMIN_USERNAME || !ADMIN_PASSWORD) {
-        return { success: false, message: 'Administrator access is not configured. Set VITE_ADMIN_USERNAME and VITE_ADMIN_PASSWORD environment variables.' }
-      }
-
-      if (usernameInput.trim() !== ADMIN_USERNAME || passwordInput !== ADMIN_PASSWORD) {
-        return { success: false, message: 'Invalid administrator credentials. Access denied.' }
+      const trimmedUser = usernameInput.trim()
+      if (!trimmedUser || !passwordInput) {
+        return { success: false, message: 'Please enter both administrator username and password.' }
       }
 
       setIsLoading(true)
-      const adminEmail = 'admin@interviewprep.com'
-
       try {
-        const { data: signInData, error: signInErr } = await supabase.auth.signInWithPassword({
-          email: adminEmail,
-          password: ADMIN_PASSWORD,
+        const response = await fetch('/api/admin-auth', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username: trimmedUser, password: passwordInput }),
         })
 
-        if (signInErr) {
-          await supabase.auth.signUp({
-            email: adminEmail,
-            password: ADMIN_PASSWORD,
-            options: {
-              data: { full_name: 'Platform Administrator', role: 'admin' },
-            },
-          })
-        } else if (signInData.session) {
-          setSession(signInData.session)
-          setRawUser(signInData.user)
+        const result = await response.json().catch(() => ({}))
+
+        if (!response.ok || !result.success) {
+          setIsLoading(false)
+          return { success: false, message: result.error || 'Invalid administrator credentials. Access denied.' }
         }
-      } catch (authErr) {
-        console.warn('[AuthProvider] Supabase admin auth error:', authErr)
+
+        const adminEmail = 'admin@interviewprep.com'
+
+        // Optional Supabase session synchronization for Postgres RLS policies
+        try {
+          const { data: signInData, error: signInErr } = await supabase.auth.signInWithPassword({
+            email: adminEmail,
+            password: passwordInput,
+          })
+
+          if (signInErr) {
+            await supabase.auth.signUp({
+              email: adminEmail,
+              password: passwordInput,
+              options: {
+                data: { full_name: 'Platform Administrator', role: 'admin' },
+              },
+            })
+          } else if (signInData.session) {
+            setSession(signInData.session)
+            setRawUser(signInData.user)
+          }
+        } catch (authErr) {
+          console.warn('[AuthProvider] Supabase admin auth notice:', authErr)
+        }
+
+        roleOverrideRef.current = 'admin'
+        const adminProfile: AuthUserProfile = {
+          id: result.user?.id || 'admin_super_user',
+          email: adminEmail,
+          name: result.user?.name || 'Platform Administrator',
+          role: 'admin',
+          entitlements: DEFAULT_ENTITLEMENTS.admin,
+          permissions: ['admin:all', 'admin:users_manage', 'admin:billing', 'admin:audit'],
+          status: 'ACTIVE',
+          createdAt: new Date().toISOString(),
+        }
+
+        try {
+          localStorage.setItem('interviewprep_active_profile', JSON.stringify(adminProfile))
+        } catch {
+          // ignore
+        }
+
+        setUserProfile(adminProfile)
+        setIsLoading(false)
+        setIsAuthModalOpen(false)
+
+        await auditService.logEvent({
+          action: 'ADMIN_SIGN_IN',
+          resource: 'admin.auth',
+          details: { adminEmail, username: trimmedUser },
+        })
+
+        return { success: true, message: 'Administrator login successful.' }
+      } catch (err: any) {
+        setIsLoading(false)
+        return { success: false, message: err?.message || 'Server connection failed during administrator authentication.' }
       }
-
-      roleOverrideRef.current = 'admin'
-      const adminProfile: AuthUserProfile = {
-        id: 'admin_super_user',
-        email: adminEmail,
-        name: 'Platform Administrator',
-        role: 'admin',
-        entitlements: DEFAULT_ENTITLEMENTS.admin,
-        permissions: ['admin:all', 'admin:users_manage', 'admin:billing', 'admin:audit'],
-        status: 'ACTIVE',
-        createdAt: new Date().toISOString(),
-      }
-
-      try {
-        localStorage.setItem('interviewprep_active_profile', JSON.stringify(adminProfile))
-      } catch {
-        // ignore
-      }
-
-      setUserProfile(adminProfile)
-      setIsLoading(false)
-      setIsAuthModalOpen(false)
-
-      await auditService.logEvent({
-        action: 'ADMIN_SIGN_IN',
-        resource: 'admin.auth',
-        details: { adminEmail, username: usernameInput.trim() },
-      })
-
-      return { success: true, message: 'Administrator access authenticated successfully.' }
     },
-    []
+    [auditService]
   )
 
   const signUp = useCallback(async (params: SignUpCredentials): Promise<AuthActionResult> => {
