@@ -17,6 +17,21 @@ import { FRONTEND_JS_QUESTIONS } from '../components/frontendjs/data/frontendJsQ
 
 export type { SubmissionRecord, QuestionAttempt }
 
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+
+function populateLocalPseudoProfiles(userIds: string[], profileMap: Map<string, any>) {
+  for (const id of userIds) {
+    if (!id || UUID_REGEX.test(id)) continue
+    if (id === 'admin_super_user' || id.includes('admin')) {
+      profileMap.set(id, { id, email: 'admin@interviewprep.com', full_name: 'Platform Administrator' })
+    } else if (id.startsWith('guest_') || id.startsWith('anon')) {
+      profileMap.set(id, { id, email: 'guest@interviewprep.com', full_name: 'Guest Candidate' })
+    } else {
+      profileMap.set(id, { id, email: `${id}@interviewprep.com`, full_name: id })
+    }
+  }
+}
+
 export interface AdminOverviewStats {
   totalUsers: number
   activeUsers: number
@@ -594,17 +609,22 @@ export const adminAnalyticsService = {
       )
 
       let profileMap = new Map<string, any>()
-      if (allUserIds.length > 0) {
+      populateLocalPseudoProfiles(allUserIds, profileMap)
+      const validUuids = allUserIds.filter(id => typeof id === 'string' && UUID_REGEX.test(id))
+
+      if (validUuids.length > 0) {
         try {
           const { data: profiles } = await client
             .from('profiles')
             .select('id, email, full_name')
-            .in('id', allUserIds)
-          profileMap = new Map((profiles || []).map(p => [p.id, p]))
+            .in('id', validUuids)
+          if (Array.isArray(profiles)) {
+            profiles.forEach(p => profileMap.set(p.id, p))
+          }
         } catch (_) {}
 
         // Enrich candidates missing in profiles from activity_logs metadata
-        const missingUserIds = allUserIds.filter(id => !profileMap.has(id))
+        const missingUserIds = validUuids.filter(id => !profileMap.has(id))
         if (missingUserIds.length > 0) {
           try {
             const { data: logs } = await client
@@ -994,17 +1014,22 @@ export const adminAnalyticsService = {
 
       // 3. Fetch profiles
       let profileMap = new Map<string, any>()
-      if (allUserIds.length > 0) {
+      populateLocalPseudoProfiles(allUserIds, profileMap)
+      const validUuids = allUserIds.filter(id => typeof id === 'string' && UUID_REGEX.test(id))
+
+      if (validUuids.length > 0) {
         try {
           const { data: profiles } = await client
             .from('profiles')
             .select('id, email, full_name')
-            .in('id', allUserIds)
-          profileMap = new Map((profiles || []).map(p => [p.id, p]))
+            .in('id', validUuids)
+          if (Array.isArray(profiles)) {
+            profiles.forEach(p => profileMap.set(p.id, p))
+          }
         } catch (_) {}
 
         // Enrich candidates missing in profiles from activity_logs metadata
-        const missingUserIds = allUserIds.filter(id => !profileMap.has(id))
+        const missingUserIds = validUuids.filter(id => !profileMap.has(id))
         if (missingUserIds.length > 0) {
           try {
             const { data: logs } = await client
@@ -1195,12 +1220,21 @@ export const adminAnalyticsService = {
       if (!error && Array.isArray(data) && data.length > 0) {
         // Enrich with profiles
         const userIds = Array.from(new Set(data.map(d => d.user_id).filter(Boolean)))
-        const { data: profiles } = await supabase
-          .from('profiles')
-          .select('id, email, full_name')
-          .in('id', userIds)
+        const validUuids = userIds.filter(id => typeof id === 'string' && UUID_REGEX.test(id))
+        const profileMap = new Map<string, any>()
+        populateLocalPseudoProfiles(userIds, profileMap)
 
-        const profileMap = new Map((profiles || []).map(p => [p.id, p]))
+        if (validUuids.length > 0) {
+          try {
+            const { data: profiles } = await supabase
+              .from('profiles')
+              .select('id, email, full_name')
+              .in('id', validUuids)
+            if (Array.isArray(profiles)) {
+              profiles.forEach(p => profileMap.set(p.id, p))
+            }
+          } catch (_) {}
+        }
 
         return data.map(d => {
           const prof = profileMap.get(d.user_id)

@@ -29,11 +29,17 @@ class FrontendJsLeaderboardService {
 
         if (!error && progressRows && progressRows.length > 0) {
           // Fetch profiles for names
+          const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
           const userIds = progressRows.map(r => r.user_id)
-          const { data: profiles } = await supabase
-            .from('profiles')
-            .select('id, full_name, email')
-            .in('id', userIds)
+          const validUserIds = userIds.filter(id => typeof id === 'string' && UUID_REGEX.test(id))
+          let profiles: any[] = []
+          if (validUserIds.length > 0) {
+            const { data } = await supabase
+              .from('profiles')
+              .select('id, full_name, email')
+              .in('id', validUserIds)
+            profiles = data || []
+          }
 
           const profileMap = new Map((profiles || []).map(p => [p.id, p]))
 

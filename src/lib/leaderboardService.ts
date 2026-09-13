@@ -454,9 +454,10 @@ export const leaderboardService = {
 
       const profileMap = new Map((rawProfiles || []).map(p => [p.id, p]))
 
+      const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
       // Enrich missing candidate profiles from activity_logs metadata (e.g. shashikunal@gmail.com)
       const allSubUserIds = Array.from(new Set(rawSubmissions.map(s => s.user_id).filter(Boolean)))
-      const missingUserIds = allSubUserIds.filter(id => !profileMap.has(id))
+      const missingUserIds = allSubUserIds.filter(id => !profileMap.has(id) && UUID_REGEX.test(id))
       if (missingUserIds.length > 0) {
         try {
           const { data: logs } = await client
