@@ -17,6 +17,7 @@ import {
   candidateAiEvaluationService,
   type CandidateAiEvaluationReport,
 } from '../../services/candidateAiEvaluationService';
+import { candidateEmailNotificationService } from '../../services/candidateEmailNotificationService';
 import type {
   CodingAttempt,
   UserPerformanceSummary,
@@ -247,6 +248,11 @@ export default function AdminCandidatePerformancePage({ isEmbedded = false }: Ad
   const [showScheduleModal, setShowScheduleModal] = useState(false);
   const [actionSuccessMsg, setActionSuccessMsg] = useState<string | null>(null);
 
+  // Email Notification & Calendar Invites State
+  const [sendEmailInvite, setSendEmailInvite] = useState(true);
+  const [dispatchingEmailRoundId, setDispatchingEmailRoundId] = useState<string | null>(null);
+  const [dispatchingAssignmentId, setDispatchingAssignmentId] = useState<string | null>(null);
+
   // Assignment Form State
   const [assignTitle, setAssignTitle] = useState('Frontend Architecture & Complex State');
   const [assignTrack, setAssignTrack] = useState<'MACHINE_CODING' | 'DSA' | 'CORE_PROGRAMMING' | 'FRONTEND_JS'>('MACHINE_CODING');
@@ -327,10 +333,65 @@ export default function AdminCandidatePerformancePage({ isEmbedded = false }: Ad
       });
       setInterviews(prev => [...prev, scheduled]);
       setShowScheduleModal(false);
-      setActionSuccessMsg('Live Technical Interview scheduled successfully!');
-      setTimeout(() => setActionSuccessMsg(null), 4000);
+
+      if (sendEmailInvite) {
+        await candidateEmailNotificationService.sendInterviewInvitation({
+          candidate: candidateProfile,
+          interview: scheduled,
+        });
+        setActionSuccessMsg(`Live Technical Interview scheduled and invitation email dispatched to ${candidateProfile.email}!`);
+      } else {
+        setActionSuccessMsg('Live Technical Interview scheduled successfully!');
+      }
+      setTimeout(() => setActionSuccessMsg(null), 5000);
     } catch (err) {
       console.error(err);
+    }
+  };
+
+  const handleSendInterviewEmail = async (round: ScheduledInterviewRound) => {
+    if (!candidateProfile) return;
+    setDispatchingEmailRoundId(round.id);
+    try {
+      const res = await candidateEmailNotificationService.sendInterviewInvitation({
+        candidate: candidateProfile,
+        interview: round,
+      });
+      setActionSuccessMsg(`✓ ${res.message}`);
+      setTimeout(() => setActionSuccessMsg(null), 5000);
+      setInterviews(prev => [...prev]);
+    } catch (err: any) {
+      console.error('Failed to dispatch interview email:', err);
+    } finally {
+      setDispatchingEmailRoundId(null);
+    }
+  };
+
+  const handleDownloadIcs = (round: ScheduledInterviewRound) => {
+    if (!candidateProfile) return;
+    candidateEmailNotificationService.downloadIcsFile(round, candidateProfile);
+  };
+
+  const handleOpenGoogleCalendar = (round: ScheduledInterviewRound) => {
+    if (!candidateProfile) return;
+    const url = candidateEmailNotificationService.getGoogleCalendarUrl(round, candidateProfile);
+    window.open(url, '_blank', 'noopener,noreferrer');
+  };
+
+  const handleSendAssignmentEmail = async (ass: CandidateAssignment) => {
+    if (!candidateProfile) return;
+    setDispatchingAssignmentId(ass.id);
+    try {
+      const res = await candidateEmailNotificationService.sendAssessmentAssignment({
+        candidate: candidateProfile,
+        assignment: ass,
+      });
+      setActionSuccessMsg(`✓ ${res.message}`);
+      setTimeout(() => setActionSuccessMsg(null), 5000);
+    } catch (err: any) {
+      console.error('Failed to dispatch assignment email:', err);
+    } finally {
+      setDispatchingAssignmentId(null);
     }
   };
 
@@ -2149,6 +2210,18 @@ export default function AdminCandidatePerformancePage({ isEmbedded = false }: Ad
                               </span>
                               <span className="item-assigned-by">By: {ass.assignedBy}</span>
                             </div>
+
+                            <div className="item-action-toolbar" style={{ marginTop: '8px', paddingTop: '8px', borderTop: '1px dashed var(--admin-perf-border)' }}>
+                              <button
+                                type="button"
+                                className="item-cal-action-btn email"
+                                onClick={() => handleSendAssignmentEmail(ass)}
+                                disabled={dispatchingAssignmentId === ass.id}
+                                title="Dispatch email notification with instructions and deadline to candidate"
+                              >
+                                {dispatchingAssignmentId === ass.id ? '✉️ Dispatching...' : '✉️ Notify via Email'}
+                              </button>
+                            </div>
                           </div>
                         );
                       })}
@@ -2183,50 +2256,95 @@ export default function AdminCandidatePerformancePage({ isEmbedded = false }: Ad
                       </button>
                     </div>
                   ) : (
-                    <div className="admin-hiring-list">
-                      {interviews.map(round => (
-                        <div key={round.id} className="admin-interview-item">
-                          <div className="item-top">
-                            <div className="item-title-group">
-                              <h5>{round.roundTitle}</h5>
-                              <span className="item-round-type">{round.roundType}</span>
-                              <span className="item-duration-tag">⏱ {round.durationMinutes}m</span>
+                      <div className="admin-hiring-list">
+                        {interviews.map(round => {
+                          const dispatch = candidateEmailNotificationService.getDispatchStatus(round.id);
+                          return (
+                            <div key={round.id} className="admin-interview-item">
+                              <div className="item-top">
+                                <div className="item-title-group">
+                                  <h5>{round.roundTitle}</h5>
+                                  <span className="item-round-type">{round.roundType}</span>
+                                  <span className="item-duration-tag">⏱ {round.durationMinutes}m</span>
+                                </div>
+                                <button
+                                  type="button"
+                                  className={`item-status-btn status-${round.status.toLowerCase()}`}
+                                  onClick={() => handleToggleInterviewStatus(round.id, round.status)}
+                                  title="Click to toggle status (Scheduled → Completed → Cancelled)"
+                                >
+                                  {round.status === 'Scheduled' && '🟢 Scheduled'}
+                                  {round.status === 'Completed' && '✓ Completed'}
+                                  {round.status === 'Cancelled' && '✕ Cancelled'}
+                                </button>
+                              </div>
+
+                              {round.interviewerNotes && (
+                                <p className="item-instructions">📝 {round.interviewerNotes}</p>
+                              )}
+
+                              <div className="item-footer">
+                                <span className="item-date">
+                                  🗓️ {new Date(round.scheduledDate).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })} at {new Date(round.scheduledDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                </span>
+                                {round.meetingLink && (
+                                  <a
+                                    href={round.meetingLink}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="item-join-link"
+                                  >
+                                    Join Meeting Room ↗
+                                  </a>
+                                )}
+                              </div>
+
+                              {/* Calendar & Email Quick Actions Toolbar */}
+                              <div className="item-action-toolbar">
+                                <div className="item-dispatch-indicator">
+                                  {dispatch.dispatched ? (
+                                    <span className="dispatch-badge delivered" title={`Dispatched on ${new Date(dispatch.dispatchedAt!).toLocaleString()}`}>
+                                      ✉️ Invite Sent ({new Date(dispatch.dispatchedAt!).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })})
+                                    </span>
+                                  ) : (
+                                    <span className="dispatch-badge pending" title="Email invitation not yet sent">
+                                      ✉️ Invite Not Sent
+                                    </span>
+                                  )}
+                                </div>
+                                <div className="item-action-btns">
+                                  <button
+                                    type="button"
+                                    className="item-cal-action-btn email"
+                                    onClick={() => handleSendInterviewEmail(round)}
+                                    disabled={dispatchingEmailRoundId === round.id}
+                                    title="Send or resend email invitation and prep instructions to candidate"
+                                  >
+                                    {dispatchingEmailRoundId === round.id ? '✉️ Sending...' : dispatch.dispatched ? '✉️ Resend Invite' : '✉️ Send Invite'}
+                                  </button>
+                                  <button
+                                    type="button"
+                                    className="item-cal-action-btn ics"
+                                    onClick={() => handleDownloadIcs(round)}
+                                    title="Download standard .ics calendar invite for Google Calendar, Outlook, or Apple Calendar"
+                                  >
+                                    📅 .ics
+                                  </button>
+                                  <button
+                                    type="button"
+                                    className="item-cal-action-btn gcal"
+                                    onClick={() => handleOpenGoogleCalendar(round)}
+                                    title="Add directly to Google Calendar via web interface"
+                                  >
+                                    🗓️ Google Cal ↗
+                                  </button>
+                                </div>
+                              </div>
                             </div>
-                            <button
-                              type="button"
-                              className={`item-status-btn status-${round.status.toLowerCase()}`}
-                              onClick={() => handleToggleInterviewStatus(round.id, round.status)}
-                              title="Click to toggle status (Scheduled → Completed → Cancelled)"
-                            >
-                              {round.status === 'Scheduled' && '🟢 Scheduled'}
-                              {round.status === 'Completed' && '✓ Completed'}
-                              {round.status === 'Cancelled' && '✕ Cancelled'}
-                            </button>
-                          </div>
-
-                          {round.interviewerNotes && (
-                            <p className="item-instructions">📝 {round.interviewerNotes}</p>
-                          )}
-
-                          <div className="item-footer">
-                            <span className="item-date">
-                              🗓️ {new Date(round.scheduledDate).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })} at {new Date(round.scheduledDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                            </span>
-                            {round.meetingLink && (
-                              <a
-                                href={round.meetingLink}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="item-join-link"
-                              >
-                                Join Meeting Room ↗
-                              </a>
-                            )}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
+                          );
+                        })}
+                      </div>
+                    )}
                 </div>
               </div>
             </div>
@@ -3513,6 +3631,22 @@ export default function AdminCandidatePerformancePage({ isEmbedded = false }: Ad
                   onChange={e => setInterviewerNotes(e.target.value)}
                   placeholder="Specific topics, past gaps to investigate, or architectural challenges..."
                 />
+              </div>
+
+              <div className="form-row form-checkbox-card">
+                <label className="checkbox-row-label">
+                  <input
+                    type="checkbox"
+                    checked={sendEmailInvite}
+                    onChange={e => setSendEmailInvite(e.target.checked)}
+                  />
+                  <div>
+                    <strong>✉️ Automatically Dispatch Email Invitation &amp; Calendar Invite (.ics)</strong>
+                    <p>
+                      Candidate (<code>{candidateProfile.email}</code>) will immediately receive round details, Google Meet room link, calendar <code>.ics</code> invite, and preparation instructions.
+                    </p>
+                  </div>
+                </label>
               </div>
 
               <div className="admin-action-form-footer">

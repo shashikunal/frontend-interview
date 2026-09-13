@@ -4017,5 +4017,147 @@ html.light,
   line-height: 1.45;
 }
 
+/* ==========================================================================
+   INTERVIEW & ASSESSMENT EMAIL DISPATCH & CALENDAR ACTION BUTTONS
+   ========================================================================== */
+
+.item-action-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--admin-perf-border);
+}
+
+.item-dispatch-indicator {
+  display: flex;
+  align-items: center;
+}
+
+.dispatch-badge {
+  font-size: 0.74rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.dispatch-badge.delivered {
+  background: rgba(1, 181, 116, 0.12);
+  color: #01b574;
+  border: 1px solid rgba(1, 181, 116, 0.28);
+}
+
+.dispatch-badge.pending {
+  background: rgba(160, 174, 192, 0.12);
+  color: var(--admin-perf-text-sub);
+  border: 1px solid var(--admin-perf-border);
+}
+
+.item-action-btns {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.item-cal-action-btn {
+  background: var(--admin-perf-card-inner);
+  border: 1px solid var(--admin-perf-border);
+  color: var(--admin-perf-text-title);
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.2s ease;
+}
+
+.item-cal-action-btn:hover:not(:disabled) {
+  border-color: var(--admin-perf-brand);
+  background: var(--admin-perf-card);
+  transform: translateY(-1px);
+}
+
+.item-cal-action-btn.email {
+  color: #4318ff;
+  border-color: rgba(67, 24, 255, 0.25);
+  background: rgba(67, 24, 255, 0.05);
+}
+
+.item-cal-action-btn.email:hover:not(:disabled) {
+  background: rgba(67, 24, 255, 0.12);
+  border-color: #4318ff;
+}
+
+.item-cal-action-btn.ics:hover {
+  border-color: #01b574;
+  color: #01b574;
+}
+
+.item-cal-action-btn.gcal:hover {
+  border-color: #ffb547;
+  color: #ffb547;
+}
+
+.item-cal-action-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Checkbox card in Schedule Modal */
+.form-checkbox-card {
+  background: var(--admin-perf-card-inner);
+  border: 1px solid rgba(67, 24, 255, 0.25);
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-top: 14px;
+}
+
+.checkbox-row-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  cursor: pointer;
+}
+
+.checkbox-row-label input[type="checkbox"] {
+  margin-top: 3px;
+  width: 18px;
+  height: 18px;
+  accent-color: #4318ff;
+  cursor: pointer;
+}
+
+.checkbox-row-label div strong {
+  font-size: 0.88rem;
+  color: var(--admin-perf-text-title);
+  display: block;
+  margin-bottom: 2px;
+}
+
+.checkbox-row-label div p {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--admin-perf-text-sub);
+  line-height: 1.4;
+}
+
+.checkbox-row-label div code {
+  background: rgba(67, 24, 255, 0.08);
+  color: #4318ff;
+  padding: 1px 4px;
+  border-radius: 4px;
+  font-family: monospace;
+}
+
+
 
 
