@@ -168,7 +168,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             try {
               const saved = localStorage.getItem('interviewprep_active_profile')
               if (saved) {
-                setUserProfile(JSON.parse(saved))
+                const parsed = JSON.parse(saved)
+                setUserProfile(parsed)
+                if (parsed?.role === 'admin') {
+                  fetch('/api/admin-auth?action=session')
+                    .then(r => r.json())
+                    .then(sessData => {
+                      if (sessData.success && sessData.session?.access_token) {
+                        supabase.auth.setSession({
+                          access_token: sessData.session.access_token,
+                          refresh_token: sessData.session.refresh_token,
+                        })
+                      }
+                    })
+                    .catch(() => {})
+                }
               }
             } catch {
               // ignore
@@ -274,26 +288,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const adminEmail = 'admin@interviewprep.com'
 
         // Optional Supabase session synchronization for Postgres RLS policies
-        try {
-          const { data: signInData, error: signInErr } = await supabase.auth.signInWithPassword({
-            email: adminEmail,
-            password: passwordInput,
-          })
-
-          if (signInErr) {
-            await supabase.auth.signUp({
-              email: adminEmail,
-              password: passwordInput,
-              options: {
-                data: { full_name: 'Platform Administrator', role: 'admin' },
-              },
+        if (result.session?.access_token) {
+          try {
+            await supabase.auth.setSession({
+              access_token: result.session.access_token,
+              refresh_token: result.session.refresh_token,
             })
-          } else if (signInData.session) {
-            setSession(signInData.session)
-            setRawUser(signInData.user)
+            setSession(result.session)
+            setRawUser(result.session.user)
+          } catch (authErr) {
+            console.warn('[AuthProvider] Supabase setSession notice:', authErr)
           }
-        } catch (authErr) {
-          console.warn('[AuthProvider] Supabase admin auth notice:', authErr)
         }
 
         roleOverrideRef.current = 'admin'

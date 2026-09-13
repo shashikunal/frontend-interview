@@ -966,6 +966,20 @@ class CodingHistoryService {
         db.from('question_attempts').select('user_id, question_id, status, created_at').then(r => r, () => ({ data: [] })),
       ]);
 
+      // If client-side queries return empty due to RLS, seamlessly fall back to serverless candidate history gateway
+      if ((!subsRes.data || subsRes.data.length === 0) && (!cpRes.data || cpRes.data.length === 0)) {
+        try {
+          const apiRes = await fetch('/api/candidate-history?mode=summaries');
+          if (apiRes.ok) {
+            const json = await apiRes.json();
+            if (json.success && json.summaries && Object.keys(json.summaries).length > 0) {
+              this.batchSummaryCache = { data: json.summaries, timestamp: Date.now() };
+              return json.summaries;
+            }
+          }
+        } catch (_) {}
+      }
+
       if (cpRes.data) {
         cpRes.data.forEach((item: any) => {
           if (item.user_id) {

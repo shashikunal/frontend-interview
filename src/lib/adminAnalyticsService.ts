@@ -487,6 +487,27 @@ export const adminAnalyticsService = {
       console.warn('[AdminAnalyticsService] Supabase stats query fallback:', err)
     }
 
+    // Fallback to serverless candidate history gateway if RLS dropped rows
+    if (totalSubmissions === 0 && totalAttempts === 0) {
+      try {
+        const apiRes = await fetch('/api/candidate-history?mode=overview')
+        if (apiRes.ok) {
+          const json = await apiRes.json()
+          if (json.success && json.overview) {
+            const ov = json.overview
+            totalUsers = ov.totalUsers || totalUsers
+            activeUsers = ov.activeUsers || activeUsers
+            totalAttempts = ov.totalAttempts || totalAttempts
+            totalSubmissions = ov.totalSubmissions || totalSubmissions
+            completedQuestions = ov.completedQuestions || completedQuestions
+            mcSubmissionsCount = ov.mcSubmissionsCount || mcSubmissionsCount
+            cpSubmissionsCount = ov.cpSubmissionsCount || cpSubmissionsCount
+            dsaSubmissionsCount = ov.dsaSubmissionsCount || dsaSubmissionsCount
+          }
+        }
+      } catch (_) {}
+    }
+
     // Source of truth user and activity counts derived directly from database rows
     const totalPlatformChallenges = mcTotalQuestions + dsaTotalQuestions + cpTotalQuestions + fjsTotalQuestions
     const completionRate = totalAttempts > 0 ? Math.round((completedQuestions / totalAttempts) * 100) : 0
@@ -564,10 +585,23 @@ export const adminAnalyticsService = {
         client.from('frontend_js_submissions').select('*').order('created_at', { ascending: false }).limit(limit),
       ])
 
-      const mcRows: any[] = mcRes.status === 'fulfilled' && Array.isArray(mcRes.value.data) ? mcRes.value.data : []
+      let mcRows: any[] = mcRes.status === 'fulfilled' && Array.isArray(mcRes.value.data) ? mcRes.value.data : []
       const dsaRows: any[] = dsaRes.status === 'fulfilled' && Array.isArray(dsaRes.value.data) ? dsaRes.value.data : []
       const cpRows: any[] = cpRes.status === 'fulfilled' && Array.isArray(cpRes.value.data) ? cpRes.value.data : []
       const fjsRows: any[] = fjsRes.status === 'fulfilled' && Array.isArray(fjsRes.value.data) ? fjsRes.value.data : []
+
+      // Fallback to serverless candidate history gateway if RLS dropped rows
+      if (mcRows.length === 0 && cpRows.length === 0) {
+        try {
+          const apiRes = await fetch('/api/candidate-history?mode=submissions')
+          if (apiRes.ok) {
+            const json = await apiRes.json()
+            if (json.success && Array.isArray(json.submissions) && json.submissions.length > 0) {
+              mcRows = json.submissions
+            }
+          }
+        } catch (_) {}
+      }
 
       // 2. Fetch local storage submissions for all 4 tracks
       let localMC: StoredCandidateSubmission[] = []

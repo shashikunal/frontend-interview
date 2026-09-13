@@ -318,6 +318,36 @@ export const profileService = {
         saveLocalProfiles(mapped)
         return mapped
       }
+
+      // If RLS blocked anon client, fetch via candidate-history gateway
+      try {
+        const apiRes = await fetch('/api/candidate-history?mode=profiles')
+        if (apiRes.ok) {
+          const json = await apiRes.json()
+          if (json.success && Array.isArray(json.profiles) && json.profiles.length > 0) {
+            const mapped: AuthUserProfile[] = json.profiles.map((d: any) => ({
+              id: d.id,
+              email: d.email,
+              name: d.full_name || d.email?.split('@')[0] || 'User',
+              role: (d.role as UserRole) || 'candidate',
+              avatarUrl: d.avatar_url,
+              targetCompany: d.target_company,
+              experienceLevel: d.experience_level,
+              entitlements: d.feature_entitlements || DEFAULT_ENTITLEMENTS[(d.role as UserRole) || 'candidate'],
+              status: (d.status as 'ACTIVE' | 'SUSPENDED') || 'ACTIVE',
+              createdAt: d.created_at,
+              updatedAt: d.updated_at,
+            }))
+            for (const known of KNOWN_SUPABASE_AUTH_USERS) {
+              if (!mapped.some(p => p.email.toLowerCase() === known.email.toLowerCase())) {
+                mapped.push(known)
+              }
+            }
+            saveLocalProfiles(mapped)
+            return mapped
+          }
+        }
+      } catch (_) {}
     } catch {
       // ignore
     }

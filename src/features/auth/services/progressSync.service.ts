@@ -107,6 +107,26 @@ export const progressSyncService = {
         supabase.from('dsa_submissions').select('user_id, question_id, status, tests_passed, tests_total, created_at').then(res => res, () => ({ data: [] })),
       ])
 
+      let remoteSubs = sbSubmissions || []
+      let remoteCPSubs = sbCPSubs || []
+      let remoteDSASubs = sbDSASubs || []
+      let remoteFJSSubs = sbFJSSubs || []
+
+      if (remoteSubs.length === 0 && remoteCPSubs.length === 0) {
+        try {
+          const apiRes = await fetch('/api/candidate-history?mode=all-submissions')
+          if (apiRes.ok) {
+            const json = await apiRes.json()
+            if (json.success) {
+              if (Array.isArray(json.submissions) && json.submissions.length > 0) remoteSubs = json.submissions
+              if (Array.isArray(json.coreProgrammingSubmissions) && json.coreProgrammingSubmissions.length > 0) remoteCPSubs = json.coreProgrammingSubmissions
+              if (Array.isArray(json.dsaSubmissions) && json.dsaSubmissions.length > 0) remoteDSASubs = json.dsaSubmissions
+              if (Array.isArray(json.frontendJsSubmissions) && json.frontendJsSubmissions.length > 0) remoteFJSSubs = json.frontendJsSubmissions
+            }
+          }
+        } catch (_) {}
+      }
+
       // 3. Read local storage tracking submissions and attempts (offline-first real data)
       let localSubs: Array<{ userId?: string; questionId?: string | number; status?: string; score?: number; createdAt?: string }> = []
       let localAttempts: Array<{ userId?: string; questionId?: string | number; status?: string; createdAt?: string }> = []
@@ -192,7 +212,7 @@ export const progressSyncService = {
         }
 
         // 1. Supabase submissions
-        ;(sbSubmissions || []).forEach(s => {
+        ;(remoteSubs || []).forEach(s => {
           if (isUserRecord(s.user_id)) {
             const isSolved = s.status === 'accepted' || (s.score !== undefined && Number(s.score) >= 70) || s.status === 'completed'
             if (isSolved && s.question_id) {
@@ -205,21 +225,21 @@ export const progressSyncService = {
         })
 
         // 1b. Supabase Core Programming, Frontend JS & DSA submissions
-        ;(sbCPSubs || []).forEach((s: any) => {
+        ;(remoteCPSubs || []).forEach((s: any) => {
           if (isUserRecord(s.user_id)) {
             const isSolved = s.status === 'accepted' || s.status === 'Accepted' || (s.score !== undefined && Number(s.score) >= 70)
             if (isSolved && s.question_id) solvedQuestionIds.add(String(s.question_id))
             if (s.score !== undefined && s.score !== null) candidateScores.push(Number(s.score))
           }
         })
-        ;(sbFJSSubs || []).forEach((s: any) => {
+        ;(remoteFJSSubs || []).forEach((s: any) => {
           if (isUserRecord(s.user_id)) {
             const isSolved = s.status === 'accepted' || s.status === 'Accepted' || (s.score !== undefined && Number(s.score) >= 70)
             if (isSolved && s.question_id) solvedQuestionIds.add(String(s.question_id))
             if (s.score !== undefined && s.score !== null) candidateScores.push(Number(s.score))
           }
         })
-        ;(sbDSASubs || []).forEach((s: any) => {
+        ;(remoteDSASubs || []).forEach((s: any) => {
           if (isUserRecord(s.user_id)) {
             const calculatedScore = s.score !== undefined && s.score !== null ? Number(s.score) : (s.status === 'accepted' || s.status === 'Accepted' ? 100 : (s.tests_total ? Math.round((Number(s.tests_passed) / Number(s.tests_total)) * 100) : 0))
             const isSolved = s.status === 'accepted' || s.status === 'Accepted' || calculatedScore >= 70

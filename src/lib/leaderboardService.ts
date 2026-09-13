@@ -419,11 +419,28 @@ export const leaderboardService = {
           .limit(1000),
       ])
 
-      const rawSubmissions = subsRes.status === 'fulfilled' && !subsRes.value.error ? subsRes.value.data || [] : []
-      const rawCPRemote = cpRes.status === 'fulfilled' && !cpRes.value.error ? cpRes.value.data || [] : []
-      const rawFJSRemote = fjsRes.status === 'fulfilled' && !fjsRes.value.error ? fjsRes.value.data || [] : []
-      const rawDSARemote = dsaRes.status === 'fulfilled' && !dsaRes.value.error ? dsaRes.value.data || [] : []
-      const rawProfiles = profRes.status === 'fulfilled' && !profRes.value.error ? profRes.value.data || [] : []
+      let rawSubmissions = subsRes.status === 'fulfilled' && !subsRes.value.error ? subsRes.value.data || [] : []
+      let rawCPRemote = cpRes.status === 'fulfilled' && !cpRes.value.error ? cpRes.value.data || [] : []
+      let rawFJSRemote = fjsRes.status === 'fulfilled' && !fjsRes.value.error ? fjsRes.value.data || [] : []
+      let rawDSARemote = dsaRes.status === 'fulfilled' && !dsaRes.value.error ? dsaRes.value.data || [] : []
+      let rawProfiles = profRes.status === 'fulfilled' && !profRes.value.error ? profRes.value.data || [] : []
+
+      // Fallback to serverless candidate history gateway if RLS dropped rows
+      if (rawSubmissions.length === 0 && rawCPRemote.length === 0) {
+        try {
+          const apiRes = await fetch('/api/candidate-history?mode=all-submissions')
+          if (apiRes.ok) {
+            const json = await apiRes.json()
+            if (json.success) {
+              if (Array.isArray(json.submissions) && json.submissions.length > 0) rawSubmissions = json.submissions
+              if (Array.isArray(json.coreProgrammingSubmissions) && json.coreProgrammingSubmissions.length > 0) rawCPRemote = json.coreProgrammingSubmissions
+              if (Array.isArray(json.dsaSubmissions) && json.dsaSubmissions.length > 0) rawDSARemote = json.dsaSubmissions
+              if (Array.isArray(json.frontendJsSubmissions) && json.frontendJsSubmissions.length > 0) rawFJSRemote = json.frontendJsSubmissions
+              if (Array.isArray(json.profiles) && json.profiles.length > 0 && rawProfiles.length === 0) rawProfiles = json.profiles
+            }
+          }
+        } catch (_) {}
+      }
 
       const profileMap = new Map((rawProfiles || []).map(p => [p.id, p]))
 
