@@ -51,6 +51,7 @@ const AnalyticsDashboard = lazy(() => import('./components/analytics/AnalyticsDa
 const Leaderboard = lazy(() => import('./components/leaderboard/Leaderboard'))
 const AIVideoMockApp = lazy(() => import('./features/ai-video-mock/AIVideoMockApp'))
 const StudentPerformanceView = lazy(() => import('./features/performance-history/components/student/StudentPerformanceView'))
+const DocsPlatform = lazy(() => import('./features/interview-docs/DocsPlatform'))
 const NotFoundPage = lazy(() => import('./components/common/NotFoundPage'))
 import RoleGuard from './components/auth/RoleGuard'
 import { useAuth } from './context/AuthContext'
@@ -72,20 +73,22 @@ export default function App() {
     (location.pathname.startsWith('/machine-coding') || location.pathname.startsWith('/dsa') || location.pathname.startsWith('/frontend-javascript') || location.pathname.startsWith('/frontend-js') || location.pathname.startsWith('/core-programming') || location.pathname.startsWith('/frontend-programming')) &&
     (Boolean(new URLSearchParams(location.search).get('id')) || location.pathname.startsWith('/dsa/DSA') || location.pathname.startsWith('/dsa/question/') || location.pathname.startsWith('/frontend-javascript/question/') || location.pathname.startsWith('/frontend-javascript/FJP') || location.pathname.startsWith('/frontend-js/question/') || location.pathname.startsWith('/frontend-js/FJP') || location.pathname.startsWith('/core-programming/question/') || location.pathname.startsWith('/core-programming/JS-P') || location.pathname.startsWith('/frontend-programming/question/') || location.pathname.startsWith('/frontend-programming/JS-P'))
   const isAIVideoMockLiveSession = location.pathname.startsWith('/ai-video-mock/session')
+  const isDocsPlatform = location.pathname.startsWith('/docs')
   const hideHeader = isAdminDashboard
-  const hideFooter = isAdminDashboard || isStudioWorkspace || isAIVideoMockLiveSession
+  const hideFooter = isAdminDashboard || isStudioWorkspace || isAIVideoMockLiveSession || isDocsPlatform
 
   return (
-    <div className={`app ${isAdminDashboard ? 'dashboard-layout-mode' : ''} ${isStudioWorkspace ? 'studio-layout-mode' : ''}`}>
+    <div className={`app ${isAdminDashboard ? 'dashboard-layout-mode' : ''} ${isStudioWorkspace ? 'studio-layout-mode' : ''} ${isDocsPlatform ? 'docs-layout-mode' : ''}`}>
       <ScrollToTop />
       {!hideHeader && <Header />}
       <AuthModal />
       <AchievementUnlockToast />
-      <main className={`main-content ${isAdminDashboard ? 'dashboard-main-content' : ''} ${isStudioWorkspace ? 'studio-main-content' : ''}`}>
+      <main className={`main-content ${isAdminDashboard ? 'dashboard-main-content' : ''} ${isStudioWorkspace ? 'studio-main-content' : ''} ${isDocsPlatform ? 'docs-main-content' : ''}`}>
         <Suspense fallback={<div className="app-route-loader"><div className="app-route-spinner" /><p>Loading masterclass studio...</p></div>}>
           <div key={location.pathname} className="app-page-transition">
             <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/docs/*" element={<DocsPlatform />} />
           <Route
             path="/profile"
             element={

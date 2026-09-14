@@ -52,12 +52,20 @@
 }
 
 .main-content:has(.mc-studio-container),
+.main-content:has(.docs-platform-root),
+.main-content.docs-main-content,
 .main-content.dashboard-main-content,
 .main-content.studio-main-content {
-  padding: 0;
-  margin: 0;
-  max-width: none;
+  padding: 0 !important;
+  margin: 0 !important;
+  max-width: none !important;
+  width: 100% !important;
+}
+
+.app.docs-layout-mode {
   width: 100%;
+  max-width: 100vw;
+  overflow-x: clip;
 }
 
 .main-content.studio-main-content {
@@ -117,7 +125,12 @@
 }
 
 .dashboard-main-content .app-page-transition,
-.studio-main-content .app-page-transition {
+.studio-main-content .app-page-transition,
+.docs-main-content .app-page-transition {
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
   height: 100%;
 }
 

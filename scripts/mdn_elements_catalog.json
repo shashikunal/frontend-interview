@@ -1,0 +1,610 @@
+[
+  {
+    "id": "main_root",
+    "title": "Main root",
+    "elements": [
+      {
+        "tag": "html",
+        "description": "Represents the root (top-level element) of an HTML document, so it is also referred to as the root element. All other elements must be descendants of this element."
+      }
+    ]
+  },
+  {
+    "id": "document_metadata",
+    "title": "Document metadata",
+    "elements": [
+      {
+        "tag": "base",
+        "description": "Specifies the base URL to use for all relative URLs in a document. There can be only one such element in a document."
+      },
+      {
+        "tag": "head",
+        "description": "Contains machine-readable information (metadata) about the document, like its title, scripts, and style sheets."
+      },
+      {
+        "tag": "link",
+        "description": "Specifies relationships between the current document and an external resource. This element is most commonly used to link to CSS but is also used to establish site icons (both \"favicon\" style icons and icons for the home screen and apps on mobile devices) among other things."
+      },
+      {
+        "tag": "meta",
+        "description": "Represents metadata that cannot be represented by other HTML meta-related elements, like &lt;base&gt;, &lt;link&gt;, &lt;script&gt;, &lt;style&gt; and &lt;title&gt;."
+      },
+      {
+        "tag": "style",
+        "description": "Contains style information for a document or part of a document. It contains CSS, which is applied to the contents of the document containing this element."
+      },
+      {
+        "tag": "title",
+        "description": "Defines the document's title that is shown in a browser's title bar or a page's tab. It only contains text; HTML tags within the element, if any, are also treated as plain text."
+      }
+    ]
+  },
+  {
+    "id": "sectioning_root",
+    "title": "Sectioning root",
+    "elements": [
+      {
+        "tag": "body",
+        "description": "Represents the content of an HTML document. There can be only one such element in a document."
+      }
+    ]
+  },
+  {
+    "id": "content_sectioning",
+    "title": "Content sectioning",
+    "elements": [
+      {
+        "tag": "address",
+        "description": "Indicates that the enclosed HTML provides contact information for a person or people, or for an organization."
+      },
+      {
+        "tag": "article",
+        "description": "Represents a self-contained composition in a document, page, application, or site, which is intended to be independently distributable or reusable (e.g., in syndication). Examples include a forum post, a magazine or newspaper article, a blog entry, a product card, a user-submitted comment, an interactive widget or gadget, or any other independent item of content."
+      },
+      {
+        "tag": "aside",
+        "description": "Represents a portion of a document whose content is only indirectly related to the document's main content. Asides are frequently presented as sidebars or call-out boxes."
+      },
+      {
+        "tag": "footer",
+        "description": "Represents a footer for its nearest ancestor sectioning content or sectioning root element. A &lt;footer&gt; typically contains information about the author of the section, copyright data, or links to related documents."
+      },
+      {
+        "tag": "header",
+        "description": "Represents introductory content, typically a group of introductory or navigational aids. It may contain some heading elements but also a logo, a search form, an author name, and other elements."
+      },
+      {
+        "tag": "hgroup",
+        "description": "Represents a heading grouped with any secondary content, such as subheadings, an alternative title, or a tagline."
+      },
+      {
+        "tag": "main",
+        "description": "Represents the dominant content of the body of a document. The main content area consists of content that is directly related to or expands upon the central topic of a document, or the central functionality of an application."
+      },
+      {
+        "tag": "nav",
+        "description": "Represents a section of a page whose purpose is to provide navigation links, either within the current document or to other documents. Common examples of navigation sections are menus, tables of contents, and indexes."
+      },
+      {
+        "tag": "section",
+        "description": "Represents a generic standalone section of a document, which doesn't have a more specific semantic element to represent it. Sections should always have a heading, with very few exceptions."
+      },
+      {
+        "tag": "search",
+        "description": "Represents a part that contains a set of form controls or other content related to performing a search or filtering operation."
+      }
+    ]
+  },
+  {
+    "id": "text_content",
+    "title": "Text content",
+    "elements": [
+      {
+        "tag": "blockquote",
+        "description": "Indicates that the enclosed text is an extended quotation. Usually, this is rendered visually by indentation. A URL for the source of the quotation may be given using the cite attribute, while a text representation of the source can be given using the &lt;cite&gt; element."
+      },
+      {
+        "tag": "dd",
+        "description": "Provides the description, definition, or value for the preceding term (&lt;dt&gt;) in a description list (&lt;dl&gt;)."
+      },
+      {
+        "tag": "div",
+        "description": "The generic container for flow content. It has no effect on the content or layout until styled in some way using CSS (e.g., styling is directly applied to it, or some kind of layout model like flexbox is applied to its parent element)."
+      },
+      {
+        "tag": "dl",
+        "description": "Represents a description list. The element encloses a list of groups of terms (specified using the &lt;dt&gt; element) and descriptions (provided by &lt;dd&gt; elements). Common uses for this element are to implement a glossary or to display metadata (a list of key-value pairs)."
+      },
+      {
+        "tag": "dt",
+        "description": "Specifies a term in a description or definition list, and as such must be used inside a &lt;dl&gt; element. It is usually followed by a &lt;dd&gt; element; however, multiple &lt;dt&gt; elements in a row indicate several terms that are all defined by the immediate next &lt;dd&gt; element."
+      },
+      {
+        "tag": "figcaption",
+        "description": "Represents a caption or legend describing the rest of the contents of its parent &lt;figure&gt; element."
+      },
+      {
+        "tag": "figure",
+        "description": "Represents self-contained content, potentially with an optional caption, which is specified using the &lt;figcaption&gt; element. The figure, its caption, and its contents are referenced as a single unit."
+      },
+      {
+        "tag": "hr",
+        "description": "Represents a thematic break between paragraph-level elements: for example, a change of scene in a story, or a shift of topic within a section."
+      },
+      {
+        "tag": "li",
+        "description": "Represents an item in a list. It must be contained in a parent element: an ordered list (&lt;ol&gt;), an unordered list (&lt;ul&gt;), or a menu (&lt;menu&gt;). In menus and unordered lists, list items are usually displayed using bullet points. In ordered lists, they are usually displayed with an ascending counter on the left, such as a number or letter."
+      },
+      {
+        "tag": "menu",
+        "description": "A semantic alternative to &lt;ul&gt;, but treated by browsers (and exposed through the accessibility tree) as no different than &lt;ul&gt;. It represents an unordered list of items (which are represented by &lt;li&gt; elements)."
+      },
+      {
+        "tag": "ol",
+        "description": "Represents an ordered list of items — typically rendered as a numbered list."
+      },
+      {
+        "tag": "p",
+        "description": "Represents a paragraph. Paragraphs are usually represented in visual media as blocks of text separated from adjacent blocks by blank lines and/or first-line indentation, but HTML paragraphs can be any structural grouping of related content, such as images or form fields."
+      },
+      {
+        "tag": "pre",
+        "description": "Represents preformatted text which is to be presented exactly as written in the HTML file. The text is typically rendered using a non-proportional, or monospaced, font. Whitespace inside this element is displayed as written."
+      },
+      {
+        "tag": "ul",
+        "description": "Represents an unordered list of items, typically rendered as a bulleted list."
+      }
+    ]
+  },
+  {
+    "id": "inline_text_semantics",
+    "title": "Inline text semantics",
+    "elements": [
+      {
+        "tag": "a",
+        "description": "Together with its href attribute, creates a hyperlink to web pages, files, email addresses, locations within the current page, or anything else a URL can address."
+      },
+      {
+        "tag": "abbr",
+        "description": "Represents an abbreviation or acronym."
+      },
+      {
+        "tag": "b",
+        "description": "Used to draw the reader's attention to the element's contents, which are not otherwise granted special importance. This was formerly known as the Boldface element, and most browsers still draw the text in boldface. However, you should not use &lt;b&gt; for styling text or granting importance. If you wish to create boldface text, you should use the CSS font-weight property. If you wish to indicate an element is of special importance, you should use the &lt;strong&gt; element."
+      },
+      {
+        "tag": "bdi",
+        "description": "Tells the browser's bidirectional algorithm to treat the text it contains in isolation from its surrounding text. It's particularly useful when a website dynamically inserts some text and doesn't know the directionality of the text being inserted."
+      },
+      {
+        "tag": "bdo",
+        "description": "Overrides the current directionality of text, so that the text within is rendered in a different direction."
+      },
+      {
+        "tag": "br",
+        "description": "Produces a line break in text (carriage-return). It is useful for writing a poem or an address, where the division of lines is significant."
+      },
+      {
+        "tag": "cite",
+        "description": "Used to mark up the title of a creative work. The reference may be in an abbreviated form according to context-appropriate conventions related to citation metadata."
+      },
+      {
+        "tag": "code",
+        "description": "Displays its contents styled in a fashion intended to indicate that the text is a short fragment of computer code. By default, the content text is displayed using the user agent's default monospace font."
+      },
+      {
+        "tag": "data",
+        "description": "Links a given piece of content with a machine-readable translation. If the content is time- or date-related, the &lt;time&gt; element must be used."
+      },
+      {
+        "tag": "dfn",
+        "description": "Used to indicate the term being defined within the context of a definition phrase or sentence. The ancestor &lt;p&gt; element, the &lt;dt&gt;/&lt;dd&gt; pairing, or the nearest section ancestor of the &lt;dfn&gt; element, is considered to be the definition of the term."
+      },
+      {
+        "tag": "em",
+        "description": "Marks text that has stress emphasis. The &lt;em&gt; element can be nested, with each nesting level indicating a greater degree of emphasis."
+      },
+      {
+        "tag": "i",
+        "description": "Represents a range of text that is set off from the normal text for some reason, such as idiomatic text, technical terms, and taxonomical designations, among others. Historically, these have been presented using italicized type, which is the original source of the &lt;i&gt; naming of this element."
+      },
+      {
+        "tag": "kbd",
+        "description": "Represents a span of inline text denoting textual user input from a keyboard, voice input, or any other text entry device. By convention, the user agent defaults to rendering the contents of a &lt;kbd&gt; element using its default monospace font, although this is not mandated by the HTML standard."
+      },
+      {
+        "tag": "mark",
+        "description": "Represents text which is marked or highlighted for reference or notation purposes due to the marked passage's relevance in the enclosing context."
+      },
+      {
+        "tag": "q",
+        "description": "Indicates that the enclosed text is a short inline quotation. Most modern browsers implement this by surrounding the text in quotation marks. This element is intended for short quotations that don't require paragraph breaks; for long quotations use the &lt;blockquote&gt; element."
+      },
+      {
+        "tag": "rp",
+        "description": "Used to provide fall-back parentheses for browsers that do not support the display of ruby annotations using the &lt;ruby&gt; element. One &lt;rp&gt; element should enclose each of the opening and closing parentheses that wrap the &lt;rt&gt; element that contains the annotation's text."
+      },
+      {
+        "tag": "rt",
+        "description": "Specifies the ruby text component of a ruby annotation, which is used to provide pronunciation, translation, or transliteration information for East Asian typography. The &lt;rt&gt; element must always be contained within a &lt;ruby&gt; element."
+      },
+      {
+        "tag": "ruby",
+        "description": "Represents small annotations that are rendered above, below, or next to base text, usually used for showing the pronunciation of East Asian characters. It can also be used for annotating other kinds of text, but this usage is less common."
+      },
+      {
+        "tag": "s",
+        "description": "Renders text with a strikethrough, or a line through it. Use the &lt;s&gt; element to represent things that are no longer relevant or no longer accurate. However, &lt;s&gt; is not appropriate when indicating document edits; for that, use the &lt;del&gt; and &lt;ins&gt; elements, as appropriate."
+      },
+      {
+        "tag": "samp",
+        "description": "Used to enclose inline text which represents sample (or quoted) output from a computer program. Its contents are typically rendered using the browser's default monospaced font (such as Courier or Lucida Console)."
+      },
+      {
+        "tag": "small",
+        "description": "Represents side-comments and small print, like copyright and legal text, independent of its styled presentation. By default, it renders text within it one font size smaller, such as from small to x-small."
+      },
+      {
+        "tag": "span",
+        "description": "A generic inline container for phrasing content, which does not inherently represent anything. It can be used to group elements for styling purposes (using the class or id attributes), or because they share attribute values, such as lang. It should be used only when no other semantic element is appropriate. &lt;span&gt; is very much like a div element, but div is a block-level element whereas a &lt;span&gt; is an inline-level element."
+      },
+      {
+        "tag": "strong",
+        "description": "Indicates that its contents have strong importance, seriousness, or urgency. Browsers typically render the contents in bold type."
+      },
+      {
+        "tag": "sub",
+        "description": "Specifies inline text which should be displayed as subscript for solely typographical reasons. Subscripts are typically rendered with a lowered baseline using smaller text."
+      },
+      {
+        "tag": "sup",
+        "description": "Specifies inline text which is to be displayed as superscript for solely typographical reasons. Superscripts are usually rendered with a raised baseline using smaller text."
+      },
+      {
+        "tag": "time",
+        "description": "Represents a specific period in time. It may include the datetime attribute to translate dates into machine-readable format, allowing for better search engine results or custom features such as reminders."
+      },
+      {
+        "tag": "u",
+        "description": "Represents a span of inline text which should be rendered in a way that indicates that it has a non-textual annotation. This is rendered by default as a single solid underline but may be altered using CSS."
+      },
+      {
+        "tag": "var",
+        "description": "Represents the name of a variable in a mathematical expression or a programming context. It's typically presented using an italicized version of the current typeface, although that behavior is browser-dependent."
+      },
+      {
+        "tag": "wbr",
+        "description": "Represents a word break opportunity—a position within text where the browser may optionally break a line, though its line-breaking rules would not otherwise create a break at that location."
+      }
+    ]
+  },
+  {
+    "id": "image_and_multimedia",
+    "title": "Image and multimedia",
+    "elements": [
+      {
+        "tag": "area",
+        "description": "Defines an area inside an image map that has predefined clickable areas. An image map allows geometric areas on an image to be associated with hyperlink."
+      },
+      {
+        "tag": "audio",
+        "description": "Used to embed sound content in documents. It may contain one or more audio sources, represented using the src attribute or the source element: the browser will choose the most suitable one. It can also be the destination for streamed media, using a MediaStream."
+      },
+      {
+        "tag": "img",
+        "description": "Embeds an image into the document."
+      },
+      {
+        "tag": "map",
+        "description": "Used with &lt;area&gt; elements to define an image map (a clickable link area)."
+      },
+      {
+        "tag": "track",
+        "description": "Used as a child of the media elements, audio and video. It lets you specify timed text tracks (or time-based data), for example to automatically handle subtitles. The tracks are formatted in WebVTT format (.vtt files)—Web Video Text Tracks."
+      },
+      {
+        "tag": "video",
+        "description": "Embeds a media player which supports video playback into the document. You can also use &lt;video&gt; for audio content, but the audio element may provide a more appropriate user experience."
+      }
+    ]
+  },
+  {
+    "id": "embedded_content",
+    "title": "Embedded content",
+    "elements": [
+      {
+        "tag": "embed",
+        "description": "Embeds external content at the specified point in the document. This content is provided by an external application or other source of interactive content such as a browser plug-in."
+      },
+      {
+        "tag": "iframe",
+        "description": "Represents a nested browsing context, embedding another HTML page into the current one."
+      },
+      {
+        "tag": "object",
+        "description": "Represents an external resource, which can be treated as an image, a nested browsing context, or a resource to be handled by a plugin."
+      },
+      {
+        "tag": "picture",
+        "description": "Contains zero or more &lt;source&gt; elements and one &lt;img&gt; element to offer alternative versions of an image for different display/device scenarios."
+      },
+      {
+        "tag": "source",
+        "description": "Specifies multiple media resources for the picture, the audio element, or the video element. It is a void element, meaning that it has no content and does not have a closing tag. It is commonly used to offer the same media content in multiple file formats in order to provide compatibility with a broad range of browsers given their differing support for image file formats and media file formats."
+      }
+    ]
+  },
+  {
+    "id": "svg_and_mathml",
+    "title": "SVG and MathML",
+    "elements": [
+      {
+        "tag": "svg",
+        "description": "Container defining a new coordinate system and viewport. It is used as the outermost element of SVG documents, but it can also be used to embed an SVG fragment inside an SVG or HTML document."
+      },
+      {
+        "tag": "math",
+        "description": "The top-level element in MathML. Every valid MathML instance must be wrapped in it. In addition, you must not nest a second &lt;math&gt; element in another, but you can have an arbitrary number of other child elements in it."
+      }
+    ]
+  },
+  {
+    "id": "scripting",
+    "title": "Scripting",
+    "elements": [
+      {
+        "tag": "canvas",
+        "description": "Container element to use with either the canvas scripting API or the WebGL API to draw graphics and animations."
+      },
+      {
+        "tag": "noscript",
+        "description": "Defines a section of HTML to be inserted if a script type on the page is unsupported or if scripting is currently turned off in the browser."
+      },
+      {
+        "tag": "script",
+        "description": "Used to embed executable code or data; this is typically used to embed or refer to JavaScript code. The &lt;script&gt; element can also be used with other languages, such as WebGL's GLSL shader programming language and JSON."
+      }
+    ]
+  },
+  {
+    "id": "demarcating_edits",
+    "title": "Demarcating edits",
+    "elements": [
+      {
+        "tag": "del",
+        "description": "Represents a range of text that has been deleted from a document. This can be used when rendering \"track changes\" or source code diff information, for example. The &lt;ins&gt; element can be used for the opposite purpose: to indicate text that has been added to the document."
+      },
+      {
+        "tag": "ins",
+        "description": "Represents a range of text that has been added to a document. You can use the &lt;del&gt; element to similarly represent a range of text that has been deleted from the document."
+      }
+    ]
+  },
+  {
+    "id": "table_content",
+    "title": "Table content",
+    "elements": [
+      {
+        "tag": "caption",
+        "description": "Specifies the caption (or title) of a table."
+      },
+      {
+        "tag": "col",
+        "description": "Defines one or more columns in a column group represented by its implicit or explicit parent &lt;colgroup&gt; element. The &lt;col&gt; element is only valid as a child of a &lt;colgroup&gt; element that has no span attribute defined."
+      },
+      {
+        "tag": "colgroup",
+        "description": "Defines a group of columns within a table."
+      },
+      {
+        "tag": "table",
+        "description": "Represents tabular data—that is, information presented in a two-dimensional table comprised of rows and columns of cells containing data."
+      },
+      {
+        "tag": "tbody",
+        "description": "Encapsulates a set of table rows (&lt;tr&gt; elements), indicating that they comprise the body of a table's (main) data."
+      },
+      {
+        "tag": "td",
+        "description": "A child of the &lt;tr&gt; element, it defines a cell of a table that contains data."
+      },
+      {
+        "tag": "tfoot",
+        "description": "Encapsulates a set of table rows (&lt;tr&gt; elements), indicating that they comprise the foot of a table with information about the table's columns. This is usually a summary of the columns, e.g., a sum of the given numbers in a column."
+      },
+      {
+        "tag": "th",
+        "description": "A child of the &lt;tr&gt; element, it defines a cell as the header of a group of table cells. The nature of this group can be explicitly defined by the scope and headers attributes."
+      },
+      {
+        "tag": "thead",
+        "description": "Encapsulates a set of table rows (&lt;tr&gt; elements), indicating that they comprise the head of a table with information about the table's columns. This is usually in the form of column headers (&lt;th&gt; elements)."
+      },
+      {
+        "tag": "tr",
+        "description": "Defines a row of cells in a table. The row's cells can then be established using a mix of &lt;td&gt; (data cell) and &lt;th&gt; (header cell) elements."
+      }
+    ]
+  },
+  {
+    "id": "forms",
+    "title": "Forms",
+    "elements": [
+      {
+        "tag": "button",
+        "description": "An interactive element activated by a user with a mouse, keyboard, finger, voice command, or other assistive technology. Once activated, it performs an action, such as submitting a form or opening a dialog."
+      },
+      {
+        "tag": "datalist",
+        "description": "Contains a set of &lt;option&gt; elements that represent the permissible or recommended options available to choose from within other controls."
+      },
+      {
+        "tag": "fieldset",
+        "description": "Used to group several controls as well as labels (&lt;label&gt;) within a web form."
+      },
+      {
+        "tag": "form",
+        "description": "Represents a document section containing interactive controls for submitting information."
+      },
+      {
+        "tag": "input",
+        "description": "Used to create interactive controls for web-based forms to accept data from the user; a wide variety of types of input data and control widgets are available, depending on the device and user agent. The &lt;input&gt; element is one of the most powerful and complex in all of HTML due to the sheer number of combinations of input types and attributes."
+      },
+      {
+        "tag": "label",
+        "description": "Represents a caption for an item in a user interface."
+      },
+      {
+        "tag": "legend",
+        "description": "Represents a caption for the content of its parent &lt;fieldset&gt;."
+      },
+      {
+        "tag": "meter",
+        "description": "Represents either a scalar value within a known range or a fractional value."
+      },
+      {
+        "tag": "optgroup",
+        "description": "Creates a grouping of options within a &lt;select&gt; element."
+      },
+      {
+        "tag": "option",
+        "description": "Used to define an item contained in a &lt;select&gt;, an &lt;optgroup&gt;, or a &lt;datalist&gt; element. As such, &lt;option&gt; can represent menu items in popups and other lists of items in an HTML document."
+      },
+      {
+        "tag": "output",
+        "description": "Container element into which a site or app can inject the results of a calculation or the outcome of a user action."
+      },
+      {
+        "tag": "progress",
+        "description": "Displays an indicator showing the completion progress of a task, typically displayed as a progress bar."
+      },
+      {
+        "tag": "select",
+        "description": "Represents a control that provides a menu of options."
+      },
+      {
+        "tag": "selectedcontent",
+        "description": "Displays the content of the currently selected &lt;option&gt; inside a closed &lt;select&gt; element."
+      },
+      {
+        "tag": "textarea",
+        "description": "Represents a multi-line plain-text editing control, useful when you want to allow users to enter a sizeable amount of free-form text, for example, a comment on a review or feedback form."
+      }
+    ]
+  },
+  {
+    "id": "interactive_elements",
+    "title": "Interactive elements",
+    "elements": [
+      {
+        "tag": "details",
+        "description": "Creates a disclosure widget in which information is visible only when the widget is toggled into an \"open\" state. A summary or label must be provided using the &lt;summary&gt; element."
+      },
+      {
+        "tag": "dialog",
+        "description": "Represents a dialog box or other interactive component, such as a dismissible alert, inspector, or subwindow."
+      },
+      {
+        "tag": "summary",
+        "description": "Specifies a summary, caption, or legend for a details element's disclosure box. Clicking the &lt;summary&gt; element toggles the state of the parent &lt;details&gt; element open and closed."
+      }
+    ]
+  },
+  {
+    "id": "web_components",
+    "title": "Web Components",
+    "elements": [
+      {
+        "tag": "slot",
+        "description": "Part of the Web Components technology suite, this element is a placeholder inside a web component that you can fill with your own markup, which lets you create separate DOM trees and present them together."
+      },
+      {
+        "tag": "template",
+        "description": "A mechanism for holding HTML that is not to be rendered immediately when a page is loaded but may be instantiated subsequently during runtime using JavaScript."
+      }
+    ]
+  },
+  {
+    "id": "obsolete_and_deprecated_elements",
+    "title": "Obsolete and deprecated elements",
+    "elements": [
+      {
+        "tag": "acronym",
+        "description": "Allows authors to clearly indicate a sequence of characters that compose an acronym or abbreviation for a word."
+      },
+      {
+        "tag": "big",
+        "description": "Renders the enclosed text at a font size one level larger than the surrounding text (medium becomes large, for example). The size is capped at the browser's maximum permitted font size."
+      },
+      {
+        "tag": "center",
+        "description": "Displays its block-level or inline contents centered horizontally within its containing element."
+      },
+      {
+        "tag": "dir",
+        "description": "Container for a directory of files and/or folders, potentially with styles and icons applied by the user agent. Do not use this obsolete element; instead, you should use the &lt;ul&gt; element for lists, including lists of files."
+      },
+      {
+        "tag": "fencedframe",
+        "description": "Represents a nested browsing context, like &lt;iframe&gt; but with more native privacy features built in."
+      },
+      {
+        "tag": "font",
+        "description": "Defines the font size, color and face for its content."
+      },
+      {
+        "tag": "frame",
+        "description": "Defines a particular area in which another HTML document can be displayed. A frame should be used within a &lt;frameset&gt;."
+      },
+      {
+        "tag": "frameset",
+        "description": "Used to contain &lt;frame&gt; elements."
+      },
+      {
+        "tag": "marquee",
+        "description": "Used to insert a scrolling area of text. You can control what happens when the text reaches the edges of its content area using its attributes."
+      },
+      {
+        "tag": "nobr",
+        "description": "Prevents the text it contains from automatically wrapping across multiple lines, potentially resulting in the user having to scroll horizontally to see the entire width of the text."
+      },
+      {
+        "tag": "noembed",
+        "description": "An obsolete, non-standard way to provide alternative, or \"fallback\", content for browsers that do not support the embed element or do not support the type of embedded content an author wishes to use. This element was deprecated in HTML 4.01 and above in favor of placing fallback content between the opening and closing tags of an &lt;object&gt; element."
+      },
+      {
+        "tag": "noframes",
+        "description": "Provides content to be presented in browsers that don't support (or have disabled support for) the &lt;frame&gt; element. Although most commonly-used browsers support frames, there are exceptions, including certain special-use browsers including some mobile browsers, as well as text-mode browsers."
+      },
+      {
+        "tag": "param",
+        "description": "Defines parameters for an &lt;object&gt; element."
+      },
+      {
+        "tag": "plaintext",
+        "description": "Renders everything following the start tag as raw text, ignoring any following HTML. There is no closing tag, since everything after it is considered raw text."
+      },
+      {
+        "tag": "rb",
+        "description": "Used to delimit the base text component of a ruby annotation, i.e., the text that is being annotated. One &lt;rb&gt; element should wrap each separate atomic segment of the base text."
+      },
+      {
+        "tag": "rtc",
+        "description": "Embraces semantic annotations of characters presented in a ruby of &lt;rb&gt; elements used inside of &lt;ruby&gt; element. &lt;rb&gt; elements can have both pronunciation (&lt;rt&gt;) and semantic (&lt;rtc&gt;) annotations."
+      },
+      {
+        "tag": "strike",
+        "description": "Places a strikethrough (horizontal line) over text."
+      },
+      {
+        "tag": "tt",
+        "description": "Creates inline text which is presented using the user agent default monospace font face. This element was created for the purpose of rendering text as it would be displayed on a fixed-width display such as a teletype, text-only screen, or line printer."
+      },
+      {
+        "tag": "xmp",
+        "description": "Renders text between the start and end tags without interpreting the HTML in between and using a monospaced font. The HTML2 specification recommended that it should be rendered wide enough to allow 80 characters per line."
+      }
+    ]
+  }
+]

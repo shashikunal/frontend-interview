@@ -162,6 +162,11 @@ export default function Header() {
                 {!hasQuestionsFull && <span className="nav-lock-tag">🔒</span>}
               </Link>
 
+              {/* 1b. Interview Docs */}
+              <Link to="/docs" className={`nav-link ${isActive('/docs') ? 'active' : ''}`}>
+                📚 Docs
+              </Link>
+
               {/* 2. Coding Dropdown */}
               <div className="nav-dropdown-wrap">
                 <button
@@ -988,6 +993,14 @@ export default function Header() {
             <>
               <div className="mobile-nav-group">
                 <span className="mobile-group-title">Practice &amp; Learn</span>
+                <Link to="/docs" className={`mobile-nav-item ${isActive('/docs') ? 'active' : ''}`} onClick={closeMobileMenu}>
+                  <span className="m-icon">🎓</span>
+                  <div className="m-text">
+                    <span className="m-label">Interview Docs</span>
+                    <span className="m-sub">21 technical tracks &amp; guides</span>
+                  </div>
+                </Link>
+
                 <Link to="/questions" className={`mobile-nav-item ${isActive('/questions') ? 'active' : ''}`} onClick={closeMobileMenu}>
                   <span className="m-icon">📚</span>
                   <div className="m-text">

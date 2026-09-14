@@ -1382,3 +1382,621 @@ html.dark .admin-field-group textarea {
   from { opacity: 0; transform: scale(0.96) translateY(10px); }
   to { opacity: 1; transform: scale(1) translateY(0); }
 }
+
+/* ==============================================================================
+   Batch Actions, Row Checkboxes & Multi-Selection Toolbar
+   Horizon UI Parity (Light Theme & Dark Navy)
+   ============================================================================== */
+
+/* Header actions wrap */
+.admin-cand-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.admin-cand-export-all-btn {
+  padding: 9px 16px;
+  border-radius: 12px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+:root[data-theme="light"] .admin-cand-export-all-btn,
+[data-theme="light"] .admin-cand-export-all-btn,
+.light-theme .admin-cand-export-all-btn,
+html.light .admin-cand-export-all-btn {
+  background: #f4f7fe;
+  border: 1px solid #e2e8f0;
+  color: #2b3674;
+}
+
+:root[data-theme="light"] .admin-cand-export-all-btn:hover:not(:disabled),
+[data-theme="light"] .admin-cand-export-all-btn:hover:not(:disabled),
+.light-theme .admin-cand-export-all-btn:hover:not(:disabled),
+html.light .admin-cand-export-all-btn:hover:not(:disabled) {
+  background: #01b574;
+  color: #ffffff;
+  border-color: #01b574;
+  box-shadow: 0 4px 16px rgba(1, 181, 116, 0.3);
+  transform: translateY(-1px);
+}
+
+:root[data-theme="dark"] .admin-cand-export-all-btn,
+[data-theme="dark"] .admin-cand-export-all-btn,
+.dark-theme .admin-cand-export-all-btn,
+html.dark .admin-cand-export-all-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+}
+
+:root[data-theme="dark"] .admin-cand-export-all-btn:hover:not(:disabled),
+[data-theme="dark"] .admin-cand-export-all-btn:hover:not(:disabled),
+.dark-theme .admin-cand-export-all-btn:hover:not(:disabled),
+html.dark .admin-cand-export-all-btn:hover:not(:disabled) {
+  background: #01b574;
+  color: #ffffff;
+  border-color: #01b574;
+  box-shadow: 0 4px 18px rgba(1, 181, 116, 0.4);
+  transform: translateY(-1px);
+}
+
+.admin-cand-export-all-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Checkbox cells */
+.admin-cand-th-checkbox,
+.admin-cand-td-checkbox {
+  padding-left: 14px !important;
+  padding-right: 6px !important;
+}
+
+.cand-master-checkbox,
+.cand-row-checkbox {
+  width: 17px;
+  height: 17px;
+  cursor: pointer;
+  accent-color: #4318ff;
+  border-radius: 4px;
+  transition: transform 0.15s ease;
+  vertical-align: middle;
+}
+
+.cand-master-checkbox:hover,
+.cand-row-checkbox:hover {
+  transform: scale(1.1);
+}
+
+/* Selected row highlight */
+:root[data-theme="light"] tr.row-selected,
+[data-theme="light"] tr.row-selected,
+.light-theme tr.row-selected,
+html.light tr.row-selected {
+  background: rgba(67, 24, 255, 0.05) !important;
+}
+
+:root[data-theme="dark"] tr.row-selected,
+[data-theme="dark"] tr.row-selected,
+.dark-theme tr.row-selected,
+html.dark tr.row-selected {
+  background: rgba(67, 24, 255, 0.12) !important;
+}
+
+/* Floating Sticky Batch Action Toolbar */
+.admin-batch-toolbar {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 990;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 12px 20px;
+  border-radius: 18px;
+  min-width: 580px;
+  max-width: 90vw;
+  box-sizing: border-box;
+  animation: slideUpToolbar 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideUpToolbar {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 20px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+}
+
+:root[data-theme="light"] .admin-batch-toolbar,
+[data-theme="light"] .admin-batch-toolbar,
+.light-theme .admin-batch-toolbar,
+html.light .admin-batch-toolbar {
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid rgba(67, 24, 255, 0.2);
+  box-shadow: 0 16px 40px rgba(67, 24, 255, 0.18), 0 4px 16px rgba(0, 0, 0, 0.06);
+  backdrop-filter: blur(14px);
+  color: #2b3674;
+}
+
+:root[data-theme="dark"] .admin-batch-toolbar,
+[data-theme="dark"] .admin-batch-toolbar,
+.dark-theme .admin-batch-toolbar,
+html.dark .admin-batch-toolbar {
+  background: rgba(17, 28, 68, 0.94);
+  border: 1px solid rgba(134, 140, 255, 0.25);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.65), 0 4px 20px rgba(67, 24, 255, 0.25);
+  backdrop-filter: blur(14px);
+  color: #ffffff;
+}
+
+.batch-toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.batch-toolbar-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(135deg, #868cff 0%, #4318ff 100%);
+  color: #ffffff;
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-size: 0.84rem;
+  font-weight: 700;
+  box-shadow: 0 3px 10px rgba(67, 24, 255, 0.35);
+}
+
+.batch-check-icon {
+  font-size: 0.8rem;
+  background: rgba(255, 255, 255, 0.25);
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.batch-toolbar-subtext {
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+:root[data-theme="light"] .batch-toolbar-subtext,
+[data-theme="light"] .batch-toolbar-subtext,
+.light-theme .batch-toolbar-subtext,
+html.light .batch-toolbar-subtext {
+  color: #707eae;
+}
+
+:root[data-theme="dark"] .batch-toolbar-subtext,
+[data-theme="dark"] .batch-toolbar-subtext,
+.dark-theme .batch-toolbar-subtext,
+html.dark .batch-toolbar-subtext {
+  color: #a3aed0;
+}
+
+.batch-toolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.batch-action-btn {
+  padding: 8px 14px;
+  border-radius: 10px;
+  font-size: 0.84rem;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.batch-btn-csv {
+  background: #01b574;
+  color: #ffffff;
+  border: 1px solid #01b574;
+  box-shadow: 0 4px 12px rgba(1, 181, 116, 0.25);
+}
+
+.batch-btn-csv:hover {
+  background: #00965e;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(1, 181, 116, 0.35);
+}
+
+.batch-btn-status {
+  background: #4318ff;
+  color: #ffffff;
+  border: 1px solid #4318ff;
+  box-shadow: 0 4px 12px rgba(67, 24, 255, 0.25);
+}
+
+.batch-btn-status:hover {
+  background: #3311db;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(67, 24, 255, 0.38);
+}
+
+.batch-btn-assign {
+  background: #7551ff;
+  color: #ffffff;
+  border: 1px solid #7551ff;
+  box-shadow: 0 4px 12px rgba(117, 81, 255, 0.25);
+}
+
+.batch-btn-assign:hover {
+  background: #5e3bdf;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(117, 81, 255, 0.38);
+}
+
+.batch-btn-clear {
+  background: transparent;
+  border: 1px solid transparent;
+  font-weight: 600;
+}
+
+:root[data-theme="light"] .batch-btn-clear,
+[data-theme="light"] .batch-btn-clear,
+.light-theme .batch-btn-clear,
+html.light .batch-btn-clear {
+  color: #707eae;
+}
+
+:root[data-theme="light"] .batch-btn-clear:hover,
+[data-theme="light"] .batch-btn-clear:hover,
+.light-theme .batch-btn-clear:hover,
+html.light .batch-btn-clear:hover {
+  background: #f4f7fe;
+  color: #ee5d50;
+}
+
+:root[data-theme="dark"] .batch-btn-clear,
+[data-theme="dark"] .batch-btn-clear,
+.dark-theme .batch-btn-clear,
+html.dark .batch-btn-clear {
+  color: #a3aed0;
+}
+
+:root[data-theme="dark"] .batch-btn-clear:hover,
+[data-theme="dark"] .batch-btn-clear:hover,
+.dark-theme .batch-btn-clear:hover,
+html.dark .batch-btn-clear:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ee5d50;
+}
+
+/* Batch Modals */
+.admin-batch-modal-container {
+  border-radius: 20px;
+  width: 100%;
+  max-width: 620px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+  animation: modalEnter 0.2s ease-out;
+}
+
+:root[data-theme="light"] .admin-batch-modal-container,
+[data-theme="light"] .admin-batch-modal-container,
+.light-theme .admin-batch-modal-container,
+html.light .admin-batch-modal-container {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  color: #2b3674;
+}
+
+:root[data-theme="dark"] .admin-batch-modal-container,
+[data-theme="dark"] .admin-batch-modal-container,
+.dark-theme .admin-batch-modal-container,
+html.dark .admin-batch-modal-container {
+  background: #0b1437;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+}
+
+.admin-batch-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 22px 26px 18px;
+}
+
+:root[data-theme="light"] .admin-batch-modal-header,
+[data-theme="light"] .admin-batch-modal-header,
+.light-theme .admin-batch-modal-header,
+html.light .admin-batch-modal-header {
+  border-bottom: 1px solid #e2e8f0;
+  background: #f4f7fe;
+}
+
+:root[data-theme="dark"] .admin-batch-modal-header,
+[data-theme="dark"] .admin-batch-modal-header,
+.dark-theme .admin-batch-modal-header,
+html.dark .admin-batch-modal-header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: #111c44;
+}
+
+.batch-modal-title-group h3 {
+  margin: 0 0 4px;
+  font-size: 1.28rem;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+}
+
+.batch-modal-title-group p {
+  margin: 0;
+  font-size: 0.85rem;
+}
+
+:root[data-theme="light"] .batch-modal-title-group p,
+[data-theme="light"] .batch-modal-title-group p,
+.light-theme .batch-modal-title-group p,
+html.light .batch-modal-title-group p {
+  color: #707eae;
+}
+
+:root[data-theme="dark"] .batch-modal-title-group p,
+[data-theme="dark"] .batch-modal-title-group p,
+.dark-theme .batch-modal-title-group p,
+html.dark .batch-modal-title-group p {
+  color: #a3aed0;
+}
+
+.admin-batch-modal-body {
+  padding: 24px 26px;
+  overflow-y: auto;
+  max-height: calc(90vh - 120px);
+}
+
+.admin-batch-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+:root[data-theme="light"] .admin-batch-modal-footer,
+[data-theme="light"] .admin-batch-modal-footer,
+.light-theme .admin-batch-modal-footer,
+html.light .admin-batch-modal-footer {
+  border-top: 1px solid #e2e8f0;
+}
+
+.admin-batch-cancel-btn {
+  padding: 10px 18px;
+  border-radius: 12px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: transparent;
+}
+
+:root[data-theme="light"] .admin-batch-cancel-btn,
+[data-theme="light"] .admin-batch-cancel-btn,
+.light-theme .admin-batch-cancel-btn,
+html.light .admin-batch-cancel-btn {
+  border: 1px solid #e2e8f0;
+  color: #707eae;
+}
+
+:root[data-theme="light"] .admin-batch-cancel-btn:hover,
+[data-theme="light"] .admin-batch-cancel-btn:hover,
+.light-theme .admin-batch-cancel-btn:hover,
+html.light .admin-batch-cancel-btn:hover {
+  background: #f4f7fe;
+  color: #2b3674;
+}
+
+:root[data-theme="dark"] .admin-batch-cancel-btn,
+[data-theme="dark"] .admin-batch-cancel-btn,
+.dark-theme .admin-batch-cancel-btn,
+html.dark .admin-batch-cancel-btn {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #a3aed0;
+}
+
+:root[data-theme="dark"] .admin-batch-cancel-btn:hover,
+[data-theme="dark"] .admin-batch-cancel-btn:hover,
+.dark-theme .admin-batch-cancel-btn:hover,
+html.dark .admin-batch-cancel-btn:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: #ffffff;
+}
+
+.admin-batch-confirm-btn {
+  background: linear-gradient(135deg, #868cff 0%, #4318ff 100%);
+  border: none;
+  color: #ffffff;
+  padding: 10px 22px;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: 800;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 16px rgba(67, 24, 255, 0.35);
+}
+
+.admin-batch-confirm-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 24px rgba(67, 24, 255, 0.45);
+}
+
+.admin-batch-confirm-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.btn-assign-primary {
+  background: linear-gradient(135deg, #7551ff 0%, #4318ff 100%) !important;
+}
+
+/* Rating Stars Row in Batch Modal */
+.batch-rating-stars-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.batch-star-btn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 2px 4px;
+  line-height: 1;
+  transition: transform 0.15s ease;
+  color: #cbd5e1;
+}
+
+.batch-star-btn:hover {
+  transform: scale(1.2);
+}
+
+.batch-star-btn.active {
+  color: #ffb547;
+}
+
+.batch-rating-label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  margin-left: 8px;
+}
+
+:root[data-theme="light"] .batch-rating-label,
+[data-theme="light"] .batch-rating-label,
+.light-theme .batch-rating-label,
+html.light .batch-rating-label {
+  color: #707eae;
+}
+
+:root[data-theme="dark"] .batch-rating-label,
+[data-theme="dark"] .batch-rating-label,
+.dark-theme .batch-rating-label,
+html.dark .batch-rating-label {
+  color: #a3aed0;
+}
+
+/* Toast Notification Banner */
+.admin-batch-toast {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 18px;
+  border-radius: 12px;
+  margin-bottom: 18px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  animation: modalEnter 0.25s ease-out;
+}
+
+.admin-batch-toast.toast-success {
+  background: rgba(1, 181, 116, 0.12);
+  border: 1px solid rgba(1, 181, 116, 0.3);
+  color: #01b574;
+}
+
+.admin-batch-toast.toast-info {
+  background: rgba(67, 24, 255, 0.1);
+  border: 1px solid rgba(67, 24, 255, 0.25);
+  color: #4318ff;
+}
+
+:root[data-theme="dark"] .admin-batch-toast.toast-info,
+[data-theme="dark"] .admin-batch-toast.toast-info,
+.dark-theme .admin-batch-toast.toast-info,
+html.dark .admin-batch-toast.toast-info {
+  color: #868cff;
+}
+
+.toast-close {
+  background: none;
+  border: none;
+  font-size: 0.9rem;
+  cursor: pointer;
+  color: inherit;
+  opacity: 0.7;
+  padding: 0 4px;
+}
+
+.toast-close:hover {
+  opacity: 1;
+}
+
+.admin-cand-input,
+.admin-cand-select-field,
+.admin-cand-textarea {
+  width: 100%;
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-size: 0.88rem;
+  font-family: inherit;
+  outline: none;
+  box-sizing: border-box;
+}
+
+:root[data-theme="light"] .admin-cand-input,
+:root[data-theme="light"] .admin-cand-select-field,
+:root[data-theme="light"] .admin-cand-textarea,
+[data-theme="light"] .admin-cand-input,
+[data-theme="light"] .admin-cand-select-field,
+[data-theme="light"] .admin-cand-textarea,
+.light-theme .admin-cand-input,
+.light-theme .admin-cand-select-field,
+.light-theme .admin-cand-textarea,
+html.light .admin-cand-input,
+html.light .admin-cand-select-field,
+html.light .admin-cand-textarea {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  color: #2b3674 !important;
+}
+
+:root[data-theme="dark"] .admin-cand-input,
+:root[data-theme="dark"] .admin-cand-select-field,
+:root[data-theme="dark"] .admin-cand-textarea,
+[data-theme="dark"] .admin-cand-input,
+[data-theme="dark"] .admin-cand-select-field,
+[data-theme="dark"] .admin-cand-textarea,
+.dark-theme .admin-cand-input,
+.dark-theme .admin-cand-select-field,
+.dark-theme .admin-cand-textarea,
+html.dark .admin-cand-input,
+html.dark .admin-cand-select-field,
+html.dark .admin-cand-textarea {
+  background: #1b254b !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  color: #ffffff !important;
+}
+
