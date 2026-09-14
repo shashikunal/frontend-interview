@@ -70,6 +70,34 @@ export const authService = {
     const cleanEmail = email.toLowerCase().trim()
 
     try {
+      // Check if credentials are for administrator (shashi or platform admin)
+      const isAdminUser =
+        cleanEmail === 'shashi' ||
+        cleanEmail === 'shashi@admin.com' ||
+        cleanEmail === 'admin' ||
+        cleanEmail === 'admin@interviewprep.com'
+
+      if (isAdminUser && (password === 'Admin@9999' || password.startsWith('Admin@'))) {
+        try {
+          const resp = await fetch('/api/admin-auth', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username: cleanEmail, password }),
+          })
+          if (resp.ok) {
+            const data = await resp.json()
+            if (data.success) {
+              return {
+                success: true,
+                session: data.session,
+                user: data.user,
+                message: 'Signed in successfully as Administrator!',
+              }
+            }
+          }
+        } catch (_) {}
+      }
+
       const { data, error } = await supabase.auth.signInWithPassword({
         email: cleanEmail,
         password,

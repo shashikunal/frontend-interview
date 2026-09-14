@@ -16,6 +16,8 @@ export function DocsVideoPlayer({
 }: DocsVideoPlayerProps) {
   const [activeVideo, setActiveVideo] = useState<VideoLesson | undefined>(video);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [customSearchQuery, setCustomSearchQuery] = useState('');
+  const [activeSearchTerm, setActiveSearchTerm] = useState('');
   const [isCollapsed, setIsCollapsed] = useState(() => {
     try {
       return localStorage.getItem('docs_video_player_collapsed') === 'true';
@@ -28,6 +30,8 @@ export function DocsVideoPlayer({
   useEffect(() => {
     setActiveVideo(video);
     setIsPlaying(false);
+    setCustomSearchQuery('');
+    setActiveSearchTerm('');
   }, [video, topicTitle]);
 
   const toggleCollapse = () => {
@@ -49,31 +53,55 @@ export function DocsVideoPlayer({
 
   const currentVideo = activeVideo || video || playlist[0];
 
-  if (!currentVideo || !currentVideo.videoId) {
-    return (
-      <div className="docs-video-card video-unavailable-card">
-        <div className="video-placeholder-inner">
-          <span className="video-status-icon">🎥</span>
-          <div>
-            <h5>Video Tutorial in Review</h5>
-            <p>
-              A verified video walkthrough is being cataloged for <strong>{topicTitle}</strong>.
-              In the meantime, all technical specifications and production code snippets are available below.
-            </p>
-          </div>
-        </div>
-      </div>
-    );
+  if (!currentVideo) {
+    return null;
   }
 
-  const directYouTubeUrl = `https://www.youtube.com/watch?v=${currentVideo.videoId}`;
-  const thumbnailUrl =
-    currentVideo.thumbnailUrl ||
-    `https://img.youtube.com/vi/${currentVideo.videoId}/hqdefault.jpg`;
+  const isSearchMode = currentVideo.videoId === 'search' || !!activeSearchTerm;
+  const effectiveSearchQuery = activeSearchTerm || currentVideo.searchQuery || `${subjectTitle} ${topicTitle} tutorial`;
+
+  const directYouTubeUrl = isSearchMode
+    ? `https://www.youtube.com/results?search_query=${encodeURIComponent(effectiveSearchQuery)}`
+    : `https://www.youtube.com/watch?v=${currentVideo.videoId}`;
+
+  const thumbnailUrl = isSearchMode
+    ? (playlist[0]?.thumbnailUrl || `https://img.youtube.com/vi/${playlist[0]?.videoId || 'M3LOgX_3X1E'}/hqdefault.jpg`)
+    : (currentVideo.thumbnailUrl || `https://img.youtube.com/vi/${currentVideo.videoId}/hqdefault.jpg`);
 
   const youtubeSearchUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(
     `${subjectTitle} ${topicTitle} tutorial guide`
   )}`;
+
+  const iframeSrc = isSearchMode
+    ? `https://www.youtube-nocookie.com/embed?listType=search&list=${encodeURIComponent(effectiveSearchQuery)}&autoplay=1`
+    : `https://www.youtube-nocookie.com/embed/${currentVideo.videoId}?autoplay=1&rel=0&modestbranding=1`;
+
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!customSearchQuery.trim()) return;
+    setActiveSearchTerm(customSearchQuery.trim());
+    setActiveVideo({
+      topicId: currentVideo.topicId,
+      videoId: 'search',
+      title: `YouTube Search: "${customSearchQuery.trim()}"`,
+      duration: 'Live Stream',
+      channelName: 'YouTube Search',
+      isVerified: true,
+      badge: 'Live YouTube Stream',
+      searchQuery: customSearchQuery.trim(),
+    });
+    setIsPlaying(true);
+  };
+
+  const handleSelectVideo = (vid: VideoLesson) => {
+    setActiveVideo(vid);
+    if (vid.videoId === 'search') {
+      setActiveSearchTerm(vid.searchQuery || `${subjectTitle} ${topicTitle}`);
+    } else {
+      setActiveSearchTerm('');
+    }
+    setIsPlaying(true);
+  };
 
   // If collapsed, render non-distracting compact banner
   if (isCollapsed) {
@@ -129,7 +157,7 @@ export function DocsVideoPlayer({
               target="_blank"
               rel="noopener noreferrer"
               className="dvm-yt-btn"
-              title="Watch on YouTube directly (Bypasses local ad-blocker & embed limits)"
+              title="Watch on YouTube directly"
             >
               📺 Watch on YouTube ↗
             </a>
@@ -144,6 +172,34 @@ export function DocsVideoPlayer({
           </div>
         </div>
       </div>
+
+      {/* Quick Chapter & Subtopic Switcher Chips */}
+      {playlist.length > 1 && (
+        <div className="docs-video-chips-bar">
+          <span className="dvc-chips-label">Select Chapter / Subtopic:</span>
+          <div className="dvc-chips-list">
+            {playlist.map((item, idx) => {
+              const isSelected = item.videoId === currentVideo.videoId && (!item.subtopicId || item.subtopicId === currentVideo.subtopicId);
+              return (
+                <button
+                  key={`${item.videoId}-${item.subtopicId || idx}`}
+                  type="button"
+                  className={`dvc-subtopic-chip ${isSelected ? 'is-chip-active' : ''}`}
+                  onClick={() => handleSelectVideo(item)}
+                  title={item.title}
+                >
+                  <span className="dvc-chip-icon">
+                    {item.videoId === 'search' ? '⚡' : item.badge === 'What Is It?' ? '💡' : item.badge === 'Practical Usage' ? '💻' : item.badge === 'Best Practices' ? '⚠️' : '🎬'}
+                  </span>
+                  <span className="dvc-chip-text">
+                    {item.subtopicTitle || (idx === 0 ? 'Topic Overview' : item.title)}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* Main Video Embed Player */}
       <div className="docs-video-player-container">
@@ -208,7 +264,7 @@ export function DocsVideoPlayer({
             </div>
             <iframe
               className="docs-video-iframe"
-              src={`https://www.youtube.com/embed/${currentVideo.videoId}?autoplay=1&rel=0&modestbranding=1`}
+              src={iframeSrc}
               title={currentVideo.title}
               referrerPolicy="strict-origin-when-cross-origin"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -218,32 +274,92 @@ export function DocsVideoPlayer({
         )}
       </div>
 
+      {/* Dynamic YouTube Finder & Search Bar */}
+      <div className="docs-video-search-bar-wrap">
+        <form onSubmit={handleSearchSubmit} className="docs-video-search-form">
+          <span className="dvs-search-icon">🔍</span>
+          <input
+            type="text"
+            className="dvs-search-input"
+            value={customSearchQuery}
+            onChange={e => setCustomSearchQuery(e.target.value)}
+            placeholder={`Search YouTube for "${topicTitle}" concepts, tutorials or questions...`}
+            aria-label="Search YouTube"
+          />
+          <button type="submit" className="dvs-search-submit-btn">
+            ⚡ Stream from YouTube
+          </button>
+        </form>
+        <div className="dvs-quick-tags">
+          <span className="dvs-tag-label">Quick Search:</span>
+          <button
+            type="button"
+            className="dvs-tag-btn"
+            onClick={() => {
+              setCustomSearchQuery(`${topicTitle} tutorial for beginners`);
+              setActiveSearchTerm(`${topicTitle} tutorial for beginners`);
+              setActiveVideo({
+                topicId: currentVideo.topicId,
+                videoId: 'search',
+                title: `YouTube: "${topicTitle} tutorial for beginners"`,
+                duration: 'Live Stream',
+                channelName: 'YouTube Stream',
+                isVerified: true,
+                badge: 'Live YouTube Stream',
+                searchQuery: `${topicTitle} tutorial for beginners`,
+              });
+              setIsPlaying(true);
+            }}
+          >
+            "{topicTitle} tutorial"
+          </button>
+          <button
+            type="button"
+            className="dvs-tag-btn"
+            onClick={() => {
+              setCustomSearchQuery(`${topicTitle} interview questions and answers`);
+              setActiveSearchTerm(`${topicTitle} interview questions and answers`);
+              setActiveVideo({
+                topicId: currentVideo.topicId,
+                videoId: 'search',
+                title: `YouTube: "${topicTitle} interview questions"`,
+                duration: 'Live Stream',
+                channelName: 'YouTube Stream',
+                isVerified: true,
+                badge: 'Live YouTube Stream',
+                searchQuery: `${topicTitle} interview questions and answers`,
+              });
+              setIsPlaying(true);
+            }}
+          >
+            "{topicTitle} interview questions"
+          </button>
+        </div>
+      </div>
+
       {/* Curated Playlist & Subtopic Video Selectors */}
       {playlist.length > 1 && (
         <div className="docs-video-playlist-section">
           <div className="dvp-header">
             <div className="dvp-header-title">
               <span className="dvp-icon">🎬</span>
-              <strong>Recommended Video Lessons ({playlist.length})</strong>
+              <strong>Curated Video Lessons for this Chapter & Subtopics ({playlist.length})</strong>
             </div>
-            <span className="dvp-subtitle">Select any tutorial below to switch playback:</span>
+            <span className="dvp-subtitle">Click any lesson below to switch the player to that specific subtopic or live stream:</span>
           </div>
 
           <div className="dvp-grid">
             {playlist.map((vid, idx) => {
-              const isSelected = vid.videoId === currentVideo.videoId;
-              const thumb =
-                vid.thumbnailUrl ||
-                `https://img.youtube.com/vi/${vid.videoId}/mqdefault.jpg`;
+              const isSelected = vid.videoId === currentVideo.videoId && (!vid.subtopicId || vid.subtopicId === currentVideo.subtopicId);
+              const thumb = vid.videoId === 'search'
+                ? (playlist[0]?.thumbnailUrl || `https://img.youtube.com/vi/${playlist[0]?.videoId || 'M3LOgX_3X1E'}/mqdefault.jpg`)
+                : (vid.thumbnailUrl || `https://img.youtube.com/vi/${vid.videoId}/mqdefault.jpg`);
 
               return (
                 <div
-                  key={`${vid.videoId}-${idx}`}
+                  key={`${vid.videoId}-${vid.subtopicId || idx}`}
                   className={`dvp-card ${isSelected ? 'is-active-video' : ''}`}
-                  onClick={() => {
-                    setActiveVideo(vid);
-                    setIsPlaying(true);
-                  }}
+                  onClick={() => handleSelectVideo(vid)}
                   role="button"
                   tabIndex={0}
                 >
@@ -256,7 +372,7 @@ export function DocsVideoPlayer({
                   <div className="dvp-card-details">
                     <div className="dvp-card-badges">
                       {vid.badge && (
-                        <span className={`dvp-badge-tag badge-${vid.badge.toLowerCase().replace(/\s+/g, '-')}`}>
+                        <span className={`dvp-badge-tag badge-${vid.badge.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}>
                           {vid.badge}
                         </span>
                       )}

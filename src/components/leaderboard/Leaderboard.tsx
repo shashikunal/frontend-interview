@@ -312,7 +312,7 @@ export default function Leaderboard({ compact = false }: LeaderboardProps) {
   const load = useCallback(async () => {
     setLoading(true)
     try {
-      const data = await leaderboardService.getGlobalLeaderboard(timeframe, category, compact ? 20 : 50)
+      const data = await leaderboardService.getGlobalLeaderboard(timeframe, category, compact ? 20 : 100)
       setEntries(data)
 
       // Identify the current active candidate

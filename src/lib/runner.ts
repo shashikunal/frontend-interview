@@ -40,6 +40,8 @@ function buildJsWorkerSource(files: Files, code: string, postlude?: string): str
   return `${FMT_SRC}
 self.__files = ${filesJson};
 const __post = (msg) => postMessage(msg);
+const exports = {};
+const module = { exports };
 const console = {
   log: (...a) => __post({ t: 'log', level: 'log', parts: a.map(formatValue) }),
   info: (...a) => __post({ t: 'log', level: 'info', parts: a.map(formatValue) }),
@@ -111,8 +113,8 @@ function __finish() {
 }
 (async function () {
   const __src = ${codeJson};
-  const fn = new AsyncFunction('require', 'fs', __src);
-  await fn(require, fs);
+  const fn = new AsyncFunction('require', 'fs', 'exports', 'module', __src);
+  await fn(require, fs, exports, module);
   ${postlude ?? ''}
 })().then(
   () => __finish(),

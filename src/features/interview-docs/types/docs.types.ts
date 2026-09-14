@@ -113,7 +113,8 @@ export interface VideoLesson {
   isVerified: boolean;
   subtopicId?: string;
   subtopicTitle?: string;
-  badge?: 'Core Concept' | 'Deep Dive' | 'Interview Gotchas' | 'Hands-on Code' | 'Subtopic Focus';
+  badge?: 'Core Concept' | 'Deep Dive' | 'Interview Gotchas' | 'Hands-on Code' | 'Subtopic Focus' | 'What Is It?' | 'Practical Usage' | 'Best Practices' | 'Live YouTube Stream' | string;
+  searchQuery?: string;
 }
 
 export interface InterviewFollowUp {

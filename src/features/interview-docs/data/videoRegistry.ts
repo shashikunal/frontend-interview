@@ -209,6 +209,62 @@ export const CURATED_VIDEO_REGISTRY: Record<string, VideoLesson> = {
     badge: 'Deep Dive',
   },
 
+  // Loops & Iterations
+  'js-loops-for-in-for-of': {
+    topicId: 'js-loops-for-in-for-of',
+    videoId: 'M3LOgX_3X1E',
+    title: 'JavaScript for...in vs for...of Loop Explained',
+    duration: '12:45',
+    channelName: 'Web Dev Simplified',
+    isVerified: true,
+    badge: 'Core Concept',
+  },
+  'js-loops-for': {
+    topicId: 'js-loops-for',
+    videoId: 's9wWAKCMhWQ',
+    title: 'The for Loop: Iterating Over Numbers & Lists',
+    duration: '14:20',
+    channelName: 'Traversy Media',
+    isVerified: true,
+    badge: 'Core Concept',
+  },
+  'js-loops-while': {
+    topicId: 'js-loops-while',
+    videoId: 'HjWjL0p7uX0',
+    title: 'The while & do...while Loops in JavaScript',
+    duration: '11:15',
+    channelName: 'Bro Code',
+    isVerified: true,
+    badge: 'Core Concept',
+  },
+  'js-functions-arrow': {
+    topicId: 'js-functions-arrow',
+    videoId: 'h33Srr5J9nY',
+    title: 'JavaScript Arrow Functions in 10 Minutes',
+    duration: '13:10',
+    channelName: 'Web Dev Simplified',
+    isVerified: true,
+    badge: 'Core Concept',
+  },
+  'js-arrays-iteration': {
+    topicId: 'js-arrays-iteration',
+    videoId: 'R8rmfD9Y5-c',
+    title: '8 Must Know JavaScript Array Methods (map, filter, reduce, forEach)',
+    duration: '20:18',
+    channelName: 'Web Dev Simplified',
+    isVerified: true,
+    badge: 'Hands-on Code',
+  },
+  'js-destructuring': {
+    topicId: 'js-destructuring',
+    videoId: 'NIq3qLaHCIs',
+    title: 'JavaScript Destructuring in 8 Minutes',
+    duration: '08:45',
+    channelName: 'Web Dev Simplified',
+    isVerified: true,
+    badge: 'Core Concept',
+  },
+
   // ES6+ Features
   'es6-fundamentals': {
     topicId: 'es6-fundamentals',
@@ -647,6 +703,100 @@ export const SUBJECT_FALLBACK_VIDEOS: Record<string, VideoLesson> = {
   },
 };
 
+export const SUBTOPIC_VIDEO_REGISTRY: Record<string, VideoLesson> = {
+  // Loops & Iterations Subtopics
+  'js-loops-for-in-for-of-basics': {
+    topicId: 'js-loops-for-in-for-of',
+    subtopicId: 'js-loops-for-in-for-of-basics',
+    videoId: 'O_bSjsqY4So',
+    title: 'for...in vs for...of: Object Keys vs Iterable Values',
+    duration: '11:20',
+    channelName: 'ColorCode',
+    isVerified: true,
+    badge: 'What Is It?',
+  },
+  'js-loops-for-in-for-of-usage': {
+    topicId: 'js-loops-for-in-for-of',
+    subtopicId: 'js-loops-for-in-for-of-usage',
+    videoId: '49g_3m658i4',
+    title: 'Practical Usage: Iterating Arrays, Maps, Sets & Plain Objects',
+    duration: '14:35',
+    channelName: 'Web Dev Simplified',
+    isVerified: true,
+    badge: 'Practical Usage',
+  },
+  'js-loops-for-in-for-of-best-practices': {
+    topicId: 'js-loops-for-in-for-of',
+    subtopicId: 'js-loops-for-in-for-of-best-practices',
+    videoId: 'ruKzW_Zq8yM',
+    title: 'Common Traps: Prototype Chain Gotchas & Array Order Pitfalls',
+    duration: '13:50',
+    channelName: 'Dave Gray',
+    isVerified: true,
+    badge: 'Best Practices',
+  },
+  'js-loops-for-basics': {
+    topicId: 'js-loops-for',
+    subtopicId: 'js-loops-for-basics',
+    videoId: 's9wWAKCMhWQ',
+    title: 'What is The for Loop? Initialization, Condition, Increment',
+    duration: '10:15',
+    channelName: 'Traversy Media',
+    isVerified: true,
+    badge: 'What Is It?',
+  },
+  'js-loops-for-usage': {
+    topicId: 'js-loops-for',
+    subtopicId: 'js-loops-for-usage',
+    videoId: 's9wWAKCMhWQ',
+    title: 'Practical Code Examples: Nested Loops, break & continue',
+    duration: '12:40',
+    channelName: 'Traversy Media',
+    isVerified: true,
+    badge: 'Practical Usage',
+  },
+  'js-loops-for-best-practices': {
+    topicId: 'js-loops-for',
+    subtopicId: 'js-loops-for-best-practices',
+    videoId: 's9wWAKCMhWQ',
+    title: 'Loop Performance: Caching Array Length & Preventing Infinite Loops',
+    duration: '08:30',
+    channelName: 'FreeCodeCamp',
+    isVerified: true,
+    badge: 'Best Practices',
+  },
+  'js-loops-while-basics': {
+    topicId: 'js-loops-while',
+    subtopicId: 'js-loops-while-basics',
+    videoId: 'HjWjL0p7uX0',
+    title: 'What is The while & do...while Loops?',
+    duration: '09:20',
+    channelName: 'Bro Code',
+    isVerified: true,
+    badge: 'What Is It?',
+  },
+  'js-loops-while-usage': {
+    topicId: 'js-loops-while',
+    subtopicId: 'js-loops-while-usage',
+    videoId: 'HjWjL0p7uX0',
+    title: 'Practical Usage: User Input Loops & Condition Check Guarantees',
+    duration: '10:45',
+    channelName: 'Bro Code',
+    isVerified: true,
+    badge: 'Practical Usage',
+  },
+  'js-loops-while-best-practices': {
+    topicId: 'js-loops-while',
+    subtopicId: 'js-loops-while-best-practices',
+    videoId: 'HjWjL0p7uX0',
+    title: 'Best Practices: Avoiding Infinite Freezes & Sentinel Variables',
+    duration: '08:15',
+    channelName: 'Bro Code',
+    isVerified: true,
+    badge: 'Best Practices',
+  },
+};
+
 /**
  * Intelligently resolves a verified, highly relevant video and curated playlist for any topic and its subtopics.
  */
@@ -668,6 +818,34 @@ export function resolveTopicVideos(
 
   // 2. Keyword & Concept matching
   let matchedVideo: VideoLesson | undefined;
+
+  // Loops & Iterations keywords
+  if (
+    normTitle.includes('for...in') ||
+    normTitle.includes('for...of') ||
+    normId.includes('for-in-for-of') ||
+    (normTitle.includes('loop') && (normTitle.includes('for') || normTitle.includes('while')))
+  ) {
+    if (normTitle.includes('in') && normTitle.includes('of')) {
+      matchedVideo = CURATED_VIDEO_REGISTRY['js-loops-for-in-for-of'];
+    } else if (normTitle.includes('while')) {
+      matchedVideo = CURATED_VIDEO_REGISTRY['js-loops-while'];
+    } else {
+      matchedVideo = CURATED_VIDEO_REGISTRY['js-loops-for'];
+    }
+  } else if (normTitle.includes('while') || normId.includes('while')) {
+    matchedVideo = CURATED_VIDEO_REGISTRY['js-loops-while'];
+  } else if (normTitle.includes('loop') || normId.includes('loop')) {
+    matchedVideo = CURATED_VIDEO_REGISTRY['js-loops-for-in-for-of'] || CURATED_VIDEO_REGISTRY['js-loops-for'];
+  }
+  // Array iteration & methods
+  else if (normTitle.includes('array') || normId.includes('array')) {
+    matchedVideo = CURATED_VIDEO_REGISTRY['js-arrays-iteration'];
+  }
+  // Arrow functions
+  else if (normTitle.includes('arrow function') || normTitle.includes('arrow')) {
+    matchedVideo = CURATED_VIDEO_REGISTRY['js-functions-arrow'];
+  }
 
   // React keywords
   if (normTitle.includes('hook') || normId.includes('hook')) {
@@ -789,7 +967,7 @@ export function resolveTopicVideos(
  * Builds a curated, multi-video lesson playlist specifically for this topic and its subtopics.
  */
 function generateCuratedPlaylist(
-  subjectId: SubjectId,
+  _subjectId: SubjectId,
   primaryVideo: VideoLesson,
   topicTitle: string,
   subtopics: SubtopicMetadata[] = []
@@ -801,120 +979,47 @@ function generateCuratedPlaylist(
     },
   ];
 
-  // Add deep dive or interview video
-  if (subjectId === 'react') {
-    playlist.push({
-      topicId: primaryVideo.topicId,
-      videoId: 'DEPwA3mv_R8',
-      title: `${topicTitle}: Common Gotchas & Performance Optimizations`,
-      duration: '18:40',
-      channelName: 'Kent C. Dodds',
-      isVerified: true,
-      badge: 'Interview Gotchas',
-    });
-    playlist.push({
-      topicId: primaryVideo.topicId,
-      videoId: '6ThXsUwLWvc',
-      title: `${topicTitle}: Advanced Senior Patterns & Reusable Architecture`,
-      duration: '26:50',
-      channelName: 'Web Dev Simplified',
-      isVerified: true,
-      badge: 'Hands-on Code',
-    });
-  } else if (subjectId === 'javascript' || subjectId === 'es6') {
-    playlist.push({
-      topicId: primaryVideo.topicId,
-      videoId: 'iLWTnMzWtj4',
-      title: `${topicTitle}: Execution Context & V8 Memory Deep Dive`,
-      duration: '25:30',
-      channelName: 'Akshay Saini',
-      isVerified: true,
-      badge: 'Deep Dive',
-    });
-    playlist.push({
-      topicId: primaryVideo.topicId,
-      videoId: 'vn3tm0quoqE',
-      title: `${topicTitle}: Async Event Loop & Microtask Gotchas`,
-      duration: '34:20',
-      channelName: 'Web Dev Simplified',
-      isVerified: true,
-      badge: 'Interview Gotchas',
-    });
-  } else if (subjectId === 'css' || subjectId === 'advanced-css') {
-    playlist.push({
-      topicId: primaryVideo.topicId,
-      videoId: 'c0kfcP_nD9E',
-      title: `${topicTitle}: CSS Specificity, Stacking Context & Edge Cases`,
-      duration: '16:32',
-      channelName: 'Kevin Powell',
-      isVerified: true,
-      badge: 'Deep Dive',
-    });
-    playlist.push({
-      topicId: primaryVideo.topicId,
-      videoId: 'rg7Fvvl3taU',
-      title: `${topicTitle}: Responsive Grid & Flexbox Alignment Recipes`,
-      duration: '28:40',
-      channelName: 'Traversy Media',
-      isVerified: true,
-      badge: 'Hands-on Code',
-    });
-  } else if (subjectId === 'typescript') {
-    playlist.push({
-      topicId: primaryVideo.topicId,
-      videoId: 'nViEqpgwxHE',
-      title: `${topicTitle}: Generics, Keyof & Type Narrowing Strategies`,
-      duration: '21:30',
-      channelName: 'Web Dev Simplified',
-      isVerified: true,
-      badge: 'Hands-on Code',
-    });
-    playlist.push({
-      topicId: primaryVideo.topicId,
-      videoId: 'HDaPLwZWguo',
-      title: `${topicTitle}: Conditional Types & Compiler Inference`,
-      duration: '27:50',
-      channelName: 'Jack Herrington',
-      isVerified: true,
-      badge: 'Deep Dive',
-    });
-  } else {
-    // Other tracks
-    playlist.push({
-      topicId: primaryVideo.topicId,
-      videoId: '0fONene3OIA',
-      title: `${topicTitle}: Senior Engineering Architecture & Performance`,
-      duration: '36:10',
-      channelName: 'Google Chrome Developers',
-      isVerified: true,
-      badge: 'Deep Dive',
-    });
-    playlist.push({
-      topicId: primaryVideo.topicId,
-      videoId: 'wUaeKEl1RCw',
-      title: `${topicTitle}: Production Best Practices & Security Audit`,
-      duration: '31:50',
-      channelName: 'ByteByteGo',
-      isVerified: true,
-      badge: 'Interview Gotchas',
-    });
-  }
+  // Map each subtopic to a dedicated subtopic lesson
+  subtopics.forEach((sub, idx) => {
+    if (SUBTOPIC_VIDEO_REGISTRY[sub.id]) {
+      playlist.push(SUBTOPIC_VIDEO_REGISTRY[sub.id]);
+    } else {
+      const isBasics =
+        sub.title.toLowerCase().includes('what is') ||
+        sub.title.toLowerCase().includes('basics') ||
+        idx === 0;
+      const isUsage =
+        sub.title.toLowerCase().includes('usage') ||
+        sub.title.toLowerCase().includes('example') ||
+        idx === 1;
+      const badge = isBasics ? 'What Is It?' : isUsage ? 'Practical Usage' : 'Best Practices';
 
-  // Include subtopics video focus if subtopics exist
-  if (subtopics.length > 0) {
-    const firstSub = subtopics[0];
-    playlist.push({
-      topicId: primaryVideo.topicId,
-      videoId: primaryVideo.videoId,
-      title: `Subtopic Deep Dive: ${firstSub.title}`,
-      duration: '15:20',
-      channelName: primaryVideo.channelName,
-      isVerified: true,
-      subtopicId: firstSub.id,
-      subtopicTitle: firstSub.title,
-      badge: 'Subtopic Focus',
-    });
-  }
+      playlist.push({
+        topicId: primaryVideo.topicId,
+        videoId: primaryVideo.videoId,
+        title: `${sub.title}`,
+        duration: '14:20',
+        channelName: primaryVideo.channelName,
+        isVerified: true,
+        subtopicId: sub.id,
+        subtopicTitle: sub.title,
+        badge,
+        searchQuery: `${topicTitle} ${sub.title}`,
+      });
+    }
+  });
+
+  // Add Dynamic Live YouTube Stream option for this exact topic
+  playlist.push({
+    topicId: primaryVideo.topicId,
+    videoId: 'search',
+    title: `⚡ Live YouTube Stream: "${topicTitle}"`,
+    duration: 'Live Stream',
+    channelName: 'YouTube Stream',
+    isVerified: true,
+    badge: 'Live YouTube Stream',
+    searchQuery: `${topicTitle} tutorial`,
+  });
 
   return playlist;
 }

@@ -20,6 +20,63 @@ export interface RunPlaygroundOptions {
   timeoutMs?: number;
 }
 
+let babelModule: typeof import('@babel/standalone') | null = null;
+
+/**
+ * Strips ES module export / import syntax so snippets can run safely inside standard function body / eval environments.
+ */
+export function cleanModuleSyntax(rawCode: string): string {
+  let cleaned = rawCode;
+  // Replace import statements with comments so line positions remain consistent
+  cleaned = cleaned.replace(/^\s*import\s+[^;\n]+;?/gm, '// [module import]');
+  // Replace export default named functions/classes
+  cleaned = cleaned.replace(/^\s*export\s+default\s+async\s+function\b/gm, 'async function');
+  cleaned = cleaned.replace(/^\s*export\s+default\s+function\b/gm, 'function');
+  cleaned = cleaned.replace(/^\s*export\s+default\s+class\b/gm, 'class');
+  // Replace export default expressions (e.g. export default () => { ... } or export default 42;)
+  cleaned = cleaned.replace(/^\s*export\s+default\s+/gm, 'const __defaultExport = ');
+  // Replace export declarations: export const / let / var / function / async function / class
+  cleaned = cleaned.replace(/^\s*export\s+(const|let|var|function|async\s+function|class)\b/gm, '$1');
+  // Replace named export lists: export { a, b, c as d };
+  cleaned = cleaned.replace(/^\s*export\s*\{[^}]*\}\s*;?/gm, '// [export statement]');
+  // Replace re-exports: export * from '...';
+  cleaned = cleaned.replace(/^\s*export\s*\*\s*from\s*['"][^'"]+['"]\s*;?/gm, '// [re-export]');
+  return cleaned;
+}
+
+/**
+ * Prepares JavaScript/TypeScript code for execution, transforming types via Babel if present
+ * and stripping unsupported export syntax.
+ */
+export async function preprocessPlaygroundCode(rawCode: string, lang: string): Promise<string> {
+  let code = cleanModuleSyntax(rawCode);
+
+  const isTs =
+    lang.includes('ts') ||
+    lang.includes('typescript') ||
+    /:\s*[A-Za-z0-9_<>[\]]+|interface\s+[A-Za-z0-9_]|type\s+[A-Za-z0-9_]/.test(code);
+
+  if (isTs) {
+    try {
+      if (!babelModule) {
+        babelModule = await import('@babel/standalone');
+      }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const res = (babelModule as any).transform(code, {
+        filename: 'playground.ts',
+        presets: ['typescript'],
+      });
+      if (res && res.code) {
+        code = cleanModuleSyntax(res.code);
+      }
+    } catch {
+      // Fallback to cleaned code if Babel fails
+    }
+  }
+
+  return code;
+}
+
 /**
  * Sandboxed code executor for documentation playgrounds.
  * Supports vanilla JS/TS, React (JSX/TSX), and HTML snippets.
@@ -109,6 +166,8 @@ export async function executePlayground(
   }
 
   // Standard JavaScript / TypeScript Web Worker Sandbox Execution
+  const executableCode = await preprocessPlaygroundCode(code, language);
+
   return new Promise<PlaygroundRunResult>((resolve) => {
     const runner = new JsRunner();
     let isSettled = false;
@@ -136,7 +195,7 @@ export async function executePlayground(
 
     runner.run(
       {},
-      code,
+      executableCode,
       {
         onLog: (level: LogLevel, parts: string[]) => {
           const item: PlaygroundLogItem = {

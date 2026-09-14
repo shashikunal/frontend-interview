@@ -285,7 +285,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           return { success: false, message: result.error || 'Invalid administrator credentials. Access denied.' }
         }
 
-        const adminEmail = 'admin@interviewprep.com'
+        const adminEmail = result.user?.email || (trimmedUser.toLowerCase().includes('shashi') ? 'shashi@admin.com' : 'admin@interviewprep.com')
+        const adminName = result.user?.name || (trimmedUser.toLowerCase().includes('shashi') ? 'shashi' : 'Platform Administrator')
 
         // Optional Supabase session synchronization for Postgres RLS policies
         if (result.session?.access_token) {
@@ -303,9 +304,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         roleOverrideRef.current = 'admin'
         const adminProfile: AuthUserProfile = {
-          id: result.user?.id || 'admin_super_user',
+          id: result.user?.id || (trimmedUser.toLowerCase().includes('shashi') ? 'f16e43bf-2ff8-480c-ae49-e2285940bf46' : 'admin_super_user'),
           email: adminEmail,
-          name: result.user?.name || 'Platform Administrator',
+          name: adminName,
           role: 'admin',
           entitlements: DEFAULT_ENTITLEMENTS.admin,
           permissions: ['admin:all', 'admin:users_manage', 'admin:billing', 'admin:audit'],
@@ -350,13 +351,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signIn = useCallback(async (params: SignInCredentials): Promise<AuthActionResult> => {
     setIsLoading(true)
+    const cleanEmail = params.email.toLowerCase().trim()
+    const isAdminCredential =
+      (cleanEmail === 'shashi' || cleanEmail === 'shashi@admin.com' || cleanEmail === 'admin' || cleanEmail === 'admin@interviewprep.com') &&
+      (params.password === 'Admin@9999' || params.password.startsWith('Admin@'))
+
+    if (isAdminCredential) {
+      const adminRes = await loginAsAdmin(params.email, params.password)
+      setIsLoading(false)
+      if (adminRes.success) {
+        setIsAuthModalOpen(false)
+        return { success: true, message: 'Welcome back, Administrator!' }
+      }
+    }
+
     const result = await authService.signIn(params)
     setIsLoading(false)
     if (result.success && result.session) {
       setIsAuthModalOpen(false)
     }
     return result
-  }, [])
+  }, [loginAsAdmin])
 
   const signOut = useCallback(async (): Promise<void> => {
     setIsLoading(true)
