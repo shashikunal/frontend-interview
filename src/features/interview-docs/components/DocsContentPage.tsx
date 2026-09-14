@@ -7,6 +7,7 @@ import { docsProgressService } from '../services/docsProgressService';
 import { BreadcrumbNav } from './common/BreadcrumbNav';
 import { SafeMarkdownViewer } from './common/SafeMarkdownViewer';
 import { DocsVideoPlayer } from './DocsVideoPlayer';
+import { DocsInteractivePlayground, type PlaygroundSnippetPreset } from './DocsInteractivePlayground';
 import { DocsQuestionsVirtualizer } from './DocsQuestionsVirtualizer';
 import { DocsTableOfContents } from './DocsTableOfContents';
 
@@ -25,6 +26,43 @@ export function DocsContentPage() {
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [isFocusMode, setIsFocusMode] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
+  const [activePlaygroundSnippet, setActivePlaygroundSnippet] = useState<PlaygroundSnippetPreset | undefined>(undefined);
+
+  // Derive interactive code presets from the topic documentation sections
+  const playgroundPresets = useMemo<PlaygroundSnippetPreset[]>(() => {
+    const list: PlaygroundSnippetPreset[] = [];
+    if (doc?.sections) {
+      doc.sections.forEach((sec, idx) => {
+        if (sec.codeSnippet && sec.codeSnippet.code) {
+          list.push({
+            id: `section-${sec.id || idx}`,
+            title: sec.heading.replace(/^\d+\.\s*/, ''),
+            language: sec.codeSnippet.language || 'javascript',
+            code: sec.codeSnippet.code,
+          });
+        }
+      });
+    }
+    if (list.length === 0) {
+      list.push({
+        id: 'default-demo',
+        title: `${doc?.title || 'Topic'} Demo`,
+        language: 'javascript',
+        code: `// ${doc?.title || 'Interactive Playground'}\nconsole.log("Mastering ${doc?.title || 'Frontend'} in real-time...");\n\nconst takeaways = ["Understand Specifications", "Practice Edge Cases", "Ace the Technical Interview"];\ntakeaways.forEach((t, i) => console.log(\`\${i + 1}. \${t}\`));`,
+      });
+    }
+    return list;
+  }, [doc]);
+
+  const handleLoadSnippetIntoPlayground = (preset: PlaygroundSnippetPreset) => {
+    setActivePlaygroundSnippet(preset);
+    setTimeout(() => {
+      const el = document.getElementById('interactive-playground-section');
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth' });
+      }
+    }, 50);
+  };
 
   useEffect(() => {
     if (subjectId && topicId) {
@@ -93,6 +131,7 @@ export function DocsContentPage() {
     { id: 'how-it-works-section', label: 'How It Works' },
     ...(doc.syntaxReference ? [{ id: 'syntax-section', label: 'Syntax & Specification' }] : []),
     ...doc.sections.map(s => ({ id: s.id, label: s.heading })),
+    { id: 'interactive-playground-section', label: '⚡ Code Playground' },
     { id: 'video-explanation', label: 'Video Walkthrough' },
     { id: 'interview-questions-section', label: `Questions (${doc.questions.length})` },
   ];
@@ -188,13 +227,29 @@ export function DocsContentPage() {
           </section>
         )}
 
-        {/* Dynamic Sections */}
+        {/* Dynamic Sections with Run in Playground Quick Actions */}
         {doc.sections.map(section => (
           <section key={section.id} id={section.id} className="docs-content-section">
             <h2 className="section-title">{section.heading}</h2>
             <SafeMarkdownViewer content={section.content} />
             {section.codeSnippet && (
               <div className="section-code-wrap">
+                <div className="section-code-header-bar">
+                  <span className="sch-lang">{section.codeSnippet.language.toUpperCase()}</span>
+                  <button
+                    type="button"
+                    className="sch-run-btn"
+                    onClick={() => handleLoadSnippetIntoPlayground({
+                      id: `section-${section.id}`,
+                      title: section.heading.replace(/^\d+\.\s*/, ''),
+                      language: section.codeSnippet!.language || 'javascript',
+                      code: section.codeSnippet!.code,
+                    })}
+                    title="Open and run this snippet in the interactive playground"
+                  >
+                    ⚡ Edit &amp; Run in Playground →
+                  </button>
+                </div>
                 <SafeMarkdownViewer
                   content={`\`\`\`${section.codeSnippet.language}\n${section.codeSnippet.code}\n\`\`\``}
                 />
@@ -202,6 +257,18 @@ export function DocsContentPage() {
             )}
           </section>
         ))}
+
+        {/* Section: Interactive Code Playground */}
+        <section id="interactive-playground-section" className="docs-content-section playground-section">
+          <h2 className="section-title">⚡ Interactive Code Playground</h2>
+          <DocsInteractivePlayground
+            topicTitle={doc.title}
+            subjectTitle={subject.title}
+            presets={playgroundPresets}
+            activeSnippetOverride={activePlaygroundSnippet}
+            onClearOverride={() => setActivePlaygroundSnippet(undefined)}
+          />
+        </section>
 
         {/* Section: Common Mistakes */}
         {doc.commonMistakes && doc.commonMistakes.length > 0 && (
@@ -236,50 +303,9 @@ export function DocsContentPage() {
             topicTitle={doc.title}
           />
         </section>
-
-        {/* Topic Completion Footer Banner */}
-        <div className="docs-completion-banner">
-          <div className="dcb-left">
-            <span className={`dcb-status-badge ${isCompleted ? 'completed' : ''}`}>
-              {isCompleted ? '✓ COMPLETED' : '○ IN PROGRESS'}
-            </span>
-            <h4>{isCompleted ? 'Topic Mastered & Recorded in Learning Path' : 'Finished reviewing this topic?'}</h4>
-            <p>Marking this topic complete updates your 21-track roadmap and readiness score.</p>
-          </div>
-          <button
-            type="button"
-            className={`dcb-toggle-btn ${isCompleted ? 'completed' : ''}`}
-            onClick={handleToggleCompleted}
-          >
-            {isCompleted ? 'Mark as Incomplete' : '✓ Mark Topic Complete'}
-          </button>
-        </div>
-
-        {/* Previous & Next Navigation */}
-        <nav className="docs-prev-next-nav" aria-label="Previous and next topic">
-          {doc.previousTopic ? (
-            <Link
-              to={`/docs/${doc.previousTopic.subjectId}/${doc.previousTopic.topicId}`}
-              className="docs-nav-card prev-card"
-            >
-              <span className="nav-direction">← Previous Topic</span>
-              <span className="nav-target-title">{doc.previousTopic.title}</span>
-            </Link>
-          ) : <div />}
-
-          {doc.nextTopic && (
-            <Link
-              to={`/docs/${doc.nextTopic.subjectId}/${doc.nextTopic.topicId}`}
-              className="docs-nav-card next-card"
-            >
-              <span className="nav-direction">Next Topic →</span>
-              <span className="nav-target-title">{doc.nextTopic.title}</span>
-            </Link>
-          )}
-        </nav>
       </div>
 
-      {/* Right Column: Sticky Table of Contents */}
+      {/* Right Table of Contents */}
       <DocsTableOfContents items={tocItems} />
     </div>
   );
