@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Editor from '@monaco-editor/react';
 import { executePlayground, type PlaygroundLogItem } from '../services/docsPlaygroundRunner';
 
