@@ -66,6 +66,33 @@ export function DocsInteractivePlayground({
     }
   }, [topicTitle, presets, activeSnippetOverride]);
 
+  // Listen for console logs and runtime errors forwarded from the sandboxed preview iframe
+  useEffect(() => {
+    const handleMessage = (e: MessageEvent) => {
+      if (!e.data || typeof e.data !== 'object') return;
+      if (e.data.t === 'log') {
+        const parts = Array.isArray(e.data.parts) ? e.data.parts : [String(e.data.parts || '')];
+        const newLog: PlaygroundLogItem = {
+          id: `log-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+          level: (e.data.level as any) || 'log',
+          parts,
+          timestamp: Date.now(),
+        };
+        setLogs(prev => [...prev, newLog]);
+      } else if (e.data.t === 'error') {
+        const newLog: PlaygroundLogItem = {
+          id: `err-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+          level: 'error',
+          parts: [e.data.message || 'Runtime Error'],
+          timestamp: Date.now(),
+        };
+        setLogs(prev => [...prev, newLog]);
+      }
+    };
+    window.addEventListener('message', handleMessage);
+    return () => window.removeEventListener('message', handleMessage);
+  }, []);
+
   const handleSelectPreset = (preset: PlaygroundSnippetPreset) => {
     if (onClearOverride) onClearOverride();
     setSelectedPresetId(preset.id);

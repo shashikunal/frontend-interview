@@ -1802,7 +1802,8 @@
 .dpc-output-pane {
   display: flex;
   flex-direction: column;
-  background: #0f172a;
+  background: #090d16;
+  color: #ededf4;
   height: 100%;
 }
 
@@ -1928,30 +1929,32 @@
   display: flex;
   align-items: flex-start;
   gap: 8px;
-  padding: 4px 8px;
-  border-radius: 4px;
+  padding: 6px 10px;
+  border-radius: 6px;
   border-left: 3px solid transparent;
 }
 
 .dpc-log-row.log-log {
   border-left-color: #38bdf8;
-  background: rgba(56, 189, 248, 0.05);
+  background: rgba(56, 189, 248, 0.08);
+  color: #f1f5f9;
 }
 
 .dpc-log-row.log-info {
   border-left-color: #818cf8;
-  background: rgba(129, 140, 248, 0.05);
+  background: rgba(129, 140, 248, 0.08);
+  color: #e0e7ff;
 }
 
 .dpc-log-row.log-warn {
   border-left-color: #facc15;
-  background: rgba(250, 204, 21, 0.05);
+  background: rgba(250, 204, 21, 0.08);
   color: #fef08a;
 }
 
 .dpc-log-row.log-error {
   border-left-color: #f87171;
-  background: rgba(248, 113, 113, 0.1);
+  background: rgba(248, 113, 113, 0.12);
   color: #fca5a5;
 }
 
@@ -1959,7 +1962,7 @@
   font-size: 0.74rem;
   font-weight: 800;
   white-space: nowrap;
-  opacity: 0.8;
+  opacity: 0.9;
 }
 
 .dpc-log-body {
@@ -1971,13 +1974,15 @@
   margin: 0;
   white-space: pre-wrap;
   word-break: break-all;
-  font-size: 0.82rem;
+  font-size: 0.84rem;
+  line-height: 1.5;
+  color: inherit;
 }
 
 .dpc-preview-frame-wrap {
   width: 100%;
   height: 100%;
-  background: #ffffff;
+  background: #0d1117;
 }
 
 .dpc-preview-iframe {

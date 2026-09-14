@@ -90,9 +90,57 @@ export async function executePlayground(
   const logs: PlaygroundLogItem[] = [];
   const normLang = language.toLowerCase();
 
-  // Detect if code is React JSX or HTML
-  const isReact = normLang.includes('react') || normLang.includes('jsx') || normLang.includes('tsx') || isReactCode(code);
-  const isHtml = normLang.includes('html') || (code.trim().startsWith('<') && code.includes('</'));
+  const trimmed = code.trim();
+
+  // 1. Detect HTML: starts with <!DOCTYPE, <html, or contains standard HTML tags without React
+  const isExplicitHtml =
+    normLang.includes('html') ||
+    /^<!doctype\s+html/i.test(trimmed) ||
+    /^<html[\s>]/i.test(trimmed) ||
+    (/^<(!DOCTYPE|html|head|body|div|p|span|section|main|h[1-6]|style|script|table|form|button|ul|ol|li)\b/i.test(trimmed) &&
+      !/\bfrom\s+['"]react['"]|\bReact\b|\buseState\b|\buseEffect\b|\bclassName=/.test(code));
+
+  // 2. Detect React JSX: explicit language or isReactCode and NOT explicit HTML
+  const isReact =
+    !isExplicitHtml &&
+    (normLang.includes('react') || normLang.includes('jsx') || normLang.includes('tsx') || isReactCode(code));
+
+  // 3. Fallback to HTML if not React but contains markup
+  const isHtml = isExplicitHtml || (!isReact && trimmed.startsWith('<') && trimmed.includes('>'));
+
+  if (isHtml) {
+    try {
+      const runId = Date.now();
+      const srcDoc = buildHtmlSrcDoc(code, '', runId);
+      return {
+        logs: [
+          {
+            id: `log-${Date.now()}`,
+            level: 'info',
+            parts: ['🌐 Live HTML DOM preview rendered.'],
+            timestamp: Date.now(),
+          },
+        ],
+        executionTimeMs: Math.round(performance.now() - startTime),
+        previewSrcDoc: srcDoc,
+        isVisual: true,
+      };
+    } catch (err: any) {
+      return {
+        logs: [
+          {
+            id: `err-${Date.now()}`,
+            level: 'error',
+            parts: [err?.message || 'HTML rendering error'],
+            timestamp: Date.now(),
+          },
+        ],
+        executionTimeMs: Math.round(performance.now() - startTime),
+        error: err?.message || 'HTML failed',
+        isVisual: true,
+      };
+    }
+  }
 
   if (isReact) {
     try {
@@ -126,40 +174,6 @@ export async function executePlayground(
         ],
         executionTimeMs: Math.round(performance.now() - startTime),
         error: err?.message || 'Compilation failed',
-        isVisual: true,
-      };
-    }
-  }
-
-  if (isHtml) {
-    try {
-      const runId = Date.now();
-      const srcDoc = buildHtmlSrcDoc(code, '', runId);
-      return {
-        logs: [
-          {
-            id: `log-${Date.now()}`,
-            level: 'info',
-            parts: ['🌐 HTML DOM preview rendered.'],
-            timestamp: Date.now(),
-          },
-        ],
-        executionTimeMs: Math.round(performance.now() - startTime),
-        previewSrcDoc: srcDoc,
-        isVisual: true,
-      };
-    } catch (err: any) {
-      return {
-        logs: [
-          {
-            id: `err-${Date.now()}`,
-            level: 'error',
-            parts: [err?.message || 'HTML rendering error'],
-            timestamp: Date.now(),
-          },
-        ],
-        executionTimeMs: Math.round(performance.now() - startTime),
-        error: err?.message || 'HTML failed',
         isVisual: true,
       };
     }

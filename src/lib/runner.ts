@@ -393,7 +393,32 @@ try {
 <head>
 <meta charset="utf-8" />
 <style>
-  body { font-family: system-ui, -apple-system, sans-serif; margin: 0; padding: 16px; background: transparent; }
+  :root { color-scheme: dark; }
+  body {
+    font-family: system-ui, -apple-system, sans-serif;
+    margin: 0;
+    padding: 16px;
+    background: #0d1117;
+    color: #e6edf3;
+    line-height: 1.5;
+  }
+  h1, h2, h3, h4, h5, h6 { color: #f0f6fc; margin-top: 0; }
+  p, span, div, li, td, th { color: inherit; }
+  button {
+    background: #21262d;
+    color: #c9d1d9;
+    border: 1px solid #30363d;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  input, textarea, select {
+    background: #0d1117;
+    color: #c9d1d9;
+    border: 1px solid #30363d;
+    padding: 6px 10px;
+    border-radius: 6px;
+  }
 </style>
 <style>${cssFiles}</style>
 <script>${shim}</script>
@@ -427,11 +452,19 @@ export function isReactWorkspace(files: Files): boolean {
 // Heuristic for a single code string: does it look like React/JSX so it
 // should run in the React iframe rather than the plain-JS sandbox?
 export function isReactCode(code: string): boolean {
+  const trimmed = code.trim()
+  // Explicitly exclude HTML documents and plain HTML tags
+  if (/^<!doctype\s+html/i.test(trimmed) || /^<html[\s>]/i.test(trimmed)) {
+    return false
+  }
   return (
     /\bfrom\s+['"]react['"]/.test(code) ||
     /\bReact\b/.test(code) ||
     /\b(useState|useEffect|useMemo|useCallback|useRef|useReducer|useContext|useLayoutEffect|useImperativeHandle|useDebugValue|useId|useTransition|useDeferredValue|createRoot|ReactDOM)\b/.test(code) ||
-    /<\/?[A-Za-z][\w.-]*(\s|>|\/)/.test(code)
+    /<([A-Z][\w.]*|React\.Fragment)[\s/>]/.test(code) ||
+    /<\/[A-Z][\w.]*>/.test(code) ||
+    /<\/>|<\s*React\.Fragment\s*>/.test(code) ||
+    /\bclassName=/.test(code)
   )
 }
 
@@ -444,6 +477,46 @@ export function isHtmlWorkspace(q: Pick<Question, 'source' | 'example' | 'code'>
     (!!q.code && !!q.example && /^<!doctype html|<html[\s>]/i.test(q.example.trim()))
   )
 }
+
+const THEME_INJECT = `
+<style id="platform-theme-root">
+  :root { color-scheme: dark; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background-color: #0d1117;
+    color: #e6edf3;
+    margin: 0;
+    padding: 16px;
+    line-height: 1.5;
+  }
+  h1, h2, h3, h4, h5, h6 { color: #f0f6fc; margin-top: 0; }
+  p, span, div, li, td, th { color: inherit; }
+  a { color: #58a6ff; }
+  button {
+    background: #21262d;
+    color: #c9d1d9;
+    border: 1px solid #30363d;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+  }
+  button:hover { background: #30363d; border-color: #8b949e; }
+  input, textarea, select {
+    background: #0d1117;
+    color: #c9d1d9;
+    border: 1px solid #30363d;
+    padding: 6px 10px;
+    border-radius: 6px;
+  }
+  pre, code {
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    background: rgba(110, 118, 129, 0.4);
+    border-radius: 4px;
+    padding: 2px 4px;
+  }
+</style>
+`
 
 // Builds a sandboxed iframe document: the starter HTML with the user's JS
 // injected before </body>, plus a console shim that forwards logs to the parent.
@@ -464,11 +537,11 @@ else window.addEventListener('DOMContentLoaded', () => setTimeout(__finish, 60))
 
   let doc = html
   if (/<\/head>/i.test(doc)) {
-    doc = doc.replace(/<head>/i, `<head>\n<script>${shim}</script>`)
+    doc = doc.replace(/<head>/i, `<head>\n${THEME_INJECT}\n<script>${shim}</script>`)
   } else if (/<head\b[^>]*>/i.test(doc)) {
-    doc = doc.replace(/<head[^>]*>/i, m => `${m}\n<script>${shim}</script>`)
+    doc = doc.replace(/<head[^>]*>/i, m => `${m}\n${THEME_INJECT}\n<script>${shim}</script>`)
   } else {
-    doc = `<script>${shim}</script>\n${doc}`
+    doc = `${THEME_INJECT}\n<script>${shim}</script>\n${doc}`
   }
 
   if (/<\/body>/i.test(doc)) {
@@ -520,7 +593,7 @@ function __finish(){ __post({ t: 'done', ms: Math.round(performance.now() - __t0
 <html>
 <head>
 <meta charset="utf-8" />
-<style>body { font-family: system-ui, -apple-system, sans-serif; margin: 0; padding: 16px; background: #fff; color: #171717; }</style>
+<style>:root { color-scheme: dark; } body { font-family: system-ui, -apple-system, sans-serif; margin: 0; padding: 16px; background: #0d1117; color: #e6edf3; }</style>
 </head>
 <body>
 <div id="app"></div>
