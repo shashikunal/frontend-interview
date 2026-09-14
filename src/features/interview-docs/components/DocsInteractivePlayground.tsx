@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import Editor from '@monaco-editor/react';
 import { executePlayground, type PlaygroundLogItem } from '../services/docsPlaygroundRunner';
 
@@ -41,6 +42,29 @@ export function DocsInteractivePlayground({
   const [hasRun, setHasRun] = useState(false);
   const [copied, setCopied] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+
+  // Handle ESC key to exit fullscreen smoothly
+  useEffect(() => {
+    if (!isFullscreen) return;
+    const handleGlobalKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setIsFullscreen(false);
+      }
+    };
+    window.addEventListener('keydown', handleGlobalKeyDown);
+    return () => window.removeEventListener('keydown', handleGlobalKeyDown);
+  }, [isFullscreen]);
+
+  // Lock body scroll when fullscreen is active to avoid background movement
+  useEffect(() => {
+    if (isFullscreen) {
+      const originalOverflow = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = originalOverflow;
+      };
+    }
+  }, [isFullscreen]);
 
   // Sync when active snippet override changes from an external section click
   useEffect(() => {
@@ -165,10 +189,9 @@ export function DocsInteractivePlayground({
     ? 'typescript'
     : 'javascript';
 
-  return (
+  const playgroundCard = (
     <div
       className={`docs-playground-card ${isFullscreen ? 'is-fullscreen' : ''}`}
-      id="interactive-playground-section"
       onKeyDown={handleKeyDown}
     >
       {/* Playground Header Bar */}
@@ -385,5 +408,47 @@ export function DocsInteractivePlayground({
         </div>
       </div>
     </div>
+  );
+
+  return (
+    <>
+      {isFullscreen ? (
+        <>
+          <div className="docs-playground-placeholder">
+            <div className="dpc-placeholder-inner">
+              <div className="dpc-placeholder-info">
+                <span className="dpc-placeholder-icon">⚡</span>
+                <div>
+                  <div className="dpc-placeholder-title">Interactive Playground is open in Fullscreen Mode</div>
+                  <div className="dpc-placeholder-desc">
+                    Working in expanded view. Press <kbd className="dpc-kbd">Esc</kbd> or click to restore.
+                  </div>
+                </div>
+              </div>
+              <button
+                type="button"
+                className="dpc-btn dpc-btn-secondary"
+                onClick={() => setIsFullscreen(false)}
+              >
+                ✕ Restore Inline
+              </button>
+            </div>
+          </div>
+          {createPortal(
+            <div
+              className="docs-playground-fullscreen-overlay"
+              onClick={(e) => {
+                if (e.target === e.currentTarget) setIsFullscreen(false);
+              }}
+            >
+              {playgroundCard}
+            </div>,
+            document.body
+          )}
+        </>
+      ) : (
+        playgroundCard
+      )}
+    </>
   );
 }
