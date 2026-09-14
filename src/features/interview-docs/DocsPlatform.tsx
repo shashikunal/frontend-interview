@@ -11,6 +11,7 @@ import { DocsInterviewStudio } from './components/DocsInterviewStudio';
 import { DocsReadinessDashboard } from './components/DocsReadinessDashboard';
 import { DocsQuickRevisionStudio } from './components/DocsQuickRevisionStudio';
 import { DocsComparisonStudio } from './components/DocsComparisonStudio';
+import { DocsStudyPlanStudio } from './components/DocsStudyPlanStudio';
 import { DocsUberMenu } from './components/DocsUberMenu';
 import { GlobalSearchModal } from './components/GlobalSearchModal';
 import './styles/DocsPlatform.css';
@@ -162,6 +163,13 @@ export default function DocsPlatform() {
             <span className="dtn-label">Interview</span>
           </NavLink>
           <NavLink
+            to="/docs/study-plan"
+            className={({ isActive }) => `dtn-link ${isActive ? 'active' : ''}`}
+          >
+            <span className="dtn-icon">🗺️</span>
+            <span className="dtn-label">Roadmap</span>
+          </NavLink>
+          <NavLink
             to="/docs/readiness"
             className={({ isActive }) => `dtn-link ${isActive ? 'active' : ''}`}
           >
@@ -266,6 +274,7 @@ export default function DocsPlatform() {
             <Route path="interview" element={<DocsInterviewStudio />} />
             <Route path="revision" element={<DocsQuickRevisionStudio />} />
             <Route path="comparisons" element={<DocsComparisonStudio />} />
+            <Route path="study-plan" element={<DocsStudyPlanStudio />} />
             <Route path="readiness" element={<DocsReadinessDashboard />} />
             <Route path=":subjectId" element={<SubjectRedirect />} />
             <Route path=":subjectId/:topicId" element={<DocsContentPage />} />
