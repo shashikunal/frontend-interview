@@ -202,6 +202,9 @@ export interface InterviewSessionState {
   activeFollowUpIndex: number;
   userRatings: Record<string, number>; // 1-5 score per question
   notes: Record<string, string>;
+  candidateTranscripts?: Record<string, string>;
+  evaluations?: Record<string, any>;
+  followUpResponses?: Record<string, string[]>;
   startedAt: string;
   completedAt?: string;
   isFinished: boolean;

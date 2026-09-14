@@ -38,10 +38,17 @@ class InterviewSimulatorService {
    * Evaluates the completed interview session, calculating readiness grade and weak topics.
    */
   evaluateSession(session: InterviewSessionState): InterviewSessionState['scoreSummary'] {
-    const ratings = Object.values(session.userRatings);
-    const totalPoints = ratings.reduce((sum, r) => sum + r, 0);
-    const maxPoints = session.questions.length * 5;
-    const overallPercentage = maxPoints > 0 ? Math.round((totalPoints / maxPoints) * 100) : 0;
+    let overallPercentage = 0;
+    const evals = session.evaluations ? Object.values(session.evaluations) : [];
+    if (evals.length > 0) {
+      const sum = evals.reduce((acc: number, cur: any) => acc + (cur.score || 0), 0);
+      overallPercentage = Math.round(sum / session.questions.length);
+    } else {
+      const ratings = Object.values(session.userRatings);
+      const totalPoints = ratings.reduce((sum, r) => sum + r, 0);
+      const maxPoints = session.questions.length * 5;
+      overallPercentage = maxPoints > 0 ? Math.round((totalPoints / maxPoints) * 100) : 0;
+    }
 
     let readinessGrade: 'Strong Hire' | 'Hire' | 'Borderline' | 'Needs Practice' = 'Needs Practice';
     if (overallPercentage >= 85) readinessGrade = 'Strong Hire';
