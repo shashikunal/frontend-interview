@@ -7,6 +7,8 @@
 
 :root,
 :root[data-theme="dark"],
+[data-theme="dark"],
+[data-theme="dark"] .h-admin-layout,
 html.dark,
 .h-admin-layout.dark-theme {
   --h-bg: #0b1437;
@@ -42,6 +44,8 @@ html.dark,
 }
 
 :root[data-theme="light"],
+[data-theme="light"],
+[data-theme="light"] .h-admin-layout,
 html.light,
 .h-admin-layout.light-theme {
   --h-bg: #f4f7fe;
