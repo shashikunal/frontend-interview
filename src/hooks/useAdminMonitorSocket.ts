@@ -35,7 +35,7 @@ export interface LiveTelemetryItem {
   }>;
 }
 
-export function useAdminMonitorSocket(sessionIds: string[], user?: any) {
+export function useAdminMonitorSocket(sessionIds: string[], user?: any, enabled: boolean = true) {
   const [isConnected, setIsConnected] = useState(false);
   const [streamConnectionState, setStreamConnectionState] = useState<StreamConnectionState>(liveStreamService.getConnectionState());
   const [telemetryMap, setTelemetryMap] = useState<Record<string, LiveTelemetryItem>>({});
@@ -44,6 +44,9 @@ export function useAdminMonitorSocket(sessionIds: string[], user?: any) {
 
   // ── 0-LATENCY HYBRID REALTIME STREAM (Supabase Realtime Broadcast + Local BroadcastChannel) ──
   useEffect(() => {
+    if (!enabled) {
+      return;
+    }
     const unsubKeystroke = liveStreamService.onKeystroke((payload) => {
       setTelemetryMap((prev) => {
         const matchingKeys = new Set<string>([payload.sessionId]);
@@ -179,7 +182,7 @@ export function useAdminMonitorSocket(sessionIds: string[], user?: any) {
       unsubExecution();
       unsubConn();
     };
-  }, []);
+  }, [enabled]);
 
   // Push activity helper
   const pushActivity = useCallback((sessionId: string, type: string, message: string, timestamp: number = Date.now()) => {
@@ -211,6 +214,17 @@ export function useAdminMonitorSocket(sessionIds: string[], user?: any) {
   }, []);
 
   useEffect(() => {
+    if (!enabled) {
+      if (socketRef.current) {
+        try {
+          socketRef.current.disconnect();
+        } catch (_) {}
+        socketRef.current = null;
+      }
+      setIsConnected(false);
+      return;
+    }
+
     let isMounted = true;
     // Handlers registered by this effect run (populated inside init).
     // Cleanup removes exactly these from the SHARED admin socket.
@@ -596,14 +610,15 @@ export function useAdminMonitorSocket(sessionIds: string[], user?: any) {
     // Scalar user dep: whole-`user` identity changes per render and re-ran
     // init, stacking handlers on the shared socket.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sessionIds.join(','), pushActivity, user?.id]);
+  }, [sessionIds.join(','), pushActivity, user?.id, enabled]);
 
   const getYDoc = useCallback((sessionId: string) => {
     return getOrCreateSessionYDoc(sessionId);
   }, []);
 
   return {
-    isConnected,
+    isConnected: enabled ? isConnected : false,
+    isRealtimeEnabled: enabled,
     streamConnectionState,
     telemetryMap,
     getYDoc,

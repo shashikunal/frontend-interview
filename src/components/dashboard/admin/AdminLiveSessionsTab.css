@@ -47,7 +47,126 @@
 .rt-header-controls {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.live-realtime-toggle-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.live-realtime-toggle-btn {
+  display: inline-flex;
+  align-items: center;
   gap: 10px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  border: 1px solid;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.live-realtime-toggle-btn.active-realtime {
+  background: rgba(16, 185, 129, 0.15);
+  border-color: rgba(16, 185, 129, 0.45);
+  color: #10b981;
+}
+
+.live-realtime-toggle-btn.active-realtime:hover {
+  background: rgba(16, 185, 129, 0.25);
+  border-color: #10b981;
+  box-shadow: 0 0 14px rgba(16, 185, 129, 0.35);
+  transform: translateY(-1px);
+}
+
+.live-realtime-toggle-btn.eco-mode {
+  background: rgba(148, 163, 184, 0.1);
+  border-color: rgba(148, 163, 184, 0.3);
+  color: #94a3b8;
+}
+
+.live-realtime-toggle-btn.eco-mode:hover {
+  background: rgba(148, 163, 184, 0.18);
+  border-color: #cbd5e1;
+  color: #e2e8f0;
+  transform: translateY(-1px);
+}
+
+.live-toggle-indicator-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.live-toggle-indicator-dot.pulse {
+  background: #10b981;
+  box-shadow: 0 0 8px #10b981;
+  animation: pulseDot 1.4s infinite;
+}
+
+.live-toggle-indicator-dot.off {
+  background: #64748b;
+}
+
+.live-toggle-label-text {
+  letter-spacing: 0.02em;
+}
+
+.live-toggle-slider-track {
+  width: 32px;
+  height: 18px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.35);
+  position: relative;
+  transition: background 0.25s ease;
+  display: inline-block;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.live-realtime-toggle-btn.active-realtime .live-toggle-slider-track {
+  background: #10b981;
+  border-color: #10b981;
+}
+
+.live-toggle-slider-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #ffffff;
+  position: absolute;
+  top: 1px;
+  left: 2px;
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.live-realtime-toggle-btn.active-realtime .live-toggle-slider-thumb {
+  transform: translateX(13px);
+}
+
+.live-eco-sync-btn {
+  background: rgba(67, 24, 255, 0.12);
+  border: 1px solid rgba(67, 24, 255, 0.3);
+  color: #6366f1;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.live-eco-sync-btn:hover {
+  background: rgba(67, 24, 255, 0.25);
+  border-color: #6366f1;
+  color: #818cf8;
+  transform: translateY(-1px);
 }
 
 .rt-connected-badge {
@@ -74,6 +193,12 @@
   color: #ef4444;
   border-color: rgba(239, 68, 68, 0.3);
   animation: pulseDot 1s infinite;
+}
+
+.rt-connected-badge.eco {
+  background: rgba(148, 163, 184, 0.12);
+  color: #94a3b8;
+  border-color: rgba(148, 163, 184, 0.3);
 }
 
 /* ─── KPI Grid ────────────────────────────────────────────────────────────── */

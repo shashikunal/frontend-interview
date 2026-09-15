@@ -89,6 +89,34 @@ export default function AdminLiveSessionsTab() {
     return () => clearTimeout(timer);
   }, [toast]);
 
+  // Real-time stream toggle: Allows admin to switch between live edge streaming and eco/snapshot mode
+  const [isRealtimeEnabled, setIsRealtimeEnabled] = useState<boolean>(() => {
+    try {
+      const saved = localStorage.getItem('admin_realtime_stream_enabled');
+      return saved !== null ? saved === 'true' : true;
+    } catch {
+      return true;
+    }
+  });
+
+  const handleToggleRealtime = useCallback(() => {
+    setIsRealtimeEnabled(prev => {
+      const next = !prev;
+      try {
+        localStorage.setItem('admin_realtime_stream_enabled', String(next));
+      } catch {}
+      setToast({
+        id: Date.now(),
+        type: next ? 'connected' : 'info',
+        title: next ? '⚡ Real-time Stream Activated' : '⏸️ Real-time Stream Paused',
+        message: next
+          ? 'Zero-delay edge streaming active. Capturing every keystroke & live typing.'
+          : 'Eco mode active. High-frequency network stream suspended.',
+      });
+      return next;
+    });
+  }, []);
+
   // Extract active session IDs from Supabase sessions for Socket.IO room subscription
   const activeSessionIds = useMemo(() => {
     return sessions
@@ -97,7 +125,7 @@ export default function AdminLiveSessionsTab() {
   }, [sessions]);
 
   // Two-way Realtime Socket.IO connection for admin live monitoring
-  const { isConnected: isRealtimeConnected, telemetryMap: socketTelemetryMap, getYDoc } = useAdminMonitorSocket(activeSessionIds, user);
+  const { isConnected: isRealtimeConnected, telemetryMap: socketTelemetryMap, getYDoc } = useAdminMonitorSocket(activeSessionIds, user, isRealtimeEnabled);
 
   // ── Canonical Candidate Store: Exactly ONE session panel per candidate ──────────
   // Deduplicates multiple historical active sessions for the same student
@@ -332,8 +360,58 @@ export default function AdminLiveSessionsTab() {
           </p>
         </div>
         <div className="rt-header-controls">
-          <span className={`rt-connected-badge ${isRealtimeConnected ? 'connected' : 'disconnected'}`}>
-            {isRealtimeConnected ? '🟢 Socket.IO Realtime Active' : '🔴 Connecting Socket…'}
+          {/* On/Off Toggle Button for Real-time Edge Stream */}
+          <div className="live-realtime-toggle-group">
+            <button
+              type="button"
+              className={`live-realtime-toggle-btn ${isRealtimeEnabled ? 'active-realtime' : 'eco-mode'}`}
+              onClick={handleToggleRealtime}
+              title={
+                isRealtimeEnabled
+                  ? 'Real-time 0ms streaming is active. Click to Pause stream (Eco Mode) and reduce network bandwidth.'
+                  : 'Real-time streaming is paused. Click to Activate 0ms real-time streaming.'
+              }
+              aria-pressed={isRealtimeEnabled}
+            >
+              <span className={`live-toggle-indicator-dot ${isRealtimeEnabled ? 'pulse' : 'off'}`} />
+              <span className="live-toggle-label-text">
+                {isRealtimeEnabled ? '⚡ Real-time: ON' : '⏸️ Real-time: OFF'}
+              </span>
+              <span className="live-toggle-slider-track">
+                <span className="live-toggle-slider-thumb" />
+              </span>
+            </button>
+
+            {!isRealtimeEnabled && (
+              <button
+                type="button"
+                className="live-eco-sync-btn"
+                onClick={() => {
+                  loadSessions();
+                  setToast({
+                    id: Date.now(),
+                    type: 'info',
+                    title: '🔄 Snapshots Synced',
+                    message: 'Latest candidate session snapshots loaded from database.',
+                  });
+                }}
+                title="Fetch latest candidate code snapshots on demand"
+              >
+                Sync Now 🔄
+              </button>
+            )}
+          </div>
+
+          <span
+            className={`rt-connected-badge ${
+              !isRealtimeEnabled ? 'eco' : isRealtimeConnected ? 'connected' : 'disconnected'
+            }`}
+          >
+            {!isRealtimeEnabled
+              ? '⏸️ Eco Mode (Paused)'
+              : isRealtimeConnected
+              ? '🟢 Edge Sockets Online'
+              : '🔴 Connecting Edge…'}
           </span>
         </div>
       </div>
