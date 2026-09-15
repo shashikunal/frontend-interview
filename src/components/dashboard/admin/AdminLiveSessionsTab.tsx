@@ -1,8 +1,12 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { interviewSessionService, type InterviewSession } from '../../../lib/interviewSessionService';
 import { CandidateMonitorPanel } from './CandidateMonitorPanel';
+import { CctvMonitorCard } from './CctvMonitorCard';
+import { LiveSessionsListView } from './LiveSessionsListView';
 import { useAuth } from '../../../context/AuthContext';
 import { useAdminMonitorSocket, type LiveTelemetryItem } from '../../../hooks/useAdminMonitorSocket';
+import { liveStreamService } from '../../../lib/realtime/liveStreamService';
 import './AdminLiveSessionsTab.css';
 
 /* ─── Track badge derived strictly from real question_id prefix ─────────── */
@@ -27,6 +31,63 @@ export default function AdminLiveSessionsTab() {
   const [filterTrack, setFilterTrack] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [, setTick] = useState(0); // clock tick for relTime and idle checks
+
+  const [viewMode, setViewMode] = useState<'cctv' | 'list' | 'panels'>('cctv');
+  const [focusedSession, setFocusedSession] = useState<InterviewSession | null>(null);
+  const [toast, setToast] = useState<{
+    id: number;
+    type: 'connected' | 'disconnected' | 'info';
+    title: string;
+    message: string;
+  } | null>(null);
+  const prevConnectedRef = useRef<boolean | null>(null);
+
+  // ── Connection / Disconnection Toast Notifications ─────────────────────────
+  useEffect(() => {
+    const unsub = liveStreamService.onConnectionChange((state) => {
+      const isConn = state.isConnected;
+      if (prevConnectedRef.current === null) {
+        prevConnectedRef.current = isConn;
+        if (isConn) {
+          setToast({
+            id: Date.now(),
+            type: 'connected',
+            title: 'Realtime Sockets Online',
+            message: `Edge synchronization active (${state.pingMs}ms latency) · Zero keystroke delay`,
+          });
+        }
+        return;
+      }
+
+      if (isConn && !prevConnectedRef.current) {
+        setToast({
+          id: Date.now(),
+          type: 'connected',
+          title: 'Realtime Stream Reconnected',
+          message: `Live edge stream re-established (${state.pingMs}ms latency) · Streaming live keystrokes`,
+        });
+      } else if (!isConn && prevConnectedRef.current) {
+        setToast({
+          id: Date.now(),
+          type: 'disconnected',
+          title: 'Realtime Stream Disconnected',
+          message: 'Connection dropped. Re-establishing realtime edge sockets to candidate studios...',
+        });
+      }
+      prevConnectedRef.current = isConn;
+    });
+
+    return unsub;
+  }, []);
+
+  // Auto-dismiss toast
+  useEffect(() => {
+    if (!toast) return;
+    const timer = setTimeout(() => {
+      setToast(null);
+    }, 4500);
+    return () => clearTimeout(timer);
+  }, [toast]);
 
   // ── Canonical Candidate Store: Exactly ONE session panel per candidate ──────────
   // Deduplicates multiple historical active sessions for the same student
@@ -317,9 +378,37 @@ export default function AdminLiveSessionsTab() {
             </button>
           ))}
         </div>
+
+        {/* View Mode Switcher (CCTV Grid / Dense List / Studio Panels) */}
+        <div className="live-view-mode-selector">
+          <button
+            type="button"
+            className={`live-view-mode-btn ${viewMode === 'cctv' ? 'active' : ''}`}
+            onClick={() => setViewMode('cctv')}
+            title="CCTV Security Grid View (Real-time live multi-cam panels)"
+          >
+            📹 CCTV Grid
+          </button>
+          <button
+            type="button"
+            className={`live-view-mode-btn ${viewMode === 'list' ? 'active' : ''}`}
+            onClick={() => setViewMode('list')}
+            title="Dense List View (Live keystrokes and typing status table)"
+          >
+            📋 Dense List
+          </button>
+          <button
+            type="button"
+            className={`live-view-mode-btn ${viewMode === 'panels' ? 'active' : ''}`}
+            onClick={() => setViewMode('panels')}
+            title="Detailed Studio Panels View"
+          >
+            🎛️ Studio Panels
+          </button>
+        </div>
       </div>
 
-      {/* 4. Realtime Live Student Monitors Grid (1 Candidate = 1 Compact Tabbed Panel) */}
+      {/* 4. Realtime Live Student Feeds (CCTV Grid / Dense List / Studio Panels) */}
       {loading ? (
         <div className="live-loading-state">
           <div className="app-route-spinner" />
@@ -342,6 +431,24 @@ export default function AdminLiveSessionsTab() {
             Students appear here in real time the moment they open any studio question — Core Programming, DSA, Frontend JS, or Machine Coding.
           </p>
         </div>
+      ) : viewMode === 'cctv' ? (
+        <div className="cctv-surveillance-grid">
+          {filteredSessions.map((session, index) => (
+            <CctvMonitorCard
+              key={session.id}
+              session={session}
+              camIndex={index + 1}
+              telemetry={telemetryMap[session.id]}
+              onFocusCam={setFocusedSession}
+            />
+          ))}
+        </div>
+      ) : viewMode === 'list' ? (
+        <LiveSessionsListView
+          sessions={filteredSessions}
+          telemetryMap={telemetryMap}
+          onFocusCam={setFocusedSession}
+        />
       ) : (
         <div className="candidate-monitors-grid">
           {filteredSessions.map(session => (
@@ -353,6 +460,60 @@ export default function AdminLiveSessionsTab() {
             />
           ))}
         </div>
+      )}
+
+      {/* 5. Focused CAM Full Modal Dialog (Mounted via Portal directly to body) */}
+      {focusedSession && typeof document !== 'undefined' && createPortal(
+        <div className="cctv-modal-overlay" onClick={() => setFocusedSession(null)}>
+          <div className="cctv-modal-container" onClick={e => e.stopPropagation()}>
+            <div className="cctv-modal-header">
+              <div className="cctv-modal-title">
+                <span className="cctv-modal-pulse-dot" />
+                <span>
+                  CAM FEED FOCUS &bull; {focusedSession.candidate_name || 'Candidate'} ({focusedSession.question_title})
+                </span>
+              </div>
+              <button
+                type="button"
+                className="cctv-modal-close-btn"
+                onClick={() => setFocusedSession(null)}
+                aria-label="Close Focused View"
+              >
+                ✕
+              </button>
+            </div>
+            <div className="cctv-modal-body">
+              <CandidateMonitorPanel
+                session={focusedSession}
+                telemetry={telemetryMap[focusedSession.id]}
+                getYDoc={getYDoc}
+              />
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
+
+      {/* 6. Connection / Disconnection Floating Toast Notification (Mounted via Portal) */}
+      {toast && typeof document !== 'undefined' && createPortal(
+        <div className={`rt-toast-notification rt-toast-${toast.type}`} role="alert">
+          <div className="rt-toast-icon">
+            {toast.type === 'connected' ? '🟢' : toast.type === 'disconnected' ? '🔴' : 'ℹ️'}
+          </div>
+          <div className="rt-toast-content">
+            <div className="rt-toast-title">{toast.title}</div>
+            <div className="rt-toast-msg">{toast.message}</div>
+          </div>
+          <button
+            type="button"
+            className="rt-toast-close"
+            onClick={() => setToast(null)}
+            aria-label="Close notification"
+          >
+            ✕
+          </button>
+        </div>,
+        document.body
       )}
     </div>
   );

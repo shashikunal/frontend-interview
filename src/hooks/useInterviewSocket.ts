@@ -1,6 +1,7 @@
 import { useEffect, useRef, useCallback, useState } from 'react';
 import { getSharedInterviewSocket, type TypedSocket } from '../lib/realtime/socketClient';
 import { getOrCreateSessionYDoc, bridgeYDocWithSocket, bindMonacoToYDoc, waitForInitialSync } from '../lib/realtime/yjsSync';
+import { liveStreamService } from '../lib/realtime/liveStreamService';
 import type { MonacoBinding } from 'y-monaco';
 import type { PresenceStatus } from '../../server/socket/types';
 
@@ -43,6 +44,7 @@ export function useInterviewSocket({
 
   const socketRef = useRef<TypedSocket | null>(null);
   const codeVersionRef = useRef<number>(1);
+  const keystrokeCountRef = useRef<number>(0);
   const codeDebounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const typingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastCursorEmitRef = useRef<number>(0);
@@ -212,12 +214,23 @@ export function useInterviewSocket({
       if (!socket || !currentSessionId) return;
 
       const curFile = fileOverride || latestFileRef.current;
+      keystrokeCountRef.current += 1;
+      const candidateName = user?.name || user?.email?.split('@')[0] || 'Candidate';
+      const candidateId = user?.id || 'guest_student';
 
       // 1. Send typing started event immediately
       if (!isTypingRef.current) {
         isTypingRef.current = true;
         socket.emit('student:typing', {
           sessionId: currentSessionId,
+          isTyping: true,
+          fileId: curFile,
+          timestamp: Date.now(),
+        });
+        liveStreamService.broadcastTyping({
+          sessionId: currentSessionId,
+          candidateId,
+          candidateName,
           isTyping: true,
           fileId: curFile,
           timestamp: Date.now(),
@@ -244,6 +257,19 @@ export function useInterviewSocket({
         timestamp: Date.now(),
       });
 
+      // 4. HYBRID REALTIME BROADCAST (Supabase Broadcast + Local BroadcastChannel)
+      liveStreamService.broadcastKeystroke({
+        sessionId: currentSessionId,
+        candidateId,
+        candidateName,
+        code: newCode,
+        activeFile: curFile,
+        lineCount: newCode.split('\n').length,
+        cursor: cursor || null,
+        keystrokeCount: keystrokeCountRef.current,
+        timestamp: Date.now(),
+      });
+
       // NOTE: We do NOT manually write to ydoc here.
       // MonacoBinding automatically keeps ytext in sync with the Monaco model.
       // Writing to ydoc here would trigger ytext→model update→onChange→emitCodeChange infinite loop.
@@ -254,6 +280,14 @@ export function useInterviewSocket({
         isTypingRef.current = false;
         socket.emit('student:typing', {
           sessionId: currentSessionId,
+          isTyping: false,
+          fileId: curFile,
+          timestamp: Date.now(),
+        });
+        liveStreamService.broadcastTyping({
+          sessionId: currentSessionId,
+          candidateId,
+          candidateName,
           isTyping: false,
           fileId: curFile,
           timestamp: Date.now(),
@@ -344,8 +378,20 @@ export function useInterviewSocket({
           timestamp: Date.now(),
         });
       }
+
+      liveStreamService.broadcastExecution({
+        sessionId,
+        candidateId: user?.id,
+        status: exec.status,
+        passed: exec.passed ?? 0,
+        total: exec.total ?? 0,
+        runtimeMs: exec.runtimeMs,
+        output: exec.output,
+        error: exec.error,
+        timestamp: Date.now(),
+      });
     },
-    [sessionId, questionId, language]
+    [sessionId, questionId, language, user?.id]
   );
 
   // ── Emit File Switch ──────────────────────────────────────────────────────

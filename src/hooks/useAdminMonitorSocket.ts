@@ -2,10 +2,13 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import * as Y from 'yjs';
 import { getAdminInterviewSocket, type TypedSocket } from '../lib/realtime/socketClient';
 import { toUint8Array, getOrCreateSessionYDoc } from '../lib/realtime/yjsSync';
+import { liveStreamService, type StreamConnectionState } from '../lib/realtime/liveStreamService';
 import type { SessionStatePayload, PresenceStatus } from '../../server/socket/types';
 
 export interface LiveTelemetryItem {
   sessionId: string;
+  candidateName?: string;
+  candidateId?: string;
   isTyping: boolean;
   activeFile: string;
   code: string;
@@ -14,6 +17,7 @@ export interface LiveTelemetryItem {
   focused: boolean;
   presence: PresenceStatus;
   lastSeenAt: number;
+  keystrokeCount?: number;
   lastExecution: {
     status: 'running' | 'success' | 'failed' | 'error';
     passed?: number;
@@ -33,9 +37,102 @@ export interface LiveTelemetryItem {
 
 export function useAdminMonitorSocket(sessionIds: string[], user?: any) {
   const [isConnected, setIsConnected] = useState(false);
+  const [streamConnectionState, setStreamConnectionState] = useState<StreamConnectionState>(liveStreamService.getConnectionState());
   const [telemetryMap, setTelemetryMap] = useState<Record<string, LiveTelemetryItem>>({});
   const socketRef = useRef<TypedSocket | null>(null);
   const typingTimersRef = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
+
+  // ── 0-LATENCY HYBRID REALTIME STREAM (Supabase Realtime Broadcast + Local BroadcastChannel) ──
+  useEffect(() => {
+    const unsubKeystroke = liveStreamService.onKeystroke((payload) => {
+      setTelemetryMap((prev) => {
+        const cur = prev[payload.sessionId];
+        return {
+          ...prev,
+          [payload.sessionId]: {
+            ...(cur || {
+              sessionId: payload.sessionId,
+              isTyping: true,
+              activeFile: payload.activeFile,
+              code: payload.code,
+              lineCount: payload.lineCount,
+              cursor: null,
+              focused: true,
+              presence: 'online',
+              lastSeenAt: payload.timestamp,
+              lastExecution: null,
+              activityHistory: [],
+            }),
+            code: payload.code,
+            lineCount: payload.lineCount,
+            activeFile: payload.activeFile || cur?.activeFile || 'solution.js',
+            isTyping: true,
+            candidateName: payload.candidateName,
+            candidateId: payload.candidateId,
+            keystrokeCount: payload.keystrokeCount,
+            cursor: payload.cursor
+              ? { line: payload.cursor.line, column: payload.cursor.column, at: payload.timestamp }
+              : cur?.cursor || null,
+            presence: 'online',
+            lastSeenAt: payload.timestamp,
+          },
+        };
+      });
+    });
+
+    const unsubTyping = liveStreamService.onTyping((payload) => {
+      setTelemetryMap((prev) => {
+        const cur = prev[payload.sessionId];
+        if (!cur) return prev;
+        return {
+          ...prev,
+          [payload.sessionId]: {
+            ...cur,
+            isTyping: payload.isTyping,
+            candidateName: payload.candidateName || cur.candidateName,
+            lastSeenAt: payload.timestamp,
+          },
+        };
+      });
+    });
+
+    const unsubExecution = liveStreamService.onExecution((payload) => {
+      setTelemetryMap((prev) => {
+        const cur = prev[payload.sessionId];
+        if (!cur) return prev;
+        return {
+          ...prev,
+          [payload.sessionId]: {
+            ...cur,
+            lastExecution: {
+              status: payload.status,
+              passed: payload.passed,
+              total: payload.total,
+              runtimeMs: payload.runtimeMs,
+              output: payload.output,
+              error: payload.error,
+              timestamp: payload.timestamp,
+            },
+            lastSeenAt: payload.timestamp,
+          },
+        };
+      });
+    });
+
+    const unsubConn = liveStreamService.onConnectionChange((state) => {
+      setStreamConnectionState(state);
+      if (state.isConnected) {
+        setIsConnected(true);
+      }
+    });
+
+    return () => {
+      unsubKeystroke();
+      unsubTyping();
+      unsubExecution();
+      unsubConn();
+    };
+  }, []);
 
   // Push activity helper
   const pushActivity = useCallback((sessionId: string, type: string, message: string, timestamp: number = Date.now()) => {
@@ -460,6 +557,7 @@ export function useAdminMonitorSocket(sessionIds: string[], user?: any) {
 
   return {
     isConnected,
+    streamConnectionState,
     telemetryMap,
     getYDoc,
   };

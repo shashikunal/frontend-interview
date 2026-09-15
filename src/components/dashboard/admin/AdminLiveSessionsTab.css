@@ -1526,4 +1526,276 @@
   width: 100%;
 }
 
+/* ─── CCTV Multi-Cam Surveillance Grid ───────────────────────────────────── */
+.cctv-surveillance-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(390px, 1fr));
+  gap: 16px;
+  width: 100%;
+  animation: fadeInGrid 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes fadeInGrid {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 768px) {
+  .cctv-surveillance-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ─── View Mode Switcher Pill Group ─────────────────────────────────────── */
+.live-view-mode-selector {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--navy-800, #111c44);
+  padding: 4px;
+  border-radius: 10px;
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+  margin-left: auto;
+}
+
+[data-theme="light"] .live-view-mode-selector {
+  background: #e9edf7;
+  border-color: #cbd5e1;
+}
+
+.live-view-mode-btn {
+  padding: 6px 13px;
+  border-radius: 7px;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary, #a3aed0);
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  letter-spacing: 0.2px;
+}
+
+.live-view-mode-btn:hover {
+  color: var(--text-primary, #ffffff);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="light"] .live-view-mode-btn:hover {
+  color: #1b254b;
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.live-view-mode-btn.active {
+  background: linear-gradient(135deg, var(--brand-500, #4318ff), #6366f1);
+  color: #ffffff;
+  box-shadow: 0 2px 10px rgba(67, 24, 255, 0.35);
+}
+
+/* ─── CCTV Focus CAM Modal ───────────────────────────────────────────────── */
+.cctv-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(5, 8, 22, 0.82);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  animation: modalFadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes modalFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.cctv-modal-container {
+  width: 95vw;
+  max-width: 1200px;
+  height: 90vh;
+  max-height: 840px;
+  background: var(--navy-900, #0b1437);
+  border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.12));
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(67, 24, 255, 0.25);
+  overflow: hidden;
+  animation: modalScaleUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+[data-theme="light"] .cctv-modal-container {
+  background: #ffffff;
+  border-color: #cbd5e1;
+  box-shadow: 0 24px 64px rgba(15, 23, 42, 0.15), 0 0 0 1px rgba(67, 24, 255, 0.2);
+}
+
+@keyframes modalScaleUp {
+  from { opacity: 0; transform: scale(0.96) translateY(12px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.cctv-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  background: var(--navy-800, #111c44);
+  border-bottom: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+}
+
+[data-theme="light"] .cctv-modal-header {
+  background: #f4f7fe;
+  border-color: #e2e8f0;
+}
+
+.cctv-modal-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: var(--text-primary, #ffffff);
+  letter-spacing: 0.4px;
+}
+
+[data-theme="light"] .cctv-modal-title {
+  color: #1b254b;
+}
+
+.cctv-modal-pulse-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #ef4444;
+  box-shadow: 0 0 10px rgba(239, 68, 68, 0.8);
+  animation: pulseRec 1.4s infinite;
+}
+
+.cctv-modal-close-btn {
+  background: transparent;
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.1));
+  color: var(--text-secondary, #a3aed0);
+  font-size: 1.1rem;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.cctv-modal-close-btn:hover {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: #ef4444;
+  color: #ef4444;
+}
+
+.cctv-modal-body {
+  flex: 1;
+  overflow: auto;
+  padding: 16px;
+  background: var(--navy-900, #0b1437);
+}
+
+[data-theme="light"] .cctv-modal-body {
+  background: #ffffff;
+}
+
+/* ─── Realtime Connection / Disconnection Floating Toast Alert ────────────── */
+.rt-toast-notification {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  border-radius: 12px;
+  background: var(--navy-800, #111c44);
+  border: 1px solid;
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05);
+  min-width: 320px;
+  max-width: 440px;
+  animation: toastSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+[data-theme="light"] .rt-toast-notification {
+  background: #ffffff;
+  box-shadow: 0 14px 40px rgba(15, 23, 42, 0.12);
+}
+
+@keyframes toastSlideIn {
+  from { opacity: 0; transform: translateY(14px) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.rt-toast-notification.rt-toast-connected {
+  border-color: rgba(16, 185, 129, 0.4);
+  border-left: 4px solid #10b981;
+}
+
+.rt-toast-notification.rt-toast-disconnected {
+  border-color: rgba(239, 68, 68, 0.4);
+  border-left: 4px solid #ef4444;
+}
+
+.rt-toast-icon {
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+.rt-toast-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.rt-toast-title {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--text-primary, #ffffff);
+}
+
+[data-theme="light"] .rt-toast-title {
+  color: #1b254b;
+}
+
+.rt-toast-msg {
+  font-size: 0.76rem;
+  color: var(--text-secondary, #a3aed0);
+  line-height: 1.35;
+}
+
+[data-theme="light"] .rt-toast-msg {
+  color: #64748b;
+}
+
+.rt-toast-close {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary, #a3aed0);
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 4px;
+  line-height: 1;
+  border-radius: 4px;
+  transition: all 0.15s;
+}
+
+.rt-toast-close:hover {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.1);
+}
+
+
 
