@@ -209,59 +209,35 @@ export function useInterviewSocket({
       // Skip if this change is from Yjs remote sync (not user typing)
       if (isYjsSyncingRef.current) return;
 
-      const socket = socketRef.current;
-      const currentSessionId = sessionIdRef.current || sessionId;
-      if (!socket || !currentSessionId) return;
-
       const curFile = fileOverride || latestFileRef.current;
       keystrokeCountRef.current += 1;
       const candidateName = user?.name || user?.email?.split('@')[0] || 'Candidate';
       const candidateId = user?.id || 'guest_student';
+      const candidateEmail = user?.email || `${candidateId}@interview.local`;
+      const currentSessionId = sessionIdRef.current || sessionId || `session_${candidateId}_${questionId}`;
 
-      // 1. Send typing started event immediately
+      // 1. UNCONDITIONAL ZERO-LATENCY HYBRID BROADCAST: Typing start
       if (!isTypingRef.current) {
         isTypingRef.current = true;
-        socket.emit('student:typing', {
-          sessionId: currentSessionId,
-          isTyping: true,
-          fileId: curFile,
-          timestamp: Date.now(),
-        });
         liveStreamService.broadcastTyping({
           sessionId: currentSessionId,
           candidateId,
           candidateName,
+          candidateEmail,
+          questionId,
           isTyping: true,
           fileId: curFile,
           timestamp: Date.now(),
         });
       }
 
-      // 2. Immediately emit cursor change if cursor was provided with keystroke
-      if (cursor) {
-        socket.emit('student:cursor-change', {
-          sessionId: currentSessionId,
-          fileId: curFile,
-          line: cursor.line,
-          column: cursor.column,
-          timestamp: Date.now(),
-        });
-      }
-
-      // 3. ZERO-LATENCY FASTPATH: Emit student:keystroke immediately without debounce
-      socket.emit('student:keystroke', {
-        sessionId: currentSessionId,
-        fileId: curFile,
-        code: newCode,
-        cursor: cursor || null,
-        timestamp: Date.now(),
-      });
-
-      // 4. HYBRID REALTIME BROADCAST (Supabase Broadcast + Local BroadcastChannel)
+      // 2. UNCONDITIONAL ZERO-LATENCY HYBRID BROADCAST: Every single keystroke with live code
       liveStreamService.broadcastKeystroke({
         sessionId: currentSessionId,
         candidateId,
         candidateName,
+        candidateEmail,
+        questionId,
         code: newCode,
         activeFile: curFile,
         lineCount: newCode.split('\n').length,
@@ -270,49 +246,82 @@ export function useInterviewSocket({
         timestamp: Date.now(),
       });
 
-      // NOTE: We do NOT manually write to ydoc here.
-      // MonacoBinding automatically keeps ytext in sync with the Monaco model.
-      // Writing to ydoc here would trigger ytext→model update→onChange→emitCodeChange infinite loop.
+      // 3. Socket.IO Room Broadcast (if connected)
+      const socket = socketRef.current;
+      if (socket) {
+        try {
+          socket.emit('student:typing', {
+            sessionId: currentSessionId,
+            isTyping: true,
+            fileId: curFile,
+            timestamp: Date.now(),
+          });
+          if (cursor) {
+            socket.emit('student:cursor-change', {
+              sessionId: currentSessionId,
+              fileId: curFile,
+              line: cursor.line,
+              column: cursor.column,
+              timestamp: Date.now(),
+            });
+          }
+          socket.emit('student:keystroke', {
+            sessionId: currentSessionId,
+            fileId: curFile,
+            code: newCode,
+            cursor: cursor || null,
+            timestamp: Date.now(),
+          });
+        } catch (_) {}
+      }
 
       // Auto clear typing state after 1.5s silence
       if (typingTimerRef.current) clearTimeout(typingTimerRef.current);
       typingTimerRef.current = setTimeout(() => {
         isTypingRef.current = false;
-        socket.emit('student:typing', {
-          sessionId: currentSessionId,
-          isTyping: false,
-          fileId: curFile,
-          timestamp: Date.now(),
-        });
         liveStreamService.broadcastTyping({
           sessionId: currentSessionId,
           candidateId,
           candidateName,
+          candidateEmail,
+          questionId,
           isTyping: false,
           fileId: curFile,
           timestamp: Date.now(),
         });
+        if (socket) {
+          try {
+            socket.emit('student:typing', {
+              sessionId: currentSessionId,
+              isTyping: false,
+              fileId: curFile,
+              timestamp: Date.now(),
+            });
+          } catch (_) {}
+        }
       }, 1500);
 
-      // 5. Fast 25ms debounce for full code snapshot broadcast
+      // 4. Fast debounce for full snapshot broadcast to Socket.IO room
       if (codeDebounceTimerRef.current) clearTimeout(codeDebounceTimerRef.current);
       codeDebounceTimerRef.current = setTimeout(() => {
+        if (!socket) return;
         const v = ++codeVersionRef.current;
         const lineCount = newCode.split('\n').length;
 
-        socket.emit('student:code-change', {
-          sessionId: currentSessionId,
-          fileId: curFile,
-          language,
-          code: newCode,
-          lineCount,
-          cursor,
-          version: v,
-          timestamp: Date.now(),
-        });
+        try {
+          socket.emit('student:code-change', {
+            sessionId: currentSessionId,
+            fileId: curFile,
+            language: language || 'javascript',
+            code: newCode,
+            lineCount,
+            version: v,
+            timestamp: Date.now(),
+          });
+        } catch (_) {}
       }, CODE_DEBOUNCE_MS);
     },
-    [sessionId, language]
+    [sessionId, questionId, user, language]
   );
 
   // ── Emit Cursor Movement ──────────────────────────────────────────────────

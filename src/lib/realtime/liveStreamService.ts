@@ -11,6 +11,8 @@ export interface KeystrokePayload {
   sessionId: string;
   candidateId: string;
   candidateName: string;
+  candidateEmail?: string;
+  questionId?: string;
   code: string;
   activeFile: string;
   lineCount: number;
@@ -23,6 +25,8 @@ export interface TypingPayload {
   sessionId: string;
   candidateId: string;
   candidateName: string;
+  candidateEmail?: string;
+  questionId?: string;
   isTyping: boolean;
   fileId?: string;
   timestamp: number;
@@ -32,6 +36,8 @@ export interface PresencePayload {
   sessionId: string;
   candidateId: string;
   candidateName: string;
+  candidateEmail?: string;
+  questionId?: string;
   presence: 'online' | 'idle' | 'disconnected';
   timestamp: number;
 }

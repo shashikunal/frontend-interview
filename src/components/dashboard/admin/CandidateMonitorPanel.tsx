@@ -113,6 +113,21 @@ export const CandidateMonitorPanel: React.FC<CandidateMonitorPanelProps> = ({
     };
   }, [editorInstance, selectedFile, session.id, getYDoc]);
 
+  // ── REALTIME TELEMETRY CODE SYNC INTO MONACO (Direct Keystroke Sync) ──
+  useEffect(() => {
+    if (!editorInstance) return;
+    const model = editorInstance.getModel();
+    if (!model) return;
+    const incomingCode = telemetry?.code;
+    if (incomingCode !== undefined && incomingCode !== null && model.getValue() !== incomingCode) {
+      const pos = editorInstance.getPosition();
+      model.setValue(incomingCode);
+      if (pos) {
+        try { editorInstance.setPosition(pos); } catch (_) {}
+      }
+    }
+  }, [editorInstance, telemetry?.code]);
+
   // ── LIVE REMOTE CURSOR WITH NAME TAG (FIGMA / VS CODE LIVE SHARE STYLE) ──
   useEffect(() => {
     if (!editorInstance) return;

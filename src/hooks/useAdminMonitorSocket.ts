@@ -46,53 +46,100 @@ export function useAdminMonitorSocket(sessionIds: string[], user?: any) {
   useEffect(() => {
     const unsubKeystroke = liveStreamService.onKeystroke((payload) => {
       setTelemetryMap((prev) => {
-        const cur = prev[payload.sessionId];
-        return {
-          ...prev,
-          [payload.sessionId]: {
-            ...(cur || {
-              sessionId: payload.sessionId,
-              isTyping: true,
-              activeFile: payload.activeFile,
-              code: payload.code,
-              lineCount: payload.lineCount,
-              cursor: null,
-              focused: true,
-              presence: 'online',
-              lastSeenAt: payload.timestamp,
-              lastExecution: null,
-              activityHistory: [],
-            }),
+        const matchingKeys = new Set<string>([payload.sessionId]);
+        if (payload.candidateId) matchingKeys.add(payload.candidateId);
+        if (payload.candidateEmail) matchingKeys.add(payload.candidateEmail);
+
+        // Also search existing entries for candidateId match
+        for (const [k, v] of Object.entries(prev)) {
+          if (
+            (payload.candidateId && v.candidateId === payload.candidateId) ||
+            (payload.sessionId && v.sessionId === payload.sessionId)
+          ) {
+            matchingKeys.add(k);
+          }
+        }
+
+        const cur = prev[payload.sessionId] || (payload.candidateId ? prev[payload.candidateId] : undefined);
+        const updatedItem: LiveTelemetryItem = {
+          ...(cur || {
+            sessionId: payload.sessionId,
+            isTyping: true,
+            activeFile: payload.activeFile,
             code: payload.code,
             lineCount: payload.lineCount,
-            activeFile: payload.activeFile || cur?.activeFile || 'solution.js',
-            isTyping: true,
-            candidateName: payload.candidateName,
-            candidateId: payload.candidateId,
-            keystrokeCount: payload.keystrokeCount,
-            cursor: payload.cursor
-              ? { line: payload.cursor.line, column: payload.cursor.column, at: payload.timestamp }
-              : cur?.cursor || null,
+            cursor: null,
+            focused: true,
             presence: 'online',
             lastSeenAt: payload.timestamp,
-          },
+            lastExecution: null,
+            activityHistory: [],
+          }),
+          code: payload.code,
+          lineCount: payload.lineCount,
+          activeFile: payload.activeFile || cur?.activeFile || 'solution.js',
+          isTyping: true,
+          candidateName: payload.candidateName || cur?.candidateName,
+          candidateId: payload.candidateId || cur?.candidateId,
+          keystrokeCount: payload.keystrokeCount,
+          cursor: payload.cursor
+            ? { line: payload.cursor.line, column: payload.cursor.column, at: payload.timestamp }
+            : cur?.cursor || null,
+          presence: 'online',
+          lastSeenAt: payload.timestamp,
         };
+
+        const next = { ...prev };
+        for (const key of matchingKeys) {
+          next[key] = { ...updatedItem, sessionId: key };
+        }
+        return next;
       });
     });
 
     const unsubTyping = liveStreamService.onTyping((payload) => {
       setTelemetryMap((prev) => {
-        const cur = prev[payload.sessionId];
-        if (!cur) return prev;
-        return {
-          ...prev,
-          [payload.sessionId]: {
-            ...cur,
+        const matchingKeys = new Set<string>([payload.sessionId]);
+        if (payload.candidateId) matchingKeys.add(payload.candidateId);
+        if (payload.candidateEmail) matchingKeys.add(payload.candidateEmail);
+
+        for (const [k, v] of Object.entries(prev)) {
+          if (
+            (payload.candidateId && v.candidateId === payload.candidateId) ||
+            (payload.sessionId && v.sessionId === payload.sessionId)
+          ) {
+            matchingKeys.add(k);
+          }
+        }
+
+        const cur = prev[payload.sessionId] || (payload.candidateId ? prev[payload.candidateId] : undefined);
+        const updatedItem: LiveTelemetryItem = {
+          ...(cur || {
+            sessionId: payload.sessionId,
+            candidateId: payload.candidateId,
+            candidateName: payload.candidateName,
             isTyping: payload.isTyping,
-            candidateName: payload.candidateName || cur.candidateName,
+            activeFile: payload.fileId || 'solution.js',
+            code: '',
+            lineCount: 1,
+            cursor: null,
+            focused: true,
+            presence: 'online',
             lastSeenAt: payload.timestamp,
-          },
+            lastExecution: null,
+            activityHistory: [],
+          }),
+          isTyping: payload.isTyping,
+          candidateName: payload.candidateName || cur?.candidateName,
+          lastSeenAt: payload.timestamp,
+          presence: 'online',
         };
+
+        const next = { ...prev };
+        for (const key of matchingKeys) {
+          next[key] = { ...updatedItem, sessionId: key };
+        }
+        return next;
       });
     });
 

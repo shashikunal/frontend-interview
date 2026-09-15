@@ -89,6 +89,16 @@ export default function AdminLiveSessionsTab() {
     return () => clearTimeout(timer);
   }, [toast]);
 
+  // Extract active session IDs from Supabase sessions for Socket.IO room subscription
+  const activeSessionIds = useMemo(() => {
+    return sessions
+      .filter(s => s.status === 'active' || s.status === 'in_progress')
+      .map(s => s.id);
+  }, [sessions]);
+
+  // Two-way Realtime Socket.IO connection for admin live monitoring
+  const { isConnected: isRealtimeConnected, telemetryMap: socketTelemetryMap, getYDoc } = useAdminMonitorSocket(activeSessionIds, user);
+
   // ── Canonical Candidate Store: Exactly ONE session panel per candidate ──────────
   // Deduplicates multiple historical active sessions for the same student
   const canonicalCandidates = useMemo(() => {
@@ -121,18 +131,37 @@ export default function AdminLiveSessionsTab() {
       }
     }
 
+    // Seamlessly include live streaming candidates broadcasting over realtime sockets
+    for (const [id, tel] of Object.entries(socketTelemetryMap)) {
+      const candidateKey = tel.candidateId || tel.sessionId || id;
+      const alreadyExists = Array.from(candidateMap.values()).some(
+        s => (tel.candidateId && s.candidate_id === tel.candidateId) ||
+             (tel.sessionId && s.id === tel.sessionId) ||
+             (s.id === id) ||
+             (s.candidate_id === id)
+      );
+      if (!alreadyExists && (tel.code || tel.isTyping || tel.presence === 'online')) {
+        candidateMap.set(candidateKey, {
+          id: tel.sessionId || id,
+          candidate_id: tel.candidateId || id,
+          candidate_name: tel.candidateName || 'Candidate',
+          candidate_email: `${tel.candidateId || id}@interview.local`,
+          question_id: 'JS-LIVE',
+          question_title: 'Live Candidate Session',
+          status: 'active',
+          active_file: tel.activeFile || 'solution.js',
+          language: 'javascript',
+          current_code_snapshot: tel.code || '',
+          started_at: new Date(tel.lastSeenAt || Date.now()).toISOString(),
+          last_activity_at: new Date(tel.lastSeenAt || Date.now()).toISOString(),
+          created_at: new Date(tel.lastSeenAt || Date.now()).toISOString(),
+          updated_at: new Date(tel.lastSeenAt || Date.now()).toISOString(),
+        });
+      }
+    }
+
     return Array.from(candidateMap.values());
-  }, [sessions]);
-
-  // Extract canonical active session IDs for Socket.IO room subscription
-  const activeSessionIds = useMemo(() => {
-    return canonicalCandidates
-      .filter(s => s.status === 'active' || s.status === 'in_progress')
-      .map(s => s.id);
-  }, [canonicalCandidates]);
-
-  // Two-way Realtime Socket.IO connection for admin live monitoring
-  const { isConnected: isRealtimeConnected, telemetryMap: socketTelemetryMap, getYDoc } = useAdminMonitorSocket(activeSessionIds, user);
+  }, [sessions, socketTelemetryMap]);
 
   // Merge persistent Supabase session data with live Socket.IO telemetry stream
   const telemetryMap = useMemo<Record<string, LiveTelemetryItem>>(() => {
@@ -140,18 +169,34 @@ export default function AdminLiveSessionsTab() {
     for (const s of canonicalCandidates) {
       const initCode = s.current_code_snapshot ||
         (s.files_snapshot ? (s.files_snapshot[s.active_file || ''] || Object.values(s.files_snapshot)[0] || '') : '');
+
+      // Check all possible telemetry keys: direct session ID, candidate ID, candidate email, or matching object
+      const liveTel =
+        socketTelemetryMap[s.id] ||
+        (s.candidate_id ? socketTelemetryMap[s.candidate_id] : null) ||
+        (s.candidate_email ? socketTelemetryMap[s.candidate_email] : null) ||
+        Object.values(socketTelemetryMap).find(
+          t =>
+            (s.candidate_id && t.candidateId === s.candidate_id) ||
+            (t.sessionId === s.id) ||
+            (s.candidate_name && t.candidateName && t.candidateName.toLowerCase() === s.candidate_name.toLowerCase())
+        );
+
       map[s.id] = {
         sessionId: s.id,
-        isTyping: false,
-        activeFile: s.active_file || 'solution.js',
-        code: initCode,
-        lineCount: initCode ? initCode.split('\n').length : 1,
-        cursor: null,
-        focused: true,
-        presence: (s.status === 'active' || s.status === 'in_progress') ? 'online' : 'disconnected',
-        lastSeenAt: new Date(s.last_activity_at || s.created_at).getTime(),
-        lastExecution: null,
-        activityHistory: [
+        isTyping: liveTel?.isTyping ?? false,
+        activeFile: liveTel?.activeFile || s.active_file || 'solution.js',
+        code: (liveTel?.code !== undefined && liveTel?.code !== null) ? liveTel.code : initCode,
+        lineCount: ((liveTel?.code !== undefined ? liveTel.code : initCode) || '').split('\n').length,
+        cursor: liveTel?.cursor || null,
+        focused: liveTel?.focused ?? true,
+        presence: liveTel?.presence || ((s.status === 'active' || s.status === 'in_progress') ? 'online' : 'disconnected'),
+        lastSeenAt: liveTel?.lastSeenAt || new Date(s.last_activity_at || s.created_at).getTime(),
+        keystrokeCount: liveTel?.keystrokeCount ?? ((liveTel?.code || initCode) || '').length,
+        candidateName: liveTel?.candidateName || s.candidate_name,
+        candidateId: liveTel?.candidateId || s.candidate_id,
+        lastExecution: liveTel?.lastExecution || null,
+        activityHistory: liveTel?.activityHistory?.length ? liveTel.activityHistory : [
           {
             id: `init_${s.id}`,
             type: 'joined',
@@ -161,20 +206,7 @@ export default function AdminLiveSessionsTab() {
         ],
       };
     }
-    for (const [id, tel] of Object.entries(socketTelemetryMap)) {
-      if (map[id]) {
-        map[id] = {
-          ...map[id],
-          ...tel,
-          code: tel.code || map[id].code,
-          activeFile: tel.activeFile || map[id].activeFile,
-          presence: tel.presence || map[id].presence,
-          activityHistory: tel.activityHistory?.length ? tel.activityHistory : map[id].activityHistory,
-        };
-      } else {
-        map[id] = tel;
-      }
-    }
+
     return map;
   }, [canonicalCandidates, socketTelemetryMap]);
 
@@ -263,6 +295,20 @@ export default function AdminLiveSessionsTab() {
       return true;
     });
   }, [canonicalCandidates, telemetryMap, filterStatus, filterTrack, searchQuery]);
+
+  // Sort sessions so actively typing and recently updated candidates appear first (CAM-01, CAM-02...)
+  const sortedSessions = useMemo(() => {
+    return [...filteredSessions].sort((a, b) => {
+      const telA = telemetryMap[a.id];
+      const telB = telemetryMap[b.id];
+      if (telA?.isTyping && !telB?.isTyping) return -1;
+      if (!telA?.isTyping && telB?.isTyping) return 1;
+
+      const timeA = telA?.lastSeenAt || new Date(a.last_activity_at || a.started_at || a.created_at).getTime();
+      const timeB = telB?.lastSeenAt || new Date(b.last_activity_at || b.started_at || b.created_at).getTime();
+      return timeB - timeA;
+    });
+  }, [filteredSessions, telemetryMap]);
 
   /* ── KPI metrics ───────────────────────────────────────────────────────── */
   const onlineCount = canonicalCandidates.filter(s => telemetryMap[s.id]?.presence === 'online').length;
@@ -433,7 +479,7 @@ export default function AdminLiveSessionsTab() {
         </div>
       ) : viewMode === 'cctv' ? (
         <div className="cctv-surveillance-grid">
-          {filteredSessions.map((session, index) => (
+          {sortedSessions.map((session, index) => (
             <CctvMonitorCard
               key={session.id}
               session={session}
@@ -445,13 +491,13 @@ export default function AdminLiveSessionsTab() {
         </div>
       ) : viewMode === 'list' ? (
         <LiveSessionsListView
-          sessions={filteredSessions}
+          sessions={sortedSessions}
           telemetryMap={telemetryMap}
           onFocusCam={setFocusedSession}
         />
       ) : (
         <div className="candidate-monitors-grid">
-          {filteredSessions.map(session => (
+          {sortedSessions.map(session => (
             <CandidateMonitorPanel
               key={session.id}
               session={session}
