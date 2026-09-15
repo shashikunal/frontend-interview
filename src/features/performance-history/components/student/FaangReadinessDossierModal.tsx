@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import type { UserPerformanceSummary, CodingAttempt } from '../../types/history.types';
 import { docsProgressService } from '../../../interview-docs/services/docsProgressService';
 import './FaangReadinessDossierModal.css';
@@ -33,8 +34,10 @@ export default function FaangReadinessDossierModal({
   attempts,
   onClose,
 }: FaangReadinessDossierModalProps) {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<'visual' | 'markdown'>('visual');
   const [copied, setCopied] = useState(false);
+  const [selectedStudioKey, setSelectedStudioKey] = useState<string | null>(null);
 
   // 1. Fetch 21-Track Docs Syllabus Telemetry
   const docsStats = useMemo(() => {
@@ -301,6 +304,87 @@ export default function FaangReadinessDossierModal({
       speedPoints,
     };
   }, [studioStats, summary, docsStats, speedMetrics]);
+
+  // 4b. Compute Targeted Studio Recommendation for Mock Interview
+  const targetedRecommendation = useMemo(() => {
+    const studios = [
+      {
+        key: 'MACHINE_CODING',
+        name: 'Machine Coding Studio',
+        icon: '⚡',
+        route: '/machine-coding',
+        actionLabel: 'Launch Component Sandbox',
+        stat: studioStats.find(s => s.key === 'MACHINE_CODING'),
+      },
+      {
+        key: 'DSA',
+        name: 'LeetCode & Algorithm Studio',
+        icon: '🧮',
+        route: '/dsa',
+        actionLabel: 'Launch Algorithm Drill',
+        stat: studioStats.find(s => s.key === 'DSA'),
+      },
+      {
+        key: 'CORE_JS',
+        name: 'Core JavaScript Mechanics',
+        icon: '💻',
+        route: '/core-programming',
+        actionLabel: 'Launch Core JS Challenge',
+        stat: studioStats.find(s => s.key === 'CORE_JS'),
+      },
+      {
+        key: 'FRONTEND_JS',
+        name: 'Frontend JS & Browser APIs',
+        icon: '🌐',
+        route: '/frontend-javascript',
+        actionLabel: 'Launch DOM / API Sandbox',
+        stat: studioStats.find(s => s.key === 'FRONTEND_JS'),
+      },
+    ];
+
+    const sorted = [...studios].sort((a, b) => {
+      const aSolved = a.stat?.solved || 0;
+      const bSolved = b.stat?.solved || 0;
+      if (aSolved !== bSolved) return aSolved - bSolved;
+      const aScore = a.stat?.avgScore || 0;
+      const bScore = b.stat?.avgScore || 0;
+      return aScore - bScore;
+    });
+
+    const recommended = sorted[0] || studios[0];
+
+    const activeStudio = selectedStudioKey
+      ? studios.find(s => s.key === selectedStudioKey) || (selectedStudioKey === 'AI_MOCK' ? {
+          key: 'AI_MOCK',
+          name: 'AI Video Mock Interview',
+          icon: '🎥',
+          route: '/ai-video-mock',
+          actionLabel: 'Launch Live AI Video Mock',
+          stat: null,
+        } : recommended)
+      : recommended;
+
+    let reason = '';
+    if (activeStudio.stat) {
+      if (activeStudio.stat.solved === 0) {
+        reason = `Zero verified problems completed in ${activeStudio.name}. Practicing here will produce the highest score gain.`;
+      } else if (activeStudio.stat.successRate < 70) {
+        reason = `Success rate is currently ${activeStudio.stat.successRate}% (${activeStudio.stat.solved}/${activeStudio.stat.attempted} solved). A timed targeted drill will boost accuracy.`;
+      } else {
+        reason = `Candidate has ${activeStudio.stat.solved} solved with ${activeStudio.stat.avgScore}% avg score. Great momentum for high-difficulty challenges.`;
+      }
+    } else {
+      reason = 'Simulate full behavioral and technical FAANG interview loops with real-time AI speech and coding analysis.';
+    }
+
+    return {
+      allStudios: studios,
+      activeStudio,
+      isAutoRecommended: !selectedStudioKey || selectedStudioKey === recommended.key,
+      recommendedKey: recommended.key,
+      reason,
+    };
+  }, [studioStats, selectedStudioKey]);
 
   // 5. Generate Formatted Markdown
   const markdownContent = useMemo(() => {
@@ -642,6 +726,70 @@ ${readinessIndex.totalIndex >= 70
                       ? `Candidate demonstrates high proficiency in core frontend engineering mechanics, algorithm resolution, and structured component architecture. Highly recommended for technical interview loops at FAANG / Tier-1 engineering organizations.`
                       : `Candidate demonstrates solid foundational capabilities across early assessment tasks. Continued practice with DSA algorithms and higher-tempo Machine Coding component tasks will significantly elevate readiness for top-tier senior frontend loops.`}
                   </p>
+                </div>
+              </div>
+
+              {/* 1-Click Targeted Mock Interview Launcher */}
+              <div className="dossier-targeted-mock-card no-print">
+                <div className="targeted-mock-header">
+                  <div className="targeted-mock-info">
+                    <div className="targeted-mock-badge-row">
+                      <span className="targeted-mock-priority-tag">
+                        {targetedRecommendation.isAutoRecommended ? '🔥 HIGHEST IMPACT FOCUS' : '🎯 CUSTOM TARGETED PRACTICE'}
+                      </span>
+                      {targetedRecommendation.isAutoRecommended && (
+                        <span className="targeted-mock-sub-tag">AI Recommended</span>
+                      )}
+                    </div>
+                    <h4 className="targeted-mock-title">
+                      Targeted Mock Practice: {targetedRecommendation.activeStudio.name}
+                    </h4>
+                    <p className="targeted-mock-desc">
+                      {targetedRecommendation.reason}
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    className="targeted-mock-launch-btn"
+                    onClick={() => {
+                      onClose();
+                      navigate(targetedRecommendation.activeStudio.route);
+                    }}
+                  >
+                    <span>{targetedRecommendation.activeStudio.icon}</span>
+                    <span>{targetedRecommendation.activeStudio.actionLabel} →</span>
+                  </button>
+                </div>
+
+                {/* Studio selector pills */}
+                <div className="targeted-mock-selector-wrap">
+                  <span className="targeted-selector-label">Or Switch Focus:</span>
+                  <div className="targeted-studio-pills">
+                    {targetedRecommendation.allStudios.map((st) => {
+                      const isSelected = targetedRecommendation.activeStudio.key === st.key;
+                      const isRec = st.key === targetedRecommendation.recommendedKey;
+                      return (
+                        <button
+                          key={st.key}
+                          type="button"
+                          className={`targeted-studio-pill ${isSelected ? 'active' : ''}`}
+                          onClick={() => setSelectedStudioKey(st.key)}
+                        >
+                          <span>{st.icon}</span>
+                          <span>{st.name.replace(' Studio', '')}</span>
+                          {isRec && <span className="rec-mini-badge">AI Pick</span>}
+                        </button>
+                      );
+                    })}
+                    <button
+                      type="button"
+                      className={`targeted-studio-pill ${targetedRecommendation.activeStudio.key === 'AI_MOCK' ? 'active' : ''}`}
+                      onClick={() => setSelectedStudioKey('AI_MOCK')}
+                    >
+                      <span>🎥</span>
+                      <span>AI Video Mock</span>
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>

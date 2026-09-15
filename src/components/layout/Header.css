@@ -1252,5 +1252,41 @@
   }
 }
 
+/* ---- Offline Status Badge (PWA) ---- */
+.header-offline-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(245, 158, 11, 0.15);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  color: #fbbf24;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  margin-left: 6px;
+  animation: pulseOffline 2s infinite ease-in-out;
+}
+
+[data-theme="light"] .header-offline-status-badge {
+  background: #fef3c7;
+  border-color: #fde68a;
+  color: #b45309;
+}
+
+.header-offline-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #f59e0b;
+}
+
+@keyframes pulseOffline {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.75; }
+}
+
+
 
 

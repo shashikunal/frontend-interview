@@ -8,6 +8,7 @@ import {
   type LeaderboardCategory,
   type TierName,
 } from '../../lib/leaderboardService'
+import LeaderboardCandidateModal from './LeaderboardCandidateModal'
 import './Leaderboard.css'
 
 interface LeaderboardProps {
@@ -66,12 +67,32 @@ function formatSpeedTime(seconds: number): string {
 
 export type LeaderboardSortBy = 'score' | 'speed' | 'solved' | 'accuracy'
 
-function PodiumCard({ entry, position }: { entry: LeaderboardEntry; position: 1 | 2 | 3 }) {
+function PodiumCard({
+  entry,
+  position,
+  onInspect,
+}: {
+  entry: LeaderboardEntry;
+  position: 1 | 2 | 3;
+  onInspect?: (entry: LeaderboardEntry) => void;
+}) {
   const medals = { 1: '👑', 2: '🥈', 3: '🥉' }
   const rankLabels = { 1: '1st Place', 2: '2nd Place', 3: '3rd Place' }
 
   return (
-    <div className={`lb-podium-card rank-${position}`}>
+    <div
+      className={`lb-podium-card rank-${position} lb-podium-clickable`}
+      onClick={() => onInspect?.(entry)}
+      title={`Click to inspect ${entry.name}'s telemetry`}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault()
+          onInspect?.(entry)
+        }
+      }}
+    >
       <div className={`lb-podium-rank-badge rank-${position}`}>{position}</div>
       <span className="lb-podium-crown">{medals[position]}</span>
 
@@ -301,6 +322,7 @@ export default function Leaderboard({ compact = false }: LeaderboardProps) {
   const [category, setCategory] = useState<LeaderboardCategory>(initialCat)
   const [sortBy, setSortBy] = useState<LeaderboardSortBy>('score')
   const [myEntry, setMyEntry] = useState<LeaderboardEntry | null>(null)
+  const [inspectEntry, setInspectEntry] = useState<LeaderboardEntry | null>(null)
 
   // Sync category when ?category= changes (deep links, back/forward, tab nav)
   useEffect(() => {
@@ -521,18 +543,18 @@ export default function Leaderboard({ compact = false }: LeaderboardProps) {
           }
         >
           {topThree.length === 1 ? (
-            <PodiumCard entry={topThree[0]} position={1} />
+            <PodiumCard entry={topThree[0]} position={1} onInspect={setInspectEntry} />
           ) : topThree.length === 2 ? (
             <>
-              <PodiumCard entry={topThree[0]} position={1} />
-              <PodiumCard entry={topThree[1]} position={2} />
+              <PodiumCard entry={topThree[0]} position={1} onInspect={setInspectEntry} />
+              <PodiumCard entry={topThree[1]} position={2} onInspect={setInspectEntry} />
             </>
           ) : (
             <>
               {/* Standard podium order: 2nd, 1st, 3rd */}
-              <PodiumCard entry={topThree[1]} position={2} />
-              <PodiumCard entry={topThree[0]} position={1} />
-              <PodiumCard entry={topThree[2]} position={3} />
+              <PodiumCard entry={topThree[1]} position={2} onInspect={setInspectEntry} />
+              <PodiumCard entry={topThree[0]} position={1} onInspect={setInspectEntry} />
+              <PodiumCard entry={topThree[2]} position={3} onInspect={setInspectEntry} />
             </>
           )}
         </div>
@@ -560,6 +582,7 @@ export default function Leaderboard({ compact = false }: LeaderboardProps) {
               <th className="lb-hide-mobile">Completed</th>
               <th className="lb-hide-mobile">Accuracy</th>
               <th className="lb-hide-mobile">Recent Challenges</th>
+              <th>Inspect</th>
             </tr>
           </thead>
           <tbody>
@@ -567,7 +590,7 @@ export default function Leaderboard({ compact = false }: LeaderboardProps) {
               <SkeletonRows />
             ) : displayedEntries.length === 0 ? (
               <tr>
-                <td colSpan={8}>
+                <td colSpan={9}>
                   <div className="lb-empty">
                     <span className="lb-empty-icon">{catConfig.icon}</span>
                     <h3>{catConfig.emptyTitle}</h3>
@@ -592,7 +615,17 @@ export default function Leaderboard({ compact = false }: LeaderboardProps) {
                   <tr
                     key={entry.userId}
                     id={`lb-row-${entry.userId}`}
-                    className={isMe ? 'highlighted' : ''}
+                    className={`lb-table-row-inspectable ${isMe ? 'highlighted' : ''}`}
+                    onClick={() => setInspectEntry(entry)}
+                    title={`Click to inspect ${entry.name}'s performance telemetry`}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault()
+                        setInspectEntry(entry)
+                      }
+                    }}
                   >
                     {/* Rank */}
                     <td className="lb-rank-cell">
@@ -721,6 +754,21 @@ export default function Leaderboard({ compact = false }: LeaderboardProps) {
                         <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>—</span>
                       )}
                     </td>
+
+                    {/* Inspect Action */}
+                    <td className="lb-inspect-cell">
+                      <button
+                        type="button"
+                        className="lb-inspect-row-btn"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          setInspectEntry(entry)
+                        }}
+                        title={`Quick view telemetry for ${entry.name}`}
+                      >
+                        👁️ View
+                      </button>
+                    </td>
                   </tr>
                 )
               })
@@ -758,6 +806,22 @@ export default function Leaderboard({ compact = false }: LeaderboardProps) {
             })}
           </div>
         </div>
+      )}
+
+      {/* Candidate Quick-Inspect Modal */}
+      {inspectEntry && (
+        <LeaderboardCandidateModal
+          entry={inspectEntry}
+          onClose={() => setInspectEntry(null)}
+          isAdmin={isAdmin}
+          isCurrentUser={Boolean(
+            user && (
+              user.id === inspectEntry.userId ||
+              (user.email && inspectEntry.userId.toLowerCase().includes(user.email.toLowerCase())) ||
+              (user.name && inspectEntry.name.toLowerCase() === user.name.toLowerCase())
+            )
+          )}
+        />
       )}
     </div>
   )

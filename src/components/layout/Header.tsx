@@ -17,7 +17,21 @@ export default function Header() {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState<boolean>(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false)
   const [mobileExpandedSection, setMobileExpandedSection] = useState<string | null>(null)
+  const [isOnline, setIsOnline] = useState<boolean>(
+    typeof navigator !== 'undefined' ? navigator.onLine : true
+  )
   const headerRef = useRef<HTMLElement | null>(null)
+
+  useEffect(() => {
+    const handleOnline = () => setIsOnline(true)
+    const handleOffline = () => setIsOnline(false)
+    window.addEventListener('online', handleOnline)
+    window.addEventListener('offline', handleOffline)
+    return () => {
+      window.removeEventListener('online', handleOnline)
+      window.removeEventListener('offline', handleOffline)
+    }
+  }, [])
 
   const { streak, solvedIds, mockInterviews } = useProgress()
   const { bookmarkedCount } = useBookmarks()
@@ -240,9 +254,20 @@ export default function Header() {
             <kbd className="hcp-kbd">⌘K</kbd>
           </button>
 
-          {/* 5. Theme Toggle */}
+          {/* 5. Theme Toggle & Offline Status */}
           <div className="header-toggle-wrap">
             <ThemeToggle />
+            {!isOnline && (
+              <div
+                className="header-offline-status-badge"
+                title="You are currently offline. MasterDocs and cached studios remain fully available!"
+                role="status"
+                aria-live="polite"
+              >
+                <span className="header-offline-dot" />
+                <span className="header-offline-text">Offline</span>
+              </div>
+            )}
           </div>
 
           {/* 6. User Auth Button / Profile Menu */}
