@@ -176,6 +176,8 @@ export interface CandidateUserListItem {
   coreProgrammingScore: number;
   hiringStatus: HiringStatus | 'Not Evaluated';
   overallRating?: number;
+  speedLabel?: string;
+  avgTimeSpentSeconds?: number;
 }
 
 export interface UserQuickMetricSummary {
@@ -186,5 +188,6 @@ export interface UserQuickMetricSummary {
   machineCodingScore: number;
   dsaScore: number;
   coreProgrammingScore: number;
+  totalCodingTimeSeconds?: number;
   lastActiveDate?: string;
 }

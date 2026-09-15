@@ -55,6 +55,16 @@ function Avatar({ name, color, size = 38 }: { name: string; color: string; size?
     </div>
   )
 }
+function formatSpeedTime(seconds: number): string {
+  if (!seconds || seconds <= 0) return '—'
+  const m = Math.floor(seconds / 60)
+  const s = seconds % 60
+  if (m === 0) return `${s}s`
+  if (s === 0) return `${m}m`
+  return `${m}m ${s}s`
+}
+
+export type LeaderboardSortBy = 'score' | 'speed' | 'solved' | 'accuracy'
 
 function PodiumCard({ entry, position }: { entry: LeaderboardEntry; position: 1 | 2 | 3 }) {
   const medals = { 1: '👑', 2: '🥈', 3: '🥉' }
@@ -95,6 +105,11 @@ function PodiumCard({ entry, position }: { entry: LeaderboardEntry; position: 1 
       <div className="lb-podium-meta">
         <span>🎯 {entry.questionsCompleted} solved</span>
         <span>✅ {entry.accuracyRate}% acc</span>
+        {entry.avgTimeSpentSeconds > 0 && (
+          <span title={`Average problem solve time: ${formatSpeedTime(entry.avgTimeSpentSeconds)}`}>
+            ⚡ {formatSpeedTime(entry.avgTimeSpentSeconds)}
+          </span>
+        )}
       </div>
 
       <div className="lb-candidate-id-badge" title={`Candidate ID: ${entry.userId}`}>
@@ -150,6 +165,7 @@ function SkeletonRows() {
               <div className="lb-skeleton-block" style={{ flex: 1, height: 5, minWidth: 80 }} />
             </div>
           </td>
+          <td className="lb-hide-mobile"><div className="lb-skeleton-block" style={{ width: 45, height: 16 }} /></td>
           <td className="lb-hide-mobile"><div className="lb-skeleton-block" style={{ width: 36, height: 16 }} /></td>
           <td className="lb-hide-mobile"><div className="lb-skeleton-block" style={{ width: 36, height: 16 }} /></td>
           <td className="lb-hide-mobile"><div className="lb-skeleton-block" style={{ width: 60, height: 18 }} /></td>
@@ -283,6 +299,7 @@ export default function Leaderboard({ compact = false }: LeaderboardProps) {
   const initialCat = (searchParams.get('category') as LeaderboardCategory) || 'all'
   const [timeframe, setTimeframe] = useState<LeaderboardTimeframe>('all')
   const [category, setCategory] = useState<LeaderboardCategory>(initialCat)
+  const [sortBy, setSortBy] = useState<LeaderboardSortBy>('score')
   const [myEntry, setMyEntry] = useState<LeaderboardEntry | null>(null)
 
   // Sync category when ?category= changes (deep links, back/forward, tab nav)
@@ -344,7 +361,27 @@ export default function Leaderboard({ compact = false }: LeaderboardProps) {
     )
   }, [entries, searchQuery])
 
-  const topThree = filteredEntries.slice(0, 3)
+  // Sort entries according to selected ranking criterion
+  const displayedEntries = useMemo(() => {
+    const list = [...filteredEntries]
+    if (sortBy === 'speed') {
+      list.sort((a, b) => {
+        const aTime = a.avgTimeSpentSeconds > 0 ? a.avgTimeSpentSeconds : 999999
+        const bTime = b.avgTimeSpentSeconds > 0 ? b.avgTimeSpentSeconds : 999999
+        if (aTime !== bTime) return aTime - bTime
+        return b.totalScore - a.totalScore
+      })
+    } else if (sortBy === 'solved') {
+      list.sort((a, b) => b.questionsCompleted - a.questionsCompleted || b.totalScore - a.totalScore)
+    } else if (sortBy === 'accuracy') {
+      list.sort((a, b) => b.accuracyRate - a.accuracyRate || b.totalScore - a.totalScore)
+    } else {
+      list.sort((a, b) => b.totalScore - a.totalScore || b.questionsCompleted - a.questionsCompleted)
+    }
+    return list
+  }, [filteredEntries, sortBy])
+
+  const topThree = displayedEntries.slice(0, 3)
 
   const catConfig = CATEGORY_CONFIG[category] || CATEGORY_CONFIG.all
 
@@ -416,21 +453,45 @@ export default function Leaderboard({ compact = false }: LeaderboardProps) {
         ))}
       </div>
 
-      {/* ---- Search Bar ---- */}
-      <div className="lb-search-bar-wrap">
-        <span className="lb-search-icon">🔍</span>
-        <input
-          type="text"
-          className="lb-search-input"
-          placeholder="Search by candidate name, target company, or candidate ID..."
-          value={searchQuery}
-          onChange={e => setSearchQuery(e.target.value)}
-        />
-        {searchQuery && (
-          <button type="button" className="lb-search-clear" onClick={() => setSearchQuery('')}>
-            ✕
-          </button>
-        )}
+      {/* ---- Search & Sort Toolbar ---- */}
+      <div className="lb-toolbar-wrap">
+        <div className="lb-search-bar-wrap">
+          <span className="lb-search-icon">🔍</span>
+          <input
+            type="text"
+            className="lb-search-input"
+            placeholder="Search by candidate name, target company, or candidate ID..."
+            value={searchQuery}
+            onChange={e => setSearchQuery(e.target.value)}
+          />
+          {searchQuery && (
+            <button type="button" className="lb-search-clear" onClick={() => setSearchQuery('')}>
+              ✕
+            </button>
+          )}
+        </div>
+
+        <div className="lb-sort-controls">
+          <span className="lb-sort-label">Rank by:</span>
+          {(
+            [
+              { key: 'score', label: '🏆 Score' },
+              { key: 'speed', label: '⚡ Speed' },
+              { key: 'solved', label: '🎯 Solved' },
+              { key: 'accuracy', label: '✅ Accuracy' },
+            ] as { key: LeaderboardSortBy; label: string }[]
+          ).map(s => (
+            <button
+              key={s.key}
+              type="button"
+              id={`lb-sort-${s.key}`}
+              className={`lb-sort-btn ${sortBy === s.key ? 'active' : ''}`}
+              onClick={() => setSortBy(s.key)}
+            >
+              {s.label}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* ---- My Rank Banner ---- */}
@@ -442,7 +503,7 @@ export default function Leaderboard({ compact = false }: LeaderboardProps) {
           </div>
           <TierBadge tier={myEntry.tier} />
           <div style={{ fontSize: '0.82rem', color: '#64748b' }}>
-            {myEntry.questionsCompleted} questions · {myEntry.accuracyRate}% accuracy · 🔥 {myEntry.streak}d streak
+            {myEntry.questionsCompleted} questions · {myEntry.accuracyRate}% accuracy · {myEntry.avgTimeSpentSeconds > 0 ? `⚡ ${formatSpeedTime(myEntry.avgTimeSpentSeconds)} avg speed · ` : ''}🔥 {myEntry.streak}d streak
           </div>
         </div>
       )}
@@ -481,7 +542,7 @@ export default function Leaderboard({ compact = false }: LeaderboardProps) {
       <div className="lb-table-wrap">
         <div className="lb-section-title" style={{ marginTop: 24, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <span style={{ fontWeight: 600 }}>
-            {catConfig.icon} {catConfig.title} - {filteredEntries.length} verified candidates
+            {catConfig.icon} {catConfig.title} - {displayedEntries.length} verified candidates {sortBy !== 'score' ? `(Ranked by ${sortBy.toUpperCase()})` : ''}
           </span>
           <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: 400 }}>
             Source: Supabase PostgreSQL &amp; Verified Sandboxes
@@ -495,6 +556,7 @@ export default function Leaderboard({ compact = false }: LeaderboardProps) {
               <th>Candidate</th>
               <th>Tier</th>
               <th>Score</th>
+              <th className="lb-hide-mobile">Speed</th>
               <th className="lb-hide-mobile">Completed</th>
               <th className="lb-hide-mobile">Accuracy</th>
               <th className="lb-hide-mobile">Recent Challenges</th>
@@ -503,9 +565,9 @@ export default function Leaderboard({ compact = false }: LeaderboardProps) {
           <tbody>
             {loading ? (
               <SkeletonRows />
-            ) : filteredEntries.length === 0 ? (
+            ) : displayedEntries.length === 0 ? (
               <tr>
-                <td colSpan={7}>
+                <td colSpan={8}>
                   <div className="lb-empty">
                     <span className="lb-empty-icon">{catConfig.icon}</span>
                     <h3>{catConfig.emptyTitle}</h3>
@@ -517,7 +579,7 @@ export default function Leaderboard({ compact = false }: LeaderboardProps) {
                 </td>
               </tr>
             ) : (
-              filteredEntries.map(entry => {
+              displayedEntries.map((entry) => {
                 const isMe = Boolean(
                   user && (
                     user.id === entry.userId ||
@@ -589,6 +651,22 @@ export default function Leaderboard({ compact = false }: LeaderboardProps) {
                           />
                         </div>
                       </div>
+                    </td>
+
+                    {/* Speed */}
+                    <td className="lb-hide-mobile">
+                      {entry.avgTimeSpentSeconds > 0 ? (
+                        <div className="lb-speed-cell" title={`Average problem solve time: ${formatSpeedTime(entry.avgTimeSpentSeconds)}`}>
+                          <span className={`lb-speed-pill ${entry.avgTimeSpentSeconds <= 120 ? 'speed-fast' : entry.avgTimeSpentSeconds <= 300 ? 'speed-med' : 'speed-normal'}`}>
+                            {entry.avgTimeSpentSeconds <= 120 ? '⚡' : '⏱️'} {formatSpeedTime(entry.avgTimeSpentSeconds)}
+                          </span>
+                          {entry.speedLabel && (
+                            <span className="lb-speed-sublabel">{entry.speedLabel}</span>
+                          )}
+                        </div>
+                      ) : (
+                        <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>—</span>
+                      )}
                     </td>
 
                     {/* Questions solved */}

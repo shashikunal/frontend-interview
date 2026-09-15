@@ -14,6 +14,81 @@
    -------------------------------------------------------------------------- */
 .perf-header-banner {
   margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.perf-header-titles {
+  flex: 1;
+  min-width: 280px;
+}
+
+.perf-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.perf-dossier-btn {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.18), rgba(236, 72, 153, 0.22));
+  border: 1px solid rgba(245, 158, 11, 0.45);
+  color: #fbbf24;
+  padding: 9px 16px;
+  border-radius: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+  font-size: 0.88rem;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 14px rgba(245, 158, 11, 0.15);
+}
+
+.perf-dossier-btn:hover {
+  background: linear-gradient(135deg, #f59e0b, #ec4899);
+  color: #ffffff;
+  border-color: transparent;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(245, 158, 11, 0.35);
+}
+
+[data-theme="light"] .perf-dossier-btn {
+  background: linear-gradient(135deg, #fffbeb, #fdf2f8);
+  border-color: #f59e0b;
+  color: #b45309;
+}
+
+[data-theme="light"] .perf-dossier-btn:hover {
+  background: linear-gradient(135deg, #f59e0b, #ec4899);
+  color: #ffffff;
+  border-color: transparent;
+}
+
+.perf-dossier-icon {
+  font-size: 1.15rem;
+}
+
+.perf-dossier-text {
+  letter-spacing: -0.01em;
+}
+
+.perf-dossier-badge {
+  background: rgba(0, 0, 0, 0.25);
+  font-size: 0.72rem;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.perf-dossier-btn:hover .perf-dossier-badge {
+  background: rgba(255, 255, 255, 0.25);
+  color: #ffffff;
 }
 
 .perf-main-title {

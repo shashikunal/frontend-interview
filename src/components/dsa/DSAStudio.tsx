@@ -155,6 +155,11 @@ function DSAStudioWorkspace({ questionId }: WorkspaceProps) {
   // Timer state
   const [timerSeconds, setTimerSeconds] = useState<number>(0)
   const [isTimerRunning, setIsTimerRunning] = useState<boolean>(true)
+  const timerSecondsRef = useRef<number>(0)
+
+  useEffect(() => {
+    timerSecondsRef.current = timerSeconds
+  }, [timerSeconds])
 
   // Submissions list for current question
   const [submissions, setSubmissions] = useState<DSASubmission[]>([])
@@ -265,6 +270,12 @@ function DSAStudioWorkspace({ questionId }: WorkspaceProps) {
     setActiveTestTab('testcase')
     setCustomInput(question.testCases[0]?.input || '[]')
     setUseCustomInput(false)
+
+    // Restore or initialize timer for this question
+    const savedTime = dsaProgressService.getTimer(question.id)
+    setTimerSeconds(savedTime)
+    timerSecondsRef.current = savedTime
+    setIsTimerRunning(true)
 
     // Load submissions
     setSubmissions(dsaProgressService.getSubmissions(question.id))
@@ -474,6 +485,11 @@ function DSAStudioWorkspace({ questionId }: WorkspaceProps) {
       runtimeMs: result.totalRuntimeMs,
     })
 
+    // Stop timer immediately on submit and save time spent
+    const finalTimeSpent = timerSecondsRef.current
+    setIsTimerRunning(false)
+    dsaProgressService.saveTimer(question.id, finalTimeSpent)
+
     // Log submission record
     const sub: DSASubmission = {
       id: `sub_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
@@ -484,6 +500,7 @@ function DSAStudioWorkspace({ questionId }: WorkspaceProps) {
       testsPassed: result.passedCount,
       testsTotal: result.totalCount,
       runtimeMs: result.totalRuntimeMs,
+      timeSpentSeconds: finalTimeSpent,
       timestamp: new Date().toISOString(),
     }
 

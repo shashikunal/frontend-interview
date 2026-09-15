@@ -29,6 +29,8 @@ import { FRONTEND_JS_QUESTIONS } from '../frontendjs/data/frontendJsQuestions'
 import { mockSessionService } from '../../features/ai-video-mock/services/mockSessionService'
 import { adminAnalyticsService } from '../../lib/adminAnalyticsService'
 import StudentPerformanceView from '../../features/performance-history/components/student/StudentPerformanceView'
+import { CandidateDocsSyllabusTracker } from './CandidateDocsSyllabusTracker'
+import { docsProgressService } from '../../features/interview-docs/services/docsProgressService'
 import './Dashboard.css'
 
 function catClass(name: string): string {
@@ -59,6 +61,14 @@ function CandidateDashboard() {
   const [showResetConfirm, setShowResetConfirm] = useState(false)
   const [assignedTrack, setAssignedTrack] = useState<UserTrackProgress | null>(null)
   const [trackAlert, setTrackAlert] = useState<string | null>(null)
+
+  // Real-time Docs & Full Syllabus Tracking State
+  const [docsSyllabusStats, setDocsSyllabusStats] = useState(() => docsProgressService.getSyllabusStats())
+  useEffect(() => {
+    const handleDocsUpdate = () => setDocsSyllabusStats(docsProgressService.getSyllabusStats())
+    window.addEventListener('docs_progress_updated', handleDocsUpdate)
+    return () => window.removeEventListener('docs_progress_updated', handleDocsUpdate)
+  }, [])
 
   // Machine Coding Submissions State
   const [mcSubmissions, setMcSubmissions] = useState<CandidateMCSubmission[]>([])
@@ -131,10 +141,13 @@ function CandidateDashboard() {
   const [searchParams] = useSearchParams()
   const { tab: urlTab } = useParams<{ tab?: string }>()
 
-  const [activeMainSection, setActiveMainSection] = useState<'overview' | 'performance'>(() => {
+  const [activeMainSection, setActiveMainSection] = useState<'overview' | 'syllabus' | 'performance'>(() => {
     const rawTab = searchParams.get('tab') || urlTab
     if (rawTab && (rawTab.toLowerCase() === 'performance' || rawTab.toLowerCase() === 'history' || rawTab.toLowerCase() === 'coding-history')) {
       return 'performance'
+    }
+    if (rawTab && (rawTab.toLowerCase() === 'syllabus' || rawTab.toLowerCase() === 'docs' || rawTab.toLowerCase() === 'documentation')) {
+      return 'syllabus'
     }
     return 'overview'
   })
@@ -144,6 +157,8 @@ function CandidateDashboard() {
     const rawTrack = searchParams.get('track')
     if (rawTab && (rawTab.toLowerCase() === 'performance' || rawTab.toLowerCase() === 'history' || rawTab.toLowerCase() === 'coding-history')) {
       setActiveMainSection('performance')
+    } else if (rawTab && (rawTab.toLowerCase() === 'syllabus' || rawTab.toLowerCase() === 'docs' || rawTab.toLowerCase() === 'documentation')) {
+      setActiveMainSection('syllabus')
     } else if (rawTab && rawTab.toLowerCase() === 'overview') {
       setActiveMainSection('overview')
     }
@@ -604,6 +619,13 @@ function CandidateDashboard() {
         </button>
         <button
           type="button"
+          className={`cand-switcher-btn ${activeMainSection === 'syllabus' ? 'active' : ''}`}
+          onClick={() => setActiveMainSection('syllabus')}
+        >
+          📚 21-Track Docs &amp; Syllabus
+        </button>
+        <button
+          type="button"
           className={`cand-switcher-btn ${activeMainSection === 'performance' ? 'active' : ''}`}
           onClick={() => setActiveMainSection('performance')}
         >
@@ -613,6 +635,10 @@ function CandidateDashboard() {
 
       {activeMainSection === 'performance' ? (
         <StudentPerformanceView />
+      ) : activeMainSection === 'syllabus' ? (
+        <div id="candidate-syllabus-tracker">
+          <CandidateDocsSyllabusTracker />
+        </div>
       ) : (
         <>
       {trackAlert && (
@@ -825,6 +851,32 @@ function CandidateDashboard() {
             {aiMockSessions.find(s => s.state === 'IN_PROGRESS') ? 'Resume Active Mock →' : 'Open Video Mock Studio →'}
           </Link>
         </div>
+
+        {/* Documentation & Syllabus Mastery Card */}
+        <div className="dash-stat-card" style={{ borderLeft: '4px solid #a855f7' }}>
+          <div className="dash-stat-top">
+            <div className="dash-stat-icon" style={{ background: 'rgba(168, 85, 247, 0.15)', color: '#a855f7' }}>📚</div>
+            <span className="dash-stat-badge" style={{ background: 'rgba(168, 85, 247, 0.15)', color: '#a855f7' }}>Full Syllabus</span>
+          </div>
+          <div className="dash-stat-info">
+            <span className="dash-stat-num">{docsSyllabusStats.totalCompletedTopics} / {docsSyllabusStats.totalSyllabusTopics}</span>
+            <span className="dash-stat-label">Syllabus Topics Mastered</span>
+          </div>
+          <div className="dash-stat-hint">
+            {docsSyllabusStats.completionPercentage}% of curriculum ({docsSyllabusStats.activeTracksCount}/21 tracks active)
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              setActiveMainSection('syllabus')
+              window.scrollTo({ top: 0, behavior: 'smooth' })
+            }}
+            className="dash-stat-link"
+            style={{ color: '#a855f7', background: 'none', border: 'none', padding: 0, font: 'inherit', cursor: 'pointer', textAlign: 'left' }}
+          >
+            Inspect 21-Track Syllabus Tracker →
+          </button>
+        </div>
       </div>
 
       {/* Question Progress & Telemetry Overview */}
@@ -929,6 +981,9 @@ function CandidateDashboard() {
           </div>
         </div>
       </section>
+
+      {/* Docs & Full Syllabus Completion Tracker */}
+      <CandidateDocsSyllabusTracker />
 
       {/* Machine Coding Submissions & Marks Evaluation Ledger */}
       <section id="candidate-submissions-section" className="candidate-mc-section card-box">

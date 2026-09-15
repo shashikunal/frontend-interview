@@ -69,8 +69,8 @@ export function getDocPage(subjectId: SubjectId, topicId: string): DocPage | und
   if (direct) return direct;
 
   // Handle canonical topic aliases
-  if (subjectId === 'react' && (topicId === 'react-hooks-useeffect' || topicId === 'useeffect-lifecycle' || topicId === 'hooks')) {
-    return DOCS_LOOKUP_MAP.get('react:react-hooks-core') || ensureTopicSynthesized('react', 'react-hooks-core');
+  if (subjectId === 'react' && (topicId === 'react-hooks-useeffect' || topicId === 'useeffect-lifecycle' || topicId === 'hooks' || topicId === 'react-hooks-core')) {
+    return DOCS_LOOKUP_MAP.get('react:react-useeffect-dependencies') || ensureTopicSynthesized('react', 'react-useeffect-dependencies');
   }
   if (subjectId === 'html') {
     if (topicId === 'html-fundamentals' || topicId === 'fundamentals' || topicId === 'html-fundamentals-parsing') {

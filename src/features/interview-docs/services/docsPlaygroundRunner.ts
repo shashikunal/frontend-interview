@@ -18,9 +18,134 @@ export interface PlaygroundRunResult {
 export interface RunPlaygroundOptions {
   onLog?: (log: PlaygroundLogItem) => void;
   timeoutMs?: number;
+  companionHtml?: string;
+  canvasTheme?: 'dark' | 'light';
 }
 
 let babelModule: typeof import('@babel/standalone') | null = null;
+
+/**
+ * Builds a sandboxed HTML5 document injecting user CSS and companion HTML elements.
+ */
+export function buildCssSrcDoc(
+  cssCode: string,
+  companionHtml?: string,
+  runId: number = Date.now(),
+  canvasTheme: 'dark' | 'light' = 'dark'
+): string {
+  const isDark = canvasTheme === 'dark';
+  const htmlBody = companionHtml && companionHtml.trim() ? companionHtml : generateDefaultHtmlForCss(cssCode);
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CSS Playground Sandbox</title>
+  <style>
+    /* Base Preview Reset & Canvas Environment */
+    :root {
+      --canvas-bg: ${isDark ? '#0b0f19' : '#f8fafc'};
+      --canvas-surface: ${isDark ? '#131929' : '#ffffff'};
+      --canvas-text: ${isDark ? '#ededf4' : '#1e293b'};
+      --canvas-muted: ${isDark ? '#94a3b8' : '#64748b'};
+      --canvas-border: ${isDark ? 'rgba(255, 255, 255, 0.12)' : 'rgba(0, 0, 0, 0.12)'};
+      --canvas-accent: #6366f1;
+    }
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+    html, body {
+      margin: 0;
+      padding: 24px;
+      background-color: var(--canvas-bg);
+      color: var(--canvas-text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      min-height: 100vh;
+      line-height: 1.5;
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    /* Injected User CSS Rules */
+    ${cssCode}
+  </style>
+  <script>
+    window.__RUN_ID__ = ${runId};
+    window.addEventListener('error', function(e) {
+      window.parent.postMessage({ t: 'error', message: e.message || 'CSS/DOM runtime error' }, '*');
+    });
+    const _log = console.log;
+    console.log = function(...args) {
+      _log.apply(console, args);
+      window.parent.postMessage({ t: 'log', level: 'log', parts: args.map(String) }, '*');
+    };
+  </script>
+</head>
+<body>
+  ${htmlBody}
+</body>
+</html>`;
+}
+
+/**
+ * Synthesizes appropriate companion HTML based on selectors discovered in the CSS snippet.
+ */
+export function generateDefaultHtmlForCss(cssCode: string): string {
+  const lower = cssCode.toLowerCase();
+  const hasCard = lower.includes('card');
+  const hasGrid = lower.includes('grid');
+  const hasFlex = lower.includes('flex');
+  const hasNav = lower.includes('nav');
+
+  if (hasNav) {
+    return `<nav class="navbar nav">
+  <div class="nav-brand">Platform Logo</div>
+  <ul class="nav-links">
+    <li class="nav-item"><a href="#" class="nav-link active">Home</a></li>
+    <li class="nav-item"><a href="#" class="nav-link">Syllabus</a></li>
+    <li class="nav-item"><a href="#" class="nav-link">Documentation</a></li>
+  </ul>
+</nav>
+<main class="content" style="padding: 24px 0;">
+  <h1>CSS Navigation Showcase</h1>
+  <p>Your navigation and layout styles rendered live above.</p>
+</main>`;
+  }
+
+  if (hasCard || hasGrid || hasFlex) {
+    return `<div class="${hasGrid ? 'feature-grid grid' : hasFlex ? 'flex-container' : 'container'}">
+  <div class="feature-card card">
+    <h2 class="card-title">Interactive CSS Card</h2>
+    <p class="card-desc">This live preview reflects your CSS rules in real time. Hover over elements, inspect box model dimensions, or test responsiveness.</p>
+    <div class="card-actions">
+      <button class="btn btn-primary button">Action 1</button>
+      <button class="btn btn-secondary button">Action 2</button>
+    </div>
+  </div>
+  <div class="feature-card card">
+    <h2 class="card-title">Responsive Grid Item</h2>
+    <p class="card-desc">Flexbox, CSS Grid, variables, transitions, and media queries are rendered natively by your browser engine.</p>
+    <div class="card-actions">
+      <button class="btn btn-primary button">Explore →</button>
+    </div>
+  </div>
+</div>`;
+  }
+
+  return `<div class="container demo-wrapper">
+  <header>
+    <h1>CSS Syntax Demonstration</h1>
+    <p class="lead">Styled with authentic live CSS rules from the editor.</p>
+  </header>
+  <section class="demo-section feature-card card">
+    <h2 class="section-heading">Featured Component</h2>
+    <p>This paragraph demonstrates font sizing, line height, letter spacing, colors, and margins.</p>
+    <div class="component-box">
+      <button class="btn button">Interactive Button</button>
+    </div>
+  </section>
+</div>`;
+}
 
 /**
  * Strips ES module export / import syntax so snippets can run safely inside standard function body / eval environments.
@@ -89,6 +214,47 @@ export async function executePlayground(
   const startTime = performance.now();
   const logs: PlaygroundLogItem[] = [];
   const normLang = language.toLowerCase();
+
+  // 0. Detect CSS: explicit language css, scss, or less
+  const isCss =
+    normLang.includes('css') ||
+    normLang === 'scss' ||
+    normLang === 'less';
+
+  if (isCss) {
+    try {
+      const runId = Date.now();
+      const companionHtml = _options.companionHtml || generateDefaultHtmlForCss(code);
+      const srcDoc = buildCssSrcDoc(code, companionHtml, runId, _options.canvasTheme || 'dark');
+      return {
+        logs: [
+          {
+            id: `log-${Date.now()}`,
+            level: 'info',
+            parts: ['🎨 Live CSS compiled and applied to preview DOM.'],
+            timestamp: Date.now(),
+          },
+        ],
+        executionTimeMs: Math.round(performance.now() - startTime),
+        previewSrcDoc: srcDoc,
+        isVisual: true,
+      };
+    } catch (err: any) {
+      return {
+        logs: [
+          {
+            id: `err-${Date.now()}`,
+            level: 'error',
+            parts: [err?.message || 'CSS compilation error'],
+            timestamp: Date.now(),
+          },
+        ],
+        executionTimeMs: Math.round(performance.now() - startTime),
+        error: err?.message || 'CSS compilation failed',
+        isVisual: true,
+      };
+    }
+  }
 
   const trimmed = code.trim();
 

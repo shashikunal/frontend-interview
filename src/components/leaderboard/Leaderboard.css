@@ -607,12 +607,107 @@
   box-shadow: 0 6px 20px rgba(67, 24, 255, 0.38);
 }
 
+/* Toolbar: Search + Sort controls */
+.lb-toolbar-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
 .lb-search-bar-wrap {
   position: relative;
   display: flex;
   align-items: center;
-  margin-bottom: 20px;
-  width: 100%;
+  flex: 1;
+  min-width: 280px;
+}
+
+.lb-sort-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.lb-sort-label {
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  margin-right: 2px;
+}
+
+.lb-sort-btn {
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  color: var(--text-secondary);
+  padding: 6px 13px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.lb-sort-btn:hover {
+  border-color: var(--accent);
+  color: var(--text-primary);
+  transform: translateY(-1px);
+}
+
+.lb-sort-btn.active {
+  background: rgba(99, 102, 241, 0.15);
+  border-color: #6366f1;
+  color: #818cf8;
+  box-shadow: 0 0 12px rgba(99, 102, 241, 0.25);
+}
+
+/* Speed metrics cell & pill */
+.lb-speed-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  align-items: flex-start;
+}
+
+.lb-speed-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  font-family: 'Space Grotesk', monospace;
+  letter-spacing: 0.2px;
+}
+
+.lb-speed-pill.speed-fast {
+  background: rgba(56, 189, 248, 0.12);
+  color: #38bdf8;
+  border: 1px solid rgba(56, 189, 248, 0.3);
+}
+
+.lb-speed-pill.speed-med {
+  background: rgba(52, 211, 153, 0.12);
+  color: #34d399;
+  border: 1px solid rgba(52, 211, 153, 0.3);
+}
+
+.lb-speed-pill.speed-normal {
+  background: rgba(148, 163, 184, 0.1);
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+}
+
+.lb-speed-sublabel {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  font-weight: 500;
 }
 
 .lb-search-icon {

@@ -23,6 +23,15 @@ export function DocsQuestionCard({ question, index, initialBookmarked = false }:
     });
   }, [question.id]);
 
+  useEffect(() => {
+    setIsBookmarked(docsProgressService.isQuestionBookmarked(question.id));
+    const handleSync = () => {
+      setIsBookmarked(docsProgressService.isQuestionBookmarked(question.id));
+    };
+    window.addEventListener('docs_progress_updated', handleSync);
+    return () => window.removeEventListener('docs_progress_updated', handleSync);
+  }, [question.id]);
+
   const handleToggleBookmark = (e: React.MouseEvent) => {
     e.stopPropagation();
     const result = docsProgressService.toggleQuestionBookmark(question.id);

@@ -14,7 +14,7 @@ import { DocsComparisonStudio } from './components/DocsComparisonStudio';
 import { DocsStudyPlanStudio } from './components/DocsStudyPlanStudio';
 import { DocsArchitectureStudio } from './components/DocsArchitectureStudio';
 import { DocsUberMenu } from './components/DocsUberMenu';
-import { GlobalSearchModal } from './components/GlobalSearchModal';
+import { DocsOfflineControl } from './components/DocsOfflineControl';
 import './styles/DocsPlatform.css';
 
 /**
@@ -34,7 +34,6 @@ function SubjectRedirect() {
 export default function DocsPlatform() {
   const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
   const [isUberMenuOpen, setIsUberMenuOpen] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(() => {
     try {
@@ -56,13 +55,9 @@ export default function DocsPlatform() {
     });
   };
 
-  // Global keyboard shortcuts: Cmd/Ctrl+K (Search), Cmd/Ctrl+B (Toggle Sidebar)
+  // Global keyboard shortcut: Cmd/Ctrl+B (Toggle Sidebar)
   useEffect(() => {
     const handleGlobalKeyDown = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
-        e.preventDefault();
-        setIsSearchModalOpen(prev => !prev);
-      }
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'b') {
         e.preventDefault();
         toggleSidebarCollapse();
@@ -83,12 +78,6 @@ export default function DocsPlatform() {
 
   return (
     <div className="docs-platform-root">
-      {/* Global Cmd/Ctrl+K Search Dialog */}
-      <GlobalSearchModal
-        isOpen={isSearchModalOpen}
-        onClose={() => setIsSearchModalOpen(false)}
-      />
-
       {/* Full Curriculum Ubermenu (Megamenu Modal) */}
       <DocsUberMenu
         isOpen={isUberMenuOpen}
@@ -207,13 +196,16 @@ export default function DocsPlatform() {
           <button
             type="button"
             className="docs-top-search-btn"
-            onClick={() => setIsSearchModalOpen(true)}
+            onClick={() => window.dispatchEvent(new CustomEvent('open-command-palette'))}
             title="Search all tracks, topics & questions (⌘K)"
           >
             <span className="dts-icon">🔍</span>
             <span className="dts-text">Search...</span>
             <kbd className="dts-kbd">⌘K</kbd>
           </button>
+
+          {/* MasterDocs Offline PWA Control & Precache Hub */}
+          <DocsOfflineControl />
         </div>
       </header>
 
@@ -229,10 +221,12 @@ export default function DocsPlatform() {
           <span className="toggle-text">21 Tracks &amp; Topics</span>
         </button>
 
+        <DocsOfflineControl compact />
+
         <button
           type="button"
           className="docs-mobile-search-trigger"
-          onClick={() => setIsSearchModalOpen(true)}
+          onClick={() => window.dispatchEvent(new CustomEvent('open-command-palette'))}
         >
           🔍 Search <kbd>⌘K</kbd>
         </button>
@@ -245,7 +239,7 @@ export default function DocsPlatform() {
           currentTopicId={activeTopicId}
           isOpenMobile={isMobileMenuOpen}
           onCloseMobile={() => setIsMobileMenuOpen(false)}
-          onOpenSearchModal={() => setIsSearchModalOpen(true)}
+          onOpenSearchModal={() => window.dispatchEvent(new CustomEvent('open-command-palette'))}
           isCollapsed={isSidebarCollapsed}
           onToggleCollapse={toggleSidebarCollapse}
         />

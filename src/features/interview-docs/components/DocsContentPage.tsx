@@ -9,6 +9,8 @@ import { SafeMarkdownViewer } from './common/SafeMarkdownViewer';
 import { DocsVideoPlayer } from './DocsVideoPlayer';
 import { DocsInteractivePlayground, type PlaygroundSnippetPreset } from './DocsInteractivePlayground';
 import { DocsQuestionsVirtualizer } from './DocsQuestionsVirtualizer';
+import { DocsTopicMasteryQuiz } from './DocsTopicMasteryQuiz';
+import { DocsExportModal } from './DocsExportModal';
 import { DocsTableOfContents } from './DocsTableOfContents';
 
 export function DocsContentPage() {
@@ -26,18 +28,20 @@ export function DocsContentPage() {
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [isFocusMode, setIsFocusMode] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
+  const [isExportModalOpen, setIsExportModalOpen] = useState(false);
   const [activePlaygroundSnippet, setActivePlaygroundSnippet] = useState<PlaygroundSnippetPreset | undefined>(undefined);
 
   // Derive interactive code presets from the topic documentation sections
   const playgroundPresets = useMemo<PlaygroundSnippetPreset[]>(() => {
     const list: PlaygroundSnippetPreset[] = [];
+    const isCssSubject = subjectId === 'css' || subjectId === 'advanced-css';
     if (doc?.sections) {
       doc.sections.forEach((sec, idx) => {
         if (sec.codeSnippet && sec.codeSnippet.code) {
           list.push({
             id: `section-${sec.id || idx}`,
             title: sec.heading.replace(/^\d+\.\s*/, ''),
-            language: sec.codeSnippet.language || 'javascript',
+            language: sec.codeSnippet.language || (isCssSubject ? 'css' : 'javascript'),
             code: sec.codeSnippet.code,
           });
         }
@@ -47,12 +51,14 @@ export function DocsContentPage() {
       list.push({
         id: 'default-demo',
         title: `${doc?.title || 'Topic'} Demo`,
-        language: 'javascript',
-        code: `// ${doc?.title || 'Interactive Playground'}\nconsole.log("Mastering ${doc?.title || 'Frontend'} in real-time...");\n\nconst takeaways = ["Understand Specifications", "Practice Edge Cases", "Ace the Technical Interview"];\ntakeaways.forEach((t, i) => console.log(\`\${i + 1}. \${t}\`));`,
+        language: isCssSubject ? 'css' : 'javascript',
+        code: isCssSubject
+          ? `/* ${doc?.title || 'CSS Demo'} */\n.feature-card {\n  display: flex;\n  flex-direction: column;\n  padding: 1.5rem;\n  background: #13131d;\n  border: 1px solid rgba(99, 102, 241, 0.4);\n  border-radius: 12px;\n  color: #ededf4;\n  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);\n  transition: transform 0.25s ease;\n}\n\n.feature-card:hover {\n  transform: translateY(-4px);\n  border-color: #6366f1;\n}\n\n.feature-card h2 {\n  margin-top: 0;\n  color: #818cf8;\n}`
+          : `// ${doc?.title || 'Interactive Playground'}\nconsole.log("Mastering ${doc?.title || 'Frontend'} in real-time...");\n\nconst takeaways = ["Understand Specifications", "Practice Edge Cases", "Ace the Technical Interview"];\ntakeaways.forEach((t, i) => console.log(\`\${i + 1}. \${t}\`));`,
       });
     }
     return list;
-  }, [doc]);
+  }, [doc, subjectId]);
 
   const handleLoadSnippetIntoPlayground = (preset: PlaygroundSnippetPreset) => {
     setActivePlaygroundSnippet(preset);
@@ -84,6 +90,17 @@ export function DocsContentPage() {
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }
     }
+  }, [subjectId, topicId]);
+
+  // Synchronize bookmark and completion state when updated from Command Palette or other tabs
+  useEffect(() => {
+    if (!subjectId || !topicId) return;
+    const handleSync = () => {
+      setIsBookmarked(docsProgressService.isDocBookmarked(subjectId, topicId));
+      setIsCompleted(docsProgressService.isTopicCompleted(subjectId, topicId));
+    };
+    window.addEventListener('docs_progress_updated', handleSync);
+    return () => window.removeEventListener('docs_progress_updated', handleSync);
   }, [subjectId, topicId]);
 
   // Esc key exits focus mode
@@ -133,6 +150,7 @@ export function DocsContentPage() {
     ...doc.sections.map(s => ({ id: s.id, label: s.heading })),
     { id: 'interactive-playground-section', label: '⚡ Code Playground' },
     { id: 'video-explanation', label: 'Video Walkthrough' },
+    { id: 'topic-mastery-quiz', label: '🧠 Mastery Quiz' },
     { id: 'interview-questions-section', label: `Questions (${doc.questions.length})` },
   ];
 
@@ -194,6 +212,25 @@ export function DocsContentPage() {
                 title={isBookmarked ? 'Remove Bookmark' : 'Bookmark this Document'}
               >
                 {isBookmarked ? '★ Bookmarked' : '☆ Bookmark'}
+              </button>
+              <button
+                type="button"
+                className="docs-quiz-jump-btn"
+                onClick={() => {
+                  const el = document.getElementById('topic-mastery-quiz');
+                  if (el) el.scrollIntoView({ behavior: 'smooth' });
+                }}
+                title="Jump to Topic Retention & Mastery Quiz"
+              >
+                🧠 Mastery Quiz
+              </button>
+              <button
+                type="button"
+                className="docs-export-dossier-btn"
+                onClick={() => setIsExportModalOpen(true)}
+                title="Export Executive Cheat Sheet, Anki Flashcards, or Markdown"
+              >
+                📄 Cheat Sheet &amp; Export
               </button>
             </div>
           </div>
@@ -264,6 +301,7 @@ export function DocsContentPage() {
           <DocsInteractivePlayground
             topicTitle={doc.title}
             subjectTitle={subject.title}
+            subjectId={subject.id}
             presets={playgroundPresets}
             activeSnippetOverride={activePlaygroundSnippet}
             onClearOverride={() => setActivePlaygroundSnippet(undefined)}
@@ -283,7 +321,7 @@ export function DocsContentPage() {
         )}
 
         {/* Section: Video Player */}
-        <section className="docs-content-section">
+        <section id="video-explanation" className="docs-content-section video-section">
           <h2 className="section-title">Video Walkthrough &amp; Explanation</h2>
           <DocsVideoPlayer
             video={doc.video}
@@ -292,6 +330,13 @@ export function DocsContentPage() {
             subjectTitle={subject.title}
           />
         </section>
+
+        {/* Section: Topic Retention & Mastery Assessment Quiz */}
+        <DocsTopicMasteryQuiz
+          doc={doc}
+          subject={subject}
+          onTopicCompletedChange={(completed) => setIsCompleted(completed)}
+        />
 
         {/* Section: Interview Questions with TanStack Virtualizer */}
         <section id="interview-questions-section" className="docs-content-section questions-section">
@@ -307,6 +352,14 @@ export function DocsContentPage() {
 
       {/* Right Table of Contents */}
       <DocsTableOfContents items={tocItems} />
+
+      {/* Executive Cheat Sheet & Multi-Format Export Modal */}
+      <DocsExportModal
+        isOpen={isExportModalOpen}
+        onClose={() => setIsExportModalOpen(false)}
+        doc={doc}
+        subject={subject}
+      />
     </div>
   );
 }

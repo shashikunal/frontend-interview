@@ -225,8 +225,21 @@ export default function Header() {
           )}
         </nav>
 
-        {/* Header Right Actions: Theme Toggle, Auth, Mobile Menu Toggle */}
+        {/* Header Right Actions: Command Palette, Theme Toggle, Auth, Mobile Menu Toggle */}
         <div className="header-right-actions">
+          {/* Global Command Palette Trigger Button */}
+          <button
+            type="button"
+            className="header-cmd-palette-btn"
+            onClick={() => window.dispatchEvent(new CustomEvent('open-command-palette'))}
+            title="Search 21 tracks, topics, and interview questions (Ctrl+K)"
+            aria-label="Open Global Command Palette (Ctrl+K)"
+          >
+            <span className="hcp-icon">🔍</span>
+            <span className="hcp-label">Search...</span>
+            <kbd className="hcp-kbd">⌘K</kbd>
+          </button>
+
           {/* 5. Theme Toggle */}
           <div className="header-toggle-wrap">
             <ThemeToggle />

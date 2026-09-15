@@ -61,6 +61,7 @@ import AuthModal from './components/auth/AuthModal'
 import ScrollToTop from './components/common/ScrollToTop'
 import AchievementUnlockToast from './components/badges/AchievementUnlockToast'
 import { useBadgeEvaluator } from './hooks/useBadgeEvaluator'
+import { DocsCommandPalette } from './features/interview-docs/components/DocsCommandPalette'
 import './App.css'
 
 export default function App() {
@@ -83,6 +84,7 @@ export default function App() {
       {!hideHeader && <Header />}
       <AuthModal />
       <AchievementUnlockToast />
+      <DocsCommandPalette />
       <main className={`main-content ${isAdminDashboard ? 'dashboard-main-content' : ''} ${isStudioWorkspace ? 'studio-main-content' : ''} ${isDocsPlatform ? 'docs-main-content' : ''}`}>
         <Suspense fallback={<div className="app-route-loader"><div className="app-route-spinner" /><p>Loading masterclass studio...</p></div>}>
           <div key={location.pathname} className="app-page-transition">

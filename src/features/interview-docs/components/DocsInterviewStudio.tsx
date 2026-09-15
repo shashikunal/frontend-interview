@@ -6,6 +6,7 @@ import { interviewSimulatorService } from '../services/interviewSimulatorService
 import { docsProgressService } from '../services/docsProgressService';
 import { docsAudioService } from '../services/docsAudioService';
 import { docsAnswerEvaluationService, type DocsAnswerEvaluation } from '../services/docsAnswerEvaluationService';
+import { ollamaProvider } from '../../ai-video-mock/services/providers/ollamaProvider';
 import { SafeMarkdownViewer } from './common/SafeMarkdownViewer';
 
 export function DocsInterviewStudio() {
@@ -27,10 +28,48 @@ export function DocsInterviewStudio() {
   const [isEvaluating, setIsEvaluating] = useState(false);
   const [activeFollowUp, setActiveFollowUp] = useState<number | null>(null);
   const [followUpAnswer, setFollowUpAnswer] = useState('');
+  const [isEvaluatingFollowUp, setIsEvaluatingFollowUp] = useState(false);
+  const [followUpResult, setFollowUpResult] = useState<{
+    scoreBoost: number;
+    feedback: string;
+    isCorrect: boolean;
+  } | null>(null);
   const [revealedBenchmark, setRevealedBenchmark] = useState(false);
+
+  // Ollama status
+  const [ollamaStatus, setOllamaStatus] = useState<{
+    checked: boolean;
+    available: boolean;
+    modelName?: string;
+    statusMessage?: string;
+  }>({ checked: false, available: false });
 
   const recognitionRef = useRef<any>(null);
   const timerRef = useRef<any>(null);
+
+  // Check Ollama availability on mount
+  useEffect(() => {
+    let mounted = true;
+    ollamaProvider.isAvailable().then(status => {
+      if (mounted) {
+        setOllamaStatus({
+          checked: true,
+          available: status.available,
+          modelName: status.modelName,
+          statusMessage: status.statusMessage,
+        });
+      }
+    }).catch(() => {
+      if (mounted) {
+        setOllamaStatus({
+          checked: true,
+          available: false,
+          statusMessage: 'Offline rubric engine active',
+        });
+      }
+    });
+    return () => { mounted = false; };
+  }, []);
 
   // Clean up audio on unmount or question change
   useEffect(() => {
@@ -95,6 +134,8 @@ export function DocsInterviewStudio() {
     setIsEvaluating(false);
     setActiveFollowUp(null);
     setFollowUpAnswer('');
+    setIsEvaluatingFollowUp(false);
+    setFollowUpResult(null);
     setRevealedBenchmark(false);
     docsAudioService.stop();
   };
@@ -158,29 +199,78 @@ export function DocsInterviewStudio() {
     }
   };
 
-  const handleRunAiEvaluation = () => {
+  const handleRunAiEvaluation = async () => {
     if (!session || !currentQ) return;
     if (isRecording) {
       handleToggleSpeechRecording();
     }
     setIsEvaluating(true);
+    setFollowUpResult(null);
+    setFollowUpAnswer('');
 
-    setTimeout(() => {
-      const evalResult = docsAnswerEvaluationService.evaluateCandidateAnswer(
+    try {
+      const evalResult = await docsAnswerEvaluationService.evaluateCandidateAnswer(
         currentQ,
         candidateTranscript,
         session.config.experience
       );
       setEvaluation(evalResult);
-      setIsEvaluating(false);
       setRevealedBenchmark(true);
-    }, 400);
+    } catch (err) {
+      console.error('Evaluation error:', err);
+      const fallback = docsAnswerEvaluationService.evaluateDeterministic(
+        currentQ,
+        candidateTranscript,
+        session.config.experience
+      );
+      setEvaluation(fallback);
+      setRevealedBenchmark(true);
+    } finally {
+      setIsEvaluating(false);
+    }
+  };
+
+  const handleSubmitFollowUp = async (probeQ: string, expectedAns: string) => {
+    if (!currentQ || !followUpAnswer.trim() || isEvaluatingFollowUp) return;
+    setIsEvaluatingFollowUp(true);
+
+    try {
+      const res = await docsAnswerEvaluationService.evaluateFollowUpAnswer(
+        currentQ,
+        probeQ,
+        followUpAnswer,
+        expectedAns
+      );
+      setFollowUpResult(res);
+
+      // If candidate earned bonus score, update active evaluation score & grade
+      if (res.scoreBoost > 0 && evaluation) {
+        const newScore = Math.min(100, evaluation.score + res.scoreBoost);
+        let newGrade = evaluation.letterGrade;
+        if (newScore >= 95) newGrade = 'A+';
+        else if (newScore >= 88) newGrade = 'A';
+        else if (newScore >= 80) newGrade = 'B+';
+        else if (newScore >= 70) newGrade = 'B';
+        else if (newScore >= 60) newGrade = 'C';
+        else if (newScore >= 50) newGrade = 'D';
+
+        setEvaluation({
+          ...evaluation,
+          score: newScore,
+          letterGrade: newGrade,
+        });
+      }
+    } catch (err) {
+      console.error('Follow-up evaluation error:', err);
+    } finally {
+      setIsEvaluatingFollowUp(false);
+    }
   };
 
   const handleNextQuestion = () => {
     if (!session || !currentQ) return;
 
-    const currentEval = evaluation || docsAnswerEvaluationService.evaluateCandidateAnswer(
+    const currentEval = evaluation || docsAnswerEvaluationService.evaluateDeterministic(
       currentQ,
       candidateTranscript,
       session.config.experience
@@ -235,14 +325,37 @@ export function DocsInterviewStudio() {
 
   const currentQ = session && !session.isFinished ? session.questions[session.currentIndex] : null;
 
+  // Derive dynamic probe question and expected benchmark answer
+  const probeQuestion =
+    evaluation?.dynamicFollowUp ||
+    (currentQ?.followUps && currentQ.followUps[activeFollowUp ?? 0]?.question) ||
+    null;
+
+  const expectedAnswer =
+    evaluation?.followUpExpected ||
+    (currentQ?.followUps && currentQ.followUps[activeFollowUp ?? 0]?.expectedAnswer) ||
+    null;
+
   return (
     <div className="docs-interview-studio-container">
       {/* Studio Header */}
       <div className="interview-header-card">
-        <span className="ih-badge">🎙️ INTERACTIVE AI MOCK INTERVIEWER</span>
+        <div className="ih-top-bar">
+          <span className="ih-badge">🎙️ INTERACTIVE AI MOCK INTERVIEWER</span>
+          <div className={`ih-ai-badge ${ollamaStatus.available ? 'ollama-active' : 'rubric-active'}`}>
+            <span className="ih-ai-dot" />
+            <span className="ih-ai-text">
+              {ollamaStatus.checked
+                ? (ollamaStatus.available
+                    ? `Ollama AI Live (${ollamaStatus.modelName || 'llama3.2'})`
+                    : 'Senior Technical Rubric (Ollama Offline)')
+                : 'Connecting AI Engine...'}
+            </span>
+          </div>
+        </div>
         <h2>AI Technical Interview Loop &amp; Voice Evaluation</h2>
         <p>
-          State your technical explanations aloud using live speech-to-text. Receive automated senior architectural rubric evaluation, concept coverage checks, and dynamic follow-up probe questions.
+          State your technical explanations aloud using live speech-to-text. Receive automated senior architectural rubric evaluation, concept coverage checks, and dynamic follow-up probe questions powered by local Ollama LLM.
         </p>
       </div>
 
@@ -410,7 +523,7 @@ export function DocsInterviewStudio() {
                   onClick={handleRunAiEvaluation}
                   disabled={isEvaluating || !candidateTranscript.trim()}
                 >
-                  {isEvaluating ? '⏳ Analyzing Answer...' : '⚡ Submit for AI Evaluation'}
+                  {isEvaluating ? '⏳ Analyzing with AI...' : '⚡ Submit for AI Evaluation'}
                 </button>
               </div>
             </div>
@@ -427,7 +540,13 @@ export function DocsInterviewStudio() {
                   </span>
                 </div>
                 <div className="aim-eval-verdict">
-                  <h4>Interviewer Verdict:</h4>
+                  <div className="aim-verdict-title-row">
+                    <h4>Interviewer Verdict:</h4>
+                    <span className={`aim-engine-badge ${evaluation.isOllamaLive ? 'engine-ollama' : 'engine-rubric'}`}>
+                      {evaluation.isOllamaLive ? `🦙 Ollama AI (${evaluation.modelUsed})` : '⚙️ Senior Rubric Engine'}
+                      {evaluation.latencyMs ? ` • ${evaluation.latencyMs}ms` : ''}
+                    </span>
+                  </div>
                   <p>{evaluation.seniorVerdict}</p>
                   <p className="aim-exp-note">💡 {evaluation.experienceFeedback}</p>
                 </div>
@@ -461,27 +580,59 @@ export function DocsInterviewStudio() {
                 </div>
               </div>
 
-              {/* Dynamic Follow-Up Probe Question */}
-              {currentQ.followUps && currentQ.followUps.length > 0 && (
+              {/* Dynamic Follow-Up Probe Question with Interactive Probing */}
+              {probeQuestion && (
                 <div className="aim-followup-probe-box">
                   <div className="aim-fu-head">
-                    <span className="aim-fu-badge">🔥 INTERVIEWER FOLLOW-UP PROBE</span>
-                    <h4>{currentQ.followUps[activeFollowUp ?? 0].depthLevel.toUpperCase()} DRILL:</h4>
+                    <span className="aim-fu-badge">🔥 SENIOR ARCHITECTURAL PROBE</span>
+                    <h4>{evaluation.isOllamaLive ? 'DYNAMIC LLM DEEP-DIVE:' : 'FOLLOW-UP PROBE:'}</h4>
                   </div>
-                  <p className="aim-fu-q">{currentQ.followUps[activeFollowUp ?? 0].question}</p>
+                  <p className="aim-fu-q">{probeQuestion}</p>
 
                   <div className="aim-fu-answer-box">
-                    <input
-                      type="text"
-                      value={followUpAnswer}
-                      onChange={e => setFollowUpAnswer(e.target.value)}
-                      placeholder="How would you address this follow-up?"
-                      className="aim-fu-input"
-                    />
-                    {followUpAnswer && (
+                    <div className="aim-fu-input-row">
+                      <input
+                        type="text"
+                        value={followUpAnswer}
+                        onChange={e => setFollowUpAnswer(e.target.value)}
+                        onKeyDown={e => {
+                          if (e.key === 'Enter' && !isEvaluatingFollowUp && followUpAnswer.trim() && expectedAnswer) {
+                            handleSubmitFollowUp(probeQuestion, expectedAnswer);
+                          }
+                        }}
+                        placeholder="State your follow-up architectural approach or edge-case handling..."
+                        className="aim-fu-input"
+                        disabled={isEvaluatingFollowUp || (followUpResult !== null && followUpResult.scoreBoost > 0)}
+                      />
+                      <button
+                        type="button"
+                        className="aim-fu-submit-btn"
+                        onClick={() => expectedAnswer && handleSubmitFollowUp(probeQuestion, expectedAnswer)}
+                        disabled={isEvaluatingFollowUp || !followUpAnswer.trim() || (followUpResult !== null && followUpResult.scoreBoost > 0)}
+                      >
+                        {isEvaluatingFollowUp ? '⏳ Evaluating...' : followUpResult && followUpResult.scoreBoost > 0 ? '✓ Evaluated' : '⚡ Submit Follow-Up'}
+                      </button>
+                    </div>
+
+                    {followUpResult && (
+                      <div className={`aim-fu-result-alert ${followUpResult.scoreBoost > 0 ? 'success' : 'critique'}`}>
+                        {followUpResult.scoreBoost > 0 ? (
+                          <div className="aim-bonus-tag">
+                            <span className="bonus-pill">+{followUpResult.scoreBoost} PTS BONUS</span>
+                            <span>{followUpResult.feedback}</span>
+                          </div>
+                        ) : (
+                          <div className="aim-critique-tag">
+                            <span>⚠️ {followUpResult.feedback}</span>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {(followUpResult !== null || followUpAnswer.length > 50) && expectedAnswer && (
                       <div className="aim-fu-expected">
-                        <strong>Expected Senior Answer:</strong>
-                        <p>{currentQ.followUps[activeFollowUp ?? 0].expectedAnswer}</p>
+                        <strong>Expected Senior Architectural Approach:</strong>
+                        <p>{expectedAnswer}</p>
                       </div>
                     )}
                   </div>

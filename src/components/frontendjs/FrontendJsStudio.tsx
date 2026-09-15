@@ -195,9 +195,10 @@ function FrontendJsWorkspace({
   const [isRevisit, setIsRevisit] = useState<boolean>(false)
   const [isSolved, setIsSolved] = useState<boolean>(false)
 
-  // Practice Timer
+  // Practice Timer: starts only once user begins coding or running, and stops on submit
   const [timerSeconds, setTimerSeconds] = useState<number>(0)
-  const [isTimerRunning, setIsTimerRunning] = useState<boolean>(true)
+  const [isTimerRunning, setIsTimerRunning] = useState<boolean>(false)
+  const timerSecondsRef = useRef<number>(0)
 
   // Interview Simulation
   const [isInterviewActive, setIsInterviewActive] = useState<boolean>(false)
@@ -226,7 +227,9 @@ function FrontendJsWorkspace({
 
     const timer = frontendJsProgressService.getTimer(question.id)
     setTimerSeconds(timer.elapsedSeconds)
-    setIsTimerRunning(true)
+    timerSecondsRef.current = timer.elapsedSeconds
+    // Practice timer is paused initially until program starts, and never auto-runs if solved
+    setIsTimerRunning(false)
 
     setSubmissions(frontendJsProgressService.getSubmissions(question.id))
     setRunResult(null)
@@ -310,6 +313,7 @@ function FrontendJsWorkspace({
     const interval = window.setInterval(() => {
       setTimerSeconds(prev => {
         const next = prev + 1
+        timerSecondsRef.current = next
         if (next % 10 === 0) {
           frontendJsProgressService.saveTimer(question.id, next)
         }
@@ -377,6 +381,12 @@ function FrontendJsWorkspace({
     if (suppressNextChangeRef.current) return
     const val = newVal || ''
     setCurrentCode(val)
+
+    // Auto-start practice timer once candidate begins coding (if not already solved or in interview)
+    if (!isTimerRunning && !isSolved && !isInterviewActive) {
+      setIsTimerRunning(true)
+    }
+
     emitCodeChange(val, 'solution.js')
 
     if (autosaveTimeoutRef.current) {
@@ -391,6 +401,10 @@ function FrontendJsWorkspace({
   // Handle Run
   const handleRunCode = async () => {
     if (isRunning) return
+    // Auto-start practice timer when candidate initiates execution
+    if (!isTimerRunning && !isSolved && !isInterviewActive) {
+      setIsTimerRunning(true)
+    }
     setIsRunning(true)
     emitCodeRun({ status: 'running' })
     setActiveTestTab('result')
@@ -448,6 +462,10 @@ function FrontendJsWorkspace({
   // Handle Official Submit
   const handleSubmitSolution = async () => {
     if (isSubmitting || isRunning) return
+    // Stop practice timer immediately upon submit and save elapsed time
+    setIsTimerRunning(false)
+    frontendJsProgressService.saveTimer(question.id, timerSecondsRef.current)
+
     setIsSubmitting(true)
     setIsRunning(true)
     emitCodeRun({ status: 'running' })
@@ -842,7 +860,15 @@ function FrontendJsWorkspace({
               <span style={{ color: '#f8fafc', fontWeight: 600 }}>{formatMMSS(timerSeconds)}</span>
               <button
                 type="button"
-                onClick={() => setIsTimerRunning(prev => !prev)}
+                onClick={() => {
+                  setIsTimerRunning(prev => {
+                    const next = !prev
+                    if (!next) {
+                      frontendJsProgressService.saveTimer(question.id, timerSecondsRef.current)
+                    }
+                    return next
+                  })
+                }}
                 style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', padding: 0 }}
                 title={isTimerRunning ? 'Pause timer' : 'Resume timer'}
               >

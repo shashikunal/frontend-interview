@@ -75,6 +75,7 @@ export interface DSASubmission {
   testsPassed: number
   testsTotal: number
   runtimeMs: number
+  timeSpentSeconds?: number
   timestamp: string
 }
 

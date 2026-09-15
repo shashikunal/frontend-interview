@@ -186,6 +186,13 @@ export interface AdminUserDetail {
   mockSessions: CandidateMockSessionItem[]
   mockSessionsCount: number
   mockSessionsCompleted: number
+  // Speed & Real-time Telemetry
+  avgTimeSpentSeconds?: number
+  speedBadge?: { label: string; icon: string; class: string }
+  // Documentation & Syllabus Telemetry
+  docsCompletedTopics?: number
+  docsTotalTopics?: number
+  docsCompletionPct?: number
 }
 
 export interface UserCodingStats {
@@ -1926,6 +1933,36 @@ export const adminAnalyticsService = {
 
       const mockSessionsCompleted = mockSessionList.filter(m => m.status === 'completed' || m.status === 'evaluated').length
 
+      // Docs & 21-Track Syllabus Telemetry
+      let docsCompletedTopics = 0
+      const docsTotalTopics = 708
+      try {
+        if (typeof localStorage !== 'undefined') {
+          const rawDocs = localStorage.getItem('interviewprep_docs_progress_v1')
+          if (rawDocs) {
+            const parsed = JSON.parse(rawDocs)
+            if (Array.isArray(parsed.completedTopics)) {
+              docsCompletedTopics = parsed.completedTopics.length
+            }
+          }
+        }
+      } catch {}
+      const docsCompletionPct = Math.round((docsCompletedTopics / docsTotalTopics) * 100)
+
+      // Speed & Time Spent Telemetry
+      const avgTimeSpentSeconds = (completedCount > 0 || totalAttempts > 0)
+        ? Math.round(totalTimeSeconds / Math.max(1, completedCount || totalAttempts))
+        : 0
+
+      let speedBadge = { label: '🎯 Steady (< 20m)', icon: '🎯', class: 'speed-steady' }
+      if (avgTimeSpentSeconds > 0 && avgTimeSpentSeconds <= 300) {
+        speedBadge = { label: '⚡ Lightning (< 5m)', icon: '⚡', class: 'speed-lightning' }
+      } else if (avgTimeSpentSeconds > 300 && avgTimeSpentSeconds <= 600) {
+        speedBadge = { label: '🏎️ Fast (< 10m)', icon: '🏎️', class: 'speed-fast' }
+      } else if (avgTimeSpentSeconds > 1200) {
+        speedBadge = { label: '🧠 Methodical (> 20m)', icon: '🧠', class: 'speed-methodical' }
+      }
+
       return {
         userId: profile?.id || userId,
         name: resolveDisplayName(profile?.full_name, profile?.email),
@@ -1968,6 +2005,13 @@ export const adminAnalyticsService = {
         mockSessions: mockSessionList,
         mockSessionsCount: mockSessionList.length,
         mockSessionsCompleted,
+        // Speed & Real-time Telemetry
+        avgTimeSpentSeconds,
+        speedBadge,
+        // Documentation & Syllabus Telemetry
+        docsCompletedTopics,
+        docsTotalTopics,
+        docsCompletionPct,
       }
     } catch (err) {
       console.warn('[AdminAnalyticsService] getUserDetailAnalytics error:', err)

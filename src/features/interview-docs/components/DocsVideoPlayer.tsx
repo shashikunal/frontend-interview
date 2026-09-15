@@ -106,7 +106,7 @@ export function DocsVideoPlayer({
   // If collapsed, render non-distracting compact banner
   if (isCollapsed) {
     return (
-      <div className="docs-video-card docs-video-card-collapsed" id="video-explanation">
+      <div className="docs-video-card docs-video-card-collapsed">
         <div className="docs-video-collapsed-bar">
           <div className="dvc-left">
             <span className="dvc-icon">📺</span>
@@ -139,7 +139,7 @@ export function DocsVideoPlayer({
   }
 
   return (
-    <div className="docs-video-card" id="video-explanation">
+    <div className="docs-video-card">
       {/* Active Video Header Info */}
       <div className="docs-video-meta-head">
         <div className="dvm-left">

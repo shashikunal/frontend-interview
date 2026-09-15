@@ -9,6 +9,7 @@ const STORAGE_KEYS = {
   CODE: 'dsa_code_v1',
   SUBMISSIONS: 'dsa_submissions_v1',
   STREAK: 'dsa_streak_v1',
+  TIMER: 'dsa_timer_v1',
 } as const
 
 export type DSAQuestionStatus = 'Not Started' | 'Attempted' | 'Solved' | 'Revisit'
@@ -166,6 +167,18 @@ class DSAProgressService {
     }
     allCode[questionId][lang] = code
     this.safeSave(STORAGE_KEYS.CODE, allCode)
+  }
+
+  // Timer per question (seconds spent solving)
+  getTimer(questionId: string): number {
+    const allTimers = this.safeParse<Record<string, number>>(STORAGE_KEYS.TIMER, {})
+    return typeof allTimers[questionId] === 'number' ? allTimers[questionId] : 0
+  }
+
+  saveTimer(questionId: string, elapsedSeconds: number): void {
+    const allTimers = this.safeParse<Record<string, number>>(STORAGE_KEYS.TIMER, {})
+    allTimers[questionId] = elapsedSeconds
+    this.safeSave(STORAGE_KEYS.TIMER, allTimers)
   }
 
   // Submissions

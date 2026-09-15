@@ -26,6 +26,8 @@ export interface LeaderboardEntry {
   questionsCompleted: number
   accuracyRate: number
   avgTimeMinutes: number
+  avgTimeSpentSeconds: number
+  speedLabel?: string
   streak: number
   badges: LeaderboardBadge[]
   recentQuestions: { id: string; title: string; score: number; language: string; status?: string }[]
@@ -80,6 +82,7 @@ export interface StoredCandidateSubmission {
   language: string
   code: string
   files?: Record<string, string>
+  timeSpentSeconds?: number
   createdAt: string
   syncedToSupabase: boolean
 }
@@ -99,6 +102,7 @@ export interface CandidateMCSubmission {
   testsTotal: number
   language: string
   executionTime: number
+  timeSpentSeconds?: number
   code: string
   createdAt: string
   syncedToSupabase: boolean
@@ -208,12 +212,15 @@ function computeBadges(entry: {
   questionsCompleted: number
   accuracyRate: number
   avgTimeMinutes: number
+  avgTimeSpentSeconds?: number
 }): LeaderboardBadge[] {
   const badges: LeaderboardBadge[] = []
   if (entry.totalScore >= 95) badges.push({ id: 'perfect', label: '100% Club', emoji: '💎', color: '#a78bfa' })
   if (entry.streak >= 7) badges.push({ id: 'streak_week', label: 'Perfect Week', emoji: '🔥', color: '#f59e0b' })
   if (entry.streak >= 30) badges.push({ id: 'streak_month', label: 'Monthly Champion', emoji: '🏆', color: '#fbbf24' })
-  if (entry.avgTimeMinutes <= 10) badges.push({ id: 'speed', label: 'Speed Demon', emoji: '⚡', color: '#38bdf8' })
+  if ((entry.avgTimeSpentSeconds && entry.avgTimeSpentSeconds > 0 && entry.avgTimeSpentSeconds <= 180) || (entry.avgTimeMinutes > 0 && entry.avgTimeMinutes <= 10)) {
+    badges.push({ id: 'speed', label: 'Speed Demon', emoji: '⚡', color: '#38bdf8' })
+  }
   if (entry.questionsCompleted >= 10) badges.push({ id: 'prolific', label: 'Prolific Solver', emoji: '🎯', color: '#34d399' })
   if (entry.accuracyRate >= 85) badges.push({ id: 'precision', label: 'Precision Coder', emoji: '🎯', color: '#6366f1' })
   if (entry.totalScore >= 85) badges.push({ id: 'top10', label: 'Top Performer', emoji: '⭐', color: '#ec4899' })
@@ -540,6 +547,7 @@ export const leaderboardService = {
         status: string
         language: string
         executionTime: number
+        timeSpentSeconds?: number
         createdAt: string
       }
 
@@ -564,6 +572,7 @@ export const leaderboardService = {
           status: String(s.status || (Number(s.score || 0) >= 70 ? 'accepted' : 'wrong_answer')),
           language: String(s.language || 'react'),
           executionTime: Number(s.execution_time || 0),
+          timeSpentSeconds: Number((s as any).time_spent_seconds || (s as any).time_spent || s.execution_time || 0),
           createdAt: String(s.created_at),
         })
       }
@@ -587,6 +596,7 @@ export const leaderboardService = {
           status: cp.status === 'accepted' || cp.status === 'Accepted' || score >= 70 ? 'accepted' : 'wrong_answer',
           language: 'javascript',
           executionTime: Number(cp.execution_time_ms || 0) / 1000,
+          timeSpentSeconds: Number((cp as any).time_spent_seconds || (cp as any).timeSpentSeconds || (cp.execution_time_ms ? Math.round(Number(cp.execution_time_ms) / 1000) : 0)),
           createdAt: String(cp.created_at),
         })
       }
@@ -610,6 +620,7 @@ export const leaderboardService = {
           status: fjs.status === 'accepted' || fjs.status === 'Accepted' || score >= 70 ? 'accepted' : 'wrong_answer',
           language: 'javascript',
           executionTime: Number(fjs.execution_time_ms || 0) / 1000,
+          timeSpentSeconds: Number((fjs as any).time_spent_seconds || (fjs as any).timeSpentSeconds || (fjs.execution_time_ms ? Math.round(Number(fjs.execution_time_ms) / 1000) : 0)),
           createdAt: String(fjs.created_at),
         })
       }
@@ -635,6 +646,7 @@ export const leaderboardService = {
           status: dsa.status === 'accepted' || dsa.status === 'Accepted' || score >= 70 ? 'accepted' : 'wrong_answer',
           language: String(dsa.language || 'javascript'),
           executionTime: Number(dsa.runtime_ms || 0) / 1000,
+          timeSpentSeconds: Number((dsa as any).time_spent_seconds || (dsa as any).timeSpentSeconds || (dsa.runtime_ms ? Math.round(Number(dsa.runtime_ms) / 1000) : 0)),
           createdAt: String(dsa.created_at),
         })
       }
@@ -667,6 +679,7 @@ export const leaderboardService = {
           status: isCompleted || score >= 70 ? 'accepted' : 'wrong_answer',
           language: lang,
           executionTime: Number(att.time_spent || att.time_spent_seconds || 30),
+          timeSpentSeconds: Number(att.time_spent_seconds || att.time_spent || 30),
           createdAt: String(att.completed_at || att.created_at),
         })
       }
@@ -693,6 +706,7 @@ export const leaderboardService = {
                   status: loc.status === 'accepted' || loc.score >= 70 ? 'accepted' : 'wrong_answer',
                   language: loc.language || 'react',
                   executionTime: loc.executionTime || 0,
+                  timeSpentSeconds: loc.timeSpentSeconds || loc.executionTime || 0,
                   createdAt: loc.createdAt,
                 })
               }
@@ -722,6 +736,7 @@ export const leaderboardService = {
                       status: cp.status === 'Accepted' || cp.status === 'accepted' || Number(cp.score ?? 0) >= 70 ? 'accepted' : 'wrong_answer',
                       language: 'javascript',
                       executionTime: Number(cp.runtimeMs || cp.executionTime || 24) / 1000,
+                      timeSpentSeconds: Number(cp.timeSpentSeconds || (cp.timeSpent ? Number(cp.timeSpent) : 0)),
                       createdAt: cp.timestamp || cp.createdAt || cp.submittedAt || new Date().toISOString(),
                     })
                   }
@@ -753,6 +768,7 @@ export const leaderboardService = {
                       status: fjs.status === 'Accepted' || fjs.status === 'accepted' || Number(fjs.score ?? 0) >= 70 ? 'accepted' : 'wrong_answer',
                       language: 'javascript',
                       executionTime: Number(fjs.runtimeMs || fjs.executionTime || 18) / 1000,
+                      timeSpentSeconds: Number(fjs.timeSpentSeconds || 0),
                       createdAt: fjs.timestamp || fjs.createdAt || new Date().toISOString(),
                     })
                   }
@@ -784,6 +800,7 @@ export const leaderboardService = {
                       status: dsa.status === 'Accepted' || dsa.status === 'accepted' ? 'accepted' : 'wrong_answer',
                       language: 'javascript',
                       executionTime: Number(dsa.runtimeMs || dsa.executionTime || 30) / 1000,
+                      timeSpentSeconds: Number(dsa.timeSpentSeconds || 0),
                       createdAt: dsa.timestamp || dsa.createdAt || new Date().toISOString(),
                     })
                   }
@@ -923,8 +940,12 @@ export const leaderboardService = {
           agg.solvedQuestions.add(s.questionId)
         }
 
-        if (s.executionTime > 0) {
-          agg.totalTimeSec += s.executionTime
+        const effectiveTime = (s.timeSpentSeconds && s.timeSpentSeconds > 0)
+          ? s.timeSpentSeconds
+          : (s.executionTime > 0 ? s.executionTime : 0)
+
+        if (effectiveTime > 0) {
+          agg.totalTimeSec += effectiveTime
           agg.timeCount++
         }
 
@@ -965,8 +986,17 @@ export const leaderboardService = {
       const ranked: LeaderboardEntry[] = Array.from(candidateMap.values()).map(cand => {
         const avgScore = cand.scoreCount > 0 ? Math.round(cand.totalScoreSum / cand.scoreCount) : 0
         const accuracyRate = cand.totalSubmissions > 0 ? Math.round((cand.acceptedCount / cand.totalSubmissions) * 100) : 0
-        const avgTimeMinutes = cand.timeCount > 0 ? Math.max(1, Math.round(cand.totalTimeSec / cand.timeCount / 60)) : 10
+        const avgTimeSpentSeconds = cand.timeCount > 0 ? Math.max(1, Math.round(cand.totalTimeSec / cand.timeCount)) : 0
+        const avgTimeMinutes = avgTimeSpentSeconds > 0 ? Math.max(1, Math.round(avgTimeSpentSeconds / 60)) : 10
         const questionsCompleted = cand.solvedQuestions.size
+
+        let speedLabel: string | undefined
+        if (avgTimeSpentSeconds > 0) {
+          if (avgTimeSpentSeconds < 120) speedLabel = '⚡ Lightning'
+          else if (avgTimeSpentSeconds < 300) speedLabel = '🏎️ Fast'
+          else if (avgTimeSpentSeconds < 900) speedLabel = '🎯 Steady'
+          else speedLabel = '🧠 Methodical'
+        }
 
         // Composite score strictly from solved count, accuracy, and score
         const totalScore = Math.min(
@@ -994,6 +1024,8 @@ export const leaderboardService = {
           questionsCompleted,
           accuracyRate,
           avgTimeMinutes,
+          avgTimeSpentSeconds,
+          speedLabel,
           streak,
           badges: computeBadges({
             totalScore,
@@ -1001,6 +1033,7 @@ export const leaderboardService = {
             questionsCompleted,
             accuracyRate,
             avgTimeMinutes,
+            avgTimeSpentSeconds,
           }),
           recentQuestions: cand.recentQuestions,
           rankChange: 0,

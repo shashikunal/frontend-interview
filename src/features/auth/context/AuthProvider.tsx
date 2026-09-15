@@ -52,6 +52,7 @@ function buildFallbackProfile(user: User | null): AuthUserProfile | null {
 }
 
 import { mcProgressService } from '../../../components/machinecoding/lib/mcProgressService'
+import { docsProgressService } from '../../interview-docs/services/docsProgressService'
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null)
@@ -63,10 +64,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Track manual role overrides so TOKEN_REFRESHED doesn't wipe them
   const roleOverrideRef = React.useRef<UserRole | null>(null)
 
-  // Synchronize candidate isolation across Machine Coding progress
+  // Synchronize candidate isolation across Machine Coding & Docs syllabus progress
   useEffect(() => {
     const effectiveUserId = userProfile?.id || session?.user?.id || null
     mcProgressService.setUserId(effectiveUserId)
+    docsProgressService.setUserId(effectiveUserId)
   }, [userProfile?.id, session?.user?.id])
 
   // Load user profile from Supabase PostgreSQL database

@@ -547,7 +547,7 @@ export const CoreProgrammingDetail: React.FC<Props> = ({
                           </span>
                         </div>
                         <div className="dsa-sub-meta" style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: 'var(--text-muted)' }}>
-                          <span>⏱️ {sub.runtimeMs} ms</span>
+                          <span>⏱️ {sub.runtimeMs} ms {sub.timeSpentSeconds !== undefined ? `• Time Spent: ${Math.floor(sub.timeSpentSeconds / 60).toString().padStart(2, '0')}:${(sub.timeSpentSeconds % 60).toString().padStart(2, '0')}` : ''}</span>
                           <span>{new Date(sub.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                         </div>
                       </div>

@@ -405,12 +405,278 @@ export function executeStandardPattern(config: StandardConfig): boolean {
   }
 }
 
+function getTopicSpecificSnippet(
+  _subjectId: SubjectId,
+  topicId: string,
+  _topicTitle: string,
+  subtopicTitle: string
+): { language: string; code: string; filename?: string; caption?: string } | null {
+  const tid = topicId.toLowerCase();
+
+  // JavaScript: Closures & Lexical Scope
+  if (tid.includes('closure') || tid.includes('lexical')) {
+    return {
+      language: 'javascript',
+      filename: 'closures-demo.js',
+      code: `// JavaScript Closures & Lexical Scope: ${subtopicTitle}
+// A closure is a function bundled together with references to its surrounding state.
+
+export function createSecureVault(initialSecret) {
+  let secretKey = initialSecret; // Encapsulated in private lexical scope
+
+  return {
+    validateKey(candidate) {
+      return candidate === secretKey;
+    },
+    updateKey(oldKey, newKey) {
+      if (oldKey === secretKey) {
+        secretKey = newKey;
+        return true;
+      }
+      return false;
+    },
+  };
+}
+
+// Example usage:
+const vault = createSecureVault('super-secret-token');
+console.log(vault.validateKey('wrong-token')); // false
+console.log(vault.validateKey('super-secret-token')); // true
+// secretKey is completely inaccessible directly from outside:
+console.log(vault.secretKey); // undefined`,
+      caption: `Demonstrates lexical scoping and private state encapsulation via closures.`,
+    };
+  }
+
+  // JavaScript: Event Loop, Microtasks & Macrotasks
+  if (tid.includes('event-loop') || tid.includes('microtask') || tid.includes('macrotask')) {
+    return {
+      language: 'javascript',
+      filename: 'event-loop-order.js',
+      code: `// Event Loop & Concurrency Model: ${subtopicTitle}
+// Execution priority: Synchronous Code -> Microtask Queue -> Macrotask Queue
+
+console.log('1. Synchronous Execution Starts');
+
+// Macrotask (scheduled by browser timer API)
+setTimeout(() => {
+  console.log('5. Macrotask (setTimeout 0ms callback executed)');
+}, 0);
+
+// Microtask 1 (scheduled via Promise resolution)
+Promise.resolve().then(() => {
+  console.log('3. Microtask (Promise .then resolution)');
+}).then(() => {
+  console.log('4. Chained Microtask (runs before any macrotask)');
+});
+
+// Microtask 2 (scheduled via queueMicrotask)
+queueMicrotask(() => {
+  console.log('3b. Microtask (queueMicrotask callback)');
+});
+
+console.log('2. Synchronous Execution Ends');
+
+// Expected Output Order:
+// 1. Synchronous Execution Starts
+// 2. Synchronous Execution Ends
+// 3. Microtask (Promise .then resolution)
+// 3b. Microtask (queueMicrotask callback)
+// 4. Chained Microtask
+// 5. Macrotask (setTimeout 0ms)`,
+      caption: `Demonstrates exact microtask vs macrotask execution order in the V8 engine.`,
+    };
+  }
+
+  // JavaScript: Prototypal Inheritance
+  if (tid.includes('prototype') || tid.includes('inheritance')) {
+    return {
+      language: 'javascript',
+      filename: 'prototypal-chain.js',
+      code: `// Prototypal Inheritance & Prototype Delegation: ${subtopicTitle}
+
+function Employee(name, department) {
+  this.name = name;
+  this.department = department;
+}
+
+// Method shared via prototype object (O(1) memory footprint across all instances)
+Employee.prototype.getDetails = function() {
+  return \`\${this.name} works in \${this.department}\`;
+};
+
+function SeniorEngineer(name, department, techStack) {
+  Employee.call(this, name, department); // Call parent constructor
+  this.techStack = techStack;
+}
+
+// Establish prototype delegation link: SeniorEngineer.prototype.__proto__ === Employee.prototype
+SeniorEngineer.prototype = Object.create(Employee.prototype);
+SeniorEngineer.prototype.constructor = SeniorEngineer;
+
+SeniorEngineer.prototype.leadSystemDesign = function() {
+  return \`\${this.name} is leading architecture in \${this.techStack.join(', ')}\`;
+};
+
+const staffLead = new SeniorEngineer('Jordan', 'Infrastructure', ['React', 'TypeScript', 'Node']);
+console.log(staffLead.getDetails()); // Delegated up to Employee.prototype
+console.log(staffLead.leadSystemDesign()); // Found directly on SeniorEngineer.prototype
+console.log(staffLead instanceof Employee); // true`,
+      caption: `Prototype chain delegation and constructor linking pattern.`,
+    };
+  }
+
+  // TypeScript: Advanced Types & Generics
+  if (tid.includes('conditional') || tid.includes('infer') || tid.includes('mapped') || tid.includes('utility') || tid.includes('generic')) {
+    return {
+      language: 'typescript',
+      filename: 'type-system.ts',
+      code: `// TypeScript Advanced Type System: ${subtopicTitle}
+
+// 1. Recursive Deep Readonly using Mapped Types
+export type DeepReadonly<T> = {
+  readonly [K in keyof T]: T[K] extends Function
+    ? T[K]
+    : T[K] extends object
+    ? DeepReadonly<T[K]>
+    : T[K];
+};
+
+// 2. Conditional Type with "infer" keyword to unwrap nested Promises
+export type AwaitNested<T> = T extends Promise<infer Inner> ? AwaitNested<Inner> : T;
+
+// 3. Template Literal Types for URL Route Parameter Extraction
+export type ExtractParams<Path extends string> =
+  Path extends \`\${string}:\${infer Param}/\${infer Rest}\`
+    ? Param | ExtractParams<\`/\${Rest}\`>
+    : Path extends \`\${string}:\${infer Param}\`
+    ? Param
+    : never;
+
+// Test type evaluation:
+type RouteParams = ExtractParams<'/api/v1/tracks/:trackId/topics/:topicId'>;
+// Evaluates at compile time to: "trackId" | "topicId"`,
+      caption: `Production conditional types and template literal utilities.`,
+    };
+  }
+
+  // React: useEffect & Lifecycle
+  if (tid.includes('useeffect') || tid.includes('lifecycle')) {
+    return {
+      language: 'typescript',
+      filename: 'useCandidateProfile.ts',
+      code: `// React useEffect Lifecycle & Cleanup: ${subtopicTitle}
+import { useState, useEffect } from 'react';
+
+export function useCandidateProfile(candidateId: string) {
+  const [data, setData] = useState<any>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    // AbortController pattern to eliminate race conditions on parameter changes
+    const controller = new AbortController();
+    setLoading(true);
+
+    async function loadData() {
+      try {
+        const res = await fetch(\`/api/candidates/\${candidateId}\`, {
+          signal: controller.signal,
+        });
+        if (!res.ok) throw new Error(\`Server returned \${res.status}\`);
+        const json = await res.json();
+        setData(json);
+      } catch (err: any) {
+        if (err.name !== 'AbortError') {
+          setError(err.message || 'Unknown network error');
+        }
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadData();
+
+    // Critical: Cleanup function runs when candidateId changes or component unmounts
+    return () => {
+      controller.abort();
+    };
+  }, [candidateId]); // Exhaustive dependencies rule
+
+  return { data, error, loading };
+}`,
+      caption: `Demonstrates AbortController cleanup in useEffect to prevent race conditions.`,
+    };
+  }
+
+  // React: Virtual DOM & Reconciliation
+  if (tid.includes('virtual-dom') || tid.includes('reconciliation')) {
+    return {
+      language: 'typescript',
+      filename: 'FiberReconciliation.tsx',
+      code: `// React Virtual DOM Reconciliation: ${subtopicTitle}
+import React, { useState } from 'react';
+
+interface CandidateMetric {
+  id: string; // Unique stable key
+  label: string;
+  score: number;
+}
+
+export function MetricReconciliationList() {
+  const [metrics, setMetrics] = useState<CandidateMetric[]>([
+    { id: 'm1', label: 'Algorithms & DSA', score: 94 },
+    { id: 'm2', label: 'System Design', score: 88 },
+  ]);
+
+  const prependMetric = () => {
+    // Prepending an item demonstrates why stable keys (not array indexes) are required
+    const newItem: CandidateMetric = {
+      id: \`m_\${Date.now()}\`,
+      label: 'Core JavaScript V8',
+      score: 96,
+    };
+    setMetrics(prev => [newItem, ...prev]);
+  };
+
+  return (
+    <div className="p-4 bg-slate-900 text-white rounded-xl">
+      <button
+        onClick={prependMetric}
+        className="px-4 py-2 bg-indigo-600 rounded-lg text-sm font-medium hover:bg-indigo-500 mb-4"
+      >
+        Prepend Metric (Tests Key Reconciliation)
+      </button>
+
+      <ul className="space-y-2">
+        {metrics.map(metric => (
+          // Invariant: Never use array index as key when list order can change
+          <li key={metric.id} className="p-3 bg-slate-800 rounded-lg flex justify-between">
+            <span>{metric.label}</span>
+            <span className="font-bold text-emerald-400">{metric.score}%</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}`,
+      caption: `Demonstrates stable keys during Virtual DOM diffing and Fiber reconciliation.`,
+    };
+  }
+
+  return null;
+}
+
 function generateSubtopicCodeSnippet(
   subjectId: SubjectId,
   topicTitle: string,
   subtopicTitle: string,
   topicId: string
 ): { language: string; code: string; filename?: string; caption?: string } {
+  // Topic-specific tailored production patterns
+  const tailored = getTopicSpecificSnippet(subjectId, topicId, topicTitle, subtopicTitle);
+  if (tailored) return tailored;
+
   switch (subjectId) {
     case 'react':
     case 'advanced-react':

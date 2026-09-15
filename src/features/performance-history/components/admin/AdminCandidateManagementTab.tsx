@@ -22,6 +22,7 @@ function exportCandidatesToCsv(candidatesToExport: CandidateUserListItem[], file
     'Solved Questions',
     'Total Attempted Questions',
     'Success Rate (%)',
+    'Speed Rating',
     'Machine Coding (%)',
     'DSA (%)',
     'Core Programming (%)',
@@ -45,6 +46,7 @@ function exportCandidatesToCsv(candidatesToExport: CandidateUserListItem[], file
     escapeCsv(c.solvedCount),
     escapeCsv(c.totalQuestions),
     escapeCsv(`${c.successRate}%`),
+    escapeCsv(c.speedLabel || '🎯 Steady'),
     escapeCsv(`${c.machineCodingScore}%`),
     escapeCsv(`${c.dsaScore}%`),
     escapeCsv(`${c.coreProgrammingScore}%`),
@@ -124,6 +126,17 @@ export default function AdminCandidateManagementTab() {
         const summary = userSummaries[u.id];
         const evalInfo = hiringStatusMap[u.id];
 
+        const avgTime = summary?.uniqueSolved && summary.uniqueSolved > 0
+          ? Math.round((summary.totalCodingTimeSeconds || 0) / summary.uniqueSolved)
+          : (summary?.totalAttempts && summary.totalAttempts > 0
+            ? Math.round((summary.totalCodingTimeSeconds || 0) / summary.totalAttempts)
+            : 0);
+
+        let speedLabel = '🎯 Steady';
+        if (avgTime > 0 && avgTime <= 300) speedLabel = '⚡ Lightning';
+        else if (avgTime > 300 && avgTime <= 600) speedLabel = '🏎️ Fast';
+        else if (avgTime > 1200) speedLabel = '🧠 Methodical';
+
         return {
           id: u.id,
           name: u.name || 'Candidate',
@@ -139,6 +152,8 @@ export default function AdminCandidateManagementTab() {
           coreProgrammingScore: summary?.coreProgrammingScore || 0,
           hiringStatus: evalInfo?.status || 'Not Evaluated',
           overallRating: evalInfo?.overallRating,
+          speedLabel,
+          avgTimeSpentSeconds: avgTime,
         };
       });
 
@@ -479,6 +494,7 @@ export default function AdminCandidateManagementTab() {
                 <th>Role</th>
                 <th style={{ textAlign: 'center' }}>Solved / Att.</th>
                 <th>Success %</th>
+                <th style={{ textAlign: 'center' }}>Speed</th>
                 <th style={{ textAlign: 'center' }} title="Machine Level Coding Score">MC</th>
                 <th style={{ textAlign: 'center' }} title="LeetCode & DSA Score">DSA</th>
                 <th style={{ textAlign: 'center' }} title="Core Programming Score">Core</th>
@@ -537,6 +553,30 @@ export default function AdminCandidateManagementTab() {
                           />
                         </div>
                       </div>
+                    </td>
+                    <td style={{ textAlign: 'center' }}>
+                      <span style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '4px',
+                        fontSize: '0.72rem',
+                        fontWeight: 700,
+                        padding: '2px 8px',
+                        borderRadius: '999px',
+                        background: cand.speedLabel?.includes('Lightning')
+                          ? 'rgba(234, 179, 8, 0.15)'
+                          : cand.speedLabel?.includes('Fast')
+                          ? 'rgba(16, 185, 129, 0.15)'
+                          : 'rgba(99, 102, 241, 0.15)',
+                        color: cand.speedLabel?.includes('Lightning')
+                          ? '#facc15'
+                          : cand.speedLabel?.includes('Fast')
+                          ? '#34d399'
+                          : '#a5b4fc',
+                        border: '1px solid rgba(255,255,255,0.08)',
+                      }}>
+                        {cand.speedLabel || '🎯 Steady'}
+                      </span>
                     </td>
                     <td className="score-cell text-purple">
                       {cand.machineCodingScore > 0 ? `${cand.machineCodingScore}%` : '—'}

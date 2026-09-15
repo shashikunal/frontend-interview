@@ -66,7 +66,7 @@ export class DSASubmissionService {
         score,
         testsPassed: submission.testsPassed,
         testsTotal: submission.testsTotal,
-        timeSpentSeconds: Math.max(5, Math.round(submission.runtimeMs / 1000)),
+        timeSpentSeconds: submission.timeSpentSeconds ?? Math.max(5, Math.round(submission.runtimeMs / 1000)),
         code: submission.code,
         language: submission.language,
         idempotencyKey: submission.id,
@@ -89,7 +89,7 @@ export class DSASubmissionService {
         score,
         passedTests: submission.testsPassed,
         totalTests: submission.testsTotal,
-        executionTime: submission.runtimeMs,
+        executionTime: submission.timeSpentSeconds ?? submission.runtimeMs,
         // Idempotency: double-clicks/retries with the same submission id must
         // not create duplicate rows in the canonical submissions table.
         idempotencyKey: submission.id,
@@ -206,6 +206,7 @@ export class DSASubmissionService {
             testsPassed: Number(row.tests_passed ?? (row.status === 'accepted' ? 4 : 0)),
             testsTotal: Number(row.tests_total ?? 4),
             runtimeMs: Number(row.runtime_ms) || 0,
+            timeSpentSeconds: row.time_spent_seconds ? Number(row.time_spent_seconds) : undefined,
             timestamp: String(row.created_at),
           })
         })
@@ -227,6 +228,7 @@ export class DSASubmissionService {
               testsPassed: Number(row.passed_tests ?? (row.status === 'accepted' ? 4 : 0)),
               testsTotal: Number(row.total_tests ?? 4),
               runtimeMs: Number(row.execution_time) || 0,
+              timeSpentSeconds: row.time_spent_seconds ? Number(row.time_spent_seconds) : undefined,
               timestamp: String(row.created_at),
             })
           }

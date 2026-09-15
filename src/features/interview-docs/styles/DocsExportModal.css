@@ -1,0 +1,335 @@
+/* ==========================================================================
+   MasterDocs Executive Cheat Sheet & Multi-Format Export Modal Styles
+   ========================================================================== */
+
+.docs-export-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background: rgba(4, 5, 10, 0.82);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: dem-fade-in 0.2s ease-out;
+}
+
+@keyframes dem-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.docs-export-modal-container {
+  width: 100%;
+  max-width: 820px;
+  background: #0d0f1b;
+  border: 1px solid #282a46;
+  border-radius: 16px;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.85), 0 0 1px rgba(99, 102, 241, 0.4);
+  display: flex;
+  flex-direction: column;
+  max-height: 88vh;
+  overflow: hidden;
+  animation: dem-card-pop 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes dem-card-pop {
+  from { transform: scale(0.96) translateY(12px); opacity: 0; }
+  to { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+/* Modal Header */
+.dem-header {
+  padding: 20px 24px;
+  background: #131526;
+  border-bottom: 1px solid #22243d;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.dem-header-info {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.dem-header-icon {
+  font-size: 2rem;
+}
+
+.dem-header-info h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #f1f5f9;
+}
+
+.dem-subtitle {
+  margin: 3px 0 0;
+  font-size: 0.82rem;
+  color: #94a3b8;
+}
+
+.dem-close-btn {
+  background: #1c1e33;
+  border: 1px solid #2e3050;
+  color: #94a3b8;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.dem-close-btn:hover {
+  background: #2a2d4c;
+  color: #ffffff;
+}
+
+/* Format Navigation Tabs */
+.dem-tabs-nav {
+  display: flex;
+  background: #111322;
+  border-bottom: 1px solid #22243d;
+  padding: 6px 16px 0;
+  gap: 8px;
+  overflow-x: auto;
+}
+
+.dem-tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: #94a3b8;
+  padding: 10px 16px;
+  font-size: 0.86rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.dem-tab-btn:hover {
+  color: #e2e8f0;
+}
+
+.dem-tab-btn.active {
+  color: #818cf8;
+  border-bottom-color: #6366f1;
+  background: rgba(99, 102, 241, 0.08);
+  border-radius: 8px 8px 0 0;
+}
+
+.dem-tab-icon {
+  font-size: 1rem;
+}
+
+/* Modal Body */
+.dem-body {
+  padding: 20px 24px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+/* Tab Card Overview */
+.dem-tab-overview {
+  background: #141629;
+  border: 1px solid #262947;
+  border-radius: 12px;
+  padding: 16px 18px;
+  margin-bottom: 18px;
+}
+
+.dem-overview-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.dem-overview-header h4 {
+  margin: 0;
+  color: #e2e8f0;
+  font-size: 1.02rem;
+  font-weight: 700;
+}
+
+.dem-badge-pill {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(99, 102, 241, 0.15);
+  color: #a5b4fc;
+  border: 1px solid rgba(99, 102, 241, 0.3);
+}
+
+.dem-tab-overview p {
+  margin: 0 0 14px;
+  color: #94a3b8;
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.dem-action-buttons-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.dem-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #6366f1;
+  border: 1px solid #4f46e5;
+  color: #ffffff;
+  padding: 9px 18px;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.dem-btn-primary:hover {
+  background: #4f46e5;
+  box-shadow: 0 4px 16px rgba(99, 102, 241, 0.35);
+  transform: translateY(-1px);
+}
+
+.dem-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #1c1e34;
+  border: 1px solid #2e3256;
+  color: #cbd5e1;
+  padding: 9px 16px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.dem-btn-secondary:hover {
+  background: #272a4a;
+  color: #ffffff;
+}
+
+.dem-copied-toast {
+  color: #34d399;
+  font-size: 0.84rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  animation: dem-fade-in 0.2s ease-out;
+}
+
+/* Preview Box */
+.dem-preview-container {
+  background: #090a13;
+  border: 1px solid #1f2136;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.dem-preview-header {
+  padding: 8px 14px;
+  background: #141626;
+  border-bottom: 1px solid #1f2136;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.78rem;
+  color: #94a3b8;
+  font-weight: 600;
+}
+
+.dem-preview-code {
+  margin: 0;
+  padding: 14px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.78rem;
+  line-height: 1.6;
+  color: #cbd5e1;
+  max-height: 240px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* Feature Checkpoints */
+.dem-features-checklist {
+  margin-top: 16px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.dem-feat-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  color: #94a3b8;
+}
+
+.dem-feat-check {
+  color: #10b981;
+  font-weight: 700;
+}
+
+/* Modal Footer */
+.dem-footer {
+  padding: 14px 24px;
+  background: #111322;
+  border-top: 1px solid #22243d;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.dem-footer-tip {
+  font-size: 0.78rem;
+  color: #64748b;
+}
+
+.dem-footer-close {
+  background: #1e2137;
+  border: 1px solid #2f3354;
+  color: #cbd5e1;
+  padding: 7px 16px;
+  border-radius: 6px;
+  font-size: 0.84rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.dem-footer-close:hover {
+  background: #2b2f4f;
+  color: #ffffff;
+}
+
+@media (max-width: 640px) {
+  .dem-features-checklist {
+    grid-template-columns: 1fr;
+  }
+  .dem-action-buttons-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

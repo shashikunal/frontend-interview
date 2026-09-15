@@ -28,7 +28,7 @@ export default function AdminUserDetailModal({
   onViewAttemptCode,
 }: AdminUserDetailModalProps) {
   const [activeSubTab, setActiveSubTab] = useState<'submissions' | 'attempts' | 'mocks' | 'activity'>('submissions')
-  const [selectedCurriculumTrack, setSelectedCurriculumTrack] = useState<'all' | 'mc' | 'cp' | 'dsa' | 'fjs' | 'mocks'>('all')
+  const [selectedCurriculumTrack, setSelectedCurriculumTrack] = useState<'all' | 'mc' | 'cp' | 'dsa' | 'fjs' | 'mocks' | 'docs'>('all')
   const [subFilter, setSubFilter] = useState<'all' | 'mc' | 'cp' | 'dsa' | 'fjs'>('all')
   const [attemptFilter, setAttemptFilter] = useState<'all' | 'mc' | 'cp' | 'dsa' | 'fjs'>('all')
 
@@ -328,6 +328,14 @@ export default function AdminUserDetailModal({
                 >
                   🤖 AI Video Mock
                 </button>
+                <button
+                  type="button"
+                  className={`btn btn-xs ${selectedCurriculumTrack === 'docs' ? 'btn-primary' : 'btn-secondary'}`}
+                  onClick={() => setSelectedCurriculumTrack('docs')}
+                  style={{ borderRadius: '6px', fontSize: '0.75rem' }}
+                >
+                  📚 21-Track Docs &amp; Syllabus
+                </button>
               </div>
 
               {/* Multi-Track Telemetry Display Card */}
@@ -558,10 +566,53 @@ export default function AdminUserDetailModal({
                     </div>
                   </div>
                 )}
+
+                {(selectedCurriculumTrack === 'all' || selectedCurriculumTrack === 'docs') && (
+                  <div style={{ marginTop: selectedCurriculumTrack === 'all' ? '14px' : '0' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px', marginBottom: '8px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <span style={{ fontSize: '1.1rem' }}>📚</span>
+                        <strong style={{ fontSize: '0.9rem', color: '#c084fc' }}>Documentation &amp; 21-Track Syllabus Coverage (708 Topics)</strong>
+                      </div>
+                      <span style={{
+                        fontSize: '0.72rem',
+                        background: 'rgba(168,85,247,0.15)',
+                        color: '#c084fc',
+                        border: '1px solid rgba(168,85,247,0.3)',
+                        padding: '2px 8px',
+                        borderRadius: '6px',
+                        fontWeight: 600,
+                      }}>
+                        {userDetail.docsCompletionPct ?? 0}% Mastered
+                      </span>
+                    </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(110px, 1fr))', gap: '10px' }}>
+                      <div style={{ background: 'rgba(255,255,255,0.03)', padding: '8px 10px', borderRadius: '8px', textAlign: 'center', border: '1px solid rgba(255,255,255,0.05)' }}>
+                        <span style={{ display: 'block', fontSize: '1.2rem', fontWeight: 800, color: '#38bdf8' }}>{userDetail.docsCompletedTopics ?? 0}</span>
+                        <span style={{ fontSize: '0.7rem', color: 'var(--text-muted, #94a3b8)' }}>Topics Mastered</span>
+                      </div>
+                      <div style={{ background: 'rgba(255,255,255,0.03)', padding: '8px 10px', borderRadius: '8px', textAlign: 'center', border: '1px solid rgba(255,255,255,0.05)' }}>
+                        <span style={{ display: 'block', fontSize: '1.2rem', fontWeight: 800, color: '#22c55e' }}>{Math.max(0, (userDetail.docsTotalTopics ?? 708) - (userDetail.docsCompletedTopics ?? 0))}</span>
+                        <span style={{ fontSize: '0.7rem', color: 'var(--text-muted, #94a3b8)' }}>Topics Remaining</span>
+                      </div>
+                      <div style={{ background: 'rgba(255,255,255,0.03)', padding: '8px 10px', borderRadius: '8px', textAlign: 'center', border: '1px solid rgba(255,255,255,0.05)' }}>
+                        <span style={{ display: 'block', fontSize: '1.2rem', fontWeight: 800, color: '#a855f7' }}>{userDetail.docsCompletionPct ?? 0}%</span>
+                        <span style={{ fontSize: '0.7rem', color: 'var(--text-muted, #94a3b8)' }}>Syllabus Rate</span>
+                      </div>
+                      <div style={{ background: 'rgba(255,255,255,0.03)', padding: '8px 10px', borderRadius: '8px', textAlign: 'center', border: '1px solid rgba(255,255,255,0.05)' }}>
+                        <span style={{ display: 'block', fontSize: '1.2rem', fontWeight: 800, color: '#f59e0b' }}>
+                          {userDetail.speedBadge?.icon || '🎯'} {Math.round((userDetail.avgTimeSpentSeconds || 0) / 60)}m
+                        </span>
+                        <span style={{ fontSize: '0.7rem', color: 'var(--text-muted, #94a3b8)' }}>Avg Solve Pace</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
 
-              {/* 5 Global Metric Badges */}
-              <div className="aud-stats-grid" style={{ marginBottom: '16px' }}>
+              {/* 7 Global Metric Badges */}
+              <div className="aud-stats-grid" style={{ marginBottom: '16px', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))' }}>
                 <div className="aud-stat-box">
                   <span className="aud-num" style={{ color: '#22c55e' }}>{userDetail.completedCount}</span>
                   <span className="aud-label">Total Unique Solved</span>
@@ -579,8 +630,20 @@ export default function AdminUserDetailModal({
                   <span className="aud-label">Average Score</span>
                 </div>
                 <div className="aud-stat-box">
+                  <span className="aud-num" style={{ color: '#38bdf8', fontSize: '1rem' }}>
+                    {userDetail.speedBadge?.label || '🎯 Steady (< 20m)'}
+                  </span>
+                  <span className="aud-label">Pace ({Math.round((userDetail.avgTimeSpentSeconds || 0) / 60)}m/q)</span>
+                </div>
+                <div className="aud-stat-box">
                   <span className="aud-num" style={{ color: '#ec4899' }}>{userDetail.totalTimeMinutes}m</span>
                   <span className="aud-label">Total Time Spent</span>
+                </div>
+                <div className="aud-stat-box">
+                  <span className="aud-num" style={{ color: '#c084fc' }}>
+                    {userDetail.docsCompletedTopics ?? 0} / {userDetail.docsTotalTopics ?? 708}
+                  </span>
+                  <span className="aud-label">Syllabus ({userDetail.docsCompletionPct ?? 0}%)</span>
                 </div>
               </div>
 

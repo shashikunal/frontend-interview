@@ -351,6 +351,11 @@ export const DSAQuestionDetail: React.FC<Props> = ({
                         <div className="dsa-sub-meta">
                           <span className="dsa-sub-lang">{sub.language}</span>
                           <span className="dsa-sub-runtime">{sub.runtimeMs} ms</span>
+                          {sub.timeSpentSeconds !== undefined && (
+                            <span className="dsa-sub-timespent" title="Time spent practicing">
+                              ⏱️ {Math.floor(sub.timeSpentSeconds / 60).toString().padStart(2, '0')}:{(sub.timeSpentSeconds % 60).toString().padStart(2, '0')}
+                            </span>
+                          )}
                           <span className="dsa-sub-time">
                             {new Date(sub.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                           </span>

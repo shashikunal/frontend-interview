@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import type { SubjectId } from '../types/docs.types';
 import { ALL_SUBJECTS_CATALOG, TOPICS_BY_SUBJECT } from '../data/subjectsCatalog';
 import { docsProgressService } from '../services/docsProgressService';
+import { DocsOfflineControl } from './DocsOfflineControl';
 
 export function DocsTracksLanding() {
   const { subjectId } = useParams<{ subjectId?: SubjectId }>();
@@ -29,6 +30,10 @@ export function DocsTracksLanding() {
         <p className="dl-subtitle">
           21 curated technical learning tracks combining MDN-grade technical depth, embedded interactive video walkthroughs, and LeetCode-style interview problem banks.
         </p>
+
+        <div className="dl-offline-action-row" style={{ marginTop: '14px', marginBottom: '8px', display: 'flex', justifyContent: 'center' }}>
+          <DocsOfflineControl />
+        </div>
 
         {/* Category Filter Tabs */}
         {!subjectId && (

@@ -191,9 +191,10 @@ function CoreProgrammingWorkspace({
   const [isAttempted, setIsAttempted] = useState<boolean>(false);
   const [isSolved, setIsSolved] = useState<boolean>(false);
 
-  // Practice Timer
+  // Practice Timer: automatically starts on program load to track time spent, and stops on submit
   const [timerSeconds, setTimerSeconds] = useState<number>(0);
   const [isTimerRunning, setIsTimerRunning] = useState<boolean>(true);
+  const timerSecondsRef = useRef<number>(0);
 
   const showToast = useCallback((msg: string) => {
     setToastMessage(msg);
@@ -213,10 +214,13 @@ function CoreProgrammingWorkspace({
     setCurrentCode(draft !== null ? draft : question.starterCode);
     setIsBookmarked(coreProgrammingProgressService.isBookmarked(question.id));
     setIsAttempted(coreProgrammingProgressService.isAttempted(question.id));
-    setIsSolved(coreProgrammingProgressService.isSolved(question.id));
+    const solved = coreProgrammingProgressService.isSolved(question.id);
+    setIsSolved(solved);
 
     const timer = coreProgrammingProgressService.getTimer(question.id);
     setTimerSeconds(timer.elapsedSeconds);
+    timerSecondsRef.current = timer.elapsedSeconds;
+    // Automatically start timer once program is loaded to calculate time spent on this program
     setIsTimerRunning(true);
 
     setSubmissions(coreProgrammingProgressService.getSubmissions(question.id));
@@ -308,6 +312,7 @@ function CoreProgrammingWorkspace({
     const interval = window.setInterval(() => {
       setTimerSeconds(prev => {
         const next = prev + 1;
+        timerSecondsRef.current = next;
         if (next % 10 === 0) {
           coreProgrammingProgressService.saveTimer(question.id, next);
         }
@@ -341,6 +346,11 @@ function CoreProgrammingWorkspace({
     const val = newVal || '';
     setCurrentCode(val);
 
+    // Auto-start practice timer once candidate begins coding (if not already solved)
+    if (!isTimerRunning && !isSolved) {
+      setIsTimerRunning(true);
+    }
+
     const pos = editorRef.current?.getPosition();
     const cursor = pos ? { line: pos.lineNumber, column: pos.column } : undefined;
     emitCodeChange(val, 'solution.js', cursor);
@@ -360,6 +370,10 @@ function CoreProgrammingWorkspace({
   // Run Code (Sample cases or custom input)
   const handleRunCode = async () => {
     if (isRunning) return;
+    // Auto-start practice timer when candidate initiates execution
+    if (!isTimerRunning && !isSolved) {
+      setIsTimerRunning(true);
+    }
     setIsRunning(true);
     emitCodeRun({ status: 'running' });
     coreProgrammingProgressService.markAttempted(question.id);
@@ -423,6 +437,11 @@ function CoreProgrammingWorkspace({
   // Submit Solution (All test cases including hidden ones)
   const handleSubmitSolution = async () => {
     if (isSubmitting || isRunning) return;
+    // Stop practice timer immediately upon submission and persist final elapsed seconds
+    setIsTimerRunning(false);
+    const finalTimeSpent = timerSecondsRef.current;
+    coreProgrammingProgressService.saveTimer(question.id, finalTimeSpent);
+
     setIsSubmitting(true);
     setIsRunning(true);
     emitCodeRun({ status: 'running' });
@@ -469,6 +488,7 @@ function CoreProgrammingWorkspace({
         testsPassed: res.passedCount,
         testsTotal: res.totalCount,
         runtimeMs: res.totalRuntimeMs,
+        timeSpentSeconds: finalTimeSpent,
         score: submissionScore,
         timestamp: new Date().toISOString(),
       };
@@ -740,7 +760,15 @@ function CoreProgrammingWorkspace({
 
           <div
             className="cp-timer-box"
-            onClick={() => setIsTimerRunning(prev => !prev)}
+            onClick={() => {
+              setIsTimerRunning(prev => {
+                const next = !prev;
+                if (!next) {
+                  coreProgrammingProgressService.saveTimer(question.id, timerSecondsRef.current);
+                }
+                return next;
+              });
+            }}
             title={isTimerRunning ? 'Pause timer' : 'Resume timer'}
           >
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

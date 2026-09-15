@@ -546,6 +546,12 @@ export default function MachineCodingStudio() {
   const { user, role, hasFeature, hasPermission } = useAuth();
   const lastSubmitTimeRef = useRef<number>(0);
   const submitInFlightRef = useRef<boolean>(false);
+  const questionLoadTimeRef = useRef<number>(Date.now());
+
+  useEffect(() => {
+    questionLoadTimeRef.current = Date.now();
+  }, [activeQuestion?.id]);
+
   const urlRole = searchParams.get('role');
   const userRole: 'candidate' | 'interviewer' | 'admin' | 'observer' = useMemo(() => {
     const effectiveRole = role || user?.role || 'candidate';
@@ -1629,7 +1635,8 @@ export default function MachineCodingStudio() {
 
     // Persist official submission to Supabase & tracking ledger
     const submittedCode = curFiles[activeFileNameRef.current] || Object.values(curFiles)[0] || '';
-    const executionDuration = isInterviewActive ? Math.max(1, interviewDuration - Math.max(0, interviewTimeLeft)) : 180;
+    const elapsedPracticeSeconds = Math.max(1, Math.round((Date.now() - questionLoadTimeRef.current) / 1000));
+    const executionDuration = isInterviewActive ? Math.max(1, interviewDuration - Math.max(0, interviewTimeLeft)) : elapsedPracticeSeconds;
     trackingService.recordSubmission({
       id: submitId,
       questionId: qId,
@@ -1661,8 +1668,8 @@ export default function MachineCodingStudio() {
 
     setScorecardData({
       question: activeQuestion,
-      timeSpentSeconds: isInterviewActive ? Math.max(1, interviewDuration - Math.max(0, interviewTimeLeft)) : 1800,
-      totalDurationSeconds: isInterviewActive ? interviewDuration : 1800,
+      timeSpentSeconds: executionDuration,
+      totalDurationSeconds: isInterviewActive ? interviewDuration : executionDuration,
       testResults: results,
       passedTests: passed,
       totalTests: total,

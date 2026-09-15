@@ -42,6 +42,7 @@ import {
   type TimeframeFilter,
   type OverviewDataSource,
 } from '../../lib/adminAnalyticsService'
+import { AdminDocsSyllabusView } from './admin/AdminDocsSyllabusView'
 import './AdminDashboard.css'
 
 // NOTE: Platform track stats are derived from live adminAnalyticsService data.
@@ -51,6 +52,7 @@ export type AdminTab =
   | 'overview'
   | 'candidates'
   | 'users'
+  | 'docs'
   | 'live'
   | 'rankings'
   | 'questions'
@@ -98,6 +100,7 @@ export default function AdminDashboard() {
     if (clean === 'overview') return 'overview'
     if (clean === 'candidates' || clean === 'hiring' || clean === 'evaluations') return 'candidates'
     if (clean === 'users' || clean === 'directory') return 'users'
+    if (clean === 'docs' || clean === 'syllabus' || clean === 'documentation') return 'docs'
     if (clean === 'live' || clean === 'live-sessions') return 'live'
     if (clean === 'rankings' || clean === 'leaderboard') return 'rankings'
     if (clean === 'submissions') return 'submissions'
@@ -796,6 +799,16 @@ export default function AdminDashboard() {
 
           <button
             type="button"
+            className={`h-nav-item ${activeTab === 'docs' ? 'active' : ''}`}
+            onClick={() => { setActiveTab('docs'); setIsMobileSidebarOpen(false); }}
+          >
+            <span className="h-nav-icon">📚</span>
+            <span>Docs &amp; Syllabus</span>
+            <span className="h-nav-badge" style={{ background: '#8b5cf6', color: '#ffffff' }}>TRACK</span>
+          </button>
+
+          <button
+            type="button"
             className={`h-nav-item ${activeTab === 'live' ? 'active' : ''}`}
             onClick={() => { setActiveTab('live'); setIsMobileSidebarOpen(false); }}
           >
@@ -1190,6 +1203,15 @@ export default function AdminDashboard() {
           ) : (
             <AdminCandidateManagementTab />
           )}
+        </div>
+      )}
+
+      {/* ================================================================ */}
+      {/* TAB: DOCS & FULL SYLLABUS COVERAGE OPERATIONS */}
+      {/* ================================================================ */}
+      {activeTab === 'docs' && (
+        <div className="admin-tab-content">
+          <AdminDocsSyllabusView profiles={profiles} />
         </div>
       )}
 

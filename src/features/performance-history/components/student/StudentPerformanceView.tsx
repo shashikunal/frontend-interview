@@ -3,6 +3,7 @@ import { useAuth } from '../../../../context/AuthContext';
 import { codingHistoryService } from '../../services/codingHistoryService';
 import type { CodingAttempt, UserPerformanceSummary } from '../../types/history.types';
 import QuestionHistoryDetailModal from './QuestionHistoryDetailModal';
+import FaangReadinessDossierModal from './FaangReadinessDossierModal';
 import './StudentPerformanceView.css';
 
 interface StudentPerformanceViewProps {
@@ -90,6 +91,7 @@ export default function StudentPerformanceView({ userId: propUserId }: StudentPe
 
   // Detail Modal State
   const [selectedAttempt, setSelectedAttempt] = useState<CodingAttempt | null>(null);
+  const [showDossierModal, setShowDossierModal] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -492,11 +494,24 @@ export default function StudentPerformanceView({ userId: propUserId }: StudentPe
     <div className="perf-container">
       {/* Header Banner */}
       <div className="perf-header-banner">
-        <div>
+        <div className="perf-header-titles">
           <h1 className="perf-main-title">My Performance &amp; Coding History</h1>
           <p className="perf-main-subtitle">
             Durable candidate metrics, multi-attempt code records, and technical competency progress.
           </p>
+        </div>
+        <div className="perf-header-actions">
+          <button
+            type="button"
+            className="perf-dossier-btn"
+            id="open-faang-dossier-btn"
+            onClick={() => setShowDossierModal(true)}
+            title="Generate executive FAANG technical readiness dossier and export as PDF or Markdown"
+          >
+            <span className="perf-dossier-icon">🏆</span>
+            <span className="perf-dossier-text">FAANG Readiness Dossier</span>
+            <span className="perf-dossier-badge">1-Click Export</span>
+          </button>
         </div>
       </div>
 
@@ -1822,6 +1837,18 @@ export default function StudentPerformanceView({ userId: propUserId }: StudentPe
           attempt={selectedAttempt}
           userId={effectiveUserId}
           onClose={() => setSelectedAttempt(null)}
+        />
+      )}
+
+      {/* FAANG Readiness Dossier & 1-Click Export Modal */}
+      {showDossierModal && (
+        <FaangReadinessDossierModal
+          candidateId={effectiveUserId}
+          candidateName={user?.name || user?.email?.split('@')[0] || (effectiveUserId === 'guest_student' ? 'Candidate' : effectiveUserId)}
+          candidateEmail={user?.email}
+          summary={summary}
+          attempts={attempts}
+          onClose={() => setShowDossierModal(false)}
         />
       )}
     </div>
