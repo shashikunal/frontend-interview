@@ -90,14 +90,17 @@ class InterviewQuestionsDataService {
   async getRandomPracticeSet(
     subjectId: MasterSubjectId | 'all',
     count: number = 10,
-    difficulty?: string
+    options?: string | { difficulty?: string; companyTag?: string; highFreqOnly?: boolean }
   ): Promise<MasterQuestion[]> {
     let pool: MasterQuestion[] = []
 
+    const diffFilter = typeof options === 'string' ? options : options?.difficulty
+    const companyFilter = typeof options === 'object' ? options?.companyTag : undefined
+    const highFreqFilter = typeof options === 'object' ? options?.highFreqOnly : undefined
+
     if (subjectId === 'all') {
       const catalog = await this.getCatalog()
-      const sampleSubjects = catalog.subjects.slice(0, 4)
-      for (const s of sampleSubjects) {
+      for (const s of catalog.subjects) {
         const qList = await this.getSubjectQuestions(s.id)
         pool.push(...qList.slice(0, 100))
       }
@@ -105,8 +108,16 @@ class InterviewQuestionsDataService {
       pool = await this.getSubjectQuestions(subjectId)
     }
 
-    if (difficulty && difficulty !== 'ALL') {
-      pool = pool.filter(q => q.difficulty === difficulty)
+    if (diffFilter && diffFilter !== 'ALL') {
+      pool = pool.filter(q => q.difficulty === diffFilter)
+    }
+
+    if (companyFilter && companyFilter !== 'ALL') {
+      pool = pool.filter(q => q.companyTags && q.companyTags.includes(companyFilter))
+    }
+
+    if (highFreqFilter) {
+      pool = pool.filter(q => q.isHighFrequency)
     }
 
     // Shuffle pool

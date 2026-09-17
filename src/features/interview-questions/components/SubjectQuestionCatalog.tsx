@@ -25,18 +25,31 @@ export default function SubjectQuestionCatalog() {
   const [error, setError] = useState<string | null>(null)
 
   // Filters
+  // Filters
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedTopic, setSelectedTopic] = useState('ALL')
   const [selectedDiff, setSelectedDiff] = useState<string>(initialDiff)
   const [selectedType, setSelectedType] = useState<string>('ALL')
   const [selectedExp, setSelectedExp] = useState<string>(initialLevel)
   const [selectedStatus, setSelectedStatus] = useState<string>('ALL')
+  const [selectedCompany, setSelectedCompany] = useState<string>('ALL')
+  const [highFreqOnly, setHighFreqOnly] = useState<boolean>(false)
   const [currentPage, setCurrentPage] = useState(1)
 
   useEffect(() => {
     const d = searchParams.get('difficulty')?.toUpperCase()
     if (d && ['EASY', 'INTERMEDIATE', 'DIFFICULT', 'ALL'].includes(d)) {
       setSelectedDiff(d)
+    }
+
+    const companyParam = searchParams.get('company')
+    if (companyParam) {
+      setSelectedCompany(companyParam)
+    }
+
+    const highFreqParam = searchParams.get('highFreq')
+    if (highFreqParam === 'true') {
+      setHighFreqOnly(true)
     }
   }, [searchParams])
 
@@ -134,6 +147,14 @@ export default function SubjectQuestionCatalog() {
       if (selectedStatus === 'BOOKMARKED' && !bookmarkedSet.has(q.id)) return false
       if (selectedStatus === 'NEEDS_REVIEW' && !reviewSet.has(q.id)) return false
 
+      // High frequency FAANG filter
+      if (highFreqOnly && !q.isHighFrequency) return false
+
+      // Company filter
+      if (selectedCompany !== 'ALL' && (!q.companyTags || !q.companyTags.includes(selectedCompany))) {
+        return false
+      }
+
       return true
     })
   }, [
@@ -144,6 +165,8 @@ export default function SubjectQuestionCatalog() {
     selectedType,
     selectedExp,
     selectedStatus,
+    selectedCompany,
+    highFreqOnly,
     progressState,
   ])
 
@@ -223,7 +246,7 @@ export default function SubjectQuestionCatalog() {
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
                 <h1 className="mqb-catalog-title">{subjectMeta?.name || subjectId.toUpperCase()}</h1>
-                <span className="mqb-catalog-count-pill">1,000 Questions</span>
+                <span className="mqb-catalog-count-pill">{questions.length} Real Questions</span>
               </div>
               <p style={{ color: 'var(--mqb-text-secondary)', margin: '0.35rem 0 0', fontSize: '0.95rem' }}>
                 {subjectMeta?.description}
@@ -282,7 +305,7 @@ export default function SubjectQuestionCatalog() {
             <span style={{ fontSize: '1.4rem' }}>🌱</span>
             <div>
               <div style={{ fontWeight: 800, color: selectedDiff === 'EASY' ? '#34d399' : 'var(--mqb-text-primary)', fontSize: '0.95rem' }}>
-                Fresher-First Learning Path (Questions 1 to 400)
+                Fresher-First Foundational Mode
               </div>
               <div style={{ fontSize: '0.8rem', color: 'var(--mqb-text-secondary)', marginTop: '0.15rem' }}>
                 Foundational, easy-level interview questions tailored for freshers & campus recruitment.
@@ -306,7 +329,7 @@ export default function SubjectQuestionCatalog() {
               cursor: 'pointer',
             }}
           >
-            {selectedDiff === 'EASY' ? '✓ Showing Easy Only (1–400)' : '🌱 Filter: Easy Questions (1–400)'}
+            {selectedDiff === 'EASY' ? '✓ Showing Easy Only' : '🌱 Filter: Easy Questions'}
           </button>
         </div>
 
@@ -318,7 +341,7 @@ export default function SubjectQuestionCatalog() {
               type="text"
               className="mqb-search-input"
               id="catalog-search-input"
-              placeholder={`Search in 1,000 ${subjectMeta?.name || subjectId} questions by title, concept, or tags...`}
+              placeholder={`Search in ${questions.length} ${subjectMeta?.name || subjectId} questions by title, concept, or tags...`}
               value={searchTerm}
               onChange={e => {
                 setSearchTerm(e.target.value)
@@ -415,6 +438,46 @@ export default function SubjectQuestionCatalog() {
             <option value="8_PLUS_YEARS">8+ Years (Staff/Principal)</option>
           </select>
 
+          {/* Company Filter */}
+          <select
+            className="mqb-filter-select"
+            id="filter-company-select"
+            value={selectedCompany}
+            onChange={e => {
+              setSelectedCompany(e.target.value)
+              setCurrentPage(1)
+            }}
+          >
+            <option value="ALL">All Companies (FAANG+)</option>
+            <option value="Google">Google</option>
+            <option value="Meta">Meta</option>
+            <option value="Amazon">Amazon</option>
+            <option value="Microsoft">Microsoft</option>
+            <option value="Netflix">Netflix</option>
+            <option value="Apple">Apple</option>
+            <option value="Uber">Uber</option>
+            <option value="Airbnb">Airbnb</option>
+          </select>
+
+          {/* High Frequency FAANG Toggle Button */}
+          <button
+            type="button"
+            className="mqb-action-pill-btn"
+            id="filter-high-freq-toggle"
+            onClick={() => {
+              setHighFreqOnly(!highFreqOnly)
+              setCurrentPage(1)
+            }}
+            style={{
+              background: highFreqOnly ? 'rgba(245,158,11,0.2)' : 'var(--mqb-input-bg)',
+              color: highFreqOnly ? '#fbbf24' : 'var(--mqb-text-secondary)',
+              border: highFreqOnly ? '1px solid rgba(245,158,11,0.5)' : '1px solid var(--mqb-border)',
+              fontWeight: 700,
+            }}
+          >
+            {highFreqOnly ? '🔥 High Frequency Only (Active)' : '🔥 Top Asked (FAANG)'}
+          </button>
+
           {/* Status */}
           <select
             className="mqb-filter-select"
@@ -433,7 +496,7 @@ export default function SubjectQuestionCatalog() {
           </select>
 
           {/* Reset Filters */}
-          {(selectedTopic !== 'ALL' || selectedDiff !== 'ALL' || selectedType !== 'ALL' || selectedExp !== 'ALL' || selectedStatus !== 'ALL' || searchTerm) && (
+          {(selectedTopic !== 'ALL' || selectedDiff !== 'ALL' || selectedType !== 'ALL' || selectedExp !== 'ALL' || selectedStatus !== 'ALL' || selectedCompany !== 'ALL' || highFreqOnly || searchTerm) && (
             <button
               type="button"
               className="mqb-action-pill-btn"
@@ -444,6 +507,8 @@ export default function SubjectQuestionCatalog() {
                 setSelectedType('ALL')
                 setSelectedExp('ALL')
                 setSelectedStatus('ALL')
+                setSelectedCompany('ALL')
+                setHighFreqOnly(false)
                 setCurrentPage(1)
               }}
             >
@@ -452,7 +517,7 @@ export default function SubjectQuestionCatalog() {
           )}
 
           <span style={{ marginLeft: 'auto', fontSize: '0.85rem', color: 'var(--mqb-text-muted)' }}>
-            Showing <strong>{filteredQuestions.length}</strong> of 1,000 questions
+            Showing <strong>{filteredQuestions.length}</strong> of {questions.length} questions
           </span>
         </div>
       </div>
@@ -475,6 +540,8 @@ export default function SubjectQuestionCatalog() {
               setSelectedType('ALL')
               setSelectedExp('ALL')
               setSelectedStatus('ALL')
+              setSelectedCompany('ALL')
+              setHighFreqOnly(false)
             }}
           >
             Clear All Filters
@@ -500,6 +567,12 @@ export default function SubjectQuestionCatalog() {
                     <div className="mqb-qcard-meta-line">
                       <span className="mqb-qcard-id">{q.id.toUpperCase()}</span>
                       <span className={`mqb-diff-pill ${q.difficulty}`}>{q.difficulty}</span>
+                      {q.isHighFrequency && (
+                        <span className="mqb-highfreq-badge">🔥 Top Asked</span>
+                      )}
+                      {q.companyTags && q.companyTags.map(comp => (
+                        <span key={comp} className="mqb-company-badge">🏢 {comp}</span>
+                      ))}
                       <span className="mqb-type-pill">{q.questionType}</span>
                       <span className="mqb-tag-pill">{q.topic}</span>
                       <span className="mqb-tag-pill" style={{ color: 'var(--mqb-text-muted)' }}>

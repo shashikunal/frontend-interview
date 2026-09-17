@@ -10,6 +10,8 @@ export default function PracticeDrillStudio() {
 
   const [questions, setQuestions] = useState<MasterQuestion[]>([])
   const [drillDifficulty, setDrillDifficulty] = useState<string>('EASY')
+  const [highFreqOnly, setHighFreqOnly] = useState<boolean>(false)
+  const [selectedCompany, setSelectedCompany] = useState<string>('ALL')
   const [currentIndex, setCurrentIndex] = useState<number>(0)
   const [isAnswerRevealed, setIsAnswerRevealed] = useState<boolean>(false)
   const [loading, setLoading] = useState<boolean>(true)
@@ -22,7 +24,11 @@ export default function PracticeDrillStudio() {
     async function loadSet() {
       try {
         setLoading(true)
-        const set = await interviewQuestionsDataService.getRandomPracticeSet(currentSubject, 10, drillDifficulty)
+        const set = await interviewQuestionsDataService.getRandomPracticeSet(
+          currentSubject,
+          10,
+          { difficulty: drillDifficulty, companyTag: selectedCompany, highFreqOnly }
+        )
         if (mounted) {
           setQuestions(set)
           setCurrentIndex(0)
@@ -39,7 +45,7 @@ export default function PracticeDrillStudio() {
 
     loadSet()
     return () => { mounted = false }
-  }, [currentSubject, drillDifficulty])
+  }, [currentSubject, drillDifficulty, selectedCompany, highFreqOnly])
 
   const currentQ = questions[currentIndex]
 
@@ -200,6 +206,39 @@ export default function PracticeDrillStudio() {
             }}
           >
             🔥 Difficult Only
+          </button>
+        </div>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <select
+            className="mqb-filter-select"
+            style={{ padding: '0.35rem 0.6rem', fontSize: '0.8rem' }}
+            value={selectedCompany}
+            onChange={e => setSelectedCompany(e.target.value)}
+          >
+            <option value="ALL">All Companies</option>
+            <option value="Google">Google</option>
+            <option value="Meta">Meta</option>
+            <option value="Amazon">Amazon</option>
+            <option value="Microsoft">Microsoft</option>
+            <option value="Netflix">Netflix</option>
+            <option value="Apple">Apple</option>
+          </select>
+
+          <button
+            type="button"
+            className="mqb-action-pill-btn"
+            onClick={() => setHighFreqOnly(!highFreqOnly)}
+            style={{
+              padding: '0.35rem 0.75rem',
+              fontSize: '0.8rem',
+              background: highFreqOnly ? 'rgba(245,158,11,0.2)' : 'transparent',
+              color: highFreqOnly ? '#fbbf24' : 'var(--mqb-text-secondary)',
+              border: highFreqOnly ? '1px solid rgba(245,158,11,0.5)' : '1px solid var(--mqb-border)',
+              fontWeight: 700,
+            }}
+          >
+            {highFreqOnly ? '🔥 High Freq (Active)' : '🔥 Top Asked'}
           </button>
         </div>
       </div>

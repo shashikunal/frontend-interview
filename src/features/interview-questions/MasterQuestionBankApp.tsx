@@ -29,8 +29,8 @@ export default function MasterQuestionBankApp() {
           <div className="mqb-subnav-left">
             <Link to="/interview-questions" className="mqb-subnav-brand">
               <span>🎯</span>
-              <span>Master Question Bank</span>
-              <span className="mqb-subnav-brand-badge">12,000 Qs</span>
+              <span className="mqb-subnav-brand-text">Master Question Bank</span>
+              <span className="mqb-subnav-brand-badge">1,500 Real Qs</span>
             </Link>
 
             <nav className="mqb-subnav-links">

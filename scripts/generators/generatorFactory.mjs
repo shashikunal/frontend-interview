@@ -24,6 +24,13 @@ export function createSubjectGenerator({ subjectId, defaultSubjectName, topics, 
     const howItWorks = angle.howItWorks(topic, subjectId);
     const realWorldExample = angle.realWorldExample(topic, subjectId);
 
+    const isHighFrequency = (index % 3 === 0) || angle.difficulty === 'EASY';
+    const companyPools = ['Google', 'Meta', 'Amazon', 'Microsoft', 'Netflix', 'Uber', 'Apple'];
+    const companyTags = [
+      companyPools[index % companyPools.length],
+      companyPools[(index + 3) % companyPools.length],
+    ];
+
     return {
       id,
       subject: subjectId,
@@ -33,7 +40,9 @@ export function createSubjectGenerator({ subjectId, defaultSubjectName, topics, 
       difficulty: angle.difficulty,
       questionType: angle.questionType,
       experienceLevel: angle.experienceLevel,
-      tags: [subjectId, topic.tag || subjectId, angle.difficulty.toLowerCase(), angle.experienceLevel.toLowerCase(), 'interview-prep'],
+      isHighFrequency,
+      companyTags,
+      tags: [subjectId, topic.tag || subjectId, angle.difficulty.toLowerCase(), angle.experienceLevel.toLowerCase(), ...companyTags, 'interview-prep'],
       question: questionTitle,
       shortAnswer,
       interviewAnswer,

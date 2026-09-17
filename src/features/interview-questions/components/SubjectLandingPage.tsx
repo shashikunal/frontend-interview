@@ -94,14 +94,14 @@ export default function SubjectLandingPage() {
           <div className="mqb-hero-text">
             <h1>Frontend Interview Master Question Bank</h1>
             <p>
-              The industry's most rigorous, exhaustive question system. 12,000 deep interview questions across 12 subjects with spoken interview scripts, line-by-line breakdowns, execution flow diagrams, and real-time candidate metrics.
+              The industry's most authentic, non-duplicated question system. {overallStats.totalQuestions.toLocaleString()} deep, unique interview questions across 12 subjects with spoken interview scripts, line-by-line breakdowns, execution flow diagrams, and real-time candidate metrics.
             </p>
             <div className="mqb-hero-badges-row">
-              <span className="mqb-hero-tag" style={{ border: '1px solid rgba(16,185,129,0.5)', background: 'rgba(16,185,129,0.12)', color: '#34d399', fontWeight: 700 }}>
-                🌱 Fresher Mode: 400 Easy Questions per Subject (Starts at Q1)
+              <span className="mqb-hero-tag fresher-tag">
+                🌱 Fresher-Friendly Foundational Path
               </span>
-              <span className="mqb-hero-tag">🔥 12,000 Total Questions</span>
-              <span className="mqb-hero-tag">🎯 12 Subjects (1,000 Each)</span>
+              <span className="mqb-hero-tag">🔥 {overallStats.totalQuestions.toLocaleString()} Real Non-Duplicated Questions</span>
+              <span className="mqb-hero-tag">🎯 12 Core Subjects</span>
               <span className="mqb-hero-tag">🎙️ Spoken Speech Answers</span>
               <span className="mqb-hero-tag">🔍 Line-by-Line Dissection</span>
               <span className="mqb-hero-tag">⚙️ Execution Flows</span>
@@ -111,9 +111,8 @@ export default function SubjectLandingPage() {
           <div style={{ display: 'flex', gap: '0.75rem', flexShrink: 0, flexWrap: 'wrap' }}>
             <Link
               to="/interview-questions/javascript?difficulty=EASY"
-              className="mqb-action-pill-btn"
+              className="mqb-action-pill-btn fresher-btn"
               id="mqb-hero-fresher-start-btn"
-              style={{ background: 'rgba(16,185,129,0.2)', color: '#34d399', border: '1px solid rgba(16,185,129,0.4)', fontWeight: 700 }}
             >
               🌱 Start with Easy (Fresher Mode)
             </Link>
@@ -140,19 +139,19 @@ export default function SubjectLandingPage() {
             <div className="mqb-stat-label">Total Questions Solved</div>
             <div className="mqb-stat-val">
               {overallStats.totalCompleted.toLocaleString()}
-              <span className="mqb-stat-sub">/ 12,000</span>
+              <span className="mqb-stat-sub">/ {overallStats.totalQuestions.toLocaleString()}</span>
             </div>
             <div className="mqb-progress-track">
               <div
                 className="mqb-progress-bar"
-                style={{ width: `${Math.min(overallStats.overallPct, 100)}%`, background: 'linear-gradient(90deg, #0ea5e9, #38bdf8)' }}
+                style={{ width: `${Math.min(overallStats.overallPct, 100)}%`, background: 'var(--mqb-grad-brand)' }}
               />
             </div>
           </div>
 
           <div className="mqb-stat-card" id="mqb-stat-completion-pct">
             <div className="mqb-stat-label">Mastery Completion Rate</div>
-            <div className="mqb-stat-val" style={{ color: '#38bdf8' }}>
+            <div className="mqb-stat-val cyan-accent">
               {overallStats.overallPct}%
             </div>
             <div className="mqb-stat-sub" style={{ marginTop: '0.5rem' }}>
@@ -162,12 +161,12 @@ export default function SubjectLandingPage() {
 
           <div className="mqb-stat-card" id="mqb-stat-bookmarked">
             <div className="mqb-stat-label">Bookmarked for Review</div>
-            <div className="mqb-stat-val" style={{ color: '#fbbf24' }}>
+            <div className="mqb-stat-val med-accent">
               {overallStats.totalBookmarked}
               <span className="mqb-stat-sub">saved</span>
             </div>
             <div className="mqb-stat-sub" style={{ marginTop: '0.5rem' }}>
-              <Link to="/interview-questions/bookmarks" style={{ color: '#fbbf24', textDecoration: 'none' }}>
+              <Link to="/interview-questions/bookmarks" style={{ color: 'var(--mqb-med-text)', textDecoration: 'none' }}>
                 Open Revision Hub →
               </Link>
             </div>
@@ -175,7 +174,7 @@ export default function SubjectLandingPage() {
 
           <div className="mqb-stat-card" id="mqb-stat-tests-completed">
             <div className="mqb-stat-label">Mock Tests Completed</div>
-            <div className="mqb-stat-val" style={{ color: '#a78bfa' }}>
+            <div className="mqb-stat-val purple-accent">
               {overallStats.totalTestsTaken}
               <span className="mqb-stat-sub">exams</span>
             </div>
@@ -186,6 +185,77 @@ export default function SubjectLandingPage() {
         </div>
       </section>
 
+      {/* Top-Asked FAANG Interview Hub & Quick Recommended Prep */}
+      <section style={{ background: 'var(--mqb-bg-glass)', border: '1px solid rgba(245,158,11,0.3)', borderRadius: '16px', padding: '1.5rem', marginBottom: '2rem', boxShadow: '0 8px 30px rgba(0,0,0,0.1)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem', marginBottom: '1rem' }}>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+              <span style={{ fontSize: '1.4rem' }}>🔥</span>
+              <h2 style={{ fontSize: '1.35rem', fontWeight: 800, margin: 0, color: 'var(--mqb-text-primary)' }}>
+                FAANG High-Frequency Interview Hub
+              </h2>
+              <span className="mqb-highfreq-badge">Top-Asked Real Questions</span>
+            </div>
+            <p style={{ color: 'var(--mqb-text-secondary)', margin: '0.35rem 0 0', fontSize: '0.9rem' }}>
+              Curated target question pools tagged by Tier-1 tech companies (Google, Meta, Amazon, Microsoft, Netflix, Apple).
+            </p>
+          </div>
+          <Link
+            to="/interview-questions/javascript?highFreq=true"
+            className="mqb-action-pill-btn"
+            style={{ background: 'rgba(245,158,11,0.15)', color: '#fbbf24', border: '1px solid rgba(245,158,11,0.4)', fontWeight: 700 }}
+          >
+            🔥 Explore High-Frequency Pool →
+          </Link>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '0.85rem' }}>
+          <Link
+            to="/interview-questions/javascript?company=Google"
+            style={{ textDecoration: 'none', background: 'var(--mqb-bg-card)', border: '1px solid var(--mqb-border)', padding: '0.85rem 1rem', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', color: 'var(--mqb-text-primary)', transition: 'transform 0.2s ease' }}
+          >
+            <div>
+              <div style={{ fontWeight: 700, fontSize: '0.92rem' }}>🏢 Google Interview Suite</div>
+              <div style={{ fontSize: '0.78rem', color: 'var(--mqb-text-muted)' }}>JS Core, Engine & V8 Optimization</div>
+            </div>
+            <span style={{ color: '#38bdf8', fontWeight: 700 }}>→</span>
+          </Link>
+
+          <Link
+            to="/interview-questions/react?company=Meta"
+            style={{ textDecoration: 'none', background: 'var(--mqb-bg-card)', border: '1px solid var(--mqb-border)', padding: '0.85rem 1rem', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', color: 'var(--mqb-text-primary)', transition: 'transform 0.2s ease' }}
+          >
+            <div>
+              <div style={{ fontWeight: 700, fontSize: '0.92rem' }}>🏢 Meta (Facebook) Suite</div>
+              <div style={{ fontSize: '0.78rem', color: 'var(--mqb-text-muted)' }}>React Internals, Fiber & Reconciliation</div>
+            </div>
+            <span style={{ color: '#818cf8', fontWeight: 700 }}>→</span>
+          </Link>
+
+          <Link
+            to="/interview-questions/dom?company=Amazon"
+            style={{ textDecoration: 'none', background: 'var(--mqb-bg-card)', border: '1px solid var(--mqb-border)', padding: '0.85rem 1rem', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', color: 'var(--mqb-text-primary)', transition: 'transform 0.2s ease' }}
+          >
+            <div>
+              <div style={{ fontWeight: 700, fontSize: '0.92rem' }}>🏢 Amazon Suite</div>
+              <div style={{ fontSize: '0.78rem', color: 'var(--mqb-text-muted)' }}>DOM Tree & Mutation Architecture</div>
+            </div>
+            <span style={{ color: '#fbbf24', fontWeight: 700 }}>→</span>
+          </Link>
+
+          <Link
+            to="/interview-questions/web-apis?company=Microsoft"
+            style={{ textDecoration: 'none', background: 'var(--mqb-bg-card)', border: '1px solid var(--mqb-border)', padding: '0.85rem 1rem', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', color: 'var(--mqb-text-primary)', transition: 'transform 0.2s ease' }}
+          >
+            <div>
+              <div style={{ fontWeight: 700, fontSize: '0.92rem' }}>🏢 Microsoft Suite</div>
+              <div style={{ fontSize: '0.78rem', color: 'var(--mqb-text-muted)' }}>Modern Web APIs & Async Workflows</div>
+            </div>
+            <span style={{ color: '#34d399', fontWeight: 700 }}>→</span>
+          </Link>
+        </div>
+      </section>
+
       {/* 12 Subjects Dashboard Cards Grid */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
         <div>
@@ -193,7 +263,7 @@ export default function SubjectLandingPage() {
             Core Subject Master Banks
           </h2>
           <p style={{ color: 'var(--mqb-text-secondary)', margin: 0, fontSize: '0.95rem' }}>
-            Each subject contains exactly 1,000 categorized questions with real-time candidate statistics.
+            100% authentic, curated real-world technical interview questions with live candidate stats.
           </p>
         </div>
       </div>
@@ -202,15 +272,15 @@ export default function SubjectLandingPage() {
         {catalog.subjects.map((subject: SubjectMeta) => {
           const stats = subjectStatsMap.get(subject.id) || {
             subjectId: subject.id,
-            totalQuestions: 1000,
+            totalQuestions: subject.totalQuestions || 125,
             completed: 0,
-            remaining: 1000,
+            remaining: subject.totalQuestions || 125,
             completionPct: 0,
-            easyCount: 400,
+            easyCount: Math.round((subject.totalQuestions || 125) * 0.4),
             easyCompleted: 0,
-            intermediateCount: 400,
+            intermediateCount: Math.round((subject.totalQuestions || 125) * 0.4),
             intermediateCompleted: 0,
-            difficultCount: 200,
+            difficultCount: Math.round((subject.totalQuestions || 125) * 0.2),
             difficultCompleted: 0,
             bookmarkedCount: 0,
             needsReviewCount: 0,
@@ -233,11 +303,8 @@ export default function SubjectLandingPage() {
                       <span className="mqb-sc-badge">{subject.badge}</span>
                     </div>
                   </div>
-                  <span
-                    className="mqb-sc-badge"
-                    style={{ background: 'rgba(56, 189, 248, 0.15)', color: '#38bdf8' }}
-                  >
-                    1,000 Qs
+                  <span className="mqb-catalog-count-pill">
+                    {subject.totalQuestions || stats.totalQuestions} Qs
                   </span>
                 </div>
 

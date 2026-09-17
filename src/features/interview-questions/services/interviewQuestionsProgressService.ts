@@ -180,17 +180,16 @@ class InterviewQuestionsProgressService {
   }
 
   getSubjectStats(subjectId: MasterSubjectId, questions?: MasterQuestion[]): SubjectProgressStat {
-    const total = 1000
+    const total = questions && questions.length > 0 ? questions.length : 100
     const prefix = `iq-${subjectId}-`
 
     const completedInSubject = this.state.completedQuestionIds.filter(id => id.startsWith(prefix)).length
     const bookmarkedInSubject = this.state.bookmarkedQuestionIds.filter(id => id.startsWith(prefix)).length
     const needsReviewInSubject = this.state.needsReviewQuestionIds.filter(id => id.startsWith(prefix)).length
 
-    // If questions are provided, calculate exact breakdown by difficulty
-    let easyCount = 400
-    let intermediateCount = 400
-    let difficultCount = 200
+    let easyCount = 0
+    let intermediateCount = 0
+    let difficultCount = 0
     let easyCompleted = 0
     let intermediateCompleted = 0
     let difficultCompleted = 0
@@ -209,21 +208,23 @@ class InterviewQuestionsProgressService {
         }
       }
     } else {
-      // Approximation for landing page before subject JSON is loaded
-      const ratio = completedInSubject / total
+      const ratio = total > 0 ? completedInSubject / total : 0
+      easyCount = Math.round(total * 0.4)
+      intermediateCount = Math.round(total * 0.4)
+      difficultCount = total - easyCount - intermediateCount
       easyCompleted = Math.round(easyCount * ratio)
       intermediateCompleted = Math.round(intermediateCount * ratio)
       difficultCompleted = completedInSubject - easyCompleted - intermediateCompleted
       if (difficultCompleted < 0) difficultCompleted = 0
     }
 
-    const completionPct = Math.round((completedInSubject / total) * 100)
+    const completionPct = total > 0 ? Math.round((completedInSubject / total) * 100) : 0
 
     return {
       subjectId,
       totalQuestions: total,
       completed: completedInSubject,
-      remaining: total - completedInSubject,
+      remaining: Math.max(0, total - completedInSubject),
       completionPct,
       easyCount,
       easyCompleted,
@@ -236,7 +237,7 @@ class InterviewQuestionsProgressService {
     }
   }
 
-  getOverallStats(_catalog?: MasterBankCatalog | null): {
+  getOverallStats(catalog?: MasterBankCatalog | null): {
     totalQuestions: number
     totalCompleted: number
     overallPct: number
@@ -244,9 +245,9 @@ class InterviewQuestionsProgressService {
     totalNeedsReview: number
     totalTestsTaken: number
   } {
-    const totalQuestions = 12000
+    const totalQuestions = catalog ? catalog.subjects.reduce((acc, s) => acc + (s.totalQuestions || 0), 0) : 1200
     const totalCompleted = this.state.completedQuestionIds.length
-    const overallPct = Math.round((totalCompleted / totalQuestions) * 100)
+    const overallPct = totalQuestions > 0 ? Math.round((totalCompleted / totalQuestions) * 100) : 0
 
     return {
       totalQuestions,

@@ -227,6 +227,12 @@ export default function QuestionDetailStudio() {
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
                 <span className="mqb-qcard-id" style={{ fontSize: '0.9rem' }}>{question.id.toUpperCase()}</span>
                 <span className={`mqb-diff-pill ${question.difficulty}`}>{question.difficulty}</span>
+                {question.isHighFrequency && (
+                  <span className="mqb-highfreq-badge">🔥 FAANG High Frequency</span>
+                )}
+                {question.companyTags && question.companyTags.map(comp => (
+                  <span key={comp} className="mqb-company-badge">🏢 {comp}</span>
+                ))}
                 <span className="mqb-type-pill">{question.questionType}</span>
                 <span className="mqb-tag-pill">{question.topic}</span>
                 <span className="mqb-tag-pill" style={{ color: 'var(--mqb-text-muted)' }}>

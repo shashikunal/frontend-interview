@@ -56,6 +56,8 @@ export interface MasterQuestion {
   difficulty: QuestionDifficulty // EASY | INTERMEDIATE | DIFFICULT
   questionType: QuestionType     // CONCEPTUAL | CODE | OUTPUT | etc.
   experienceLevel: ExperienceLevel // FRESHER | 1_3_YEARS | etc.
+  isHighFrequency?: boolean       // True for FAANG top asked questions
+  companyTags?: string[]           // e.g. ["Google", "Meta", "Amazon"]
   tags: string[]                 // ["semantics", "a11y", "seo"]
 
   // Mandatory 13 Deep Content Sections

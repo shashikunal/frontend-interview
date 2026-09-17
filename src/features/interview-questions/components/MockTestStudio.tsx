@@ -11,6 +11,8 @@ export default function MockTestStudio() {
   // Test setup
   const [selectedSubject, setSelectedSubject] = useState<MasterSubjectId | 'all'>(initialSubject)
   const [testDifficulty, setTestDifficulty] = useState<string>('EASY')
+  const [selectedCompany, setSelectedCompany] = useState<string>('ALL')
+  const [highFreqOnly, setHighFreqOnly] = useState<boolean>(false)
   const [questionCount, setQuestionCount] = useState<number>(10)
   const [isTestActive, setIsTestActive] = useState<boolean>(false)
   const [isTestFinished, setIsTestFinished] = useState<boolean>(false)
@@ -24,7 +26,11 @@ export default function MockTestStudio() {
 
   // Start the test
   const handleStartTest = async () => {
-    const set = await interviewQuestionsDataService.getRandomPracticeSet(selectedSubject, questionCount, testDifficulty)
+    const set = await interviewQuestionsDataService.getRandomPracticeSet(
+      selectedSubject,
+      questionCount,
+      { difficulty: testDifficulty, companyTag: selectedCompany, highFreqOnly }
+    )
     setTestQuestions(set)
     setCurrentQIndex(0)
     setUserAnswers({})
@@ -169,6 +175,45 @@ export default function MockTestStudio() {
                   onClick={() => setTestDifficulty('DIFFICULT')}
                 >
                   🔥 Advanced Only
+                </button>
+              </div>
+            </div>
+
+            {/* Target Tech Company Track */}
+            <div>
+              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: 'var(--mqb-text-muted)', marginBottom: '0.5rem', textTransform: 'uppercase' }}>
+                Target Tech Company Focus (Optional)
+              </label>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                <select
+                  className="mqb-filter-select"
+                  style={{ width: '100%', padding: '0.75rem' }}
+                  value={selectedCompany}
+                  onChange={e => setSelectedCompany(e.target.value)}
+                >
+                  <option value="ALL">All Companies (General Mock)</option>
+                  <option value="Google">🏢 Google Track</option>
+                  <option value="Meta">🏢 Meta (Facebook) Track</option>
+                  <option value="Amazon">🏢 Amazon Track</option>
+                  <option value="Microsoft">🏢 Microsoft Track</option>
+                  <option value="Netflix">🏢 Netflix Track</option>
+                  <option value="Apple">🏢 Apple Track</option>
+                </select>
+
+                <button
+                  type="button"
+                  className="mqb-action-pill-btn"
+                  onClick={() => setHighFreqOnly(!highFreqOnly)}
+                  style={{
+                    padding: '0.75rem',
+                    justifyContent: 'center',
+                    background: highFreqOnly ? 'rgba(245,158,11,0.2)' : 'var(--mqb-input-bg)',
+                    color: highFreqOnly ? '#fbbf24' : 'var(--mqb-text-secondary)',
+                    border: highFreqOnly ? '1px solid rgba(245,158,11,0.5)' : '1px solid var(--mqb-border)',
+                    fontWeight: 700,
+                  }}
+                >
+                  {highFreqOnly ? '🔥 High-Frequency FAANG Pool (Active)' : '🔥 Target Top-Asked Questions'}
                 </button>
               </div>
             </div>
