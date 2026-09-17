@@ -43,6 +43,7 @@ import {
   type OverviewDataSource,
 } from '../../lib/adminAnalyticsService'
 import { AdminDocsSyllabusView } from './admin/AdminDocsSyllabusView'
+import MasterBankAdminTab from '../../features/interview-questions/components/MasterBankAdminTab'
 import './AdminDashboard.css'
 
 // NOTE: Platform track stats are derived from live adminAnalyticsService data.
@@ -53,6 +54,7 @@ export type AdminTab =
   | 'candidates'
   | 'users'
   | 'docs'
+  | 'master_bank'
   | 'live'
   | 'rankings'
   | 'questions'
@@ -101,6 +103,7 @@ export default function AdminDashboard() {
     if (clean === 'candidates' || clean === 'hiring' || clean === 'evaluations') return 'candidates'
     if (clean === 'users' || clean === 'directory') return 'users'
     if (clean === 'docs' || clean === 'syllabus' || clean === 'documentation') return 'docs'
+    if (clean === 'master_bank' || clean === 'master-bank' || clean === 'interview-bank' || clean === 'interview-questions') return 'master_bank'
     if (clean === 'live' || clean === 'live-sessions') return 'live'
     if (clean === 'rankings' || clean === 'leaderboard') return 'rankings'
     if (clean === 'submissions') return 'submissions'
@@ -809,6 +812,16 @@ export default function AdminDashboard() {
 
           <button
             type="button"
+            className={`h-nav-item ${activeTab === 'master_bank' ? 'active' : ''}`}
+            onClick={() => { setActiveTab('master_bank'); setIsMobileSidebarOpen(false); }}
+          >
+            <span className="h-nav-icon">🎯</span>
+            <span>Master Bank (12K)</span>
+            <span className="h-nav-badge" style={{ background: '#0ea5e9', color: '#ffffff' }}>12K</span>
+          </button>
+
+          <button
+            type="button"
             className={`h-nav-item ${activeTab === 'live' ? 'active' : ''}`}
             onClick={() => { setActiveTab('live'); setIsMobileSidebarOpen(false); }}
           >
@@ -1212,6 +1225,12 @@ export default function AdminDashboard() {
       {activeTab === 'docs' && (
         <div className="admin-tab-content">
           <AdminDocsSyllabusView profiles={profiles} />
+        </div>
+      )}
+
+      {activeTab === 'master_bank' && (
+        <div className="admin-tab-content">
+          <MasterBankAdminTab />
         </div>
       )}
 

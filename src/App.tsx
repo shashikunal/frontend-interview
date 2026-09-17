@@ -52,6 +52,8 @@ const Leaderboard = lazy(() => import('./components/leaderboard/Leaderboard'))
 const AIVideoMockApp = lazy(() => import('./features/ai-video-mock/AIVideoMockApp'))
 const StudentPerformanceView = lazy(() => import('./features/performance-history/components/student/StudentPerformanceView'))
 const DocsPlatform = lazy(() => import('./features/interview-docs/DocsPlatform'))
+const MasterQuestionBankApp = lazy(() => import('./features/interview-questions/MasterQuestionBankApp'))
+const MeetingRoom = lazy(() => import('./features/meetings/components/MeetingRoom'))
 const NotFoundPage = lazy(() => import('./components/common/NotFoundPage'))
 import RoleGuard from './components/auth/RoleGuard'
 import { useAuth } from './context/AuthContext'
@@ -75,21 +77,23 @@ export default function App() {
     (Boolean(new URLSearchParams(location.search).get('id')) || location.pathname.startsWith('/dsa/DSA') || location.pathname.startsWith('/dsa/question/') || location.pathname.startsWith('/frontend-javascript/question/') || location.pathname.startsWith('/frontend-javascript/FJP') || location.pathname.startsWith('/frontend-js/question/') || location.pathname.startsWith('/frontend-js/FJP') || location.pathname.startsWith('/core-programming/question/') || location.pathname.startsWith('/core-programming/JS-P') || location.pathname.startsWith('/frontend-programming/question/') || location.pathname.startsWith('/frontend-programming/JS-P'))
   const isAIVideoMockLiveSession = location.pathname.startsWith('/ai-video-mock/session')
   const isDocsPlatform = location.pathname.startsWith('/docs')
-  const hideHeader = isAdminDashboard
-  const hideFooter = isAdminDashboard || isStudioWorkspace || isAIVideoMockLiveSession || isDocsPlatform
+  const isMeetingRoom = location.pathname.startsWith('/meet')
+  const hideHeader = isAdminDashboard || isMeetingRoom
+  const hideFooter = isAdminDashboard || isStudioWorkspace || isAIVideoMockLiveSession || isDocsPlatform || isMeetingRoom
 
   return (
-    <div className={`app ${isAdminDashboard ? 'dashboard-layout-mode' : ''} ${isStudioWorkspace ? 'studio-layout-mode' : ''} ${isDocsPlatform ? 'docs-layout-mode' : ''}`}>
+    <div className={`app ${isAdminDashboard ? 'dashboard-layout-mode' : ''} ${isStudioWorkspace ? 'studio-layout-mode' : ''} ${isDocsPlatform ? 'docs-layout-mode' : ''} ${isMeetingRoom ? 'meeting-layout-mode' : ''}`}>
       <ScrollToTop />
       {!hideHeader && <Header />}
       <AuthModal />
       <AchievementUnlockToast />
       <DocsCommandPalette />
-      <main className={`main-content ${isAdminDashboard ? 'dashboard-main-content' : ''} ${isStudioWorkspace ? 'studio-main-content' : ''} ${isDocsPlatform ? 'docs-main-content' : ''}`}>
+      <main className={`main-content ${isAdminDashboard ? 'dashboard-main-content' : ''} ${isStudioWorkspace ? 'studio-main-content' : ''} ${isDocsPlatform ? 'docs-main-content' : ''} ${isMeetingRoom ? 'meeting-main-content' : ''}`}>
         <Suspense fallback={<div className="app-route-loader"><div className="app-route-spinner" /><p>Loading masterclass studio...</p></div>}>
           <div key={location.pathname} className="app-page-transition">
             <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/meet/:meetingId" element={<MeetingRoom />} />
           <Route path="/docs/*" element={<DocsPlatform />} />
           <Route
             path="/profile"
@@ -625,6 +629,12 @@ export default function App() {
                 <QuestionDetailPage />
               </FeatureGuard>
             }
+          />
+
+          {/* Frontend Interview Master Question Bank (12,000 Questions) */}
+          <Route
+            path="/interview-questions/*"
+            element={<MasterQuestionBankApp />}
           />
 
           {/* Machine Coding Masterclass Studio */}

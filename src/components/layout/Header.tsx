@@ -170,6 +170,11 @@ export default function Header() {
                 />
               </form>
 
+              {/* 1a. Master Question Bank (12K Questions) */}
+              <Link to="/interview-questions" className={`nav-link ${isActive('/interview-questions') ? 'active' : ''}`}>
+                🎯 Master Bank <span style={{ fontSize: '0.68rem', padding: '0.12rem 0.35rem', borderRadius: '4px', background: 'linear-gradient(135deg, #0ea5e9, #6366f1)', color: '#fff', fontWeight: 700, marginLeft: '0.2rem' }}>12K</span>
+              </Link>
+
               {/* 1. Direct Questions Bank Link */}
               <Link to="/questions" className={`nav-link ${isActive('/questions') ? 'active' : ''}`}>
                 Questions
@@ -1031,6 +1036,15 @@ export default function Header() {
             <>
               <div className="mobile-nav-group">
                 <span className="mobile-group-title">Practice &amp; Learn</span>
+                <Link to="/interview-questions" className={`mobile-nav-item ${isActive('/interview-questions') ? 'active' : ''}`} onClick={closeMobileMenu}>
+                  <span className="m-icon">🎯</span>
+                  <div className="m-text">
+                    <span className="m-label">Master Question Bank</span>
+                    <span className="m-sub">12,000 deep interview questions</span>
+                  </div>
+                  <span className="m-badge-pill" style={{ background: 'linear-gradient(135deg, #0ea5e9, #6366f1)', color: '#fff' }}>12K</span>
+                </Link>
+
                 <Link to="/docs" className={`mobile-nav-item ${isActive('/docs') ? 'active' : ''}`} onClick={closeMobileMenu}>
                   <span className="m-icon">🎓</span>
                   <div className="m-text">

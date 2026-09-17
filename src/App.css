@@ -55,11 +55,21 @@
 .main-content:has(.docs-platform-root),
 .main-content.docs-main-content,
 .main-content.dashboard-main-content,
-.main-content.studio-main-content {
+.main-content.studio-main-content,
+.main-content.meeting-main-content {
   padding: 0 !important;
   margin: 0 !important;
   max-width: none !important;
   width: 100% !important;
+  height: 100vh !important;
+  overflow: hidden !important;
+}
+
+.app.meeting-layout-mode {
+  height: 100vh;
+  max-height: 100vh;
+  overflow: hidden;
+  background: #0b1437;
 }
 
 .app.docs-layout-mode {

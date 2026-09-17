@@ -104,6 +104,285 @@ function localAdminAuthPlugin(): Plugin {
           res.end(JSON.stringify({ error: err?.message || 'Server error' }))
         }
       })
+
+      // Local Dev Phase 1 Meeting Token API Middleware
+      server.middlewares.use('/api/v1/auth/token', async (req: any, res: any) => {
+        try {
+          // @ts-ignore
+          const { default: handler } = await import('./api/v1/auth/token.js')
+          res.status = (code: number) => { res.statusCode = code; return res }
+          res.json = (data: any) => {
+            res.setHeader('Content-Type', 'application/json')
+            res.end(JSON.stringify(data))
+            return res
+          }
+
+          if (req.method === 'POST') {
+            let body = ''
+            req.on('data', (chunk: any) => { body += chunk })
+            req.on('end', async () => {
+              try { req.body = JSON.parse(body || '{}') } catch { req.body = {} }
+              await handler(req, res)
+            })
+            return
+          }
+
+          await handler(req, res)
+        } catch (err: any) {
+          res.statusCode = 500
+          res.setHeader('Content-Type', 'application/json')
+          res.end(JSON.stringify({ error: err?.message || 'Server error' }))
+        }
+      })
+
+      // Local Dev Phase 2 Meeting Lifecycle API Middleware
+      server.middlewares.use('/api/v1/meetings/lifecycle', async (req: any, res: any) => {
+        try {
+          // @ts-ignore
+          const { default: handler } = await import('./api/v1/meetings/lifecycle.js')
+          res.status = (code: number) => { res.statusCode = code; return res }
+          res.json = (data: any) => {
+            res.setHeader('Content-Type', 'application/json')
+            res.end(JSON.stringify(data))
+            return res
+          }
+
+          if (req.method === 'POST') {
+            let body = ''
+            req.on('data', (chunk: any) => { body += chunk })
+            req.on('end', async () => {
+              try { req.body = JSON.parse(body || '{}') } catch { req.body = {} }
+              await handler(req, res)
+            })
+            return
+          }
+
+          await handler(req, res)
+        } catch (err: any) {
+          res.statusCode = 500
+          res.setHeader('Content-Type', 'application/json')
+          res.end(JSON.stringify({ error: err?.message || 'Server error' }))
+        }
+      })
+
+      // Local Dev Phase 2 Meetings API Middleware
+      server.middlewares.use('/api/v1/meetings', async (req: any, res: any) => {
+        try {
+          // @ts-ignore
+          const { default: handler } = await import('./api/v1/meetings/index.js')
+          res.status = (code: number) => { res.statusCode = code; return res }
+          res.json = (data: any) => {
+            res.setHeader('Content-Type', 'application/json')
+            res.end(JSON.stringify(data))
+            return res
+          }
+
+          if (req.method === 'POST') {
+            let body = ''
+            req.on('data', (chunk: any) => { body += chunk })
+            req.on('end', async () => {
+              try { req.body = JSON.parse(body || '{}') } catch { req.body = {} }
+              await handler(req, res)
+            })
+            return
+          }
+
+          await handler(req, res)
+        } catch (err: any) {
+          res.statusCode = 500
+          res.setHeader('Content-Type', 'application/json')
+          res.end(JSON.stringify({ error: err?.message || 'Server error' }))
+        }
+      })
+
+      // Local Dev Phase 3 Meeting Invitations API Middleware
+      server.middlewares.use('/api/v1/meetings/invite', async (req: any, res: any) => {
+        try {
+          // @ts-ignore
+          const { default: handler } = await import('./api/v1/meetings/invite.js')
+          res.status = (code: number) => { res.statusCode = code; return res }
+          res.json = (data: any) => {
+            res.setHeader('Content-Type', 'application/json')
+            res.end(JSON.stringify(data))
+            return res
+          }
+
+          if (req.method === 'POST') {
+            let body = ''
+            req.on('data', (chunk: any) => { body += chunk })
+            req.on('end', async () => {
+              try { req.body = JSON.parse(body || '{}') } catch { req.body = {} }
+              await handler(req, res)
+            })
+            return
+          }
+
+          await handler(req, res)
+        } catch (err: any) {
+          res.statusCode = 500
+          res.setHeader('Content-Type', 'application/json')
+          res.end(JSON.stringify({ error: err?.message || 'Server error' }))
+        }
+      })
+
+      // Local Dev Phase 3 Meeting Join Pipeline API Middleware
+      server.middlewares.use('/api/v1/meetings/join', async (req: any, res: any) => {
+        try {
+          // @ts-ignore
+          const { default: handler } = await import('./api/v1/meetings/join.js')
+          res.status = (code: number) => { res.statusCode = code; return res }
+          res.json = (data: any) => {
+            res.setHeader('Content-Type', 'application/json')
+            res.end(JSON.stringify(data))
+            return res
+          }
+
+          if (req.method === 'POST') {
+            let body = ''
+            req.on('data', (chunk: any) => { body += chunk })
+            req.on('end', async () => {
+              try { req.body = JSON.parse(body || '{}') } catch { req.body = {} }
+              await handler(req, res)
+            })
+            return
+          }
+
+          await handler(req, res)
+        } catch (err: any) {
+          res.statusCode = 500
+          res.setHeader('Content-Type', 'application/json')
+          res.end(JSON.stringify({ error: err?.message || 'Server error' }))
+        }
+      })
+
+      // Local Dev Phase 4 WebRTC / SFU Media Token API Middleware
+      server.middlewares.use('/api/v1/meetings/media-token', async (req: any, res: any) => {
+        try {
+          // @ts-ignore
+          const { default: handler } = await import('./api/v1/meetings/media-token.js')
+          res.status = (code: number) => { res.statusCode = code; return res }
+          res.json = (data: any) => {
+            res.setHeader('Content-Type', 'application/json')
+            res.end(JSON.stringify(data))
+            return res
+          }
+
+          if (req.method === 'POST') {
+            let body = ''
+            req.on('data', (chunk: any) => { body += chunk })
+            req.on('end', async () => {
+              try { req.body = JSON.parse(body || '{}') } catch { req.body = {} }
+              await handler(req, res)
+            })
+            return
+          }
+
+          await handler(req, res)
+        } catch (err: any) {
+          res.statusCode = 500
+          res.setHeader('Content-Type', 'application/json')
+          res.end(JSON.stringify({ error: err?.message || 'Server error' }))
+        }
+      })
+
+      // Local Dev Phase 5 In-Meeting Chat API Middleware
+      server.middlewares.use('/api/v1/meetings/chat', async (req: any, res: any) => {
+        try {
+          // @ts-ignore
+          const { default: handler } = await import('./api/v1/meetings/chat.js')
+          const urlObj = new URL(req.url || '/', 'http://localhost')
+          req.query = Object.fromEntries(urlObj.searchParams.entries())
+
+          res.status = (code: number) => { res.statusCode = code; return res }
+          res.json = (data: any) => {
+            res.setHeader('Content-Type', 'application/json')
+            res.end(JSON.stringify(data))
+            return res
+          }
+
+          if (req.method === 'POST') {
+            let body = ''
+            req.on('data', (chunk: any) => { body += chunk })
+            req.on('end', async () => {
+              try { req.body = JSON.parse(body || '{}') } catch { req.body = {} }
+              await handler(req, res)
+            })
+            return
+          }
+
+          await handler(req, res)
+        } catch (err: any) {
+          res.statusCode = 500
+          res.setHeader('Content-Type', 'application/json')
+          res.end(JSON.stringify({ error: err?.message || 'Server error' }))
+        }
+      })
+
+      // Local Dev Phase 6 In-Meeting Whiteboard API Middleware
+      server.middlewares.use('/api/v1/meetings/whiteboard', async (req: any, res: any) => {
+        try {
+          // @ts-ignore
+          const { default: handler } = await import('./api/v1/meetings/whiteboard.js')
+          const urlObj = new URL(req.url || '/', 'http://localhost')
+          req.query = Object.fromEntries(urlObj.searchParams.entries())
+
+          res.status = (code: number) => { res.statusCode = code; return res }
+          res.json = (data: any) => {
+            res.setHeader('Content-Type', 'application/json')
+            res.end(JSON.stringify(data))
+            return res
+          }
+
+          if (req.method === 'POST') {
+            let body = ''
+            req.on('data', (chunk: any) => { body += chunk })
+            req.on('end', async () => {
+              try { req.body = JSON.parse(body || '{}') } catch { req.body = {} }
+              await handler(req, res)
+            })
+            return
+          }
+
+          await handler(req, res)
+        } catch (err: any) {
+          res.statusCode = 500
+          res.setHeader('Content-Type', 'application/json')
+          res.end(JSON.stringify({ error: err?.message || 'Server error' }))
+        }
+      })
+
+      // Local Dev Phase 7 In-Meeting Collaborative Code Editor API Middleware
+      server.middlewares.use('/api/v1/meetings/editor', async (req: any, res: any) => {
+        try {
+          // @ts-ignore
+          const { default: handler } = await import('./api/v1/meetings/editor.js')
+          const urlObj = new URL(req.url || '/', 'http://localhost')
+          req.query = Object.fromEntries(urlObj.searchParams.entries())
+
+          res.status = (code: number) => { res.statusCode = code; return res }
+          res.json = (data: any) => {
+            res.setHeader('Content-Type', 'application/json')
+            res.end(JSON.stringify(data))
+            return res
+          }
+
+          if (req.method === 'POST') {
+            let body = ''
+            req.on('data', (chunk: any) => { body += chunk })
+            req.on('end', async () => {
+              try { req.body = JSON.parse(body || '{}') } catch { req.body = {} }
+              await handler(req, res)
+            })
+            return
+          }
+
+          await handler(req, res)
+        } catch (err: any) {
+          res.statusCode = 500
+          res.setHeader('Content-Type', 'application/json')
+          res.end(JSON.stringify({ error: err?.message || 'Server error' }))
+        }
+      })
     },
   }
 }

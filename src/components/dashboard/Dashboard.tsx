@@ -31,6 +31,7 @@ import { adminAnalyticsService } from '../../lib/adminAnalyticsService'
 import StudentPerformanceView from '../../features/performance-history/components/student/StudentPerformanceView'
 import { CandidateDocsSyllabusTracker } from './CandidateDocsSyllabusTracker'
 import { docsProgressService } from '../../features/interview-docs/services/docsProgressService'
+import CandidateMasterBankCard from '../../features/interview-questions/components/CandidateMasterBankCard'
 import './Dashboard.css'
 
 function catClass(name: string): string {
@@ -672,6 +673,11 @@ function CandidateDashboard() {
           </div>
         </div>
       )}
+
+      {/* Master Question Bank (12,000 Questions) */}
+      <div style={{ marginBottom: '1.75rem' }}>
+        <CandidateMasterBankCard />
+      </div>
 
       {/* Hero Stats Row */}
       <div className="dashboard-stats-grid">
