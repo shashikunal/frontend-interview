@@ -2,6 +2,10 @@
   "version": 2,
   "rewrites": [
     {
+      "source": "/api/v1/meetings/:subpath*",
+      "destination": "/api/v1/meetings?_subpath=:subpath*"
+    },
+    {
       "source": "/((?!api/.*).*)",
       "destination": "/index.html"
     }

@@ -2,9 +2,9 @@
 // Control Plane: Secure Join Validation Pipeline
 // Validates meeting status, access tokens, invitations, rate limits, and issues short-lived session tokens
 
-import { invitationService } from '../../../server/meetings/invitationService.ts';
-import { tokenService } from '../../../server/auth/tokenService.ts';
-import { createErrorResponse } from '../../../server/auth/rbacMiddleware.ts';
+import { invitationService } from '../../../../server/meetings/invitationService.ts';
+import { tokenService } from '../../../../server/auth/tokenService.ts';
+import { createErrorResponse } from '../../../../server/auth/rbacMiddleware.ts';
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');

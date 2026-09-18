@@ -2,9 +2,9 @@
 // Media & Realtime Plane: In-Meeting Multi-Party Chat & Direct Messaging
 // Handles message dispatch, direct message privacy isolation, threading, and reactions
 
-import { tokenService } from '../../../server/auth/tokenService.ts';
-import { chatService } from '../../../server/meetings/chatService.ts';
-import { createErrorResponse } from '../../../server/auth/rbacMiddleware.ts';
+import { tokenService } from '../../../../server/auth/tokenService.ts';
+import { chatService } from '../../../../server/meetings/chatService.ts';
+import { createErrorResponse } from '../../../../server/auth/rbacMiddleware.ts';
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');

@@ -139,7 +139,7 @@ function localAdminAuthPlugin(): Plugin {
       server.middlewares.use('/api/v1/meetings/lifecycle', async (req: any, res: any) => {
         try {
           // @ts-ignore
-          const { default: handler } = await import('./api/v1/meetings/lifecycle.js')
+          const { default: handler } = await import('./api/v1/meetings/_handlers/lifecycle.js')
           res.status = (code: number) => { res.statusCode = code; return res }
           res.json = (data: any) => {
             res.setHeader('Content-Type', 'application/json')
@@ -199,7 +199,7 @@ function localAdminAuthPlugin(): Plugin {
       server.middlewares.use('/api/v1/meetings/invite', async (req: any, res: any) => {
         try {
           // @ts-ignore
-          const { default: handler } = await import('./api/v1/meetings/invite.js')
+          const { default: handler } = await import('./api/v1/meetings/_handlers/invite.js')
           res.status = (code: number) => { res.statusCode = code; return res }
           res.json = (data: any) => {
             res.setHeader('Content-Type', 'application/json')
@@ -229,7 +229,7 @@ function localAdminAuthPlugin(): Plugin {
       server.middlewares.use('/api/v1/meetings/join', async (req: any, res: any) => {
         try {
           // @ts-ignore
-          const { default: handler } = await import('./api/v1/meetings/join.js')
+          const { default: handler } = await import('./api/v1/meetings/_handlers/join.js')
           res.status = (code: number) => { res.statusCode = code; return res }
           res.json = (data: any) => {
             res.setHeader('Content-Type', 'application/json')
@@ -259,7 +259,7 @@ function localAdminAuthPlugin(): Plugin {
       server.middlewares.use('/api/v1/meetings/media-token', async (req: any, res: any) => {
         try {
           // @ts-ignore
-          const { default: handler } = await import('./api/v1/meetings/media-token.js')
+          const { default: handler } = await import('./api/v1/meetings/_handlers/media-token.js')
           res.status = (code: number) => { res.statusCode = code; return res }
           res.json = (data: any) => {
             res.setHeader('Content-Type', 'application/json')
@@ -289,7 +289,7 @@ function localAdminAuthPlugin(): Plugin {
       server.middlewares.use('/api/v1/meetings/chat', async (req: any, res: any) => {
         try {
           // @ts-ignore
-          const { default: handler } = await import('./api/v1/meetings/chat.js')
+          const { default: handler } = await import('./api/v1/meetings/_handlers/chat.js')
           const urlObj = new URL(req.url || '/', 'http://localhost')
           req.query = Object.fromEntries(urlObj.searchParams.entries())
 
@@ -322,7 +322,7 @@ function localAdminAuthPlugin(): Plugin {
       server.middlewares.use('/api/v1/meetings/whiteboard', async (req: any, res: any) => {
         try {
           // @ts-ignore
-          const { default: handler } = await import('./api/v1/meetings/whiteboard.js')
+          const { default: handler } = await import('./api/v1/meetings/_handlers/whiteboard.js')
           const urlObj = new URL(req.url || '/', 'http://localhost')
           req.query = Object.fromEntries(urlObj.searchParams.entries())
 
@@ -355,7 +355,7 @@ function localAdminAuthPlugin(): Plugin {
       server.middlewares.use('/api/v1/meetings/editor', async (req: any, res: any) => {
         try {
           // @ts-ignore
-          const { default: handler } = await import('./api/v1/meetings/editor.js')
+          const { default: handler } = await import('./api/v1/meetings/_handlers/editor.js')
           const urlObj = new URL(req.url || '/', 'http://localhost')
           req.query = Object.fromEntries(urlObj.searchParams.entries())
 

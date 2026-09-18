@@ -2,9 +2,9 @@
 // Media & Realtime Plane: In-Meeting Collaborative Vector Whiteboard
 // Handles canvas state snapshot retrieval, shape upserts, deletions, and canvas clearing
 
-import { tokenService } from '../../../server/auth/tokenService.ts';
-import { whiteboardService } from '../../../server/meetings/whiteboardService.ts';
-import { createErrorResponse } from '../../../server/auth/rbacMiddleware.ts';
+import { tokenService } from '../../../../server/auth/tokenService.ts';
+import { whiteboardService } from '../../../../server/meetings/whiteboardService.ts';
+import { createErrorResponse } from '../../../../server/auth/rbacMiddleware.ts';
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');

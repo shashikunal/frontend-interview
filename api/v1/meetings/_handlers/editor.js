@@ -2,9 +2,9 @@
 // Media & Realtime Plane: In-Meeting Collaborative Monaco Code Editor & Sandbox
 // Handles code sync, language switching, template loading, host locking, and execution
 
-import { tokenService } from '../../../server/auth/tokenService.ts';
-import { editorService, BUILTIN_PROBLEM_TEMPLATES } from '../../../server/meetings/editorService.ts';
-import { createErrorResponse } from '../../../server/auth/rbacMiddleware.ts';
+import { tokenService } from '../../../../server/auth/tokenService.ts';
+import { editorService, BUILTIN_PROBLEM_TEMPLATES } from '../../../../server/meetings/editorService.ts';
+import { createErrorResponse } from '../../../../server/auth/rbacMiddleware.ts';
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');

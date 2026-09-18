@@ -1,11 +1,47 @@
 // REST API: /api/v1/meetings
-// Control Plane: Meeting List & Admin-Only Meeting Creation
+// Control Plane: Meeting List & Admin-Only Meeting Creation + Sub-route Router
 
 import { meetingService } from '../../../server/meetings/meetingService.ts';
 import { tokenService } from '../../../server/auth/tokenService.ts';
 import { createErrorResponse } from '../../../server/auth/rbacMiddleware.ts';
 
+import chatHandler from './_handlers/chat.js';
+import editorHandler from './_handlers/editor.js';
+import inviteHandler from './_handlers/invite.js';
+import joinHandler from './_handlers/join.js';
+import lifecycleHandler from './_handlers/lifecycle.js';
+import mediaTokenHandler from './_handlers/media-token.js';
+import whiteboardHandler from './_handlers/whiteboard.js';
+
 export default async function handler(req, res) {
+  const urlObj = new URL(req.url || '/', 'http://localhost');
+  const pathname = urlObj.pathname;
+  const subpath = (req.query?._subpath || urlObj.searchParams.get('_subpath') || '').toLowerCase();
+
+  // Dispatch to sub-handlers when invoked via Vercel rewrite or direct routing
+  if (pathname.endsWith('/chat') || pathname.includes('/chat') || subpath === 'chat') {
+    return chatHandler(req, res);
+  }
+  if (pathname.endsWith('/editor') || pathname.includes('/editor') || subpath === 'editor') {
+    return editorHandler(req, res);
+  }
+  if (pathname.endsWith('/invite') || pathname.includes('/invite') || subpath === 'invite') {
+    return inviteHandler(req, res);
+  }
+  if (pathname.endsWith('/join') || pathname.includes('/join') || subpath === 'join') {
+    return joinHandler(req, res);
+  }
+  if (pathname.endsWith('/lifecycle') || pathname.includes('/lifecycle') || subpath === 'lifecycle') {
+    return lifecycleHandler(req, res);
+  }
+  if (pathname.endsWith('/media-token') || pathname.includes('/media-token') || subpath === 'media-token') {
+    return mediaTokenHandler(req, res);
+  }
+  if (pathname.endsWith('/whiteboard') || pathname.includes('/whiteboard') || subpath === 'whiteboard') {
+    return whiteboardHandler(req, res);
+  }
+
+  // Base /api/v1/meetings handler
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
@@ -37,7 +73,6 @@ export default async function handler(req, res) {
 
   // GET: List Meetings
   if (req.method === 'GET') {
-    const urlObj = new URL(req.url || '/', 'http://localhost');
     const status = urlObj.searchParams.get('status') || undefined;
     const hostId = urlObj.searchParams.get('hostId') || undefined;
 

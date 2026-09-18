@@ -1,9 +1,9 @@
 // REST API: /api/v1/meetings/lifecycle
 // Control Plane: Explicit Server-Side Lifecycle State Transitions
 
-import { meetingService } from '../../../server/meetings/meetingService.ts';
-import { tokenService } from '../../../server/auth/tokenService.ts';
-import { createErrorResponse } from '../../../server/auth/rbacMiddleware.ts';
+import { meetingService } from '../../../../server/meetings/meetingService.ts';
+import { tokenService } from '../../../../server/auth/tokenService.ts';
+import { createErrorResponse } from '../../../../server/auth/rbacMiddleware.ts';
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');

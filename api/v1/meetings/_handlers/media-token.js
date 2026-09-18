@@ -2,10 +2,10 @@
 // Media Plane: WebRTC / SFU Credentials & Media Token Generation
 // Issues secure media token with role-based track publishing permissions
 
-import { tokenService } from '../../../server/auth/tokenService.ts';
-import { meetingService } from '../../../server/meetings/meetingService.ts';
-import { mediaTokenService } from '../../../server/meetings/mediaTokenService.ts';
-import { createErrorResponse } from '../../../server/auth/rbacMiddleware.ts';
+import { tokenService } from '../../../../server/auth/tokenService.ts';
+import { meetingService } from '../../../../server/meetings/meetingService.ts';
+import { mediaTokenService } from '../../../../server/meetings/mediaTokenService.ts';
+import { createErrorResponse } from '../../../../server/auth/rbacMiddleware.ts';
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
