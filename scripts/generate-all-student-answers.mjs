@@ -638,6 +638,337 @@ console.log("Step 3: Execution completed successfully:", outcome);`
   };
 }
 
+// Specialized authentic deep technical dive, historical why, internal engine mechanics, traps & follow-ups
+function generateSubjectDeepContent(subject, q, title) {
+  // 1. CSS
+  if (subject === 'css') {
+    return {
+      detailedExplanation: `### Deep Technical Dive: Browser Rendering & CSSOM Mechanics for ${title}\n\n1. **CSSOM & Render Tree Synthesis**: When the browser engine (Blink/Gecko/WebKit) parses stylesheets, it constructs the CSS Object Model (CSSOM). The engine pairs CSSOM rules with the DOM tree to form the Render Tree, calculating computed styles for every visible node.\n2. **Box Model & Layout Calculation**: During the **Layout (Reflow)** phase, the layout engine calculates the geometry—exact coordinates (x, y) and bounding dimensions (width, height)—governed by the box-sizing property, display mode (block, inline, flex, grid), and parent containing blocks.\n3. **Paint & Hardware Compositing**: Visible properties (backgrounds, borders, text) are rasterized into bitmaps. Hardware-accelerated properties (transform, opacity) are promoted to GPU compositor layers, avoiding full-page reflow and maintaining 60fps/120fps rendering smoothness.`,
+      why: `Why is ${title} essential in modern CSS architecture?\n1. Solves the brittle calculation challenges in legacy web design where margins, padding, and borders caused unpredictable column overflows.\n2. Establishes a predictable layout contract for responsive multi-device layouts (mobile, tablet, desktop).\n3. Allows modern component libraries and design systems to scale cleanly across engineering teams without custom math or fragile overrides.`,
+      howItWorks: `How it works under the hood in the browser rendering engine:\n1. **Parsing Phase**: The browser CSS parser tokenizes rules and resolves declarations into the CSSOM.\n2. **Cascade Resolution**: Relative units (rem, em, %, vh, vw) are calculated into absolute device pixel values.\n3. **Layout Tree Box Generation**: The engine generates rectangular boxes following the W3C Box Model and formatting contexts.\n4. **Raster & Composite**: Pixel data is painted onto bitmaps and dispatched to the GPU compositor for rendering.`,
+      realWorldExample: `Production Scenario: Building a responsive multi-column dashboard card grid (like Airbnb or Flipkart) where cards have borders and internal padding. Without proper box-sizing, adjacent columns wrap unpredictably and break the grid layout.`,
+      lineByLineExplanation: [
+        { line: 1, code: `/* CSS Rule Definition */`, explanation: `Selects matching elements across the DOM tree for styling.` },
+        { line: 2, code: `box-sizing: border-box;`, explanation: `Forces padding and border to be calculated inside the declared width/height bounds.` },
+        { line: 3, code: `display: flex; /* or grid */`, explanation: `Establishes a modern layout formatting context for child elements.` },
+        { line: 4, code: `transition: all 0.2s ease;`, explanation: `Defines hardware-accelerated property transitions for smooth interactive feedback.` }
+      ],
+      executionFlow: [
+        `Step 1: Browser parses CSS text into the CSS Object Model (CSSOM).`,
+        `Step 2: Combines DOM and CSSOM to build the Render Tree.`,
+        `Step 3: Reflow phase computes exact pixel coordinates and bounding dimensions.`,
+        `Step 4: Paint phase rasterizes background, colors, borders, and typography into pixels.`,
+        `Step 5: Compositor uploads bitmap layers to the GPU for final display on screen.`
+      ],
+      commonMistakes: [
+        `Forgetting to apply box-sizing: border-box to ::before and ::after pseudo-elements.`,
+        `Overusing !important to override specificity issues instead of managing cascade layers.`,
+        `Triggering expensive layout reflows by animating width, height, or top/left instead of CSS transforms.`
+      ],
+      interviewTraps: [
+        `Interviewer may ask how specificity is resolved when two rules have identical specificity weight (source order wins).`,
+        `How margin collapsing behaves vertically between adjacent sibling elements vs parent-child margins.`,
+        `The difference between Layout (Reflow) and Paint performance costs in modern browser engines.`
+      ],
+      interviewTips: [
+        `Always mention the browser rendering pipeline: DOM + CSSOM -> Render Tree -> Layout -> Paint -> Composite.`,
+        `Emphasize mobile responsiveness, accessibility (focus rings, contrast ratios), and Core Web Vitals (CLS).`,
+        `Show mastery of modern layout tools (Flexbox, Grid) over legacy floats or table hacks.`
+      ],
+      followUps: [
+        `How does the browser handle margin collapsing with this layout?`,
+        `What is the difference between Reflow and Repaint, and how do you optimize for it?`,
+        `How do CSS Cascade Layers (@layer) solve specificity conflicts in large applications?`
+      ],
+      followUpAnswers: [
+        `Vertical margins collapse between adjacent block-level elements in normal flow; padding, borders, or flex/grid containers prevent collapse.`,
+        `Reflow recalculates geometry (width, height, position) on the CPU; Repaint only redraws visual colors without recalculating dimensions.`,
+        `CSS @layer allows developers to control the precedence order of style layers explicitly, regardless of selector specificity score.`
+      ]
+    };
+  }
+
+  // 2. HTML
+  if (subject === 'html') {
+    return {
+      detailedExplanation: `### Deep Technical Dive: DOM Tree Construction, Semantic Tokens & Accessibility for ${title}\n\n1. **Tokenization & Tree Construction**: The HTML parser runs in the browser main thread, converting raw byte streams into characters, tokens (StartTag, EndTag, Character, Comment), and DOM Nodes following the WHATWG HTML specification.\n2. **Accessibility Object Model (AOM)**: Semantic tags automatically register standard ARIA roles, states, and properties into the browser's accessibility tree, enabling assistive technologies (screen readers) to navigate headings and landmark regions natively.\n3. **SEO & Web Crawler Architecture**: Search engine crawlers (Googlebot) parse semantic HTML structure to determine primary document hierarchy (h1-h6, article, nav, main), optimizing Core Web Vitals and organic indexing.`,
+      why: `Why is ${title} foundational in modern HTML5?\n1. Eliminates unsemantic 'div soup' and provides meaningful, self-describing structural hierarchy.\n2. Delivers built-in screen reader accessibility and keyboard focusability without requiring manual ARIA hacks.\n3. Enhances web crawler comprehension, social sharing meta previews, and Core Web Vitals performance.`,
+      howItWorks: `How it works under the hood:\n1. **Byte Stream Decoding**: Raw network bytes are decoded using the character encoding declared in <meta charset='UTF-8'>.\n2. **Tokenization State Machine**: Characters are scanned sequentially into discrete element tokens.\n3. **DOM Node Instantiation**: Nodes are constructed and linked parent-to-child in the live document tree.\n4. **AOM Mapping**: The browser simultaneously builds parallel Accessibility Object Model nodes for assistive devices.`,
+      realWorldExample: `Production Scenario: Accessible e-commerce product checkout page where screen reader users navigate between form inputs, labels, and payment confirmation buttons seamlessly with keyboard Tab/Enter controls.`,
+      lineByLineExplanation: [
+        { line: 1, code: `<main role="main">`, explanation: `Declares the primary document landmark for screen readers and SEO indexing.` },
+        { line: 2, code: `<section aria-labelledby="section-title">`, explanation: `Creates a distinct thematic region linked to its accessible header label.` },
+        { line: 3, code: `<button type="button">Action</button>`, explanation: `Provides native keyboard focusability (Tab) and Enter/Space activation.` }
+      ],
+      executionFlow: [
+        `Step 1: Network stream arrives as raw byte chunks.`,
+        `Step 2: HTML tokenizer converts characters into tag and attribute tokens.`,
+        `Step 3: Parser constructs live DOM Element tree in memory.`,
+        `Step 4: Browser builds the parallel Accessibility Object Model (AOM) tree.`,
+        `Step 5: Dispatches DOMContentLoaded event once the DOM tree is complete.`
+      ],
+      commonMistakes: [
+        `Using generic <div> elements with click handlers instead of native accessible <button> elements.`,
+        `Missing alt text on images or descriptive text on hyperlink anchors.`,
+        `Skipping heading levels (e.g. jumping from h1 directly to h4) which breaks screen reader navigation.`
+      ],
+      interviewTraps: [
+        `Interviewer asks why <button> is preferred over <div onClick>: buttons have native Enter/Space keyboard events and focusability for free.`,
+        `Difference between client-side rendering and semantic server-rendered HTML for search crawlers.`,
+        `How meta viewport tags impact responsive rendering and mobile scaling.`
+      ],
+      interviewTips: [
+        `Emphasize accessibility (WCAG 2.1 compliance) and keyboard navigation (Tab, Enter, Space).`,
+        `Explain the importance of semantic landmarks (<header>, <nav>, <main>, <footer>) for screen readers.`,
+        `Highlight Core Web Vitals (LCP, CLS, INP) directly tied to HTML loading strategies.`
+      ],
+      followUps: [
+        `Why is using semantic elements better for accessibility than using ARIA role attributes on divs?`,
+        `How does the browser parse HTML when it encounters a <script> tag without async or defer?`,
+        `What is the Accessibility Object Model (AOM) and how does it relate to the DOM?`
+      ],
+      followUpAnswers: [
+        `Native semantic elements provide built-in keyboard behaviors, focus states, and browser events for free, whereas ARIA roles require manual JavaScript event management.`,
+        `Without async or defer, the parser halts HTML document parsing, downloads the script, and executes it immediately before resuming.`,
+        `The AOM is an internal browser tree that mirrors the DOM, exposing semantic roles, accessible names, and states directly to the operating system accessibility API.`
+      ]
+    };
+  }
+
+  // 3. React
+  if (subject === 'react') {
+    return {
+      detailedExplanation: `### Deep Technical Dive: React Fiber Architecture, Reconciliation & Hooks for ${title}\n\n1. **Fiber Node & Work Loop**: React represents every component instance as a Fiber node (a lightweight JavaScript object with child, sibling, and return pointers). The Fiber reconciler breaks rendering work into incremental chunks that can be paused, resumed, or aborted based on priority.\n2. **Two-Phase Lifecycle (Render vs Commit)**:\n   - **Render Phase (Concurrent/Interruptible)**: React invokes component functions, constructs new Virtual DOM elements, and diffs them with current Fibers using O(n) heuristics (key props, type comparisons).\n   - **Commit Phase (Synchronous/Uninterruptible)**: React applies minimal computed DOM mutations (insert, update, delete) to the real browser DOM and fires layout effects.\n3. **Hooks Dispatcher & Linked List**: Hooks (useState, useEffect, useMemo) are stored as a sequentially linked list attached to the Fiber's memoizedState. This is why Hooks must always be called in the exact same order on every render.`,
+      why: `Why does ${title} exist in React architecture?\n1. Solves the performance and maintainability problems of manual imperative DOM manipulation.\n2. Provides predictable unidirectional data flow where UI is a pure function of State and Props (UI = f(state)).\n3. Enables concurrent rendering, automated state batching, and high-priority user interaction responsiveness.`,
+      howItWorks: `How it works under the hood in React Fiber:\n1. **Trigger**: State update scheduled via useState or dispatch.\n2. **Render Phase**: Fiber workLoop traverses the tree; computes new Virtual DOM nodes.\n3. **Reconciliation**: Diffing algorithm compares new elements against current Fiber nodes.\n4. **Commit Phase**: DOM mutations applied synchronously; passive effects (useEffect) queued for post-paint execution.`,
+      realWorldExample: `Production Scenario: Dynamic shopping cart or collaborative text editor where rapid user keystrokes update state while heavy background calculations run concurrently without freezing UI responsiveness.`,
+      lineByLineExplanation: [
+        { line: 1, code: `const [state, setState] = useState(initialValue);`, explanation: `Initializes hook node in Fiber memoizedState linked list.` },
+        { line: 2, code: `useEffect(() => { ... return () => cleanup(); }, [dep]);`, explanation: `Registers passive side-effect with cleanup callback run post-commit.` },
+        { line: 3, code: `return <Component key={item.id} {...props} />;`, explanation: `Returns React element; key prop guarantees O(1) reconciliation identity tracking.` }
+      ],
+      executionFlow: [
+        `Step 1: State setter function triggers re-render request.`,
+        `Step 2: React schedules Fiber work loop according to lane priority.`,
+        `Step 3: Component function executes; returns new Virtual DOM tree.`,
+        `Step 4: Diffing algorithm identifies minimum necessary DOM changes.`,
+        `Step 5: Commit phase synchronously updates real DOM; triggers useEffect callbacks post-paint.`
+      ],
+      commonMistakes: [
+        `Mutating state directly instead of using setter functions or immutable copies.`,
+        `Calling hooks conditionally or inside loops, which corrupts the Fiber hook linked list.`,
+        `Missing dependencies in useEffect dependency array leading to stale closures.`
+      ],
+      interviewTraps: [
+        `Why React state updates are asynchronous and batched in React 18 (Automatic Batching).`,
+        `Why using array index as key prop causes subtle UI bugs during list reordering or deletions.`,
+        `Difference between useEffect (asynchronous post-paint) and useLayoutEffect (synchronous pre-paint).`
+      ],
+      interviewTips: [
+        `Explain the formula UI = f(state) and unidirectional data flow.`,
+        `Show mastery of React Fiber 2-phase lifecycle: Render Phase vs Commit Phase.`,
+        `Highlight performance optimizations: React.memo, useCallback, useMemo, and virtualization.`
+      ],
+      followUps: [
+        `Why can't React hooks be called conditionally or inside loops?`,
+        `How does React Fiber differ from the legacy Stack reconciler?`,
+        `What is the difference between useEffect and useLayoutEffect in terms of timing?`
+      ],
+      followUpAnswers: [
+        `Hooks rely on a strict linked list order stored on the component Fiber; conditionals alter the traversal order and corrupt state associations.`,
+        `The Stack reconciler was synchronous and recursive (could not pause); Fiber represents a linked list work loop that can pause, resume, and prioritize renders.`,
+        `useLayoutEffect fires synchronously after DOM mutation but before the browser paints (blocks visual render); useEffect fires asynchronously after the paint.`
+      ]
+    };
+  }
+
+  // 4. Redux
+  if (subject === 'redux') {
+    return {
+      detailedExplanation: `### Deep Technical Dive: Redux Unidirectional Architecture & State Container for ${title}\n\n1. **Single Source of Truth & Immutability**: Redux maintains the entire application state in a single immutable JavaScript object tree inside the Store. State can never be mutated directly—only transformed by emitting Action objects.\n2. **Pure Reducer Functions**: Reducers are pure functions: (previousState, action) => newState. Given the same arguments, they must always return the exact same output without side effects, API calls, or non-deterministic mutations.\n3. **Middleware Pipeline & Subscriptions**: Actions flow through a sequential middleware chain (thunks, sagas, logging) before reaching reducers. Once updated, the store notifies subscriber components via selector equality checks, re-rendering only components whose selected state has changed.`,
+      why: `Why does ${title} exist in Redux state management?\n1. Solves the chaotic state synchronization bugs in large apps where multiple components share and modify the same data.\n2. Provides predictable, deterministic state transitions with complete time-travel debugging capabilities.\n3. Decouples business logic and side effects cleanly from UI view presentation.`,
+      howItWorks: `How it works under the hood in Redux:\n1. **Dispatch**: UI component calls dispatch(actionObject).\n2. **Middleware Pipeline**: Action passes through registered middleware (e.g. redux-thunk, RTK query).\n3. **Reducer Invocation**: Root reducer executes child slice reducers, producing next state immutably.\n4. **Subscriber Notification**: Store updates reference; useSelector listeners compare equality and trigger selective component re-renders.`,
+      realWorldExample: `Production Scenario: Global authentication and cart state in a large e-commerce platform (like Amazon or Flipkart) shared across headers, search pages, checkout screens, and payment gateways.`,
+      lineByLineExplanation: [
+        { line: 1, code: `const slice = createSlice({ name: 'cart', initialState, reducers: { ... } });`, explanation: `Defines slice containing initial state and pure reducer actions using Immer.` },
+        { line: 2, code: `dispatch(addItem({ id: 101, name: 'Phone' }));`, explanation: `Dispatches plain action object { type: 'cart/addItem', payload } to store.` },
+        { line: 3, code: `const cart = useSelector((state) => state.cart.items);`, explanation: `Subscribes component to specific slice; re-renders only when reference changes.` }
+      ],
+      executionFlow: [
+        `Step 1: User action triggers store.dispatch(action).`,
+        `Step 2: Middleware chain intercepts action (handles async thunks or logging).`,
+        `Step 3: Pure reducer calculates next state using structural sharing.`,
+        `Step 4: Redux Store updates root state tree reference.`,
+        `Step 5: useSelector hooks run equality checks; re-renders subscribed components.`
+      ],
+      commonMistakes: [
+        `Mutating state directly inside reducers instead of returning new objects (or using Immer in Redux Toolkit).`,
+        `Putting non-serializable data (Promises, functions, classes) into Redux store state.`,
+        `Over-centralizing ephemeral local UI state (like modal toggle or text input) into global Redux store.`
+      ],
+      interviewTraps: [
+        `Why reducers must be pure functions and never call Math.random() or Date.now() directly inside them.`,
+        `How Redux Toolkit uses Immer under the hood to allow "mutating" syntax while preserving strict immutability.`,
+        `The difference between Redux Thunk (imperative async functions) and Redux Saga (generator functions and channels).`
+      ],
+      interviewTips: [
+        `Draw the unidirectional data flow cycle: Action -> Middleware -> Reducer -> Store -> View.`,
+        `Emphasize why Redux Toolkit (RTK) is the modern industry standard over verbose legacy Redux boilerplate.`,
+        `Highlight selector memoization using createSelector (Reselect) for expensive derived data.`
+      ],
+      followUps: [
+        `Why must Redux reducers be pure functions?`,
+        `How does Redux Toolkit's createSlice simplify legacy Redux boilerplate?`,
+        `When should you use global Redux state vs React local component state (useState)?`
+      ],
+      followUpAnswers: [
+        `Pure reducers ensure deterministic state transitions, enabling time-travel debugging, undo/redo, and reliable shallow equality checks.`,
+        `createSlice generates action creators and action types automatically from reducer functions and integrates Immer for effortless immutable updates.`,
+        `Use local useState for component-specific UI state (input values, accordion toggles); use Redux for globally shared business data (auth user, shopping cart, theme).`
+      ]
+    };
+  }
+
+  // 5. TypeScript
+  if (subject === 'typescript') {
+    return {
+      detailedExplanation: `### Deep Technical Dive: TypeScript Compiler Architecture & Type Checking for ${title}\n\n1. **TypeScript Compiler (tsc) Pipeline**: The compiler operates in 5 distinct phases: (1) **Scanner** converts characters into tokens, (2) **Parser** builds the Abstract Syntax Tree (AST), (3) **Binder** links identifiers to symbols, (4) **Checker** performs semantic type validation and diagnostics, and (5) **Emitter** removes type annotations and produces standard JavaScript.\n2. **Structural Type System (Duck Typing)**: TypeScript uses structural typing rather than nominal typing. Two types are compatible if they possess the same shape and members, regardless of explicit inheritance declarations.\n3. **Type Erasure & Zero Runtime Overhead**: All types, interfaces, type aliases, and generics exist exclusively during compilation. At runtime in the browser, they are completely erased—meaning TypeScript adds zero kilobyte overhead to the production JavaScript bundle.`,
+      why: `Why does ${title} exist in TypeScript?\n1. Catches syntax, reference, and type mismatch errors at compile time before code ever reaches production.\n2. Acts as living, self-updating code documentation with rich IDE autocomplete (IntelliSense).\n3. Empowers large engineering teams to refactor massive codebases safely and fearlessly.`,
+      howItWorks: `How it works under the hood in the TypeScript compiler:\n1. **Tokenize & Parse**: Reads source text and builds the AST.\n2. **Symbol Binding**: Binder associates identifiers with symbol declarations in a scope tree.\n3. **Type Checking**: Semantic checker validates assignments, property accesses, and generic type constraints.\n4. **Code Emission**: Strips type syntax and emits JavaScript conforming to target ES version (ES6, ES2020, etc.).`,
+      realWorldExample: `Production Scenario: Large fintech payments gateway API integration where strict TypeScript interfaces validate request/response payloads, preventing missing fields and runtime null pointer crashes.`,
+      lineByLineExplanation: [
+        { line: 1, code: `interface Config<T> { data: T; readonly id: string; }`, explanation: `Defines generic contract with immutable identifier and parameterized data payload.` },
+        { line: 2, code: `function process<T>(item: Config<T>): T { ... }`, explanation: `Generic function preserving return type safety based on input argument type.` },
+        { line: 3, code: `const res = process({ data: 42, id: 'A1' });`, explanation: `Compiler infers T as number; validates all members strictly at compile time.` }
+      ],
+      executionFlow: [
+        `Step 1: Scanner tokenizes raw source text.`,
+        `Step 2: Parser constructs the Abstract Syntax Tree (AST).`,
+        `Step 3: Binder builds symbol tables and lexical scope hierarchy.`,
+        `Step 4: Type Checker validates contracts, generics, and narrows union types.`,
+        `Step 5: Emitter erases type annotations and outputs clean JavaScript.`
+      ],
+      commonMistakes: [
+        `Using 'any' type as a quick escape hatch, which completely disables type safety and defeated TypeScript's purpose.`,
+        `Overusing type assertions ('as Type') to silence compiler warnings instead of proper type narrowing with type guards.`,
+        `Confusing Type Aliases (type) and Interfaces (interface) when declaration merging is required.`
+      ],
+      interviewTraps: [
+        `The crucial difference between 'any' (turns off type checking) and 'unknown' (type-safe top type requiring narrowing before use).`,
+        `How TypeScript structural typing differs from nominal typing in languages like Java or C#.`,
+        `The difference between interface declaration merging vs type alias union compositions.`
+      ],
+      interviewTips: [
+        `Always recommend 'unknown' over 'any' for untrusted external API data.`,
+        `Showcase advanced utility types: Partial, Pick, Omit, Record, and ReturnType.`,
+        `Explain the concept of Discriminated Unions for modeling state machines.`
+      ],
+      followUps: [
+        `What is the difference between 'any', 'unknown', and 'never' in TypeScript?`,
+        `How does TypeScript's structural typing system differ from nominal typing?`,
+        `When should you use an 'interface' versus a 'type' alias in TypeScript?`
+      ],
+      followUpAnswers: [
+        `'any' disables type checking; 'unknown' is type-safe requiring narrowing before property access; 'never' represents values that can never occur (exhaustive checks).`,
+        `Structural typing compares the shape and properties of objects (duck typing); nominal typing requires explicit named class or interface declarations to be considered compatible.`,
+        `Use 'interface' for object shapes and public APIs that may require declaration merging; use 'type' for unions, primitives, tuples, and mapped types.`
+      ]
+    };
+  }
+
+  // 6. DOM, BOM, Web APIs
+  if (subject === 'dom' || subject === 'bom' || subject === 'web-apis') {
+    return {
+      detailedExplanation: `### Deep Technical Dive: Browser Architecture, Event Lifecycle & Web APIs for ${title}\n\n1. **Event Dispatch & Propagation Pipeline**: When an event occurs, the browser dispatches it through 3 phases: (1) **Capturing Phase** (window down to target element), (2) **Target Phase**, and (3) **Bubbling Phase** (target element back up to window). Event Delegation leverages bubbling to handle thousands of child events with a single parent listener.\n2. **DOM Mutability & Batching**: Direct DOM writes trigger expensive browser Layout and Paint operations. Using techniques like DocumentFragment, requestAnimationFrame, or virtual DOM reconciliation batches mutations to avoid layout thrashing.\n3. **Browser Sandbox & Storage Quotas**: Web APIs (LocalStorage, IndexedDB, Cache API, Web Workers) operate within browser security sandboxes per origin (protocol + domain + port), isolating memory and preventing cross-origin data contamination.`,
+      why: `Why is ${title} critical in frontend engineering?\n1. Connects JavaScript runtime logic to real user interface interactions and platform capabilities.\n2. Enables high-performance UI updates without blocking the browser main thread.\n3. Powers modern Single Page Applications (SPAs) and Progressive Web Apps (PWAs).`,
+      howItWorks: `How it works under the hood in the browser:\n1. **Event Registration**: Listeners are attached to internal C++ DOM node event target tables.\n2. **Hardware Interrupt to Event Object**: User interaction (mouse click, keyboard) triggers OS interrupt; browser packages it into a DOM Event object.\n3. **Propagation Cycle**: Event traverses down the DOM tree (capture) and bubbles up (bubble), firing matching callbacks.\n4. **Reflow/Repaint Throttling**: DOM mutations are queued and applied during the next browser vsync frame (typically 16.6ms).`,
+      realWorldExample: `Production Scenario: Infinite scroll product feed (like Instagram or Amazon) using IntersectionObserver to lazy-load images and fetch new pages seamlessly without freezing the main thread.`,
+      lineByLineExplanation: [
+        { line: 1, code: `const target = document.querySelector('#app');`, explanation: `Queries the live DOM tree and returns reference to matching element.` },
+        { line: 2, code: `target.addEventListener('click', handler, false);`, explanation: `Registers event listener on bubbling phase (third parameter defaults to false).` },
+        { line: 3, code: `event.stopPropagation();`, explanation: `Prevents event from continuing up the DOM bubbling chain.` }
+      ],
+      executionFlow: [
+        `Step 1: User interaction triggers browser hardware event.`,
+        `Step 2: Browser creates Synthetic Event object with target and timestamp.`,
+        `Step 3: Event travels down DOM tree during Capturing Phase.`,
+        `Step 4: Event fires on target element during Target Phase.`,
+        `Step 5: Event bubbles up through ancestor elements during Bubbling Phase.`
+      ],
+      commonMistakes: [
+        `Attaching separate event listeners to hundreds of list items instead of using Event Delegation on the parent container.`,
+        `Forgetting to clean up event listeners when elements are removed, creating detached DOM memory leaks.`,
+        `Reading layout properties (offsetHeight, clientWidth) immediately after modifying styles, forcing layout thrashing.`
+      ],
+      interviewTraps: [
+        `Interviewer asks difference between event.target (element that triggered event) and event.currentTarget (element where listener is attached).`,
+        `How event.stopPropagation() differs from event.preventDefault().`,
+        `Storage quota differences: localStorage (5MB synchronous) vs IndexedDB (hundreds of MB asynchronous).`
+      ],
+      interviewTips: [
+        `Always mention Event Delegation as a premier performance best practice.`,
+        `Explain the 3 phases of event propagation clearly: Capturing, Target, Bubbling.`,
+        `Demonstrate awareness of main-thread responsiveness and requestAnimationFrame.`
+      ],
+      followUps: [
+        `What is event delegation and why is it memory-efficient?`,
+        `What is the difference between event.target and event.currentTarget?`,
+        `How does the IntersectionObserver API improve performance over scroll event listeners?`
+      ],
+      followUpAnswers: [
+        `Event delegation uses a single event listener on a parent element leveraging event bubbling, reducing memory consumption from thousands of listeners to one.`,
+        `event.target is the element where the interaction physically occurred; event.currentTarget is the element to which the event handler is currently attached.`,
+        `IntersectionObserver runs asynchronously off the main thread, eliminating high-frequency scroll event thrashing and forced synchronous reflows.`
+      ]
+    };
+  }
+
+  // 7. JavaScript Core, ES6, ES7, ES8 (Default JS engine)
+  return {
+    detailedExplanation: `### Deep Technical Dive: JavaScript V8 Engine & Execution Lifecycle for ${title}\n\n1. **V8 Compilation Pipeline**: Modern V8 parses source text into an Abstract Syntax Tree (AST). The **Ignition** bytecode interpreter produces compact bytecode, while **TurboFan** JIT compiler optimizes hot code paths into machine assembly.\n2. **Execution Context & Scoping**: When code runs, the engine creates an Execution Context containing a Lexical Environment (let/const bindings in TDZ until evaluated) and a Variable Environment (var declarations hoisted). Closures capture parent lexical scopes in the memory heap.\n3. **Event Loop & Microtask Priority**: Synchronous code executes on the single-threaded Call Stack. Microtasks (Promise resolutions, queueMicrotask) run immediately when the call stack empties, preceding macrotasks (setTimeout, DOM events) in the Event Loop cycle.`,
+    why: `Why does ${title} exist in modern JavaScript?\n1. Eliminates error-prone legacy patterns (callback hell, global scope pollution, hoisting bugs).\n2. Enhances developer ergonomics with declarative, expressive, and self-documenting syntax.\n3. Enables V8 and other modern engines to apply runtime JIT optimizations and efficient garbage collection.`,
+    howItWorks: `How it works under the hood in the JavaScript engine:\n1. **Parsing & AST Generation**: Source code is tokenized and parsed into an Abstract Syntax Tree.\n2. **Creation Phase**: Engine allocates memory for variables and functions; identifier bindings are registered in the environment record.\n3. **Execution Phase**: Statements execute line-by-line in the Call Stack; values are assigned to identifiers.\n4. **Task Scheduling**: Asynchronous operations are handed off to Web APIs, resolving via microtask or macrotask queues.`,
+    realWorldExample: `Production Scenario: Real-time fintech stock price ticker or dashboard where data streams are processed asynchronously, cached safely in scope without memory leaks, and rendered to users with sub-millisecond latency.`,
+    lineByLineExplanation: [
+      { line: 1, code: `// Feature Initialization`, explanation: `Initializes execution in current lexical scope.` },
+      { line: 2, code: `const result = await processData();`, explanation: `Pauses execution in async function; pushes continuation to microtask queue upon resolution.` },
+      { line: 3, code: `return { success: true, payload: result };`, explanation: `Returns immutable data payload to caller.` }
+    ],
+    executionFlow: [
+      `Step 1: Environment parses source into an Abstract Syntax Tree (AST).`,
+      `Step 2: Memory allocation and identifier declarations occur in Creation Phase.`,
+      `Step 3: Synchronous statements run sequentially on the Call Stack.`,
+      `Step 4: Microtasks (Promises) drain completely when Call Stack clears.`,
+      `Step 5: Event Loop picks the next macrotask (setTimeout, DOM events) from the Callback Queue.`
+    ],
+    commonMistakes: [
+      `Confusing synchronous execution with asynchronous microtask scheduling in the event loop.`,
+      `Accidentally creating memory leaks by retaining references in closures or uncleared event listeners.`,
+      `Assuming 'this' binding is lexical in regular functions instead of dynamically determined at call time.`
+    ],
+    interviewTraps: [
+      `Interviewer presents code mixing Promise.resolve(), setTimeout(..., 0), and synchronous console.log to test exact queue order.`,
+      `How closures retain access to outer variables even after the outer function has completed execution and returned.`,
+      `Temporal Dead Zone (TDZ): accessing let/const before initialization throws ReferenceError, unlike var which is initialized to undefined.`
+    ],
+    interviewTips: [
+      `Clearly articulate the phases: Creation Phase (hoisting) vs Execution Phase.`,
+      `Explain the Event Loop clearly: Call Stack -> Microtask Queue (Promises) -> Macrotask Queue (Timers).`,
+      `Highlight immutability, pure functions, and predictable state transformations.`
+    ],
+    followUps: [
+      `What is the difference between the Microtask Queue and the Macrotask (Callback) Queue?`,
+      `How does the V8 garbage collector detect and clean up unreferenced memory in closures?`,
+      `What is the Temporal Dead Zone (TDZ) and why was it introduced in ES6?`
+    ],
+    followUpAnswers: [
+      `Microtasks (Promise.then, queueMicrotask) have higher priority and run completely to exhaustion after every call stack frame, whereas Macrotasks (setTimeout, setInterval) run one per event loop tick.`,
+      `V8 uses a Generational Garbage Collector (Scavenger for young generation, Mark-Sweep-Compact for old generation) tracing reachability from roots (window/global).`,
+      `The TDZ is the period between entering scope and variable declaration evaluation; accessing let/const during TDZ throws a ReferenceError to prevent accessing uninitialized state.`
+    ]
+  };
+}
+
 async function runUpgradedGenerator() {
   const files = fs.readdirSync(DATA_DIR).filter(f => f.endsWith('.json') && f !== 'catalog.json');
   console.log(`Upgrading ${files.length} subject files in ${DATA_DIR}...`);
@@ -666,11 +997,26 @@ async function runUpgradedGenerator() {
         continue;
       }
 
+      const title = q.subtopic || q.concept || q.question;
       const content = generateSimplifiedContent(subject, q);
       q.shortAnswer = content.shortAnswer;
       q.interviewAnswer = content.interviewAnswer;
       q.example = content.example;
       q.codeSnippet = content.example;
+
+      // Authentic Deep Technical Dive & Strategy Data
+      const deepData = generateSubjectDeepContent(subject, q, title);
+      q.detailedExplanation = deepData.detailedExplanation;
+      q.why = deepData.why;
+      q.howItWorks = deepData.howItWorks;
+      q.realWorldExample = deepData.realWorldExample;
+      q.lineByLineExplanation = deepData.lineByLineExplanation;
+      q.executionFlow = deepData.executionFlow;
+      q.commonMistakes = deepData.commonMistakes;
+      q.interviewTraps = deepData.interviewTraps;
+      q.interviewTips = deepData.interviewTips;
+      q.followUps = deepData.followUps;
+      q.followUpAnswers = deepData.followUpAnswers;
 
       // Authentic Diagram ONLY if truly relevant! Omit otherwise (no fake diagrams!)
       const authDiagram = getAuthenticDiagram(subject, `${q.question} ${q.subtopic || ''} ${q.concept || ''}`);

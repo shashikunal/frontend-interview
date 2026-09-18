@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import { Link, useParams, useNavigate } from 'react-router-dom'
 import { interviewQuestionsDataService } from '../services/interviewQuestionsDataService'
 import { interviewQuestionsProgressService } from '../services/interviewQuestionsProgressService'
@@ -172,6 +172,78 @@ export default function QuestionDetailStudio() {
     const before = fullText.slice(0, start)
     const activeWord = fullText.slice(start, end)
     const after = fullText.slice(end)
+
+    return (
+      <>
+        {before}
+        <span className="mqb-spoken-active-word">{activeWord}</span>
+        {after}
+      </>
+    )
+  }
+
+  // Parse Executive Short Answer lines into individual structured checklist points
+  const shortAnswerItems = useMemo(() => {
+    if (!question?.shortAnswer) return []
+    const lines = question.shortAnswer.split('\n').filter(l => l.trim().length > 0)
+    let currentOffset = 0
+
+    return lines.map((rawLine, idx) => {
+      const matchIndex = question.shortAnswer.indexOf(rawLine, currentOffset)
+      const lineStart = matchIndex !== -1 ? matchIndex : currentOffset
+      currentOffset = lineStart + rawLine.length
+
+      const numMatch = rawLine.match(/^(\d+)\.\s*(.*)$/)
+      const num = numMatch ? numMatch[1] : String(idx + 1)
+      const content = numMatch ? numMatch[2] : rawLine
+
+      const isAnalogy = num === '2' || rawLine.toLowerCase().includes('analogy:') || rawLine.toLowerCase().includes('real-life analogy')
+      const isTakeaway = idx === lines.length - 1 || rawLine.toLowerCase().includes('key takeaway:') || rawLine.toLowerCase().includes('takeaway:')
+
+      return {
+        num,
+        rawLine,
+        content,
+        startIndex: lineStart,
+        endIndex: lineStart + rawLine.length,
+        isAnalogy,
+        isTakeaway,
+      }
+    })
+  }, [question?.shortAnswer])
+
+  // Speech highlighting for individual card text
+  const renderCardSpokenText = (item: { content: string; startIndex: number; endIndex: number; rawLine: string }) => {
+    if (
+      activeSpeechSource !== 'short' ||
+      !isPlayingAudio ||
+      spokenCharRange.start < item.startIndex ||
+      spokenCharRange.start >= item.endIndex
+    ) {
+      return item.content
+    }
+
+    const prefixLen = item.rawLine.indexOf(item.content)
+    const contentStart = item.startIndex + (prefixLen >= 0 ? prefixLen : 0)
+
+    const relStart = spokenCharRange.start - contentStart
+    const relEnd = (spokenCharRange.end > 0 ? spokenCharRange.end : spokenCharRange.start + 1) - contentStart
+
+    if (relStart < 0 || relStart >= item.content.length) {
+      return item.content
+    }
+
+    const start = Math.max(0, relStart)
+    let end = Math.min(item.content.length, Math.max(start + 1, relEnd))
+    if (end <= start) {
+      const slice = item.content.slice(start)
+      const match = slice.search(/[\s,.;:!?\n]/)
+      end = match === -1 ? item.content.length : start + Math.max(1, match)
+    }
+
+    const before = item.content.slice(0, start)
+    const activeWord = item.content.slice(start, end)
+    const after = item.content.slice(end)
 
     return (
       <>
@@ -471,15 +543,57 @@ export default function QuestionDetailStudio() {
           {/* TAB 1: Interview & Short Answer */}
           {activeTab === 'answer' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-              {/* Short Answer (10+ lines formatted) */}
-              <div className="mqb-section-card" id="section-short-answer">
-                <h3 className="mqb-section-title">
-                  <span>⚡</span> Executive Short Answer (Key Takeaways &amp; Core Principles)
-                </h3>
-                <div className="mqb-section-body">
-                  <p style={{ fontSize: '1.05rem', color: 'var(--mqb-text-primary)', fontWeight: 500, lineHeight: 1.7, whiteSpace: 'pre-line' }}>
-                    {renderSpokenText(question.shortAnswer, activeSpeechSource === 'short')}
-                  </p>
+              {/* Executive Short Answer (12-Point Checklist Design with Real-Life Analogy) */}
+              <div className="mqb-executive-card" id="section-short-answer">
+                <div className="mqb-executive-header">
+                  <div className="mqb-executive-title-group">
+                    <span className="mqb-executive-icon">⚡</span>
+                    <div>
+                      <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 700, color: '#f8fafc' }}>
+                        Executive Short Answer (Key Takeaways &amp; Core Principles)
+                      </h3>
+                      <span className="mqb-executive-subtitle">
+                        Structured point-by-point breakdown with real-life analogies and senior interview takeaways
+                      </span>
+                    </div>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                    <span className="mqb-executive-badge">🎯 {shortAnswerItems.length || 12} Key Principles</span>
+                    <button
+                      type="button"
+                      className={`mqb-action-pill-btn ${activeSpeechSource === 'short' ? 'primary' : ''}`}
+                      onClick={() => handlePlayAudio('short')}
+                    >
+                      ⚡ Listen to Summary
+                    </button>
+                  </div>
+                </div>
+
+                <div className="mqb-short-answer-container">
+                  {shortAnswerItems.map((item) => {
+                    const isSpoken = activeSpeechSource === 'short' && isPlayingAudio && spokenCharRange.start >= item.startIndex && spokenCharRange.start < item.endIndex
+                    return (
+                      <div
+                        key={item.num}
+                        className={`mqb-short-answer-card ${item.isAnalogy ? 'analogy-card' : ''} ${item.isTakeaway ? 'takeaway-card' : ''} ${isSpoken ? 'active-spoken-card' : ''}`}
+                      >
+                        <span className="mqb-short-answer-badge">
+                          {item.isAnalogy ? '💡' : item.isTakeaway ? '🎯' : item.num.padStart(2, '0')}
+                        </span>
+                        <div className="mqb-short-answer-content">
+                          {item.isAnalogy && (
+                            <span className="mqb-analogy-tag">💡 REAL-LIFE MENTOR ANALOGY</span>
+                          )}
+                          {item.isTakeaway && (
+                            <span className="mqb-takeaway-tag">🎯 KEY INTERVIEW TAKEAWAY</span>
+                          )}
+                          <p className="mqb-short-answer-text">
+                            {renderCardSpokenText(item)}
+                          </p>
+                        </div>
+                      </div>
+                    )
+                  })}
                 </div>
               </div>
 
