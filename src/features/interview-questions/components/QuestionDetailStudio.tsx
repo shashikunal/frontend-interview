@@ -643,6 +643,29 @@ export default function QuestionDetailStudio() {
                 </div>
               )}
 
+              {/* Video Explanation Studio */}
+              {question.videoUrl && (
+                <div className="mqb-section-card" id="section-video-lesson">
+                  <h3 className="mqb-section-title">
+                    <span>🎬</span> Video Tutorial &amp; Visual Walkthrough
+                  </h3>
+                  {question.videoTitle && (
+                    <p style={{ color: 'var(--mqb-text-secondary)', fontSize: '0.9rem', margin: '0 0 0.85rem' }}>
+                      {question.videoTitle}
+                    </p>
+                  )}
+                  <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0, overflow: 'hidden', borderRadius: '12px', border: '1px solid var(--mqb-border)', background: '#000000' }}>
+                    <iframe
+                      src={question.videoUrl}
+                      title={question.videoTitle || 'Interview Video Lesson'}
+                      style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 0 }}
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                    />
+                  </div>
+                </div>
+              )}
+
               {/* Real World Production Scenario */}
               <div className="mqb-section-card">
                 <h3 className="mqb-section-title">

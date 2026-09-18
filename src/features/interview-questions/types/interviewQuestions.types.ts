@@ -82,6 +82,8 @@ export interface MasterQuestion {
   expectedOutput?: string
   diagram?: string               // Optional Mermaid state/sequence/flowchart diagram definition
   diagramCaption?: string        // Caption for the architecture/lifecycle diagram
+  videoUrl?: string              // Curated video explanation tutorial embed URL (YouTube/Vimeo)
+  videoTitle?: string            // Video lesson title
   complexity?: {
     time: string
     space: string
