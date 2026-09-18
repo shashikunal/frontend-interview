@@ -25,8 +25,8 @@ class InterviewQuestionsDataService {
 
     const promise = (async () => {
       try {
-        const url = `${this.getBaseUrl()}data/interview-questions/catalog.json`
-        const res = await fetch(url)
+        const url = `${this.getBaseUrl()}data/interview-questions/catalog.json?t=${Date.now()}`
+        const res = await fetch(url, { cache: 'no-cache' })
         if (!res.ok) {
           throw new Error(`Failed to load master bank catalog (HTTP ${res.status})`)
         }
@@ -57,8 +57,8 @@ class InterviewQuestionsDataService {
 
     const promise = (async () => {
       try {
-        const url = `${this.getBaseUrl()}data/interview-questions/${subjectId}.json`
-        const res = await fetch(url)
+        const url = `${this.getBaseUrl()}data/interview-questions/${subjectId}.json?t=${Date.now()}`
+        const res = await fetch(url, { cache: 'no-cache' })
         if (!res.ok) {
           throw new Error(`Failed to load ${subjectId} questions (HTTP ${res.status})`)
         }

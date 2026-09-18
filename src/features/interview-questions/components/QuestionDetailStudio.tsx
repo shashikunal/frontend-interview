@@ -38,11 +38,48 @@ export default function QuestionDetailStudio() {
   const [codeRunOutput, setCodeRunOutput] = useState<string | null>(null)
   const [isRunningCode, setIsRunningCode] = useState<boolean>(false)
 
-  // Audio Speech Narrator State
+  // Audio Speech Narrator State with Indian English Accent support
   const [isPlayingAudio, setIsPlayingAudio] = useState<boolean>(false)
   const [isAudioPaused, setIsAudioPaused] = useState<boolean>(false)
   const [speechRate, setSpeechRate] = useState<number>(1.0)
   const [activeSpeechSource, setActiveSpeechSource] = useState<'interview' | 'short'>('interview')
+  const [availableVoices, setAvailableVoices] = useState<SpeechSynthesisVoice[]>([])
+  const [selectedVoiceURI, setSelectedVoiceURI] = useState<string>('')
+  const [isIndianVoiceActive, setIsIndianVoiceActive] = useState<boolean>(false)
+
+  // Load and auto-select Indian English voice
+  useEffect(() => {
+    if (!('speechSynthesis' in window)) return
+
+    const loadVoices = () => {
+      const all = window.speechSynthesis.getVoices()
+      if (!all || all.length === 0) return
+      setAvailableVoices(all)
+
+      // Priority 1: Indian English (en-IN)
+      const indianVoice = all.find(
+        v => v.lang === 'en-IN' ||
+             v.lang.toLowerCase().replace('_', '-').includes('en-in') ||
+             v.name.toLowerCase().includes('india') ||
+             v.name.toLowerCase().includes('ravi') ||
+             v.name.toLowerCase().includes('heera') ||
+             v.name.toLowerCase().includes('neerja') ||
+             v.name.toLowerCase().includes('rishi')
+      )
+
+      if (indianVoice) {
+        setSelectedVoiceURI(indianVoice.voiceURI)
+        setIsIndianVoiceActive(true)
+      } else {
+        const fallback = all.find(v => v.lang.startsWith('en')) || all[0]
+        if (fallback) setSelectedVoiceURI(fallback.voiceURI)
+        setIsIndianVoiceActive(false)
+      }
+    }
+
+    loadVoices()
+    window.speechSynthesis.onvoiceschanged = loadVoices
+  }, [])
 
   const handlePlayAudio = (source: 'interview' | 'short' = 'interview') => {
     if (!('speechSynthesis' in window) || !question) return
@@ -53,6 +90,14 @@ export default function QuestionDetailStudio() {
 
     const utter = new SpeechSynthesisUtterance(text)
     utter.rate = speechRate
+
+    const chosenVoice = availableVoices.find(v => v.voiceURI === selectedVoiceURI)
+    if (chosenVoice) {
+      utter.voice = chosenVoice
+      utter.lang = chosenVoice.lang || 'en-IN'
+    } else {
+      utter.lang = 'en-IN'
+    }
 
     utter.onstart = () => {
       setIsPlayingAudio(true)
@@ -432,6 +477,18 @@ export default function QuestionDetailStudio() {
                     <span style={{ fontSize: '0.85rem', fontWeight: 600, color: isPlayingAudio ? 'var(--mqb-accent-bright, #818cf8)' : 'var(--mqb-text-secondary)' }}>
                       {isPlayingAudio ? (isAudioPaused ? '⏸️ Audio Paused' : '🔊 Narrating Aloud...') : '🎧 AI Audio Narrator Ready'}
                     </span>
+                    <span
+                      className="mqb-company-badge"
+                      style={{
+                        background: isIndianVoiceActive ? 'rgba(16, 185, 129, 0.15)' : 'rgba(99, 102, 241, 0.15)',
+                        color: isIndianVoiceActive ? '#34d399' : '#818cf8',
+                        border: `1px solid ${isIndianVoiceActive ? 'rgba(16, 185, 129, 0.35)' : 'rgba(99, 102, 241, 0.35)'}`,
+                        fontSize: '0.72rem',
+                        padding: '0.15rem 0.5rem',
+                      }}
+                    >
+                      {isIndianVoiceActive ? '🇮🇳 Indian English Accent' : '🗣️ English Voice'}
+                    </span>
                   </div>
 
                   <div className="mqb-audio-actions">
@@ -489,6 +546,33 @@ export default function QuestionDetailStudio() {
                         <option value={1.5}>1.5x</option>
                       </select>
                     </div>
+
+                    {/* Voice Selection Dropdown */}
+                    {availableVoices.filter(v => v.lang.startsWith('en')).length > 1 && (
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                        <span style={{ fontSize: '0.72rem', color: 'var(--mqb-text-muted)' }}>Voice:</span>
+                        <select
+                          className="mqb-audio-speed-select"
+                          style={{ maxWidth: '140px' }}
+                          value={selectedVoiceURI}
+                          onChange={(e) => {
+                            setSelectedVoiceURI(e.target.value)
+                            const chosen = availableVoices.find(v => v.voiceURI === e.target.value)
+                            const isInd = !!(chosen && (chosen.lang.includes('IN') || chosen.name.toLowerCase().includes('india') || chosen.name.toLowerCase().includes('ravi') || chosen.name.toLowerCase().includes('heera') || chosen.name.toLowerCase().includes('neerja')))
+                            setIsIndianVoiceActive(isInd)
+                            if (isPlayingAudio) {
+                              handlePlayAudio(activeSpeechSource)
+                            }
+                          }}
+                        >
+                          {availableVoices.filter(v => v.lang.startsWith('en')).map(v => (
+                            <option key={v.voiceURI} value={v.voiceURI}>
+                              {v.name.includes('India') || v.lang === 'en-IN' ? `🇮🇳 ${v.name.slice(0, 18)}` : v.name.slice(0, 18)}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>

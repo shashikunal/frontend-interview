@@ -662,7 +662,9 @@
       "Meta",
       "Amazon",
       "Netflix",
-      "Apple"
+      "Flipkart",
+      "TCS",
+      "Infosys"
     ],
     "tags": [
       "es6",
@@ -673,135 +675,116 @@
       "promises-aplus",
       "faang"
     ],
-    "question": "Explain JavaScript Promises, their three internal states (Pending, Fulfilled, Rejected), and how the Promises/A+ Specification governs thenable resolution and the microtask queue.",
-    "shortAnswer": "1. An ES6 Promise is a first-class object representing the eventual completion or failure of an asynchronous operation and its resulting value.\n2. At any given instant, a Promise exists in exactly one of three mutually exclusive states: Pending, Fulfilled, or Rejected.\n3. Pending is the initial, unfulfilled state where the asynchronous task is currently in flight.\n4. Fulfilled signifies that the operation completed successfully, permanently locking in an immutable fulfillment value.\n5. Rejected signifies that the operation encountered an error, permanently locking in an immutable rejection reason.\n6. Once a promise transitions from Pending to either Fulfilled or Rejected, it becomes \"Settled\", and its state is completely immutable—it cannot transition again or change value.\n7. The Promises/A+ Specification standardizes interoperability, mandating the .then(onFulfilled, onRejected) method contract.\n8. .then() always returns a brand new Promise, enabling composable, linear chaining without callback inversion of control.\n9. Thenable assimilation: If a callback returns a thenable or promise, the engine assimilates it and waits for it to settle before settling the outer promise.\n10. Asynchronous execution: Handlers attached via .then(), .catch(), or .finally() are strictly scheduled onto the Microtask Queue via the V8 microtask checkpoint.\n11. Microtask Queue priority ensures promise handlers execute immediately after the current synchronous frame, before any macrotasks (setTimeout, I/O, rendering).\n12. Unhandled rejections trigger global unhandledrejection events, preventing silent runtime failures in modern enterprise applications.",
-    "interviewAnswer": "In JavaScript, a Promise is an abstraction over an asynchronous operation that acts as a placeholder for a future value.\n\nAccording to the ECMAScript standard and the Promises/A+ specification, a Promise has three mutually exclusive internal states:\nFirst, 'Pending': The initial state where the asynchronous task is currently in flight and has neither resolved nor failed.\nSecond, 'Fulfilled': The operation completed successfully, permanently storing an immutable value.\nThird, 'Rejected': The operation failed, permanently storing an immutable rejection reason or Error instance.\n\nA fundamental architectural guarantee is immutability: once a promise settles (moving from Pending to Fulfilled or Rejected), it is locked forever. Any subsequent calls to resolve() or reject() are completely ignored.\n\nThe Promises/A+ specification dictates that every promise must expose a .then(onFulfilled, onRejected) method that must return a brand new promise. This is what allows chaining. If an onFulfilled or onRejected handler returns a value, the chained promise fulfills with that value. If it throws an exception, the chained promise rejects with that exception. If it returns another promise or thenable, it assimilates that promise and waits for it to settle.\n\nCrucially, promise callbacks are never executed synchronously. The spec mandates that handlers are scheduled onto the Microtask Queue. In the JavaScript Event Loop, after the current synchronous execution context empties, all microtasks are drained completely before the browser or Node engine moves on to rendering or macrotasks like setTimeout. This guarantees deterministic, non-blocking execution order.",
-    "diagram": "stateDiagram-v2\n    [*] --> Pending : new Promise((resolve, reject) => ...)\n\n    state Pending {\n        [*] --> AsyncInProgress\n        AsyncInProgress : State = [[PromiseState]]: 'pending'\n        AsyncInProgress : Result = [[PromiseResult]]: undefined\n        AsyncInProgress : Callbacks registered in [[PromiseFulfillReactions]] & [[PromiseRejectReactions]]\n    }\n\n    Pending --> Fulfilled : resolve(value)\n    Pending --> Rejected : reject(error) OR throw err\n\n    state Fulfilled {\n        [*] --> LockedValue\n        LockedValue : State = [[PromiseState]]: 'fulfilled'\n        LockedValue : Result = [[PromiseResult]]: value\n        LockedValue : Enqueue onFulfilled handlers into Microtask Queue\n    }\n\n    state Rejected {\n        [*] --> LockedReason\n        LockedReason : State = [[PromiseState]]: 'rejected'\n        LockedReason : Result = [[PromiseResult]]: reason\n        LockedReason : Enqueue onRejected/.catch handlers into Microtask Queue\n    }\n\n    Fulfilled --> Settled : Terminal State (Immutable)\n    Rejected --> Settled : Terminal State (Immutable)\n\n    state Settled {\n        [*] --> Chaining\n        Chaining : .then() returns a BRAND NEW Promise\n        Chaining : Microtask checkpoint runs before next Macrotask\n    }",
-    "diagramCaption": "ES6 / Promises/A+ Formal State Machine & Microtask Scheduling Architecture",
-    "detailedExplanation": "### Deep Technical Breakdown: Promises & The Promises/A+ Specification\n\n#### 1. Internal Engine Slot Model (V8 & SpiderMonkey)\nInternally in the JavaScript engine (such as Google V8), every Promise instance is represented as an object with dedicated internal slots:\n- [[PromiseState]]: Enumerated as 'pending', 'fulfilled', or 'rejected'.\n- [[PromiseResult]]: Holds the settled value or rejection reason. Initialized to undefined.\n- [[PromiseFulfillReactions]]: A queue of reaction records registered via .then() to run upon fulfillment.\n- [[PromiseRejectReactions]]: A queue of reaction records registered via .then() or .catch() to run upon rejection.\n- [[PromiseIsHandled]]: A boolean tracking whether a rejection handler has been registered (preventing UnhandledPromiseRejection).\n\n#### 2. The Promises/A+ Specification Rules\nThe Promises/A+ specification was authored to unify competing asynchronous patterns before ES6 standardized Promise globally:\n1. 2.1 Promise States: When pending, may transition to either fulfilled or rejected. When fulfilled or rejected, must not transition to any other state and must have a value/reason that cannot change.\n2. 2.2 The then Method: Must accept two optional arguments: promise.then(onFulfilled, onRejected). Both must be called as functions with no this value. Must not be called before promise is fulfilled/rejected, and must not be called more than once.\n3. 2.3 The Promise Resolution Procedure [[Resolve]](promise, x):\n   - If promise and x refer to the same object, reject promise with a TypeError (detects circular promise chains).\n   - If x is a promise, adopt its state.\n   - If x is an object or function with a .then property (a \"thenable\"), retrieve x.then and call it with x as this, passing resolvePromise and rejectPromise. If retrieving or calling x.then throws an exception, reject with that exception.\n   - If x is a primitive value, fulfill promise with x.\n\n#### 3. Microtask Queue & Event Loop Mechanics\nThe specification explicitly states that onFulfilled and onRejected must only be called after the execution context stack contains only platform code. In browser and Node.js runtimes, this is implemented via the Microtask Queue:\n\n[ Synchronous Call Stack ] -> Drains to completion\n          ↓\n[ Microtask Checkpoint ]   -> Drains ALL Microtasks (Promise reactions, queueMicrotask, MutationObserver)\n          ↓\n[ Macrotask Queue / Render] -> Runs 1 Macrotask (setTimeout, I/O, UI render, requestAnimationFrame)",
-    "why": "Before Promises and the Promises/A+ standard, JavaScript asynchronous programming relied exclusively on continuation-passing style (CPS) error-first callbacks (e.g. fs.readFile(path, (err, data) => ...)).\n\nThis produced three critical industry problems:\n1. Callback Hell / Pyramid of Doom: Deeply nested indentation causing unmaintainable code.\n2. Inversion of Control: Trusting a third-party library to invoke your callback exactly once, not zero times, and not multiple times.\n3. Fragmented Error Handling: Uncaught synchronous exceptions inside asynchronous callbacks escaped standard try/catch blocks, crashing Node.js processes or causing silent browser failures.\n\nPromises solved all three: providing trust guarantees (settles at most once, immutable result), chainable synchronous-style composition (.then()), and unified error propagation (.catch()).",
-    "howItWorks": "1. Executor Execution: The function passed to new Promise((resolve, reject) => ...) is invoked synchronously during construction.\n2. Reaction Registration: When .then(onFulfilled, onRejected) is called on a pending promise, reaction objects are created and pushed onto the promise's internal [[PromiseFulfillReactions]] and [[PromiseRejectReactions]] lists.\n3. State Transition: Calling resolve(v) transitions [[PromiseState]] from 'pending' to 'fulfilled' and sets [[PromiseResult]] = v.\n4. Microtask Scheduling: The engine iterates through the registered reactions and queues each callback into the host environment's Microtask Queue.\n5. Event Loop Drainage: Once the synchronous thread stack reaches depth 0, the event loop triggers a Microtask Checkpoint, dequeuing and executing the callbacks sequentially.",
-    "realWorldExample": "In production frontend applications, Promises power network communication (Fetch API), cached resource pipelines, and resilient state synchronization.\n\nExample: Implementing an exponential-backoff resilient API fetcher with AbortController timeout:\n\nasync function fetchWithRetry(url, { maxRetries = 3, timeoutMs = 5000, delayMs = 1000 } = {}) {\n  for (let attempt = 1; attempt <= maxRetries; attempt++) {\n    const controller = new AbortController();\n    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);\n\n    try {\n      const response = await fetch(url, { signal: controller.signal });\n      clearTimeout(timeoutId);\n      if (!response.ok) throw new Error(`HTTP Error ${response.status}`);\n      return await response.json();\n    } catch (err) {\n      clearTimeout(timeoutId);\n      if (attempt === maxRetries) throw err;\n      await new Promise(r => setTimeout(r, delayMs * Math.pow(2, attempt - 1)));\n    }\n  }\n}",
-    "example": "// Comprehensive Demonstration: ES6 Promise States, A+ Spec Chaining & Microtask Scheduling\nfunction demonstratePromiseLifecycle() {\n  console.log('1: Synchronous script starts');\n\n  // 1. Initial State: Pending\n  const promise = new Promise((resolve, reject) => {\n    console.log('2: Promise executor runs synchronously');\n    \n    setTimeout(() => {\n      // 2. Transition: Pending -> Fulfilled (Immutable)\n      resolve('Success Payload');\n      // Subsequent transitions are ignored by A+ specification guarantee\n      reject(new Error('Ignored rejection after fulfillment'));\n    }, 100);\n  });\n\n  console.log('3: Promise object constructed (State: Pending)');\n\n  // 3. A+ Chaining and Microtask Dispatch\n  promise\n    .then((result) => {\n      console.log('4: onFulfilled triggered in microtask with:', result);\n      // Returning a value fulfills the chained promise with that value\n      return result.toUpperCase();\n    })\n    .then((transformed) => {\n      console.log('5: Chained onFulfilled received:', transformed);\n      // Throwing an error transitions chained promise to Rejected\n      throw new Error('Downstream processing failed');\n    })\n    .catch((error) => {\n      console.log('6: onRejected caught error:', error.message);\n      // Returning from catch recovers the chain back to Fulfilled\n      return 'Fallback Default Value';\n    })\n    .finally(() => {\n      console.log('7: finally handler runs regardless of outcome');\n    });\n\n  console.log('8: Synchronous script finishes');\n}\n\ndemonstratePromiseLifecycle();",
-    "codeSnippet": "// Comprehensive Demonstration: ES6 Promise States, A+ Spec Chaining & Microtask Scheduling\nfunction demonstratePromiseLifecycle() {\n  console.log('1: Synchronous script starts');\n\n  // 1. Initial State: Pending\n  const promise = new Promise((resolve, reject) => {\n    console.log('2: Promise executor runs synchronously');\n    \n    setTimeout(() => {\n      // 2. Transition: Pending -> Fulfilled (Immutable)\n      resolve('Success Payload');\n      // Subsequent transitions are ignored by A+ specification guarantee\n      reject(new Error('Ignored rejection after fulfillment'));\n    }, 100);\n  });\n\n  console.log('3: Promise object constructed (State: Pending)');\n\n  // 3. A+ Chaining and Microtask Dispatch\n  promise\n    .then((result) => {\n      console.log('4: onFulfilled triggered in microtask with:', result);\n      // Returning a value fulfills the chained promise with that value\n      return result.toUpperCase();\n    })\n    .then((transformed) => {\n      console.log('5: Chained onFulfilled received:', transformed);\n      // Throwing an error transitions chained promise to Rejected\n      throw new Error('Downstream processing failed');\n    })\n    .catch((error) => {\n      console.log('6: onRejected caught error:', error.message);\n      // Returning from catch recovers the chain back to Fulfilled\n      return 'Fallback Default Value';\n    })\n    .finally(() => {\n      console.log('7: finally handler runs regardless of outcome');\n    });\n\n  console.log('8: Synchronous script finishes');\n}\n\ndemonstratePromiseLifecycle();",
-    "expectedOutput": "1: Synchronous script starts\n2: Promise executor runs synchronously\n3: Promise object constructed (State: Pending)\n8: Synchronous script finishes\n4: onFulfilled triggered in microtask with: Success Payload\n5: Chained onFulfilled received: SUCCESS PAYLOAD\n6: onRejected caught error: Downstream processing failed\n7: finally handler runs regardless of outcome",
+    "question": "What is a Promise in JavaScript? Explain its three states (Pending, Fulfilled, Rejected) and how the Promises/A+ specification works with real-world examples.",
+    "shortAnswer": "1. In simple words, a Promise in JavaScript is an object that represents a background task whose result will be delivered in the future.\n2. Think of it like a token receipt you get when you order food at a restaurant counter: you hold the receipt now, and the actual food comes later.\n3. A Promise always stays in exactly one of three states: Pending, Fulfilled, or Rejected.\n4. 'Pending' is the initial waiting state—the asynchronous task (like a backend API call or database query) is currently running in the background.\n5. 'Fulfilled' means the task completed successfully, and the promise now holds the final result data.\n6. 'Rejected' means something went wrong (like network error or server down), and the promise now holds the error reason.\n7. Once a promise becomes Fulfilled or Rejected, we say it is 'Settled'—and its value is 100% immutable (it can never change or be re-triggered again).\n8. You use .then(data => ...) to consume the successful result.\n9. You use .catch(error => ...) to handle any failure or error, preventing your website or app from crashing.\n10. You use .finally(() => ...) for cleanup code (like hiding a loading spinner or closing a modal) that must run no matter what happened.\n11. Every .then() returns a brand new Promise, allowing you to chain multiple async tasks one after another in a clean, straight line instead of messy callback hell.\n12. Under the hood, Promise callbacks are scheduled on the Microtask Queue, meaning JavaScript finishes all regular code first before running promise callbacks.",
+    "interviewAnswer": "Sir, in very simple terms, a Promise in JavaScript is an object that represents an asynchronous operation and acts as a placeholder for a future result.\n\nA classic real-world analogy to understand this easily is ordering food online on Zomato or Swiggy:\nWhen you place your order, you do not get the food instantly in one second. Instead, you immediately get an Order Receipt. That receipt is your Promise!\n\nNow, this Promise has exactly three states according to the official specification:\n1. First is 'Pending': This is the waiting stage. The restaurant is preparing your food, and the delivery partner is on the way. The task is neither a success nor a failure yet.\n2. Second is 'Fulfilled': The delivery partner arrives at your door and hands you the hot food! The background task succeeded, and we got our value.\n3. Third is 'Rejected': The restaurant ran out of food or your payment failed. The background task failed, and we got an error reason.\n\nA very important rule to remember in interviews is Immutability: Once a promise is Settled (either Fulfilled or Rejected), it is locked forever. You cannot change the result or call resolve again.\n\nTo work with promises in our code, we use three methods:\n- We use .then() to handle the success data.\n- We use .catch() to handle any errors safely so our website never crashes.\n- And we use .finally() for cleanup tasks, like turning off a loading spinner.\n\nAlso, because every .then() returns a new promise, we can chain tasks one after another in a clean, readable line. This completely eliminates the old 'Callback Hell' problem. And under the hood, all promise callbacks run in the Microtask Queue of the Event Loop, so they execute right after the synchronous code finishes.",
+    "diagram": "stateDiagram-v2\n    [*] --> Pending : new Promise((resolve, reject) => ...)\n\n    state Pending {\n        [*] --> InProgress\n        InProgress : State = 'Pending' (Waiting / काम चालू है)\n        InProgress : Task running in background (API call / DB query)\n        InProgress : Handlers waiting in [[PromiseFulfillReactions]]\n    }\n\n    Pending --> Fulfilled : resolve(data) -> Success!\n    Pending --> Rejected : reject(error) -> Failure!\n\n    state Fulfilled {\n        [*] --> SuccessResult\n        SuccessResult : State = 'Fulfilled' (सफल)\n        SuccessResult : Holds final data (e.g. user profile / API JSON)\n        SuccessResult : Runs .then(data => ...) in Microtask Queue\n    }\n\n    state Rejected {\n        [*] --> ErrorReason\n        ErrorReason : State = 'Rejected' (त्रुटि / Error)\n        ErrorReason : Holds error reason (e.g. 404 Not Found / Network Error)\n        ErrorReason : Runs .catch(err => ...) in Microtask Queue\n    }\n\n    Fulfilled --> Settled : State is Locked Forever\n    Rejected --> Settled : State is Locked Forever\n\n    state Settled {\n        [*] --> ChainNext\n        ChainNext : State is IMMUTABLE (cannot change again)\n        ChainNext : .then() returns a brand new Promise for chaining\n        ChainNext : .finally() runs cleanup (hide spinner)\n    }",
+    "diagramCaption": "Simple Visual State Machine: Pending -> Fulfilled or Rejected (Settled & Immutable)",
+    "detailedExplanation": "### Student-Friendly Deep Dive: Promises & The Promises/A+ Standard\n\n#### 1. Why Did JavaScript Need Promises? (The Old Problem)\nBefore ES6 (2015), JavaScript handled all background tasks using callbacks.\nFor example, if you wanted to fetch a user, then fetch their orders, then fetch order details, you had to write callbacks inside callbacks inside callbacks:\n\n// The Old Nightmare: Callback Hell (Pyramid of Doom)\ngetUser(userId, function(user) {\n  getOrders(user.id, function(orders) {\n    getOrderDetails(orders[0].id, function(details) {\n      console.log(details);\n    });\n  });\n});\n\nThis caused two major headaches for developers:\n1. Callback Hell: The code looks like a giant sideways pyramid (>), very hard to read and debug.\n2. Inversion of Control: You give your callback function to another library, hoping they call it once. But what if they call it twice? Or never call it?\n\n#### 2. How Promises Solve This Completely\nA Promise turns asynchronous code into clean, top-to-bottom readable code:\n\ngetUser(userId)\n  .then(user => getOrders(user.id))\n  .then(orders => getOrderDetails(orders[0].id))\n  .then(details => console.log(details))\n  .catch(error => console.error(\"Error occurred:\", error))\n  .finally(() => console.log(\"Done loading\"));\n\n#### 3. The 3 States & Internal Engine Rules\nEvery Promise object in JavaScript has two hidden internal properties:\n- [[PromiseState]]: Starts as 'pending'. Changes to 'fulfilled' on resolve, or 'rejected' on reject.\n- [[PromiseResult]]: Starts as undefined. Holds your data when resolved, or the Error object when rejected.\n\nGolden Rule of Settled Promises:\nOnce a Promise moves from pending to fulfilled or rejected, it is called Settled.\nSettled promises are immutable—you cannot change their value, and you cannot resolve or reject them again.\n\n#### 4. The Microtask Queue (Event Loop Timing)\nHave you ever wondered why console.log('End') prints before promise.then()?\nHere is the exact execution order in JavaScript:\n1. Synchronous Call Stack: JavaScript runs your normal lines of code first (Line 1, Line 2, etc.).\n2. Microtask Queue (VIP line): Promise callbacks (.then, .catch, .finally) go here! The moment the call stack is empty, JavaScript executes ALL microtasks immediately.\n3. Macrotask Queue (Regular line): setTimeout, setInterval, and DOM events go here. They only run after all microtasks are finished!",
+    "why": "Why do we use Promises?\n1. Clean Code: Eliminates deeply nested callback functions (Callback Hell).\n2. Predictable Error Handling: If an error happens anywhere in a 10-step chain, a single .catch() at the bottom catches it gracefully.\n3. Built-in Trust: A promise guarantees your callback will run at most once, never twice, and always asynchronously after the current line of code.",
+    "howItWorks": "How a Promise works step by step:\n1. Step 1 (Creation): When you write 'new Promise((resolve, reject) => { ... })', the function inside runs immediately.\n2. Step 2 (Pending): While the timer or network fetch is running, the Promise stays in 'pending' state.\n3. Step 3 (Settlement): When you call resolve(data), the state becomes 'fulfilled'. If you call reject(err), it becomes 'rejected'.\n4. Step 4 (Queueing): The callback function you gave to .then() or .catch() is placed into the Microtask Queue.\n5. Step 5 (Execution): As soon as your current JavaScript code finishes, the event loop picks up your callback from the Microtask queue and runs it with the data.",
+    "realWorldExample": "Real-World Practical Example: Fetching Weather Data with Loading Spinner and Error Handling\n\nImagine a weather app on your mobile screen:\n1. When user clicks 'Search', turn on loading spinner.\n2. Call weather API using a Promise.\n3. If success (.then): Show temperature and city name.\n4. If failed (.catch): Show 'City not found or Network Error' message.\n5. In all cases (.finally): Turn off loading spinner.\n\nfunction fetchCityWeather(cityName) {\n  // Show spinner\n  showLoadingSpinner(true);\n\n  fetch(`https://api.weather.com/v1/${cityName}`)\n    .then(response => {\n      if (!response.ok) {\n        throw new Error(\"City not found or server error\");\n      }\n      return response.json(); // Parses JSON and returns a new promise\n    })\n    .then(weatherData => {\n      displayWeather(weatherData);\n    })\n    .catch(error => {\n      showErrorMessage(error.message);\n    })\n    .finally(() => {\n      // Always hide spinner, whether success or error!\n      showLoadingSpinner(false);\n    });\n}",
+    "example": "// Student-Friendly Practical Example: Understanding Promise States & Microtasks\nfunction checkTicketBooking(availableSeats) {\n  console.log(\"Step 1: Booking request initiated...\");\n\n  return new Promise((resolve, reject) => {\n    console.log(\"Step 2: Checking seat availability in database...\");\n\n    setTimeout(() => {\n      if (availableSeats > 0) {\n        // Fulfilled state: We have seats!\n        resolve({ status: \"CONFIRMED\", seatNumber: \"B-14\" });\n      } else {\n        // Rejected state: No seats left!\n        reject(new Error(\"Sorry, all seats are already booked!\"));\n      }\n    }, 1000);\n  });\n}\n\nconsole.log(\"Start of Program\");\n\n// Calling the Promise function\ncheckTicketBooking(2)\n  .then((ticket) => {\n    console.log(\"Step 4 (Success): Ticket Confirmed! Seat:\", ticket.seatNumber);\n    return \"SMS Notification Sent to User\";\n  })\n  .then((notificationStatus) => {\n    console.log(\"Step 5 (Chained):\", notificationStatus);\n  })\n  .catch((err) => {\n    console.error(\"Step 4 (Failure): Booking Failed! Reason:\", err.message);\n  })\n  .finally(() => {\n    console.log(\"Step 6 (Cleanup): Booking session closed. Thank you!\");\n  });\n\nconsole.log(\"End of Program (Notice this logs BEFORE the Promise finishes!)\");",
+    "codeSnippet": "// Student-Friendly Practical Example: Understanding Promise States & Microtasks\nfunction checkTicketBooking(availableSeats) {\n  console.log(\"Step 1: Booking request initiated...\");\n\n  return new Promise((resolve, reject) => {\n    console.log(\"Step 2: Checking seat availability in database...\");\n\n    setTimeout(() => {\n      if (availableSeats > 0) {\n        // Fulfilled state: We have seats!\n        resolve({ status: \"CONFIRMED\", seatNumber: \"B-14\" });\n      } else {\n        // Rejected state: No seats left!\n        reject(new Error(\"Sorry, all seats are already booked!\"));\n      }\n    }, 1000);\n  });\n}\n\nconsole.log(\"Start of Program\");\n\n// Calling the Promise function\ncheckTicketBooking(2)\n  .then((ticket) => {\n    console.log(\"Step 4 (Success): Ticket Confirmed! Seat:\", ticket.seatNumber);\n    return \"SMS Notification Sent to User\";\n  })\n  .then((notificationStatus) => {\n    console.log(\"Step 5 (Chained):\", notificationStatus);\n  })\n  .catch((err) => {\n    console.error(\"Step 4 (Failure): Booking Failed! Reason:\", err.message);\n  })\n  .finally(() => {\n    console.log(\"Step 6 (Cleanup): Booking session closed. Thank you!\");\n  });\n\nconsole.log(\"End of Program (Notice this logs BEFORE the Promise finishes!)\");",
+    "expectedOutput": "Start of Program\nStep 1: Booking request initiated...\nStep 2: Checking seat availability in database...\nEnd of Program (Notice this logs BEFORE the Promise finishes!)\nStep 4 (Success): Ticket Confirmed! Seat: B-14\nStep 5 (Chained): SMS Notification Sent to User\nStep 6 (Cleanup): Booking session closed. Thank you!",
     "lineByLineExplanation": [
       {
-        "line": 1,
-        "code": "function demonstratePromiseLifecycle() {",
-        "explanation": "Declares demonstration function enclosing the full Promise lifecycle scenario."
-      },
-      {
         "line": 2,
-        "code": "console.log('1: Synchronous script starts');",
-        "explanation": "Synchronous call; logs immediately to the current call stack frame."
+        "code": "function checkTicketBooking(availableSeats) {",
+        "explanation": "Defines the booking function that takes available seats as an argument."
       },
       {
         "line": 5,
-        "code": "const promise = new Promise((resolve, reject) => {",
-        "explanation": "Instantiates a new Promise; executor callback is executed synchronously by runtime."
-      },
-      {
-        "line": 6,
-        "code": "console.log('2: Promise executor runs synchronously');",
-        "explanation": "Logs from within executor during instantiation before constructor returns."
+        "code": "return new Promise((resolve, reject) => {",
+        "explanation": "Creates and returns a new Promise. The callback inside executes immediately."
       },
       {
         "line": 8,
         "code": "setTimeout(() => {",
-        "explanation": "Schedules a macrotask timer to simulate asynchronous I/O completion."
+        "explanation": "Simulates a 1-second delay for database query or server response."
       },
       {
-        "line": 10,
-        "code": "resolve('Success Payload');",
-        "explanation": "Transitions Promise state from Pending to Fulfilled with immutable result."
+        "line": 11,
+        "code": "resolve({ status: 'CONFIRMED', seatNumber: 'B-14' });",
+        "explanation": "Success! Transitions Promise from 'Pending' to 'Fulfilled' with ticket details."
       },
       {
-        "line": 12,
-        "code": "reject(new Error('Ignored rejection after fulfillment'));",
-        "explanation": "No-op. Per A+ spec 2.1.2.1, once fulfilled, state cannot transition to rejected."
+        "line": 14,
+        "code": "reject(new Error('Sorry, all seats are already booked!'));",
+        "explanation": "Failure! Transitions Promise to 'Rejected' with an error message."
       },
       {
-        "line": 16,
-        "code": "console.log('3: Promise object constructed (State: Pending)');",
-        "explanation": "Constructor returns Pending Promise instance to caller."
-      },
-      {
-        "line": 19,
-        "code": "promise.then((result) => { ... })",
-        "explanation": "Registers onFulfilled reaction handler; returns a brand new promise for chaining."
-      },
-      {
-        "line": 22,
-        "code": "return result.toUpperCase();",
-        "explanation": "Returned value automatically fulfills the returned chained promise."
+        "line": 23,
+        "code": ".then((ticket) => { ... })",
+        "explanation": "Runs when promise resolves. Receives the ticket object and returns a follow-up message."
       },
       {
         "line": 27,
-        "code": "throw new Error('Downstream processing failed');",
-        "explanation": "Thrown exception automatically rejects the second chained promise."
+        "code": ".then((notificationStatus) => { ... })",
+        "explanation": "Chained step: receives output of previous .then() and logs confirmation."
       },
       {
-        "line": 29,
-        "code": ".catch((error) => { ... })",
-        "explanation": "Catches upstream rejection; returning a value here recovers the chain back to Fulfilled."
+        "line": 30,
+        "code": ".catch((err) => { ... })",
+        "explanation": "Runs if any error occurred in the chain, preventing app crash."
       },
       {
-        "line": 34,
+        "line": 33,
         "code": ".finally(() => { ... })",
-        "explanation": "Always executes when settled without receiving or altering the resolution value."
+        "explanation": "Always runs at the very end to do cleanup (like closing the session or hiding spinner)."
       },
       {
-        "line": 38,
-        "code": "console.log('8: Synchronous script finishes');",
-        "explanation": "Synchronous execution stack completes; event loop now checks the microtask queue."
+        "line": 37,
+        "code": "console.log('End of Program...');",
+        "explanation": "Demonstrates that synchronous lines run BEFORE the 1-second async promise completes!"
       }
     ],
     "executionFlow": [
-      "Step 1 [Synchronous]: Main thread begins executing demonstratePromiseLifecycle(); logs '1: Synchronous script starts'.",
-      "Step 2 [Synchronous]: `new Promise(...)` constructor executes its executor immediately; logs '2: Promise executor runs synchronously'.",
-      "Step 3 [Macrotask Scheduling]: `setTimeout` registers a 100ms timer in browser Web APIs / Node libuv timer heap.",
-      "Step 4 [Synchronous]: Constructor returns `promise` in `[[PromiseState]]: 'pending'`; logs '3: Promise object constructed'.",
-      "Step 5 [Reaction Registration]: `.then()`, `.catch()`, and `.finally()` chain is attached, recording handler callbacks in internal reactions.",
-      "Step 6 [Synchronous]: Main thread logs '8: Synchronous script finishes'; Call stack is now empty.",
-      "Step 7 [Timer Expiration]: After 100ms, timer expires and its callback enters the Macrotask Queue.",
-      "Step 8 [Resolution]: Macrotask executes `resolve('Success Payload')`; transitions state to `fulfilled` and enqueues the first `.then()` callback onto the Microtask Queue.",
-      "Step 9 [Microtask Drainage]: Engine drains Microtask Queue: runs first `.then()`, returns transformed value, enqueues second `.then()`, throws Error, enqueues `.catch()`, recovers value, and executes `.finally()`."
+      "Step 1: JavaScript starts from top: prints 'Start of Program'.",
+      "Step 2: Calls checkTicketBooking(2). Prints 'Step 1: Booking request initiated...'.",
+      "Step 3: Inside Promise constructor, prints 'Step 2: Checking seat availability...'.",
+      "Step 4: setTimeout starts a 1000ms timer in the background browser API.",
+      "Step 5: Function returns the Promise (currently in Pending state).",
+      "Step 6: Prints 'End of Program' (synchronous execution finishes).",
+      "Step 7: After 1 second, timer finishes, resolve() is called.",
+      "Step 8: Promise state flips from 'Pending' -> 'Fulfilled'.",
+      "Step 9: .then() callback is pushed into the Microtask Queue and runs immediately: prints 'Step 4: Ticket Confirmed'.",
+      "Step 10: Second chained .then() runs: prints 'Step 5: SMS Notification Sent'.",
+      "Step 11: .finally() runs: prints 'Step 6: Booking session closed'."
     ],
     "complexity": {
-      "time": "O(1) per state transition & registration; O(N) chain depth traversal",
-      "space": "O(N) heap memory for reaction closures and queued handler callbacks"
+      "time": "O(1) creation and state transition; O(N) for chaining N steps",
+      "space": "O(1) memory for single promise; O(N) memory to store chained reaction callbacks"
     },
     "edgeCases": [
-      "Circular Promise Resolution: Returning a promise from its own resolution (`const p = p.then(...)`) throws a TypeError according to A+ Rule 2.3.1.",
-      "Thenable Recursion: An object with a rogue `.then` method that calls both resolve and reject multiple times—A+ spec guarantees only the first call takes effect.",
-      "Zalgo / Synchronous Execution: A custom promise library executing callbacks synchronously before the outer function returns violates spec 2.2.4."
+      "Calling resolve() twice: Only the first call counts! Second resolve is completely ignored.",
+      "Calling resolve() after reject(): Ignored! Once rejected, it stays rejected forever.",
+      "Throwing an error inside executor: If you throw new Error() inside the promise constructor, JavaScript automatically catches it and rejects the promise safely."
     ],
     "commonMistakes": [
-      "The 'Promise Hell' anti-pattern: Nesting promises inside `.then()` callbacks instead of returning them and chaining at the top level.",
-      "Forgetting to return inside `.then()`: Omitting the return statement causes the chained promise to resolve with `undefined`.",
-      "Assuming executor runs asynchronously: The executor passed to `new Promise((resolve, reject) => { ... })` runs immediately and synchronously during construction.",
-      "Mixing callbacks with Promises: Creating a `new Promise` wrapper around a function that already returns a promise (the 'deferred anti-pattern')."
+      "Mistake 1: Forgetting to return a value in .then(). If you don't write return, the next .then() gets undefined!",
+      "Mistake 2: Nesting promises inside .then() like callback hell. Always return the promise and chain flatly.",
+      "Mistake 3: Forgetting to add .catch(). Unhandled rejections can cause silent failures or warnings in your console."
     ],
     "interviewTraps": [
-      "Trap: Interviewer asks 'What does this output?' with `Promise.resolve().then(() => console.log('A')); setTimeout(() => console.log('B'), 0); console.log('C');`. Many candidates answer 'A, B, C' or 'C, B, A'. Correct Answer: 'C, A, B' because synchronous code runs first ('C'), then Microtasks run ('A'), then Macrotasks run ('B').",
-      "Trap: Interviewer asks 'Can a Promise in Fulfilled state ever reject if an error is thrown in `.finally()`?' Answer: Yes! While `.finally()` normally preserves the upstream value/reason, throwing inside `.finally()` will override with a new rejection."
+      "Interviewer Trap: 'Will console.log(1) run before or after Promise.resolve().then(() => console.log(2))?'",
+      "Answer: console.log(1) runs FIRST because synchronous code always runs before the microtask queue!"
     ],
     "interviewTips": [
-      "Explicitly name the three internal states: Pending, Fulfilled, and Rejected.",
-      "Mention the term 'Settled' and state that it is an informal term meaning either Fulfilled or Rejected (terminal state).",
-      "Emphasize the Microtask Queue and describe how the V8 microtask checkpoint drains all microtasks before any macrotasks run.",
-      "Point out thenable assimilation (Rule 2.3 of Promises/A+) when discussing how promises compose with foreign async libraries."
+      "Start your answer with the simple food delivery or token receipt analogy—interviewers love clear practical thinking!",
+      "Clearly mention all 3 states: Pending, Fulfilled, and Rejected.",
+      "Mention that a Settled promise is Immutable (cannot be changed).",
+      "Explain that .then() is for success, .catch() is for error, and .finally() is for cleanup."
     ],
     "followUps": [
-      "What is the exact behavioral difference between `Promise.all()` and `Promise.allSettled()`?",
-      "How does `async/await` relate syntactically and at the runtime bytecode level to Promises?",
-      "How would you write a polyfill for `Promise.all()` that respects the Promises/A+ specification?"
+      "What is the difference between Promise.all() and Promise.allSettled()?",
+      "How does async/await make Promises even easier to write?",
+      "What is the difference between Microtask Queue and Macrotask Queue?"
     ],
     "followUpAnswers": [
-      "`Promise.all()` short-circuits and immediately rejects on the very first rejection, losing remaining results. `Promise.allSettled()` waits for all promises to finish regardless of success or failure, returning an array of `{ status: 'fulfilled', value }` or `{ status: 'rejected', reason }` objects.",
-      "`async/await` is syntactic sugar built directly atop Promises and ES6 Generators. An `async` function always returns a Promise; `await` yields execution back to the caller while registering an implicit microtask reaction that resumes execution with the resolved value when the awaited promise settles.",
-      "To polyfill `Promise.all(iterable)`: validate iterable, return a `new Promise((resolve, reject) => ...)`. Keep an array of results and a completed counter. Iterate over items, wrap each with `Promise.resolve(item).then(val => { results[i] = val; if (++completed === total) resolve(results); }, reject)`. If the array is empty, resolve immediately."
+      "Promise.all() waits for all promises, but if even ONE fails, the whole thing rejects immediately. Promise.allSettled() waits for ALL promises to finish, whether they succeeded or failed, and gives you a full report.",
+      "async/await is simply syntactic sugar over Promises. Instead of writing .then() chains, you can write code that looks like normal synchronous code using the 'await' keyword, making it even easier to read and maintain.",
+      "Microtask Queue has higher priority than Macrotask Queue. Promise callbacks run in Microtasks (VIP queue), while setTimeout and setInterval run in Macrotasks (general queue). All microtasks finish before any macrotask starts."
     ]
   },
   {
