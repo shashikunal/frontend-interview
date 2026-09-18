@@ -1583,79 +1583,139 @@
     "difficulty": "INTERMEDIATE",
     "questionType": "ARCHITECTURE",
     "experienceLevel": "5_8_YEARS",
-    "isHighFrequency": false,
+    "isHighFrequency": true,
     "companyTags": [
       "Microsoft",
-      "Apple"
+      "Apple",
+      "Google",
+      "Amazon",
+      "Meta"
     ],
     "tags": [
       "javascript",
-      "javascript",
-      "Microsoft",
-      "Apple",
+      "dom",
+      "events",
+      "bubbling",
+      "capturing",
+      "event-delegation",
       "interview-prep"
     ],
     "question": "Event Propagation: Capturing, Target & Bubbling Phases",
-    "shortAnswer": "1. In simple words, \"Event Propagation: Capturing, Target & Bubbling Phases\" is a foundational concept in JavaScript that dictates how code runs and stores data in memory.\n2. Real-life analogy: Imagine a doctor’s clinic with an appointment token system. Patients enter one by one into the doctor’s room (the Call Stack). If an emergency arises (Microtask), the doctor handles it before calling the next regular patient (Macrotask).\n3. JavaScript executes code inside an Execution Context consisting of a Memory component (Variable Environment) and a Code component (Thread of Execution).\n4. It operates as a single-threaded language, meaning it can only execute one command at a time in sequence.\n5. Understanding this concept prevents common interview bugs like unexpected undefined values, closure memory leaks, or scope shadowing.\n6. It explains why synchronous code always finishes before asynchronous callbacks (like setTimeout or fetch) can run.\n7. It forms the backbone of modern frameworks like React, Node.js, and Vue.\n8. Mastering this allows you to write high-performance code that avoids blocking the main thread.\n9. Common mistake: Assuming JavaScript does multiple things at the exact same time; in reality, the Event Loop coordinates tasks seamlessly.\n10. In interviews, explain this step-by-step: Creation Phase (memory allocation) followed by Execution Phase (running code line by line).\n11. Always keep functions small and pure to avoid unwanted side effects.\n12. Key takeaway: Master JavaScript runtime fundamentals, and cracking frontend coding rounds becomes easy.",
-    "interviewAnswer": "Sir, in very simple terms, Event Propagation: Capturing, Target & Bubbling Phases is a core JavaScript engine concept that governs how our code is parsed, stored, and executed.\n\nBecause JavaScript is single-threaded, it uses an Execution Context with two clear phases:\n1. The Creation Phase: where memory is allocated for variables and functions.\n2. The Execution Phase: where code runs line-by-line and values are assigned.\n\nA helpful analogy is a busy restaurant kitchen with one head chef:\nThe chef prepares their ingredients first (memory creation phase), and then cooks the orders one by one on the single stove (call stack).\n\nUnderstanding Event Propagation: Capturing, Target & Bubbling Phases helps us avoid tricky bugs with scope, hoisting, and async timing, ensuring our web apps remain fast and responsive.",
-    "detailedExplanation": "### Deep Technical Dive: JavaScript V8 Engine & Execution Lifecycle for Event Propagation: Capturing, Target & Bubbling Phases\n\n1. **V8 Compilation Pipeline**: Modern V8 parses source text into an Abstract Syntax Tree (AST). The **Ignition** bytecode interpreter produces compact bytecode, while **TurboFan** JIT compiler optimizes hot code paths into machine assembly.\n2. **Execution Context & Scoping**: When code runs, the engine creates an Execution Context containing a Lexical Environment (let/const bindings in TDZ until evaluated) and a Variable Environment (var declarations hoisted). Closures capture parent lexical scopes in the memory heap.\n3. **Event Loop & Microtask Priority**: Synchronous code executes on the single-threaded Call Stack. Microtasks (Promise resolutions, queueMicrotask) run immediately when the call stack empties, preceding macrotasks (setTimeout, DOM events) in the Event Loop cycle.",
-    "why": "Why does Event Propagation: Capturing, Target & Bubbling Phases exist in modern JavaScript?\n1. Eliminates error-prone legacy patterns (callback hell, global scope pollution, hoisting bugs).\n2. Enhances developer ergonomics with declarative, expressive, and self-documenting syntax.\n3. Enables V8 and other modern engines to apply runtime JIT optimizations and efficient garbage collection.",
-    "howItWorks": "How it works under the hood in the JavaScript engine:\n1. **Parsing & AST Generation**: Source code is tokenized and parsed into an Abstract Syntax Tree.\n2. **Creation Phase**: Engine allocates memory for variables and functions; identifier bindings are registered in the environment record.\n3. **Execution Phase**: Statements execute line-by-line in the Call Stack; values are assigned to identifiers.\n4. **Task Scheduling**: Asynchronous operations are handed off to Web APIs, resolving via microtask or macrotask queues.",
-    "realWorldExample": "Production Scenario: Real-time fintech stock price ticker or dashboard where data streams are processed asynchronously, cached safely in scope without memory leaks, and rendered to users with sub-millisecond latency.",
-    "example": "// Practical JavaScript Example: Event Propagation: Capturing, Target & Bubbling Phases\nfunction demonstrateCoreConcept() {\n  console.log(\"Step 1: Function Execution Context created.\");\n\n  let activeUser = \"Kunal\";\n  const userRole = \"Frontend Architect\";\n\n  function displayDetails() {\n    // Accesses outer lexical scope\n    console.log(`Step 2: Authenticated ${activeUser} as ${userRole}.`);\n  }\n\n  displayDetails();\n  console.log(\"Step 3: Execution Context completed and popped from Call Stack.\");\n}\n\ndemonstrateCoreConcept();",
-    "codeSnippet": "// Practical JavaScript Example: Event Propagation: Capturing, Target & Bubbling Phases\nfunction demonstrateCoreConcept() {\n  console.log(\"Step 1: Function Execution Context created.\");\n\n  let activeUser = \"Kunal\";\n  const userRole = \"Frontend Architect\";\n\n  function displayDetails() {\n    // Accesses outer lexical scope\n    console.log(`Step 2: Authenticated ${activeUser} as ${userRole}.`);\n  }\n\n  displayDetails();\n  console.log(\"Step 3: Execution Context completed and popped from Call Stack.\");\n}\n\ndemonstrateCoreConcept();",
+    "shortAnswer": "1. In simple words, Event Propagation is the mechanism by which a DOM event travels through the HTML element hierarchy whenever an event occurs on a webpage.\n2. Real-life analogy: Imagine a company hierarchy where the CEO sends instructions down through Managers to the Employee (Capturing = Down), the Employee receives the task (Target), and the Employee sends a status report back up to the CEO (Bubbling = Up).\n3. DOM event propagation occurs across three distinct phases in order: (1) Capturing Phase, (2) Target Phase, and (3) Bubbling Phase.\n4. 1. Capturing Phase (Trickling): The event travels down from the top of the DOM hierarchy (Window -> Document -> HTML -> Body -> Parent) towards the target element.\n5. In the Capturing Phase, listeners only trigger if explicitly registered with { capture: true } (or true as the 3rd argument in addEventListener).\n6. 2. Target Phase: The event reaches the actual DOM element that triggered the event (the button or input the user clicked).\n7. In the Target Phase, listeners registered directly on that element execute, and event.target references this origin element.\n8. 3. Bubbling Phase: After the target phase, the event bubbles back up through ancestor elements (Child -> Parent -> Body -> HTML -> Document -> Window).\n9. event.target vs event.currentTarget: event.target is the innermost element that triggered the event, while event.currentTarget is the element whose event listener is currently executing.\n10. stopPropagation() vs preventDefault(): event.stopPropagation() stops the event from continuing its travel through the DOM hierarchy, whereas event.preventDefault() cancels the browser default native action (like link navigation or form submission).\n11. Event Delegation is a powerful architectural pattern enabled by Event Bubbling: attach a single event listener on a parent container to manage clicks on hundreds of child or dynamically added elements.\n12. Key takeaway: Never confuse DOM Event Propagation (Capturing, Target, Bubbling) with JavaScript Execution Context (Creation Phase, Execution Phase, Hoisting, Call Stack)—they are completely separate JavaScript and Web API concepts!",
+    "interviewAnswer": "Event propagation is the process by which a DOM event travels through the DOM hierarchy. It has three phases: capturing, target, and bubbling. During capturing, the event travels from the document toward the target element. In the target phase, the event reaches the element that triggered it. During bubbling, the event travels back from the target toward its ancestors. Understanding propagation is important for handling DOM events, preventing unwanted event behavior, and implementing event delegation.",
+    "diagram": "flowchart TD\n    subgraph Capturing[\"1. Capturing Phase (Top → Down / Trickling)\"]\n        W1[\"Window\"] --> D1[\"Document\"]\n        D1 --> H1[\"<html>\"]\n        H1 --> B1[\"<body>\"]\n        B1 --> P1[\"<div id='parent'> (Capture Listener: {capture: true})\"]\n    end\n    subgraph Target[\"2. Target Phase (Originating Element)\"]\n        P1 --> T[\"<button id='child'> (event.target: Button Clicked!)\"]\n    end\n    subgraph Bubbling[\"3. Bubbling Phase (Bottom → Up / Default)\"]\n        T --> P2[\"<div id='parent'> (event.currentTarget: Standard Listener)\"]\n        P2 --> B2[\"<body>\"]\n        B2 --> H2[\"<html>\"]\n        H2 --> D2[\"Document\"]\n        D2 --> W2[\"Window\"]\n    end\n    style Capturing fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e40af\n    style Target fill:#fef3c7,stroke:#f59e0b,stroke-width:3px,color:#92400e\n    style Bubbling fill:#f0fdf4,stroke:#22c55e,stroke-width:2px,color:#166534\n    style T fill:#fde68a,stroke:#d97706,stroke-width:2px,color:#78350f",
+    "diagramCaption": "DOM Event Propagation Lifecycle: Capturing Phase (Top-Down from Window to Target), Target Phase (Origin Element), and Bubbling Phase (Bottom-Up back to Window).",
+    "detailedExplanation": "### Event Propagation: Capturing, Target & Bubbling Phases\n\n**Event Propagation** is the mechanism by which a DOM event travels through the HTML element hierarchy when an event occurs.\n\nConsider this standard HTML structure:\n\n```html\n<div id=\"parent\">\n  <button id=\"child\">Click Me</button>\n</div>\n```\n\nWhen the user clicks the button, the browser processes the event through **three distinct phases**:\n\n1. **Capturing Phase** (Trickling)\n2. **Target Phase**\n3. **Bubbling Phase**\n\n---\n\n### 1. Capturing Phase\n\nDuring the **capturing phase**, the event travels from the top of the DOM hierarchy toward the element that triggered the event.\n\n```text\ndocument\n   ↓\nhtml\n   ↓\nbody\n   ↓\ndiv#parent\n   ↓\nbutton#child\n```\n\nWe can register an event listener during the capturing phase using:\n\n```javascript\nparent.addEventListener(\n  \"click\",\n  () => {\n    console.log(\"Parent - Capturing\");\n  },\n  { capture: true }\n);\n```\n\nThe core rule to remember:\n```text\nCapturing = Parent/Document → Target\n```\n\n---\n\n### 2. Target Phase\n\nThe event reaches the **actual element that triggered the event**.\n\nIf the user clicks:\n\n```html\n<button id=\"child\">Click Me</button>\n```\n\nthen the button is the event target.\n\n```javascript\nchild.addEventListener(\"click\", (event) => {\n  console.log(\"Button clicked\");\n  console.log(event.target); // button#child\n});\n```\n\nHere:\n```text\nevent.target → button#child\n```\n\nThe target phase occurs when the event reaches the element where the event originated.\n\n---\n\n### 3. Bubbling Phase\n\nAfter reaching the target, the event normally travels back up through its ancestor elements:\n\n```text\nbutton#child\n   ↑\ndiv#parent\n   ↑\nbody\n   ↑\nhtml\n   ↑\ndocument\n```\n\nThis is called **event bubbling**.\n\n```javascript\nparent.addEventListener(\"click\", () => {\n  console.log(\"Parent clicked (bubbling)\");\n});\n```\n\nIf the user clicks the button, the parent’s click handler can also execute because the click event bubbles from the button to the parent.\n\n---\n\n### Complete Event Propagation Flow\n\n```text\n             CAPTURING PHASE\n                    ↓\n                document\n                    ↓\n                  html\n                    ↓\n                  body\n                    ↓\n              parent div\n                    ↓\n              TARGET PHASE\n                    ↓\n              button clicked\n                    ↑\n              BUBBLING PHASE\n                    ↑\n              parent div\n                    ↑\n                  body\n                    ↑\n                  html\n                    ↑\n                document\n```\n\nThe easiest way to remember it is:\n```text\nCapturing → Target → Bubbling\n\nTop → Target → Top\n```\n\n---\n\n### event.target vs event.currentTarget\n\nThis is an essential interview concept:\n\n```javascript\nparent.addEventListener(\"click\", (event) => {\n  console.log(\"target:\", event.target);\n  console.log(\"currentTarget:\", event.currentTarget);\n});\n```\n\nWhen clicking the button inside `#parent`:\n```text\nevent.target        → button#child  (where the click originated)\nevent.currentTarget → div#parent     (element whose listener is executing)\n```\n\n- **event.target**: The element where the event originally occurred.\n- **event.currentTarget**: The element whose event listener is currently executing.\n\n---\n\n### Stopping Event Propagation\n\nJavaScript provides `event.stopPropagation()` to stop the propagation path:\n\n```javascript\nchild.addEventListener(\"click\", (event) => {\n  event.stopPropagation();\n  console.log(\"Button clicked — propagation stopped\");\n});\n```\n\n**Important Distinction:**\n- `event.stopPropagation()` stops the event from traveling further along the propagation path.\n- `event.preventDefault()` prevents the browser’s default native action (such as submitting a form or navigating an `<a>` link).\nThese are completely different concepts and must not be confused.\n\n---\n\n### Event Delegation\n\n**Event bubbling is the foundation of event delegation**.\n\nInstead of attaching an event listener to every child button:\n\n```javascript\nbuttons.forEach((button) => {\n  button.addEventListener(\"click\", handleClick);\n});\n```\n\nwe can attach one single listener to the parent container:\n\n```javascript\ncontainer.addEventListener(\"click\", (event) => {\n  if (event.target.matches(\"button\")) {\n    console.log(\"Button clicked:\", event.target.textContent);\n  }\n});\n```\n\nThis pattern is ideal for:\n- Handling many child elements with minimal memory overhead\n- Dynamically created elements (no need to re-bind listeners)\n- Reducing memory leaks from uncleared listeners\n\n---\n\n### Real-World Analogy\n\nImagine a message travelling through a corporate company hierarchy:\n\n1. **Capturing (Down)**: The CEO sends an instruction down: CEO → VP → Manager → Team Lead → Employee.\n2. **Target**: The message reaches the intended Employee who performs the task.\n3. **Bubbling (Up)**: The confirmation report travels back up: Employee → Team Lead → Manager → VP → CEO.\n\nTherefore:\n- **Capturing** = Downwards\n- **Target** = Actual element\n- **Bubbling** = Upwards\n\n---\n\n### Very Important: Do Not Mix These Concepts\n\nIn interviews, candidates often mistakenly mix up Event Propagation with JavaScript Execution Context. Keep them completely separate:\n\n```text\nJavaScript Execution Context          DOM Event Propagation\n        ≠                                       ≠\n• Global & Function Context           • Capturing Phase\n• Creation Phase (Memory allocation)  • Target Phase\n• Execution Phase (Line-by-line)      • Bubbling Phase\n• Variable Environment & Scope        • event.target & event.currentTarget\n• Hoisting & Call Stack               • stopPropagation() & preventDefault()\n• Lexical Scope                       • Event Delegation Pattern\n```\n\nDo NOT claim that Event Propagation explains Hoisting, Scope, Memory Allocation, or the Call Stack. Those belong to core JavaScript runtime and engine execution.",
+    "why": "Why does DOM Event Propagation exist in browsers?\n1. Structural Event Handling: Allows parent containers to respond to child user interactions without hardcoding listeners on every nested node.\n2. Enables Event Delegation: Enables handling clicks on thousands of dynamic items with a single listener, drastically improving web application performance and memory usage.\n3. Separation of Concerns & Interception: Capturing allows root interceptors (analytics, modal overlays, global hotkeys) to inspect or cancel events before target components process them.",
+    "howItWorks": "How Event Propagation works under the hood:\n1. Dispatch: When a physical hardware event (mouse click, keyboard press) occurs, the browser creates an Event object.\n2. Phase 1 (Capturing Phase): Browser computes the DOM path from Window to Target and travels downward. Any listener registered with { capture: true } runs.\n3. Phase 2 (Target Phase): The event reaches the target element (event.target). Listeners registered directly on this element fire in registration order.\n4. Phase 3 (Bubbling Phase): The event travels back up from Target to Window. Standard addEventListener listeners fire.\n5. Propagation Termination: Calling event.stopPropagation() stops further traversal along the capture/bubble path.",
+    "realWorldExample": "Production Scenario: An ecommerce infinite-scroll catalog with 5,000 product cards. Instead of attaching 5,000 click listeners (which consumes massive memory and requires re-binding on every scroll load), a single click listener is attached to the parent <div id=\"product-grid\">. When a user clicks \"Add to Cart\", event bubbling propagates the click to the grid, where event.target.closest(\".add-to-cart-btn\") safely detects and handles the action.",
+    "example": "// Complete Demonstration: Event Propagation & Event Delegation\nconst parent = document.querySelector(\"#parent\");\nconst child = document.querySelector(\"#child\");\n\n// 1. Capturing Phase listener (Third argument: { capture: true })\nparent.addEventListener(\"click\", (event) => {\n  console.log(\"[1. Capturing] Parent intercepted event | target:\", event.target.id);\n}, { capture: true });\n\n// 2. Target Phase listener\nchild.addEventListener(\"click\", (event) => {\n  console.log(\"[2. Target Phase] Button clicked | target:\", event.target.id, \"| currentTarget:\", event.currentTarget.id);\n  // event.stopPropagation(); // Uncomment to halt bubbling to parent\n});\n\n// 3. Bubbling Phase listener (Default behavior)\nparent.addEventListener(\"click\", (event) => {\n  console.log(\"[3. Bubbling Phase] Parent handled event | target:\", event.target.id, \"| currentTarget:\", event.currentTarget.id);\n});\n\n// 4. Practical Event Delegation Pattern\nconst list = document.querySelector(\"#todo-list\");\nlist.addEventListener(\"click\", (event) => {\n  if (event.target.matches(\"button.delete-btn\")) {\n    const listItem = event.target.closest(\"li\");\n    console.log(\"Deleted item:\", listItem.dataset.id);\n    listItem.remove();\n  }\n});",
+    "codeSnippet": "// Complete Demonstration: Event Propagation & Event Delegation\nconst parent = document.querySelector(\"#parent\");\nconst child = document.querySelector(\"#child\");\n\n// 1. Capturing Phase listener (Third argument: { capture: true })\nparent.addEventListener(\"click\", (event) => {\n  console.log(\"[1. Capturing] Parent intercepted event | target:\", event.target.id);\n}, { capture: true });\n\n// 2. Target Phase listener\nchild.addEventListener(\"click\", (event) => {\n  console.log(\"[2. Target Phase] Button clicked | target:\", event.target.id, \"| currentTarget:\", event.currentTarget.id);\n  // event.stopPropagation(); // Uncomment to halt bubbling to parent\n});\n\n// 3. Bubbling Phase listener (Default behavior)\nparent.addEventListener(\"click\", (event) => {\n  console.log(\"[3. Bubbling Phase] Parent handled event | target:\", event.target.id, \"| currentTarget:\", event.currentTarget.id);\n});\n\n// 4. Practical Event Delegation Pattern\nconst list = document.querySelector(\"#todo-list\");\nlist.addEventListener(\"click\", (event) => {\n  if (event.target.matches(\"button.delete-btn\")) {\n    const listItem = event.target.closest(\"li\");\n    console.log(\"Deleted item:\", listItem.dataset.id);\n    listItem.remove();\n  }\n});",
+    "expectedOutput": "[1. Capturing] Parent intercepted event | target: child\n[2. Target Phase] Button clicked | target: child | currentTarget: child\n[3. Bubbling Phase] Parent handled event | target: child | currentTarget: parent",
     "lineByLineExplanation": [
       {
         "line": 1,
-        "code": "// Feature Initialization",
-        "explanation": "Initializes execution in current lexical scope."
+        "code": "parent.addEventListener(\"click\", ..., { capture: true });",
+        "explanation": "Registers a listener during the downward Capturing Phase before the event reaches the target element."
       },
       {
         "line": 2,
-        "code": "const result = await processData();",
-        "explanation": "Pauses execution in async function; pushes continuation to microtask queue upon resolution."
+        "code": "child.addEventListener(\"click\", (event) => { ... });",
+        "explanation": "Registers a standard click listener directly on the child element, invoked during the Target Phase."
       },
       {
         "line": 3,
-        "code": "return { success: true, payload: result };",
-        "explanation": "Returns immutable data payload to caller."
+        "code": "event.stopPropagation();",
+        "explanation": "Stops the event from traveling further up (bubbling) or down (capturing) the DOM tree."
+      },
+      {
+        "line": 4,
+        "code": "parent.addEventListener(\"click\", ...);",
+        "explanation": "Standard bubbling listener invoked after the target phase as the event bubbles back up to window."
+      },
+      {
+        "line": 5,
+        "code": "list.addEventListener(\"click\", (event) => { ... });",
+        "explanation": "Event Delegation: a single parent listener catches clicks from current and future child elements."
       }
     ],
     "executionFlow": [
-      "Step 1: Environment parses source into an Abstract Syntax Tree (AST).",
-      "Step 2: Memory allocation and identifier declarations occur in Creation Phase.",
-      "Step 3: Synchronous statements run sequentially on the Call Stack.",
-      "Step 4: Microtasks (Promises) drain completely when Call Stack clears.",
-      "Step 5: Event Loop picks the next macrotask (setTimeout, DOM events) from the Callback Queue."
+      "Step 1: User clicks the #child button inside #parent.",
+      "Step 2: Capturing Phase begins at Window -> Document -> Body -> Parent. The parent capturing handler ({ capture: true }) executes first.",
+      "Step 3: Target Phase is reached at #child. The child button click handler executes; event.target points to #child.",
+      "Step 4: Bubbling Phase begins from #child -> Parent -> Body -> Document -> Window. The parent bubbling handler executes; event.currentTarget is #parent.",
+      "Step 5: If event.stopPropagation() was invoked, subsequent ancestor listeners in the chain are skipped."
+    ],
+    "complexity": {
+      "time": "O(d) where d is the depth of the DOM tree from window to the target element.",
+      "space": "O(1) memory overhead; Event delegation reduces memory footprint from O(n) listeners to O(1)."
+    },
+    "edgeCases": [
+      "Non-Bubbling Events: Events such as focus, blur, mouseenter, mouseleave, load, unload, and scroll (on elements) do not bubble. Use focusin/focusout or capturing listeners instead.",
+      "stopPropagation() vs stopImmediatePropagation(): stopPropagation() stops ancestor traversal but allows other listeners on the SAME element to run; stopImmediatePropagation() halts both ancestor traversal and other listeners on the same element.",
+      "Target Phase Ordering: In modern browsers, when an event listener is attached to the target itself, listeners fire in registration order regardless of the capture flag."
     ],
     "commonMistakes": [
-      "Confusing synchronous execution with asynchronous microtask scheduling in the event loop.",
-      "Accidentally creating memory leaks by retaining references in closures or uncleared event listeners.",
-      "Assuming 'this' binding is lexical in regular functions instead of dynamically determined at call time."
+      "Confusing DOM Event Propagation with JavaScript Execution Context (Creation/Execution Phase, Hoisting, Call Stack).",
+      "Assuming event.preventDefault() stops event bubbling. It only stops browser default behavior (like following links); event.stopPropagation() must be called to stop bubbling.",
+      "Relying on event.target in event delegation without verifying event.target.closest() or matches(), causing bugs when clicking nested icons/spans inside buttons."
     ],
     "interviewTraps": [
-      "Interviewer presents code mixing Promise.resolve(), setTimeout(..., 0), and synchronous console.log to test exact queue order.",
-      "How closures retain access to outer variables even after the outer function has completed execution and returned.",
-      "Temporal Dead Zone (TDZ): accessing let/const before initialization throws ReferenceError, unlike var which is initialized to undefined."
+      "Interviewer asks: \"What happens if both parent and child have click handlers? Which fires first?\" Answer: Child fires first during standard bubbling, BUT parent fires first if parent registered with { capture: true }!",
+      "Interviewer asks: \"Does stopPropagation() prevent other listeners on the same element from firing?\" Answer: No! stopPropagation() only stops traversal to OTHER elements; use stopImmediatePropagation() to stop other listeners on the same element.",
+      "Interviewer asks: \"Can event delegation handle dynamically added elements?\" Answer: Yes, because bubbling happens at runtime based on the live DOM hierarchy, not at registration time."
     ],
     "interviewTips": [
-      "Clearly articulate the phases: Creation Phase (hoisting) vs Execution Phase.",
-      "Explain the Event Loop clearly: Call Stack -> Microtask Queue (Promises) -> Macrotask Queue (Timers).",
-      "Highlight immutability, pure functions, and predictable state transformations."
+      "Recite the 3 phases cleanly: Capturing (Top -> Target), Target (At element), Bubbling (Target -> Top).",
+      "Use the corporate hierarchy analogy: CEO down to Employee is Capturing, Employee is Target, Employee report up to CEO is Bubbling.",
+      "Explicitly clarify that Execution Context (Creation/Execution Phase) is JS engine memory/code execution, whereas Event Propagation is DOM/Web API event dispatching."
     ],
     "followUps": [
-      "What is the difference between the Microtask Queue and the Macrotask (Callback) Queue?",
-      "How does the V8 garbage collector detect and clean up unreferenced memory in closures?",
-      "What is the Temporal Dead Zone (TDZ) and why was it introduced in ES6?"
+      "What is event propagation?",
+      "What are the three phases of event propagation?",
+      "What is event capturing?",
+      "What is event bubbling?",
+      "What is the target phase?",
+      "What is the difference between capturing and bubbling?",
+      "What is event.target?",
+      "What is event.currentTarget?",
+      "What is the difference between event.target and event.currentTarget?",
+      "How do you enable event capturing?",
+      "What does { capture: true } do?",
+      "What does stopPropagation() do?",
+      "What is the difference between stopPropagation() and preventDefault()?",
+      "What is event delegation?",
+      "How does event bubbling enable event delegation?",
+      "What happens when a child element is clicked and both child and parent have click handlers?",
+      "Can event propagation be stopped?",
+      "Can bubbling be disabled for an event listener?",
+      "What is the difference between onclick and addEventListener()?",
+      "Give a real-world use case for event delegation."
     ],
     "followUpAnswers": [
-      "Microtasks (Promise.then, queueMicrotask) have higher priority and run completely to exhaustion after every call stack frame, whereas Macrotasks (setTimeout, setInterval) run one per event loop tick.",
-      "V8 uses a Generational Garbage Collector (Scavenger for young generation, Mark-Sweep-Compact for old generation) tracing reachability from roots (window/global).",
-      "The TDZ is the period between entering scope and variable declaration evaluation; accessing let/const during TDZ throws a ReferenceError to prevent accessing uninitialized state."
+      "Event propagation is the mechanism by which a DOM event travels through the HTML element hierarchy when an event (like a click or keypress) occurs.",
+      "The three phases are: (1) Capturing Phase (event travels down from document to target), (2) Target Phase (event reaches the actual target element), and (3) Bubbling Phase (event travels back up from target to document).",
+      "Event capturing (also called trickling) is the first phase of event propagation where the event descends from window and document down through ancestor elements toward the target element.",
+      "Event bubbling is the third phase of event propagation where, after reaching the target, the event travels back up through parent and ancestor elements toward window.",
+      "The target phase occurs when the event reaches the actual element that triggered the user action (identified by event.target), executing listeners attached directly to that element.",
+      "Capturing travels top-down (from document to target), while bubbling travels bottom-up (from target back to document). By default, addEventListener listens during bubbling unless { capture: true } is specified.",
+      "event.target is a reference to the actual innermost DOM element where the event originally occurred (e.g., the specific button or icon clicked by the user).",
+      "event.currentTarget is a reference to the DOM element whose event listener is currently executing in the propagation path.",
+      "event.target is where the event originated, whereas event.currentTarget is the element that attached the active event listener. In event delegation, event.target is the clicked child and event.currentTarget is the parent container.",
+      "By passing { capture: true } (or true as the third argument) to addEventListener: element.addEventListener(\"click\", handler, { capture: true });",
+      "It instructs the browser to invoke the event listener during the downward Capturing phase before the event reaches the target element, rather than during the upward Bubbling phase.",
+      "event.stopPropagation() prevents the event from continuing through the propagation path, stopping it from reaching further ancestors during bubbling or further descendants during capturing.",
+      "stopPropagation() stops the event from traveling further up or down the DOM tree. preventDefault() prevents the browser default native action (e.g., following an <a> link or submitting a form) without stopping event propagation.",
+      "Event delegation is a design pattern where a single event listener is attached to a parent container to manage events for multiple current and dynamically created child elements using event bubbling.",
+      "Because events bubble upwards from child elements to parent elements, a parent listener can intercept events originating from any child by inspecting event.target.",
+      "By default (bubbling phase), the child click handler executes first, followed by the parent click handler as the event bubbles up. However, if the parent registered with { capture: true }, the parent handler executes first during capturing.",
+      "Yes, calling event.stopPropagation() or event.stopImmediatePropagation() immediately halts event propagation across the DOM tree.",
+      "You cannot disable the browser from generating the bubbling phase, but an event listener can call event.stopPropagation() to prevent the event from bubbling up to higher ancestors.",
+      "onclick is an element property that can only hold one callback at a time (overwriting previous ones) and only supports bubbling. addEventListener() supports multiple listeners, capturing options ({ capture: true }), once options, and passive options.",
+      "An infinite-scrolling ecommerce product grid or a dynamic todo list: rather than binding 1,000 separate click listeners to 1,000 product cards, you attach one click listener to the container and check event.target.closest(\".product-card\")."
     ],
-    "expectedOutput": "Step 1: Starting operation for Event Propagation: Capturing, Target & Bubbling Phases...\nStep 2: Operation evaluated successfully.\nStep 3: Cleanup completed deterministically.\nFinal Result: { ok: true, data: { status: 'SUCCESS' } }",
     "videoUrl": "https://www.youtube-nocookie.com/embed/aVS4W7GZsq0",
-    "videoTitle": "Event Bubbling, Capturing & Delegation in JS (Akshay Saini)"
+    "videoTitle": "Event Bubbling, Capturing and Event Delegation in JS (Akshay Saini)"
   },
   {
     "id": "iq-javascript-0021",

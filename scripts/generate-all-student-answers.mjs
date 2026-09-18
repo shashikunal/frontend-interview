@@ -986,8 +986,8 @@ async function runUpgradedGenerator() {
       const q = questions[i];
       totalQuestions++;
 
-      // PRESERVE iq-es6-0010 (already handcrafted with custom Swiggy/Zomato state machine)
-      if (q.id === 'iq-es6-0010') {
+      // PRESERVE iq-es6-0010 & iq-javascript-0020 (handcrafted master interview questions)
+      if (q.id === 'iq-es6-0010' || q.id === 'iq-javascript-0020') {
         const video = findVideo(q.question);
         if (video) {
           q.videoUrl = video.url;
