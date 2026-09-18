@@ -1504,3 +1504,18 @@
   cursor: pointer;
 }
 
+/* Real-Time Speech Active Word Highlight & Underline */
+.mqb-spoken-active-word {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.45), rgba(234, 88, 12, 0.55)) !important;
+  color: #fef08a !important;
+  font-weight: 800 !important;
+  text-decoration: underline !important;
+  text-decoration-color: #f59e0b !important;
+  text-decoration-thickness: 3px !important;
+  text-underline-offset: 4px !important;
+  border-radius: 4px;
+  padding: 1px 4px;
+  box-shadow: 0 0 14px rgba(245, 158, 11, 0.75);
+  transition: all 0.05s ease-in-out;
+  display: inline;
+}

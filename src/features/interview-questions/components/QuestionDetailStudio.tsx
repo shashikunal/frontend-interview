@@ -46,6 +46,7 @@ export default function QuestionDetailStudio() {
   const [availableVoices, setAvailableVoices] = useState<SpeechSynthesisVoice[]>([])
   const [selectedVoiceURI, setSelectedVoiceURI] = useState<string>('')
   const [isIndianVoiceActive, setIsIndianVoiceActive] = useState<boolean>(false)
+  const [spokenCharRange, setSpokenCharRange] = useState<{ start: number; end: number }>({ start: -1, end: -1 })
 
   // Load and auto-select Indian English voice
   useEffect(() => {
@@ -87,6 +88,7 @@ export default function QuestionDetailStudio() {
 
     const text = source === 'interview' ? question.interviewAnswer : question.shortAnswer
     setActiveSpeechSource(source)
+    setSpokenCharRange({ start: -1, end: -1 })
 
     const utter = new SpeechSynthesisUtterance(text)
     utter.rate = speechRate
@@ -99,6 +101,17 @@ export default function QuestionDetailStudio() {
       utter.lang = 'en-IN'
     }
 
+    utter.onboundary = (event: SpeechSynthesisEvent) => {
+      const charIndex = event.charIndex
+      let charLength = (event as any).charLength || 0
+      if (charLength <= 0) {
+        const slice = text.slice(charIndex)
+        const match = slice.search(/[\s,.;:!?\n()""'']/);
+        charLength = match === -1 ? slice.length : Math.max(1, match);
+      }
+      setSpokenCharRange({ start: charIndex, end: charIndex + charLength })
+    }
+
     utter.onstart = () => {
       setIsPlayingAudio(true)
       setIsAudioPaused(false)
@@ -106,10 +119,12 @@ export default function QuestionDetailStudio() {
     utter.onend = () => {
       setIsPlayingAudio(false)
       setIsAudioPaused(false)
+      setSpokenCharRange({ start: -1, end: -1 })
     }
     utter.onerror = () => {
       setIsPlayingAudio(false)
       setIsAudioPaused(false)
+      setSpokenCharRange({ start: -1, end: -1 })
     }
 
     window.speechSynthesis.speak(utter)
@@ -131,7 +146,40 @@ export default function QuestionDetailStudio() {
       window.speechSynthesis.cancel()
       setIsPlayingAudio(false)
       setIsAudioPaused(false)
+      setSpokenCharRange({ start: -1, end: -1 })
     }
+  }
+
+  // Real-Time Speech Text Highlighting with Word Underline & Glowing Color
+  const renderSpokenText = (fullText: string, isCurrentSource: boolean) => {
+    if (
+      !isCurrentSource ||
+      !isPlayingAudio ||
+      spokenCharRange.start < 0 ||
+      spokenCharRange.start >= fullText.length
+    ) {
+      return fullText
+    }
+
+    const start = Math.max(0, spokenCharRange.start)
+    let end = Math.min(fullText.length, spokenCharRange.end)
+    if (end <= start) {
+      const slice = fullText.slice(start)
+      const match = slice.search(/[\s,.;:!?\n]/)
+      end = match === -1 ? fullText.length : start + Math.max(1, match)
+    }
+
+    const before = fullText.slice(0, start)
+    const activeWord = fullText.slice(start, end)
+    const after = fullText.slice(end)
+
+    return (
+      <>
+        {before}
+        <span className="mqb-spoken-active-word">{activeWord}</span>
+        {after}
+      </>
+    )
   }
 
   useEffect(() => {
@@ -430,7 +478,7 @@ export default function QuestionDetailStudio() {
                 </h3>
                 <div className="mqb-section-body">
                   <p style={{ fontSize: '1.05rem', color: 'var(--mqb-text-primary)', fontWeight: 500, lineHeight: 1.7, whiteSpace: 'pre-line' }}>
-                    {question.shortAnswer}
+                    {renderSpokenText(question.shortAnswer, activeSpeechSource === 'short')}
                   </p>
                 </div>
               </div>
@@ -462,7 +510,7 @@ export default function QuestionDetailStudio() {
                 </div>
 
                 <p className="mqb-speech-text" style={{ whiteSpace: 'pre-line' }}>
-                  "{question.interviewAnswer}"
+                  "{renderSpokenText(question.interviewAnswer, activeSpeechSource === 'interview')}"
                 </p>
 
                 {/* Interactive Audio Player Bar */}
