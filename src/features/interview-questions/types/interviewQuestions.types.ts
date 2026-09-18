@@ -80,6 +80,8 @@ export interface MasterQuestion {
   lineByLineExplanation?: LineExplanation[]
   executionFlow?: string[]       // Step 1: Input -> Step 2: Parsing -> Step 3: Runtime -> Output
   expectedOutput?: string
+  diagram?: string               // Optional Mermaid state/sequence/flowchart diagram definition
+  diagramCaption?: string        // Caption for the architecture/lifecycle diagram
   complexity?: {
     time: string
     space: string

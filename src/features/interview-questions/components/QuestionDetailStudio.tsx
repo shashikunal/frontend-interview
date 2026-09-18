@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { Link, useParams, useNavigate } from 'react-router-dom'
 import { interviewQuestionsDataService } from '../services/interviewQuestionsDataService'
 import { interviewQuestionsProgressService } from '../services/interviewQuestionsProgressService'
+import { MermaidDiagram } from '../../interview-docs/components/common/MermaidDiagram'
 import type {
   MasterSubjectId,
   MasterQuestion,
@@ -36,6 +37,57 @@ export default function QuestionDetailStudio() {
   // Interactive Code Sandbox Execution
   const [codeRunOutput, setCodeRunOutput] = useState<string | null>(null)
   const [isRunningCode, setIsRunningCode] = useState<boolean>(false)
+
+  // Audio Speech Narrator State
+  const [isPlayingAudio, setIsPlayingAudio] = useState<boolean>(false)
+  const [isAudioPaused, setIsAudioPaused] = useState<boolean>(false)
+  const [speechRate, setSpeechRate] = useState<number>(1.0)
+  const [activeSpeechSource, setActiveSpeechSource] = useState<'interview' | 'short'>('interview')
+
+  const handlePlayAudio = (source: 'interview' | 'short' = 'interview') => {
+    if (!('speechSynthesis' in window) || !question) return
+    window.speechSynthesis.cancel()
+
+    const text = source === 'interview' ? question.interviewAnswer : question.shortAnswer
+    setActiveSpeechSource(source)
+
+    const utter = new SpeechSynthesisUtterance(text)
+    utter.rate = speechRate
+
+    utter.onstart = () => {
+      setIsPlayingAudio(true)
+      setIsAudioPaused(false)
+    }
+    utter.onend = () => {
+      setIsPlayingAudio(false)
+      setIsAudioPaused(false)
+    }
+    utter.onerror = () => {
+      setIsPlayingAudio(false)
+      setIsAudioPaused(false)
+    }
+
+    window.speechSynthesis.speak(utter)
+  }
+
+  const handlePauseResumeAudio = () => {
+    if (!('speechSynthesis' in window)) return
+    if (isAudioPaused) {
+      window.speechSynthesis.resume()
+      setIsAudioPaused(false)
+    } else {
+      window.speechSynthesis.pause()
+      setIsAudioPaused(true)
+    }
+  }
+
+  const handleStopAudio = () => {
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel()
+      setIsPlayingAudio(false)
+      setIsAudioPaused(false)
+    }
+  }
 
   useEffect(() => {
     let mounted = true
@@ -76,15 +128,19 @@ export default function QuestionDetailStudio() {
 
     load()
 
-    // Reset speech practice timer when question changes
+    // Reset speech practice timer & speech audio when question changes
     setIsSpeakingTimerRunning(false)
     setSpeakingSeconds(0)
     if (timerRef.current) clearInterval(timerRef.current)
     setCodeRunOutput(null)
+    if ('speechSynthesis' in window) window.speechSynthesis.cancel()
+    setIsPlayingAudio(false)
+    setIsAudioPaused(false)
 
     return () => {
       mounted = false
       if (timerRef.current) clearInterval(timerRef.current)
+      if ('speechSynthesis' in window) window.speechSynthesis.cancel()
     }
   }, [subjectId, questionId])
 
@@ -322,45 +378,138 @@ export default function QuestionDetailStudio() {
           {/* TAB 1: Interview & Short Answer */}
           {activeTab === 'answer' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-              {/* Short Answer (2-5 lines) */}
+              {/* Short Answer (10+ lines formatted) */}
               <div className="mqb-section-card" id="section-short-answer">
                 <h3 className="mqb-section-title">
-                  <span>⚡</span> Executive Short Answer (2–5 Lines)
+                  <span>⚡</span> Executive Short Answer (Key Takeaways &amp; Core Principles)
                 </h3>
                 <div className="mqb-section-body">
-                  <p style={{ fontSize: '1.05rem', color: 'var(--mqb-text-primary)', fontWeight: 500, lineHeight: 1.6 }}>
+                  <p style={{ fontSize: '1.05rem', color: 'var(--mqb-text-primary)', fontWeight: 500, lineHeight: 1.7, whiteSpace: 'pre-line' }}>
                     {question.shortAnswer}
                   </p>
                 </div>
               </div>
 
-              {/* Natural Spoken Interview Script */}
+              {/* Natural Spoken Interview Script with Full Audio Studio Player */}
               <div className="mqb-speech-box" id="section-interview-answer">
                 <div className="mqb-speech-header">
                   <span className="mqb-speech-tag">
                     <span>🎙️</span> Natural Spoken Interview Answer (Say This Aloud)
                   </span>
-                  <button
-                    type="button"
-                    className="mqb-action-pill-btn"
-                    style={{ fontSize: '0.75rem', padding: '0.25rem 0.6rem' }}
-                    onClick={() => {
-                      if ('speechSynthesis' in window) {
-                        const utter = new SpeechSynthesisUtterance(question.interviewAnswer)
-                        utter.rate = 1.0
-                        window.speechSynthesis.speak(utter)
-                      } else {
-                        alert('Speech synthesis not supported on this browser.')
-                      }
-                    }}
-                  >
-                    🔊 Listen Audio
-                  </button>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                    <button
+                      type="button"
+                      className={`mqb-action-pill-btn ${activeSpeechSource === 'interview' ? 'primary' : ''}`}
+                      style={{ fontSize: '0.75rem', padding: '0.2rem 0.55rem' }}
+                      onClick={() => handlePlayAudio('interview')}
+                    >
+                      🎙️ Spoken Answer
+                    </button>
+                    <button
+                      type="button"
+                      className={`mqb-action-pill-btn ${activeSpeechSource === 'short' ? 'primary' : ''}`}
+                      style={{ fontSize: '0.75rem', padding: '0.2rem 0.55rem' }}
+                      onClick={() => handlePlayAudio('short')}
+                    >
+                      ⚡ Executive Summary
+                    </button>
+                  </div>
                 </div>
-                <p className="mqb-speech-text">
+
+                <p className="mqb-speech-text" style={{ whiteSpace: 'pre-line' }}>
                   "{question.interviewAnswer}"
                 </p>
+
+                {/* Interactive Audio Player Bar */}
+                <div className="mqb-audio-player-bar">
+                  <div className="mqb-audio-meta">
+                    <div className={`mqb-audio-equalizer ${isPlayingAudio && !isAudioPaused ? 'playing' : ''}`}>
+                      <span className="mqb-audio-bar"></span>
+                      <span className="mqb-audio-bar"></span>
+                      <span className="mqb-audio-bar"></span>
+                      <span className="mqb-audio-bar"></span>
+                    </div>
+                    <span style={{ fontSize: '0.85rem', fontWeight: 600, color: isPlayingAudio ? 'var(--mqb-accent-bright, #818cf8)' : 'var(--mqb-text-secondary)' }}>
+                      {isPlayingAudio ? (isAudioPaused ? '⏸️ Audio Paused' : '🔊 Narrating Aloud...') : '🎧 AI Audio Narrator Ready'}
+                    </span>
+                  </div>
+
+                  <div className="mqb-audio-actions">
+                    {!isPlayingAudio ? (
+                      <button
+                        type="button"
+                        className="mqb-audio-btn primary"
+                        onClick={() => handlePlayAudio(activeSpeechSource)}
+                      >
+                        ▶ Play Audio
+                      </button>
+                    ) : (
+                      <>
+                        <button
+                          type="button"
+                          className="mqb-audio-btn"
+                          onClick={handlePauseResumeAudio}
+                        >
+                          {isAudioPaused ? '▶ Resume' : '⏸ Pause'}
+                        </button>
+                        <button
+                          type="button"
+                          className="mqb-audio-btn"
+                          onClick={handleStopAudio}
+                        >
+                          ⏹ Stop
+                        </button>
+                        <button
+                          type="button"
+                          className="mqb-audio-btn"
+                          onClick={() => handlePlayAudio(activeSpeechSource)}
+                        >
+                          🔄 Replay
+                        </button>
+                      </>
+                    )}
+
+                    {/* Speech Rate Control */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                      <span style={{ fontSize: '0.72rem', color: 'var(--mqb-text-muted)' }}>Speed:</span>
+                      <select
+                        className="mqb-audio-speed-select"
+                        value={speechRate}
+                        onChange={(e) => {
+                          const newRate = parseFloat(e.target.value)
+                          setSpeechRate(newRate)
+                          if (isPlayingAudio) {
+                            handlePlayAudio(activeSpeechSource)
+                          }
+                        }}
+                      >
+                        <option value={0.8}>0.8x</option>
+                        <option value={1.0}>1.0x (Normal)</option>
+                        <option value={1.25}>1.25x</option>
+                        <option value={1.5}>1.5x</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
               </div>
+
+              {/* Architecture & State Lifecycle Diagram */}
+              {question.diagram && (
+                <div className="mqb-section-card" id="section-diagram">
+                  <h3 className="mqb-section-title">
+                    <span>📊</span> Architecture &amp; State Lifecycle Diagram
+                  </h3>
+                  <p style={{ color: 'var(--mqb-text-secondary)', fontSize: '0.9rem', margin: '0 0 1rem' }}>
+                    Visual state machine and runtime transition flow:
+                  </p>
+                  <div style={{ padding: '0.5rem 0' }}>
+                    <MermaidDiagram
+                      chart={question.diagram}
+                      caption={question.diagramCaption || `${question.concept} — State Machine & Lifecycle Flow`}
+                    />
+                  </div>
+                </div>
+              )}
 
               {/* Real World Production Scenario */}
               <div className="mqb-section-card">
@@ -368,7 +517,7 @@ export default function QuestionDetailStudio() {
                   <span>🏭</span> Production &amp; Real-World Scenario
                 </h3>
                 <div className="mqb-section-body">
-                  <p>{question.realWorldExample}</p>
+                  <p style={{ whiteSpace: 'pre-line' }}>{question.realWorldExample}</p>
                 </div>
               </div>
 
@@ -407,13 +556,28 @@ export default function QuestionDetailStudio() {
                 </div>
               </div>
 
+              {/* Architecture & State Lifecycle Diagram in Deep Dive */}
+              {question.diagram && (
+                <div className="mqb-section-card">
+                  <h3 className="mqb-section-title">
+                    <span>📊</span> Technical State Machine &amp; Specification Diagram
+                  </h3>
+                  <div style={{ padding: '0.5rem 0' }}>
+                    <MermaidDiagram
+                      chart={question.diagram}
+                      caption={question.diagramCaption || `${question.concept} — Internal State Transitions`}
+                    />
+                  </div>
+                </div>
+              )}
+
               {/* Why it exists */}
               <div className="mqb-section-card">
                 <h3 className="mqb-section-title">
                   <span>💡</span> Why This Feature Exists (Historical Context &amp; Purpose)
                 </h3>
                 <div className="mqb-section-body">
-                  <p>{question.why}</p>
+                  <p style={{ whiteSpace: 'pre-line' }}>{question.why}</p>
                 </div>
               </div>
 

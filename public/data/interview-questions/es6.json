@@ -653,70 +653,155 @@
     "topic": "ECMAScript 2015",
     "subtopic": "Promises (Pending, Fulfilled, Rejected) & A+ Spec",
     "concept": "Promises (Pending, Fulfilled, Rejected) & A+ Spec",
-    "difficulty": "EASY",
+    "difficulty": "INTERMEDIATE",
     "questionType": "CODE",
     "experienceLevel": "1_3_YEARS",
-    "isHighFrequency": false,
+    "isHighFrequency": true,
     "companyTags": [
+      "Google",
       "Meta",
-      "Netflix"
+      "Amazon",
+      "Netflix",
+      "Apple"
     ],
     "tags": [
       "es6",
-      "es6",
-      "Meta",
-      "Netflix",
-      "interview-prep"
+      "promises",
+      "async",
+      "event-loop",
+      "microtasks",
+      "promises-aplus",
+      "faang"
     ],
-    "question": "Promises (Pending, Fulfilled, Rejected) & A+ Spec",
-    "shortAnswer": "applying promises (pending, fulfilled, rejected) & a+ spec in modern ES6 production architecture",
-    "interviewAnswer": "When discussing Promises (Pending, Fulfilled, Rejected) & A+ Spec in an interview, I explain its core purpose, key specification rules, and production architectural best practices.",
-    "detailedExplanation": "### Deep Technical Dive into Promises (Pending, Fulfilled, Rejected) & A+ Spec\n\n1. **Core Specification**: applying promises (pending, fulfilled, rejected) & a+ spec in modern ES6 production architecture.\n2. **Runtime Execution**: Engine processes constructs with strict type checking and scope isolation.\n3. **Production Best Practices**: Encapsulate within modular design patterns to guarantee high maintainability.",
-    "why": "Promises (Pending, Fulfilled, Rejected) & A+ Spec was established to solve legacy architectural drawbacks and provide standardized runtime behavior.",
-    "howItWorks": "1. Engine parses and tokenizes Promises (Pending, Fulfilled, Rejected) & A+ Spec.\n2. Scope binding and execution context allocation complete.\n3. State updates apply deterministically.",
-    "realWorldExample": "Used in high-scale production systems to guarantee zero-regression performance and reliable client interactions.",
-    "example": "// ES6 Demonstration: Promises (Pending, Fulfilled, Rejected) & A+ Spec\nexport function executeES6Feature(config = {}) {\n  const context = { feature: \"Promises (Pending, Fulfilled, Rejected) & A+ Spec\", active: true };\n  return { success: true, context, config };\n}",
-    "codeSnippet": "// ES6 Demonstration: Promises (Pending, Fulfilled, Rejected) & A+ Spec\nexport function executeES6Feature(config = {}) {\n  const context = { feature: \"Promises (Pending, Fulfilled, Rejected) & A+ Spec\", active: true };\n  return { success: true, context, config };\n}",
+    "question": "Explain JavaScript Promises, their three internal states (Pending, Fulfilled, Rejected), and how the Promises/A+ Specification governs thenable resolution and the microtask queue.",
+    "shortAnswer": "1. An ES6 Promise is a first-class object representing the eventual completion or failure of an asynchronous operation and its resulting value.\n2. At any given instant, a Promise exists in exactly one of three mutually exclusive states: Pending, Fulfilled, or Rejected.\n3. Pending is the initial, unfulfilled state where the asynchronous task is currently in flight.\n4. Fulfilled signifies that the operation completed successfully, permanently locking in an immutable fulfillment value.\n5. Rejected signifies that the operation encountered an error, permanently locking in an immutable rejection reason.\n6. Once a promise transitions from Pending to either Fulfilled or Rejected, it becomes \"Settled\", and its state is completely immutable—it cannot transition again or change value.\n7. The Promises/A+ Specification standardizes interoperability, mandating the .then(onFulfilled, onRejected) method contract.\n8. .then() always returns a brand new Promise, enabling composable, linear chaining without callback inversion of control.\n9. Thenable assimilation: If a callback returns a thenable or promise, the engine assimilates it and waits for it to settle before settling the outer promise.\n10. Asynchronous execution: Handlers attached via .then(), .catch(), or .finally() are strictly scheduled onto the Microtask Queue via the V8 microtask checkpoint.\n11. Microtask Queue priority ensures promise handlers execute immediately after the current synchronous frame, before any macrotasks (setTimeout, I/O, rendering).\n12. Unhandled rejections trigger global unhandledrejection events, preventing silent runtime failures in modern enterprise applications.",
+    "interviewAnswer": "In JavaScript, a Promise is an abstraction over an asynchronous operation that acts as a placeholder for a future value.\n\nAccording to the ECMAScript standard and the Promises/A+ specification, a Promise has three mutually exclusive internal states:\nFirst, 'Pending': The initial state where the asynchronous task is currently in flight and has neither resolved nor failed.\nSecond, 'Fulfilled': The operation completed successfully, permanently storing an immutable value.\nThird, 'Rejected': The operation failed, permanently storing an immutable rejection reason or Error instance.\n\nA fundamental architectural guarantee is immutability: once a promise settles (moving from Pending to Fulfilled or Rejected), it is locked forever. Any subsequent calls to resolve() or reject() are completely ignored.\n\nThe Promises/A+ specification dictates that every promise must expose a .then(onFulfilled, onRejected) method that must return a brand new promise. This is what allows chaining. If an onFulfilled or onRejected handler returns a value, the chained promise fulfills with that value. If it throws an exception, the chained promise rejects with that exception. If it returns another promise or thenable, it assimilates that promise and waits for it to settle.\n\nCrucially, promise callbacks are never executed synchronously. The spec mandates that handlers are scheduled onto the Microtask Queue. In the JavaScript Event Loop, after the current synchronous execution context empties, all microtasks are drained completely before the browser or Node engine moves on to rendering or macrotasks like setTimeout. This guarantees deterministic, non-blocking execution order.",
+    "diagram": "stateDiagram-v2\n    [*] --> Pending : new Promise((resolve, reject) => ...)\n\n    state Pending {\n        [*] --> AsyncInProgress\n        AsyncInProgress : State = [[PromiseState]]: 'pending'\n        AsyncInProgress : Result = [[PromiseResult]]: undefined\n        AsyncInProgress : Callbacks registered in [[PromiseFulfillReactions]] & [[PromiseRejectReactions]]\n    }\n\n    Pending --> Fulfilled : resolve(value)\n    Pending --> Rejected : reject(error) OR throw err\n\n    state Fulfilled {\n        [*] --> LockedValue\n        LockedValue : State = [[PromiseState]]: 'fulfilled'\n        LockedValue : Result = [[PromiseResult]]: value\n        LockedValue : Enqueue onFulfilled handlers into Microtask Queue\n    }\n\n    state Rejected {\n        [*] --> LockedReason\n        LockedReason : State = [[PromiseState]]: 'rejected'\n        LockedReason : Result = [[PromiseResult]]: reason\n        LockedReason : Enqueue onRejected/.catch handlers into Microtask Queue\n    }\n\n    Fulfilled --> Settled : Terminal State (Immutable)\n    Rejected --> Settled : Terminal State (Immutable)\n\n    state Settled {\n        [*] --> Chaining\n        Chaining : .then() returns a BRAND NEW Promise\n        Chaining : Microtask checkpoint runs before next Macrotask\n    }",
+    "diagramCaption": "ES6 / Promises/A+ Formal State Machine & Microtask Scheduling Architecture",
+    "detailedExplanation": "### Deep Technical Breakdown: Promises & The Promises/A+ Specification\n\n#### 1. Internal Engine Slot Model (V8 & SpiderMonkey)\nInternally in the JavaScript engine (such as Google V8), every Promise instance is represented as an object with dedicated internal slots:\n- [[PromiseState]]: Enumerated as 'pending', 'fulfilled', or 'rejected'.\n- [[PromiseResult]]: Holds the settled value or rejection reason. Initialized to undefined.\n- [[PromiseFulfillReactions]]: A queue of reaction records registered via .then() to run upon fulfillment.\n- [[PromiseRejectReactions]]: A queue of reaction records registered via .then() or .catch() to run upon rejection.\n- [[PromiseIsHandled]]: A boolean tracking whether a rejection handler has been registered (preventing UnhandledPromiseRejection).\n\n#### 2. The Promises/A+ Specification Rules\nThe Promises/A+ specification was authored to unify competing asynchronous patterns before ES6 standardized Promise globally:\n1. 2.1 Promise States: When pending, may transition to either fulfilled or rejected. When fulfilled or rejected, must not transition to any other state and must have a value/reason that cannot change.\n2. 2.2 The then Method: Must accept two optional arguments: promise.then(onFulfilled, onRejected). Both must be called as functions with no this value. Must not be called before promise is fulfilled/rejected, and must not be called more than once.\n3. 2.3 The Promise Resolution Procedure [[Resolve]](promise, x):\n   - If promise and x refer to the same object, reject promise with a TypeError (detects circular promise chains).\n   - If x is a promise, adopt its state.\n   - If x is an object or function with a .then property (a \"thenable\"), retrieve x.then and call it with x as this, passing resolvePromise and rejectPromise. If retrieving or calling x.then throws an exception, reject with that exception.\n   - If x is a primitive value, fulfill promise with x.\n\n#### 3. Microtask Queue & Event Loop Mechanics\nThe specification explicitly states that onFulfilled and onRejected must only be called after the execution context stack contains only platform code. In browser and Node.js runtimes, this is implemented via the Microtask Queue:\n\n[ Synchronous Call Stack ] -> Drains to completion\n          ↓\n[ Microtask Checkpoint ]   -> Drains ALL Microtasks (Promise reactions, queueMicrotask, MutationObserver)\n          ↓\n[ Macrotask Queue / Render] -> Runs 1 Macrotask (setTimeout, I/O, UI render, requestAnimationFrame)",
+    "why": "Before Promises and the Promises/A+ standard, JavaScript asynchronous programming relied exclusively on continuation-passing style (CPS) error-first callbacks (e.g. fs.readFile(path, (err, data) => ...)).\n\nThis produced three critical industry problems:\n1. Callback Hell / Pyramid of Doom: Deeply nested indentation causing unmaintainable code.\n2. Inversion of Control: Trusting a third-party library to invoke your callback exactly once, not zero times, and not multiple times.\n3. Fragmented Error Handling: Uncaught synchronous exceptions inside asynchronous callbacks escaped standard try/catch blocks, crashing Node.js processes or causing silent browser failures.\n\nPromises solved all three: providing trust guarantees (settles at most once, immutable result), chainable synchronous-style composition (.then()), and unified error propagation (.catch()).",
+    "howItWorks": "1. Executor Execution: The function passed to new Promise((resolve, reject) => ...) is invoked synchronously during construction.\n2. Reaction Registration: When .then(onFulfilled, onRejected) is called on a pending promise, reaction objects are created and pushed onto the promise's internal [[PromiseFulfillReactions]] and [[PromiseRejectReactions]] lists.\n3. State Transition: Calling resolve(v) transitions [[PromiseState]] from 'pending' to 'fulfilled' and sets [[PromiseResult]] = v.\n4. Microtask Scheduling: The engine iterates through the registered reactions and queues each callback into the host environment's Microtask Queue.\n5. Event Loop Drainage: Once the synchronous thread stack reaches depth 0, the event loop triggers a Microtask Checkpoint, dequeuing and executing the callbacks sequentially.",
+    "realWorldExample": "In production frontend applications, Promises power network communication (Fetch API), cached resource pipelines, and resilient state synchronization.\n\nExample: Implementing an exponential-backoff resilient API fetcher with AbortController timeout:\n\nasync function fetchWithRetry(url, { maxRetries = 3, timeoutMs = 5000, delayMs = 1000 } = {}) {\n  for (let attempt = 1; attempt <= maxRetries; attempt++) {\n    const controller = new AbortController();\n    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);\n\n    try {\n      const response = await fetch(url, { signal: controller.signal });\n      clearTimeout(timeoutId);\n      if (!response.ok) throw new Error(`HTTP Error ${response.status}`);\n      return await response.json();\n    } catch (err) {\n      clearTimeout(timeoutId);\n      if (attempt === maxRetries) throw err;\n      await new Promise(r => setTimeout(r, delayMs * Math.pow(2, attempt - 1)));\n    }\n  }\n}",
+    "example": "// Comprehensive Demonstration: ES6 Promise States, A+ Spec Chaining & Microtask Scheduling\nfunction demonstratePromiseLifecycle() {\n  console.log('1: Synchronous script starts');\n\n  // 1. Initial State: Pending\n  const promise = new Promise((resolve, reject) => {\n    console.log('2: Promise executor runs synchronously');\n    \n    setTimeout(() => {\n      // 2. Transition: Pending -> Fulfilled (Immutable)\n      resolve('Success Payload');\n      // Subsequent transitions are ignored by A+ specification guarantee\n      reject(new Error('Ignored rejection after fulfillment'));\n    }, 100);\n  });\n\n  console.log('3: Promise object constructed (State: Pending)');\n\n  // 3. A+ Chaining and Microtask Dispatch\n  promise\n    .then((result) => {\n      console.log('4: onFulfilled triggered in microtask with:', result);\n      // Returning a value fulfills the chained promise with that value\n      return result.toUpperCase();\n    })\n    .then((transformed) => {\n      console.log('5: Chained onFulfilled received:', transformed);\n      // Throwing an error transitions chained promise to Rejected\n      throw new Error('Downstream processing failed');\n    })\n    .catch((error) => {\n      console.log('6: onRejected caught error:', error.message);\n      // Returning from catch recovers the chain back to Fulfilled\n      return 'Fallback Default Value';\n    })\n    .finally(() => {\n      console.log('7: finally handler runs regardless of outcome');\n    });\n\n  console.log('8: Synchronous script finishes');\n}\n\ndemonstratePromiseLifecycle();",
+    "codeSnippet": "// Comprehensive Demonstration: ES6 Promise States, A+ Spec Chaining & Microtask Scheduling\nfunction demonstratePromiseLifecycle() {\n  console.log('1: Synchronous script starts');\n\n  // 1. Initial State: Pending\n  const promise = new Promise((resolve, reject) => {\n    console.log('2: Promise executor runs synchronously');\n    \n    setTimeout(() => {\n      // 2. Transition: Pending -> Fulfilled (Immutable)\n      resolve('Success Payload');\n      // Subsequent transitions are ignored by A+ specification guarantee\n      reject(new Error('Ignored rejection after fulfillment'));\n    }, 100);\n  });\n\n  console.log('3: Promise object constructed (State: Pending)');\n\n  // 3. A+ Chaining and Microtask Dispatch\n  promise\n    .then((result) => {\n      console.log('4: onFulfilled triggered in microtask with:', result);\n      // Returning a value fulfills the chained promise with that value\n      return result.toUpperCase();\n    })\n    .then((transformed) => {\n      console.log('5: Chained onFulfilled received:', transformed);\n      // Throwing an error transitions chained promise to Rejected\n      throw new Error('Downstream processing failed');\n    })\n    .catch((error) => {\n      console.log('6: onRejected caught error:', error.message);\n      // Returning from catch recovers the chain back to Fulfilled\n      return 'Fallback Default Value';\n    })\n    .finally(() => {\n      console.log('7: finally handler runs regardless of outcome');\n    });\n\n  console.log('8: Synchronous script finishes');\n}\n\ndemonstratePromiseLifecycle();",
+    "expectedOutput": "1: Synchronous script starts\n2: Promise executor runs synchronously\n3: Promise object constructed (State: Pending)\n8: Synchronous script finishes\n4: onFulfilled triggered in microtask with: Success Payload\n5: Chained onFulfilled received: SUCCESS PAYLOAD\n6: onRejected caught error: Downstream processing failed\n7: finally handler runs regardless of outcome",
     "lineByLineExplanation": [
       {
+        "line": 1,
+        "code": "function demonstratePromiseLifecycle() {",
+        "explanation": "Declares demonstration function enclosing the full Promise lifecycle scenario."
+      },
+      {
         "line": 2,
-        "code": "export function executeES6Feature(config = {}) {",
-        "explanation": "Exported initializer function."
+        "code": "console.log('1: Synchronous script starts');",
+        "explanation": "Synchronous call; logs immediately to the current call stack frame."
       },
       {
-        "line": 3,
-        "code": "const context = { feature: \"Promises (Pending, Fulfilled, Rejected) & A+ Spec\", active: true };",
-        "explanation": "Instantiates contextual execution payload."
+        "line": 5,
+        "code": "const promise = new Promise((resolve, reject) => {",
+        "explanation": "Instantiates a new Promise; executor callback is executed synchronously by runtime."
       },
       {
-        "line": 4,
-        "code": "return { success: true, context, config };",
-        "explanation": "Returns state payload to calling execution frame."
+        "line": 6,
+        "code": "console.log('2: Promise executor runs synchronously');",
+        "explanation": "Logs from within executor during instantiation before constructor returns."
+      },
+      {
+        "line": 8,
+        "code": "setTimeout(() => {",
+        "explanation": "Schedules a macrotask timer to simulate asynchronous I/O completion."
+      },
+      {
+        "line": 10,
+        "code": "resolve('Success Payload');",
+        "explanation": "Transitions Promise state from Pending to Fulfilled with immutable result."
+      },
+      {
+        "line": 12,
+        "code": "reject(new Error('Ignored rejection after fulfillment'));",
+        "explanation": "No-op. Per A+ spec 2.1.2.1, once fulfilled, state cannot transition to rejected."
+      },
+      {
+        "line": 16,
+        "code": "console.log('3: Promise object constructed (State: Pending)');",
+        "explanation": "Constructor returns Pending Promise instance to caller."
+      },
+      {
+        "line": 19,
+        "code": "promise.then((result) => { ... })",
+        "explanation": "Registers onFulfilled reaction handler; returns a brand new promise for chaining."
+      },
+      {
+        "line": 22,
+        "code": "return result.toUpperCase();",
+        "explanation": "Returned value automatically fulfills the returned chained promise."
+      },
+      {
+        "line": 27,
+        "code": "throw new Error('Downstream processing failed');",
+        "explanation": "Thrown exception automatically rejects the second chained promise."
+      },
+      {
+        "line": 29,
+        "code": ".catch((error) => { ... })",
+        "explanation": "Catches upstream rejection; returning a value here recovers the chain back to Fulfilled."
+      },
+      {
+        "line": 34,
+        "code": ".finally(() => { ... })",
+        "explanation": "Always executes when settled without receiving or altering the resolution value."
+      },
+      {
+        "line": 38,
+        "code": "console.log('8: Synchronous script finishes');",
+        "explanation": "Synchronous execution stack completes; event loop now checks the microtask queue."
       }
     ],
     "executionFlow": [
-      "Step 1: Environment parses construct for Promises (Pending, Fulfilled, Rejected) & A+ Spec.",
-      "Step 2: Engine verifies spec invariants and binds lexical scope.",
-      "Step 3: State updates deterministically according to W3C / TC39 standard."
+      "Step 1 [Synchronous]: Main thread begins executing demonstratePromiseLifecycle(); logs '1: Synchronous script starts'.",
+      "Step 2 [Synchronous]: `new Promise(...)` constructor executes its executor immediately; logs '2: Promise executor runs synchronously'.",
+      "Step 3 [Macrotask Scheduling]: `setTimeout` registers a 100ms timer in browser Web APIs / Node libuv timer heap.",
+      "Step 4 [Synchronous]: Constructor returns `promise` in `[[PromiseState]]: 'pending'`; logs '3: Promise object constructed'.",
+      "Step 5 [Reaction Registration]: `.then()`, `.catch()`, and `.finally()` chain is attached, recording handler callbacks in internal reactions.",
+      "Step 6 [Synchronous]: Main thread logs '8: Synchronous script finishes'; Call stack is now empty.",
+      "Step 7 [Timer Expiration]: After 100ms, timer expires and its callback enters the Macrotask Queue.",
+      "Step 8 [Resolution]: Macrotask executes `resolve('Success Payload')`; transitions state to `fulfilled` and enqueues the first `.then()` callback onto the Microtask Queue.",
+      "Step 9 [Microtask Drainage]: Engine drains Microtask Queue: runs first `.then()`, returns transformed value, enqueues second `.then()`, throws Error, enqueues `.catch()`, recovers value, and executes `.finally()`."
+    ],
+    "complexity": {
+      "time": "O(1) per state transition & registration; O(N) chain depth traversal",
+      "space": "O(N) heap memory for reaction closures and queued handler callbacks"
+    },
+    "edgeCases": [
+      "Circular Promise Resolution: Returning a promise from its own resolution (`const p = p.then(...)`) throws a TypeError according to A+ Rule 2.3.1.",
+      "Thenable Recursion: An object with a rogue `.then` method that calls both resolve and reject multiple times—A+ spec guarantees only the first call takes effect.",
+      "Zalgo / Synchronous Execution: A custom promise library executing callbacks synchronously before the outer function returns violates spec 2.2.4."
     ],
     "commonMistakes": [
-      "Failing to handle edge cases or browser engine discrepancies for Promises (Pending, Fulfilled, Rejected) & A+ Spec.",
-      "Omitting defensive error handling or cleanup logic in production."
+      "The 'Promise Hell' anti-pattern: Nesting promises inside `.then()` callbacks instead of returning them and chaining at the top level.",
+      "Forgetting to return inside `.then()`: Omitting the return statement causes the chained promise to resolve with `undefined`.",
+      "Assuming executor runs asynchronously: The executor passed to `new Promise((resolve, reject) => { ... })` runs immediately and synchronously during construction.",
+      "Mixing callbacks with Promises: Creating a `new Promise` wrapper around a function that already returns a promise (the 'deferred anti-pattern')."
     ],
     "interviewTraps": [
-      "Trap: Assuming Promises (Pending, Fulfilled, Rejected) & A+ Spec operates identically in legacy or non-standard runtimes. Tip: Check official specification guidelines."
+      "Trap: Interviewer asks 'What does this output?' with `Promise.resolve().then(() => console.log('A')); setTimeout(() => console.log('B'), 0); console.log('C');`. Many candidates answer 'A, B, C' or 'C, B, A'. Correct Answer: 'C, A, B' because synchronous code runs first ('C'), then Microtasks run ('A'), then Macrotasks run ('B').",
+      "Trap: Interviewer asks 'Can a Promise in Fulfilled state ever reject if an error is thrown in `.finally()`?' Answer: Yes! While `.finally()` normally preserves the upstream value/reason, throwing inside `.finally()` will override with a new rejection."
     ],
     "interviewTips": [
-      "Articulate the core architectural motivation behind Promises (Pending, Fulfilled, Rejected) & A+ Spec before writing implementation code.",
-      "Highlight memory retention, performance footprint, and production reliability."
+      "Explicitly name the three internal states: Pending, Fulfilled, and Rejected.",
+      "Mention the term 'Settled' and state that it is an informal term meaning either Fulfilled or Rejected (terminal state).",
+      "Emphasize the Microtask Queue and describe how the V8 microtask checkpoint drains all microtasks before any macrotasks run.",
+      "Point out thenable assimilation (Rule 2.3 of Promises/A+) when discussing how promises compose with foreign async libraries."
     ],
     "followUps": [
-      "How does Promises (Pending, Fulfilled, Rejected) & A+ Spec behave under high-concurrency production load?",
-      "What security or memory management trade-offs should be considered when using Promises (Pending, Fulfilled, Rejected) & A+ Spec?"
+      "What is the exact behavioral difference between `Promise.all()` and `Promise.allSettled()`?",
+      "How does `async/await` relate syntactically and at the runtime bytecode level to Promises?",
+      "How would you write a polyfill for `Promise.all()` that respects the Promises/A+ specification?"
     ],
     "followUpAnswers": [
-      "In production, Promises (Pending, Fulfilled, Rejected) & A+ Spec should be benchmarked across target browsers and monitored for memory leaks via Heap Snapshots.",
-      "Applying strict typing, defensive sanitization, and scope isolation prevents runtime vulnerabilities."
+      "`Promise.all()` short-circuits and immediately rejects on the very first rejection, losing remaining results. `Promise.allSettled()` waits for all promises to finish regardless of success or failure, returning an array of `{ status: 'fulfilled', value }` or `{ status: 'rejected', reason }` objects.",
+      "`async/await` is syntactic sugar built directly atop Promises and ES6 Generators. An `async` function always returns a Promise; `await` yields execution back to the caller while registering an implicit microtask reaction that resumes execution with the resolved value when the awaited promise settles.",
+      "To polyfill `Promise.all(iterable)`: validate iterable, return a `new Promise((resolve, reject) => ...)`. Keep an array of results and a completed counter. Iterate over items, wrap each with `Promise.resolve(item).then(val => { results[i] = val; if (++completed === total) resolve(results); }, reject)`. If the array is empty, resolve immediately."
     ]
   },
   {
