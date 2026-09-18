@@ -54,7 +54,7 @@ export class MediaTokenService {
           canSubscribe: true,
           canModerate: false,
         };
-      case 'VIEWER':
+      case 'OBSERVER':
       default:
         return {
           canPublishAudio: false,

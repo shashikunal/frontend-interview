@@ -45,9 +45,11 @@ export class TokenService {
 
   constructor(secret = JWT_SECRET) {
     this.secret = secret;
-    // Periodic cleanup of expired revoked tokens every 5 minutes
     if (typeof setInterval !== 'undefined') {
-      setInterval(() => this.cleanupRevocationList(), 5 * 60 * 1000).unref?.();
+      const timer: any = setInterval(() => this.cleanupRevocationList(), 5 * 60 * 1000);
+      if (typeof timer?.unref === 'function') {
+        timer.unref();
+      }
     }
   }
 
