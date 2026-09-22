@@ -46,3 +46,4 @@ nul
 db-backup-*.json
 cp-full-extract.json
 storage/
+scripts/backups/

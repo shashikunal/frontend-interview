@@ -1,5 +1,6 @@
 import type { Socket } from 'socket.io';
-import { supabase } from '../../src/lib/supabase/client.js';
+import { supabase } from '../../src/lib/supabase/client.ts';
+import { tokenService } from '../auth/tokenService.ts';
 import type { AuthenticatedUser, ClientToServerEvents, ServerToClientEvents, SocketData } from './types.js';
 
 type CustomSocket = Socket<ClientToServerEvents, ServerToClientEvents, Record<string, never>, SocketData>;
@@ -34,7 +35,22 @@ export async function authenticateSocket(
       return next(new Error('Authentication failed: Missing access token'));
     }
 
-    // 1. Verify token with Supabase Auth
+    // 1. Try verify as meeting JWT token
+    const meetingAuth = tokenService.verifyMeetingToken(token);
+    if (meetingAuth.valid && meetingAuth.claims) {
+      const authUser: AuthenticatedUser = {
+        id: meetingAuth.claims.userId,
+        email: meetingAuth.claims.userEmail,
+        role: (meetingAuth.claims.userRole as any) || 'candidate',
+        name: meetingAuth.claims.userName,
+      };
+      socket.data.user = authUser;
+      socket.data.role = authUser.role;
+      socket.data.subscribedSessions = new Set();
+      return next();
+    }
+
+    // 2. Fallback: Verify token with Supabase Auth
     const { data: { user }, error: authError } = await supabase.auth.getUser(token);
 
     if (authError || !user) {

@@ -98,7 +98,10 @@ export default function SubjectQuestionCatalog() {
   const availableTopics = useMemo(() => {
     if (!questions.length) return []
     const set = new Set<string>()
-    questions.forEach(q => set.add(q.topic))
+    questions.forEach(q => {
+      const top = q.category || q.topic
+      if (top) set.add(top)
+    })
     return Array.from(set).sort()
   }, [questions])
 
@@ -114,26 +117,32 @@ export default function SubjectQuestionCatalog() {
       if (term) {
         const matchesQuestion = q.question.toLowerCase().includes(term)
         const matchesId = q.id.toLowerCase().includes(term)
-        const matchesConcept = q.concept.toLowerCase().includes(term)
-        const matchesTags = q.tags.some(t => t.toLowerCase().includes(term))
+        const matchesConcept = (q.concept || q.category || '').toLowerCase().includes(term)
+        const matchesTags = (q.tags || []).some(t => t.toLowerCase().includes(term))
         if (!matchesQuestion && !matchesId && !matchesConcept && !matchesTags) {
           return false
         }
       }
 
-      // Topic filter
-      if (selectedTopic !== 'ALL' && q.topic !== selectedTopic) {
-        return false
+      // Topic / Category filter
+      if (selectedTopic !== 'ALL') {
+        const top = q.category || q.topic
+        if (top !== selectedTopic) {
+          return false
+        }
       }
 
       // Difficulty filter
-      if (selectedDiff !== 'ALL' && q.difficulty !== selectedDiff) {
+      if (selectedDiff !== 'ALL' && q.difficulty.toUpperCase() !== selectedDiff.toUpperCase()) {
         return false
       }
 
       // Type filter
-      if (selectedType !== 'ALL' && q.questionType !== selectedType) {
-        return false
+      if (selectedType !== 'ALL') {
+        const isMCQ = (Array.isArray(q.options) && q.options.length > 0) || q.questionType?.toUpperCase() === 'MCQ' || q.question_type?.toLowerCase() === 'mcq'
+        if (selectedType === 'MCQ' && !isMCQ) return false
+        if (selectedType === 'CONCEPTUAL' && isMCQ) return false
+        if (selectedType !== 'MCQ' && selectedType !== 'CONCEPTUAL' && q.questionType !== selectedType) return false
       }
 
       // Experience level filter
@@ -408,6 +417,7 @@ export default function SubjectQuestionCatalog() {
             }}
           >
             <option value="ALL">All Question Types</option>
+            <option value="MCQ">⚡ Interactive MCQs</option>
             <option value="CONCEPTUAL">Conceptual</option>
             <option value="CODE">Code Implementation</option>
             <option value="OUTPUT">Output Prediction</option>
@@ -565,7 +575,7 @@ export default function SubjectQuestionCatalog() {
                   <span className={`mqb-qcard-status-dot ${isCompleted ? 'completed' : ''}`} />
                   <div className="mqb-qcard-info">
                     <div className="mqb-qcard-meta-line">
-                      <span className="mqb-qcard-id">{q.id.toUpperCase()}</span>
+                      <span className="mqb-qcard-id">{q.questionNumber ? `Q${q.questionNumber}` : q.id.toUpperCase()}</span>
                       <span className={`mqb-diff-pill ${q.difficulty}`}>{q.difficulty}</span>
                       {q.isHighFrequency && (
                         <span className="mqb-highfreq-badge">🔥 Top Asked</span>
@@ -573,14 +583,18 @@ export default function SubjectQuestionCatalog() {
                       {q.companyTags && q.companyTags.map(comp => (
                         <span key={comp} className="mqb-company-badge">🏢 {comp}</span>
                       ))}
-                      <span className="mqb-type-pill">{q.questionType}</span>
-                      <span className="mqb-tag-pill">{q.topic}</span>
-                      <span className="mqb-tag-pill" style={{ color: 'var(--mqb-text-muted)' }}>
-                        {q.experienceLevel.replace(/_/g, ' ')}
-                      </span>
+                      {q.questionType && <span className="mqb-type-pill">{q.questionType}</span>}
+                      <span className="mqb-tag-pill">{q.category || q.topic}</span>
+                      {q.experienceLevel && (
+                        <span className="mqb-tag-pill" style={{ color: 'var(--mqb-text-muted)' }}>
+                          {q.experienceLevel.replace(/_/g, ' ')}
+                        </span>
+                      )}
                     </div>
 
-                    <h3 className="mqb-qcard-title">{q.question}</h3>
+                    <h3 className="mqb-qcard-title">
+                      {q.questionNumber ? `Q${q.questionNumber}. ` : ''}{q.question}
+                    </h3>
                     <p className="mqb-qcard-snippet">{q.shortAnswer}</p>
                   </div>
                 </div>

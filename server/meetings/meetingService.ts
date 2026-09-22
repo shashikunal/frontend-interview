@@ -14,6 +14,7 @@ import type {
 } from './meetingTypes.ts';
 import { DEFAULT_MEETING_SETTINGS } from './meetingTypes.ts';
 import type { AuthContextUser } from '../auth/tokenTypes.ts';
+import { outboxService } from '../kafka/outboxService.ts';
 
 // Valid Lifecycle Transitions Map
 const VALID_TRANSITIONS: Record<MeetingStatus, MeetingStatus[]> = {
@@ -252,6 +253,13 @@ export class MeetingService {
       createdAt: new Date().toISOString(),
     };
     this.outbox.push(event);
+
+    // Phase 9: Transactional Outbox integration
+    try {
+      outboxService.recordEvent(`${eventType}.v1`, 'MEETING', meetingId, payload, {
+        partitionKey: meetingId,
+      });
+    } catch (_) {}
   }
 
   public getOutboxEvents(filter?: { status?: 'PENDING' | 'PUBLISHED' }): MeetingOutboxEvent[] {

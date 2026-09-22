@@ -54,6 +54,7 @@ const StudentPerformanceView = lazy(() => import('./features/performance-history
 const DocsPlatform = lazy(() => import('./features/interview-docs/DocsPlatform'))
 const MasterQuestionBankApp = lazy(() => import('./features/interview-questions/MasterQuestionBankApp'))
 const MeetingRoom = lazy(() => import('./features/meetings/components/MeetingRoom'))
+const AppChatWorkspace = lazy(() => import('./features/chat/components/AppChatWorkspace'))
 const NotFoundPage = lazy(() => import('./components/common/NotFoundPage'))
 import RoleGuard from './components/auth/RoleGuard'
 import { useAuth } from './context/AuthContext'
@@ -94,6 +95,8 @@ export default function App() {
             <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/meet/:meetingId" element={<MeetingRoom />} />
+          <Route path="/chat" element={<AppChatWorkspace />} />
+          <Route path="/app-chat" element={<AppChatWorkspace />} />
           <Route path="/docs/*" element={<DocsPlatform />} />
           <Route
             path="/profile"

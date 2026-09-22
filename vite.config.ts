@@ -383,6 +383,77 @@ function localAdminAuthPlugin(): Plugin {
           res.end(JSON.stringify({ error: err?.message || 'Server error' }))
         }
       })
+
+      // Local Dev Phase 7 Application Chat API Middleware
+      server.middlewares.use('/api/v1/chat', async (req: any, res: any) => {
+        try {
+          // @ts-ignore
+          const { default: handler } = await import('./api/v1/chat/index.js')
+          const urlObj = new URL(req.url || '/', 'http://localhost')
+          req.query = Object.fromEntries(urlObj.searchParams.entries())
+
+          res.status = (code: number) => { res.statusCode = code; return res }
+          res.json = (data: any) => {
+            res.setHeader('Content-Type', 'application/json')
+            res.end(JSON.stringify(data))
+            return res
+          }
+
+          if (req.method === 'POST') {
+            let body = ''
+            req.on('data', (chunk: any) => { body += chunk })
+            req.on('end', async () => {
+              try { req.body = JSON.parse(body || '{}') } catch { req.body = {} }
+              await handler(req, res)
+            })
+            return
+          }
+
+          await handler(req, res)
+        } catch (err: any) {
+          res.statusCode = 500
+          res.setHeader('Content-Type', 'application/json')
+          res.end(JSON.stringify({ error: err?.message || 'Server error' }))
+        }
+      })
+
+      // Local Dev Phase 8 Redis Health & Observability Middleware
+      server.middlewares.use('/api/v1/health/redis', async (req: any, res: any) => {
+        try {
+          // @ts-ignore
+          const { default: handler } = await import('./api/v1/health/redis.js')
+          res.status = (code: number) => { res.statusCode = code; return res }
+          res.json = (data: any) => {
+            res.setHeader('Content-Type', 'application/json')
+            res.end(JSON.stringify(data))
+            return res
+          }
+          await handler(req, res)
+        } catch (err: any) {
+          res.statusCode = 500
+          res.setHeader('Content-Type', 'application/json')
+          res.end(JSON.stringify({ error: err?.message || 'Server error' }))
+        }
+      })
+
+      // Local Dev Phase 9 Kafka Health & Observability Middleware
+      server.middlewares.use('/api/v1/health/kafka', async (req: any, res: any) => {
+        try {
+          // @ts-ignore
+          const { default: handler } = await import('./api/v1/health/kafka.js')
+          res.status = (code: number) => { res.statusCode = code; return res }
+          res.json = (data: any) => {
+            res.setHeader('Content-Type', 'application/json')
+            res.end(JSON.stringify(data))
+            return res
+          }
+          await handler(req, res)
+        } catch (err: any) {
+          res.statusCode = 500
+          res.setHeader('Content-Type', 'application/json')
+          res.end(JSON.stringify({ error: err?.message || 'Server error' }))
+        }
+      })
     },
   }
 }

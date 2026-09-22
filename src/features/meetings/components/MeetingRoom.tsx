@@ -58,6 +58,9 @@ export const MeetingRoom: React.FC = () => {
   const [isChatDrawerOpen, setIsChatDrawerOpen] = useState<boolean>(false);
   const [chatMessages, setChatMessages] = useState<ChatMessageRecord[]>([]);
   const [unreadChatCount, setUnreadChatCount] = useState<number>(0);
+  const [allowChat, setAllowChat] = useState<boolean>(true);
+  const [chatCursor, setChatCursor] = useState<string | null>(null);
+  const [hasMoreOlderMessages, setHasMoreOlderMessages] = useState<boolean>(false);
   const [isWhiteboardOpen, setIsWhiteboardOpen] = useState<boolean>(false);
   const [isCodeEditorOpen, setIsCodeEditorOpen] = useState<boolean>(false);
   const [whiteboardElements, setWhiteboardElements] = useState<WhiteboardElement[]>([]);
@@ -390,18 +393,25 @@ export const MeetingRoom: React.FC = () => {
     setTimeout(() => setCopiedInvite(false), 2500);
   };
 
-  // 9. In-Meeting Real-Time Chat Sync & Broadcast
+  // 9. In-Meeting Real-Time Chat Sync & Broadcast (Phase 6 Production-Grade)
   useEffect(() => {
     if (inLobby || hasLeft || !meetingId) return;
 
     const token = activeSessionTokenRef.current;
     if (token) {
-      chatClientService.getMessages(meetingId, token).then(setChatMessages).catch(() => {});
+      chatClientService.initSocket(meetingId, token);
+      chatClientService
+        .getMessages(meetingId, token, undefined, 50)
+        .then(res => {
+          setChatMessages(res.messages || []);
+          setChatCursor(res.nextCursor || null);
+          setHasMoreOlderMessages(res.hasMore || false);
+        })
+        .catch(() => {});
     }
 
-    const unsubscribe = chatClientService.subscribeToRealtime(
-      meetingId,
-      (newMsg) => {
+    const unsubscribe = chatClientService.subscribeToRealtime(meetingId, {
+      onMessage: (newMsg) => {
         setChatMessages(prev => {
           if (prev.some(m => m.id === newMsg.id)) return prev;
           return [...prev, newMsg];
@@ -411,12 +421,39 @@ export const MeetingRoom: React.FC = () => {
           return isOpen;
         });
       },
-      (msgId, reactions) => {
+      onReaction: (msgId, reactions) => {
         setChatMessages(prev =>
           prev.map(m => (m.id === msgId ? { ...m, reactions } : m))
         );
-      }
-    );
+      },
+      onDeleted: (msgId, deletedBy) => {
+        setChatMessages(prev =>
+          prev.map(m =>
+            m.id === msgId
+              ? { ...m, deletedAt: new Date().toISOString(), deletedBy }
+              : m
+          )
+        );
+      },
+      onStatus: (allowed) => {
+        setAllowChat(allowed);
+      },
+      onSystem: (msg) => {
+        if (msg.metadata?.allowChat !== undefined) {
+          setAllowChat(msg.metadata.allowChat);
+        }
+      },
+      onAnnouncement: (msg) => {
+        setChatMessages(prev => {
+          if (prev.some(m => m.id === msg.id)) return prev;
+          return [...prev, msg];
+        });
+        setIsChatDrawerOpen(isOpen => {
+          if (!isOpen) setUnreadChatCount(c => c + 1);
+          return isOpen;
+        });
+      },
+    });
 
     return () => {
       unsubscribe();
@@ -462,6 +499,61 @@ export const MeetingRoom: React.FC = () => {
     setChatMessages(prev =>
       prev.map(m => (m.id === messageId ? { ...m, reactions } : m))
     );
+  };
+
+  const handleDeleteMessage = async (messageId: string) => {
+    if (!meetingId) return;
+    const token = activeSessionTokenRef.current;
+    if (!token) return;
+
+    await chatClientService.deleteMessage(token, meetingId, messageId);
+    setChatMessages(prev =>
+      prev.map(m =>
+        m.id === messageId
+          ? { ...m, deletedAt: new Date().toISOString(), deletedBy: user?.id || 'me' }
+          : m
+      )
+    );
+  };
+
+  const handleToggleChat = async (newAllowChat: boolean) => {
+    if (!meetingId) return;
+    const token = activeSessionTokenRef.current;
+    if (!token) return;
+
+    const result = await chatClientService.toggleChat(token, meetingId, newAllowChat);
+    setAllowChat(result);
+  };
+
+  const handleSendAnnouncement = async (content: string) => {
+    if (!meetingId) return;
+    const token = activeSessionTokenRef.current;
+    if (!token) return;
+
+    const ann = await chatClientService.sendAnnouncement(token, meetingId, content);
+    setChatMessages(prev => {
+      if (prev.some(m => m.id === ann.id)) return prev;
+      return [...prev, ann];
+    });
+  };
+
+  const handleLoadOlderMessages = async () => {
+    if (!meetingId || !chatCursor) return;
+    const token = activeSessionTokenRef.current;
+    if (!token) return;
+
+    const res = await chatClientService.getMessages(meetingId, token, chatCursor, 30);
+    if (res.messages && res.messages.length > 0) {
+      setChatMessages(prev => {
+        const existingIds = new Set(prev.map(m => m.id));
+        const olderUnique = res.messages.filter(m => !existingIds.has(m.id));
+        return [...olderUnique, ...prev];
+      });
+      setChatCursor(res.nextCursor || null);
+      setHasMoreOlderMessages(res.hasMore || false);
+    } else {
+      setHasMoreOlderMessages(false);
+    }
   };
 
   const handleToggleChatDrawer = () => {
@@ -985,8 +1077,15 @@ export const MeetingRoom: React.FC = () => {
             currentUserName={user?.name || 'You'}
             participants={participants}
             messages={chatMessages}
+            isHost={meetingRole === 'HOST' || user?.role === 'admin'}
+            allowChat={allowChat}
+            hasMoreOlderMessages={hasMoreOlderMessages}
             onSendMessage={handleSendMessage}
             onAddReaction={handleAddReaction}
+            onDeleteMessage={handleDeleteMessage}
+            onToggleChat={handleToggleChat}
+            onSendAnnouncement={handleSendAnnouncement}
+            onLoadOlderMessages={handleLoadOlderMessages}
             onClose={() => setIsChatDrawerOpen(false)}
           />
         )}

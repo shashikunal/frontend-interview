@@ -3,10 +3,12 @@ import type {
   CandidateSetupConfig,
   InterviewAnswer,
   MockQuestion,
+  InterviewBlueprint,
 } from '../types/mock.types';
 import { blueprintService } from './blueprintService';
-import { getMockQuestionById } from '../data/questionBankRegistry';
+import { getMockQuestionById, registerDynamicMockQuestion } from '../data/questionBankRegistry';
 import { mockPersistenceService, newUuid, type PersistResult } from './mockPersistenceService';
+import type { MasterQuestion } from '../../interview-questions/types/interviewQuestions.types';
 
 const LOCAL_SESSION_PREFIX = 'ai_video_mock_session_';
 const LOCAL_ACTIVE_SESSION_ID = 'ai_video_mock_active_id';
@@ -42,6 +44,130 @@ export const mockSessionService = {
       currentQuestionIndex: 0,
       totalQuestions: blueprint.questionCount,
       answers,
+      integritySignals: [],
+      startedAt: new Date().toISOString(),
+      totalPausedSeconds: 0,
+      updatedAt: new Date().toISOString(),
+    };
+
+    this.saveSessionLocally(session);
+    this.syncSessionRemote(session);
+    return session;
+  },
+
+  createQuestionDrillSession(userId: string, masterQ: MasterQuestion): MockInterviewSession {
+    const sessionId = newUuid();
+
+    // Map difficulty
+    let diff: 'Basic' | 'Intermediate' | 'Advanced' | 'Expert' = 'Intermediate';
+    const rawDiff = (masterQ.difficulty || '').toLowerCase();
+    if (rawDiff.includes('easy')) diff = 'Basic';
+    else if (rawDiff.includes('diff') || rawDiff.includes('hard')) diff = 'Advanced';
+    else if (rawDiff.includes('expert')) diff = 'Expert';
+
+    // Adapt MasterQuestion into MockQuestion
+    const mockQ: MockQuestion = {
+      id: masterQ.id,
+      technology: (masterQ.subject || 'javascript') as any,
+      topic: masterQ.topic || 'Core Concept',
+      subtopic: masterQ.concept || masterQ.subtopic || 'Interview Question',
+      difficulty: diff,
+      question: masterQ.question,
+      questionType: (masterQ.questionType === 'CODE' || masterQ.codeSnippet ? 'Practical' : 'Theory') as any,
+      experienceLevels: ['0-1', '1-2', '2-4'],
+      expectedConcepts: [masterQ.concept || masterQ.topic || 'Core Concept'],
+      idealAnswerPoints: [
+        masterQ.shortAnswer || '',
+        ...(masterQ.commonMistakes || []).map((m: string) => `Avoid mistake: ${m}`),
+      ],
+      commonMistakes: masterQ.commonMistakes || [],
+      followUpTopics: masterQ.followUpQuestions || masterQ.followUps || [],
+      estimatedTimeMinutes: 3,
+      tags: masterQ.tags || [masterQ.subject],
+      status: 'APPROVED',
+      qualityScore: 98,
+      reviewStatus: 'APPROVED',
+      version: 1,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      rubric: {
+        minimumExpected: masterQ.shortAnswer || 'Clear understanding of core concept.',
+        strongAnswer: masterQ.simpleExplanation || masterQ.shortAnswer || 'Comprehensive explanation with practical mechanics.',
+        seniorLevelExpectations: masterQ.interviewAnswer || masterQ.detailedExplanation || 'Senior-level depth with edge cases.',
+        expertLevelExpectations: masterQ.detailedExplanation || 'Architectural mastery and performance trade-offs.',
+      },
+    };
+
+    registerDynamicMockQuestion(mockQ);
+
+    const config: CandidateSetupConfig = {
+      totalExperienceYears: 2,
+      experienceTier: '1-2',
+      techSpecificExperience: { [masterQ.subject || 'javascript']: 2 },
+      primaryTechnology: (masterQ.subject || 'javascript') as any,
+      secondaryTechnologies: [],
+      topic: masterQ.topic || 'Core Concept',
+      difficulty: diff,
+      interviewMode: 'Standard',
+      interviewerStyle: 'Senior Interviewer',
+      interviewerPersonaId: 'p_meta_sarah',
+      questionCount: 1,
+      questionMix: {
+        theoryPercent: 100,
+        practicalPercent: 0,
+        codingPercent: 0,
+        scenarioPercent: 0,
+      },
+    };
+
+    const blueprint: InterviewBlueprint = {
+      id: `bp_${sessionId.slice(0, 8)}_${Date.now()}`,
+      sessionId,
+      questionCount: 1,
+      difficultyDistribution: {
+        Basic: diff === 'Basic' ? 1 : 0,
+        Intermediate: diff === 'Intermediate' ? 1 : 0,
+        Advanced: diff === 'Advanced' ? 1 : 0,
+        Expert: diff === 'Expert' ? 1 : 0,
+      },
+      topicDistribution: { [mockQ.topic]: 1 },
+      typeDistribution: { [mockQ.questionType]: 1 },
+      reservedQuestionIds: [mockQ.id],
+      expectedLevel: '1-2' as const,
+      scoringRubricWeights: {
+        correctness: 0.35,
+        depth: 0.2,
+        practical: 0.2,
+        communication: 0.15,
+        problemSolving: 0.05,
+        architecture: 0.05,
+      },
+      timeLimitTotalMinutes: 5,
+      perQuestionTimeLimitSeconds: 180,
+      createdAt: new Date().toISOString(),
+    };
+
+    const answer: InterviewAnswer = {
+      id: newUuid(),
+      sessionId,
+      questionId: mockQ.id,
+      questionNumber: 1,
+      question: mockQ,
+      mode: 'speech',
+      status: 'UNANSWERED',
+      timeSpentSeconds: 0,
+      startedAt: new Date().toISOString(),
+    };
+
+    const session: MockInterviewSession = {
+      id: sessionId,
+      userId: userId || 'anonymous_candidate',
+      state: 'READY',
+      config,
+      blueprint,
+      currentQuestionIndex: 0,
+      totalQuestions: 1,
+      answers: [answer],
       integritySignals: [],
       startedAt: new Date().toISOString(),
       totalPausedSeconds: 0,

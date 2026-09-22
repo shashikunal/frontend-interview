@@ -155,6 +155,27 @@ export interface ClientToServerEvents {
   'monitor:unsubscribe': (data: { sessionId: string }) => void;
   'yjs:update': (data: YjsUpdateEvent) => void;
   'yjs:sync-request': (data: YjsSyncRequestEvent, callback?: (res: YjsSyncResponseEvent) => void) => void;
+
+  // Phase 6: Meeting Chat Events
+  'meeting:join': (data: { meetingId: string; meetingToken?: string }, callback?: (ack: { success: boolean; error?: string; allowChat?: boolean }) => void) => void;
+  'meeting:leave': (data: { meetingId: string }) => void;
+  'meeting:chat:send': (data: { meetingId: string; content: string; messageType?: string; codeLanguage?: string; replyToMessageId?: string; correlationId?: string }, callback?: (ack: { success: boolean; message?: any; error?: string; code?: string }) => void) => void;
+  'meeting:chat:delete': (data: { meetingId: string; messageId: string }, callback?: (ack: { success: boolean; error?: string; code?: string }) => void) => void;
+  'meeting:chat:reaction': (data: { meetingId: string; messageId: string; emoji: string }, callback?: (ack: { success: boolean; reactions?: Record<string, string[]>; error?: string }) => void) => void;
+  'meeting:chat:toggle': (data: { meetingId: string; allowChat: boolean }, callback?: (ack: { success: boolean; allowChat?: boolean; error?: string }) => void) => void;
+  'meeting:chat:announce': (data: { meetingId: string; content: string; correlationId?: string }, callback?: (ack: { success: boolean; message?: any; error?: string }) => void) => void;
+  'meeting:chat:sync': (data: { meetingId: string; sinceTimestamp?: string }, callback?: (res: { success: boolean; messages: any[] }) => void) => void;
+
+  // Phase 7: Application Chat Events (DM + Group + Presence + Typing + Read Receipts)
+  'app:chat:subscribe': (data: { conversationIds?: string[] }, callback?: (ack: { success: boolean; error?: string }) => void) => void;
+  'app:chat:join': (data: { conversationId: string }, callback?: (ack: { success: boolean; error?: string }) => void) => void;
+  'app:chat:leave': (data: { conversationId: string }) => void;
+  'app:chat:message:send': (data: { conversationId: string; content: string; clientMessageId?: string; metadata?: any }, callback?: (ack: { success: boolean; message?: any; error?: string; code?: string }) => void) => void;
+  'app:chat:message:delete': (data: { conversationId: string; messageId: string }, callback?: (ack: { success: boolean; error?: string; code?: string }) => void) => void;
+  'app:chat:message:read': (data: { conversationId: string; messageId?: string }, callback?: (ack: { success: boolean; lastReadMessageId?: string; lastReadAt?: string; error?: string }) => void) => void;
+  'app:chat:typing:start': (data: { conversationId: string }) => void;
+  'app:chat:typing:stop': (data: { conversationId: string }) => void;
+  'app:chat:presence:subscribe': (data: { userIds: string[] }, callback?: (ack: { success: boolean; presences: Record<string, any> }) => void) => void;
 }
 
 export interface ServerToClientEvents {
@@ -173,11 +194,33 @@ export interface ServerToClientEvents {
   'yjs:update': (data: YjsUpdateEvent) => void;
   'yjs:sync-response': (data: YjsSyncResponseEvent) => void;
   'error': (data: { message: string; code?: string }) => void;
+
+  // Phase 6: Meeting Chat Broadcasts
+  'meeting:chat:message': (message: any) => void;
+  'meeting:chat:deleted': (data: { meetingId: string; messageId: string; deletedBy: string }) => void;
+  'meeting:chat:reaction': (data: { meetingId: string; messageId: string; reactions: Record<string, string[]> }) => void;
+  'meeting:chat:system': (message: any) => void;
+  'meeting:chat:announcement': (message: any) => void;
+  'meeting:chat:status': (data: { meetingId: string; allowChat: boolean; updatedBy: string }) => void;
+  'meeting:chat:error': (data: { code: string; message: string; correlationId?: string }) => void;
+
+  // Phase 7: Application Chat Broadcasts
+  'app:chat:message:created': (message: any) => void;
+  'app:chat:message:deleted': (data: { conversationId: string; messageId: string; deletedBy: string }) => void;
+  'app:chat:message:read': (data: { conversationId: string; userId: string; lastReadMessageId: string; lastReadAt: string }) => void;
+  'app:chat:typing:update': (data: { conversationId: string; userId: string; userName: string; isTyping: boolean }) => void;
+  'app:chat:presence:update': (data: { userId: string; status: 'ONLINE' | 'OFFLINE'; lastSeen?: string }) => void;
+  'app:chat:conversation:updated': (conversation: any) => void;
+  'app:chat:member:updated': (data: { conversationId: string; participant: any; action: 'ADDED' | 'REMOVED' | 'LEFT' }) => void;
+  'app:chat:error': (data: { code: string; message: string; correlationId?: string }) => void;
 }
 
 export interface SocketData {
   user: AuthenticatedUser;
   sessionId?: string;
+  meetingId?: string;
   role: UserRole;
   subscribedSessions: Set<string>;
+  subscribedMeetings: Set<string>;
+  subscribedConversations?: Set<string>;
 }

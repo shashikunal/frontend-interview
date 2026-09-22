@@ -1,5 +1,5 @@
 import * as Y from 'yjs';
-import { supabase } from '../../src/lib/supabase/client.js';
+import { supabase } from '../../src/lib/supabase/client.ts';
 import type { SessionStatePayload, StudentCodeChangeEvent } from './types.js';
 
 // In-memory ephemeral state cache (for fast sub-millisecond keystroke relays)

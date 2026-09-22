@@ -43,7 +43,9 @@ export default function SubjectLandingPage() {
     }
   }, [])
 
-  // Calculate real subject stats for all 12 subjects
+  const [selectedCategory, setSelectedCategory] = useState<'ALL' | 'FOUNDATIONS' | 'FRAMEWORKS' | 'PLATFORM' | 'SYSTEM_DESIGN'>('ALL')
+
+  // Calculate real subject stats for all subjects
   const subjectStatsMap = useMemo(() => {
     const map = new Map<string, SubjectProgressStat>()
     if (!catalog) return map
@@ -59,12 +61,26 @@ export default function SubjectLandingPage() {
     return interviewQuestionsProgressService.getOverallStats(catalog)
   }, [catalog, progressState])
 
+  const CATEGORY_SUBJECTS = useMemo(() => ({
+    FOUNDATIONS: ['html', 'css', 'javascript', 'es6', 'dom', 'bom', 'web-apis', 'jquery'],
+    FRAMEWORKS: ['typescript', 'react', 'redux', 'react-router', 'tanstack-query', 'nextjs'],
+    PLATFORM: ['http', 'rest-apis', 'websockets', 'browser-internals', 'performance', 'accessibility', 'seo', 'security', 'testing', 'git', 'build-tools', 'micro-frontends'],
+    SYSTEM_DESIGN: ['design-patterns', 'frontend-architecture', 'machine-coding', 'system-design', 'coding-problems', 'scenarios', 'company-questions']
+  }), [])
+
+  const displayedSubjects = useMemo(() => {
+    if (!catalog) return []
+    if (selectedCategory === 'ALL') return catalog.subjects
+    const allowed = new Set(CATEGORY_SUBJECTS[selectedCategory] || [])
+    return catalog.subjects.filter(s => allowed.has(s.id))
+  }, [catalog, selectedCategory, CATEGORY_SUBJECTS])
+
   if (loading) {
     return (
       <div className="mqb-loading-state" id="mqb-loading-spinner" style={{ textAlign: 'center', padding: '5rem 0' }}>
         <div className="app-route-spinner" style={{ margin: '0 auto 1.5rem', width: 44, height: 44, border: '3px solid rgba(56,189,248,0.2)', borderTopColor: '#38bdf8', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
-        <h3 style={{ color: 'var(--mqb-text-primary)' }}>Loading 12,000 Master Questions Catalog...</h3>
-        <p style={{ color: 'var(--mqb-text-secondary)' }}>Indexing 12 core frontend subjects with deep answer architecture</p>
+        <h3 style={{ color: 'var(--mqb-text-primary)' }}>Loading 33 Frontend Interview Tracks...</h3>
+        <p style={{ color: 'var(--mqb-text-secondary)' }}>Indexing complete frontend question bank with speech synthesis and interactive MCQs</p>
       </div>
     )
   }
@@ -94,17 +110,17 @@ export default function SubjectLandingPage() {
           <div className="mqb-hero-text">
             <h1>Frontend Interview Master Question Bank</h1>
             <p>
-              The industry's most authentic, non-duplicated question system. {overallStats.totalQuestions.toLocaleString()} deep, unique interview questions across 12 subjects with spoken interview scripts, line-by-line breakdowns, execution flow diagrams, and real-time candidate metrics.
+              The industry's most authentic, non-duplicated question system. {overallStats.totalQuestions.toLocaleString()} comprehensive technical questions across 33 frontend subjects with clean Text-to-Speech narration, line-by-line code breakdowns, execution flow diagrams, and real-time candidate metrics.
             </p>
             <div className="mqb-hero-badges-row">
               <span className="mqb-hero-tag fresher-tag">
-                🌱 Fresher-Friendly Foundational Path
+                🌱 Fresher to Staff Engineer Path
               </span>
-              <span className="mqb-hero-tag">🔥 {overallStats.totalQuestions.toLocaleString()} Real Non-Duplicated Questions</span>
-              <span className="mqb-hero-tag">🎯 12 Core Subjects</span>
+              <span className="mqb-hero-tag">🔥 {overallStats.totalQuestions.toLocaleString()} Unique Questions</span>
+              <span className="mqb-hero-tag">🎯 33 Dedicated Tracks</span>
               <span className="mqb-hero-tag">🎙️ Spoken Speech Answers</span>
-              <span className="mqb-hero-tag">🔍 Line-by-Line Dissection</span>
-              <span className="mqb-hero-tag">⚙️ Execution Flows</span>
+              <span className="mqb-hero-tag">⚡ Interactive MCQs</span>
+              <span className="mqb-hero-tag">🔍 Line-by-Line Code Breakdown</span>
               <span className="mqb-hero-tag">🚀 100% Real Candidate Metrics</span>
             </div>
           </div>
@@ -256,20 +272,69 @@ export default function SubjectLandingPage() {
         </div>
       </section>
 
-      {/* 12 Subjects Dashboard Cards Grid */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
-        <div>
-          <h2 style={{ fontSize: '1.5rem', fontWeight: 800, margin: '0 0 0.25rem', color: 'var(--mqb-text-primary)' }}>
-            Core Subject Master Banks
-          </h2>
-          <p style={{ color: 'var(--mqb-text-secondary)', margin: 0, fontSize: '0.95rem' }}>
-            100% authentic, curated real-world technical interview questions with live candidate stats.
-          </p>
+      {/* 33 Subjects Dashboard Cards Grid with Category Filter */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '1.5rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem' }}>
+          <div>
+            <h2 style={{ fontSize: '1.5rem', fontWeight: 800, margin: '0 0 0.25rem', color: 'var(--mqb-text-primary)' }}>
+              Master Question Banks (33 Dedicated Subjects)
+            </h2>
+            <p style={{ color: 'var(--mqb-text-secondary)', margin: 0, fontSize: '0.95rem' }}>
+              100% authentic, curated real-world technical interview questions with live candidate metrics, spoken TTS scripts, and interactive MCQs.
+            </p>
+          </div>
+          <span className="mqb-catalog-count-pill" style={{ fontSize: '0.9rem', padding: '0.4rem 0.8rem' }}>
+            Showing {displayedSubjects.length} of {catalog.subjects.length} Tracks
+          </span>
+        </div>
+
+        {/* Category Filter Pills */}
+        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }} id="mqb-category-filters">
+          <button
+            type="button"
+            className={`mqb-action-pill-btn ${selectedCategory === 'ALL' ? 'primary' : ''}`}
+            onClick={() => setSelectedCategory('ALL')}
+            style={{ fontSize: '0.85rem', padding: '0.45rem 0.85rem' }}
+          >
+            All Tracks (33)
+          </button>
+          <button
+            type="button"
+            className={`mqb-action-pill-btn ${selectedCategory === 'FOUNDATIONS' ? 'primary' : ''}`}
+            onClick={() => setSelectedCategory('FOUNDATIONS')}
+            style={{ fontSize: '0.85rem', padding: '0.45rem 0.85rem' }}
+          >
+            🌐 Core Foundations (8)
+          </button>
+          <button
+            type="button"
+            className={`mqb-action-pill-btn ${selectedCategory === 'FRAMEWORKS' ? 'primary' : ''}`}
+            onClick={() => setSelectedCategory('FRAMEWORKS')}
+            style={{ fontSize: '0.85rem', padding: '0.45rem 0.85rem' }}
+          >
+            ⚛️ Frameworks & State (6)
+          </button>
+          <button
+            type="button"
+            className={`mqb-action-pill-btn ${selectedCategory === 'PLATFORM' ? 'primary' : ''}`}
+            onClick={() => setSelectedCategory('PLATFORM')}
+            style={{ fontSize: '0.85rem', padding: '0.45rem 0.85rem' }}
+          >
+            🛡️ Platform, Networking & Security (12)
+          </button>
+          <button
+            type="button"
+            className={`mqb-action-pill-btn ${selectedCategory === 'SYSTEM_DESIGN' ? 'primary' : ''}`}
+            onClick={() => setSelectedCategory('SYSTEM_DESIGN')}
+            style={{ fontSize: '0.85rem', padding: '0.45rem 0.85rem' }}
+          >
+            📐 Architecture, System Design & Practice (7)
+          </button>
         </div>
       </div>
 
       <div className="mqb-subjects-grid" id="mqb-subjects-grid">
-        {catalog.subjects.map((subject: SubjectMeta) => {
+        {displayedSubjects.map((subject: SubjectMeta) => {
           const stats = subjectStatsMap.get(subject.id) || {
             subjectId: subject.id,
             totalQuestions: subject.totalQuestions || 125,

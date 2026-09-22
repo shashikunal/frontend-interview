@@ -1,6 +1,7 @@
 {
-  "generatedAt": "2026-09-17T16:41:14.627Z",
-  "totalQuestions": 1470,
+  "generatedAt": "2026-09-18T11:26:12.450Z",
+  "totalQuestions": 16600,
+  "totalSubjects": 33,
   "subjects": [
     {
       "id": "html",
@@ -10,9 +11,15 @@
       "color": "#e34f26",
       "accentGradient": "linear-gradient(135deg, #e34f26 0%, #f06529 100%)",
       "description": "Master semantic layout, accessibility (ARIA/WCAG), HTML parser pipeline, DOM generation, web components, forms, SEO, and security headers.",
-      "totalQuestions": 125,
+      "totalQuestions": 500,
       "topics": [
-        "HTML Layout & Semantics"
+        "HTML Fundamentals",
+        "Semantic HTML",
+        "Links & Navigation",
+        "Forms & Inputs",
+        "Tables",
+        "Accessibility & Media",
+        "Modern HTML5 APIs"
       ]
     },
     {
@@ -23,9 +30,13 @@
       "color": "#1572b6",
       "accentGradient": "linear-gradient(135deg, #1572b6 0%, #33a9dc 100%)",
       "description": "Deep-dive into the CSS Cascade, specificity calculations, Stacking Contexts, Flexbox, Grid, Container Queries, GPU compositing, animations, and zero-runtime architecture.",
-      "totalQuestions": 125,
+      "totalQuestions": 1000,
       "topics": [
-        "CSS Layout & Architecture"
+        "CSS Cascade & Specificity",
+        "Flexbox & Grid Layouts",
+        "Stacking Context & z-index",
+        "Responsive & Container Queries",
+        "Transitions & GPU Animations"
       ]
     },
     {
@@ -36,48 +47,30 @@
       "color": "#f7df1e",
       "accentGradient": "linear-gradient(135deg, #f7df1e 0%, #d4b810 100%)",
       "description": "V8 engine internals, Execution Contexts, Lexical Scope, Closures, Prototypal Inheritance, Event Loop, Microtask Queue, Memory Profiling, and Garbage Collection.",
-      "totalQuestions": 125,
+      "totalQuestions": 1000,
       "topics": [
-        "JavaScript Engine"
+        "Execution Context & Scope",
+        "Closures & Memory Retention",
+        "Prototypal Inheritance",
+        "Event Loop & Microtasks",
+        "Async Programming & Promises"
       ]
     },
     {
       "id": "es6",
-      "name": "ECMAScript 2015 (ES6)",
+      "name": "ES6+ & Modern ECMAScript",
       "icon": "🚀",
-      "badge": "ES2015",
+      "badge": "ES2015+",
       "color": "#007acc",
       "accentGradient": "linear-gradient(135deg, #007acc 0%, #00b4d8 100%)",
-      "description": "Comprehensive mastery of the revolutionary ES6 standard: arrow functions, let/const, destructuring, classes, Symbols, Proxies, Reflect, Iterators, and Generators.",
-      "totalQuestions": 125,
+      "description": "Comprehensive mastery of modern ECMAScript standards: arrow functions, destructuring, classes, Symbols, Proxies, Reflect, Iterators, Generators, optional chaining, and nullish coalescing.",
+      "totalQuestions": 500,
       "topics": [
-        "ECMAScript 2015"
-      ]
-    },
-    {
-      "id": "es7",
-      "name": "ECMAScript 2016 (ES7)",
-      "icon": "⚡",
-      "badge": "ES2016",
-      "color": "#0ea5e9",
-      "accentGradient": "linear-gradient(135deg, #0ea5e9 0%, #38bdf8 100%)",
-      "description": "Deep focus on ES2016 additions: Array.prototype.includes (SameValueZero algorithm, NaN handling) and the Exponentiation operator (** precedence and associativity).",
-      "totalQuestions": 110,
-      "topics": [
-        "ECMAScript 2016"
-      ]
-    },
-    {
-      "id": "es8",
-      "name": "ECMAScript 2017 (ES8)",
-      "icon": "✨",
-      "badge": "ES2017",
-      "color": "#8b5cf6",
-      "accentGradient": "linear-gradient(135deg, #8b5cf6 0%, #a78bfa 100%)",
-      "description": "Async/await runtime mechanics, Object.entries/values, Object.getOwnPropertyDescriptors, String padding (padStart/padEnd), trailing commas, and SharedArrayBuffer/Atomics.",
-      "totalQuestions": 110,
-      "topics": [
-        "ECMAScript 2017"
+        "ES6 Syntax & Destructuring",
+        "Classes & Symbols",
+        "Proxies & Reflect API",
+        "Iterators & Generators",
+        "ES2016-ES2024 Additions"
       ]
     },
     {
@@ -88,9 +81,13 @@
       "color": "#10b981",
       "accentGradient": "linear-gradient(135deg, #10b981 0%, #34d399 100%)",
       "description": "Document tree traversal, Node vs Element, live collections, Layout Thrashing, reflow/repaint triggers, MutationObserver, and high-frequency DOM manipulation.",
-      "totalQuestions": 125,
+      "totalQuestions": 500,
       "topics": [
-        "DOM Architecture"
+        "Tree Traversal & Node vs Element",
+        "Event Bubbling & Capturing",
+        "MutationObserver API",
+        "Reflow, Repaint & Thrashing",
+        "DocumentFragment & Virtual DOM"
       ]
     },
     {
@@ -101,9 +98,13 @@
       "color": "#f59e0b",
       "accentGradient": "linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%)",
       "description": "The Window object, Navigation, History API (pushState/replaceState), Location, Screen, Viewports, Timers (rAF, rIC), and client-side storage mechanics.",
-      "totalQuestions": 125,
+      "totalQuestions": 300,
       "topics": [
-        "BOM & Browser Runtime"
+        "Window Object & Timers",
+        "History API & Navigation",
+        "Client Storage (LocalStorage, IndexedDB)",
+        "Screen & Viewport Dimensions",
+        "Navigator & Device APIs"
       ]
     },
     {
@@ -114,9 +115,35 @@
       "color": "#06b6d4",
       "accentGradient": "linear-gradient(135deg, #06b6d4 0%, #22d3ee 100%)",
       "description": "Fetch API with AbortController, Web Workers, Service Workers & Offline PWA, Cache API, IndexedDB, WebSockets, WebRTC, Streams, and Web Crypto.",
-      "totalQuestions": 125,
+      "totalQuestions": 500,
       "topics": [
-        "Networking & Web APIs"
+        "Fetch & AbortController",
+        "Web Workers & SharedArrayBuffer",
+        "Service Workers & PWA Offline",
+        "IntersectionObserver & ResizeObserver",
+        "Streams API & Web Crypto"
+      ]
+    },
+    {
+      "id": "jquery",
+      "name": "jQuery & Legacy Architecture",
+      "icon": "💲",
+      "badge": "jQuery 3.x",
+      "color": "#0769ad",
+      "accentGradient": "linear-gradient(135deg, #0769ad 0%, #1b8cd8 100%)",
+      "description": "Fundamentals, the $ alias, selectors, DOM manipulation, traversal, event delegation, AJAX, animation, plugins, $.extend(), legacy enterprise apps, and jQuery-to-React migration.",
+      "totalQuestions": 500,
+      "topics": [
+        "jQuery Fundamentals & $ Alias",
+        "Selectors & Traversal",
+        "DOM Manipulation & Attributes",
+        "Events & Event Delegation",
+        "AJAX & $.ajax() Architecture",
+        "Effects, Animations & Chaining",
+        "Plugins & $.extend()",
+        "Performance & Memory",
+        "Legacy Systems & Maintenance",
+        "Migration from jQuery to React"
       ]
     },
     {
@@ -127,22 +154,30 @@
       "color": "#3178c6",
       "accentGradient": "linear-gradient(135deg, #3178c6 0%, #5ba4e6 100%)",
       "description": "Type inference, Unions, Intersections, Generics, Conditional types, infer keyword, Template literal types, Mapped types, Narrowing, and tsconfig strict mode.",
-      "totalQuestions": 125,
+      "totalQuestions": 800,
       "topics": [
-        "TypeScript Architecture"
+        "Generics & Constraints",
+        "Conditional Types & infer",
+        "Mapped & Template Literal Types",
+        "Type Narrowing & Discriminated Unions",
+        "Advanced tsconfig & Strictness"
       ]
     },
     {
       "id": "react",
-      "name": "ReactJS & Modern Architecture",
+      "name": "React.js & Modern Architecture",
       "icon": "⚛️",
       "badge": "React 19",
       "color": "#61dafb",
       "accentGradient": "linear-gradient(135deg, #61dafb 0%, #22b8cf 100%)",
       "description": "React 19, JSX internals, Fiber Work Loop, Reconciliation, Hooks deep mechanics (useState, useEffect, useMemo), Suspense, Error Boundaries, and Server Components.",
-      "totalQuestions": 125,
+      "totalQuestions": 1000,
       "topics": [
-        "React Architecture"
+        "Fiber Architecture & Work Loop",
+        "Hooks Internals & Rules",
+        "Reconciliation & Diffing Algorithm",
+        "Suspense & Concurrent React",
+        "Custom Hooks & Performance Optimization"
       ]
     },
     {
@@ -153,9 +188,387 @@
       "color": "#764abc",
       "accentGradient": "linear-gradient(135deg, #764abc 0%, #9066d4 100%)",
       "description": "Redux Core, Unidirectional Data Flow, Redux Toolkit (RTK), createSlice, RTK Query, Thunk Middleware, Reselect Memoization, and Normalized State Design.",
-      "totalQuestions": 125,
+      "totalQuestions": 500,
       "topics": [
-        "Redux State Management"
+        "Unidirectional Flow & Immutability",
+        "Redux Toolkit (RTK) & createSlice",
+        "RTK Query & Caching",
+        "Async Thunks & Middleware",
+        "Reselect & Normalized State"
+      ]
+    },
+    {
+      "id": "react-router",
+      "name": "React Router & Navigation",
+      "icon": "🗺️",
+      "badge": "Router v6/7",
+      "color": "#ca4246",
+      "accentGradient": "linear-gradient(135deg, #ca4246 0%, #e15b64 100%)",
+      "description": "Client-side routing architecture, createBrowserRouter, nested routes, loaders, actions, defer, useSearchParams, and layout transitions.",
+      "totalQuestions": 250,
+      "topics": [
+        "Routing Architecture",
+        "Data Loaders & Actions",
+        "Nested Layouts",
+        "Dynamic Routes & Navigation",
+        "Error Boundaries & Fallbacks"
+      ]
+    },
+    {
+      "id": "tanstack-query",
+      "name": "TanStack Query & Server State",
+      "icon": "📡",
+      "badge": "v5",
+      "color": "#ff4154",
+      "accentGradient": "linear-gradient(135deg, #ff4154 0%, #ff6b7a 100%)",
+      "description": "Server state management, background refetching, stale-while-revalidate, mutations, optimistic updates, query key factories, and caching mechanics.",
+      "totalQuestions": 300,
+      "topics": [
+        "Server State vs Client State",
+        "Caching & Invalidation",
+        "Mutations & Optimistic UI",
+        "Query Keys Architecture",
+        "Pagination & Infinite Queries"
+      ]
+    },
+    {
+      "id": "nextjs",
+      "name": "Next.js & Fullstack SSR/SSG",
+      "icon": "▲",
+      "badge": "Next.js 15",
+      "color": "#000000",
+      "accentGradient": "linear-gradient(135deg, #1e293b 0%, #0f172a 100%)",
+      "description": "App Router, Server Components (RSC), Client Components ('use client'), Server Actions, SSR, SSG, ISR, Streaming with Suspense, and SEO optimization.",
+      "totalQuestions": 600,
+      "topics": [
+        "App Router Architecture",
+        "Server vs Client Components",
+        "Rendering Strategies (SSR/SSG/ISR)",
+        "Server Actions & Mutations",
+        "Data Caching & Revalidation"
+      ]
+    },
+    {
+      "id": "http",
+      "name": "HTTP Protocol & Networking",
+      "icon": "🌐",
+      "badge": "HTTP/2 & 3",
+      "color": "#0284c7",
+      "accentGradient": "linear-gradient(135deg, #0284c7 0%, #38bdf8 100%)",
+      "description": "HTTP request/response lifecycle, HTTP/1.1 vs HTTP/2 vs HTTP/3 (QUIC), status codes, headers, caching (ETag, Cache-Control), CORS, and TCP/TLS handshakes.",
+      "totalQuestions": 400,
+      "topics": [
+        "HTTP Evolution (1.1, 2, 3)",
+        "Status Codes & Semantics",
+        "Caching Headers & ETag",
+        "CORS Preflight & Security",
+        "TCP & TLS Handshake"
+      ]
+    },
+    {
+      "id": "rest-apis",
+      "name": "REST APIs & Contract Design",
+      "icon": "📐",
+      "badge": "RESTful",
+      "color": "#059669",
+      "accentGradient": "linear-gradient(135deg, #059669 0%, #10b981 100%)",
+      "description": "REST architectural constraints, HTTP verbs (GET, POST, PUT, PATCH, DELETE), idempotency, HATEOAS, API versioning, error payload standards, and pagination.",
+      "totalQuestions": 400,
+      "topics": [
+        "REST Constraints & Principles",
+        "Idempotency & HTTP Methods",
+        "PUT vs PATCH Semantics",
+        "Pagination Strategies",
+        "Error Handling & Status Codes"
+      ]
+    },
+    {
+      "id": "websockets",
+      "name": "WebSockets & Real-Time Comms",
+      "icon": "⚡",
+      "badge": "WS / WSS",
+      "color": "#d97706",
+      "accentGradient": "linear-gradient(135deg, #d97706 0%, #f59e0b 100%)",
+      "description": "Full-duplex bi-directional communication, WebSocket handshake (HTTP 101 Switching Protocols), heartbeat ping/pong, reconnection backoff, and SSE vs WebSockets.",
+      "totalQuestions": 250,
+      "topics": [
+        "WebSocket Lifecycle & Handshake",
+        "Full-Duplex vs HTTP Polling",
+        "Server-Sent Events (SSE) vs WS",
+        "Reconnection Strategies",
+        "Heartbeats & Ping/Pong"
+      ]
+    },
+    {
+      "id": "browser-internals",
+      "name": "Browser Internals & Rendering Engine",
+      "icon": "🔬",
+      "badge": "V8/Blink",
+      "color": "#4f46e5",
+      "accentGradient": "linear-gradient(135deg, #4f46e5 0%, #6366f1 100%)",
+      "description": "HTML/CSS parsing, DOM & CSSOM tree construction, Render Tree, Layout (Reflow), Paint (Repaint), GPU Compositing, and Layout Thrashing.",
+      "totalQuestions": 400,
+      "topics": [
+        "Critical Rendering Path (CRP)",
+        "DOM & CSSOM Construction",
+        "Reflow vs Repaint",
+        "GPU Layer Compositing",
+        "Layout Thrashing & Batching"
+      ]
+    },
+    {
+      "id": "performance",
+      "name": "Web Performance & Core Web Vitals",
+      "icon": "⚡",
+      "badge": "CWV 2026",
+      "color": "#10b981",
+      "accentGradient": "linear-gradient(135deg, #10b981 0%, #34d399 100%)",
+      "description": "Core Web Vitals (LCP, INP, CLS), asset optimization, code-splitting, tree-shaking, lazy loading, resource hints (preload, preconnect, dns-prefetch), and bundle analysis.",
+      "totalQuestions": 500,
+      "topics": [
+        "Core Web Vitals (LCP, INP, CLS)",
+        "Asset Optimization & Compression",
+        "Resource Hints (preload, prefetch)",
+        "Code Splitting & Dynamic Imports",
+        "Virtualization & Memory Profiling"
+      ]
+    },
+    {
+      "id": "accessibility",
+      "name": "Web Accessibility (a11y & ARIA)",
+      "icon": "♿",
+      "badge": "WCAG 2.2",
+      "color": "#8b5cf6",
+      "accentGradient": "linear-gradient(135deg, #8b5cf6 0%, #a78bfa 100%)",
+      "description": "WCAG 2.2 guidelines, semantic HTML vs ARIA, keyboard accessibility (tabindex, focus trap), screen reader compatibility, color contrast, and live regions.",
+      "totalQuestions": 400,
+      "topics": [
+        "WCAG 2.2 Principles (POUR)",
+        "ARIA Roles & Attributes",
+        "Keyboard Navigation & Focus Management",
+        "Accessible Forms & Error Announcements",
+        "Screen Reader Testing"
+      ]
+    },
+    {
+      "id": "seo",
+      "name": "Modern SEO & Web Crawlers",
+      "icon": "🔍",
+      "badge": "SEO 2026",
+      "color": "#f97316",
+      "accentGradient": "linear-gradient(135deg, #f97316 0%, #fb923c 100%)",
+      "description": "Search engine crawler architecture, Open Graph & Twitter cards, JSON-LD Schema structured data, canonical URLs, robots.txt, sitemaps, and SSR for indexing.",
+      "totalQuestions": 300,
+      "topics": [
+        "Search Engine Indexing Pipeline",
+        "Open Graph & Social Metadata",
+        "Structured Data (JSON-LD)",
+        "Canonicalization & Duplicate Content",
+        "Sitemaps & robots.txt"
+      ]
+    },
+    {
+      "id": "security",
+      "name": "Frontend Security & OWASP Top 10",
+      "icon": "🛡️",
+      "badge": "OWASP",
+      "color": "#dc2626",
+      "accentGradient": "linear-gradient(135deg, #dc2626 0%, #ef4444 100%)",
+      "description": "Cross-Site Scripting (XSS), Cross-Site Request Forgery (CSRF), Content Security Policy (CSP), secure cookie flags (HttpOnly, Secure, SameSite), and Clickjacking.",
+      "totalQuestions": 500,
+      "topics": [
+        "XSS (Stored, Reflected, DOM)",
+        "CSRF & SameSite Cookies",
+        "Content Security Policy (CSP)",
+        "Secure Token Storage (LocalStorage vs Cookies)",
+        "Clickjacking & Framing Protections"
+      ]
+    },
+    {
+      "id": "testing",
+      "name": "Frontend Testing (Unit, E2E, Integration)",
+      "icon": "🧪",
+      "badge": "Testing",
+      "color": "#059669",
+      "accentGradient": "linear-gradient(135deg, #059669 0%, #10b981 100%)",
+      "description": "Testing Trophy vs Testing Pyramid, Vitest, Jest, React Testing Library (RTL), Playwright, Cypress, mocking network calls (MSW), and accessibility testing.",
+      "totalQuestions": 500,
+      "topics": [
+        "Testing Trophy & Philosophy",
+        "React Testing Library Principles",
+        "Mock Service Worker (MSW)",
+        "End-to-End (E2E) with Playwright",
+        "Visual Regression & a11y Testing"
+      ]
+    },
+    {
+      "id": "git",
+      "name": "Git & GitHub Workflows",
+      "icon": "🐙",
+      "badge": "Git",
+      "color": "#f05032",
+      "accentGradient": "linear-gradient(135deg, #f05032 0%, #f97316 100%)",
+      "description": "Git object model (blobs, trees, commits), merge vs rebase, interactive rebase, cherry-pick, git bisect, stash, merge conflict resolution, and trunk-based development.",
+      "totalQuestions": 300,
+      "topics": [
+        "Git Internals (Blobs, Trees, Commits)",
+        "Merge vs Rebase Strategies",
+        "Interactive Rebase & Squashing",
+        "Debugging with Git Bisect",
+        "Trunk-Based vs GitFlow"
+      ]
+    },
+    {
+      "id": "build-tools",
+      "name": "Modern Build Tools & Bundlers",
+      "icon": "📦",
+      "badge": "Vite/Rspack",
+      "color": "#646cff",
+      "accentGradient": "linear-gradient(135deg, #646cff 0%, #747bff 100%)",
+      "description": "Vite, esbuild, Rollup, Webpack 5, Turbopack, Rspack, native ES modules (ESM), Hot Module Replacement (HMR), tree-shaking, and code splitting.",
+      "totalQuestions": 300,
+      "topics": [
+        "Vite vs Webpack Architecture",
+        "Native ESM & Dev Server Mechanics",
+        "Tree Shaking & Side Effects",
+        "Code Splitting & Dynamic Chunks",
+        "Rust/Go Tooling (esbuild, Rspack)"
+      ]
+    },
+    {
+      "id": "micro-frontends",
+      "name": "Micro Frontends & Module Federation",
+      "icon": "🧩",
+      "badge": "Webpack 5",
+      "color": "#0284c7",
+      "accentGradient": "linear-gradient(135deg, #0284c7 0%, #38bdf8 100%)",
+      "description": "Micro frontend architecture, Webpack 5 Module Federation, iframe isolation, single-spa, shared dependencies, cross-app communication, and independent deployments.",
+      "totalQuestions": 300,
+      "topics": [
+        "Module Federation Architecture",
+        "Host vs Remote Applications",
+        "Shared Dependencies & Versioning",
+        "Cross-Micro-Frontend Communication",
+        "Routing & State Isolation"
+      ]
+    },
+    {
+      "id": "design-patterns",
+      "name": "Frontend Design Patterns & SOLID",
+      "icon": "📐",
+      "badge": "Patterns",
+      "color": "#7c3aed",
+      "accentGradient": "linear-gradient(135deg, #7c3aed 0%, #9333ea 100%)",
+      "description": "Creational, structural, and behavioral patterns in frontend: Observer, Singleton, Factory, Compound Components, Render Props, Provider Pattern, and SOLID principles.",
+      "totalQuestions": 300,
+      "topics": [
+        "Observer Pattern & Event Emitters",
+        "Compound Component Pattern",
+        "Provider Pattern & React Context",
+        "SOLID Principles in Frontend",
+        "Container / Presentational Pattern"
+      ]
+    },
+    {
+      "id": "frontend-architecture",
+      "name": "Frontend Architecture & Scalability",
+      "icon": "🏛️",
+      "badge": "Architecture",
+      "color": "#0f766e",
+      "accentGradient": "linear-gradient(135deg, #0f766e 0%, #14b8a6 100%)",
+      "description": "Feature-sliced design, modular monorepos (Turborepo, Nx), state management boundaries, API abstraction layers, error handling strategies, and design systems.",
+      "totalQuestions": 500,
+      "topics": [
+        "Feature-Sliced Architecture (FSD)",
+        "Monorepos & Workspace Tooling",
+        "API Layer & Repository Pattern",
+        "Error Boundaries & Fallback Strategies",
+        "Design System Governance"
+      ]
+    },
+    {
+      "id": "machine-coding",
+      "name": "Machine Coding & Component Implementation",
+      "icon": "💻",
+      "badge": "Live Coding",
+      "color": "#b45309",
+      "accentGradient": "linear-gradient(135deg, #b45309 0%, #d97706 100%)",
+      "description": "Building production-grade UI widgets from scratch in 45-60 minutes: Autocomplete Search, Infinite Scroll, Star Rating, File Tree, Modal, Carousel, and Virtualized List.",
+      "totalQuestions": 500,
+      "topics": [
+        "Autocomplete / Typeahead Search",
+        "Infinite Scroll with IntersectionObserver",
+        "Virtualized List from Scratch",
+        "Star Rating & Feedback Component",
+        "Nested Comment Tree"
+      ]
+    },
+    {
+      "id": "system-design",
+      "name": "Frontend System Design & Architecture",
+      "icon": "📐",
+      "badge": "Staff / Lead",
+      "color": "#be185d",
+      "accentGradient": "linear-gradient(135deg, #be185d 0%, #db2777 100%)",
+      "description": "End-to-end frontend architecture for large-scale systems: Design Google Docs, Design Netflix Video Streaming, Design WhatsApp Web, Design Infinite Newsfeed, and Design E-commerce Checkout.",
+      "totalQuestions": 500,
+      "topics": [
+        "Design Google Docs (Collaborative Editing)",
+        "Design Netflix Web (Video & Adaptive Bitrate)",
+        "Design WhatsApp / Messenger Web",
+        "Design Infinite Newsfeed (Twitter/Facebook)",
+        "Design E-Commerce Shopping & Checkout"
+      ]
+    },
+    {
+      "id": "coding-problems",
+      "name": "Frontend Coding Problems & DSA",
+      "icon": "🧮",
+      "badge": "Algorithms",
+      "color": "#2563eb",
+      "accentGradient": "linear-gradient(135deg, #2563eb 0%, #3b82f6 100%)",
+      "description": "Practical frontend algorithms and JavaScript implementations: Custom Promise.all, Deep Clone, Flatten Array/Object, Event Emitter, Memoize, Curry, and LRU Cache.",
+      "totalQuestions": 1000,
+      "topics": [
+        "Implement Promise.all / Promise.allSettled",
+        "Deep Clone with Circular References",
+        "Flatten Nested Arrays and Objects",
+        "Implement Custom Event Emitter",
+        "Implement LRU Cache from Scratch"
+      ]
+    },
+    {
+      "id": "scenarios",
+      "name": "Scenario-Based Frontend Engineering",
+      "icon": "💡",
+      "badge": "Real-World",
+      "color": "#0891b2",
+      "accentGradient": "linear-gradient(135deg, #0891b2 0%, #06b6d4 100%)",
+      "description": "Debugging production memory leaks, diagnosing sudden Core Web Vitals drops, handling flaky network requests, zero-downtime releases, and race condition resolutions.",
+      "totalQuestions": 500,
+      "topics": [
+        "Debugging Memory Leaks in Single Page Apps",
+        "Handling API Race Conditions in Fast Typing",
+        "Diagnosing 60 FPS Animation Jitter",
+        "Zero-Downtime Static Asset Deployments",
+        "Handling Offline Mode & Conflict Resolution"
+      ]
+    },
+    {
+      "id": "company-questions",
+      "name": "Company-Specific Frontend Questions",
+      "icon": "🏢",
+      "badge": "FAANG / Tier 1",
+      "color": "#4338ca",
+      "accentGradient": "linear-gradient(135deg, #4338ca 0%, #6366f1 100%)",
+      "description": "Verified interview rounds, coding challenges, and system architecture questions asked at Google, Meta, Amazon, Microsoft, Netflix, Uber, and Apple.",
+      "totalQuestions": 500,
+      "topics": [
+        "Google Frontend Engineering Rounds",
+        "Meta (Facebook) Frontend Rounds",
+        "Amazon Customer Experience (CX) Rounds",
+        "Microsoft Web Platform Rounds",
+        "Netflix High-Performance UI Rounds"
       ]
     }
   ]

@@ -1,0 +1,2756 @@
+[
+  {
+    "id": "iq-build-tools-0001",
+    "standard_id": "BUILDTOOLS-MCQ-000001",
+    "questionNumber": 1,
+    "subject": "build-tools",
+    "category": "Vite vs Webpack Architecture",
+    "topic": "Vite vs Webpack Architecture",
+    "subtopic": "No-Bundle Dev Server & Native ESM",
+    "concept": "No-Bundle Dev Server & Native ESM",
+    "difficulty": "INTERMEDIATE",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "1_3_YEARS",
+    "isHighFrequency": true,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Netflix"
+    ],
+    "tags": [
+      "build-tools",
+      "frontend-interview",
+      "vite-vs-webpack-architecture"
+    ],
+    "question": "Why is Vite significantly faster than traditional Webpack dev servers?",
+    "shortAnswer": "Webpack bundles your entire application and all dependencies into memory before the dev server can start. Vite starts instantly by serving source code over native browser ES modules (ESM) on-demand, pre-bundling dependencies using ultra-fast Go-based esbuild.",
+    "simpleExplanation": "Traditional bundlers like **Webpack** have to crawl your whole project and bundle thousands of files into one big file before your browser can load line 1.\n\n**Vite** doesn't bundle source code in development at all.\n\nWhen your browser requests `import App from './App.jsx'`, Vite compiles only that specific file on the fly and serves it directly.",
+    "detailedAnswer": "Traditional bundlers like **Webpack** have to crawl your whole project and bundle thousands of files into one big file before your browser can load line 1.\n\n**Vite** doesn't bundle source code in development at all.\n\nWhen your browser requests `import App from './App.jsx'`, Vite compiles only that specific file on the fly and serves it directly.",
+    "detailedExplanation": "Traditional bundlers like **Webpack** have to crawl your whole project and bundle thousands of files into one big file before your browser can load line 1.\n\n**Vite** doesn't bundle source code in development at all.\n\nWhen your browser requests `import App from './App.jsx'`, Vite compiles only that specific file on the fly and serves it directly.",
+    "howItWorks": "1. Dependencies (node_modules) are pre-bundled once with `esbuild` (written in Go, 10-100x faster than JS).\n2. Source code is served natively via browser `<script type='module'>`.\n3. HMR updates only the modified module without reloading the entire dependency graph.",
+    "codeExample": "// vite.config.js - Modern build setup with manual chunk splitting:\nimport { defineConfig } from 'vite';\nimport react from '@vitejs/plugin-react';\n\nexport default defineConfig({\n  plugins: [react()],\n  build: {\n    rollupOptions: {\n      output: {\n        manualChunks: {\n          vendor: ['react', 'react-dom'],\n        },\n      },\n    },\n  },\n});",
+    "example": "// vite.config.js - Modern build setup with manual chunk splitting:\nimport { defineConfig } from 'vite';\nimport react from '@vitejs/plugin-react';\n\nexport default defineConfig({\n  plugins: [react()],\n  build: {\n    rollupOptions: {\n      output: {\n        manualChunks: {\n          vendor: ['react', 'react-dom'],\n        },\n      },\n    },\n  },\n});",
+    "codeSnippet": "// vite.config.js - Modern build setup with manual chunk splitting:\nimport { defineConfig } from 'vite';\nimport react from '@vitejs/plugin-react';\n\nexport default defineConfig({\n  plugins: [react()],\n  build: {\n    rollupOptions: {\n      output: {\n        manualChunks: {\n          vendor: ['react', 'react-dom'],\n        },\n      },\n    },\n  },\n});",
+    "codeExplanationSpeech": "This code illustrates the architecture and implementation of No-Bundle Dev Server & Native ESM in modern frontend systems.",
+    "realWorldExample": "Enterprise codebases with over 10,000 components saw local server cold-boot times drop from 90 seconds in Webpack to under 300 milliseconds in Vite.",
+    "commonMistakes": [
+      "Assuming that Vite does not bundle for production (Vite uses Rollup or Rolldown for highly optimized production bundling)."
+    ],
+    "interviewTip": "Explain the role of 'sideEffects: false' in package.json for enabling dead-code elimination (tree-shaking).",
+    "interviewTips": [
+      "Explain the role of 'sideEffects: false' in package.json for enabling dead-code elimination (tree-shaking)."
+    ],
+    "followUpQuestions": [
+      "How does tree-shaking determine which exports are unused?",
+      "What is the difference between esbuild and Rollup/Rspack?"
+    ],
+    "followUps": [
+      "How does tree-shaking determine which exports are unused?",
+      "What is the difference between esbuild and Rollup/Rspack?"
+    ],
+    "question_hash": "qh_37ba95d8",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "text": "It provides standardized, predictable behavior for No-Bundle Dev Server & Native ESM across all client environments.",
+        "explanation": "Correct. Follows modern web platform and architectural specifications."
+      },
+      {
+        "key": "B",
+        "text": "It bypasses the browser JavaScript runtime and executes as machine code on the GPU.",
+        "explanation": "Incorrect. Frontend code executes within the browser engine thread."
+      },
+      {
+        "key": "C",
+        "text": "It disables all browser caching and forces fresh HTTP 1.0 TCP handshakes on every interaction.",
+        "explanation": "Incorrect. Caching and networking follow standard browser protocols."
+      },
+      {
+        "key": "D",
+        "text": "It automatically converts all async operations into synchronous blocking code.",
+        "explanation": "Incorrect. The browser event loop remains asynchronous."
+      }
+    ],
+    "correctAnswer": "A",
+    "mcqExplanation": "In Modern Build Tools & Bundlers, No-Bundle Dev Server & Native ESM provides robust, scalable execution per standard architectural patterns.",
+    "wrongOptionExplanations": {
+      "B": "UI logic executes in the browser JavaScript engine or V8 runtime.",
+      "C": "Browser caching mechanisms operate in accordance with HTTP headers.",
+      "D": "JavaScript remains single-threaded and non-blocking."
+    },
+    "correctOption": "A",
+    "explanation": "In Modern Build Tools & Bundlers, No-Bundle Dev Server & Native ESM provides robust, scalable execution per standard architectural patterns."
+  },
+  {
+    "id": "iq-build-tools-0002",
+    "standard_id": "BUILDTOOLS-MCQ-000002",
+    "questionNumber": 2,
+    "subject": "build-tools",
+    "category": "Native ESM & Dev Server Mechanics",
+    "topic": "Native ESM & Dev Server Mechanics",
+    "subtopic": "Native ESM & Dev Server Mechanics Operations",
+    "concept": "Native ESM & Dev Server Mechanics",
+    "difficulty": "DIFFICULT",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "3_5_YEARS",
+    "isHighFrequency": true,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "build-tools",
+      "native-esm---dev-server-mechanics",
+      "frontend-interview"
+    ],
+    "question": "Modern Build Tools & Bundlers: How does Native ESM & Dev Server Mechanics operate in production enterprise applications (Q2)?",
+    "shortAnswer": "In Modern Build Tools & Bundlers, Native ESM & Dev Server Mechanics ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Native ESM & Dev Server Mechanics** is an essential architectural concept in <u>Modern Build Tools & Bundlers</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Native ESM & Dev Server Mechanics** is an essential architectural concept in <u>Modern Build Tools & Bundlers</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Native ESM & Dev Server Mechanics** is an essential architectural concept in <u>Modern Build Tools & Bundlers</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Native ESM & Dev Server Mechanics in Modern Build Tools & Bundlers:\nexport function handleNativeESMDevServerMechanics(config) {\n  console.log('Executing Native ESM & Dev Server Mechanics with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Native ESM & Dev Server Mechanics in Modern Build Tools & Bundlers:\nexport function handleNativeESMDevServerMechanics(config) {\n  console.log('Executing Native ESM & Dev Server Mechanics with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Native ESM & Dev Server Mechanics in Modern Build Tools & Bundlers:\nexport function handleNativeESMDevServerMechanics(config) {\n  console.log('Executing Native ESM & Dev Server Mechanics with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Native ESM & Dev Server Mechanics in Modern Build Tools & Bundlers.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Native ESM & Dev Server Mechanics to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Native ESM & Dev Server Mechanics.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Native ESM & Dev Server Mechanics, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Native ESM & Dev Server Mechanics, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Native ESM & Dev Server Mechanics scale under extreme concurrency?",
+      "What monitoring tools can track Native ESM & Dev Server Mechanics metrics in production?"
+    ],
+    "followUps": [
+      "How does Native ESM & Dev Server Mechanics scale under extreme concurrency?",
+      "What monitoring tools can track Native ESM & Dev Server Mechanics metrics in production?"
+    ],
+    "question_hash": "qh_68a38937",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Modern Build Tools & Bundlers, Rust/Go Tooling (esbuild, Rspack) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Rust/Go Tooling (esbuild, Rspack), not Native ESM & Dev Server Mechanics."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Modern Build Tools & Bundlers, Native ESM & Dev Server Mechanics ensures predictable, resilient execution.",
+        "explanation": "Correct. In Modern Build Tools & Bundlers, Native ESM & Dev Server Mechanics ensures predictable, resilient execution."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Modern Build Tools & Bundlers, Tree Shaking & Side Effects ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Tree Shaking & Side Effects, not Native ESM & Dev Server Mechanics."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Modern Build Tools & Bundlers, Vite vs Webpack Architecture ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Vite vs Webpack Architecture, not Native ESM & Dev Server Mechanics."
+      }
+    ],
+    "correctAnswer": "B",
+    "correctOption": "B",
+    "mcqExplanation": "Correct. In Modern Build Tools & Bundlers, Native ESM & Dev Server Mechanics ensures predictable, resilient execution.",
+    "explanation": "Correct. In Modern Build Tools & Bundlers, Native ESM & Dev Server Mechanics ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Rust/Go Tooling (esbuild, Rspack), not Native ESM & Dev Server Mechanics.",
+      "C": "Incorrect. This describes Tree Shaking & Side Effects, not Native ESM & Dev Server Mechanics.",
+      "D": "Incorrect. This describes Vite vs Webpack Architecture, not Native ESM & Dev Server Mechanics."
+    },
+    "mcqQuestion": "Modern Build Tools & Bundlers: How does Native ESM & Dev Server Mechanics operate in production enterprise applications (Q2)?"
+  },
+  {
+    "id": "iq-build-tools-0003",
+    "standard_id": "BUILDTOOLS-MCQ-000003",
+    "questionNumber": 3,
+    "subject": "build-tools",
+    "category": "Tree Shaking & Side Effects",
+    "topic": "Tree Shaking & Side Effects",
+    "subtopic": "Tree Shaking & Side Effects Operations",
+    "concept": "Tree Shaking & Side Effects",
+    "difficulty": "EASY",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "FRESHER",
+    "isHighFrequency": true,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "build-tools",
+      "tree-shaking---side-effects",
+      "frontend-interview"
+    ],
+    "question": "Modern Build Tools & Bundlers: How does Tree Shaking & Side Effects operate in production enterprise applications (Q3)?",
+    "shortAnswer": "In Modern Build Tools & Bundlers, Tree Shaking & Side Effects ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Tree Shaking & Side Effects** is an essential architectural concept in <u>Modern Build Tools & Bundlers</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Tree Shaking & Side Effects** is an essential architectural concept in <u>Modern Build Tools & Bundlers</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Tree Shaking & Side Effects** is an essential architectural concept in <u>Modern Build Tools & Bundlers</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Tree Shaking & Side Effects in Modern Build Tools & Bundlers:\nexport function handleTreeShakingSideEffects(config) {\n  console.log('Executing Tree Shaking & Side Effects with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Tree Shaking & Side Effects in Modern Build Tools & Bundlers:\nexport function handleTreeShakingSideEffects(config) {\n  console.log('Executing Tree Shaking & Side Effects with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Tree Shaking & Side Effects in Modern Build Tools & Bundlers:\nexport function handleTreeShakingSideEffects(config) {\n  console.log('Executing Tree Shaking & Side Effects with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Tree Shaking & Side Effects in Modern Build Tools & Bundlers.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Tree Shaking & Side Effects to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Tree Shaking & Side Effects.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Tree Shaking & Side Effects, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Tree Shaking & Side Effects, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Tree Shaking & Side Effects scale under extreme concurrency?",
+      "What monitoring tools can track Tree Shaking & Side Effects metrics in production?"
+    ],
+    "followUps": [
+      "How does Tree Shaking & Side Effects scale under extreme concurrency?",
+      "What monitoring tools can track Tree Shaking & Side Effects metrics in production?"
+    ],
+    "question_hash": "qh_3d6d08d2",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Modern Build Tools & Bundlers, Vite vs Webpack Architecture ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Vite vs Webpack Architecture, not Tree Shaking & Side Effects."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Modern Build Tools & Bundlers, Code Splitting & Dynamic Chunks ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Code Splitting & Dynamic Chunks, not Tree Shaking & Side Effects."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Modern Build Tools & Bundlers, Tree Shaking & Side Effects ensures predictable, resilient execution.",
+        "explanation": "Correct. In Modern Build Tools & Bundlers, Tree Shaking & Side Effects ensures predictable, resilient execution."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Modern Build Tools & Bundlers, Native ESM & Dev Server Mechanics ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Native ESM & Dev Server Mechanics, not Tree Shaking & Side Effects."
+      }
+    ],
+    "correctAnswer": "C",
+    "mcqExplanation": "Correct. In Modern Build Tools & Bundlers, Tree Shaking & Side Effects ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Vite vs Webpack Architecture, not Tree Shaking & Side Effects.",
+      "B": "Incorrect. This describes Code Splitting & Dynamic Chunks, not Tree Shaking & Side Effects.",
+      "D": "Incorrect. This describes Native ESM & Dev Server Mechanics, not Tree Shaking & Side Effects."
+    },
+    "correctOption": "C",
+    "explanation": "Correct. In Modern Build Tools & Bundlers, Tree Shaking & Side Effects ensures predictable, resilient execution.",
+    "mcqQuestion": "Modern Build Tools & Bundlers: How does Tree Shaking & Side Effects operate in production enterprise applications (Q3)?"
+  },
+  {
+    "id": "iq-build-tools-0004",
+    "standard_id": "BUILDTOOLS-MCQ-000004",
+    "questionNumber": 4,
+    "subject": "build-tools",
+    "category": "Code Splitting & Dynamic Chunks",
+    "topic": "Code Splitting & Dynamic Chunks",
+    "subtopic": "Code Splitting & Dynamic Chunks Operations",
+    "concept": "Code Splitting & Dynamic Chunks",
+    "difficulty": "INTERMEDIATE",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "1_3_YEARS",
+    "isHighFrequency": true,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "build-tools",
+      "code-splitting---dynamic-chunks",
+      "frontend-interview"
+    ],
+    "question": "Modern Build Tools & Bundlers: How does Code Splitting & Dynamic Chunks operate in production enterprise applications (Q4)?",
+    "shortAnswer": "In Modern Build Tools & Bundlers, Code Splitting & Dynamic Chunks ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Code Splitting & Dynamic Chunks** is an essential architectural concept in <u>Modern Build Tools & Bundlers</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Code Splitting & Dynamic Chunks** is an essential architectural concept in <u>Modern Build Tools & Bundlers</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Code Splitting & Dynamic Chunks** is an essential architectural concept in <u>Modern Build Tools & Bundlers</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Code Splitting & Dynamic Chunks in Modern Build Tools & Bundlers:\nexport function handleCodeSplittingDynamicChunks(config) {\n  console.log('Executing Code Splitting & Dynamic Chunks with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Code Splitting & Dynamic Chunks in Modern Build Tools & Bundlers:\nexport function handleCodeSplittingDynamicChunks(config) {\n  console.log('Executing Code Splitting & Dynamic Chunks with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Code Splitting & Dynamic Chunks in Modern Build Tools & Bundlers:\nexport function handleCodeSplittingDynamicChunks(config) {\n  console.log('Executing Code Splitting & Dynamic Chunks with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Code Splitting & Dynamic Chunks in Modern Build Tools & Bundlers.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Code Splitting & Dynamic Chunks to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Code Splitting & Dynamic Chunks.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Code Splitting & Dynamic Chunks, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Code Splitting & Dynamic Chunks, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Code Splitting & Dynamic Chunks scale under extreme concurrency?",
+      "What monitoring tools can track Code Splitting & Dynamic Chunks metrics in production?"
+    ],
+    "followUps": [
+      "How does Code Splitting & Dynamic Chunks scale under extreme concurrency?",
+      "What monitoring tools can track Code Splitting & Dynamic Chunks metrics in production?"
+    ],
+    "question_hash": "qh_3a14ba67",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Modern Build Tools & Bundlers, Native ESM & Dev Server Mechanics ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Native ESM & Dev Server Mechanics, not Code Splitting & Dynamic Chunks."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Modern Build Tools & Bundlers, Rust/Go Tooling (esbuild, Rspack) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Rust/Go Tooling (esbuild, Rspack), not Code Splitting & Dynamic Chunks."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Modern Build Tools & Bundlers, Tree Shaking & Side Effects ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Tree Shaking & Side Effects, not Code Splitting & Dynamic Chunks."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Modern Build Tools & Bundlers, Code Splitting & Dynamic Chunks ensures predictable, resilient execution.",
+        "explanation": "Correct. In Modern Build Tools & Bundlers, Code Splitting & Dynamic Chunks ensures predictable, resilient execution."
+      }
+    ],
+    "correctAnswer": "D",
+    "correctOption": "D",
+    "mcqExplanation": "Correct. In Modern Build Tools & Bundlers, Code Splitting & Dynamic Chunks ensures predictable, resilient execution.",
+    "explanation": "Correct. In Modern Build Tools & Bundlers, Code Splitting & Dynamic Chunks ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Native ESM & Dev Server Mechanics, not Code Splitting & Dynamic Chunks.",
+      "B": "Incorrect. This describes Rust/Go Tooling (esbuild, Rspack), not Code Splitting & Dynamic Chunks.",
+      "C": "Incorrect. This describes Tree Shaking & Side Effects, not Code Splitting & Dynamic Chunks."
+    },
+    "mcqQuestion": "Modern Build Tools & Bundlers: How does Code Splitting & Dynamic Chunks operate in production enterprise applications (Q4)?"
+  },
+  {
+    "id": "iq-build-tools-0005",
+    "standard_id": "BUILDTOOLS-MCQ-000005",
+    "questionNumber": 5,
+    "subject": "build-tools",
+    "category": "Rust/Go Tooling (esbuild, Rspack)",
+    "topic": "Rust/Go Tooling (esbuild, Rspack)",
+    "subtopic": "Rust/Go Tooling (esbuild, Rspack) Operations",
+    "concept": "Rust/Go Tooling (esbuild, Rspack)",
+    "difficulty": "DIFFICULT",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "3_5_YEARS",
+    "isHighFrequency": true,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "build-tools",
+      "rust-go-tooling--esbuild--rspack-",
+      "frontend-interview"
+    ],
+    "question": "Modern Build Tools & Bundlers: How does Rust/Go Tooling (esbuild, Rspack) operate in production enterprise applications (Q5)?",
+    "shortAnswer": "In Modern Build Tools & Bundlers, Rust/Go Tooling (esbuild, Rspack) ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Rust/Go Tooling (esbuild, Rspack)** is an essential architectural concept in <u>Modern Build Tools & Bundlers</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Rust/Go Tooling (esbuild, Rspack)** is an essential architectural concept in <u>Modern Build Tools & Bundlers</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Rust/Go Tooling (esbuild, Rspack)** is an essential architectural concept in <u>Modern Build Tools & Bundlers</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Rust/Go Tooling (esbuild, Rspack) in Modern Build Tools & Bundlers:\nexport function handleRustGoToolingesbuildRspack(config) {\n  console.log('Executing Rust/Go Tooling (esbuild, Rspack) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Rust/Go Tooling (esbuild, Rspack) in Modern Build Tools & Bundlers:\nexport function handleRustGoToolingesbuildRspack(config) {\n  console.log('Executing Rust/Go Tooling (esbuild, Rspack) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Rust/Go Tooling (esbuild, Rspack) in Modern Build Tools & Bundlers:\nexport function handleRustGoToolingesbuildRspack(config) {\n  console.log('Executing Rust/Go Tooling (esbuild, Rspack) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Rust/Go Tooling (esbuild, Rspack) in Modern Build Tools & Bundlers.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Rust/Go Tooling (esbuild, Rspack) to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Rust/Go Tooling (esbuild, Rspack).",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Rust/Go Tooling (esbuild, Rspack), explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Rust/Go Tooling (esbuild, Rspack), explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Rust/Go Tooling (esbuild, Rspack) scale under extreme concurrency?",
+      "What monitoring tools can track Rust/Go Tooling (esbuild, Rspack) metrics in production?"
+    ],
+    "followUps": [
+      "How does Rust/Go Tooling (esbuild, Rspack) scale under extreme concurrency?",
+      "What monitoring tools can track Rust/Go Tooling (esbuild, Rspack) metrics in production?"
+    ],
+    "question_hash": "qh_39a31730",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Modern Build Tools & Bundlers, Rust/Go Tooling (esbuild, Rspack) ensures predictable, resilient execution.",
+        "explanation": "Correct. In Modern Build Tools & Bundlers, Rust/Go Tooling (esbuild, Rspack) ensures predictable, resilient execution."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Modern Build Tools & Bundlers, Tree Shaking & Side Effects ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Tree Shaking & Side Effects, not Rust/Go Tooling (esbuild, Rspack)."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Modern Build Tools & Bundlers, Vite vs Webpack Architecture ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Vite vs Webpack Architecture, not Rust/Go Tooling (esbuild, Rspack)."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Modern Build Tools & Bundlers, Code Splitting & Dynamic Chunks ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Code Splitting & Dynamic Chunks, not Rust/Go Tooling (esbuild, Rspack)."
+      }
+    ],
+    "correctAnswer": "A",
+    "mcqExplanation": "Correct. In Modern Build Tools & Bundlers, Rust/Go Tooling (esbuild, Rspack) ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "B": "Incorrect. This describes Tree Shaking & Side Effects, not Rust/Go Tooling (esbuild, Rspack).",
+      "C": "Incorrect. This describes Vite vs Webpack Architecture, not Rust/Go Tooling (esbuild, Rspack).",
+      "D": "Incorrect. This describes Code Splitting & Dynamic Chunks, not Rust/Go Tooling (esbuild, Rspack)."
+    },
+    "correctOption": "A",
+    "explanation": "Correct. In Modern Build Tools & Bundlers, Rust/Go Tooling (esbuild, Rspack) ensures predictable, resilient execution.",
+    "mcqQuestion": "Modern Build Tools & Bundlers: How does Rust/Go Tooling (esbuild, Rspack) operate in production enterprise applications (Q5)?"
+  },
+  {
+    "id": "iq-build-tools-0006",
+    "standard_id": "BUILDTOOLS-MCQ-000006",
+    "questionNumber": 6,
+    "subject": "build-tools",
+    "category": "Vite vs Webpack Architecture",
+    "topic": "Vite vs Webpack Architecture",
+    "subtopic": "Vite vs Webpack Architecture Operations",
+    "concept": "Vite vs Webpack Architecture",
+    "difficulty": "EASY",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "FRESHER",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "build-tools",
+      "vite-vs-webpack-architecture",
+      "frontend-interview"
+    ],
+    "question": "Modern Build Tools & Bundlers: How does Vite vs Webpack Architecture operate in production enterprise applications (Q6)?",
+    "shortAnswer": "In Modern Build Tools & Bundlers, Vite vs Webpack Architecture ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Vite vs Webpack Architecture** is an essential architectural concept in <u>Modern Build Tools & Bundlers</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Vite vs Webpack Architecture** is an essential architectural concept in <u>Modern Build Tools & Bundlers</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Vite vs Webpack Architecture** is an essential architectural concept in <u>Modern Build Tools & Bundlers</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Vite vs Webpack Architecture in Modern Build Tools & Bundlers:\nexport function handleVitevsWebpackArchitecture(config) {\n  console.log('Executing Vite vs Webpack Architecture with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Vite vs Webpack Architecture in Modern Build Tools & Bundlers:\nexport function handleVitevsWebpackArchitecture(config) {\n  console.log('Executing Vite vs Webpack Architecture with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Vite vs Webpack Architecture in Modern Build Tools & Bundlers:\nexport function handleVitevsWebpackArchitecture(config) {\n  console.log('Executing Vite vs Webpack Architecture with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Vite vs Webpack Architecture in Modern Build Tools & Bundlers.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Vite vs Webpack Architecture to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Vite vs Webpack Architecture.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Vite vs Webpack Architecture, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Vite vs Webpack Architecture, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Vite vs Webpack Architecture scale under extreme concurrency?",
+      "What monitoring tools can track Vite vs Webpack Architecture metrics in production?"
+    ],
+    "followUps": [
+      "How does Vite vs Webpack Architecture scale under extreme concurrency?",
+      "What monitoring tools can track Vite vs Webpack Architecture metrics in production?"
+    ],
+    "question_hash": "qh_4b708ccd",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Modern Build Tools & Bundlers, Code Splitting & Dynamic Chunks ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Code Splitting & Dynamic Chunks, not Vite vs Webpack Architecture."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Modern Build Tools & Bundlers, Vite vs Webpack Architecture ensures predictable, resilient execution.",
+        "explanation": "Correct. In Modern Build Tools & Bundlers, Vite vs Webpack Architecture ensures predictable, resilient execution."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Modern Build Tools & Bundlers, Native ESM & Dev Server Mechanics ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Native ESM & Dev Server Mechanics, not Vite vs Webpack Architecture."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Modern Build Tools & Bundlers, Rust/Go Tooling (esbuild, Rspack) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Rust/Go Tooling (esbuild, Rspack), not Vite vs Webpack Architecture."
+      }
+    ],
+    "correctAnswer": "B",
+    "correctOption": "B",
+    "mcqExplanation": "Correct. In Modern Build Tools & Bundlers, Vite vs Webpack Architecture ensures predictable, resilient execution.",
+    "explanation": "Correct. In Modern Build Tools & Bundlers, Vite vs Webpack Architecture ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Code Splitting & Dynamic Chunks, not Vite vs Webpack Architecture.",
+      "C": "Incorrect. This describes Native ESM & Dev Server Mechanics, not Vite vs Webpack Architecture.",
+      "D": "Incorrect. This describes Rust/Go Tooling (esbuild, Rspack), not Vite vs Webpack Architecture."
+    },
+    "mcqQuestion": "Modern Build Tools & Bundlers: How does Vite vs Webpack Architecture operate in production enterprise applications (Q6)?"
+  },
+  {
+    "id": "iq-build-tools-0007",
+    "standard_id": "BUILDTOOLS-MCQ-000007",
+    "questionNumber": 7,
+    "subject": "build-tools",
+    "category": "Native ESM & Dev Server Mechanics",
+    "topic": "Native ESM & Dev Server Mechanics",
+    "subtopic": "Native ESM & Dev Server Mechanics Operations",
+    "concept": "Native ESM & Dev Server Mechanics",
+    "difficulty": "INTERMEDIATE",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "1_3_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "build-tools",
+      "native-esm---dev-server-mechanics",
+      "frontend-interview"
+    ],
+    "question": "Modern Build Tools & Bundlers: How does Native ESM & Dev Server Mechanics operate in production enterprise applications (Q7)?",
+    "shortAnswer": "In Modern Build Tools & Bundlers, Native ESM & Dev Server Mechanics ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Native ESM & Dev Server Mechanics** is an essential architectural concept in <u>Modern Build Tools & Bundlers</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Native ESM & Dev Server Mechanics** is an essential architectural concept in <u>Modern Build Tools & Bundlers</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Native ESM & Dev Server Mechanics** is an essential architectural concept in <u>Modern Build Tools & Bundlers</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Native ESM & Dev Server Mechanics in Modern Build Tools & Bundlers:\nexport function handleNativeESMDevServerMechanics(config) {\n  console.log('Executing Native ESM & Dev Server Mechanics with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Native ESM & Dev Server Mechanics in Modern Build Tools & Bundlers:\nexport function handleNativeESMDevServerMechanics(config) {\n  console.log('Executing Native ESM & Dev Server Mechanics with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Native ESM & Dev Server Mechanics in Modern Build Tools & Bundlers:\nexport function handleNativeESMDevServerMechanics(config) {\n  console.log('Executing Native ESM & Dev Server Mechanics with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Native ESM & Dev Server Mechanics in Modern Build Tools & Bundlers.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Native ESM & Dev Server Mechanics to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Native ESM & Dev Server Mechanics.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Native ESM & Dev Server Mechanics, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Native ESM & Dev Server Mechanics, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Native ESM & Dev Server Mechanics scale under extreme concurrency?",
+      "What monitoring tools can track Native ESM & Dev Server Mechanics metrics in production?"
+    ],
+    "followUps": [
+      "How does Native ESM & Dev Server Mechanics scale under extreme concurrency?",
+      "What monitoring tools can track Native ESM & Dev Server Mechanics metrics in production?"
+    ],
+    "question_hash": "qh_68a3893c",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Modern Build Tools & Bundlers, Rust/Go Tooling (esbuild, Rspack) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Rust/Go Tooling (esbuild, Rspack), not Native ESM & Dev Server Mechanics."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Modern Build Tools & Bundlers, Tree Shaking & Side Effects ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Tree Shaking & Side Effects, not Native ESM & Dev Server Mechanics."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Modern Build Tools & Bundlers, Native ESM & Dev Server Mechanics ensures predictable, resilient execution.",
+        "explanation": "Correct. In Modern Build Tools & Bundlers, Native ESM & Dev Server Mechanics ensures predictable, resilient execution."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Modern Build Tools & Bundlers, Vite vs Webpack Architecture ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Vite vs Webpack Architecture, not Native ESM & Dev Server Mechanics."
+      }
+    ],
+    "correctAnswer": "C",
+    "mcqExplanation": "Correct. In Modern Build Tools & Bundlers, Native ESM & Dev Server Mechanics ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Rust/Go Tooling (esbuild, Rspack), not Native ESM & Dev Server Mechanics.",
+      "B": "Incorrect. This describes Tree Shaking & Side Effects, not Native ESM & Dev Server Mechanics.",
+      "D": "Incorrect. This describes Vite vs Webpack Architecture, not Native ESM & Dev Server Mechanics."
+    },
+    "correctOption": "C",
+    "explanation": "Correct. In Modern Build Tools & Bundlers, Native ESM & Dev Server Mechanics ensures predictable, resilient execution.",
+    "mcqQuestion": "Modern Build Tools & Bundlers: How does Native ESM & Dev Server Mechanics operate in production enterprise applications (Q7)?"
+  },
+  {
+    "id": "iq-build-tools-0008",
+    "standard_id": "BUILDTOOLS-MCQ-000008",
+    "questionNumber": 8,
+    "subject": "build-tools",
+    "category": "Tree Shaking & Side Effects",
+    "topic": "Tree Shaking & Side Effects",
+    "subtopic": "Tree Shaking & Side Effects Operations",
+    "concept": "Tree Shaking & Side Effects",
+    "difficulty": "DIFFICULT",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "3_5_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "build-tools",
+      "tree-shaking---side-effects",
+      "frontend-interview"
+    ],
+    "question": "Modern Build Tools & Bundlers: How does Tree Shaking & Side Effects operate in production enterprise applications (Q8)?",
+    "shortAnswer": "In Modern Build Tools & Bundlers, Tree Shaking & Side Effects ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Tree Shaking & Side Effects** is an essential architectural concept in <u>Modern Build Tools & Bundlers</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Tree Shaking & Side Effects** is an essential architectural concept in <u>Modern Build Tools & Bundlers</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Tree Shaking & Side Effects** is an essential architectural concept in <u>Modern Build Tools & Bundlers</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Tree Shaking & Side Effects in Modern Build Tools & Bundlers:\nexport function handleTreeShakingSideEffects(config) {\n  console.log('Executing Tree Shaking & Side Effects with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Tree Shaking & Side Effects in Modern Build Tools & Bundlers:\nexport function handleTreeShakingSideEffects(config) {\n  console.log('Executing Tree Shaking & Side Effects with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Tree Shaking & Side Effects in Modern Build Tools & Bundlers:\nexport function handleTreeShakingSideEffects(config) {\n  console.log('Executing Tree Shaking & Side Effects with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Tree Shaking & Side Effects in Modern Build Tools & Bundlers.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Tree Shaking & Side Effects to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Tree Shaking & Side Effects.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Tree Shaking & Side Effects, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Tree Shaking & Side Effects, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Tree Shaking & Side Effects scale under extreme concurrency?",
+      "What monitoring tools can track Tree Shaking & Side Effects metrics in production?"
+    ],
+    "followUps": [
+      "How does Tree Shaking & Side Effects scale under extreme concurrency?",
+      "What monitoring tools can track Tree Shaking & Side Effects metrics in production?"
+    ],
+    "question_hash": "qh_3d6d08cd",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Modern Build Tools & Bundlers, Vite vs Webpack Architecture ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Vite vs Webpack Architecture, not Tree Shaking & Side Effects."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Modern Build Tools & Bundlers, Code Splitting & Dynamic Chunks ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Code Splitting & Dynamic Chunks, not Tree Shaking & Side Effects."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Modern Build Tools & Bundlers, Native ESM & Dev Server Mechanics ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Native ESM & Dev Server Mechanics, not Tree Shaking & Side Effects."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Modern Build Tools & Bundlers, Tree Shaking & Side Effects ensures predictable, resilient execution.",
+        "explanation": "Correct. In Modern Build Tools & Bundlers, Tree Shaking & Side Effects ensures predictable, resilient execution."
+      }
+    ],
+    "correctAnswer": "D",
+    "correctOption": "D",
+    "mcqExplanation": "Correct. In Modern Build Tools & Bundlers, Tree Shaking & Side Effects ensures predictable, resilient execution.",
+    "explanation": "Correct. In Modern Build Tools & Bundlers, Tree Shaking & Side Effects ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Vite vs Webpack Architecture, not Tree Shaking & Side Effects.",
+      "B": "Incorrect. This describes Code Splitting & Dynamic Chunks, not Tree Shaking & Side Effects.",
+      "C": "Incorrect. This describes Native ESM & Dev Server Mechanics, not Tree Shaking & Side Effects."
+    },
+    "mcqQuestion": "Modern Build Tools & Bundlers: How does Tree Shaking & Side Effects operate in production enterprise applications (Q8)?"
+  },
+  {
+    "id": "iq-build-tools-0009",
+    "standard_id": "BUILDTOOLS-MCQ-000009",
+    "questionNumber": 9,
+    "subject": "build-tools",
+    "category": "Code Splitting & Dynamic Chunks",
+    "topic": "Code Splitting & Dynamic Chunks",
+    "subtopic": "Code Splitting & Dynamic Chunks Operations",
+    "concept": "Code Splitting & Dynamic Chunks",
+    "difficulty": "EASY",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "FRESHER",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "build-tools",
+      "code-splitting---dynamic-chunks",
+      "frontend-interview"
+    ],
+    "question": "Modern Build Tools & Bundlers: How does Code Splitting & Dynamic Chunks operate in production enterprise applications (Q9)?",
+    "shortAnswer": "In Modern Build Tools & Bundlers, Code Splitting & Dynamic Chunks ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Code Splitting & Dynamic Chunks** is an essential architectural concept in <u>Modern Build Tools & Bundlers</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Code Splitting & Dynamic Chunks** is an essential architectural concept in <u>Modern Build Tools & Bundlers</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Code Splitting & Dynamic Chunks** is an essential architectural concept in <u>Modern Build Tools & Bundlers</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Code Splitting & Dynamic Chunks in Modern Build Tools & Bundlers:\nexport function handleCodeSplittingDynamicChunks(config) {\n  console.log('Executing Code Splitting & Dynamic Chunks with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Code Splitting & Dynamic Chunks in Modern Build Tools & Bundlers:\nexport function handleCodeSplittingDynamicChunks(config) {\n  console.log('Executing Code Splitting & Dynamic Chunks with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Code Splitting & Dynamic Chunks in Modern Build Tools & Bundlers:\nexport function handleCodeSplittingDynamicChunks(config) {\n  console.log('Executing Code Splitting & Dynamic Chunks with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Code Splitting & Dynamic Chunks in Modern Build Tools & Bundlers.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Code Splitting & Dynamic Chunks to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Code Splitting & Dynamic Chunks.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Code Splitting & Dynamic Chunks, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Code Splitting & Dynamic Chunks, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Code Splitting & Dynamic Chunks scale under extreme concurrency?",
+      "What monitoring tools can track Code Splitting & Dynamic Chunks metrics in production?"
+    ],
+    "followUps": [
+      "How does Code Splitting & Dynamic Chunks scale under extreme concurrency?",
+      "What monitoring tools can track Code Splitting & Dynamic Chunks metrics in production?"
+    ],
+    "question_hash": "qh_3a14ba62",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Modern Build Tools & Bundlers, Code Splitting & Dynamic Chunks ensures predictable, resilient execution.",
+        "explanation": "Correct. In Modern Build Tools & Bundlers, Code Splitting & Dynamic Chunks ensures predictable, resilient execution."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Modern Build Tools & Bundlers, Native ESM & Dev Server Mechanics ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Native ESM & Dev Server Mechanics, not Code Splitting & Dynamic Chunks."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Modern Build Tools & Bundlers, Rust/Go Tooling (esbuild, Rspack) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Rust/Go Tooling (esbuild, Rspack), not Code Splitting & Dynamic Chunks."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Modern Build Tools & Bundlers, Tree Shaking & Side Effects ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Tree Shaking & Side Effects, not Code Splitting & Dynamic Chunks."
+      }
+    ],
+    "correctAnswer": "A",
+    "mcqExplanation": "Correct. In Modern Build Tools & Bundlers, Code Splitting & Dynamic Chunks ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "B": "Incorrect. This describes Native ESM & Dev Server Mechanics, not Code Splitting & Dynamic Chunks.",
+      "C": "Incorrect. This describes Rust/Go Tooling (esbuild, Rspack), not Code Splitting & Dynamic Chunks.",
+      "D": "Incorrect. This describes Tree Shaking & Side Effects, not Code Splitting & Dynamic Chunks."
+    },
+    "correctOption": "A",
+    "explanation": "Correct. In Modern Build Tools & Bundlers, Code Splitting & Dynamic Chunks ensures predictable, resilient execution.",
+    "mcqQuestion": "Modern Build Tools & Bundlers: How does Code Splitting & Dynamic Chunks operate in production enterprise applications (Q9)?"
+  },
+  {
+    "id": "iq-build-tools-0010",
+    "standard_id": "BUILDTOOLS-MCQ-000010",
+    "questionNumber": 10,
+    "subject": "build-tools",
+    "category": "Rust/Go Tooling (esbuild, Rspack)",
+    "topic": "Rust/Go Tooling (esbuild, Rspack)",
+    "subtopic": "Rust/Go Tooling (esbuild, Rspack) Operations",
+    "concept": "Rust/Go Tooling (esbuild, Rspack)",
+    "difficulty": "INTERMEDIATE",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "1_3_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "build-tools",
+      "rust-go-tooling--esbuild--rspack-",
+      "frontend-interview"
+    ],
+    "question": "Modern Build Tools & Bundlers: How does Rust/Go Tooling (esbuild, Rspack) operate in production enterprise applications (Q10)?",
+    "shortAnswer": "In Modern Build Tools & Bundlers, Rust/Go Tooling (esbuild, Rspack) ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Rust/Go Tooling (esbuild, Rspack)** is an essential architectural concept in <u>Modern Build Tools & Bundlers</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Rust/Go Tooling (esbuild, Rspack)** is an essential architectural concept in <u>Modern Build Tools & Bundlers</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Rust/Go Tooling (esbuild, Rspack)** is an essential architectural concept in <u>Modern Build Tools & Bundlers</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Rust/Go Tooling (esbuild, Rspack) in Modern Build Tools & Bundlers:\nexport function handleRustGoToolingesbuildRspack(config) {\n  console.log('Executing Rust/Go Tooling (esbuild, Rspack) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Rust/Go Tooling (esbuild, Rspack) in Modern Build Tools & Bundlers:\nexport function handleRustGoToolingesbuildRspack(config) {\n  console.log('Executing Rust/Go Tooling (esbuild, Rspack) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Rust/Go Tooling (esbuild, Rspack) in Modern Build Tools & Bundlers:\nexport function handleRustGoToolingesbuildRspack(config) {\n  console.log('Executing Rust/Go Tooling (esbuild, Rspack) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Rust/Go Tooling (esbuild, Rspack) in Modern Build Tools & Bundlers.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Rust/Go Tooling (esbuild, Rspack) to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Rust/Go Tooling (esbuild, Rspack).",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Rust/Go Tooling (esbuild, Rspack), explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Rust/Go Tooling (esbuild, Rspack), explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Rust/Go Tooling (esbuild, Rspack) scale under extreme concurrency?",
+      "What monitoring tools can track Rust/Go Tooling (esbuild, Rspack) metrics in production?"
+    ],
+    "followUps": [
+      "How does Rust/Go Tooling (esbuild, Rspack) scale under extreme concurrency?",
+      "What monitoring tools can track Rust/Go Tooling (esbuild, Rspack) metrics in production?"
+    ],
+    "question_hash": "qh_54030e4",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Modern Build Tools & Bundlers, Tree Shaking & Side Effects ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Tree Shaking & Side Effects, not Rust/Go Tooling (esbuild, Rspack)."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Modern Build Tools & Bundlers, Rust/Go Tooling (esbuild, Rspack) ensures predictable, resilient execution.",
+        "explanation": "Correct. In Modern Build Tools & Bundlers, Rust/Go Tooling (esbuild, Rspack) ensures predictable, resilient execution."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Modern Build Tools & Bundlers, Vite vs Webpack Architecture ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Vite vs Webpack Architecture, not Rust/Go Tooling (esbuild, Rspack)."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Modern Build Tools & Bundlers, Code Splitting & Dynamic Chunks ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Code Splitting & Dynamic Chunks, not Rust/Go Tooling (esbuild, Rspack)."
+      }
+    ],
+    "correctAnswer": "B",
+    "correctOption": "B",
+    "mcqExplanation": "Correct. In Modern Build Tools & Bundlers, Rust/Go Tooling (esbuild, Rspack) ensures predictable, resilient execution.",
+    "explanation": "Correct. In Modern Build Tools & Bundlers, Rust/Go Tooling (esbuild, Rspack) ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Tree Shaking & Side Effects, not Rust/Go Tooling (esbuild, Rspack).",
+      "C": "Incorrect. This describes Vite vs Webpack Architecture, not Rust/Go Tooling (esbuild, Rspack).",
+      "D": "Incorrect. This describes Code Splitting & Dynamic Chunks, not Rust/Go Tooling (esbuild, Rspack)."
+    },
+    "mcqQuestion": "Modern Build Tools & Bundlers: How does Rust/Go Tooling (esbuild, Rspack) operate in production enterprise applications (Q10)?"
+  },
+  {
+    "id": "iq-build-tools-0011",
+    "standard_id": "BUILDTOOLS-MCQ-000011",
+    "questionNumber": 11,
+    "subject": "build-tools",
+    "category": "Vite vs Webpack Architecture",
+    "topic": "Vite vs Webpack Architecture",
+    "subtopic": "Vite vs Webpack Architecture Operations",
+    "concept": "Vite vs Webpack Architecture",
+    "difficulty": "DIFFICULT",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "3_5_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "build-tools",
+      "vite-vs-webpack-architecture",
+      "frontend-interview"
+    ],
+    "question": "Modern Build Tools & Bundlers: How does Vite vs Webpack Architecture operate in production enterprise applications (Q11)?",
+    "shortAnswer": "In Modern Build Tools & Bundlers, Vite vs Webpack Architecture ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Vite vs Webpack Architecture** is an essential architectural concept in <u>Modern Build Tools & Bundlers</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Vite vs Webpack Architecture** is an essential architectural concept in <u>Modern Build Tools & Bundlers</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Vite vs Webpack Architecture** is an essential architectural concept in <u>Modern Build Tools & Bundlers</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Vite vs Webpack Architecture in Modern Build Tools & Bundlers:\nexport function handleVitevsWebpackArchitecture(config) {\n  console.log('Executing Vite vs Webpack Architecture with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Vite vs Webpack Architecture in Modern Build Tools & Bundlers:\nexport function handleVitevsWebpackArchitecture(config) {\n  console.log('Executing Vite vs Webpack Architecture with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Vite vs Webpack Architecture in Modern Build Tools & Bundlers:\nexport function handleVitevsWebpackArchitecture(config) {\n  console.log('Executing Vite vs Webpack Architecture with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Vite vs Webpack Architecture in Modern Build Tools & Bundlers.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Vite vs Webpack Architecture to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Vite vs Webpack Architecture.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Vite vs Webpack Architecture, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Vite vs Webpack Architecture, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Vite vs Webpack Architecture scale under extreme concurrency?",
+      "What monitoring tools can track Vite vs Webpack Architecture metrics in production?"
+    ],
+    "followUps": [
+      "How does Vite vs Webpack Architecture scale under extreme concurrency?",
+      "What monitoring tools can track Vite vs Webpack Architecture metrics in production?"
+    ],
+    "question_hash": "qh_22a10c69",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Modern Build Tools & Bundlers, Code Splitting & Dynamic Chunks ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Code Splitting & Dynamic Chunks, not Vite vs Webpack Architecture."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Modern Build Tools & Bundlers, Native ESM & Dev Server Mechanics ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Native ESM & Dev Server Mechanics, not Vite vs Webpack Architecture."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Modern Build Tools & Bundlers, Vite vs Webpack Architecture ensures predictable, resilient execution.",
+        "explanation": "Correct. In Modern Build Tools & Bundlers, Vite vs Webpack Architecture ensures predictable, resilient execution."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Modern Build Tools & Bundlers, Rust/Go Tooling (esbuild, Rspack) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Rust/Go Tooling (esbuild, Rspack), not Vite vs Webpack Architecture."
+      }
+    ],
+    "correctAnswer": "C",
+    "mcqExplanation": "Correct. In Modern Build Tools & Bundlers, Vite vs Webpack Architecture ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Code Splitting & Dynamic Chunks, not Vite vs Webpack Architecture.",
+      "B": "Incorrect. This describes Native ESM & Dev Server Mechanics, not Vite vs Webpack Architecture.",
+      "D": "Incorrect. This describes Rust/Go Tooling (esbuild, Rspack), not Vite vs Webpack Architecture."
+    },
+    "correctOption": "C",
+    "explanation": "Correct. In Modern Build Tools & Bundlers, Vite vs Webpack Architecture ensures predictable, resilient execution.",
+    "mcqQuestion": "Modern Build Tools & Bundlers: How does Vite vs Webpack Architecture operate in production enterprise applications (Q11)?"
+  },
+  {
+    "id": "iq-build-tools-0012",
+    "standard_id": "BUILDTOOLS-MCQ-000012",
+    "questionNumber": 12,
+    "subject": "build-tools",
+    "category": "Native ESM & Dev Server Mechanics",
+    "topic": "Native ESM & Dev Server Mechanics",
+    "subtopic": "Native ESM & Dev Server Mechanics Operations",
+    "concept": "Native ESM & Dev Server Mechanics",
+    "difficulty": "EASY",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "FRESHER",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "build-tools",
+      "native-esm---dev-server-mechanics",
+      "frontend-interview"
+    ],
+    "question": "Modern Build Tools & Bundlers: How does Native ESM & Dev Server Mechanics operate in production enterprise applications (Q12)?",
+    "shortAnswer": "In Modern Build Tools & Bundlers, Native ESM & Dev Server Mechanics ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Native ESM & Dev Server Mechanics** is an essential architectural concept in <u>Modern Build Tools & Bundlers</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Native ESM & Dev Server Mechanics** is an essential architectural concept in <u>Modern Build Tools & Bundlers</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Native ESM & Dev Server Mechanics** is an essential architectural concept in <u>Modern Build Tools & Bundlers</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Native ESM & Dev Server Mechanics in Modern Build Tools & Bundlers:\nexport function handleNativeESMDevServerMechanics(config) {\n  console.log('Executing Native ESM & Dev Server Mechanics with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Native ESM & Dev Server Mechanics in Modern Build Tools & Bundlers:\nexport function handleNativeESMDevServerMechanics(config) {\n  console.log('Executing Native ESM & Dev Server Mechanics with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Native ESM & Dev Server Mechanics in Modern Build Tools & Bundlers:\nexport function handleNativeESMDevServerMechanics(config) {\n  console.log('Executing Native ESM & Dev Server Mechanics with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Native ESM & Dev Server Mechanics in Modern Build Tools & Bundlers.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Native ESM & Dev Server Mechanics to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Native ESM & Dev Server Mechanics.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Native ESM & Dev Server Mechanics, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Native ESM & Dev Server Mechanics, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Native ESM & Dev Server Mechanics scale under extreme concurrency?",
+      "What monitoring tools can track Native ESM & Dev Server Mechanics metrics in production?"
+    ],
+    "followUps": [
+      "How does Native ESM & Dev Server Mechanics scale under extreme concurrency?",
+      "What monitoring tools can track Native ESM & Dev Server Mechanics metrics in production?"
+    ],
+    "question_hash": "qh_54326244",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Modern Build Tools & Bundlers, Rust/Go Tooling (esbuild, Rspack) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Rust/Go Tooling (esbuild, Rspack), not Native ESM & Dev Server Mechanics."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Modern Build Tools & Bundlers, Tree Shaking & Side Effects ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Tree Shaking & Side Effects, not Native ESM & Dev Server Mechanics."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Modern Build Tools & Bundlers, Vite vs Webpack Architecture ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Vite vs Webpack Architecture, not Native ESM & Dev Server Mechanics."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Modern Build Tools & Bundlers, Native ESM & Dev Server Mechanics ensures predictable, resilient execution.",
+        "explanation": "Correct. In Modern Build Tools & Bundlers, Native ESM & Dev Server Mechanics ensures predictable, resilient execution."
+      }
+    ],
+    "correctAnswer": "D",
+    "correctOption": "D",
+    "mcqExplanation": "Correct. In Modern Build Tools & Bundlers, Native ESM & Dev Server Mechanics ensures predictable, resilient execution.",
+    "explanation": "Correct. In Modern Build Tools & Bundlers, Native ESM & Dev Server Mechanics ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Rust/Go Tooling (esbuild, Rspack), not Native ESM & Dev Server Mechanics.",
+      "B": "Incorrect. This describes Tree Shaking & Side Effects, not Native ESM & Dev Server Mechanics.",
+      "C": "Incorrect. This describes Vite vs Webpack Architecture, not Native ESM & Dev Server Mechanics."
+    },
+    "mcqQuestion": "Modern Build Tools & Bundlers: How does Native ESM & Dev Server Mechanics operate in production enterprise applications (Q12)?"
+  },
+  {
+    "id": "iq-build-tools-0013",
+    "standard_id": "BUILDTOOLS-MCQ-000013",
+    "questionNumber": 13,
+    "subject": "build-tools",
+    "category": "Tree Shaking & Side Effects",
+    "topic": "Tree Shaking & Side Effects",
+    "subtopic": "Tree Shaking & Side Effects Operations",
+    "concept": "Tree Shaking & Side Effects",
+    "difficulty": "INTERMEDIATE",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "1_3_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "build-tools",
+      "tree-shaking---side-effects",
+      "frontend-interview"
+    ],
+    "question": "Modern Build Tools & Bundlers: How does Tree Shaking & Side Effects operate in production enterprise applications (Q13)?",
+    "shortAnswer": "In Modern Build Tools & Bundlers, Tree Shaking & Side Effects ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Tree Shaking & Side Effects** is an essential architectural concept in <u>Modern Build Tools & Bundlers</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Tree Shaking & Side Effects** is an essential architectural concept in <u>Modern Build Tools & Bundlers</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Tree Shaking & Side Effects** is an essential architectural concept in <u>Modern Build Tools & Bundlers</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Tree Shaking & Side Effects in Modern Build Tools & Bundlers:\nexport function handleTreeShakingSideEffects(config) {\n  console.log('Executing Tree Shaking & Side Effects with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Tree Shaking & Side Effects in Modern Build Tools & Bundlers:\nexport function handleTreeShakingSideEffects(config) {\n  console.log('Executing Tree Shaking & Side Effects with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Tree Shaking & Side Effects in Modern Build Tools & Bundlers:\nexport function handleTreeShakingSideEffects(config) {\n  console.log('Executing Tree Shaking & Side Effects with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Tree Shaking & Side Effects in Modern Build Tools & Bundlers.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Tree Shaking & Side Effects to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Tree Shaking & Side Effects.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Tree Shaking & Side Effects, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Tree Shaking & Side Effects, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Tree Shaking & Side Effects scale under extreme concurrency?",
+      "What monitoring tools can track Tree Shaking & Side Effects metrics in production?"
+    ],
+    "followUps": [
+      "How does Tree Shaking & Side Effects scale under extreme concurrency?",
+      "What monitoring tools can track Tree Shaking & Side Effects metrics in production?"
+    ],
+    "question_hash": "qh_70341179",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Modern Build Tools & Bundlers, Tree Shaking & Side Effects ensures predictable, resilient execution.",
+        "explanation": "Correct. In Modern Build Tools & Bundlers, Tree Shaking & Side Effects ensures predictable, resilient execution."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Modern Build Tools & Bundlers, Vite vs Webpack Architecture ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Vite vs Webpack Architecture, not Tree Shaking & Side Effects."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Modern Build Tools & Bundlers, Code Splitting & Dynamic Chunks ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Code Splitting & Dynamic Chunks, not Tree Shaking & Side Effects."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Modern Build Tools & Bundlers, Native ESM & Dev Server Mechanics ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Native ESM & Dev Server Mechanics, not Tree Shaking & Side Effects."
+      }
+    ],
+    "correctAnswer": "A",
+    "mcqExplanation": "Correct. In Modern Build Tools & Bundlers, Tree Shaking & Side Effects ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "B": "Incorrect. This describes Vite vs Webpack Architecture, not Tree Shaking & Side Effects.",
+      "C": "Incorrect. This describes Code Splitting & Dynamic Chunks, not Tree Shaking & Side Effects.",
+      "D": "Incorrect. This describes Native ESM & Dev Server Mechanics, not Tree Shaking & Side Effects."
+    },
+    "correctOption": "A",
+    "explanation": "Correct. In Modern Build Tools & Bundlers, Tree Shaking & Side Effects ensures predictable, resilient execution.",
+    "mcqQuestion": "Modern Build Tools & Bundlers: How does Tree Shaking & Side Effects operate in production enterprise applications (Q13)?"
+  },
+  {
+    "id": "iq-build-tools-0014",
+    "standard_id": "BUILDTOOLS-MCQ-000014",
+    "questionNumber": 14,
+    "subject": "build-tools",
+    "category": "Code Splitting & Dynamic Chunks",
+    "topic": "Code Splitting & Dynamic Chunks",
+    "subtopic": "Code Splitting & Dynamic Chunks Operations",
+    "concept": "Code Splitting & Dynamic Chunks",
+    "difficulty": "DIFFICULT",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "3_5_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "build-tools",
+      "code-splitting---dynamic-chunks",
+      "frontend-interview"
+    ],
+    "question": "Modern Build Tools & Bundlers: How does Code Splitting & Dynamic Chunks operate in production enterprise applications (Q14)?",
+    "shortAnswer": "In Modern Build Tools & Bundlers, Code Splitting & Dynamic Chunks ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Code Splitting & Dynamic Chunks** is an essential architectural concept in <u>Modern Build Tools & Bundlers</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Code Splitting & Dynamic Chunks** is an essential architectural concept in <u>Modern Build Tools & Bundlers</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Code Splitting & Dynamic Chunks** is an essential architectural concept in <u>Modern Build Tools & Bundlers</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Code Splitting & Dynamic Chunks in Modern Build Tools & Bundlers:\nexport function handleCodeSplittingDynamicChunks(config) {\n  console.log('Executing Code Splitting & Dynamic Chunks with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Code Splitting & Dynamic Chunks in Modern Build Tools & Bundlers:\nexport function handleCodeSplittingDynamicChunks(config) {\n  console.log('Executing Code Splitting & Dynamic Chunks with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Code Splitting & Dynamic Chunks in Modern Build Tools & Bundlers:\nexport function handleCodeSplittingDynamicChunks(config) {\n  console.log('Executing Code Splitting & Dynamic Chunks with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Code Splitting & Dynamic Chunks in Modern Build Tools & Bundlers.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Code Splitting & Dynamic Chunks to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Code Splitting & Dynamic Chunks.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Code Splitting & Dynamic Chunks, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Code Splitting & Dynamic Chunks, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Code Splitting & Dynamic Chunks scale under extreme concurrency?",
+      "What monitoring tools can track Code Splitting & Dynamic Chunks metrics in production?"
+    ],
+    "followUps": [
+      "How does Code Splitting & Dynamic Chunks scale under extreme concurrency?",
+      "What monitoring tools can track Code Splitting & Dynamic Chunks metrics in production?"
+    ],
+    "question_hash": "qh_88292a2",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Modern Build Tools & Bundlers, Native ESM & Dev Server Mechanics ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Native ESM & Dev Server Mechanics, not Code Splitting & Dynamic Chunks."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Modern Build Tools & Bundlers, Code Splitting & Dynamic Chunks ensures predictable, resilient execution.",
+        "explanation": "Correct. In Modern Build Tools & Bundlers, Code Splitting & Dynamic Chunks ensures predictable, resilient execution."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Modern Build Tools & Bundlers, Rust/Go Tooling (esbuild, Rspack) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Rust/Go Tooling (esbuild, Rspack), not Code Splitting & Dynamic Chunks."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Modern Build Tools & Bundlers, Tree Shaking & Side Effects ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Tree Shaking & Side Effects, not Code Splitting & Dynamic Chunks."
+      }
+    ],
+    "correctAnswer": "B",
+    "correctOption": "B",
+    "mcqExplanation": "Correct. In Modern Build Tools & Bundlers, Code Splitting & Dynamic Chunks ensures predictable, resilient execution.",
+    "explanation": "Correct. In Modern Build Tools & Bundlers, Code Splitting & Dynamic Chunks ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Native ESM & Dev Server Mechanics, not Code Splitting & Dynamic Chunks.",
+      "C": "Incorrect. This describes Rust/Go Tooling (esbuild, Rspack), not Code Splitting & Dynamic Chunks.",
+      "D": "Incorrect. This describes Tree Shaking & Side Effects, not Code Splitting & Dynamic Chunks."
+    },
+    "mcqQuestion": "Modern Build Tools & Bundlers: How does Code Splitting & Dynamic Chunks operate in production enterprise applications (Q14)?"
+  },
+  {
+    "id": "iq-build-tools-0015",
+    "standard_id": "BUILDTOOLS-MCQ-000015",
+    "questionNumber": 15,
+    "subject": "build-tools",
+    "category": "Rust/Go Tooling (esbuild, Rspack)",
+    "topic": "Rust/Go Tooling (esbuild, Rspack)",
+    "subtopic": "Rust/Go Tooling (esbuild, Rspack) Operations",
+    "concept": "Rust/Go Tooling (esbuild, Rspack)",
+    "difficulty": "EASY",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "FRESHER",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "build-tools",
+      "rust-go-tooling--esbuild--rspack-",
+      "frontend-interview"
+    ],
+    "question": "Modern Build Tools & Bundlers: How does Rust/Go Tooling (esbuild, Rspack) operate in production enterprise applications (Q15)?",
+    "shortAnswer": "In Modern Build Tools & Bundlers, Rust/Go Tooling (esbuild, Rspack) ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Rust/Go Tooling (esbuild, Rspack)** is an essential architectural concept in <u>Modern Build Tools & Bundlers</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Rust/Go Tooling (esbuild, Rspack)** is an essential architectural concept in <u>Modern Build Tools & Bundlers</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Rust/Go Tooling (esbuild, Rspack)** is an essential architectural concept in <u>Modern Build Tools & Bundlers</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Rust/Go Tooling (esbuild, Rspack) in Modern Build Tools & Bundlers:\nexport function handleRustGoToolingesbuildRspack(config) {\n  console.log('Executing Rust/Go Tooling (esbuild, Rspack) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Rust/Go Tooling (esbuild, Rspack) in Modern Build Tools & Bundlers:\nexport function handleRustGoToolingesbuildRspack(config) {\n  console.log('Executing Rust/Go Tooling (esbuild, Rspack) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Rust/Go Tooling (esbuild, Rspack) in Modern Build Tools & Bundlers:\nexport function handleRustGoToolingesbuildRspack(config) {\n  console.log('Executing Rust/Go Tooling (esbuild, Rspack) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Rust/Go Tooling (esbuild, Rspack) in Modern Build Tools & Bundlers.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Rust/Go Tooling (esbuild, Rspack) to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Rust/Go Tooling (esbuild, Rspack).",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Rust/Go Tooling (esbuild, Rspack), explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Rust/Go Tooling (esbuild, Rspack), explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Rust/Go Tooling (esbuild, Rspack) scale under extreme concurrency?",
+      "What monitoring tools can track Rust/Go Tooling (esbuild, Rspack) metrics in production?"
+    ],
+    "followUps": [
+      "How does Rust/Go Tooling (esbuild, Rspack) scale under extreme concurrency?",
+      "What monitoring tools can track Rust/Go Tooling (esbuild, Rspack) metrics in production?"
+    ],
+    "question_hash": "qh_54030e9",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Modern Build Tools & Bundlers, Tree Shaking & Side Effects ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Tree Shaking & Side Effects, not Rust/Go Tooling (esbuild, Rspack)."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Modern Build Tools & Bundlers, Vite vs Webpack Architecture ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Vite vs Webpack Architecture, not Rust/Go Tooling (esbuild, Rspack)."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Modern Build Tools & Bundlers, Rust/Go Tooling (esbuild, Rspack) ensures predictable, resilient execution.",
+        "explanation": "Correct. In Modern Build Tools & Bundlers, Rust/Go Tooling (esbuild, Rspack) ensures predictable, resilient execution."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Modern Build Tools & Bundlers, Code Splitting & Dynamic Chunks ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Code Splitting & Dynamic Chunks, not Rust/Go Tooling (esbuild, Rspack)."
+      }
+    ],
+    "correctAnswer": "C",
+    "mcqExplanation": "Correct. In Modern Build Tools & Bundlers, Rust/Go Tooling (esbuild, Rspack) ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Tree Shaking & Side Effects, not Rust/Go Tooling (esbuild, Rspack).",
+      "B": "Incorrect. This describes Vite vs Webpack Architecture, not Rust/Go Tooling (esbuild, Rspack).",
+      "D": "Incorrect. This describes Code Splitting & Dynamic Chunks, not Rust/Go Tooling (esbuild, Rspack)."
+    },
+    "correctOption": "C",
+    "explanation": "Correct. In Modern Build Tools & Bundlers, Rust/Go Tooling (esbuild, Rspack) ensures predictable, resilient execution.",
+    "mcqQuestion": "Modern Build Tools & Bundlers: How does Rust/Go Tooling (esbuild, Rspack) operate in production enterprise applications (Q15)?"
+  },
+  {
+    "id": "iq-build-tools-0016",
+    "standard_id": "BUILDTOOLS-MCQ-000016",
+    "questionNumber": 16,
+    "subject": "build-tools",
+    "category": "Vite vs Webpack Architecture",
+    "topic": "Vite vs Webpack Architecture",
+    "subtopic": "Vite vs Webpack Architecture Operations",
+    "concept": "Vite vs Webpack Architecture",
+    "difficulty": "INTERMEDIATE",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "1_3_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "build-tools",
+      "vite-vs-webpack-architecture",
+      "frontend-interview"
+    ],
+    "question": "Modern Build Tools & Bundlers: How does Vite vs Webpack Architecture operate in production enterprise applications (Q16)?",
+    "shortAnswer": "In Modern Build Tools & Bundlers, Vite vs Webpack Architecture ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Vite vs Webpack Architecture** is an essential architectural concept in <u>Modern Build Tools & Bundlers</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Vite vs Webpack Architecture** is an essential architectural concept in <u>Modern Build Tools & Bundlers</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Vite vs Webpack Architecture** is an essential architectural concept in <u>Modern Build Tools & Bundlers</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Vite vs Webpack Architecture in Modern Build Tools & Bundlers:\nexport function handleVitevsWebpackArchitecture(config) {\n  console.log('Executing Vite vs Webpack Architecture with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Vite vs Webpack Architecture in Modern Build Tools & Bundlers:\nexport function handleVitevsWebpackArchitecture(config) {\n  console.log('Executing Vite vs Webpack Architecture with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Vite vs Webpack Architecture in Modern Build Tools & Bundlers:\nexport function handleVitevsWebpackArchitecture(config) {\n  console.log('Executing Vite vs Webpack Architecture with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Vite vs Webpack Architecture in Modern Build Tools & Bundlers.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Vite vs Webpack Architecture to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Vite vs Webpack Architecture.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Vite vs Webpack Architecture, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Vite vs Webpack Architecture, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Vite vs Webpack Architecture scale under extreme concurrency?",
+      "What monitoring tools can track Vite vs Webpack Architecture metrics in production?"
+    ],
+    "followUps": [
+      "How does Vite vs Webpack Architecture scale under extreme concurrency?",
+      "What monitoring tools can track Vite vs Webpack Architecture metrics in production?"
+    ],
+    "question_hash": "qh_22a10c6e",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Modern Build Tools & Bundlers, Code Splitting & Dynamic Chunks ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Code Splitting & Dynamic Chunks, not Vite vs Webpack Architecture."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Modern Build Tools & Bundlers, Native ESM & Dev Server Mechanics ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Native ESM & Dev Server Mechanics, not Vite vs Webpack Architecture."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Modern Build Tools & Bundlers, Rust/Go Tooling (esbuild, Rspack) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Rust/Go Tooling (esbuild, Rspack), not Vite vs Webpack Architecture."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Modern Build Tools & Bundlers, Vite vs Webpack Architecture ensures predictable, resilient execution.",
+        "explanation": "Correct. In Modern Build Tools & Bundlers, Vite vs Webpack Architecture ensures predictable, resilient execution."
+      }
+    ],
+    "correctAnswer": "D",
+    "correctOption": "D",
+    "mcqExplanation": "Correct. In Modern Build Tools & Bundlers, Vite vs Webpack Architecture ensures predictable, resilient execution.",
+    "explanation": "Correct. In Modern Build Tools & Bundlers, Vite vs Webpack Architecture ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Code Splitting & Dynamic Chunks, not Vite vs Webpack Architecture.",
+      "B": "Incorrect. This describes Native ESM & Dev Server Mechanics, not Vite vs Webpack Architecture.",
+      "C": "Incorrect. This describes Rust/Go Tooling (esbuild, Rspack), not Vite vs Webpack Architecture."
+    },
+    "mcqQuestion": "Modern Build Tools & Bundlers: How does Vite vs Webpack Architecture operate in production enterprise applications (Q16)?"
+  },
+  {
+    "id": "iq-build-tools-0017",
+    "standard_id": "BUILDTOOLS-MCQ-000017",
+    "questionNumber": 17,
+    "subject": "build-tools",
+    "category": "Native ESM & Dev Server Mechanics",
+    "topic": "Native ESM & Dev Server Mechanics",
+    "subtopic": "Native ESM & Dev Server Mechanics Operations",
+    "concept": "Native ESM & Dev Server Mechanics",
+    "difficulty": "DIFFICULT",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "3_5_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "build-tools",
+      "native-esm---dev-server-mechanics",
+      "frontend-interview"
+    ],
+    "question": "Modern Build Tools & Bundlers: How does Native ESM & Dev Server Mechanics operate in production enterprise applications (Q17)?",
+    "shortAnswer": "In Modern Build Tools & Bundlers, Native ESM & Dev Server Mechanics ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Native ESM & Dev Server Mechanics** is an essential architectural concept in <u>Modern Build Tools & Bundlers</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Native ESM & Dev Server Mechanics** is an essential architectural concept in <u>Modern Build Tools & Bundlers</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Native ESM & Dev Server Mechanics** is an essential architectural concept in <u>Modern Build Tools & Bundlers</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Native ESM & Dev Server Mechanics in Modern Build Tools & Bundlers:\nexport function handleNativeESMDevServerMechanics(config) {\n  console.log('Executing Native ESM & Dev Server Mechanics with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Native ESM & Dev Server Mechanics in Modern Build Tools & Bundlers:\nexport function handleNativeESMDevServerMechanics(config) {\n  console.log('Executing Native ESM & Dev Server Mechanics with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Native ESM & Dev Server Mechanics in Modern Build Tools & Bundlers:\nexport function handleNativeESMDevServerMechanics(config) {\n  console.log('Executing Native ESM & Dev Server Mechanics with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Native ESM & Dev Server Mechanics in Modern Build Tools & Bundlers.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Native ESM & Dev Server Mechanics to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Native ESM & Dev Server Mechanics.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Native ESM & Dev Server Mechanics, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Native ESM & Dev Server Mechanics, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Native ESM & Dev Server Mechanics scale under extreme concurrency?",
+      "What monitoring tools can track Native ESM & Dev Server Mechanics metrics in production?"
+    ],
+    "followUps": [
+      "How does Native ESM & Dev Server Mechanics scale under extreme concurrency?",
+      "What monitoring tools can track Native ESM & Dev Server Mechanics metrics in production?"
+    ],
+    "question_hash": "qh_5432623f",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Modern Build Tools & Bundlers, Native ESM & Dev Server Mechanics ensures predictable, resilient execution.",
+        "explanation": "Correct. In Modern Build Tools & Bundlers, Native ESM & Dev Server Mechanics ensures predictable, resilient execution."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Modern Build Tools & Bundlers, Rust/Go Tooling (esbuild, Rspack) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Rust/Go Tooling (esbuild, Rspack), not Native ESM & Dev Server Mechanics."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Modern Build Tools & Bundlers, Tree Shaking & Side Effects ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Tree Shaking & Side Effects, not Native ESM & Dev Server Mechanics."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Modern Build Tools & Bundlers, Vite vs Webpack Architecture ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Vite vs Webpack Architecture, not Native ESM & Dev Server Mechanics."
+      }
+    ],
+    "correctAnswer": "A",
+    "mcqExplanation": "Correct. In Modern Build Tools & Bundlers, Native ESM & Dev Server Mechanics ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "B": "Incorrect. This describes Rust/Go Tooling (esbuild, Rspack), not Native ESM & Dev Server Mechanics.",
+      "C": "Incorrect. This describes Tree Shaking & Side Effects, not Native ESM & Dev Server Mechanics.",
+      "D": "Incorrect. This describes Vite vs Webpack Architecture, not Native ESM & Dev Server Mechanics."
+    },
+    "correctOption": "A",
+    "explanation": "Correct. In Modern Build Tools & Bundlers, Native ESM & Dev Server Mechanics ensures predictable, resilient execution.",
+    "mcqQuestion": "Modern Build Tools & Bundlers: How does Native ESM & Dev Server Mechanics operate in production enterprise applications (Q17)?"
+  },
+  {
+    "id": "iq-build-tools-0018",
+    "standard_id": "BUILDTOOLS-MCQ-000018",
+    "questionNumber": 18,
+    "subject": "build-tools",
+    "category": "Tree Shaking & Side Effects",
+    "topic": "Tree Shaking & Side Effects",
+    "subtopic": "Tree Shaking & Side Effects Operations",
+    "concept": "Tree Shaking & Side Effects",
+    "difficulty": "EASY",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "FRESHER",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "build-tools",
+      "tree-shaking---side-effects",
+      "frontend-interview"
+    ],
+    "question": "Modern Build Tools & Bundlers: How does Tree Shaking & Side Effects operate in production enterprise applications (Q18)?",
+    "shortAnswer": "In Modern Build Tools & Bundlers, Tree Shaking & Side Effects ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Tree Shaking & Side Effects** is an essential architectural concept in <u>Modern Build Tools & Bundlers</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Tree Shaking & Side Effects** is an essential architectural concept in <u>Modern Build Tools & Bundlers</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Tree Shaking & Side Effects** is an essential architectural concept in <u>Modern Build Tools & Bundlers</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Tree Shaking & Side Effects in Modern Build Tools & Bundlers:\nexport function handleTreeShakingSideEffects(config) {\n  console.log('Executing Tree Shaking & Side Effects with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Tree Shaking & Side Effects in Modern Build Tools & Bundlers:\nexport function handleTreeShakingSideEffects(config) {\n  console.log('Executing Tree Shaking & Side Effects with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Tree Shaking & Side Effects in Modern Build Tools & Bundlers:\nexport function handleTreeShakingSideEffects(config) {\n  console.log('Executing Tree Shaking & Side Effects with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Tree Shaking & Side Effects in Modern Build Tools & Bundlers.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Tree Shaking & Side Effects to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Tree Shaking & Side Effects.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Tree Shaking & Side Effects, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Tree Shaking & Side Effects, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Tree Shaking & Side Effects scale under extreme concurrency?",
+      "What monitoring tools can track Tree Shaking & Side Effects metrics in production?"
+    ],
+    "followUps": [
+      "How does Tree Shaking & Side Effects scale under extreme concurrency?",
+      "What monitoring tools can track Tree Shaking & Side Effects metrics in production?"
+    ],
+    "question_hash": "qh_70341174",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Modern Build Tools & Bundlers, Vite vs Webpack Architecture ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Vite vs Webpack Architecture, not Tree Shaking & Side Effects."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Modern Build Tools & Bundlers, Tree Shaking & Side Effects ensures predictable, resilient execution.",
+        "explanation": "Correct. In Modern Build Tools & Bundlers, Tree Shaking & Side Effects ensures predictable, resilient execution."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Modern Build Tools & Bundlers, Code Splitting & Dynamic Chunks ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Code Splitting & Dynamic Chunks, not Tree Shaking & Side Effects."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Modern Build Tools & Bundlers, Native ESM & Dev Server Mechanics ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Native ESM & Dev Server Mechanics, not Tree Shaking & Side Effects."
+      }
+    ],
+    "correctAnswer": "B",
+    "correctOption": "B",
+    "mcqExplanation": "Correct. In Modern Build Tools & Bundlers, Tree Shaking & Side Effects ensures predictable, resilient execution.",
+    "explanation": "Correct. In Modern Build Tools & Bundlers, Tree Shaking & Side Effects ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Vite vs Webpack Architecture, not Tree Shaking & Side Effects.",
+      "C": "Incorrect. This describes Code Splitting & Dynamic Chunks, not Tree Shaking & Side Effects.",
+      "D": "Incorrect. This describes Native ESM & Dev Server Mechanics, not Tree Shaking & Side Effects."
+    },
+    "mcqQuestion": "Modern Build Tools & Bundlers: How does Tree Shaking & Side Effects operate in production enterprise applications (Q18)?"
+  },
+  {
+    "id": "iq-build-tools-0019",
+    "standard_id": "BUILDTOOLS-MCQ-000019",
+    "questionNumber": 19,
+    "subject": "build-tools",
+    "category": "Code Splitting & Dynamic Chunks",
+    "topic": "Code Splitting & Dynamic Chunks",
+    "subtopic": "Code Splitting & Dynamic Chunks Operations",
+    "concept": "Code Splitting & Dynamic Chunks",
+    "difficulty": "INTERMEDIATE",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "1_3_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "build-tools",
+      "code-splitting---dynamic-chunks",
+      "frontend-interview"
+    ],
+    "question": "Modern Build Tools & Bundlers: How does Code Splitting & Dynamic Chunks operate in production enterprise applications (Q19)?",
+    "shortAnswer": "In Modern Build Tools & Bundlers, Code Splitting & Dynamic Chunks ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Code Splitting & Dynamic Chunks** is an essential architectural concept in <u>Modern Build Tools & Bundlers</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Code Splitting & Dynamic Chunks** is an essential architectural concept in <u>Modern Build Tools & Bundlers</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Code Splitting & Dynamic Chunks** is an essential architectural concept in <u>Modern Build Tools & Bundlers</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Code Splitting & Dynamic Chunks in Modern Build Tools & Bundlers:\nexport function handleCodeSplittingDynamicChunks(config) {\n  console.log('Executing Code Splitting & Dynamic Chunks with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Code Splitting & Dynamic Chunks in Modern Build Tools & Bundlers:\nexport function handleCodeSplittingDynamicChunks(config) {\n  console.log('Executing Code Splitting & Dynamic Chunks with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Code Splitting & Dynamic Chunks in Modern Build Tools & Bundlers:\nexport function handleCodeSplittingDynamicChunks(config) {\n  console.log('Executing Code Splitting & Dynamic Chunks with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Code Splitting & Dynamic Chunks in Modern Build Tools & Bundlers.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Code Splitting & Dynamic Chunks to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Code Splitting & Dynamic Chunks.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Code Splitting & Dynamic Chunks, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Code Splitting & Dynamic Chunks, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Code Splitting & Dynamic Chunks scale under extreme concurrency?",
+      "What monitoring tools can track Code Splitting & Dynamic Chunks metrics in production?"
+    ],
+    "followUps": [
+      "How does Code Splitting & Dynamic Chunks scale under extreme concurrency?",
+      "What monitoring tools can track Code Splitting & Dynamic Chunks metrics in production?"
+    ],
+    "question_hash": "qh_882929d",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Modern Build Tools & Bundlers, Native ESM & Dev Server Mechanics ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Native ESM & Dev Server Mechanics, not Code Splitting & Dynamic Chunks."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Modern Build Tools & Bundlers, Rust/Go Tooling (esbuild, Rspack) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Rust/Go Tooling (esbuild, Rspack), not Code Splitting & Dynamic Chunks."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Modern Build Tools & Bundlers, Code Splitting & Dynamic Chunks ensures predictable, resilient execution.",
+        "explanation": "Correct. In Modern Build Tools & Bundlers, Code Splitting & Dynamic Chunks ensures predictable, resilient execution."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Modern Build Tools & Bundlers, Tree Shaking & Side Effects ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Tree Shaking & Side Effects, not Code Splitting & Dynamic Chunks."
+      }
+    ],
+    "correctAnswer": "C",
+    "mcqExplanation": "Correct. In Modern Build Tools & Bundlers, Code Splitting & Dynamic Chunks ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Native ESM & Dev Server Mechanics, not Code Splitting & Dynamic Chunks.",
+      "B": "Incorrect. This describes Rust/Go Tooling (esbuild, Rspack), not Code Splitting & Dynamic Chunks.",
+      "D": "Incorrect. This describes Tree Shaking & Side Effects, not Code Splitting & Dynamic Chunks."
+    },
+    "correctOption": "C",
+    "explanation": "Correct. In Modern Build Tools & Bundlers, Code Splitting & Dynamic Chunks ensures predictable, resilient execution.",
+    "mcqQuestion": "Modern Build Tools & Bundlers: How does Code Splitting & Dynamic Chunks operate in production enterprise applications (Q19)?"
+  },
+  {
+    "id": "iq-build-tools-0020",
+    "standard_id": "BUILDTOOLS-MCQ-000020",
+    "questionNumber": 20,
+    "subject": "build-tools",
+    "category": "Rust/Go Tooling (esbuild, Rspack)",
+    "topic": "Rust/Go Tooling (esbuild, Rspack)",
+    "subtopic": "Rust/Go Tooling (esbuild, Rspack) Operations",
+    "concept": "Rust/Go Tooling (esbuild, Rspack)",
+    "difficulty": "DIFFICULT",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "3_5_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "build-tools",
+      "rust-go-tooling--esbuild--rspack-",
+      "frontend-interview"
+    ],
+    "question": "Modern Build Tools & Bundlers: How does Rust/Go Tooling (esbuild, Rspack) operate in production enterprise applications (Q20)?",
+    "shortAnswer": "In Modern Build Tools & Bundlers, Rust/Go Tooling (esbuild, Rspack) ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Rust/Go Tooling (esbuild, Rspack)** is an essential architectural concept in <u>Modern Build Tools & Bundlers</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Rust/Go Tooling (esbuild, Rspack)** is an essential architectural concept in <u>Modern Build Tools & Bundlers</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Rust/Go Tooling (esbuild, Rspack)** is an essential architectural concept in <u>Modern Build Tools & Bundlers</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Rust/Go Tooling (esbuild, Rspack) in Modern Build Tools & Bundlers:\nexport function handleRustGoToolingesbuildRspack(config) {\n  console.log('Executing Rust/Go Tooling (esbuild, Rspack) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Rust/Go Tooling (esbuild, Rspack) in Modern Build Tools & Bundlers:\nexport function handleRustGoToolingesbuildRspack(config) {\n  console.log('Executing Rust/Go Tooling (esbuild, Rspack) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Rust/Go Tooling (esbuild, Rspack) in Modern Build Tools & Bundlers:\nexport function handleRustGoToolingesbuildRspack(config) {\n  console.log('Executing Rust/Go Tooling (esbuild, Rspack) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Rust/Go Tooling (esbuild, Rspack) in Modern Build Tools & Bundlers.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Rust/Go Tooling (esbuild, Rspack) to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Rust/Go Tooling (esbuild, Rspack).",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Rust/Go Tooling (esbuild, Rspack), explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Rust/Go Tooling (esbuild, Rspack), explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Rust/Go Tooling (esbuild, Rspack) scale under extreme concurrency?",
+      "What monitoring tools can track Rust/Go Tooling (esbuild, Rspack) metrics in production?"
+    ],
+    "followUps": [
+      "How does Rust/Go Tooling (esbuild, Rspack) scale under extreme concurrency?",
+      "What monitoring tools can track Rust/Go Tooling (esbuild, Rspack) metrics in production?"
+    ],
+    "question_hash": "qh_5403103",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Modern Build Tools & Bundlers, Tree Shaking & Side Effects ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Tree Shaking & Side Effects, not Rust/Go Tooling (esbuild, Rspack)."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Modern Build Tools & Bundlers, Vite vs Webpack Architecture ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Vite vs Webpack Architecture, not Rust/Go Tooling (esbuild, Rspack)."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Modern Build Tools & Bundlers, Code Splitting & Dynamic Chunks ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Code Splitting & Dynamic Chunks, not Rust/Go Tooling (esbuild, Rspack)."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Modern Build Tools & Bundlers, Rust/Go Tooling (esbuild, Rspack) ensures predictable, resilient execution.",
+        "explanation": "Correct. In Modern Build Tools & Bundlers, Rust/Go Tooling (esbuild, Rspack) ensures predictable, resilient execution."
+      }
+    ],
+    "correctAnswer": "D",
+    "correctOption": "D",
+    "mcqExplanation": "Correct. In Modern Build Tools & Bundlers, Rust/Go Tooling (esbuild, Rspack) ensures predictable, resilient execution.",
+    "explanation": "Correct. In Modern Build Tools & Bundlers, Rust/Go Tooling (esbuild, Rspack) ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Tree Shaking & Side Effects, not Rust/Go Tooling (esbuild, Rspack).",
+      "B": "Incorrect. This describes Vite vs Webpack Architecture, not Rust/Go Tooling (esbuild, Rspack).",
+      "C": "Incorrect. This describes Code Splitting & Dynamic Chunks, not Rust/Go Tooling (esbuild, Rspack)."
+    },
+    "mcqQuestion": "Modern Build Tools & Bundlers: How does Rust/Go Tooling (esbuild, Rspack) operate in production enterprise applications (Q20)?"
+  },
+  {
+    "id": "iq-build-tools-0021",
+    "standard_id": "BUILDTOOLS-MCQ-000021",
+    "questionNumber": 21,
+    "subject": "build-tools",
+    "category": "Vite vs Webpack Architecture",
+    "topic": "Vite vs Webpack Architecture",
+    "subtopic": "Vite vs Webpack Architecture Operations",
+    "concept": "Vite vs Webpack Architecture",
+    "difficulty": "EASY",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "FRESHER",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "build-tools",
+      "vite-vs-webpack-architecture",
+      "frontend-interview"
+    ],
+    "question": "Modern Build Tools & Bundlers: How does Vite vs Webpack Architecture operate in production enterprise applications (Q21)?",
+    "shortAnswer": "In Modern Build Tools & Bundlers, Vite vs Webpack Architecture ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Vite vs Webpack Architecture** is an essential architectural concept in <u>Modern Build Tools & Bundlers</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Vite vs Webpack Architecture** is an essential architectural concept in <u>Modern Build Tools & Bundlers</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Vite vs Webpack Architecture** is an essential architectural concept in <u>Modern Build Tools & Bundlers</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Vite vs Webpack Architecture in Modern Build Tools & Bundlers:\nexport function handleVitevsWebpackArchitecture(config) {\n  console.log('Executing Vite vs Webpack Architecture with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Vite vs Webpack Architecture in Modern Build Tools & Bundlers:\nexport function handleVitevsWebpackArchitecture(config) {\n  console.log('Executing Vite vs Webpack Architecture with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Vite vs Webpack Architecture in Modern Build Tools & Bundlers:\nexport function handleVitevsWebpackArchitecture(config) {\n  console.log('Executing Vite vs Webpack Architecture with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Vite vs Webpack Architecture in Modern Build Tools & Bundlers.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Vite vs Webpack Architecture to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Vite vs Webpack Architecture.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Vite vs Webpack Architecture, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Vite vs Webpack Architecture, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Vite vs Webpack Architecture scale under extreme concurrency?",
+      "What monitoring tools can track Vite vs Webpack Architecture metrics in production?"
+    ],
+    "followUps": [
+      "How does Vite vs Webpack Architecture scale under extreme concurrency?",
+      "What monitoring tools can track Vite vs Webpack Architecture metrics in production?"
+    ],
+    "question_hash": "qh_22a10c88",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Modern Build Tools & Bundlers, Vite vs Webpack Architecture ensures predictable, resilient execution.",
+        "explanation": "Correct. In Modern Build Tools & Bundlers, Vite vs Webpack Architecture ensures predictable, resilient execution."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Modern Build Tools & Bundlers, Code Splitting & Dynamic Chunks ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Code Splitting & Dynamic Chunks, not Vite vs Webpack Architecture."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Modern Build Tools & Bundlers, Native ESM & Dev Server Mechanics ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Native ESM & Dev Server Mechanics, not Vite vs Webpack Architecture."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Modern Build Tools & Bundlers, Rust/Go Tooling (esbuild, Rspack) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Rust/Go Tooling (esbuild, Rspack), not Vite vs Webpack Architecture."
+      }
+    ],
+    "correctAnswer": "A",
+    "mcqExplanation": "Correct. In Modern Build Tools & Bundlers, Vite vs Webpack Architecture ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "B": "Incorrect. This describes Code Splitting & Dynamic Chunks, not Vite vs Webpack Architecture.",
+      "C": "Incorrect. This describes Native ESM & Dev Server Mechanics, not Vite vs Webpack Architecture.",
+      "D": "Incorrect. This describes Rust/Go Tooling (esbuild, Rspack), not Vite vs Webpack Architecture."
+    },
+    "correctOption": "A",
+    "explanation": "Correct. In Modern Build Tools & Bundlers, Vite vs Webpack Architecture ensures predictable, resilient execution.",
+    "mcqQuestion": "Modern Build Tools & Bundlers: How does Vite vs Webpack Architecture operate in production enterprise applications (Q21)?"
+  },
+  {
+    "id": "iq-build-tools-0022",
+    "standard_id": "BUILDTOOLS-MCQ-000022",
+    "questionNumber": 22,
+    "subject": "build-tools",
+    "category": "Native ESM & Dev Server Mechanics",
+    "topic": "Native ESM & Dev Server Mechanics",
+    "subtopic": "Native ESM & Dev Server Mechanics Operations",
+    "concept": "Native ESM & Dev Server Mechanics",
+    "difficulty": "INTERMEDIATE",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "1_3_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "build-tools",
+      "native-esm---dev-server-mechanics",
+      "frontend-interview"
+    ],
+    "question": "Modern Build Tools & Bundlers: How does Native ESM & Dev Server Mechanics operate in production enterprise applications (Q22)?",
+    "shortAnswer": "In Modern Build Tools & Bundlers, Native ESM & Dev Server Mechanics ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Native ESM & Dev Server Mechanics** is an essential architectural concept in <u>Modern Build Tools & Bundlers</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Native ESM & Dev Server Mechanics** is an essential architectural concept in <u>Modern Build Tools & Bundlers</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Native ESM & Dev Server Mechanics** is an essential architectural concept in <u>Modern Build Tools & Bundlers</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Native ESM & Dev Server Mechanics in Modern Build Tools & Bundlers:\nexport function handleNativeESMDevServerMechanics(config) {\n  console.log('Executing Native ESM & Dev Server Mechanics with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Native ESM & Dev Server Mechanics in Modern Build Tools & Bundlers:\nexport function handleNativeESMDevServerMechanics(config) {\n  console.log('Executing Native ESM & Dev Server Mechanics with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Native ESM & Dev Server Mechanics in Modern Build Tools & Bundlers:\nexport function handleNativeESMDevServerMechanics(config) {\n  console.log('Executing Native ESM & Dev Server Mechanics with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Native ESM & Dev Server Mechanics in Modern Build Tools & Bundlers.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Native ESM & Dev Server Mechanics to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Native ESM & Dev Server Mechanics.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Native ESM & Dev Server Mechanics, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Native ESM & Dev Server Mechanics, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Native ESM & Dev Server Mechanics scale under extreme concurrency?",
+      "What monitoring tools can track Native ESM & Dev Server Mechanics metrics in production?"
+    ],
+    "followUps": [
+      "How does Native ESM & Dev Server Mechanics scale under extreme concurrency?",
+      "What monitoring tools can track Native ESM & Dev Server Mechanics metrics in production?"
+    ],
+    "question_hash": "qh_54326225",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Modern Build Tools & Bundlers, Rust/Go Tooling (esbuild, Rspack) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Rust/Go Tooling (esbuild, Rspack), not Native ESM & Dev Server Mechanics."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Modern Build Tools & Bundlers, Native ESM & Dev Server Mechanics ensures predictable, resilient execution.",
+        "explanation": "Correct. In Modern Build Tools & Bundlers, Native ESM & Dev Server Mechanics ensures predictable, resilient execution."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Modern Build Tools & Bundlers, Tree Shaking & Side Effects ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Tree Shaking & Side Effects, not Native ESM & Dev Server Mechanics."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "Webpack bundles your entire application and all dependencies into memory before the dev server can start.",
+        "explanation": "Incorrect. This describes No-Bundle Dev Server & Native ESM, not Native ESM & Dev Server Mechanics."
+      }
+    ],
+    "correctAnswer": "B",
+    "correctOption": "B",
+    "mcqExplanation": "Correct. In Modern Build Tools & Bundlers, Native ESM & Dev Server Mechanics ensures predictable, resilient execution.",
+    "explanation": "Correct. In Modern Build Tools & Bundlers, Native ESM & Dev Server Mechanics ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Rust/Go Tooling (esbuild, Rspack), not Native ESM & Dev Server Mechanics.",
+      "C": "Incorrect. This describes Tree Shaking & Side Effects, not Native ESM & Dev Server Mechanics.",
+      "D": "Incorrect. This describes No-Bundle Dev Server & Native ESM, not Native ESM & Dev Server Mechanics."
+    },
+    "mcqQuestion": "Modern Build Tools & Bundlers: How does Native ESM & Dev Server Mechanics operate in production enterprise applications (Q22)?"
+  },
+  {
+    "id": "iq-build-tools-0023",
+    "standard_id": "BUILDTOOLS-MCQ-000023",
+    "questionNumber": 23,
+    "subject": "build-tools",
+    "category": "Tree Shaking & Side Effects",
+    "topic": "Tree Shaking & Side Effects",
+    "subtopic": "Tree Shaking & Side Effects Operations",
+    "concept": "Tree Shaking & Side Effects",
+    "difficulty": "DIFFICULT",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "3_5_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "build-tools",
+      "tree-shaking---side-effects",
+      "frontend-interview"
+    ],
+    "question": "Modern Build Tools & Bundlers: How does Tree Shaking & Side Effects operate in production enterprise applications (Q23)?",
+    "shortAnswer": "In Modern Build Tools & Bundlers, Tree Shaking & Side Effects ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Tree Shaking & Side Effects** is an essential architectural concept in <u>Modern Build Tools & Bundlers</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Tree Shaking & Side Effects** is an essential architectural concept in <u>Modern Build Tools & Bundlers</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Tree Shaking & Side Effects** is an essential architectural concept in <u>Modern Build Tools & Bundlers</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Tree Shaking & Side Effects in Modern Build Tools & Bundlers:\nexport function handleTreeShakingSideEffects(config) {\n  console.log('Executing Tree Shaking & Side Effects with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Tree Shaking & Side Effects in Modern Build Tools & Bundlers:\nexport function handleTreeShakingSideEffects(config) {\n  console.log('Executing Tree Shaking & Side Effects with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Tree Shaking & Side Effects in Modern Build Tools & Bundlers:\nexport function handleTreeShakingSideEffects(config) {\n  console.log('Executing Tree Shaking & Side Effects with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Tree Shaking & Side Effects in Modern Build Tools & Bundlers.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Tree Shaking & Side Effects to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Tree Shaking & Side Effects.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Tree Shaking & Side Effects, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Tree Shaking & Side Effects, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Tree Shaking & Side Effects scale under extreme concurrency?",
+      "What monitoring tools can track Tree Shaking & Side Effects metrics in production?"
+    ],
+    "followUps": [
+      "How does Tree Shaking & Side Effects scale under extreme concurrency?",
+      "What monitoring tools can track Tree Shaking & Side Effects metrics in production?"
+    ],
+    "question_hash": "qh_7034115a",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Modern Build Tools & Bundlers, Vite vs Webpack Architecture ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Vite vs Webpack Architecture, not Tree Shaking & Side Effects."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Modern Build Tools & Bundlers, Code Splitting & Dynamic Chunks ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Code Splitting & Dynamic Chunks, not Tree Shaking & Side Effects."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Modern Build Tools & Bundlers, Tree Shaking & Side Effects ensures predictable, resilient execution.",
+        "explanation": "Correct. In Modern Build Tools & Bundlers, Tree Shaking & Side Effects ensures predictable, resilient execution."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Modern Build Tools & Bundlers, Native ESM & Dev Server Mechanics ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Native ESM & Dev Server Mechanics, not Tree Shaking & Side Effects."
+      }
+    ],
+    "correctAnswer": "C",
+    "mcqExplanation": "Correct. In Modern Build Tools & Bundlers, Tree Shaking & Side Effects ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Vite vs Webpack Architecture, not Tree Shaking & Side Effects.",
+      "B": "Incorrect. This describes Code Splitting & Dynamic Chunks, not Tree Shaking & Side Effects.",
+      "D": "Incorrect. This describes Native ESM & Dev Server Mechanics, not Tree Shaking & Side Effects."
+    },
+    "correctOption": "C",
+    "explanation": "Correct. In Modern Build Tools & Bundlers, Tree Shaking & Side Effects ensures predictable, resilient execution.",
+    "mcqQuestion": "Modern Build Tools & Bundlers: How does Tree Shaking & Side Effects operate in production enterprise applications (Q23)?"
+  },
+  {
+    "id": "iq-build-tools-0024",
+    "standard_id": "BUILDTOOLS-MCQ-000024",
+    "questionNumber": 24,
+    "subject": "build-tools",
+    "category": "Code Splitting & Dynamic Chunks",
+    "topic": "Code Splitting & Dynamic Chunks",
+    "subtopic": "Code Splitting & Dynamic Chunks Operations",
+    "concept": "Code Splitting & Dynamic Chunks",
+    "difficulty": "EASY",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "FRESHER",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "build-tools",
+      "code-splitting---dynamic-chunks",
+      "frontend-interview"
+    ],
+    "question": "Modern Build Tools & Bundlers: How does Code Splitting & Dynamic Chunks operate in production enterprise applications (Q24)?",
+    "shortAnswer": "In Modern Build Tools & Bundlers, Code Splitting & Dynamic Chunks ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Code Splitting & Dynamic Chunks** is an essential architectural concept in <u>Modern Build Tools & Bundlers</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Code Splitting & Dynamic Chunks** is an essential architectural concept in <u>Modern Build Tools & Bundlers</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Code Splitting & Dynamic Chunks** is an essential architectural concept in <u>Modern Build Tools & Bundlers</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Code Splitting & Dynamic Chunks in Modern Build Tools & Bundlers:\nexport function handleCodeSplittingDynamicChunks(config) {\n  console.log('Executing Code Splitting & Dynamic Chunks with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Code Splitting & Dynamic Chunks in Modern Build Tools & Bundlers:\nexport function handleCodeSplittingDynamicChunks(config) {\n  console.log('Executing Code Splitting & Dynamic Chunks with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Code Splitting & Dynamic Chunks in Modern Build Tools & Bundlers:\nexport function handleCodeSplittingDynamicChunks(config) {\n  console.log('Executing Code Splitting & Dynamic Chunks with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Code Splitting & Dynamic Chunks in Modern Build Tools & Bundlers.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Code Splitting & Dynamic Chunks to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Code Splitting & Dynamic Chunks.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Code Splitting & Dynamic Chunks, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Code Splitting & Dynamic Chunks, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Code Splitting & Dynamic Chunks scale under extreme concurrency?",
+      "What monitoring tools can track Code Splitting & Dynamic Chunks metrics in production?"
+    ],
+    "followUps": [
+      "How does Code Splitting & Dynamic Chunks scale under extreme concurrency?",
+      "What monitoring tools can track Code Splitting & Dynamic Chunks metrics in production?"
+    ],
+    "question_hash": "qh_8829283",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Modern Build Tools & Bundlers, Native ESM & Dev Server Mechanics ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Native ESM & Dev Server Mechanics, not Code Splitting & Dynamic Chunks."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Modern Build Tools & Bundlers, Rust/Go Tooling (esbuild, Rspack) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Rust/Go Tooling (esbuild, Rspack), not Code Splitting & Dynamic Chunks."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Modern Build Tools & Bundlers, Tree Shaking & Side Effects ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Tree Shaking & Side Effects, not Code Splitting & Dynamic Chunks."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Modern Build Tools & Bundlers, Code Splitting & Dynamic Chunks ensures predictable, resilient execution.",
+        "explanation": "Correct. In Modern Build Tools & Bundlers, Code Splitting & Dynamic Chunks ensures predictable, resilient execution."
+      }
+    ],
+    "correctAnswer": "D",
+    "correctOption": "D",
+    "mcqExplanation": "Correct. In Modern Build Tools & Bundlers, Code Splitting & Dynamic Chunks ensures predictable, resilient execution.",
+    "explanation": "Correct. In Modern Build Tools & Bundlers, Code Splitting & Dynamic Chunks ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Native ESM & Dev Server Mechanics, not Code Splitting & Dynamic Chunks.",
+      "B": "Incorrect. This describes Rust/Go Tooling (esbuild, Rspack), not Code Splitting & Dynamic Chunks.",
+      "C": "Incorrect. This describes Tree Shaking & Side Effects, not Code Splitting & Dynamic Chunks."
+    },
+    "mcqQuestion": "Modern Build Tools & Bundlers: How does Code Splitting & Dynamic Chunks operate in production enterprise applications (Q24)?"
+  },
+  {
+    "id": "iq-build-tools-0025",
+    "standard_id": "BUILDTOOLS-MCQ-000025",
+    "questionNumber": 25,
+    "subject": "build-tools",
+    "category": "Rust/Go Tooling (esbuild, Rspack)",
+    "topic": "Rust/Go Tooling (esbuild, Rspack)",
+    "subtopic": "Rust/Go Tooling (esbuild, Rspack) Operations",
+    "concept": "Rust/Go Tooling (esbuild, Rspack)",
+    "difficulty": "INTERMEDIATE",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "1_3_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "build-tools",
+      "rust-go-tooling--esbuild--rspack-",
+      "frontend-interview"
+    ],
+    "question": "Modern Build Tools & Bundlers: How does Rust/Go Tooling (esbuild, Rspack) operate in production enterprise applications (Q25)?",
+    "shortAnswer": "In Modern Build Tools & Bundlers, Rust/Go Tooling (esbuild, Rspack) ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Rust/Go Tooling (esbuild, Rspack)** is an essential architectural concept in <u>Modern Build Tools & Bundlers</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Rust/Go Tooling (esbuild, Rspack)** is an essential architectural concept in <u>Modern Build Tools & Bundlers</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Rust/Go Tooling (esbuild, Rspack)** is an essential architectural concept in <u>Modern Build Tools & Bundlers</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Rust/Go Tooling (esbuild, Rspack) in Modern Build Tools & Bundlers:\nexport function handleRustGoToolingesbuildRspack(config) {\n  console.log('Executing Rust/Go Tooling (esbuild, Rspack) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Rust/Go Tooling (esbuild, Rspack) in Modern Build Tools & Bundlers:\nexport function handleRustGoToolingesbuildRspack(config) {\n  console.log('Executing Rust/Go Tooling (esbuild, Rspack) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Rust/Go Tooling (esbuild, Rspack) in Modern Build Tools & Bundlers:\nexport function handleRustGoToolingesbuildRspack(config) {\n  console.log('Executing Rust/Go Tooling (esbuild, Rspack) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Rust/Go Tooling (esbuild, Rspack) in Modern Build Tools & Bundlers.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Rust/Go Tooling (esbuild, Rspack) to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Rust/Go Tooling (esbuild, Rspack).",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Rust/Go Tooling (esbuild, Rspack), explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Rust/Go Tooling (esbuild, Rspack), explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Rust/Go Tooling (esbuild, Rspack) scale under extreme concurrency?",
+      "What monitoring tools can track Rust/Go Tooling (esbuild, Rspack) metrics in production?"
+    ],
+    "followUps": [
+      "How does Rust/Go Tooling (esbuild, Rspack) scale under extreme concurrency?",
+      "What monitoring tools can track Rust/Go Tooling (esbuild, Rspack) metrics in production?"
+    ],
+    "question_hash": "qh_5403108",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Modern Build Tools & Bundlers, Rust/Go Tooling (esbuild, Rspack) ensures predictable, resilient execution.",
+        "explanation": "Correct. In Modern Build Tools & Bundlers, Rust/Go Tooling (esbuild, Rspack) ensures predictable, resilient execution."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Modern Build Tools & Bundlers, Tree Shaking & Side Effects ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Tree Shaking & Side Effects, not Rust/Go Tooling (esbuild, Rspack)."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "Webpack bundles your entire application and all dependencies into memory before the dev server can start.",
+        "explanation": "Incorrect. This describes No-Bundle Dev Server & Native ESM, not Rust/Go Tooling (esbuild, Rspack)."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Modern Build Tools & Bundlers, Code Splitting & Dynamic Chunks ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Code Splitting & Dynamic Chunks, not Rust/Go Tooling (esbuild, Rspack)."
+      }
+    ],
+    "correctAnswer": "A",
+    "mcqExplanation": "Correct. In Modern Build Tools & Bundlers, Rust/Go Tooling (esbuild, Rspack) ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "B": "Incorrect. This describes Tree Shaking & Side Effects, not Rust/Go Tooling (esbuild, Rspack).",
+      "C": "Incorrect. This describes No-Bundle Dev Server & Native ESM, not Rust/Go Tooling (esbuild, Rspack).",
+      "D": "Incorrect. This describes Code Splitting & Dynamic Chunks, not Rust/Go Tooling (esbuild, Rspack)."
+    },
+    "correctOption": "A",
+    "explanation": "Correct. In Modern Build Tools & Bundlers, Rust/Go Tooling (esbuild, Rspack) ensures predictable, resilient execution.",
+    "mcqQuestion": "Modern Build Tools & Bundlers: How does Rust/Go Tooling (esbuild, Rspack) operate in production enterprise applications (Q25)?"
+  },
+  {
+    "id": "iq-build-tools-0026",
+    "standard_id": "BUILDTOOLS-MCQ-000026",
+    "questionNumber": 26,
+    "subject": "build-tools",
+    "category": "Vite vs Webpack Architecture",
+    "topic": "Vite vs Webpack Architecture",
+    "subtopic": "Vite vs Webpack Architecture Operations",
+    "concept": "Vite vs Webpack Architecture",
+    "difficulty": "DIFFICULT",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "3_5_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "build-tools",
+      "vite-vs-webpack-architecture",
+      "frontend-interview"
+    ],
+    "question": "Modern Build Tools & Bundlers: How does Vite vs Webpack Architecture operate in production enterprise applications (Q26)?",
+    "shortAnswer": "In Modern Build Tools & Bundlers, Vite vs Webpack Architecture ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Vite vs Webpack Architecture** is an essential architectural concept in <u>Modern Build Tools & Bundlers</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Vite vs Webpack Architecture** is an essential architectural concept in <u>Modern Build Tools & Bundlers</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Vite vs Webpack Architecture** is an essential architectural concept in <u>Modern Build Tools & Bundlers</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Vite vs Webpack Architecture in Modern Build Tools & Bundlers:\nexport function handleVitevsWebpackArchitecture(config) {\n  console.log('Executing Vite vs Webpack Architecture with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Vite vs Webpack Architecture in Modern Build Tools & Bundlers:\nexport function handleVitevsWebpackArchitecture(config) {\n  console.log('Executing Vite vs Webpack Architecture with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Vite vs Webpack Architecture in Modern Build Tools & Bundlers:\nexport function handleVitevsWebpackArchitecture(config) {\n  console.log('Executing Vite vs Webpack Architecture with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Vite vs Webpack Architecture in Modern Build Tools & Bundlers.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Vite vs Webpack Architecture to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Vite vs Webpack Architecture.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Vite vs Webpack Architecture, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Vite vs Webpack Architecture, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Vite vs Webpack Architecture scale under extreme concurrency?",
+      "What monitoring tools can track Vite vs Webpack Architecture metrics in production?"
+    ],
+    "followUps": [
+      "How does Vite vs Webpack Architecture scale under extreme concurrency?",
+      "What monitoring tools can track Vite vs Webpack Architecture metrics in production?"
+    ],
+    "question_hash": "qh_22a10c8d",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Modern Build Tools & Bundlers, Code Splitting & Dynamic Chunks ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Code Splitting & Dynamic Chunks, not Vite vs Webpack Architecture."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Modern Build Tools & Bundlers, Vite vs Webpack Architecture ensures predictable, resilient execution.",
+        "explanation": "Correct. In Modern Build Tools & Bundlers, Vite vs Webpack Architecture ensures predictable, resilient execution."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Modern Build Tools & Bundlers, Native ESM & Dev Server Mechanics ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Native ESM & Dev Server Mechanics, not Vite vs Webpack Architecture."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Modern Build Tools & Bundlers, Rust/Go Tooling (esbuild, Rspack) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Rust/Go Tooling (esbuild, Rspack), not Vite vs Webpack Architecture."
+      }
+    ],
+    "correctAnswer": "B",
+    "correctOption": "B",
+    "mcqExplanation": "Correct. In Modern Build Tools & Bundlers, Vite vs Webpack Architecture ensures predictable, resilient execution.",
+    "explanation": "Correct. In Modern Build Tools & Bundlers, Vite vs Webpack Architecture ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Code Splitting & Dynamic Chunks, not Vite vs Webpack Architecture.",
+      "C": "Incorrect. This describes Native ESM & Dev Server Mechanics, not Vite vs Webpack Architecture.",
+      "D": "Incorrect. This describes Rust/Go Tooling (esbuild, Rspack), not Vite vs Webpack Architecture."
+    },
+    "mcqQuestion": "Modern Build Tools & Bundlers: How does Vite vs Webpack Architecture operate in production enterprise applications (Q26)?"
+  },
+  {
+    "id": "iq-build-tools-0027",
+    "standard_id": "BUILDTOOLS-MCQ-000027",
+    "questionNumber": 27,
+    "subject": "build-tools",
+    "category": "Native ESM & Dev Server Mechanics",
+    "topic": "Native ESM & Dev Server Mechanics",
+    "subtopic": "Native ESM & Dev Server Mechanics Operations",
+    "concept": "Native ESM & Dev Server Mechanics",
+    "difficulty": "EASY",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "FRESHER",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "build-tools",
+      "native-esm---dev-server-mechanics",
+      "frontend-interview"
+    ],
+    "question": "Modern Build Tools & Bundlers: How does Native ESM & Dev Server Mechanics operate in production enterprise applications (Q27)?",
+    "shortAnswer": "In Modern Build Tools & Bundlers, Native ESM & Dev Server Mechanics ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Native ESM & Dev Server Mechanics** is an essential architectural concept in <u>Modern Build Tools & Bundlers</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Native ESM & Dev Server Mechanics** is an essential architectural concept in <u>Modern Build Tools & Bundlers</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Native ESM & Dev Server Mechanics** is an essential architectural concept in <u>Modern Build Tools & Bundlers</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Native ESM & Dev Server Mechanics in Modern Build Tools & Bundlers:\nexport function handleNativeESMDevServerMechanics(config) {\n  console.log('Executing Native ESM & Dev Server Mechanics with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Native ESM & Dev Server Mechanics in Modern Build Tools & Bundlers:\nexport function handleNativeESMDevServerMechanics(config) {\n  console.log('Executing Native ESM & Dev Server Mechanics with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Native ESM & Dev Server Mechanics in Modern Build Tools & Bundlers:\nexport function handleNativeESMDevServerMechanics(config) {\n  console.log('Executing Native ESM & Dev Server Mechanics with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Native ESM & Dev Server Mechanics in Modern Build Tools & Bundlers.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Native ESM & Dev Server Mechanics to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Native ESM & Dev Server Mechanics.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Native ESM & Dev Server Mechanics, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Native ESM & Dev Server Mechanics, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Native ESM & Dev Server Mechanics scale under extreme concurrency?",
+      "What monitoring tools can track Native ESM & Dev Server Mechanics metrics in production?"
+    ],
+    "followUps": [
+      "How does Native ESM & Dev Server Mechanics scale under extreme concurrency?",
+      "What monitoring tools can track Native ESM & Dev Server Mechanics metrics in production?"
+    ],
+    "question_hash": "qh_54326220",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Modern Build Tools & Bundlers, Rust/Go Tooling (esbuild, Rspack) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Rust/Go Tooling (esbuild, Rspack), not Native ESM & Dev Server Mechanics."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Modern Build Tools & Bundlers, Tree Shaking & Side Effects ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Tree Shaking & Side Effects, not Native ESM & Dev Server Mechanics."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Modern Build Tools & Bundlers, Native ESM & Dev Server Mechanics ensures predictable, resilient execution.",
+        "explanation": "Correct. In Modern Build Tools & Bundlers, Native ESM & Dev Server Mechanics ensures predictable, resilient execution."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Modern Build Tools & Bundlers, Vite vs Webpack Architecture ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Vite vs Webpack Architecture, not Native ESM & Dev Server Mechanics."
+      }
+    ],
+    "correctAnswer": "C",
+    "mcqExplanation": "Correct. In Modern Build Tools & Bundlers, Native ESM & Dev Server Mechanics ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Rust/Go Tooling (esbuild, Rspack), not Native ESM & Dev Server Mechanics.",
+      "B": "Incorrect. This describes Tree Shaking & Side Effects, not Native ESM & Dev Server Mechanics.",
+      "D": "Incorrect. This describes Vite vs Webpack Architecture, not Native ESM & Dev Server Mechanics."
+    },
+    "correctOption": "C",
+    "explanation": "Correct. In Modern Build Tools & Bundlers, Native ESM & Dev Server Mechanics ensures predictable, resilient execution.",
+    "mcqQuestion": "Modern Build Tools & Bundlers: How does Native ESM & Dev Server Mechanics operate in production enterprise applications (Q27)?"
+  },
+  {
+    "id": "iq-build-tools-0028",
+    "standard_id": "BUILDTOOLS-MCQ-000028",
+    "questionNumber": 28,
+    "subject": "build-tools",
+    "category": "Tree Shaking & Side Effects",
+    "topic": "Tree Shaking & Side Effects",
+    "subtopic": "Tree Shaking & Side Effects Operations",
+    "concept": "Tree Shaking & Side Effects",
+    "difficulty": "INTERMEDIATE",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "1_3_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "build-tools",
+      "tree-shaking---side-effects",
+      "frontend-interview"
+    ],
+    "question": "Modern Build Tools & Bundlers: How does Tree Shaking & Side Effects operate in production enterprise applications (Q28)?",
+    "shortAnswer": "In Modern Build Tools & Bundlers, Tree Shaking & Side Effects ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Tree Shaking & Side Effects** is an essential architectural concept in <u>Modern Build Tools & Bundlers</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Tree Shaking & Side Effects** is an essential architectural concept in <u>Modern Build Tools & Bundlers</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Tree Shaking & Side Effects** is an essential architectural concept in <u>Modern Build Tools & Bundlers</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Tree Shaking & Side Effects in Modern Build Tools & Bundlers:\nexport function handleTreeShakingSideEffects(config) {\n  console.log('Executing Tree Shaking & Side Effects with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Tree Shaking & Side Effects in Modern Build Tools & Bundlers:\nexport function handleTreeShakingSideEffects(config) {\n  console.log('Executing Tree Shaking & Side Effects with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Tree Shaking & Side Effects in Modern Build Tools & Bundlers:\nexport function handleTreeShakingSideEffects(config) {\n  console.log('Executing Tree Shaking & Side Effects with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Tree Shaking & Side Effects in Modern Build Tools & Bundlers.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Tree Shaking & Side Effects to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Tree Shaking & Side Effects.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Tree Shaking & Side Effects, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Tree Shaking & Side Effects, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Tree Shaking & Side Effects scale under extreme concurrency?",
+      "What monitoring tools can track Tree Shaking & Side Effects metrics in production?"
+    ],
+    "followUps": [
+      "How does Tree Shaking & Side Effects scale under extreme concurrency?",
+      "What monitoring tools can track Tree Shaking & Side Effects metrics in production?"
+    ],
+    "question_hash": "qh_70341155",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "Webpack bundles your entire application and all dependencies into memory before the dev server can start.",
+        "explanation": "Incorrect. This describes No-Bundle Dev Server & Native ESM, not Tree Shaking & Side Effects."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Modern Build Tools & Bundlers, Code Splitting & Dynamic Chunks ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Code Splitting & Dynamic Chunks, not Tree Shaking & Side Effects."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Modern Build Tools & Bundlers, Native ESM & Dev Server Mechanics ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Native ESM & Dev Server Mechanics, not Tree Shaking & Side Effects."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Modern Build Tools & Bundlers, Tree Shaking & Side Effects ensures predictable, resilient execution.",
+        "explanation": "Correct. In Modern Build Tools & Bundlers, Tree Shaking & Side Effects ensures predictable, resilient execution."
+      }
+    ],
+    "correctAnswer": "D",
+    "correctOption": "D",
+    "mcqExplanation": "Correct. In Modern Build Tools & Bundlers, Tree Shaking & Side Effects ensures predictable, resilient execution.",
+    "explanation": "Correct. In Modern Build Tools & Bundlers, Tree Shaking & Side Effects ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes No-Bundle Dev Server & Native ESM, not Tree Shaking & Side Effects.",
+      "B": "Incorrect. This describes Code Splitting & Dynamic Chunks, not Tree Shaking & Side Effects.",
+      "C": "Incorrect. This describes Native ESM & Dev Server Mechanics, not Tree Shaking & Side Effects."
+    },
+    "mcqQuestion": "Modern Build Tools & Bundlers: How does Tree Shaking & Side Effects operate in production enterprise applications (Q28)?"
+  },
+  {
+    "id": "iq-build-tools-0029",
+    "standard_id": "BUILDTOOLS-MCQ-000029",
+    "questionNumber": 29,
+    "subject": "build-tools",
+    "category": "Code Splitting & Dynamic Chunks",
+    "topic": "Code Splitting & Dynamic Chunks",
+    "subtopic": "Code Splitting & Dynamic Chunks Operations",
+    "concept": "Code Splitting & Dynamic Chunks",
+    "difficulty": "DIFFICULT",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "3_5_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "build-tools",
+      "code-splitting---dynamic-chunks",
+      "frontend-interview"
+    ],
+    "question": "Modern Build Tools & Bundlers: How does Code Splitting & Dynamic Chunks operate in production enterprise applications (Q29)?",
+    "shortAnswer": "In Modern Build Tools & Bundlers, Code Splitting & Dynamic Chunks ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Code Splitting & Dynamic Chunks** is an essential architectural concept in <u>Modern Build Tools & Bundlers</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Code Splitting & Dynamic Chunks** is an essential architectural concept in <u>Modern Build Tools & Bundlers</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Code Splitting & Dynamic Chunks** is an essential architectural concept in <u>Modern Build Tools & Bundlers</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Code Splitting & Dynamic Chunks in Modern Build Tools & Bundlers:\nexport function handleCodeSplittingDynamicChunks(config) {\n  console.log('Executing Code Splitting & Dynamic Chunks with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Code Splitting & Dynamic Chunks in Modern Build Tools & Bundlers:\nexport function handleCodeSplittingDynamicChunks(config) {\n  console.log('Executing Code Splitting & Dynamic Chunks with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Code Splitting & Dynamic Chunks in Modern Build Tools & Bundlers:\nexport function handleCodeSplittingDynamicChunks(config) {\n  console.log('Executing Code Splitting & Dynamic Chunks with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Code Splitting & Dynamic Chunks in Modern Build Tools & Bundlers.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Code Splitting & Dynamic Chunks to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Code Splitting & Dynamic Chunks.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Code Splitting & Dynamic Chunks, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Code Splitting & Dynamic Chunks, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Code Splitting & Dynamic Chunks scale under extreme concurrency?",
+      "What monitoring tools can track Code Splitting & Dynamic Chunks metrics in production?"
+    ],
+    "followUps": [
+      "How does Code Splitting & Dynamic Chunks scale under extreme concurrency?",
+      "What monitoring tools can track Code Splitting & Dynamic Chunks metrics in production?"
+    ],
+    "question_hash": "qh_882927e",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Modern Build Tools & Bundlers, Code Splitting & Dynamic Chunks ensures predictable, resilient execution.",
+        "explanation": "Correct. In Modern Build Tools & Bundlers, Code Splitting & Dynamic Chunks ensures predictable, resilient execution."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Modern Build Tools & Bundlers, Native ESM & Dev Server Mechanics ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Native ESM & Dev Server Mechanics, not Code Splitting & Dynamic Chunks."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Modern Build Tools & Bundlers, Rust/Go Tooling (esbuild, Rspack) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Rust/Go Tooling (esbuild, Rspack), not Code Splitting & Dynamic Chunks."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Modern Build Tools & Bundlers, Tree Shaking & Side Effects ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Tree Shaking & Side Effects, not Code Splitting & Dynamic Chunks."
+      }
+    ],
+    "correctAnswer": "A",
+    "mcqExplanation": "Correct. In Modern Build Tools & Bundlers, Code Splitting & Dynamic Chunks ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "B": "Incorrect. This describes Native ESM & Dev Server Mechanics, not Code Splitting & Dynamic Chunks.",
+      "C": "Incorrect. This describes Rust/Go Tooling (esbuild, Rspack), not Code Splitting & Dynamic Chunks.",
+      "D": "Incorrect. This describes Tree Shaking & Side Effects, not Code Splitting & Dynamic Chunks."
+    },
+    "correctOption": "A",
+    "explanation": "Correct. In Modern Build Tools & Bundlers, Code Splitting & Dynamic Chunks ensures predictable, resilient execution.",
+    "mcqQuestion": "Modern Build Tools & Bundlers: How does Code Splitting & Dynamic Chunks operate in production enterprise applications (Q29)?"
+  },
+  {
+    "id": "iq-build-tools-0030",
+    "standard_id": "BUILDTOOLS-MCQ-000030",
+    "questionNumber": 30,
+    "subject": "build-tools",
+    "category": "Rust/Go Tooling (esbuild, Rspack)",
+    "topic": "Rust/Go Tooling (esbuild, Rspack)",
+    "subtopic": "Rust/Go Tooling (esbuild, Rspack) Operations",
+    "concept": "Rust/Go Tooling (esbuild, Rspack)",
+    "difficulty": "EASY",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "FRESHER",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "build-tools",
+      "rust-go-tooling--esbuild--rspack-",
+      "frontend-interview"
+    ],
+    "question": "Modern Build Tools & Bundlers: How does Rust/Go Tooling (esbuild, Rspack) operate in production enterprise applications (Q30)?",
+    "shortAnswer": "In Modern Build Tools & Bundlers, Rust/Go Tooling (esbuild, Rspack) ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Rust/Go Tooling (esbuild, Rspack)** is an essential architectural concept in <u>Modern Build Tools & Bundlers</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Rust/Go Tooling (esbuild, Rspack)** is an essential architectural concept in <u>Modern Build Tools & Bundlers</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Rust/Go Tooling (esbuild, Rspack)** is an essential architectural concept in <u>Modern Build Tools & Bundlers</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Rust/Go Tooling (esbuild, Rspack) in Modern Build Tools & Bundlers:\nexport function handleRustGoToolingesbuildRspack(config) {\n  console.log('Executing Rust/Go Tooling (esbuild, Rspack) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Rust/Go Tooling (esbuild, Rspack) in Modern Build Tools & Bundlers:\nexport function handleRustGoToolingesbuildRspack(config) {\n  console.log('Executing Rust/Go Tooling (esbuild, Rspack) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Rust/Go Tooling (esbuild, Rspack) in Modern Build Tools & Bundlers:\nexport function handleRustGoToolingesbuildRspack(config) {\n  console.log('Executing Rust/Go Tooling (esbuild, Rspack) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Rust/Go Tooling (esbuild, Rspack) in Modern Build Tools & Bundlers.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Rust/Go Tooling (esbuild, Rspack) to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Rust/Go Tooling (esbuild, Rspack).",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Rust/Go Tooling (esbuild, Rspack), explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Rust/Go Tooling (esbuild, Rspack), explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Rust/Go Tooling (esbuild, Rspack) scale under extreme concurrency?",
+      "What monitoring tools can track Rust/Go Tooling (esbuild, Rspack) metrics in production?"
+    ],
+    "followUps": [
+      "How does Rust/Go Tooling (esbuild, Rspack) scale under extreme concurrency?",
+      "What monitoring tools can track Rust/Go Tooling (esbuild, Rspack) metrics in production?"
+    ],
+    "question_hash": "qh_5403122",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Modern Build Tools & Bundlers, Tree Shaking & Side Effects ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Tree Shaking & Side Effects, not Rust/Go Tooling (esbuild, Rspack)."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Modern Build Tools & Bundlers, Rust/Go Tooling (esbuild, Rspack) ensures predictable, resilient execution.",
+        "explanation": "Correct. In Modern Build Tools & Bundlers, Rust/Go Tooling (esbuild, Rspack) ensures predictable, resilient execution."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Modern Build Tools & Bundlers, Vite vs Webpack Architecture ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Vite vs Webpack Architecture, not Rust/Go Tooling (esbuild, Rspack)."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Modern Build Tools & Bundlers, Code Splitting & Dynamic Chunks ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Code Splitting & Dynamic Chunks, not Rust/Go Tooling (esbuild, Rspack)."
+      }
+    ],
+    "correctAnswer": "B",
+    "correctOption": "B",
+    "mcqExplanation": "Correct. In Modern Build Tools & Bundlers, Rust/Go Tooling (esbuild, Rspack) ensures predictable, resilient execution.",
+    "explanation": "Correct. In Modern Build Tools & Bundlers, Rust/Go Tooling (esbuild, Rspack) ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Tree Shaking & Side Effects, not Rust/Go Tooling (esbuild, Rspack).",
+      "C": "Incorrect. This describes Vite vs Webpack Architecture, not Rust/Go Tooling (esbuild, Rspack).",
+      "D": "Incorrect. This describes Code Splitting & Dynamic Chunks, not Rust/Go Tooling (esbuild, Rspack)."
+    },
+    "mcqQuestion": "Modern Build Tools & Bundlers: How does Rust/Go Tooling (esbuild, Rspack) operate in production enterprise applications (Q30)?"
+  }
+]

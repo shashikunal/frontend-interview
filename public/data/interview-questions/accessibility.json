@@ -1,0 +1,2756 @@
+[
+  {
+    "id": "iq-accessibility-0001",
+    "standard_id": "ACCESSIBILITY-MCQ-000001",
+    "questionNumber": 1,
+    "subject": "accessibility",
+    "category": "ARIA Roles & Attributes",
+    "topic": "ARIA Roles & Attributes",
+    "subtopic": "First Rule of ARIA & Focus Trap",
+    "concept": "First Rule of ARIA & Focus Trap",
+    "difficulty": "INTERMEDIATE",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "1_3_YEARS",
+    "isHighFrequency": true,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Netflix"
+    ],
+    "tags": [
+      "accessibility",
+      "frontend-interview",
+      "aria-roles---attributes"
+    ],
+    "question": "What is the First Rule of ARIA and how do you build an accessible modal dialog?",
+    "shortAnswer": "The First Rule of ARIA states: 'If you can use a native HTML element or attribute with the semantics and behavior already built in, do so instead of re-purposing an element and adding ARIA.' For accessible modals, use native <dialog> or implement role='dialog', aria-modal='true', and trap keyboard focus inside.",
+    "simpleExplanation": "Never use `<div onClick={...}>` when you can simply use a native `<button>`.\n\nNative HTML buttons already support keyboard Enter and Space keys, focus outlines, and screen reader announcements.\n\nWhen opening a modal, focus must move into the dialog, stay trapped inside while tabbing, and return to the trigger button when closed with Escape.",
+    "detailedAnswer": "Never use `<div onClick={...}>` when you can simply use a native `<button>`.\n\nNative HTML buttons already support keyboard Enter and Space keys, focus outlines, and screen reader announcements.\n\nWhen opening a modal, focus must move into the dialog, stay trapped inside while tabbing, and return to the trigger button when closed with Escape.",
+    "detailedExplanation": "Never use `<div onClick={...}>` when you can simply use a native `<button>`.\n\nNative HTML buttons already support keyboard Enter and Space keys, focus outlines, and screen reader announcements.\n\nWhen opening a modal, focus must move into the dialog, stay trapped inside while tabbing, and return to the trigger button when closed with Escape.",
+    "howItWorks": "1. The modal container gets `role='dialog'`, `aria-modal='true'`, and `aria-labelledby='modal-title'`.\n2. When opened, JavaScript saves the previously focused element and sets focus to the first interactive child.\n3. Keyboard `Tab` cycles only within modal elements; pressing `Escape` closes the modal.",
+    "codeExample": "<!-- Accessible Modal Dialog using HTML5 Native Element -->\n<dialog id=\"favDialog\" aria-labelledby=\"dialog-title\">\n  <form method=\"dialog\">\n    <h2 id=\"dialog-title\">Confirm Subscription</h2>\n    <p>Are you sure you want to proceed?</p>\n    <button value=\"cancel\">Cancel</button>\n    <button value=\"confirm\" autofocus>Confirm</button>\n  </form>\n</dialog>",
+    "example": "<!-- Accessible Modal Dialog using HTML5 Native Element -->\n<dialog id=\"favDialog\" aria-labelledby=\"dialog-title\">\n  <form method=\"dialog\">\n    <h2 id=\"dialog-title\">Confirm Subscription</h2>\n    <p>Are you sure you want to proceed?</p>\n    <button value=\"cancel\">Cancel</button>\n    <button value=\"confirm\" autofocus>Confirm</button>\n  </form>\n</dialog>",
+    "codeSnippet": "<!-- Accessible Modal Dialog using HTML5 Native Element -->\n<dialog id=\"favDialog\" aria-labelledby=\"dialog-title\">\n  <form method=\"dialog\">\n    <h2 id=\"dialog-title\">Confirm Subscription</h2>\n    <p>Are you sure you want to proceed?</p>\n    <button value=\"cancel\">Cancel</button>\n    <button value=\"confirm\" autofocus>Confirm</button>\n  </form>\n</dialog>",
+    "codeExplanationSpeech": "This code illustrates the architecture and implementation of First Rule of ARIA & Focus Trap in modern frontend systems.",
+    "realWorldExample": "Banking and healthcare portals are legally required to meet WCAG 2.1 AA compliance under the Americans with Disabilities Act (ADA) and European Accessibility Act.",
+    "commonMistakes": [
+      "Using tabindex values greater than 0, which disrupts the natural reading flow of the document."
+    ],
+    "interviewTip": "Remember the POUR acronym for WCAG: Perceivable, Operable, Understandable, Robust.",
+    "interviewTips": [
+      "Remember the POUR acronym for WCAG: Perceivable, Operable, Understandable, Robust."
+    ],
+    "followUpQuestions": [
+      "How do aria-live regions (polite vs assertive) announce dynamic notifications to screen readers?",
+      "What is the minimum color contrast ratio required for normal text under WCAG AA?"
+    ],
+    "followUps": [
+      "How do aria-live regions (polite vs assertive) announce dynamic notifications to screen readers?",
+      "What is the minimum color contrast ratio required for normal text under WCAG AA?"
+    ],
+    "question_hash": "qh_7fb2c877",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "text": "It provides standardized, predictable behavior for First Rule of ARIA & Focus Trap across all client environments.",
+        "explanation": "Correct. Follows modern web platform and architectural specifications."
+      },
+      {
+        "key": "B",
+        "text": "It bypasses the browser JavaScript runtime and executes as machine code on the GPU.",
+        "explanation": "Incorrect. Frontend code executes within the browser engine thread."
+      },
+      {
+        "key": "C",
+        "text": "It disables all browser caching and forces fresh HTTP 1.0 TCP handshakes on every interaction.",
+        "explanation": "Incorrect. Caching and networking follow standard browser protocols."
+      },
+      {
+        "key": "D",
+        "text": "It automatically converts all async operations into synchronous blocking code.",
+        "explanation": "Incorrect. The browser event loop remains asynchronous."
+      }
+    ],
+    "correctAnswer": "A",
+    "mcqExplanation": "In Web Accessibility (a11y & ARIA), First Rule of ARIA & Focus Trap provides robust, scalable execution per standard architectural patterns.",
+    "wrongOptionExplanations": {
+      "B": "UI logic executes in the browser JavaScript engine or V8 runtime.",
+      "C": "Browser caching mechanisms operate in accordance with HTTP headers.",
+      "D": "JavaScript remains single-threaded and non-blocking."
+    },
+    "correctOption": "A",
+    "explanation": "In Web Accessibility (a11y & ARIA), First Rule of ARIA & Focus Trap provides robust, scalable execution per standard architectural patterns."
+  },
+  {
+    "id": "iq-accessibility-0002",
+    "standard_id": "ACCESSIBILITY-MCQ-000002",
+    "questionNumber": 2,
+    "subject": "accessibility",
+    "category": "ARIA Roles & Attributes",
+    "topic": "ARIA Roles & Attributes",
+    "subtopic": "ARIA Roles & Attributes Operations",
+    "concept": "ARIA Roles & Attributes",
+    "difficulty": "DIFFICULT",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "3_5_YEARS",
+    "isHighFrequency": true,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "accessibility",
+      "aria-roles---attributes",
+      "frontend-interview"
+    ],
+    "question": "Web Accessibility (a11y & ARIA): How does ARIA Roles & Attributes operate in production enterprise applications (Q2)?",
+    "shortAnswer": "In Web Accessibility (a11y & ARIA), ARIA Roles & Attributes ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**ARIA Roles & Attributes** is an essential architectural concept in <u>Web Accessibility (a11y & ARIA)</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**ARIA Roles & Attributes** is an essential architectural concept in <u>Web Accessibility (a11y & ARIA)</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**ARIA Roles & Attributes** is an essential architectural concept in <u>Web Accessibility (a11y & ARIA)</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for ARIA Roles & Attributes in Web Accessibility (a11y & ARIA):\nexport function handleARIARolesAttributes(config) {\n  console.log('Executing ARIA Roles & Attributes with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for ARIA Roles & Attributes in Web Accessibility (a11y & ARIA):\nexport function handleARIARolesAttributes(config) {\n  console.log('Executing ARIA Roles & Attributes with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for ARIA Roles & Attributes in Web Accessibility (a11y & ARIA):\nexport function handleARIARolesAttributes(config) {\n  console.log('Executing ARIA Roles & Attributes with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of ARIA Roles & Attributes in Web Accessibility (a11y & ARIA).",
+    "realWorldExample": "Enterprise high-scale web platforms utilize ARIA Roles & Attributes to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with ARIA Roles & Attributes.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about ARIA Roles & Attributes, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about ARIA Roles & Attributes, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does ARIA Roles & Attributes scale under extreme concurrency?",
+      "What monitoring tools can track ARIA Roles & Attributes metrics in production?"
+    ],
+    "followUps": [
+      "How does ARIA Roles & Attributes scale under extreme concurrency?",
+      "What monitoring tools can track ARIA Roles & Attributes metrics in production?"
+    ],
+    "question_hash": "qh_178b4d91",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Web Accessibility (a11y & ARIA), Screen Reader Testing ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Screen Reader Testing, not ARIA Roles & Attributes."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Web Accessibility (a11y & ARIA), ARIA Roles & Attributes ensures predictable, resilient execution.",
+        "explanation": "Correct. In Web Accessibility (a11y & ARIA), ARIA Roles & Attributes ensures predictable, resilient execution."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Web Accessibility (a11y & ARIA), Keyboard Navigation & Focus Management ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Keyboard Navigation & Focus Management, not ARIA Roles & Attributes."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Web Accessibility (a11y & ARIA), WCAG 2.2 Principles (POUR) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes WCAG 2.2 Principles (POUR), not ARIA Roles & Attributes."
+      }
+    ],
+    "correctAnswer": "B",
+    "correctOption": "B",
+    "mcqExplanation": "Correct. In Web Accessibility (a11y & ARIA), ARIA Roles & Attributes ensures predictable, resilient execution.",
+    "explanation": "Correct. In Web Accessibility (a11y & ARIA), ARIA Roles & Attributes ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Screen Reader Testing, not ARIA Roles & Attributes.",
+      "C": "Incorrect. This describes Keyboard Navigation & Focus Management, not ARIA Roles & Attributes.",
+      "D": "Incorrect. This describes WCAG 2.2 Principles (POUR), not ARIA Roles & Attributes."
+    },
+    "mcqQuestion": "Web Accessibility (a11y & ARIA): How does ARIA Roles & Attributes operate in production enterprise applications (Q2)?"
+  },
+  {
+    "id": "iq-accessibility-0003",
+    "standard_id": "ACCESSIBILITY-MCQ-000003",
+    "questionNumber": 3,
+    "subject": "accessibility",
+    "category": "Keyboard Navigation & Focus Management",
+    "topic": "Keyboard Navigation & Focus Management",
+    "subtopic": "Keyboard Navigation & Focus Management Operations",
+    "concept": "Keyboard Navigation & Focus Management",
+    "difficulty": "EASY",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "FRESHER",
+    "isHighFrequency": true,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "accessibility",
+      "keyboard-navigation---focus-management",
+      "frontend-interview"
+    ],
+    "question": "Web Accessibility (a11y & ARIA): How does Keyboard Navigation & Focus Management operate in production enterprise applications (Q3)?",
+    "shortAnswer": "In Web Accessibility (a11y & ARIA), Keyboard Navigation & Focus Management ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Keyboard Navigation & Focus Management** is an essential architectural concept in <u>Web Accessibility (a11y & ARIA)</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Keyboard Navigation & Focus Management** is an essential architectural concept in <u>Web Accessibility (a11y & ARIA)</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Keyboard Navigation & Focus Management** is an essential architectural concept in <u>Web Accessibility (a11y & ARIA)</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Keyboard Navigation & Focus Management in Web Accessibility (a11y & ARIA):\nexport function handleKeyboardNavigationFocusManagement(config) {\n  console.log('Executing Keyboard Navigation & Focus Management with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Keyboard Navigation & Focus Management in Web Accessibility (a11y & ARIA):\nexport function handleKeyboardNavigationFocusManagement(config) {\n  console.log('Executing Keyboard Navigation & Focus Management with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Keyboard Navigation & Focus Management in Web Accessibility (a11y & ARIA):\nexport function handleKeyboardNavigationFocusManagement(config) {\n  console.log('Executing Keyboard Navigation & Focus Management with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Keyboard Navigation & Focus Management in Web Accessibility (a11y & ARIA).",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Keyboard Navigation & Focus Management to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Keyboard Navigation & Focus Management.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Keyboard Navigation & Focus Management, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Keyboard Navigation & Focus Management, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Keyboard Navigation & Focus Management scale under extreme concurrency?",
+      "What monitoring tools can track Keyboard Navigation & Focus Management metrics in production?"
+    ],
+    "followUps": [
+      "How does Keyboard Navigation & Focus Management scale under extreme concurrency?",
+      "What monitoring tools can track Keyboard Navigation & Focus Management metrics in production?"
+    ],
+    "question_hash": "qh_469851da",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Web Accessibility (a11y & ARIA), WCAG 2.2 Principles (POUR) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes WCAG 2.2 Principles (POUR), not Keyboard Navigation & Focus Management."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Web Accessibility (a11y & ARIA), Accessible Forms & Error Announcements ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Accessible Forms & Error Announcements, not Keyboard Navigation & Focus Management."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Web Accessibility (a11y & ARIA), Keyboard Navigation & Focus Management ensures predictable, resilient execution.",
+        "explanation": "Correct. In Web Accessibility (a11y & ARIA), Keyboard Navigation & Focus Management ensures predictable, resilient execution."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Web Accessibility (a11y & ARIA), ARIA Roles & Attributes ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes ARIA Roles & Attributes, not Keyboard Navigation & Focus Management."
+      }
+    ],
+    "correctAnswer": "C",
+    "mcqExplanation": "Correct. In Web Accessibility (a11y & ARIA), Keyboard Navigation & Focus Management ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes WCAG 2.2 Principles (POUR), not Keyboard Navigation & Focus Management.",
+      "B": "Incorrect. This describes Accessible Forms & Error Announcements, not Keyboard Navigation & Focus Management.",
+      "D": "Incorrect. This describes ARIA Roles & Attributes, not Keyboard Navigation & Focus Management."
+    },
+    "correctOption": "C",
+    "explanation": "Correct. In Web Accessibility (a11y & ARIA), Keyboard Navigation & Focus Management ensures predictable, resilient execution.",
+    "mcqQuestion": "Web Accessibility (a11y & ARIA): How does Keyboard Navigation & Focus Management operate in production enterprise applications (Q3)?"
+  },
+  {
+    "id": "iq-accessibility-0004",
+    "standard_id": "ACCESSIBILITY-MCQ-000004",
+    "questionNumber": 4,
+    "subject": "accessibility",
+    "category": "Accessible Forms & Error Announcements",
+    "topic": "Accessible Forms & Error Announcements",
+    "subtopic": "Accessible Forms & Error Announcements Operations",
+    "concept": "Accessible Forms & Error Announcements",
+    "difficulty": "INTERMEDIATE",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "1_3_YEARS",
+    "isHighFrequency": true,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "accessibility",
+      "accessible-forms---error-announcements",
+      "frontend-interview"
+    ],
+    "question": "Web Accessibility (a11y & ARIA): How does Accessible Forms & Error Announcements operate in production enterprise applications (Q4)?",
+    "shortAnswer": "In Web Accessibility (a11y & ARIA), Accessible Forms & Error Announcements ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Accessible Forms & Error Announcements** is an essential architectural concept in <u>Web Accessibility (a11y & ARIA)</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Accessible Forms & Error Announcements** is an essential architectural concept in <u>Web Accessibility (a11y & ARIA)</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Accessible Forms & Error Announcements** is an essential architectural concept in <u>Web Accessibility (a11y & ARIA)</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Accessible Forms & Error Announcements in Web Accessibility (a11y & ARIA):\nexport function handleAccessibleFormsErrorAnnouncements(config) {\n  console.log('Executing Accessible Forms & Error Announcements with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Accessible Forms & Error Announcements in Web Accessibility (a11y & ARIA):\nexport function handleAccessibleFormsErrorAnnouncements(config) {\n  console.log('Executing Accessible Forms & Error Announcements with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Accessible Forms & Error Announcements in Web Accessibility (a11y & ARIA):\nexport function handleAccessibleFormsErrorAnnouncements(config) {\n  console.log('Executing Accessible Forms & Error Announcements with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Accessible Forms & Error Announcements in Web Accessibility (a11y & ARIA).",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Accessible Forms & Error Announcements to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Accessible Forms & Error Announcements.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Accessible Forms & Error Announcements, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Accessible Forms & Error Announcements, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Accessible Forms & Error Announcements scale under extreme concurrency?",
+      "What monitoring tools can track Accessible Forms & Error Announcements metrics in production?"
+    ],
+    "followUps": [
+      "How does Accessible Forms & Error Announcements scale under extreme concurrency?",
+      "What monitoring tools can track Accessible Forms & Error Announcements metrics in production?"
+    ],
+    "question_hash": "qh_2d68cddd",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Web Accessibility (a11y & ARIA), ARIA Roles & Attributes ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes ARIA Roles & Attributes, not Accessible Forms & Error Announcements."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Web Accessibility (a11y & ARIA), Screen Reader Testing ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Screen Reader Testing, not Accessible Forms & Error Announcements."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Web Accessibility (a11y & ARIA), Keyboard Navigation & Focus Management ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Keyboard Navigation & Focus Management, not Accessible Forms & Error Announcements."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Web Accessibility (a11y & ARIA), Accessible Forms & Error Announcements ensures predictable, resilient execution.",
+        "explanation": "Correct. In Web Accessibility (a11y & ARIA), Accessible Forms & Error Announcements ensures predictable, resilient execution."
+      }
+    ],
+    "correctAnswer": "D",
+    "correctOption": "D",
+    "mcqExplanation": "Correct. In Web Accessibility (a11y & ARIA), Accessible Forms & Error Announcements ensures predictable, resilient execution.",
+    "explanation": "Correct. In Web Accessibility (a11y & ARIA), Accessible Forms & Error Announcements ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes ARIA Roles & Attributes, not Accessible Forms & Error Announcements.",
+      "B": "Incorrect. This describes Screen Reader Testing, not Accessible Forms & Error Announcements.",
+      "C": "Incorrect. This describes Keyboard Navigation & Focus Management, not Accessible Forms & Error Announcements."
+    },
+    "mcqQuestion": "Web Accessibility (a11y & ARIA): How does Accessible Forms & Error Announcements operate in production enterprise applications (Q4)?"
+  },
+  {
+    "id": "iq-accessibility-0005",
+    "standard_id": "ACCESSIBILITY-MCQ-000005",
+    "questionNumber": 5,
+    "subject": "accessibility",
+    "category": "Screen Reader Testing",
+    "topic": "Screen Reader Testing",
+    "subtopic": "Screen Reader Testing Operations",
+    "concept": "Screen Reader Testing",
+    "difficulty": "DIFFICULT",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "3_5_YEARS",
+    "isHighFrequency": true,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "accessibility",
+      "screen-reader-testing",
+      "frontend-interview"
+    ],
+    "question": "Web Accessibility (a11y & ARIA): How does Screen Reader Testing operate in production enterprise applications (Q5)?",
+    "shortAnswer": "In Web Accessibility (a11y & ARIA), Screen Reader Testing ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Screen Reader Testing** is an essential architectural concept in <u>Web Accessibility (a11y & ARIA)</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Screen Reader Testing** is an essential architectural concept in <u>Web Accessibility (a11y & ARIA)</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Screen Reader Testing** is an essential architectural concept in <u>Web Accessibility (a11y & ARIA)</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Screen Reader Testing in Web Accessibility (a11y & ARIA):\nexport function handleScreenReaderTesting(config) {\n  console.log('Executing Screen Reader Testing with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Screen Reader Testing in Web Accessibility (a11y & ARIA):\nexport function handleScreenReaderTesting(config) {\n  console.log('Executing Screen Reader Testing with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Screen Reader Testing in Web Accessibility (a11y & ARIA):\nexport function handleScreenReaderTesting(config) {\n  console.log('Executing Screen Reader Testing with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Screen Reader Testing in Web Accessibility (a11y & ARIA).",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Screen Reader Testing to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Screen Reader Testing.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Screen Reader Testing, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Screen Reader Testing, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Screen Reader Testing scale under extreme concurrency?",
+      "What monitoring tools can track Screen Reader Testing metrics in production?"
+    ],
+    "followUps": [
+      "How does Screen Reader Testing scale under extreme concurrency?",
+      "What monitoring tools can track Screen Reader Testing metrics in production?"
+    ],
+    "question_hash": "qh_66dc19b2",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Web Accessibility (a11y & ARIA), Screen Reader Testing ensures predictable, resilient execution.",
+        "explanation": "Correct. In Web Accessibility (a11y & ARIA), Screen Reader Testing ensures predictable, resilient execution."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Web Accessibility (a11y & ARIA), Keyboard Navigation & Focus Management ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Keyboard Navigation & Focus Management, not Screen Reader Testing."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Web Accessibility (a11y & ARIA), WCAG 2.2 Principles (POUR) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes WCAG 2.2 Principles (POUR), not Screen Reader Testing."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Web Accessibility (a11y & ARIA), Accessible Forms & Error Announcements ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Accessible Forms & Error Announcements, not Screen Reader Testing."
+      }
+    ],
+    "correctAnswer": "A",
+    "mcqExplanation": "Correct. In Web Accessibility (a11y & ARIA), Screen Reader Testing ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "B": "Incorrect. This describes Keyboard Navigation & Focus Management, not Screen Reader Testing.",
+      "C": "Incorrect. This describes WCAG 2.2 Principles (POUR), not Screen Reader Testing.",
+      "D": "Incorrect. This describes Accessible Forms & Error Announcements, not Screen Reader Testing."
+    },
+    "correctOption": "A",
+    "explanation": "Correct. In Web Accessibility (a11y & ARIA), Screen Reader Testing ensures predictable, resilient execution.",
+    "mcqQuestion": "Web Accessibility (a11y & ARIA): How does Screen Reader Testing operate in production enterprise applications (Q5)?"
+  },
+  {
+    "id": "iq-accessibility-0006",
+    "standard_id": "ACCESSIBILITY-MCQ-000006",
+    "questionNumber": 6,
+    "subject": "accessibility",
+    "category": "WCAG 2.2 Principles (POUR)",
+    "topic": "WCAG 2.2 Principles (POUR)",
+    "subtopic": "WCAG 2.2 Principles (POUR) Operations",
+    "concept": "WCAG 2.2 Principles (POUR)",
+    "difficulty": "EASY",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "FRESHER",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "accessibility",
+      "wcag-2-2-principles--pour-",
+      "frontend-interview"
+    ],
+    "question": "Web Accessibility (a11y & ARIA): How does WCAG 2.2 Principles (POUR) operate in production enterprise applications (Q6)?",
+    "shortAnswer": "In Web Accessibility (a11y & ARIA), WCAG 2.2 Principles (POUR) ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**WCAG 2.2 Principles (POUR)** is an essential architectural concept in <u>Web Accessibility (a11y & ARIA)</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**WCAG 2.2 Principles (POUR)** is an essential architectural concept in <u>Web Accessibility (a11y & ARIA)</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**WCAG 2.2 Principles (POUR)** is an essential architectural concept in <u>Web Accessibility (a11y & ARIA)</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for WCAG 2.2 Principles (POUR) in Web Accessibility (a11y & ARIA):\nexport function handleWCAGPrinciplesPOUR(config) {\n  console.log('Executing WCAG 2.2 Principles (POUR) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for WCAG 2.2 Principles (POUR) in Web Accessibility (a11y & ARIA):\nexport function handleWCAGPrinciplesPOUR(config) {\n  console.log('Executing WCAG 2.2 Principles (POUR) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for WCAG 2.2 Principles (POUR) in Web Accessibility (a11y & ARIA):\nexport function handleWCAGPrinciplesPOUR(config) {\n  console.log('Executing WCAG 2.2 Principles (POUR) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of WCAG 2.2 Principles (POUR) in Web Accessibility (a11y & ARIA).",
+    "realWorldExample": "Enterprise high-scale web platforms utilize WCAG 2.2 Principles (POUR) to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with WCAG 2.2 Principles (POUR).",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about WCAG 2.2 Principles (POUR), explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about WCAG 2.2 Principles (POUR), explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does WCAG 2.2 Principles (POUR) scale under extreme concurrency?",
+      "What monitoring tools can track WCAG 2.2 Principles (POUR) metrics in production?"
+    ],
+    "followUps": [
+      "How does WCAG 2.2 Principles (POUR) scale under extreme concurrency?",
+      "What monitoring tools can track WCAG 2.2 Principles (POUR) metrics in production?"
+    ],
+    "question_hash": "qh_5d9fbd9f",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Web Accessibility (a11y & ARIA), Accessible Forms & Error Announcements ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Accessible Forms & Error Announcements, not WCAG 2.2 Principles (POUR)."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Web Accessibility (a11y & ARIA), WCAG 2.2 Principles (POUR) ensures predictable, resilient execution.",
+        "explanation": "Correct. In Web Accessibility (a11y & ARIA), WCAG 2.2 Principles (POUR) ensures predictable, resilient execution."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Web Accessibility (a11y & ARIA), ARIA Roles & Attributes ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes ARIA Roles & Attributes, not WCAG 2.2 Principles (POUR)."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Web Accessibility (a11y & ARIA), Screen Reader Testing ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Screen Reader Testing, not WCAG 2.2 Principles (POUR)."
+      }
+    ],
+    "correctAnswer": "B",
+    "correctOption": "B",
+    "mcqExplanation": "Correct. In Web Accessibility (a11y & ARIA), WCAG 2.2 Principles (POUR) ensures predictable, resilient execution.",
+    "explanation": "Correct. In Web Accessibility (a11y & ARIA), WCAG 2.2 Principles (POUR) ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Accessible Forms & Error Announcements, not WCAG 2.2 Principles (POUR).",
+      "C": "Incorrect. This describes ARIA Roles & Attributes, not WCAG 2.2 Principles (POUR).",
+      "D": "Incorrect. This describes Screen Reader Testing, not WCAG 2.2 Principles (POUR)."
+    },
+    "mcqQuestion": "Web Accessibility (a11y & ARIA): How does WCAG 2.2 Principles (POUR) operate in production enterprise applications (Q6)?"
+  },
+  {
+    "id": "iq-accessibility-0007",
+    "standard_id": "ACCESSIBILITY-MCQ-000007",
+    "questionNumber": 7,
+    "subject": "accessibility",
+    "category": "ARIA Roles & Attributes",
+    "topic": "ARIA Roles & Attributes",
+    "subtopic": "ARIA Roles & Attributes Operations",
+    "concept": "ARIA Roles & Attributes",
+    "difficulty": "INTERMEDIATE",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "1_3_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "accessibility",
+      "aria-roles---attributes",
+      "frontend-interview"
+    ],
+    "question": "Web Accessibility (a11y & ARIA): How does ARIA Roles & Attributes operate in production enterprise applications (Q7)?",
+    "shortAnswer": "In Web Accessibility (a11y & ARIA), ARIA Roles & Attributes ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**ARIA Roles & Attributes** is an essential architectural concept in <u>Web Accessibility (a11y & ARIA)</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**ARIA Roles & Attributes** is an essential architectural concept in <u>Web Accessibility (a11y & ARIA)</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**ARIA Roles & Attributes** is an essential architectural concept in <u>Web Accessibility (a11y & ARIA)</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for ARIA Roles & Attributes in Web Accessibility (a11y & ARIA):\nexport function handleARIARolesAttributes(config) {\n  console.log('Executing ARIA Roles & Attributes with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for ARIA Roles & Attributes in Web Accessibility (a11y & ARIA):\nexport function handleARIARolesAttributes(config) {\n  console.log('Executing ARIA Roles & Attributes with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for ARIA Roles & Attributes in Web Accessibility (a11y & ARIA):\nexport function handleARIARolesAttributes(config) {\n  console.log('Executing ARIA Roles & Attributes with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of ARIA Roles & Attributes in Web Accessibility (a11y & ARIA).",
+    "realWorldExample": "Enterprise high-scale web platforms utilize ARIA Roles & Attributes to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with ARIA Roles & Attributes.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about ARIA Roles & Attributes, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about ARIA Roles & Attributes, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does ARIA Roles & Attributes scale under extreme concurrency?",
+      "What monitoring tools can track ARIA Roles & Attributes metrics in production?"
+    ],
+    "followUps": [
+      "How does ARIA Roles & Attributes scale under extreme concurrency?",
+      "What monitoring tools can track ARIA Roles & Attributes metrics in production?"
+    ],
+    "question_hash": "qh_178b4d96",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Web Accessibility (a11y & ARIA), Screen Reader Testing ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Screen Reader Testing, not ARIA Roles & Attributes."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Web Accessibility (a11y & ARIA), Keyboard Navigation & Focus Management ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Keyboard Navigation & Focus Management, not ARIA Roles & Attributes."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Web Accessibility (a11y & ARIA), ARIA Roles & Attributes ensures predictable, resilient execution.",
+        "explanation": "Correct. In Web Accessibility (a11y & ARIA), ARIA Roles & Attributes ensures predictable, resilient execution."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Web Accessibility (a11y & ARIA), WCAG 2.2 Principles (POUR) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes WCAG 2.2 Principles (POUR), not ARIA Roles & Attributes."
+      }
+    ],
+    "correctAnswer": "C",
+    "mcqExplanation": "Correct. In Web Accessibility (a11y & ARIA), ARIA Roles & Attributes ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Screen Reader Testing, not ARIA Roles & Attributes.",
+      "B": "Incorrect. This describes Keyboard Navigation & Focus Management, not ARIA Roles & Attributes.",
+      "D": "Incorrect. This describes WCAG 2.2 Principles (POUR), not ARIA Roles & Attributes."
+    },
+    "correctOption": "C",
+    "explanation": "Correct. In Web Accessibility (a11y & ARIA), ARIA Roles & Attributes ensures predictable, resilient execution.",
+    "mcqQuestion": "Web Accessibility (a11y & ARIA): How does ARIA Roles & Attributes operate in production enterprise applications (Q7)?"
+  },
+  {
+    "id": "iq-accessibility-0008",
+    "standard_id": "ACCESSIBILITY-MCQ-000008",
+    "questionNumber": 8,
+    "subject": "accessibility",
+    "category": "Keyboard Navigation & Focus Management",
+    "topic": "Keyboard Navigation & Focus Management",
+    "subtopic": "Keyboard Navigation & Focus Management Operations",
+    "concept": "Keyboard Navigation & Focus Management",
+    "difficulty": "DIFFICULT",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "3_5_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "accessibility",
+      "keyboard-navigation---focus-management",
+      "frontend-interview"
+    ],
+    "question": "Web Accessibility (a11y & ARIA): How does Keyboard Navigation & Focus Management operate in production enterprise applications (Q8)?",
+    "shortAnswer": "In Web Accessibility (a11y & ARIA), Keyboard Navigation & Focus Management ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Keyboard Navigation & Focus Management** is an essential architectural concept in <u>Web Accessibility (a11y & ARIA)</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Keyboard Navigation & Focus Management** is an essential architectural concept in <u>Web Accessibility (a11y & ARIA)</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Keyboard Navigation & Focus Management** is an essential architectural concept in <u>Web Accessibility (a11y & ARIA)</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Keyboard Navigation & Focus Management in Web Accessibility (a11y & ARIA):\nexport function handleKeyboardNavigationFocusManagement(config) {\n  console.log('Executing Keyboard Navigation & Focus Management with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Keyboard Navigation & Focus Management in Web Accessibility (a11y & ARIA):\nexport function handleKeyboardNavigationFocusManagement(config) {\n  console.log('Executing Keyboard Navigation & Focus Management with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Keyboard Navigation & Focus Management in Web Accessibility (a11y & ARIA):\nexport function handleKeyboardNavigationFocusManagement(config) {\n  console.log('Executing Keyboard Navigation & Focus Management with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Keyboard Navigation & Focus Management in Web Accessibility (a11y & ARIA).",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Keyboard Navigation & Focus Management to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Keyboard Navigation & Focus Management.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Keyboard Navigation & Focus Management, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Keyboard Navigation & Focus Management, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Keyboard Navigation & Focus Management scale under extreme concurrency?",
+      "What monitoring tools can track Keyboard Navigation & Focus Management metrics in production?"
+    ],
+    "followUps": [
+      "How does Keyboard Navigation & Focus Management scale under extreme concurrency?",
+      "What monitoring tools can track Keyboard Navigation & Focus Management metrics in production?"
+    ],
+    "question_hash": "qh_469851d5",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Web Accessibility (a11y & ARIA), WCAG 2.2 Principles (POUR) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes WCAG 2.2 Principles (POUR), not Keyboard Navigation & Focus Management."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Web Accessibility (a11y & ARIA), Accessible Forms & Error Announcements ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Accessible Forms & Error Announcements, not Keyboard Navigation & Focus Management."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Web Accessibility (a11y & ARIA), ARIA Roles & Attributes ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes ARIA Roles & Attributes, not Keyboard Navigation & Focus Management."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Web Accessibility (a11y & ARIA), Keyboard Navigation & Focus Management ensures predictable, resilient execution.",
+        "explanation": "Correct. In Web Accessibility (a11y & ARIA), Keyboard Navigation & Focus Management ensures predictable, resilient execution."
+      }
+    ],
+    "correctAnswer": "D",
+    "correctOption": "D",
+    "mcqExplanation": "Correct. In Web Accessibility (a11y & ARIA), Keyboard Navigation & Focus Management ensures predictable, resilient execution.",
+    "explanation": "Correct. In Web Accessibility (a11y & ARIA), Keyboard Navigation & Focus Management ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes WCAG 2.2 Principles (POUR), not Keyboard Navigation & Focus Management.",
+      "B": "Incorrect. This describes Accessible Forms & Error Announcements, not Keyboard Navigation & Focus Management.",
+      "C": "Incorrect. This describes ARIA Roles & Attributes, not Keyboard Navigation & Focus Management."
+    },
+    "mcqQuestion": "Web Accessibility (a11y & ARIA): How does Keyboard Navigation & Focus Management operate in production enterprise applications (Q8)?"
+  },
+  {
+    "id": "iq-accessibility-0009",
+    "standard_id": "ACCESSIBILITY-MCQ-000009",
+    "questionNumber": 9,
+    "subject": "accessibility",
+    "category": "Accessible Forms & Error Announcements",
+    "topic": "Accessible Forms & Error Announcements",
+    "subtopic": "Accessible Forms & Error Announcements Operations",
+    "concept": "Accessible Forms & Error Announcements",
+    "difficulty": "EASY",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "FRESHER",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "accessibility",
+      "accessible-forms---error-announcements",
+      "frontend-interview"
+    ],
+    "question": "Web Accessibility (a11y & ARIA): How does Accessible Forms & Error Announcements operate in production enterprise applications (Q9)?",
+    "shortAnswer": "In Web Accessibility (a11y & ARIA), Accessible Forms & Error Announcements ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Accessible Forms & Error Announcements** is an essential architectural concept in <u>Web Accessibility (a11y & ARIA)</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Accessible Forms & Error Announcements** is an essential architectural concept in <u>Web Accessibility (a11y & ARIA)</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Accessible Forms & Error Announcements** is an essential architectural concept in <u>Web Accessibility (a11y & ARIA)</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Accessible Forms & Error Announcements in Web Accessibility (a11y & ARIA):\nexport function handleAccessibleFormsErrorAnnouncements(config) {\n  console.log('Executing Accessible Forms & Error Announcements with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Accessible Forms & Error Announcements in Web Accessibility (a11y & ARIA):\nexport function handleAccessibleFormsErrorAnnouncements(config) {\n  console.log('Executing Accessible Forms & Error Announcements with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Accessible Forms & Error Announcements in Web Accessibility (a11y & ARIA):\nexport function handleAccessibleFormsErrorAnnouncements(config) {\n  console.log('Executing Accessible Forms & Error Announcements with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Accessible Forms & Error Announcements in Web Accessibility (a11y & ARIA).",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Accessible Forms & Error Announcements to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Accessible Forms & Error Announcements.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Accessible Forms & Error Announcements, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Accessible Forms & Error Announcements, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Accessible Forms & Error Announcements scale under extreme concurrency?",
+      "What monitoring tools can track Accessible Forms & Error Announcements metrics in production?"
+    ],
+    "followUps": [
+      "How does Accessible Forms & Error Announcements scale under extreme concurrency?",
+      "What monitoring tools can track Accessible Forms & Error Announcements metrics in production?"
+    ],
+    "question_hash": "qh_2d68cdd8",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Web Accessibility (a11y & ARIA), Accessible Forms & Error Announcements ensures predictable, resilient execution.",
+        "explanation": "Correct. In Web Accessibility (a11y & ARIA), Accessible Forms & Error Announcements ensures predictable, resilient execution."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Web Accessibility (a11y & ARIA), ARIA Roles & Attributes ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes ARIA Roles & Attributes, not Accessible Forms & Error Announcements."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Web Accessibility (a11y & ARIA), Screen Reader Testing ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Screen Reader Testing, not Accessible Forms & Error Announcements."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Web Accessibility (a11y & ARIA), Keyboard Navigation & Focus Management ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Keyboard Navigation & Focus Management, not Accessible Forms & Error Announcements."
+      }
+    ],
+    "correctAnswer": "A",
+    "mcqExplanation": "Correct. In Web Accessibility (a11y & ARIA), Accessible Forms & Error Announcements ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "B": "Incorrect. This describes ARIA Roles & Attributes, not Accessible Forms & Error Announcements.",
+      "C": "Incorrect. This describes Screen Reader Testing, not Accessible Forms & Error Announcements.",
+      "D": "Incorrect. This describes Keyboard Navigation & Focus Management, not Accessible Forms & Error Announcements."
+    },
+    "correctOption": "A",
+    "explanation": "Correct. In Web Accessibility (a11y & ARIA), Accessible Forms & Error Announcements ensures predictable, resilient execution.",
+    "mcqQuestion": "Web Accessibility (a11y & ARIA): How does Accessible Forms & Error Announcements operate in production enterprise applications (Q9)?"
+  },
+  {
+    "id": "iq-accessibility-0010",
+    "standard_id": "ACCESSIBILITY-MCQ-000010",
+    "questionNumber": 10,
+    "subject": "accessibility",
+    "category": "Screen Reader Testing",
+    "topic": "Screen Reader Testing",
+    "subtopic": "Screen Reader Testing Operations",
+    "concept": "Screen Reader Testing",
+    "difficulty": "INTERMEDIATE",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "1_3_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "accessibility",
+      "screen-reader-testing",
+      "frontend-interview"
+    ],
+    "question": "Web Accessibility (a11y & ARIA): How does Screen Reader Testing operate in production enterprise applications (Q10)?",
+    "shortAnswer": "In Web Accessibility (a11y & ARIA), Screen Reader Testing ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Screen Reader Testing** is an essential architectural concept in <u>Web Accessibility (a11y & ARIA)</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Screen Reader Testing** is an essential architectural concept in <u>Web Accessibility (a11y & ARIA)</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Screen Reader Testing** is an essential architectural concept in <u>Web Accessibility (a11y & ARIA)</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Screen Reader Testing in Web Accessibility (a11y & ARIA):\nexport function handleScreenReaderTesting(config) {\n  console.log('Executing Screen Reader Testing with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Screen Reader Testing in Web Accessibility (a11y & ARIA):\nexport function handleScreenReaderTesting(config) {\n  console.log('Executing Screen Reader Testing with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Screen Reader Testing in Web Accessibility (a11y & ARIA):\nexport function handleScreenReaderTesting(config) {\n  console.log('Executing Screen Reader Testing with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Screen Reader Testing in Web Accessibility (a11y & ARIA).",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Screen Reader Testing to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Screen Reader Testing.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Screen Reader Testing, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Screen Reader Testing, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Screen Reader Testing scale under extreme concurrency?",
+      "What monitoring tools can track Screen Reader Testing metrics in production?"
+    ],
+    "followUps": [
+      "How does Screen Reader Testing scale under extreme concurrency?",
+      "What monitoring tools can track Screen Reader Testing metrics in production?"
+    ],
+    "question_hash": "qh_74a71cda",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Web Accessibility (a11y & ARIA), Keyboard Navigation & Focus Management ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Keyboard Navigation & Focus Management, not Screen Reader Testing."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Web Accessibility (a11y & ARIA), Screen Reader Testing ensures predictable, resilient execution.",
+        "explanation": "Correct. In Web Accessibility (a11y & ARIA), Screen Reader Testing ensures predictable, resilient execution."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Web Accessibility (a11y & ARIA), WCAG 2.2 Principles (POUR) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes WCAG 2.2 Principles (POUR), not Screen Reader Testing."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Web Accessibility (a11y & ARIA), Accessible Forms & Error Announcements ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Accessible Forms & Error Announcements, not Screen Reader Testing."
+      }
+    ],
+    "correctAnswer": "B",
+    "correctOption": "B",
+    "mcqExplanation": "Correct. In Web Accessibility (a11y & ARIA), Screen Reader Testing ensures predictable, resilient execution.",
+    "explanation": "Correct. In Web Accessibility (a11y & ARIA), Screen Reader Testing ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Keyboard Navigation & Focus Management, not Screen Reader Testing.",
+      "C": "Incorrect. This describes WCAG 2.2 Principles (POUR), not Screen Reader Testing.",
+      "D": "Incorrect. This describes Accessible Forms & Error Announcements, not Screen Reader Testing."
+    },
+    "mcqQuestion": "Web Accessibility (a11y & ARIA): How does Screen Reader Testing operate in production enterprise applications (Q10)?"
+  },
+  {
+    "id": "iq-accessibility-0011",
+    "standard_id": "ACCESSIBILITY-MCQ-000011",
+    "questionNumber": 11,
+    "subject": "accessibility",
+    "category": "WCAG 2.2 Principles (POUR)",
+    "topic": "WCAG 2.2 Principles (POUR)",
+    "subtopic": "WCAG 2.2 Principles (POUR) Operations",
+    "concept": "WCAG 2.2 Principles (POUR)",
+    "difficulty": "DIFFICULT",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "3_5_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "accessibility",
+      "wcag-2-2-principles--pour-",
+      "frontend-interview"
+    ],
+    "question": "Web Accessibility (a11y & ARIA): How does WCAG 2.2 Principles (POUR) operate in production enterprise applications (Q11)?",
+    "shortAnswer": "In Web Accessibility (a11y & ARIA), WCAG 2.2 Principles (POUR) ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**WCAG 2.2 Principles (POUR)** is an essential architectural concept in <u>Web Accessibility (a11y & ARIA)</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**WCAG 2.2 Principles (POUR)** is an essential architectural concept in <u>Web Accessibility (a11y & ARIA)</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**WCAG 2.2 Principles (POUR)** is an essential architectural concept in <u>Web Accessibility (a11y & ARIA)</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for WCAG 2.2 Principles (POUR) in Web Accessibility (a11y & ARIA):\nexport function handleWCAGPrinciplesPOUR(config) {\n  console.log('Executing WCAG 2.2 Principles (POUR) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for WCAG 2.2 Principles (POUR) in Web Accessibility (a11y & ARIA):\nexport function handleWCAGPrinciplesPOUR(config) {\n  console.log('Executing WCAG 2.2 Principles (POUR) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for WCAG 2.2 Principles (POUR) in Web Accessibility (a11y & ARIA):\nexport function handleWCAGPrinciplesPOUR(config) {\n  console.log('Executing WCAG 2.2 Principles (POUR) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of WCAG 2.2 Principles (POUR) in Web Accessibility (a11y & ARIA).",
+    "realWorldExample": "Enterprise high-scale web platforms utilize WCAG 2.2 Principles (POUR) to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with WCAG 2.2 Principles (POUR).",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about WCAG 2.2 Principles (POUR), explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about WCAG 2.2 Principles (POUR), explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does WCAG 2.2 Principles (POUR) scale under extreme concurrency?",
+      "What monitoring tools can track WCAG 2.2 Principles (POUR) metrics in production?"
+    ],
+    "followUps": [
+      "How does WCAG 2.2 Principles (POUR) scale under extreme concurrency?",
+      "What monitoring tools can track WCAG 2.2 Principles (POUR) metrics in production?"
+    ],
+    "question_hash": "qh_5657f6ab",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Web Accessibility (a11y & ARIA), Accessible Forms & Error Announcements ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Accessible Forms & Error Announcements, not WCAG 2.2 Principles (POUR)."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Web Accessibility (a11y & ARIA), ARIA Roles & Attributes ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes ARIA Roles & Attributes, not WCAG 2.2 Principles (POUR)."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Web Accessibility (a11y & ARIA), WCAG 2.2 Principles (POUR) ensures predictable, resilient execution.",
+        "explanation": "Correct. In Web Accessibility (a11y & ARIA), WCAG 2.2 Principles (POUR) ensures predictable, resilient execution."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Web Accessibility (a11y & ARIA), Screen Reader Testing ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Screen Reader Testing, not WCAG 2.2 Principles (POUR)."
+      }
+    ],
+    "correctAnswer": "C",
+    "mcqExplanation": "Correct. In Web Accessibility (a11y & ARIA), WCAG 2.2 Principles (POUR) ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Accessible Forms & Error Announcements, not WCAG 2.2 Principles (POUR).",
+      "B": "Incorrect. This describes ARIA Roles & Attributes, not WCAG 2.2 Principles (POUR).",
+      "D": "Incorrect. This describes Screen Reader Testing, not WCAG 2.2 Principles (POUR)."
+    },
+    "correctOption": "C",
+    "explanation": "Correct. In Web Accessibility (a11y & ARIA), WCAG 2.2 Principles (POUR) ensures predictable, resilient execution.",
+    "mcqQuestion": "Web Accessibility (a11y & ARIA): How does WCAG 2.2 Principles (POUR) operate in production enterprise applications (Q11)?"
+  },
+  {
+    "id": "iq-accessibility-0012",
+    "standard_id": "ACCESSIBILITY-MCQ-000012",
+    "questionNumber": 12,
+    "subject": "accessibility",
+    "category": "ARIA Roles & Attributes",
+    "topic": "ARIA Roles & Attributes",
+    "subtopic": "ARIA Roles & Attributes Operations",
+    "concept": "ARIA Roles & Attributes",
+    "difficulty": "EASY",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "FRESHER",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "accessibility",
+      "aria-roles---attributes",
+      "frontend-interview"
+    ],
+    "question": "Web Accessibility (a11y & ARIA): How does ARIA Roles & Attributes operate in production enterprise applications (Q12)?",
+    "shortAnswer": "In Web Accessibility (a11y & ARIA), ARIA Roles & Attributes ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**ARIA Roles & Attributes** is an essential architectural concept in <u>Web Accessibility (a11y & ARIA)</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**ARIA Roles & Attributes** is an essential architectural concept in <u>Web Accessibility (a11y & ARIA)</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**ARIA Roles & Attributes** is an essential architectural concept in <u>Web Accessibility (a11y & ARIA)</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for ARIA Roles & Attributes in Web Accessibility (a11y & ARIA):\nexport function handleARIARolesAttributes(config) {\n  console.log('Executing ARIA Roles & Attributes with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for ARIA Roles & Attributes in Web Accessibility (a11y & ARIA):\nexport function handleARIARolesAttributes(config) {\n  console.log('Executing ARIA Roles & Attributes with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for ARIA Roles & Attributes in Web Accessibility (a11y & ARIA):\nexport function handleARIARolesAttributes(config) {\n  console.log('Executing ARIA Roles & Attributes with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of ARIA Roles & Attributes in Web Accessibility (a11y & ARIA).",
+    "realWorldExample": "Enterprise high-scale web platforms utilize ARIA Roles & Attributes to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with ARIA Roles & Attributes.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about ARIA Roles & Attributes, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about ARIA Roles & Attributes, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does ARIA Roles & Attributes scale under extreme concurrency?",
+      "What monitoring tools can track ARIA Roles & Attributes metrics in production?"
+    ],
+    "followUps": [
+      "How does ARIA Roles & Attributes scale under extreme concurrency?",
+      "What monitoring tools can track ARIA Roles & Attributes metrics in production?"
+    ],
+    "question_hash": "qh_26219b5e",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Web Accessibility (a11y & ARIA), Screen Reader Testing ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Screen Reader Testing, not ARIA Roles & Attributes."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Web Accessibility (a11y & ARIA), Keyboard Navigation & Focus Management ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Keyboard Navigation & Focus Management, not ARIA Roles & Attributes."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Web Accessibility (a11y & ARIA), WCAG 2.2 Principles (POUR) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes WCAG 2.2 Principles (POUR), not ARIA Roles & Attributes."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Web Accessibility (a11y & ARIA), ARIA Roles & Attributes ensures predictable, resilient execution.",
+        "explanation": "Correct. In Web Accessibility (a11y & ARIA), ARIA Roles & Attributes ensures predictable, resilient execution."
+      }
+    ],
+    "correctAnswer": "D",
+    "correctOption": "D",
+    "mcqExplanation": "Correct. In Web Accessibility (a11y & ARIA), ARIA Roles & Attributes ensures predictable, resilient execution.",
+    "explanation": "Correct. In Web Accessibility (a11y & ARIA), ARIA Roles & Attributes ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Screen Reader Testing, not ARIA Roles & Attributes.",
+      "B": "Incorrect. This describes Keyboard Navigation & Focus Management, not ARIA Roles & Attributes.",
+      "C": "Incorrect. This describes WCAG 2.2 Principles (POUR), not ARIA Roles & Attributes."
+    },
+    "mcqQuestion": "Web Accessibility (a11y & ARIA): How does ARIA Roles & Attributes operate in production enterprise applications (Q12)?"
+  },
+  {
+    "id": "iq-accessibility-0013",
+    "standard_id": "ACCESSIBILITY-MCQ-000013",
+    "questionNumber": 13,
+    "subject": "accessibility",
+    "category": "Keyboard Navigation & Focus Management",
+    "topic": "Keyboard Navigation & Focus Management",
+    "subtopic": "Keyboard Navigation & Focus Management Operations",
+    "concept": "Keyboard Navigation & Focus Management",
+    "difficulty": "INTERMEDIATE",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "1_3_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "accessibility",
+      "keyboard-navigation---focus-management",
+      "frontend-interview"
+    ],
+    "question": "Web Accessibility (a11y & ARIA): How does Keyboard Navigation & Focus Management operate in production enterprise applications (Q13)?",
+    "shortAnswer": "In Web Accessibility (a11y & ARIA), Keyboard Navigation & Focus Management ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Keyboard Navigation & Focus Management** is an essential architectural concept in <u>Web Accessibility (a11y & ARIA)</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Keyboard Navigation & Focus Management** is an essential architectural concept in <u>Web Accessibility (a11y & ARIA)</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Keyboard Navigation & Focus Management** is an essential architectural concept in <u>Web Accessibility (a11y & ARIA)</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Keyboard Navigation & Focus Management in Web Accessibility (a11y & ARIA):\nexport function handleKeyboardNavigationFocusManagement(config) {\n  console.log('Executing Keyboard Navigation & Focus Management with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Keyboard Navigation & Focus Management in Web Accessibility (a11y & ARIA):\nexport function handleKeyboardNavigationFocusManagement(config) {\n  console.log('Executing Keyboard Navigation & Focus Management with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Keyboard Navigation & Focus Management in Web Accessibility (a11y & ARIA):\nexport function handleKeyboardNavigationFocusManagement(config) {\n  console.log('Executing Keyboard Navigation & Focus Management with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Keyboard Navigation & Focus Management in Web Accessibility (a11y & ARIA).",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Keyboard Navigation & Focus Management to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Keyboard Navigation & Focus Management.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Keyboard Navigation & Focus Management, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Keyboard Navigation & Focus Management, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Keyboard Navigation & Focus Management scale under extreme concurrency?",
+      "What monitoring tools can track Keyboard Navigation & Focus Management metrics in production?"
+    ],
+    "followUps": [
+      "How does Keyboard Navigation & Focus Management scale under extreme concurrency?",
+      "What monitoring tools can track Keyboard Navigation & Focus Management metrics in production?"
+    ],
+    "question_hash": "qh_738e168f",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Web Accessibility (a11y & ARIA), Keyboard Navigation & Focus Management ensures predictable, resilient execution.",
+        "explanation": "Correct. In Web Accessibility (a11y & ARIA), Keyboard Navigation & Focus Management ensures predictable, resilient execution."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Web Accessibility (a11y & ARIA), WCAG 2.2 Principles (POUR) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes WCAG 2.2 Principles (POUR), not Keyboard Navigation & Focus Management."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Web Accessibility (a11y & ARIA), Accessible Forms & Error Announcements ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Accessible Forms & Error Announcements, not Keyboard Navigation & Focus Management."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Web Accessibility (a11y & ARIA), ARIA Roles & Attributes ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes ARIA Roles & Attributes, not Keyboard Navigation & Focus Management."
+      }
+    ],
+    "correctAnswer": "A",
+    "mcqExplanation": "Correct. In Web Accessibility (a11y & ARIA), Keyboard Navigation & Focus Management ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "B": "Incorrect. This describes WCAG 2.2 Principles (POUR), not Keyboard Navigation & Focus Management.",
+      "C": "Incorrect. This describes Accessible Forms & Error Announcements, not Keyboard Navigation & Focus Management.",
+      "D": "Incorrect. This describes ARIA Roles & Attributes, not Keyboard Navigation & Focus Management."
+    },
+    "correctOption": "A",
+    "explanation": "Correct. In Web Accessibility (a11y & ARIA), Keyboard Navigation & Focus Management ensures predictable, resilient execution.",
+    "mcqQuestion": "Web Accessibility (a11y & ARIA): How does Keyboard Navigation & Focus Management operate in production enterprise applications (Q13)?"
+  },
+  {
+    "id": "iq-accessibility-0014",
+    "standard_id": "ACCESSIBILITY-MCQ-000014",
+    "questionNumber": 14,
+    "subject": "accessibility",
+    "category": "Accessible Forms & Error Announcements",
+    "topic": "Accessible Forms & Error Announcements",
+    "subtopic": "Accessible Forms & Error Announcements Operations",
+    "concept": "Accessible Forms & Error Announcements",
+    "difficulty": "DIFFICULT",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "3_5_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "accessibility",
+      "accessible-forms---error-announcements",
+      "frontend-interview"
+    ],
+    "question": "Web Accessibility (a11y & ARIA): How does Accessible Forms & Error Announcements operate in production enterprise applications (Q14)?",
+    "shortAnswer": "In Web Accessibility (a11y & ARIA), Accessible Forms & Error Announcements ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Accessible Forms & Error Announcements** is an essential architectural concept in <u>Web Accessibility (a11y & ARIA)</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Accessible Forms & Error Announcements** is an essential architectural concept in <u>Web Accessibility (a11y & ARIA)</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Accessible Forms & Error Announcements** is an essential architectural concept in <u>Web Accessibility (a11y & ARIA)</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Accessible Forms & Error Announcements in Web Accessibility (a11y & ARIA):\nexport function handleAccessibleFormsErrorAnnouncements(config) {\n  console.log('Executing Accessible Forms & Error Announcements with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Accessible Forms & Error Announcements in Web Accessibility (a11y & ARIA):\nexport function handleAccessibleFormsErrorAnnouncements(config) {\n  console.log('Executing Accessible Forms & Error Announcements with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Accessible Forms & Error Announcements in Web Accessibility (a11y & ARIA):\nexport function handleAccessibleFormsErrorAnnouncements(config) {\n  console.log('Executing Accessible Forms & Error Announcements with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Accessible Forms & Error Announcements in Web Accessibility (a11y & ARIA).",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Accessible Forms & Error Announcements to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Accessible Forms & Error Announcements.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Accessible Forms & Error Announcements, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Accessible Forms & Error Announcements, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Accessible Forms & Error Announcements scale under extreme concurrency?",
+      "What monitoring tools can track Accessible Forms & Error Announcements metrics in production?"
+    ],
+    "followUps": [
+      "How does Accessible Forms & Error Announcements scale under extreme concurrency?",
+      "What monitoring tools can track Accessible Forms & Error Announcements metrics in production?"
+    ],
+    "question_hash": "qh_7fb0edec",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Web Accessibility (a11y & ARIA), ARIA Roles & Attributes ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes ARIA Roles & Attributes, not Accessible Forms & Error Announcements."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Web Accessibility (a11y & ARIA), Accessible Forms & Error Announcements ensures predictable, resilient execution.",
+        "explanation": "Correct. In Web Accessibility (a11y & ARIA), Accessible Forms & Error Announcements ensures predictable, resilient execution."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Web Accessibility (a11y & ARIA), Screen Reader Testing ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Screen Reader Testing, not Accessible Forms & Error Announcements."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Web Accessibility (a11y & ARIA), Keyboard Navigation & Focus Management ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Keyboard Navigation & Focus Management, not Accessible Forms & Error Announcements."
+      }
+    ],
+    "correctAnswer": "B",
+    "correctOption": "B",
+    "mcqExplanation": "Correct. In Web Accessibility (a11y & ARIA), Accessible Forms & Error Announcements ensures predictable, resilient execution.",
+    "explanation": "Correct. In Web Accessibility (a11y & ARIA), Accessible Forms & Error Announcements ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes ARIA Roles & Attributes, not Accessible Forms & Error Announcements.",
+      "C": "Incorrect. This describes Screen Reader Testing, not Accessible Forms & Error Announcements.",
+      "D": "Incorrect. This describes Keyboard Navigation & Focus Management, not Accessible Forms & Error Announcements."
+    },
+    "mcqQuestion": "Web Accessibility (a11y & ARIA): How does Accessible Forms & Error Announcements operate in production enterprise applications (Q14)?"
+  },
+  {
+    "id": "iq-accessibility-0015",
+    "standard_id": "ACCESSIBILITY-MCQ-000015",
+    "questionNumber": 15,
+    "subject": "accessibility",
+    "category": "Screen Reader Testing",
+    "topic": "Screen Reader Testing",
+    "subtopic": "Screen Reader Testing Operations",
+    "concept": "Screen Reader Testing",
+    "difficulty": "EASY",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "FRESHER",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "accessibility",
+      "screen-reader-testing",
+      "frontend-interview"
+    ],
+    "question": "Web Accessibility (a11y & ARIA): How does Screen Reader Testing operate in production enterprise applications (Q15)?",
+    "shortAnswer": "In Web Accessibility (a11y & ARIA), Screen Reader Testing ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Screen Reader Testing** is an essential architectural concept in <u>Web Accessibility (a11y & ARIA)</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Screen Reader Testing** is an essential architectural concept in <u>Web Accessibility (a11y & ARIA)</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Screen Reader Testing** is an essential architectural concept in <u>Web Accessibility (a11y & ARIA)</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Screen Reader Testing in Web Accessibility (a11y & ARIA):\nexport function handleScreenReaderTesting(config) {\n  console.log('Executing Screen Reader Testing with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Screen Reader Testing in Web Accessibility (a11y & ARIA):\nexport function handleScreenReaderTesting(config) {\n  console.log('Executing Screen Reader Testing with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Screen Reader Testing in Web Accessibility (a11y & ARIA):\nexport function handleScreenReaderTesting(config) {\n  console.log('Executing Screen Reader Testing with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Screen Reader Testing in Web Accessibility (a11y & ARIA).",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Screen Reader Testing to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Screen Reader Testing.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Screen Reader Testing, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Screen Reader Testing, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Screen Reader Testing scale under extreme concurrency?",
+      "What monitoring tools can track Screen Reader Testing metrics in production?"
+    ],
+    "followUps": [
+      "How does Screen Reader Testing scale under extreme concurrency?",
+      "What monitoring tools can track Screen Reader Testing metrics in production?"
+    ],
+    "question_hash": "qh_74a71cd5",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Web Accessibility (a11y & ARIA), Keyboard Navigation & Focus Management ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Keyboard Navigation & Focus Management, not Screen Reader Testing."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Web Accessibility (a11y & ARIA), WCAG 2.2 Principles (POUR) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes WCAG 2.2 Principles (POUR), not Screen Reader Testing."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Web Accessibility (a11y & ARIA), Screen Reader Testing ensures predictable, resilient execution.",
+        "explanation": "Correct. In Web Accessibility (a11y & ARIA), Screen Reader Testing ensures predictable, resilient execution."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Web Accessibility (a11y & ARIA), Accessible Forms & Error Announcements ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Accessible Forms & Error Announcements, not Screen Reader Testing."
+      }
+    ],
+    "correctAnswer": "C",
+    "mcqExplanation": "Correct. In Web Accessibility (a11y & ARIA), Screen Reader Testing ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Keyboard Navigation & Focus Management, not Screen Reader Testing.",
+      "B": "Incorrect. This describes WCAG 2.2 Principles (POUR), not Screen Reader Testing.",
+      "D": "Incorrect. This describes Accessible Forms & Error Announcements, not Screen Reader Testing."
+    },
+    "correctOption": "C",
+    "explanation": "Correct. In Web Accessibility (a11y & ARIA), Screen Reader Testing ensures predictable, resilient execution.",
+    "mcqQuestion": "Web Accessibility (a11y & ARIA): How does Screen Reader Testing operate in production enterprise applications (Q15)?"
+  },
+  {
+    "id": "iq-accessibility-0016",
+    "standard_id": "ACCESSIBILITY-MCQ-000016",
+    "questionNumber": 16,
+    "subject": "accessibility",
+    "category": "WCAG 2.2 Principles (POUR)",
+    "topic": "WCAG 2.2 Principles (POUR)",
+    "subtopic": "WCAG 2.2 Principles (POUR) Operations",
+    "concept": "WCAG 2.2 Principles (POUR)",
+    "difficulty": "INTERMEDIATE",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "1_3_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "accessibility",
+      "wcag-2-2-principles--pour-",
+      "frontend-interview"
+    ],
+    "question": "Web Accessibility (a11y & ARIA): How does WCAG 2.2 Principles (POUR) operate in production enterprise applications (Q16)?",
+    "shortAnswer": "In Web Accessibility (a11y & ARIA), WCAG 2.2 Principles (POUR) ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**WCAG 2.2 Principles (POUR)** is an essential architectural concept in <u>Web Accessibility (a11y & ARIA)</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**WCAG 2.2 Principles (POUR)** is an essential architectural concept in <u>Web Accessibility (a11y & ARIA)</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**WCAG 2.2 Principles (POUR)** is an essential architectural concept in <u>Web Accessibility (a11y & ARIA)</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for WCAG 2.2 Principles (POUR) in Web Accessibility (a11y & ARIA):\nexport function handleWCAGPrinciplesPOUR(config) {\n  console.log('Executing WCAG 2.2 Principles (POUR) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for WCAG 2.2 Principles (POUR) in Web Accessibility (a11y & ARIA):\nexport function handleWCAGPrinciplesPOUR(config) {\n  console.log('Executing WCAG 2.2 Principles (POUR) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for WCAG 2.2 Principles (POUR) in Web Accessibility (a11y & ARIA):\nexport function handleWCAGPrinciplesPOUR(config) {\n  console.log('Executing WCAG 2.2 Principles (POUR) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of WCAG 2.2 Principles (POUR) in Web Accessibility (a11y & ARIA).",
+    "realWorldExample": "Enterprise high-scale web platforms utilize WCAG 2.2 Principles (POUR) to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with WCAG 2.2 Principles (POUR).",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about WCAG 2.2 Principles (POUR), explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about WCAG 2.2 Principles (POUR), explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does WCAG 2.2 Principles (POUR) scale under extreme concurrency?",
+      "What monitoring tools can track WCAG 2.2 Principles (POUR) metrics in production?"
+    ],
+    "followUps": [
+      "How does WCAG 2.2 Principles (POUR) scale under extreme concurrency?",
+      "What monitoring tools can track WCAG 2.2 Principles (POUR) metrics in production?"
+    ],
+    "question_hash": "qh_5657f6a6",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Web Accessibility (a11y & ARIA), Accessible Forms & Error Announcements ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Accessible Forms & Error Announcements, not WCAG 2.2 Principles (POUR)."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Web Accessibility (a11y & ARIA), ARIA Roles & Attributes ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes ARIA Roles & Attributes, not WCAG 2.2 Principles (POUR)."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Web Accessibility (a11y & ARIA), Screen Reader Testing ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Screen Reader Testing, not WCAG 2.2 Principles (POUR)."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Web Accessibility (a11y & ARIA), WCAG 2.2 Principles (POUR) ensures predictable, resilient execution.",
+        "explanation": "Correct. In Web Accessibility (a11y & ARIA), WCAG 2.2 Principles (POUR) ensures predictable, resilient execution."
+      }
+    ],
+    "correctAnswer": "D",
+    "correctOption": "D",
+    "mcqExplanation": "Correct. In Web Accessibility (a11y & ARIA), WCAG 2.2 Principles (POUR) ensures predictable, resilient execution.",
+    "explanation": "Correct. In Web Accessibility (a11y & ARIA), WCAG 2.2 Principles (POUR) ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Accessible Forms & Error Announcements, not WCAG 2.2 Principles (POUR).",
+      "B": "Incorrect. This describes ARIA Roles & Attributes, not WCAG 2.2 Principles (POUR).",
+      "C": "Incorrect. This describes Screen Reader Testing, not WCAG 2.2 Principles (POUR)."
+    },
+    "mcqQuestion": "Web Accessibility (a11y & ARIA): How does WCAG 2.2 Principles (POUR) operate in production enterprise applications (Q16)?"
+  },
+  {
+    "id": "iq-accessibility-0017",
+    "standard_id": "ACCESSIBILITY-MCQ-000017",
+    "questionNumber": 17,
+    "subject": "accessibility",
+    "category": "ARIA Roles & Attributes",
+    "topic": "ARIA Roles & Attributes",
+    "subtopic": "ARIA Roles & Attributes Operations",
+    "concept": "ARIA Roles & Attributes",
+    "difficulty": "DIFFICULT",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "3_5_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "accessibility",
+      "aria-roles---attributes",
+      "frontend-interview"
+    ],
+    "question": "Web Accessibility (a11y & ARIA): How does ARIA Roles & Attributes operate in production enterprise applications (Q17)?",
+    "shortAnswer": "In Web Accessibility (a11y & ARIA), ARIA Roles & Attributes ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**ARIA Roles & Attributes** is an essential architectural concept in <u>Web Accessibility (a11y & ARIA)</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**ARIA Roles & Attributes** is an essential architectural concept in <u>Web Accessibility (a11y & ARIA)</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**ARIA Roles & Attributes** is an essential architectural concept in <u>Web Accessibility (a11y & ARIA)</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for ARIA Roles & Attributes in Web Accessibility (a11y & ARIA):\nexport function handleARIARolesAttributes(config) {\n  console.log('Executing ARIA Roles & Attributes with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for ARIA Roles & Attributes in Web Accessibility (a11y & ARIA):\nexport function handleARIARolesAttributes(config) {\n  console.log('Executing ARIA Roles & Attributes with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for ARIA Roles & Attributes in Web Accessibility (a11y & ARIA):\nexport function handleARIARolesAttributes(config) {\n  console.log('Executing ARIA Roles & Attributes with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of ARIA Roles & Attributes in Web Accessibility (a11y & ARIA).",
+    "realWorldExample": "Enterprise high-scale web platforms utilize ARIA Roles & Attributes to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with ARIA Roles & Attributes.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about ARIA Roles & Attributes, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about ARIA Roles & Attributes, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does ARIA Roles & Attributes scale under extreme concurrency?",
+      "What monitoring tools can track ARIA Roles & Attributes metrics in production?"
+    ],
+    "followUps": [
+      "How does ARIA Roles & Attributes scale under extreme concurrency?",
+      "What monitoring tools can track ARIA Roles & Attributes metrics in production?"
+    ],
+    "question_hash": "qh_26219b59",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Web Accessibility (a11y & ARIA), ARIA Roles & Attributes ensures predictable, resilient execution.",
+        "explanation": "Correct. In Web Accessibility (a11y & ARIA), ARIA Roles & Attributes ensures predictable, resilient execution."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Web Accessibility (a11y & ARIA), Screen Reader Testing ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Screen Reader Testing, not ARIA Roles & Attributes."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Web Accessibility (a11y & ARIA), Keyboard Navigation & Focus Management ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Keyboard Navigation & Focus Management, not ARIA Roles & Attributes."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Web Accessibility (a11y & ARIA), WCAG 2.2 Principles (POUR) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes WCAG 2.2 Principles (POUR), not ARIA Roles & Attributes."
+      }
+    ],
+    "correctAnswer": "A",
+    "mcqExplanation": "Correct. In Web Accessibility (a11y & ARIA), ARIA Roles & Attributes ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "B": "Incorrect. This describes Screen Reader Testing, not ARIA Roles & Attributes.",
+      "C": "Incorrect. This describes Keyboard Navigation & Focus Management, not ARIA Roles & Attributes.",
+      "D": "Incorrect. This describes WCAG 2.2 Principles (POUR), not ARIA Roles & Attributes."
+    },
+    "correctOption": "A",
+    "explanation": "Correct. In Web Accessibility (a11y & ARIA), ARIA Roles & Attributes ensures predictable, resilient execution.",
+    "mcqQuestion": "Web Accessibility (a11y & ARIA): How does ARIA Roles & Attributes operate in production enterprise applications (Q17)?"
+  },
+  {
+    "id": "iq-accessibility-0018",
+    "standard_id": "ACCESSIBILITY-MCQ-000018",
+    "questionNumber": 18,
+    "subject": "accessibility",
+    "category": "Keyboard Navigation & Focus Management",
+    "topic": "Keyboard Navigation & Focus Management",
+    "subtopic": "Keyboard Navigation & Focus Management Operations",
+    "concept": "Keyboard Navigation & Focus Management",
+    "difficulty": "EASY",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "FRESHER",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "accessibility",
+      "keyboard-navigation---focus-management",
+      "frontend-interview"
+    ],
+    "question": "Web Accessibility (a11y & ARIA): How does Keyboard Navigation & Focus Management operate in production enterprise applications (Q18)?",
+    "shortAnswer": "In Web Accessibility (a11y & ARIA), Keyboard Navigation & Focus Management ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Keyboard Navigation & Focus Management** is an essential architectural concept in <u>Web Accessibility (a11y & ARIA)</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Keyboard Navigation & Focus Management** is an essential architectural concept in <u>Web Accessibility (a11y & ARIA)</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Keyboard Navigation & Focus Management** is an essential architectural concept in <u>Web Accessibility (a11y & ARIA)</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Keyboard Navigation & Focus Management in Web Accessibility (a11y & ARIA):\nexport function handleKeyboardNavigationFocusManagement(config) {\n  console.log('Executing Keyboard Navigation & Focus Management with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Keyboard Navigation & Focus Management in Web Accessibility (a11y & ARIA):\nexport function handleKeyboardNavigationFocusManagement(config) {\n  console.log('Executing Keyboard Navigation & Focus Management with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Keyboard Navigation & Focus Management in Web Accessibility (a11y & ARIA):\nexport function handleKeyboardNavigationFocusManagement(config) {\n  console.log('Executing Keyboard Navigation & Focus Management with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Keyboard Navigation & Focus Management in Web Accessibility (a11y & ARIA).",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Keyboard Navigation & Focus Management to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Keyboard Navigation & Focus Management.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Keyboard Navigation & Focus Management, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Keyboard Navigation & Focus Management, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Keyboard Navigation & Focus Management scale under extreme concurrency?",
+      "What monitoring tools can track Keyboard Navigation & Focus Management metrics in production?"
+    ],
+    "followUps": [
+      "How does Keyboard Navigation & Focus Management scale under extreme concurrency?",
+      "What monitoring tools can track Keyboard Navigation & Focus Management metrics in production?"
+    ],
+    "question_hash": "qh_738e1694",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Web Accessibility (a11y & ARIA), WCAG 2.2 Principles (POUR) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes WCAG 2.2 Principles (POUR), not Keyboard Navigation & Focus Management."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Web Accessibility (a11y & ARIA), Keyboard Navigation & Focus Management ensures predictable, resilient execution.",
+        "explanation": "Correct. In Web Accessibility (a11y & ARIA), Keyboard Navigation & Focus Management ensures predictable, resilient execution."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Web Accessibility (a11y & ARIA), Accessible Forms & Error Announcements ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Accessible Forms & Error Announcements, not Keyboard Navigation & Focus Management."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Web Accessibility (a11y & ARIA), ARIA Roles & Attributes ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes ARIA Roles & Attributes, not Keyboard Navigation & Focus Management."
+      }
+    ],
+    "correctAnswer": "B",
+    "correctOption": "B",
+    "mcqExplanation": "Correct. In Web Accessibility (a11y & ARIA), Keyboard Navigation & Focus Management ensures predictable, resilient execution.",
+    "explanation": "Correct. In Web Accessibility (a11y & ARIA), Keyboard Navigation & Focus Management ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes WCAG 2.2 Principles (POUR), not Keyboard Navigation & Focus Management.",
+      "C": "Incorrect. This describes Accessible Forms & Error Announcements, not Keyboard Navigation & Focus Management.",
+      "D": "Incorrect. This describes ARIA Roles & Attributes, not Keyboard Navigation & Focus Management."
+    },
+    "mcqQuestion": "Web Accessibility (a11y & ARIA): How does Keyboard Navigation & Focus Management operate in production enterprise applications (Q18)?"
+  },
+  {
+    "id": "iq-accessibility-0019",
+    "standard_id": "ACCESSIBILITY-MCQ-000019",
+    "questionNumber": 19,
+    "subject": "accessibility",
+    "category": "Accessible Forms & Error Announcements",
+    "topic": "Accessible Forms & Error Announcements",
+    "subtopic": "Accessible Forms & Error Announcements Operations",
+    "concept": "Accessible Forms & Error Announcements",
+    "difficulty": "INTERMEDIATE",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "1_3_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "accessibility",
+      "accessible-forms---error-announcements",
+      "frontend-interview"
+    ],
+    "question": "Web Accessibility (a11y & ARIA): How does Accessible Forms & Error Announcements operate in production enterprise applications (Q19)?",
+    "shortAnswer": "In Web Accessibility (a11y & ARIA), Accessible Forms & Error Announcements ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Accessible Forms & Error Announcements** is an essential architectural concept in <u>Web Accessibility (a11y & ARIA)</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Accessible Forms & Error Announcements** is an essential architectural concept in <u>Web Accessibility (a11y & ARIA)</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Accessible Forms & Error Announcements** is an essential architectural concept in <u>Web Accessibility (a11y & ARIA)</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Accessible Forms & Error Announcements in Web Accessibility (a11y & ARIA):\nexport function handleAccessibleFormsErrorAnnouncements(config) {\n  console.log('Executing Accessible Forms & Error Announcements with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Accessible Forms & Error Announcements in Web Accessibility (a11y & ARIA):\nexport function handleAccessibleFormsErrorAnnouncements(config) {\n  console.log('Executing Accessible Forms & Error Announcements with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Accessible Forms & Error Announcements in Web Accessibility (a11y & ARIA):\nexport function handleAccessibleFormsErrorAnnouncements(config) {\n  console.log('Executing Accessible Forms & Error Announcements with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Accessible Forms & Error Announcements in Web Accessibility (a11y & ARIA).",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Accessible Forms & Error Announcements to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Accessible Forms & Error Announcements.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Accessible Forms & Error Announcements, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Accessible Forms & Error Announcements, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Accessible Forms & Error Announcements scale under extreme concurrency?",
+      "What monitoring tools can track Accessible Forms & Error Announcements metrics in production?"
+    ],
+    "followUps": [
+      "How does Accessible Forms & Error Announcements scale under extreme concurrency?",
+      "What monitoring tools can track Accessible Forms & Error Announcements metrics in production?"
+    ],
+    "question_hash": "qh_7fb0ede7",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Web Accessibility (a11y & ARIA), ARIA Roles & Attributes ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes ARIA Roles & Attributes, not Accessible Forms & Error Announcements."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Web Accessibility (a11y & ARIA), Screen Reader Testing ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Screen Reader Testing, not Accessible Forms & Error Announcements."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Web Accessibility (a11y & ARIA), Accessible Forms & Error Announcements ensures predictable, resilient execution.",
+        "explanation": "Correct. In Web Accessibility (a11y & ARIA), Accessible Forms & Error Announcements ensures predictable, resilient execution."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Web Accessibility (a11y & ARIA), Keyboard Navigation & Focus Management ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Keyboard Navigation & Focus Management, not Accessible Forms & Error Announcements."
+      }
+    ],
+    "correctAnswer": "C",
+    "mcqExplanation": "Correct. In Web Accessibility (a11y & ARIA), Accessible Forms & Error Announcements ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes ARIA Roles & Attributes, not Accessible Forms & Error Announcements.",
+      "B": "Incorrect. This describes Screen Reader Testing, not Accessible Forms & Error Announcements.",
+      "D": "Incorrect. This describes Keyboard Navigation & Focus Management, not Accessible Forms & Error Announcements."
+    },
+    "correctOption": "C",
+    "explanation": "Correct. In Web Accessibility (a11y & ARIA), Accessible Forms & Error Announcements ensures predictable, resilient execution.",
+    "mcqQuestion": "Web Accessibility (a11y & ARIA): How does Accessible Forms & Error Announcements operate in production enterprise applications (Q19)?"
+  },
+  {
+    "id": "iq-accessibility-0020",
+    "standard_id": "ACCESSIBILITY-MCQ-000020",
+    "questionNumber": 20,
+    "subject": "accessibility",
+    "category": "Screen Reader Testing",
+    "topic": "Screen Reader Testing",
+    "subtopic": "Screen Reader Testing Operations",
+    "concept": "Screen Reader Testing",
+    "difficulty": "DIFFICULT",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "3_5_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "accessibility",
+      "screen-reader-testing",
+      "frontend-interview"
+    ],
+    "question": "Web Accessibility (a11y & ARIA): How does Screen Reader Testing operate in production enterprise applications (Q20)?",
+    "shortAnswer": "In Web Accessibility (a11y & ARIA), Screen Reader Testing ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Screen Reader Testing** is an essential architectural concept in <u>Web Accessibility (a11y & ARIA)</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Screen Reader Testing** is an essential architectural concept in <u>Web Accessibility (a11y & ARIA)</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Screen Reader Testing** is an essential architectural concept in <u>Web Accessibility (a11y & ARIA)</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Screen Reader Testing in Web Accessibility (a11y & ARIA):\nexport function handleScreenReaderTesting(config) {\n  console.log('Executing Screen Reader Testing with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Screen Reader Testing in Web Accessibility (a11y & ARIA):\nexport function handleScreenReaderTesting(config) {\n  console.log('Executing Screen Reader Testing with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Screen Reader Testing in Web Accessibility (a11y & ARIA):\nexport function handleScreenReaderTesting(config) {\n  console.log('Executing Screen Reader Testing with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Screen Reader Testing in Web Accessibility (a11y & ARIA).",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Screen Reader Testing to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Screen Reader Testing.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Screen Reader Testing, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Screen Reader Testing, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Screen Reader Testing scale under extreme concurrency?",
+      "What monitoring tools can track Screen Reader Testing metrics in production?"
+    ],
+    "followUps": [
+      "How does Screen Reader Testing scale under extreme concurrency?",
+      "What monitoring tools can track Screen Reader Testing metrics in production?"
+    ],
+    "question_hash": "qh_74a71cbb",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Web Accessibility (a11y & ARIA), Keyboard Navigation & Focus Management ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Keyboard Navigation & Focus Management, not Screen Reader Testing."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Web Accessibility (a11y & ARIA), WCAG 2.2 Principles (POUR) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes WCAG 2.2 Principles (POUR), not Screen Reader Testing."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Web Accessibility (a11y & ARIA), Accessible Forms & Error Announcements ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Accessible Forms & Error Announcements, not Screen Reader Testing."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Web Accessibility (a11y & ARIA), Screen Reader Testing ensures predictable, resilient execution.",
+        "explanation": "Correct. In Web Accessibility (a11y & ARIA), Screen Reader Testing ensures predictable, resilient execution."
+      }
+    ],
+    "correctAnswer": "D",
+    "correctOption": "D",
+    "mcqExplanation": "Correct. In Web Accessibility (a11y & ARIA), Screen Reader Testing ensures predictable, resilient execution.",
+    "explanation": "Correct. In Web Accessibility (a11y & ARIA), Screen Reader Testing ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Keyboard Navigation & Focus Management, not Screen Reader Testing.",
+      "B": "Incorrect. This describes WCAG 2.2 Principles (POUR), not Screen Reader Testing.",
+      "C": "Incorrect. This describes Accessible Forms & Error Announcements, not Screen Reader Testing."
+    },
+    "mcqQuestion": "Web Accessibility (a11y & ARIA): How does Screen Reader Testing operate in production enterprise applications (Q20)?"
+  },
+  {
+    "id": "iq-accessibility-0021",
+    "standard_id": "ACCESSIBILITY-MCQ-000021",
+    "questionNumber": 21,
+    "subject": "accessibility",
+    "category": "WCAG 2.2 Principles (POUR)",
+    "topic": "WCAG 2.2 Principles (POUR)",
+    "subtopic": "WCAG 2.2 Principles (POUR) Operations",
+    "concept": "WCAG 2.2 Principles (POUR)",
+    "difficulty": "EASY",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "FRESHER",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "accessibility",
+      "wcag-2-2-principles--pour-",
+      "frontend-interview"
+    ],
+    "question": "Web Accessibility (a11y & ARIA): How does WCAG 2.2 Principles (POUR) operate in production enterprise applications (Q21)?",
+    "shortAnswer": "In Web Accessibility (a11y & ARIA), WCAG 2.2 Principles (POUR) ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**WCAG 2.2 Principles (POUR)** is an essential architectural concept in <u>Web Accessibility (a11y & ARIA)</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**WCAG 2.2 Principles (POUR)** is an essential architectural concept in <u>Web Accessibility (a11y & ARIA)</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**WCAG 2.2 Principles (POUR)** is an essential architectural concept in <u>Web Accessibility (a11y & ARIA)</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for WCAG 2.2 Principles (POUR) in Web Accessibility (a11y & ARIA):\nexport function handleWCAGPrinciplesPOUR(config) {\n  console.log('Executing WCAG 2.2 Principles (POUR) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for WCAG 2.2 Principles (POUR) in Web Accessibility (a11y & ARIA):\nexport function handleWCAGPrinciplesPOUR(config) {\n  console.log('Executing WCAG 2.2 Principles (POUR) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for WCAG 2.2 Principles (POUR) in Web Accessibility (a11y & ARIA):\nexport function handleWCAGPrinciplesPOUR(config) {\n  console.log('Executing WCAG 2.2 Principles (POUR) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of WCAG 2.2 Principles (POUR) in Web Accessibility (a11y & ARIA).",
+    "realWorldExample": "Enterprise high-scale web platforms utilize WCAG 2.2 Principles (POUR) to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with WCAG 2.2 Principles (POUR).",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about WCAG 2.2 Principles (POUR), explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about WCAG 2.2 Principles (POUR), explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does WCAG 2.2 Principles (POUR) scale under extreme concurrency?",
+      "What monitoring tools can track WCAG 2.2 Principles (POUR) metrics in production?"
+    ],
+    "followUps": [
+      "How does WCAG 2.2 Principles (POUR) scale under extreme concurrency?",
+      "What monitoring tools can track WCAG 2.2 Principles (POUR) metrics in production?"
+    ],
+    "question_hash": "qh_5657f68c",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Web Accessibility (a11y & ARIA), WCAG 2.2 Principles (POUR) ensures predictable, resilient execution.",
+        "explanation": "Correct. In Web Accessibility (a11y & ARIA), WCAG 2.2 Principles (POUR) ensures predictable, resilient execution."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Web Accessibility (a11y & ARIA), Accessible Forms & Error Announcements ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Accessible Forms & Error Announcements, not WCAG 2.2 Principles (POUR)."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Web Accessibility (a11y & ARIA), ARIA Roles & Attributes ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes ARIA Roles & Attributes, not WCAG 2.2 Principles (POUR)."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Web Accessibility (a11y & ARIA), Screen Reader Testing ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Screen Reader Testing, not WCAG 2.2 Principles (POUR)."
+      }
+    ],
+    "correctAnswer": "A",
+    "mcqExplanation": "Correct. In Web Accessibility (a11y & ARIA), WCAG 2.2 Principles (POUR) ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "B": "Incorrect. This describes Accessible Forms & Error Announcements, not WCAG 2.2 Principles (POUR).",
+      "C": "Incorrect. This describes ARIA Roles & Attributes, not WCAG 2.2 Principles (POUR).",
+      "D": "Incorrect. This describes Screen Reader Testing, not WCAG 2.2 Principles (POUR)."
+    },
+    "correctOption": "A",
+    "explanation": "Correct. In Web Accessibility (a11y & ARIA), WCAG 2.2 Principles (POUR) ensures predictable, resilient execution.",
+    "mcqQuestion": "Web Accessibility (a11y & ARIA): How does WCAG 2.2 Principles (POUR) operate in production enterprise applications (Q21)?"
+  },
+  {
+    "id": "iq-accessibility-0022",
+    "standard_id": "ACCESSIBILITY-MCQ-000022",
+    "questionNumber": 22,
+    "subject": "accessibility",
+    "category": "ARIA Roles & Attributes",
+    "topic": "ARIA Roles & Attributes",
+    "subtopic": "ARIA Roles & Attributes Operations",
+    "concept": "ARIA Roles & Attributes",
+    "difficulty": "INTERMEDIATE",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "1_3_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "accessibility",
+      "aria-roles---attributes",
+      "frontend-interview"
+    ],
+    "question": "Web Accessibility (a11y & ARIA): How does ARIA Roles & Attributes operate in production enterprise applications (Q22)?",
+    "shortAnswer": "In Web Accessibility (a11y & ARIA), ARIA Roles & Attributes ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**ARIA Roles & Attributes** is an essential architectural concept in <u>Web Accessibility (a11y & ARIA)</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**ARIA Roles & Attributes** is an essential architectural concept in <u>Web Accessibility (a11y & ARIA)</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**ARIA Roles & Attributes** is an essential architectural concept in <u>Web Accessibility (a11y & ARIA)</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for ARIA Roles & Attributes in Web Accessibility (a11y & ARIA):\nexport function handleARIARolesAttributes(config) {\n  console.log('Executing ARIA Roles & Attributes with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for ARIA Roles & Attributes in Web Accessibility (a11y & ARIA):\nexport function handleARIARolesAttributes(config) {\n  console.log('Executing ARIA Roles & Attributes with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for ARIA Roles & Attributes in Web Accessibility (a11y & ARIA):\nexport function handleARIARolesAttributes(config) {\n  console.log('Executing ARIA Roles & Attributes with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of ARIA Roles & Attributes in Web Accessibility (a11y & ARIA).",
+    "realWorldExample": "Enterprise high-scale web platforms utilize ARIA Roles & Attributes to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with ARIA Roles & Attributes.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about ARIA Roles & Attributes, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about ARIA Roles & Attributes, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does ARIA Roles & Attributes scale under extreme concurrency?",
+      "What monitoring tools can track ARIA Roles & Attributes metrics in production?"
+    ],
+    "followUps": [
+      "How does ARIA Roles & Attributes scale under extreme concurrency?",
+      "What monitoring tools can track ARIA Roles & Attributes metrics in production?"
+    ],
+    "question_hash": "qh_26219b3f",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Web Accessibility (a11y & ARIA), Screen Reader Testing ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Screen Reader Testing, not ARIA Roles & Attributes."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Web Accessibility (a11y & ARIA), ARIA Roles & Attributes ensures predictable, resilient execution.",
+        "explanation": "Correct. In Web Accessibility (a11y & ARIA), ARIA Roles & Attributes ensures predictable, resilient execution."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Web Accessibility (a11y & ARIA), Keyboard Navigation & Focus Management ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Keyboard Navigation & Focus Management, not ARIA Roles & Attributes."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "The First Rule of ARIA states: 'If you can use a native HTML element or attribute with the semantics and behavior already built in, do so instead of re-purposing an element and adding ARIA.' For accessible...",
+        "explanation": "Incorrect. This describes First Rule of ARIA & Focus Trap, not ARIA Roles & Attributes."
+      }
+    ],
+    "correctAnswer": "B",
+    "correctOption": "B",
+    "mcqExplanation": "Correct. In Web Accessibility (a11y & ARIA), ARIA Roles & Attributes ensures predictable, resilient execution.",
+    "explanation": "Correct. In Web Accessibility (a11y & ARIA), ARIA Roles & Attributes ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Screen Reader Testing, not ARIA Roles & Attributes.",
+      "C": "Incorrect. This describes Keyboard Navigation & Focus Management, not ARIA Roles & Attributes.",
+      "D": "Incorrect. This describes First Rule of ARIA & Focus Trap, not ARIA Roles & Attributes."
+    },
+    "mcqQuestion": "Web Accessibility (a11y & ARIA): How does ARIA Roles & Attributes operate in production enterprise applications (Q22)?"
+  },
+  {
+    "id": "iq-accessibility-0023",
+    "standard_id": "ACCESSIBILITY-MCQ-000023",
+    "questionNumber": 23,
+    "subject": "accessibility",
+    "category": "Keyboard Navigation & Focus Management",
+    "topic": "Keyboard Navigation & Focus Management",
+    "subtopic": "Keyboard Navigation & Focus Management Operations",
+    "concept": "Keyboard Navigation & Focus Management",
+    "difficulty": "DIFFICULT",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "3_5_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "accessibility",
+      "keyboard-navigation---focus-management",
+      "frontend-interview"
+    ],
+    "question": "Web Accessibility (a11y & ARIA): How does Keyboard Navigation & Focus Management operate in production enterprise applications (Q23)?",
+    "shortAnswer": "In Web Accessibility (a11y & ARIA), Keyboard Navigation & Focus Management ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Keyboard Navigation & Focus Management** is an essential architectural concept in <u>Web Accessibility (a11y & ARIA)</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Keyboard Navigation & Focus Management** is an essential architectural concept in <u>Web Accessibility (a11y & ARIA)</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Keyboard Navigation & Focus Management** is an essential architectural concept in <u>Web Accessibility (a11y & ARIA)</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Keyboard Navigation & Focus Management in Web Accessibility (a11y & ARIA):\nexport function handleKeyboardNavigationFocusManagement(config) {\n  console.log('Executing Keyboard Navigation & Focus Management with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Keyboard Navigation & Focus Management in Web Accessibility (a11y & ARIA):\nexport function handleKeyboardNavigationFocusManagement(config) {\n  console.log('Executing Keyboard Navigation & Focus Management with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Keyboard Navigation & Focus Management in Web Accessibility (a11y & ARIA):\nexport function handleKeyboardNavigationFocusManagement(config) {\n  console.log('Executing Keyboard Navigation & Focus Management with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Keyboard Navigation & Focus Management in Web Accessibility (a11y & ARIA).",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Keyboard Navigation & Focus Management to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Keyboard Navigation & Focus Management.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Keyboard Navigation & Focus Management, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Keyboard Navigation & Focus Management, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Keyboard Navigation & Focus Management scale under extreme concurrency?",
+      "What monitoring tools can track Keyboard Navigation & Focus Management metrics in production?"
+    ],
+    "followUps": [
+      "How does Keyboard Navigation & Focus Management scale under extreme concurrency?",
+      "What monitoring tools can track Keyboard Navigation & Focus Management metrics in production?"
+    ],
+    "question_hash": "qh_738e16ae",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Web Accessibility (a11y & ARIA), WCAG 2.2 Principles (POUR) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes WCAG 2.2 Principles (POUR), not Keyboard Navigation & Focus Management."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Web Accessibility (a11y & ARIA), Accessible Forms & Error Announcements ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Accessible Forms & Error Announcements, not Keyboard Navigation & Focus Management."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Web Accessibility (a11y & ARIA), Keyboard Navigation & Focus Management ensures predictable, resilient execution.",
+        "explanation": "Correct. In Web Accessibility (a11y & ARIA), Keyboard Navigation & Focus Management ensures predictable, resilient execution."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Web Accessibility (a11y & ARIA), ARIA Roles & Attributes ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes ARIA Roles & Attributes, not Keyboard Navigation & Focus Management."
+      }
+    ],
+    "correctAnswer": "C",
+    "mcqExplanation": "Correct. In Web Accessibility (a11y & ARIA), Keyboard Navigation & Focus Management ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes WCAG 2.2 Principles (POUR), not Keyboard Navigation & Focus Management.",
+      "B": "Incorrect. This describes Accessible Forms & Error Announcements, not Keyboard Navigation & Focus Management.",
+      "D": "Incorrect. This describes ARIA Roles & Attributes, not Keyboard Navigation & Focus Management."
+    },
+    "correctOption": "C",
+    "explanation": "Correct. In Web Accessibility (a11y & ARIA), Keyboard Navigation & Focus Management ensures predictable, resilient execution.",
+    "mcqQuestion": "Web Accessibility (a11y & ARIA): How does Keyboard Navigation & Focus Management operate in production enterprise applications (Q23)?"
+  },
+  {
+    "id": "iq-accessibility-0024",
+    "standard_id": "ACCESSIBILITY-MCQ-000024",
+    "questionNumber": 24,
+    "subject": "accessibility",
+    "category": "Accessible Forms & Error Announcements",
+    "topic": "Accessible Forms & Error Announcements",
+    "subtopic": "Accessible Forms & Error Announcements Operations",
+    "concept": "Accessible Forms & Error Announcements",
+    "difficulty": "EASY",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "FRESHER",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "accessibility",
+      "accessible-forms---error-announcements",
+      "frontend-interview"
+    ],
+    "question": "Web Accessibility (a11y & ARIA): How does Accessible Forms & Error Announcements operate in production enterprise applications (Q24)?",
+    "shortAnswer": "In Web Accessibility (a11y & ARIA), Accessible Forms & Error Announcements ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Accessible Forms & Error Announcements** is an essential architectural concept in <u>Web Accessibility (a11y & ARIA)</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Accessible Forms & Error Announcements** is an essential architectural concept in <u>Web Accessibility (a11y & ARIA)</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Accessible Forms & Error Announcements** is an essential architectural concept in <u>Web Accessibility (a11y & ARIA)</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Accessible Forms & Error Announcements in Web Accessibility (a11y & ARIA):\nexport function handleAccessibleFormsErrorAnnouncements(config) {\n  console.log('Executing Accessible Forms & Error Announcements with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Accessible Forms & Error Announcements in Web Accessibility (a11y & ARIA):\nexport function handleAccessibleFormsErrorAnnouncements(config) {\n  console.log('Executing Accessible Forms & Error Announcements with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Accessible Forms & Error Announcements in Web Accessibility (a11y & ARIA):\nexport function handleAccessibleFormsErrorAnnouncements(config) {\n  console.log('Executing Accessible Forms & Error Announcements with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Accessible Forms & Error Announcements in Web Accessibility (a11y & ARIA).",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Accessible Forms & Error Announcements to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Accessible Forms & Error Announcements.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Accessible Forms & Error Announcements, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Accessible Forms & Error Announcements, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Accessible Forms & Error Announcements scale under extreme concurrency?",
+      "What monitoring tools can track Accessible Forms & Error Announcements metrics in production?"
+    ],
+    "followUps": [
+      "How does Accessible Forms & Error Announcements scale under extreme concurrency?",
+      "What monitoring tools can track Accessible Forms & Error Announcements metrics in production?"
+    ],
+    "question_hash": "qh_7fb0edcd",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Web Accessibility (a11y & ARIA), ARIA Roles & Attributes ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes ARIA Roles & Attributes, not Accessible Forms & Error Announcements."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Web Accessibility (a11y & ARIA), Screen Reader Testing ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Screen Reader Testing, not Accessible Forms & Error Announcements."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Web Accessibility (a11y & ARIA), Keyboard Navigation & Focus Management ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Keyboard Navigation & Focus Management, not Accessible Forms & Error Announcements."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Web Accessibility (a11y & ARIA), Accessible Forms & Error Announcements ensures predictable, resilient execution.",
+        "explanation": "Correct. In Web Accessibility (a11y & ARIA), Accessible Forms & Error Announcements ensures predictable, resilient execution."
+      }
+    ],
+    "correctAnswer": "D",
+    "correctOption": "D",
+    "mcqExplanation": "Correct. In Web Accessibility (a11y & ARIA), Accessible Forms & Error Announcements ensures predictable, resilient execution.",
+    "explanation": "Correct. In Web Accessibility (a11y & ARIA), Accessible Forms & Error Announcements ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes ARIA Roles & Attributes, not Accessible Forms & Error Announcements.",
+      "B": "Incorrect. This describes Screen Reader Testing, not Accessible Forms & Error Announcements.",
+      "C": "Incorrect. This describes Keyboard Navigation & Focus Management, not Accessible Forms & Error Announcements."
+    },
+    "mcqQuestion": "Web Accessibility (a11y & ARIA): How does Accessible Forms & Error Announcements operate in production enterprise applications (Q24)?"
+  },
+  {
+    "id": "iq-accessibility-0025",
+    "standard_id": "ACCESSIBILITY-MCQ-000025",
+    "questionNumber": 25,
+    "subject": "accessibility",
+    "category": "Screen Reader Testing",
+    "topic": "Screen Reader Testing",
+    "subtopic": "Screen Reader Testing Operations",
+    "concept": "Screen Reader Testing",
+    "difficulty": "INTERMEDIATE",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "1_3_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "accessibility",
+      "screen-reader-testing",
+      "frontend-interview"
+    ],
+    "question": "Web Accessibility (a11y & ARIA): How does Screen Reader Testing operate in production enterprise applications (Q25)?",
+    "shortAnswer": "In Web Accessibility (a11y & ARIA), Screen Reader Testing ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Screen Reader Testing** is an essential architectural concept in <u>Web Accessibility (a11y & ARIA)</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Screen Reader Testing** is an essential architectural concept in <u>Web Accessibility (a11y & ARIA)</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Screen Reader Testing** is an essential architectural concept in <u>Web Accessibility (a11y & ARIA)</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Screen Reader Testing in Web Accessibility (a11y & ARIA):\nexport function handleScreenReaderTesting(config) {\n  console.log('Executing Screen Reader Testing with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Screen Reader Testing in Web Accessibility (a11y & ARIA):\nexport function handleScreenReaderTesting(config) {\n  console.log('Executing Screen Reader Testing with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Screen Reader Testing in Web Accessibility (a11y & ARIA):\nexport function handleScreenReaderTesting(config) {\n  console.log('Executing Screen Reader Testing with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Screen Reader Testing in Web Accessibility (a11y & ARIA).",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Screen Reader Testing to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Screen Reader Testing.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Screen Reader Testing, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Screen Reader Testing, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Screen Reader Testing scale under extreme concurrency?",
+      "What monitoring tools can track Screen Reader Testing metrics in production?"
+    ],
+    "followUps": [
+      "How does Screen Reader Testing scale under extreme concurrency?",
+      "What monitoring tools can track Screen Reader Testing metrics in production?"
+    ],
+    "question_hash": "qh_74a71cb6",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Web Accessibility (a11y & ARIA), Screen Reader Testing ensures predictable, resilient execution.",
+        "explanation": "Correct. In Web Accessibility (a11y & ARIA), Screen Reader Testing ensures predictable, resilient execution."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Web Accessibility (a11y & ARIA), Keyboard Navigation & Focus Management ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Keyboard Navigation & Focus Management, not Screen Reader Testing."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "The First Rule of ARIA states: 'If you can use a native HTML element or attribute with the semantics and behavior already built in, do so instead of re-purposing an element and adding ARIA.' For accessible...",
+        "explanation": "Incorrect. This describes First Rule of ARIA & Focus Trap, not Screen Reader Testing."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Web Accessibility (a11y & ARIA), Accessible Forms & Error Announcements ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Accessible Forms & Error Announcements, not Screen Reader Testing."
+      }
+    ],
+    "correctAnswer": "A",
+    "mcqExplanation": "Correct. In Web Accessibility (a11y & ARIA), Screen Reader Testing ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "B": "Incorrect. This describes Keyboard Navigation & Focus Management, not Screen Reader Testing.",
+      "C": "Incorrect. This describes First Rule of ARIA & Focus Trap, not Screen Reader Testing.",
+      "D": "Incorrect. This describes Accessible Forms & Error Announcements, not Screen Reader Testing."
+    },
+    "correctOption": "A",
+    "explanation": "Correct. In Web Accessibility (a11y & ARIA), Screen Reader Testing ensures predictable, resilient execution.",
+    "mcqQuestion": "Web Accessibility (a11y & ARIA): How does Screen Reader Testing operate in production enterprise applications (Q25)?"
+  },
+  {
+    "id": "iq-accessibility-0026",
+    "standard_id": "ACCESSIBILITY-MCQ-000026",
+    "questionNumber": 26,
+    "subject": "accessibility",
+    "category": "WCAG 2.2 Principles (POUR)",
+    "topic": "WCAG 2.2 Principles (POUR)",
+    "subtopic": "WCAG 2.2 Principles (POUR) Operations",
+    "concept": "WCAG 2.2 Principles (POUR)",
+    "difficulty": "DIFFICULT",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "3_5_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "accessibility",
+      "wcag-2-2-principles--pour-",
+      "frontend-interview"
+    ],
+    "question": "Web Accessibility (a11y & ARIA): How does WCAG 2.2 Principles (POUR) operate in production enterprise applications (Q26)?",
+    "shortAnswer": "In Web Accessibility (a11y & ARIA), WCAG 2.2 Principles (POUR) ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**WCAG 2.2 Principles (POUR)** is an essential architectural concept in <u>Web Accessibility (a11y & ARIA)</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**WCAG 2.2 Principles (POUR)** is an essential architectural concept in <u>Web Accessibility (a11y & ARIA)</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**WCAG 2.2 Principles (POUR)** is an essential architectural concept in <u>Web Accessibility (a11y & ARIA)</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for WCAG 2.2 Principles (POUR) in Web Accessibility (a11y & ARIA):\nexport function handleWCAGPrinciplesPOUR(config) {\n  console.log('Executing WCAG 2.2 Principles (POUR) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for WCAG 2.2 Principles (POUR) in Web Accessibility (a11y & ARIA):\nexport function handleWCAGPrinciplesPOUR(config) {\n  console.log('Executing WCAG 2.2 Principles (POUR) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for WCAG 2.2 Principles (POUR) in Web Accessibility (a11y & ARIA):\nexport function handleWCAGPrinciplesPOUR(config) {\n  console.log('Executing WCAG 2.2 Principles (POUR) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of WCAG 2.2 Principles (POUR) in Web Accessibility (a11y & ARIA).",
+    "realWorldExample": "Enterprise high-scale web platforms utilize WCAG 2.2 Principles (POUR) to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with WCAG 2.2 Principles (POUR).",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about WCAG 2.2 Principles (POUR), explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about WCAG 2.2 Principles (POUR), explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does WCAG 2.2 Principles (POUR) scale under extreme concurrency?",
+      "What monitoring tools can track WCAG 2.2 Principles (POUR) metrics in production?"
+    ],
+    "followUps": [
+      "How does WCAG 2.2 Principles (POUR) scale under extreme concurrency?",
+      "What monitoring tools can track WCAG 2.2 Principles (POUR) metrics in production?"
+    ],
+    "question_hash": "qh_5657f687",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Web Accessibility (a11y & ARIA), Accessible Forms & Error Announcements ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Accessible Forms & Error Announcements, not WCAG 2.2 Principles (POUR)."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Web Accessibility (a11y & ARIA), WCAG 2.2 Principles (POUR) ensures predictable, resilient execution.",
+        "explanation": "Correct. In Web Accessibility (a11y & ARIA), WCAG 2.2 Principles (POUR) ensures predictable, resilient execution."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Web Accessibility (a11y & ARIA), ARIA Roles & Attributes ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes ARIA Roles & Attributes, not WCAG 2.2 Principles (POUR)."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Web Accessibility (a11y & ARIA), Screen Reader Testing ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Screen Reader Testing, not WCAG 2.2 Principles (POUR)."
+      }
+    ],
+    "correctAnswer": "B",
+    "correctOption": "B",
+    "mcqExplanation": "Correct. In Web Accessibility (a11y & ARIA), WCAG 2.2 Principles (POUR) ensures predictable, resilient execution.",
+    "explanation": "Correct. In Web Accessibility (a11y & ARIA), WCAG 2.2 Principles (POUR) ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Accessible Forms & Error Announcements, not WCAG 2.2 Principles (POUR).",
+      "C": "Incorrect. This describes ARIA Roles & Attributes, not WCAG 2.2 Principles (POUR).",
+      "D": "Incorrect. This describes Screen Reader Testing, not WCAG 2.2 Principles (POUR)."
+    },
+    "mcqQuestion": "Web Accessibility (a11y & ARIA): How does WCAG 2.2 Principles (POUR) operate in production enterprise applications (Q26)?"
+  },
+  {
+    "id": "iq-accessibility-0027",
+    "standard_id": "ACCESSIBILITY-MCQ-000027",
+    "questionNumber": 27,
+    "subject": "accessibility",
+    "category": "ARIA Roles & Attributes",
+    "topic": "ARIA Roles & Attributes",
+    "subtopic": "ARIA Roles & Attributes Operations",
+    "concept": "ARIA Roles & Attributes",
+    "difficulty": "EASY",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "FRESHER",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "accessibility",
+      "aria-roles---attributes",
+      "frontend-interview"
+    ],
+    "question": "Web Accessibility (a11y & ARIA): How does ARIA Roles & Attributes operate in production enterprise applications (Q27)?",
+    "shortAnswer": "In Web Accessibility (a11y & ARIA), ARIA Roles & Attributes ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**ARIA Roles & Attributes** is an essential architectural concept in <u>Web Accessibility (a11y & ARIA)</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**ARIA Roles & Attributes** is an essential architectural concept in <u>Web Accessibility (a11y & ARIA)</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**ARIA Roles & Attributes** is an essential architectural concept in <u>Web Accessibility (a11y & ARIA)</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for ARIA Roles & Attributes in Web Accessibility (a11y & ARIA):\nexport function handleARIARolesAttributes(config) {\n  console.log('Executing ARIA Roles & Attributes with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for ARIA Roles & Attributes in Web Accessibility (a11y & ARIA):\nexport function handleARIARolesAttributes(config) {\n  console.log('Executing ARIA Roles & Attributes with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for ARIA Roles & Attributes in Web Accessibility (a11y & ARIA):\nexport function handleARIARolesAttributes(config) {\n  console.log('Executing ARIA Roles & Attributes with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of ARIA Roles & Attributes in Web Accessibility (a11y & ARIA).",
+    "realWorldExample": "Enterprise high-scale web platforms utilize ARIA Roles & Attributes to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with ARIA Roles & Attributes.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about ARIA Roles & Attributes, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about ARIA Roles & Attributes, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does ARIA Roles & Attributes scale under extreme concurrency?",
+      "What monitoring tools can track ARIA Roles & Attributes metrics in production?"
+    ],
+    "followUps": [
+      "How does ARIA Roles & Attributes scale under extreme concurrency?",
+      "What monitoring tools can track ARIA Roles & Attributes metrics in production?"
+    ],
+    "question_hash": "qh_26219b3a",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Web Accessibility (a11y & ARIA), Screen Reader Testing ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Screen Reader Testing, not ARIA Roles & Attributes."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Web Accessibility (a11y & ARIA), Keyboard Navigation & Focus Management ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Keyboard Navigation & Focus Management, not ARIA Roles & Attributes."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Web Accessibility (a11y & ARIA), ARIA Roles & Attributes ensures predictable, resilient execution.",
+        "explanation": "Correct. In Web Accessibility (a11y & ARIA), ARIA Roles & Attributes ensures predictable, resilient execution."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Web Accessibility (a11y & ARIA), WCAG 2.2 Principles (POUR) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes WCAG 2.2 Principles (POUR), not ARIA Roles & Attributes."
+      }
+    ],
+    "correctAnswer": "C",
+    "mcqExplanation": "Correct. In Web Accessibility (a11y & ARIA), ARIA Roles & Attributes ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Screen Reader Testing, not ARIA Roles & Attributes.",
+      "B": "Incorrect. This describes Keyboard Navigation & Focus Management, not ARIA Roles & Attributes.",
+      "D": "Incorrect. This describes WCAG 2.2 Principles (POUR), not ARIA Roles & Attributes."
+    },
+    "correctOption": "C",
+    "explanation": "Correct. In Web Accessibility (a11y & ARIA), ARIA Roles & Attributes ensures predictable, resilient execution.",
+    "mcqQuestion": "Web Accessibility (a11y & ARIA): How does ARIA Roles & Attributes operate in production enterprise applications (Q27)?"
+  },
+  {
+    "id": "iq-accessibility-0028",
+    "standard_id": "ACCESSIBILITY-MCQ-000028",
+    "questionNumber": 28,
+    "subject": "accessibility",
+    "category": "Keyboard Navigation & Focus Management",
+    "topic": "Keyboard Navigation & Focus Management",
+    "subtopic": "Keyboard Navigation & Focus Management Operations",
+    "concept": "Keyboard Navigation & Focus Management",
+    "difficulty": "INTERMEDIATE",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "1_3_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "accessibility",
+      "keyboard-navigation---focus-management",
+      "frontend-interview"
+    ],
+    "question": "Web Accessibility (a11y & ARIA): How does Keyboard Navigation & Focus Management operate in production enterprise applications (Q28)?",
+    "shortAnswer": "In Web Accessibility (a11y & ARIA), Keyboard Navigation & Focus Management ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Keyboard Navigation & Focus Management** is an essential architectural concept in <u>Web Accessibility (a11y & ARIA)</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Keyboard Navigation & Focus Management** is an essential architectural concept in <u>Web Accessibility (a11y & ARIA)</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Keyboard Navigation & Focus Management** is an essential architectural concept in <u>Web Accessibility (a11y & ARIA)</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Keyboard Navigation & Focus Management in Web Accessibility (a11y & ARIA):\nexport function handleKeyboardNavigationFocusManagement(config) {\n  console.log('Executing Keyboard Navigation & Focus Management with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Keyboard Navigation & Focus Management in Web Accessibility (a11y & ARIA):\nexport function handleKeyboardNavigationFocusManagement(config) {\n  console.log('Executing Keyboard Navigation & Focus Management with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Keyboard Navigation & Focus Management in Web Accessibility (a11y & ARIA):\nexport function handleKeyboardNavigationFocusManagement(config) {\n  console.log('Executing Keyboard Navigation & Focus Management with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Keyboard Navigation & Focus Management in Web Accessibility (a11y & ARIA).",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Keyboard Navigation & Focus Management to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Keyboard Navigation & Focus Management.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Keyboard Navigation & Focus Management, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Keyboard Navigation & Focus Management, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Keyboard Navigation & Focus Management scale under extreme concurrency?",
+      "What monitoring tools can track Keyboard Navigation & Focus Management metrics in production?"
+    ],
+    "followUps": [
+      "How does Keyboard Navigation & Focus Management scale under extreme concurrency?",
+      "What monitoring tools can track Keyboard Navigation & Focus Management metrics in production?"
+    ],
+    "question_hash": "qh_738e16b3",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "The First Rule of ARIA states: 'If you can use a native HTML element or attribute with the semantics and behavior already built in, do so instead of re-purposing an element and adding ARIA.' For accessible...",
+        "explanation": "Incorrect. This describes First Rule of ARIA & Focus Trap, not Keyboard Navigation & Focus Management."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Web Accessibility (a11y & ARIA), Accessible Forms & Error Announcements ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Accessible Forms & Error Announcements, not Keyboard Navigation & Focus Management."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Web Accessibility (a11y & ARIA), ARIA Roles & Attributes ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes ARIA Roles & Attributes, not Keyboard Navigation & Focus Management."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Web Accessibility (a11y & ARIA), Keyboard Navigation & Focus Management ensures predictable, resilient execution.",
+        "explanation": "Correct. In Web Accessibility (a11y & ARIA), Keyboard Navigation & Focus Management ensures predictable, resilient execution."
+      }
+    ],
+    "correctAnswer": "D",
+    "correctOption": "D",
+    "mcqExplanation": "Correct. In Web Accessibility (a11y & ARIA), Keyboard Navigation & Focus Management ensures predictable, resilient execution.",
+    "explanation": "Correct. In Web Accessibility (a11y & ARIA), Keyboard Navigation & Focus Management ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes First Rule of ARIA & Focus Trap, not Keyboard Navigation & Focus Management.",
+      "B": "Incorrect. This describes Accessible Forms & Error Announcements, not Keyboard Navigation & Focus Management.",
+      "C": "Incorrect. This describes ARIA Roles & Attributes, not Keyboard Navigation & Focus Management."
+    },
+    "mcqQuestion": "Web Accessibility (a11y & ARIA): How does Keyboard Navigation & Focus Management operate in production enterprise applications (Q28)?"
+  },
+  {
+    "id": "iq-accessibility-0029",
+    "standard_id": "ACCESSIBILITY-MCQ-000029",
+    "questionNumber": 29,
+    "subject": "accessibility",
+    "category": "Accessible Forms & Error Announcements",
+    "topic": "Accessible Forms & Error Announcements",
+    "subtopic": "Accessible Forms & Error Announcements Operations",
+    "concept": "Accessible Forms & Error Announcements",
+    "difficulty": "DIFFICULT",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "3_5_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "accessibility",
+      "accessible-forms---error-announcements",
+      "frontend-interview"
+    ],
+    "question": "Web Accessibility (a11y & ARIA): How does Accessible Forms & Error Announcements operate in production enterprise applications (Q29)?",
+    "shortAnswer": "In Web Accessibility (a11y & ARIA), Accessible Forms & Error Announcements ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Accessible Forms & Error Announcements** is an essential architectural concept in <u>Web Accessibility (a11y & ARIA)</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Accessible Forms & Error Announcements** is an essential architectural concept in <u>Web Accessibility (a11y & ARIA)</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Accessible Forms & Error Announcements** is an essential architectural concept in <u>Web Accessibility (a11y & ARIA)</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Accessible Forms & Error Announcements in Web Accessibility (a11y & ARIA):\nexport function handleAccessibleFormsErrorAnnouncements(config) {\n  console.log('Executing Accessible Forms & Error Announcements with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Accessible Forms & Error Announcements in Web Accessibility (a11y & ARIA):\nexport function handleAccessibleFormsErrorAnnouncements(config) {\n  console.log('Executing Accessible Forms & Error Announcements with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Accessible Forms & Error Announcements in Web Accessibility (a11y & ARIA):\nexport function handleAccessibleFormsErrorAnnouncements(config) {\n  console.log('Executing Accessible Forms & Error Announcements with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Accessible Forms & Error Announcements in Web Accessibility (a11y & ARIA).",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Accessible Forms & Error Announcements to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Accessible Forms & Error Announcements.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Accessible Forms & Error Announcements, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Accessible Forms & Error Announcements, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Accessible Forms & Error Announcements scale under extreme concurrency?",
+      "What monitoring tools can track Accessible Forms & Error Announcements metrics in production?"
+    ],
+    "followUps": [
+      "How does Accessible Forms & Error Announcements scale under extreme concurrency?",
+      "What monitoring tools can track Accessible Forms & Error Announcements metrics in production?"
+    ],
+    "question_hash": "qh_7fb0edc8",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Web Accessibility (a11y & ARIA), Accessible Forms & Error Announcements ensures predictable, resilient execution.",
+        "explanation": "Correct. In Web Accessibility (a11y & ARIA), Accessible Forms & Error Announcements ensures predictable, resilient execution."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Web Accessibility (a11y & ARIA), ARIA Roles & Attributes ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes ARIA Roles & Attributes, not Accessible Forms & Error Announcements."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Web Accessibility (a11y & ARIA), Screen Reader Testing ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Screen Reader Testing, not Accessible Forms & Error Announcements."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Web Accessibility (a11y & ARIA), Keyboard Navigation & Focus Management ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Keyboard Navigation & Focus Management, not Accessible Forms & Error Announcements."
+      }
+    ],
+    "correctAnswer": "A",
+    "mcqExplanation": "Correct. In Web Accessibility (a11y & ARIA), Accessible Forms & Error Announcements ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "B": "Incorrect. This describes ARIA Roles & Attributes, not Accessible Forms & Error Announcements.",
+      "C": "Incorrect. This describes Screen Reader Testing, not Accessible Forms & Error Announcements.",
+      "D": "Incorrect. This describes Keyboard Navigation & Focus Management, not Accessible Forms & Error Announcements."
+    },
+    "correctOption": "A",
+    "explanation": "Correct. In Web Accessibility (a11y & ARIA), Accessible Forms & Error Announcements ensures predictable, resilient execution.",
+    "mcqQuestion": "Web Accessibility (a11y & ARIA): How does Accessible Forms & Error Announcements operate in production enterprise applications (Q29)?"
+  },
+  {
+    "id": "iq-accessibility-0030",
+    "standard_id": "ACCESSIBILITY-MCQ-000030",
+    "questionNumber": 30,
+    "subject": "accessibility",
+    "category": "Screen Reader Testing",
+    "topic": "Screen Reader Testing",
+    "subtopic": "Screen Reader Testing Operations",
+    "concept": "Screen Reader Testing",
+    "difficulty": "EASY",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "FRESHER",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "accessibility",
+      "screen-reader-testing",
+      "frontend-interview"
+    ],
+    "question": "Web Accessibility (a11y & ARIA): How does Screen Reader Testing operate in production enterprise applications (Q30)?",
+    "shortAnswer": "In Web Accessibility (a11y & ARIA), Screen Reader Testing ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Screen Reader Testing** is an essential architectural concept in <u>Web Accessibility (a11y & ARIA)</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Screen Reader Testing** is an essential architectural concept in <u>Web Accessibility (a11y & ARIA)</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Screen Reader Testing** is an essential architectural concept in <u>Web Accessibility (a11y & ARIA)</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Screen Reader Testing in Web Accessibility (a11y & ARIA):\nexport function handleScreenReaderTesting(config) {\n  console.log('Executing Screen Reader Testing with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Screen Reader Testing in Web Accessibility (a11y & ARIA):\nexport function handleScreenReaderTesting(config) {\n  console.log('Executing Screen Reader Testing with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Screen Reader Testing in Web Accessibility (a11y & ARIA):\nexport function handleScreenReaderTesting(config) {\n  console.log('Executing Screen Reader Testing with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Screen Reader Testing in Web Accessibility (a11y & ARIA).",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Screen Reader Testing to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Screen Reader Testing.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Screen Reader Testing, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Screen Reader Testing, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Screen Reader Testing scale under extreme concurrency?",
+      "What monitoring tools can track Screen Reader Testing metrics in production?"
+    ],
+    "followUps": [
+      "How does Screen Reader Testing scale under extreme concurrency?",
+      "What monitoring tools can track Screen Reader Testing metrics in production?"
+    ],
+    "question_hash": "qh_74a71c9c",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Web Accessibility (a11y & ARIA), Keyboard Navigation & Focus Management ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Keyboard Navigation & Focus Management, not Screen Reader Testing."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Web Accessibility (a11y & ARIA), Screen Reader Testing ensures predictable, resilient execution.",
+        "explanation": "Correct. In Web Accessibility (a11y & ARIA), Screen Reader Testing ensures predictable, resilient execution."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Web Accessibility (a11y & ARIA), WCAG 2.2 Principles (POUR) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes WCAG 2.2 Principles (POUR), not Screen Reader Testing."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Web Accessibility (a11y & ARIA), Accessible Forms & Error Announcements ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Accessible Forms & Error Announcements, not Screen Reader Testing."
+      }
+    ],
+    "correctAnswer": "B",
+    "correctOption": "B",
+    "mcqExplanation": "Correct. In Web Accessibility (a11y & ARIA), Screen Reader Testing ensures predictable, resilient execution.",
+    "explanation": "Correct. In Web Accessibility (a11y & ARIA), Screen Reader Testing ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Keyboard Navigation & Focus Management, not Screen Reader Testing.",
+      "C": "Incorrect. This describes WCAG 2.2 Principles (POUR), not Screen Reader Testing.",
+      "D": "Incorrect. This describes Accessible Forms & Error Announcements, not Screen Reader Testing."
+    },
+    "mcqQuestion": "Web Accessibility (a11y & ARIA): How does Screen Reader Testing operate in production enterprise applications (Q30)?"
+  }
+]

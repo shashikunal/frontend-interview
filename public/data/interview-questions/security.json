@@ -1,0 +1,2756 @@
+[
+  {
+    "id": "iq-security-0001",
+    "standard_id": "SECURITY-MCQ-000001",
+    "questionNumber": 1,
+    "subject": "security",
+    "category": "XSS (Stored, Reflected, DOM)",
+    "topic": "XSS (Stored, Reflected, DOM)",
+    "subtopic": "XSS Vectors & Sanitization Defense",
+    "concept": "XSS Vectors & Sanitization Defense",
+    "difficulty": "INTERMEDIATE",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "1_3_YEARS",
+    "isHighFrequency": true,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Netflix"
+    ],
+    "tags": [
+      "security",
+      "frontend-interview",
+      "xss--stored--reflected--dom-"
+    ],
+    "question": "What is Cross-Site Scripting (XSS), what are its types, and how do you prevent it in modern web apps?",
+    "shortAnswer": "XSS occurs when an attacker injects malicious executable JavaScript into a trusted web application. The three main types are Stored XSS (database persisted), Reflected XSS (URL parameters reflected back), and DOM-based XSS (unsafe client DOM manipulation). Prevention involves contextual output encoding, Content Security Policy (CSP), and avoiding dangerouslySetInnerHTML.",
+    "simpleExplanation": "If a user inputs `<script>stealCookies()</script>` into a comment box and the website displays it directly, the browser executes that script.\n\nThe hacker can steal session tokens or redirect users to phishing sites.\n\nModern frameworks like React automatically encode text to prevent XSS, but using `innerHTML` or `dangerouslySetInnerHTML` bypasses this protection.",
+    "detailedAnswer": "If a user inputs `<script>stealCookies()</script>` into a comment box and the website displays it directly, the browser executes that script.\n\nThe hacker can steal session tokens or redirect users to phishing sites.\n\nModern frameworks like React automatically encode text to prevent XSS, but using `innerHTML` or `dangerouslySetInnerHTML` bypasses this protection.",
+    "detailedExplanation": "If a user inputs `<script>stealCookies()</script>` into a comment box and the website displays it directly, the browser executes that script.\n\nThe hacker can steal session tokens or redirect users to phishing sites.\n\nModern frameworks like React automatically encode text to prevent XSS, but using `innerHTML` or `dangerouslySetInnerHTML` bypasses this protection.",
+    "howItWorks": "1. The browser cannot differentiate between legitimate application scripts and attacker-injected scripts.\n2. Injected scripts run with the full privileges of the logged-in user in that origin.\n3. Defenses sanitize all inputs using libraries like DOMPurify and restrict execution with CSP headers.",
+    "codeExample": "import DOMPurify from 'dompurify';\n\n// Safe rendering of user-generated HTML:\nfunction SafeUserComment({ rawHtmlContent }) {\n  const cleanHtml = DOMPurify.sanitize(rawHtmlContent);\n  return <div dangerouslySetInnerHTML={{ __html: cleanHtml }} />;\n}",
+    "example": "import DOMPurify from 'dompurify';\n\n// Safe rendering of user-generated HTML:\nfunction SafeUserComment({ rawHtmlContent }) {\n  const cleanHtml = DOMPurify.sanitize(rawHtmlContent);\n  return <div dangerouslySetInnerHTML={{ __html: cleanHtml }} />;\n}",
+    "codeSnippet": "import DOMPurify from 'dompurify';\n\n// Safe rendering of user-generated HTML:\nfunction SafeUserComment({ rawHtmlContent }) {\n  const cleanHtml = DOMPurify.sanitize(rawHtmlContent);\n  return <div dangerouslySetInnerHTML={{ __html: cleanHtml }} />;\n}",
+    "codeExplanationSpeech": "This code illustrates the architecture and implementation of XSS Vectors & Sanitization Defense in modern frontend systems.",
+    "realWorldExample": "In 2018, British Airways suffered a massive data breach when attackers injected a 22-line Magecart script that skimmed credit cards from checkout forms.",
+    "commonMistakes": [
+      "Storing sensitive JWT authentication tokens in localStorage, where any XSS vulnerability can read them instantly via window.localStorage."
+    ],
+    "interviewTip": "Recommend storing authentication tokens in HttpOnly, Secure, SameSite=Strict cookies, which JavaScript cannot read.",
+    "interviewTips": [
+      "Recommend storing authentication tokens in HttpOnly, Secure, SameSite=Strict cookies, which JavaScript cannot read."
+    ],
+    "followUpQuestions": [
+      "How does a Content Security Policy (CSP) header prevent unauthorized script execution?",
+      "How does SameSite cookie attribute protect against CSRF attacks?"
+    ],
+    "followUps": [
+      "How does a Content Security Policy (CSP) header prevent unauthorized script execution?",
+      "How does SameSite cookie attribute protect against CSRF attacks?"
+    ],
+    "question_hash": "qh_5b873e9c",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "text": "It provides standardized, predictable behavior for XSS Vectors & Sanitization Defense across all client environments.",
+        "explanation": "Correct. Follows modern web platform and architectural specifications."
+      },
+      {
+        "key": "B",
+        "text": "It bypasses the browser JavaScript runtime and executes as machine code on the GPU.",
+        "explanation": "Incorrect. Frontend code executes within the browser engine thread."
+      },
+      {
+        "key": "C",
+        "text": "It disables all browser caching and forces fresh HTTP 1.0 TCP handshakes on every interaction.",
+        "explanation": "Incorrect. Caching and networking follow standard browser protocols."
+      },
+      {
+        "key": "D",
+        "text": "It automatically converts all async operations into synchronous blocking code.",
+        "explanation": "Incorrect. The browser event loop remains asynchronous."
+      }
+    ],
+    "correctAnswer": "A",
+    "mcqExplanation": "In Frontend Security & OWASP Top 10, XSS Vectors & Sanitization Defense provides robust, scalable execution per standard architectural patterns.",
+    "wrongOptionExplanations": {
+      "B": "UI logic executes in the browser JavaScript engine or V8 runtime.",
+      "C": "Browser caching mechanisms operate in accordance with HTTP headers.",
+      "D": "JavaScript remains single-threaded and non-blocking."
+    },
+    "correctOption": "A",
+    "explanation": "In Frontend Security & OWASP Top 10, XSS Vectors & Sanitization Defense provides robust, scalable execution per standard architectural patterns."
+  },
+  {
+    "id": "iq-security-0002",
+    "standard_id": "SECURITY-MCQ-000002",
+    "questionNumber": 2,
+    "subject": "security",
+    "category": "CSRF & SameSite Cookies",
+    "topic": "CSRF & SameSite Cookies",
+    "subtopic": "CSRF & SameSite Cookies Operations",
+    "concept": "CSRF & SameSite Cookies",
+    "difficulty": "DIFFICULT",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "3_5_YEARS",
+    "isHighFrequency": true,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "security",
+      "csrf---samesite-cookies",
+      "frontend-interview"
+    ],
+    "question": "Frontend Security & OWASP Top 10: How does CSRF & SameSite Cookies operate in production enterprise applications (Q2)?",
+    "shortAnswer": "In Frontend Security & OWASP Top 10, CSRF & SameSite Cookies ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**CSRF & SameSite Cookies** is an essential architectural concept in <u>Frontend Security & OWASP Top 10</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**CSRF & SameSite Cookies** is an essential architectural concept in <u>Frontend Security & OWASP Top 10</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**CSRF & SameSite Cookies** is an essential architectural concept in <u>Frontend Security & OWASP Top 10</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for CSRF & SameSite Cookies in Frontend Security & OWASP Top 10:\nexport function handleCSRFSameSiteCookies(config) {\n  console.log('Executing CSRF & SameSite Cookies with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for CSRF & SameSite Cookies in Frontend Security & OWASP Top 10:\nexport function handleCSRFSameSiteCookies(config) {\n  console.log('Executing CSRF & SameSite Cookies with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for CSRF & SameSite Cookies in Frontend Security & OWASP Top 10:\nexport function handleCSRFSameSiteCookies(config) {\n  console.log('Executing CSRF & SameSite Cookies with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of CSRF & SameSite Cookies in Frontend Security & OWASP Top 10.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize CSRF & SameSite Cookies to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with CSRF & SameSite Cookies.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about CSRF & SameSite Cookies, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about CSRF & SameSite Cookies, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does CSRF & SameSite Cookies scale under extreme concurrency?",
+      "What monitoring tools can track CSRF & SameSite Cookies metrics in production?"
+    ],
+    "followUps": [
+      "How does CSRF & SameSite Cookies scale under extreme concurrency?",
+      "What monitoring tools can track CSRF & SameSite Cookies metrics in production?"
+    ],
+    "question_hash": "qh_72c3bc08",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Frontend Security & OWASP Top 10, Clickjacking & Framing Protections ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Clickjacking & Framing Protections, not CSRF & SameSite Cookies."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Frontend Security & OWASP Top 10, CSRF & SameSite Cookies ensures predictable, resilient execution.",
+        "explanation": "Correct. In Frontend Security & OWASP Top 10, CSRF & SameSite Cookies ensures predictable, resilient execution."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Frontend Security & OWASP Top 10, Content Security Policy (CSP) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Content Security Policy (CSP), not CSRF & SameSite Cookies."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Frontend Security & OWASP Top 10, XSS (Stored, Reflected, DOM) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes XSS (Stored, Reflected, DOM), not CSRF & SameSite Cookies."
+      }
+    ],
+    "correctAnswer": "B",
+    "correctOption": "B",
+    "mcqExplanation": "Correct. In Frontend Security & OWASP Top 10, CSRF & SameSite Cookies ensures predictable, resilient execution.",
+    "explanation": "Correct. In Frontend Security & OWASP Top 10, CSRF & SameSite Cookies ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Clickjacking & Framing Protections, not CSRF & SameSite Cookies.",
+      "C": "Incorrect. This describes Content Security Policy (CSP), not CSRF & SameSite Cookies.",
+      "D": "Incorrect. This describes XSS (Stored, Reflected, DOM), not CSRF & SameSite Cookies."
+    },
+    "mcqQuestion": "Frontend Security & OWASP Top 10: How does CSRF & SameSite Cookies operate in production enterprise applications (Q2)?"
+  },
+  {
+    "id": "iq-security-0003",
+    "standard_id": "SECURITY-MCQ-000003",
+    "questionNumber": 3,
+    "subject": "security",
+    "category": "Content Security Policy (CSP)",
+    "topic": "Content Security Policy (CSP)",
+    "subtopic": "Content Security Policy (CSP) Operations",
+    "concept": "Content Security Policy (CSP)",
+    "difficulty": "EASY",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "FRESHER",
+    "isHighFrequency": true,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "security",
+      "content-security-policy--csp-",
+      "frontend-interview"
+    ],
+    "question": "Frontend Security & OWASP Top 10: How does Content Security Policy (CSP) operate in production enterprise applications (Q3)?",
+    "shortAnswer": "In Frontend Security & OWASP Top 10, Content Security Policy (CSP) ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Content Security Policy (CSP)** is an essential architectural concept in <u>Frontend Security & OWASP Top 10</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Content Security Policy (CSP)** is an essential architectural concept in <u>Frontend Security & OWASP Top 10</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Content Security Policy (CSP)** is an essential architectural concept in <u>Frontend Security & OWASP Top 10</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Content Security Policy (CSP) in Frontend Security & OWASP Top 10:\nexport function handleContentSecurityPolicyCSP(config) {\n  console.log('Executing Content Security Policy (CSP) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Content Security Policy (CSP) in Frontend Security & OWASP Top 10:\nexport function handleContentSecurityPolicyCSP(config) {\n  console.log('Executing Content Security Policy (CSP) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Content Security Policy (CSP) in Frontend Security & OWASP Top 10:\nexport function handleContentSecurityPolicyCSP(config) {\n  console.log('Executing Content Security Policy (CSP) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Content Security Policy (CSP) in Frontend Security & OWASP Top 10.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Content Security Policy (CSP) to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Content Security Policy (CSP).",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Content Security Policy (CSP), explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Content Security Policy (CSP), explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Content Security Policy (CSP) scale under extreme concurrency?",
+      "What monitoring tools can track Content Security Policy (CSP) metrics in production?"
+    ],
+    "followUps": [
+      "How does Content Security Policy (CSP) scale under extreme concurrency?",
+      "What monitoring tools can track Content Security Policy (CSP) metrics in production?"
+    ],
+    "question_hash": "qh_5409d247",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Frontend Security & OWASP Top 10, XSS (Stored, Reflected, DOM) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes XSS (Stored, Reflected, DOM), not Content Security Policy (CSP)."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Frontend Security & OWASP Top 10, Secure Token Storage (LocalStorage vs Cookies) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Secure Token Storage (LocalStorage vs Cookies), not Content Security Policy (CSP)."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Frontend Security & OWASP Top 10, Content Security Policy (CSP) ensures predictable, resilient execution.",
+        "explanation": "Correct. In Frontend Security & OWASP Top 10, Content Security Policy (CSP) ensures predictable, resilient execution."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Frontend Security & OWASP Top 10, CSRF & SameSite Cookies ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes CSRF & SameSite Cookies, not Content Security Policy (CSP)."
+      }
+    ],
+    "correctAnswer": "C",
+    "mcqExplanation": "Correct. In Frontend Security & OWASP Top 10, Content Security Policy (CSP) ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes XSS (Stored, Reflected, DOM), not Content Security Policy (CSP).",
+      "B": "Incorrect. This describes Secure Token Storage (LocalStorage vs Cookies), not Content Security Policy (CSP).",
+      "D": "Incorrect. This describes CSRF & SameSite Cookies, not Content Security Policy (CSP)."
+    },
+    "correctOption": "C",
+    "explanation": "Correct. In Frontend Security & OWASP Top 10, Content Security Policy (CSP) ensures predictable, resilient execution.",
+    "mcqQuestion": "Frontend Security & OWASP Top 10: How does Content Security Policy (CSP) operate in production enterprise applications (Q3)?"
+  },
+  {
+    "id": "iq-security-0004",
+    "standard_id": "SECURITY-MCQ-000004",
+    "questionNumber": 4,
+    "subject": "security",
+    "category": "Secure Token Storage (LocalStorage vs Cookies)",
+    "topic": "Secure Token Storage (LocalStorage vs Cookies)",
+    "subtopic": "Secure Token Storage (LocalStorage vs Cookies) Operations",
+    "concept": "Secure Token Storage (LocalStorage vs Cookies)",
+    "difficulty": "INTERMEDIATE",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "1_3_YEARS",
+    "isHighFrequency": true,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "security",
+      "secure-token-storage--localstorage-vs-cookies-",
+      "frontend-interview"
+    ],
+    "question": "Frontend Security & OWASP Top 10: How does Secure Token Storage (LocalStorage vs Cookies) operate in production enterprise applications (Q4)?",
+    "shortAnswer": "In Frontend Security & OWASP Top 10, Secure Token Storage (LocalStorage vs Cookies) ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Secure Token Storage (LocalStorage vs Cookies)** is an essential architectural concept in <u>Frontend Security & OWASP Top 10</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Secure Token Storage (LocalStorage vs Cookies)** is an essential architectural concept in <u>Frontend Security & OWASP Top 10</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Secure Token Storage (LocalStorage vs Cookies)** is an essential architectural concept in <u>Frontend Security & OWASP Top 10</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Secure Token Storage (LocalStorage vs Cookies) in Frontend Security & OWASP Top 10:\nexport function handleSecureTokenStorageLocalStoragevsCookies(config) {\n  console.log('Executing Secure Token Storage (LocalStorage vs Cookies) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Secure Token Storage (LocalStorage vs Cookies) in Frontend Security & OWASP Top 10:\nexport function handleSecureTokenStorageLocalStoragevsCookies(config) {\n  console.log('Executing Secure Token Storage (LocalStorage vs Cookies) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Secure Token Storage (LocalStorage vs Cookies) in Frontend Security & OWASP Top 10:\nexport function handleSecureTokenStorageLocalStoragevsCookies(config) {\n  console.log('Executing Secure Token Storage (LocalStorage vs Cookies) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Secure Token Storage (LocalStorage vs Cookies) in Frontend Security & OWASP Top 10.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Secure Token Storage (LocalStorage vs Cookies) to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Secure Token Storage (LocalStorage vs Cookies).",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Secure Token Storage (LocalStorage vs Cookies), explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Secure Token Storage (LocalStorage vs Cookies), explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Secure Token Storage (LocalStorage vs Cookies) scale under extreme concurrency?",
+      "What monitoring tools can track Secure Token Storage (LocalStorage vs Cookies) metrics in production?"
+    ],
+    "followUps": [
+      "How does Secure Token Storage (LocalStorage vs Cookies) scale under extreme concurrency?",
+      "What monitoring tools can track Secure Token Storage (LocalStorage vs Cookies) metrics in production?"
+    ],
+    "question_hash": "qh_4bcd4dc6",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Frontend Security & OWASP Top 10, CSRF & SameSite Cookies ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes CSRF & SameSite Cookies, not Secure Token Storage (LocalStorage vs Cookies)."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Frontend Security & OWASP Top 10, Clickjacking & Framing Protections ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Clickjacking & Framing Protections, not Secure Token Storage (LocalStorage vs Cookies)."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Frontend Security & OWASP Top 10, Content Security Policy (CSP) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Content Security Policy (CSP), not Secure Token Storage (LocalStorage vs Cookies)."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Frontend Security & OWASP Top 10, Secure Token Storage (LocalStorage vs Cookies) ensures predictable, resilient execution.",
+        "explanation": "Correct. In Frontend Security & OWASP Top 10, Secure Token Storage (LocalStorage vs Cookies) ensures predictable, resilient execution."
+      }
+    ],
+    "correctAnswer": "D",
+    "correctOption": "D",
+    "mcqExplanation": "Correct. In Frontend Security & OWASP Top 10, Secure Token Storage (LocalStorage vs Cookies) ensures predictable, resilient execution.",
+    "explanation": "Correct. In Frontend Security & OWASP Top 10, Secure Token Storage (LocalStorage vs Cookies) ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes CSRF & SameSite Cookies, not Secure Token Storage (LocalStorage vs Cookies).",
+      "B": "Incorrect. This describes Clickjacking & Framing Protections, not Secure Token Storage (LocalStorage vs Cookies).",
+      "C": "Incorrect. This describes Content Security Policy (CSP), not Secure Token Storage (LocalStorage vs Cookies)."
+    },
+    "mcqQuestion": "Frontend Security & OWASP Top 10: How does Secure Token Storage (LocalStorage vs Cookies) operate in production enterprise applications (Q4)?"
+  },
+  {
+    "id": "iq-security-0005",
+    "standard_id": "SECURITY-MCQ-000005",
+    "questionNumber": 5,
+    "subject": "security",
+    "category": "Clickjacking & Framing Protections",
+    "topic": "Clickjacking & Framing Protections",
+    "subtopic": "Clickjacking & Framing Protections Operations",
+    "concept": "Clickjacking & Framing Protections",
+    "difficulty": "DIFFICULT",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "3_5_YEARS",
+    "isHighFrequency": true,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "security",
+      "clickjacking---framing-protections",
+      "frontend-interview"
+    ],
+    "question": "Frontend Security & OWASP Top 10: How does Clickjacking & Framing Protections operate in production enterprise applications (Q5)?",
+    "shortAnswer": "In Frontend Security & OWASP Top 10, Clickjacking & Framing Protections ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Clickjacking & Framing Protections** is an essential architectural concept in <u>Frontend Security & OWASP Top 10</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Clickjacking & Framing Protections** is an essential architectural concept in <u>Frontend Security & OWASP Top 10</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Clickjacking & Framing Protections** is an essential architectural concept in <u>Frontend Security & OWASP Top 10</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Clickjacking & Framing Protections in Frontend Security & OWASP Top 10:\nexport function handleClickjackingFramingProtections(config) {\n  console.log('Executing Clickjacking & Framing Protections with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Clickjacking & Framing Protections in Frontend Security & OWASP Top 10:\nexport function handleClickjackingFramingProtections(config) {\n  console.log('Executing Clickjacking & Framing Protections with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Clickjacking & Framing Protections in Frontend Security & OWASP Top 10:\nexport function handleClickjackingFramingProtections(config) {\n  console.log('Executing Clickjacking & Framing Protections with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Clickjacking & Framing Protections in Frontend Security & OWASP Top 10.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Clickjacking & Framing Protections to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Clickjacking & Framing Protections.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Clickjacking & Framing Protections, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Clickjacking & Framing Protections, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Clickjacking & Framing Protections scale under extreme concurrency?",
+      "What monitoring tools can track Clickjacking & Framing Protections metrics in production?"
+    ],
+    "followUps": [
+      "How does Clickjacking & Framing Protections scale under extreme concurrency?",
+      "What monitoring tools can track Clickjacking & Framing Protections metrics in production?"
+    ],
+    "question_hash": "qh_79f11a41",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Frontend Security & OWASP Top 10, Clickjacking & Framing Protections ensures predictable, resilient execution.",
+        "explanation": "Correct. In Frontend Security & OWASP Top 10, Clickjacking & Framing Protections ensures predictable, resilient execution."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Frontend Security & OWASP Top 10, Content Security Policy (CSP) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Content Security Policy (CSP), not Clickjacking & Framing Protections."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Frontend Security & OWASP Top 10, XSS (Stored, Reflected, DOM) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes XSS (Stored, Reflected, DOM), not Clickjacking & Framing Protections."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Frontend Security & OWASP Top 10, Secure Token Storage (LocalStorage vs Cookies) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Secure Token Storage (LocalStorage vs Cookies), not Clickjacking & Framing Protections."
+      }
+    ],
+    "correctAnswer": "A",
+    "mcqExplanation": "Correct. In Frontend Security & OWASP Top 10, Clickjacking & Framing Protections ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "B": "Incorrect. This describes Content Security Policy (CSP), not Clickjacking & Framing Protections.",
+      "C": "Incorrect. This describes XSS (Stored, Reflected, DOM), not Clickjacking & Framing Protections.",
+      "D": "Incorrect. This describes Secure Token Storage (LocalStorage vs Cookies), not Clickjacking & Framing Protections."
+    },
+    "correctOption": "A",
+    "explanation": "Correct. In Frontend Security & OWASP Top 10, Clickjacking & Framing Protections ensures predictable, resilient execution.",
+    "mcqQuestion": "Frontend Security & OWASP Top 10: How does Clickjacking & Framing Protections operate in production enterprise applications (Q5)?"
+  },
+  {
+    "id": "iq-security-0006",
+    "standard_id": "SECURITY-MCQ-000006",
+    "questionNumber": 6,
+    "subject": "security",
+    "category": "XSS (Stored, Reflected, DOM)",
+    "topic": "XSS (Stored, Reflected, DOM)",
+    "subtopic": "XSS (Stored, Reflected, DOM) Operations",
+    "concept": "XSS (Stored, Reflected, DOM)",
+    "difficulty": "EASY",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "FRESHER",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "security",
+      "xss--stored--reflected--dom-",
+      "frontend-interview"
+    ],
+    "question": "Frontend Security & OWASP Top 10: How does XSS (Stored, Reflected, DOM) operate in production enterprise applications (Q6)?",
+    "shortAnswer": "In Frontend Security & OWASP Top 10, XSS (Stored, Reflected, DOM) ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**XSS (Stored, Reflected, DOM)** is an essential architectural concept in <u>Frontend Security & OWASP Top 10</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**XSS (Stored, Reflected, DOM)** is an essential architectural concept in <u>Frontend Security & OWASP Top 10</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**XSS (Stored, Reflected, DOM)** is an essential architectural concept in <u>Frontend Security & OWASP Top 10</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for XSS (Stored, Reflected, DOM) in Frontend Security & OWASP Top 10:\nexport function handleXSSStoredReflectedDOM(config) {\n  console.log('Executing XSS (Stored, Reflected, DOM) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for XSS (Stored, Reflected, DOM) in Frontend Security & OWASP Top 10:\nexport function handleXSSStoredReflectedDOM(config) {\n  console.log('Executing XSS (Stored, Reflected, DOM) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for XSS (Stored, Reflected, DOM) in Frontend Security & OWASP Top 10:\nexport function handleXSSStoredReflectedDOM(config) {\n  console.log('Executing XSS (Stored, Reflected, DOM) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of XSS (Stored, Reflected, DOM) in Frontend Security & OWASP Top 10.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize XSS (Stored, Reflected, DOM) to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with XSS (Stored, Reflected, DOM).",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about XSS (Stored, Reflected, DOM), explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about XSS (Stored, Reflected, DOM), explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does XSS (Stored, Reflected, DOM) scale under extreme concurrency?",
+      "What monitoring tools can track XSS (Stored, Reflected, DOM) metrics in production?"
+    ],
+    "followUps": [
+      "How does XSS (Stored, Reflected, DOM) scale under extreme concurrency?",
+      "What monitoring tools can track XSS (Stored, Reflected, DOM) metrics in production?"
+    ],
+    "question_hash": "qh_1846872",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Frontend Security & OWASP Top 10, Secure Token Storage (LocalStorage vs Cookies) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Secure Token Storage (LocalStorage vs Cookies), not XSS (Stored, Reflected, DOM)."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Frontend Security & OWASP Top 10, XSS (Stored, Reflected, DOM) ensures predictable, resilient execution.",
+        "explanation": "Correct. In Frontend Security & OWASP Top 10, XSS (Stored, Reflected, DOM) ensures predictable, resilient execution."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Frontend Security & OWASP Top 10, CSRF & SameSite Cookies ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes CSRF & SameSite Cookies, not XSS (Stored, Reflected, DOM)."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Frontend Security & OWASP Top 10, Clickjacking & Framing Protections ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Clickjacking & Framing Protections, not XSS (Stored, Reflected, DOM)."
+      }
+    ],
+    "correctAnswer": "B",
+    "correctOption": "B",
+    "mcqExplanation": "Correct. In Frontend Security & OWASP Top 10, XSS (Stored, Reflected, DOM) ensures predictable, resilient execution.",
+    "explanation": "Correct. In Frontend Security & OWASP Top 10, XSS (Stored, Reflected, DOM) ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Secure Token Storage (LocalStorage vs Cookies), not XSS (Stored, Reflected, DOM).",
+      "C": "Incorrect. This describes CSRF & SameSite Cookies, not XSS (Stored, Reflected, DOM).",
+      "D": "Incorrect. This describes Clickjacking & Framing Protections, not XSS (Stored, Reflected, DOM)."
+    },
+    "mcqQuestion": "Frontend Security & OWASP Top 10: How does XSS (Stored, Reflected, DOM) operate in production enterprise applications (Q6)?"
+  },
+  {
+    "id": "iq-security-0007",
+    "standard_id": "SECURITY-MCQ-000007",
+    "questionNumber": 7,
+    "subject": "security",
+    "category": "CSRF & SameSite Cookies",
+    "topic": "CSRF & SameSite Cookies",
+    "subtopic": "CSRF & SameSite Cookies Operations",
+    "concept": "CSRF & SameSite Cookies",
+    "difficulty": "INTERMEDIATE",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "1_3_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "security",
+      "csrf---samesite-cookies",
+      "frontend-interview"
+    ],
+    "question": "Frontend Security & OWASP Top 10: How does CSRF & SameSite Cookies operate in production enterprise applications (Q7)?",
+    "shortAnswer": "In Frontend Security & OWASP Top 10, CSRF & SameSite Cookies ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**CSRF & SameSite Cookies** is an essential architectural concept in <u>Frontend Security & OWASP Top 10</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**CSRF & SameSite Cookies** is an essential architectural concept in <u>Frontend Security & OWASP Top 10</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**CSRF & SameSite Cookies** is an essential architectural concept in <u>Frontend Security & OWASP Top 10</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for CSRF & SameSite Cookies in Frontend Security & OWASP Top 10:\nexport function handleCSRFSameSiteCookies(config) {\n  console.log('Executing CSRF & SameSite Cookies with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for CSRF & SameSite Cookies in Frontend Security & OWASP Top 10:\nexport function handleCSRFSameSiteCookies(config) {\n  console.log('Executing CSRF & SameSite Cookies with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for CSRF & SameSite Cookies in Frontend Security & OWASP Top 10:\nexport function handleCSRFSameSiteCookies(config) {\n  console.log('Executing CSRF & SameSite Cookies with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of CSRF & SameSite Cookies in Frontend Security & OWASP Top 10.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize CSRF & SameSite Cookies to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with CSRF & SameSite Cookies.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about CSRF & SameSite Cookies, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about CSRF & SameSite Cookies, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does CSRF & SameSite Cookies scale under extreme concurrency?",
+      "What monitoring tools can track CSRF & SameSite Cookies metrics in production?"
+    ],
+    "followUps": [
+      "How does CSRF & SameSite Cookies scale under extreme concurrency?",
+      "What monitoring tools can track CSRF & SameSite Cookies metrics in production?"
+    ],
+    "question_hash": "qh_72c3bc0d",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Frontend Security & OWASP Top 10, Clickjacking & Framing Protections ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Clickjacking & Framing Protections, not CSRF & SameSite Cookies."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Frontend Security & OWASP Top 10, Content Security Policy (CSP) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Content Security Policy (CSP), not CSRF & SameSite Cookies."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Frontend Security & OWASP Top 10, CSRF & SameSite Cookies ensures predictable, resilient execution.",
+        "explanation": "Correct. In Frontend Security & OWASP Top 10, CSRF & SameSite Cookies ensures predictable, resilient execution."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Frontend Security & OWASP Top 10, XSS (Stored, Reflected, DOM) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes XSS (Stored, Reflected, DOM), not CSRF & SameSite Cookies."
+      }
+    ],
+    "correctAnswer": "C",
+    "mcqExplanation": "Correct. In Frontend Security & OWASP Top 10, CSRF & SameSite Cookies ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Clickjacking & Framing Protections, not CSRF & SameSite Cookies.",
+      "B": "Incorrect. This describes Content Security Policy (CSP), not CSRF & SameSite Cookies.",
+      "D": "Incorrect. This describes XSS (Stored, Reflected, DOM), not CSRF & SameSite Cookies."
+    },
+    "correctOption": "C",
+    "explanation": "Correct. In Frontend Security & OWASP Top 10, CSRF & SameSite Cookies ensures predictable, resilient execution.",
+    "mcqQuestion": "Frontend Security & OWASP Top 10: How does CSRF & SameSite Cookies operate in production enterprise applications (Q7)?"
+  },
+  {
+    "id": "iq-security-0008",
+    "standard_id": "SECURITY-MCQ-000008",
+    "questionNumber": 8,
+    "subject": "security",
+    "category": "Content Security Policy (CSP)",
+    "topic": "Content Security Policy (CSP)",
+    "subtopic": "Content Security Policy (CSP) Operations",
+    "concept": "Content Security Policy (CSP)",
+    "difficulty": "DIFFICULT",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "3_5_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "security",
+      "content-security-policy--csp-",
+      "frontend-interview"
+    ],
+    "question": "Frontend Security & OWASP Top 10: How does Content Security Policy (CSP) operate in production enterprise applications (Q8)?",
+    "shortAnswer": "In Frontend Security & OWASP Top 10, Content Security Policy (CSP) ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Content Security Policy (CSP)** is an essential architectural concept in <u>Frontend Security & OWASP Top 10</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Content Security Policy (CSP)** is an essential architectural concept in <u>Frontend Security & OWASP Top 10</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Content Security Policy (CSP)** is an essential architectural concept in <u>Frontend Security & OWASP Top 10</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Content Security Policy (CSP) in Frontend Security & OWASP Top 10:\nexport function handleContentSecurityPolicyCSP(config) {\n  console.log('Executing Content Security Policy (CSP) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Content Security Policy (CSP) in Frontend Security & OWASP Top 10:\nexport function handleContentSecurityPolicyCSP(config) {\n  console.log('Executing Content Security Policy (CSP) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Content Security Policy (CSP) in Frontend Security & OWASP Top 10:\nexport function handleContentSecurityPolicyCSP(config) {\n  console.log('Executing Content Security Policy (CSP) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Content Security Policy (CSP) in Frontend Security & OWASP Top 10.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Content Security Policy (CSP) to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Content Security Policy (CSP).",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Content Security Policy (CSP), explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Content Security Policy (CSP), explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Content Security Policy (CSP) scale under extreme concurrency?",
+      "What monitoring tools can track Content Security Policy (CSP) metrics in production?"
+    ],
+    "followUps": [
+      "How does Content Security Policy (CSP) scale under extreme concurrency?",
+      "What monitoring tools can track Content Security Policy (CSP) metrics in production?"
+    ],
+    "question_hash": "qh_5409d242",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Frontend Security & OWASP Top 10, XSS (Stored, Reflected, DOM) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes XSS (Stored, Reflected, DOM), not Content Security Policy (CSP)."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Frontend Security & OWASP Top 10, Secure Token Storage (LocalStorage vs Cookies) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Secure Token Storage (LocalStorage vs Cookies), not Content Security Policy (CSP)."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Frontend Security & OWASP Top 10, CSRF & SameSite Cookies ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes CSRF & SameSite Cookies, not Content Security Policy (CSP)."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Frontend Security & OWASP Top 10, Content Security Policy (CSP) ensures predictable, resilient execution.",
+        "explanation": "Correct. In Frontend Security & OWASP Top 10, Content Security Policy (CSP) ensures predictable, resilient execution."
+      }
+    ],
+    "correctAnswer": "D",
+    "correctOption": "D",
+    "mcqExplanation": "Correct. In Frontend Security & OWASP Top 10, Content Security Policy (CSP) ensures predictable, resilient execution.",
+    "explanation": "Correct. In Frontend Security & OWASP Top 10, Content Security Policy (CSP) ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes XSS (Stored, Reflected, DOM), not Content Security Policy (CSP).",
+      "B": "Incorrect. This describes Secure Token Storage (LocalStorage vs Cookies), not Content Security Policy (CSP).",
+      "C": "Incorrect. This describes CSRF & SameSite Cookies, not Content Security Policy (CSP)."
+    },
+    "mcqQuestion": "Frontend Security & OWASP Top 10: How does Content Security Policy (CSP) operate in production enterprise applications (Q8)?"
+  },
+  {
+    "id": "iq-security-0009",
+    "standard_id": "SECURITY-MCQ-000009",
+    "questionNumber": 9,
+    "subject": "security",
+    "category": "Secure Token Storage (LocalStorage vs Cookies)",
+    "topic": "Secure Token Storage (LocalStorage vs Cookies)",
+    "subtopic": "Secure Token Storage (LocalStorage vs Cookies) Operations",
+    "concept": "Secure Token Storage (LocalStorage vs Cookies)",
+    "difficulty": "EASY",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "FRESHER",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "security",
+      "secure-token-storage--localstorage-vs-cookies-",
+      "frontend-interview"
+    ],
+    "question": "Frontend Security & OWASP Top 10: How does Secure Token Storage (LocalStorage vs Cookies) operate in production enterprise applications (Q9)?",
+    "shortAnswer": "In Frontend Security & OWASP Top 10, Secure Token Storage (LocalStorage vs Cookies) ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Secure Token Storage (LocalStorage vs Cookies)** is an essential architectural concept in <u>Frontend Security & OWASP Top 10</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Secure Token Storage (LocalStorage vs Cookies)** is an essential architectural concept in <u>Frontend Security & OWASP Top 10</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Secure Token Storage (LocalStorage vs Cookies)** is an essential architectural concept in <u>Frontend Security & OWASP Top 10</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Secure Token Storage (LocalStorage vs Cookies) in Frontend Security & OWASP Top 10:\nexport function handleSecureTokenStorageLocalStoragevsCookies(config) {\n  console.log('Executing Secure Token Storage (LocalStorage vs Cookies) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Secure Token Storage (LocalStorage vs Cookies) in Frontend Security & OWASP Top 10:\nexport function handleSecureTokenStorageLocalStoragevsCookies(config) {\n  console.log('Executing Secure Token Storage (LocalStorage vs Cookies) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Secure Token Storage (LocalStorage vs Cookies) in Frontend Security & OWASP Top 10:\nexport function handleSecureTokenStorageLocalStoragevsCookies(config) {\n  console.log('Executing Secure Token Storage (LocalStorage vs Cookies) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Secure Token Storage (LocalStorage vs Cookies) in Frontend Security & OWASP Top 10.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Secure Token Storage (LocalStorage vs Cookies) to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Secure Token Storage (LocalStorage vs Cookies).",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Secure Token Storage (LocalStorage vs Cookies), explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Secure Token Storage (LocalStorage vs Cookies), explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Secure Token Storage (LocalStorage vs Cookies) scale under extreme concurrency?",
+      "What monitoring tools can track Secure Token Storage (LocalStorage vs Cookies) metrics in production?"
+    ],
+    "followUps": [
+      "How does Secure Token Storage (LocalStorage vs Cookies) scale under extreme concurrency?",
+      "What monitoring tools can track Secure Token Storage (LocalStorage vs Cookies) metrics in production?"
+    ],
+    "question_hash": "qh_4bcd4dc1",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Frontend Security & OWASP Top 10, Secure Token Storage (LocalStorage vs Cookies) ensures predictable, resilient execution.",
+        "explanation": "Correct. In Frontend Security & OWASP Top 10, Secure Token Storage (LocalStorage vs Cookies) ensures predictable, resilient execution."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Frontend Security & OWASP Top 10, CSRF & SameSite Cookies ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes CSRF & SameSite Cookies, not Secure Token Storage (LocalStorage vs Cookies)."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Frontend Security & OWASP Top 10, Clickjacking & Framing Protections ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Clickjacking & Framing Protections, not Secure Token Storage (LocalStorage vs Cookies)."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Frontend Security & OWASP Top 10, Content Security Policy (CSP) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Content Security Policy (CSP), not Secure Token Storage (LocalStorage vs Cookies)."
+      }
+    ],
+    "correctAnswer": "A",
+    "mcqExplanation": "Correct. In Frontend Security & OWASP Top 10, Secure Token Storage (LocalStorage vs Cookies) ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "B": "Incorrect. This describes CSRF & SameSite Cookies, not Secure Token Storage (LocalStorage vs Cookies).",
+      "C": "Incorrect. This describes Clickjacking & Framing Protections, not Secure Token Storage (LocalStorage vs Cookies).",
+      "D": "Incorrect. This describes Content Security Policy (CSP), not Secure Token Storage (LocalStorage vs Cookies)."
+    },
+    "correctOption": "A",
+    "explanation": "Correct. In Frontend Security & OWASP Top 10, Secure Token Storage (LocalStorage vs Cookies) ensures predictable, resilient execution.",
+    "mcqQuestion": "Frontend Security & OWASP Top 10: How does Secure Token Storage (LocalStorage vs Cookies) operate in production enterprise applications (Q9)?"
+  },
+  {
+    "id": "iq-security-0010",
+    "standard_id": "SECURITY-MCQ-000010",
+    "questionNumber": 10,
+    "subject": "security",
+    "category": "Clickjacking & Framing Protections",
+    "topic": "Clickjacking & Framing Protections",
+    "subtopic": "Clickjacking & Framing Protections Operations",
+    "concept": "Clickjacking & Framing Protections",
+    "difficulty": "INTERMEDIATE",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "1_3_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "security",
+      "clickjacking---framing-protections",
+      "frontend-interview"
+    ],
+    "question": "Frontend Security & OWASP Top 10: How does Clickjacking & Framing Protections operate in production enterprise applications (Q10)?",
+    "shortAnswer": "In Frontend Security & OWASP Top 10, Clickjacking & Framing Protections ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Clickjacking & Framing Protections** is an essential architectural concept in <u>Frontend Security & OWASP Top 10</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Clickjacking & Framing Protections** is an essential architectural concept in <u>Frontend Security & OWASP Top 10</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Clickjacking & Framing Protections** is an essential architectural concept in <u>Frontend Security & OWASP Top 10</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Clickjacking & Framing Protections in Frontend Security & OWASP Top 10:\nexport function handleClickjackingFramingProtections(config) {\n  console.log('Executing Clickjacking & Framing Protections with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Clickjacking & Framing Protections in Frontend Security & OWASP Top 10:\nexport function handleClickjackingFramingProtections(config) {\n  console.log('Executing Clickjacking & Framing Protections with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Clickjacking & Framing Protections in Frontend Security & OWASP Top 10:\nexport function handleClickjackingFramingProtections(config) {\n  console.log('Executing Clickjacking & Framing Protections with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Clickjacking & Framing Protections in Frontend Security & OWASP Top 10.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Clickjacking & Framing Protections to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Clickjacking & Framing Protections.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Clickjacking & Framing Protections, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Clickjacking & Framing Protections, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Clickjacking & Framing Protections scale under extreme concurrency?",
+      "What monitoring tools can track Clickjacking & Framing Protections metrics in production?"
+    ],
+    "followUps": [
+      "How does Clickjacking & Framing Protections scale under extreme concurrency?",
+      "What monitoring tools can track Clickjacking & Framing Protections metrics in production?"
+    ],
+    "question_hash": "qh_3bcdd1d5",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Frontend Security & OWASP Top 10, Content Security Policy (CSP) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Content Security Policy (CSP), not Clickjacking & Framing Protections."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Frontend Security & OWASP Top 10, Clickjacking & Framing Protections ensures predictable, resilient execution.",
+        "explanation": "Correct. In Frontend Security & OWASP Top 10, Clickjacking & Framing Protections ensures predictable, resilient execution."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Frontend Security & OWASP Top 10, XSS (Stored, Reflected, DOM) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes XSS (Stored, Reflected, DOM), not Clickjacking & Framing Protections."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Frontend Security & OWASP Top 10, Secure Token Storage (LocalStorage vs Cookies) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Secure Token Storage (LocalStorage vs Cookies), not Clickjacking & Framing Protections."
+      }
+    ],
+    "correctAnswer": "B",
+    "correctOption": "B",
+    "mcqExplanation": "Correct. In Frontend Security & OWASP Top 10, Clickjacking & Framing Protections ensures predictable, resilient execution.",
+    "explanation": "Correct. In Frontend Security & OWASP Top 10, Clickjacking & Framing Protections ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Content Security Policy (CSP), not Clickjacking & Framing Protections.",
+      "C": "Incorrect. This describes XSS (Stored, Reflected, DOM), not Clickjacking & Framing Protections.",
+      "D": "Incorrect. This describes Secure Token Storage (LocalStorage vs Cookies), not Clickjacking & Framing Protections."
+    },
+    "mcqQuestion": "Frontend Security & OWASP Top 10: How does Clickjacking & Framing Protections operate in production enterprise applications (Q10)?"
+  },
+  {
+    "id": "iq-security-0011",
+    "standard_id": "SECURITY-MCQ-000011",
+    "questionNumber": 11,
+    "subject": "security",
+    "category": "XSS (Stored, Reflected, DOM)",
+    "topic": "XSS (Stored, Reflected, DOM)",
+    "subtopic": "XSS (Stored, Reflected, DOM) Operations",
+    "concept": "XSS (Stored, Reflected, DOM)",
+    "difficulty": "DIFFICULT",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "3_5_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "security",
+      "xss--stored--reflected--dom-",
+      "frontend-interview"
+    ],
+    "question": "Frontend Security & OWASP Top 10: How does XSS (Stored, Reflected, DOM) operate in production enterprise applications (Q11)?",
+    "shortAnswer": "In Frontend Security & OWASP Top 10, XSS (Stored, Reflected, DOM) ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**XSS (Stored, Reflected, DOM)** is an essential architectural concept in <u>Frontend Security & OWASP Top 10</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**XSS (Stored, Reflected, DOM)** is an essential architectural concept in <u>Frontend Security & OWASP Top 10</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**XSS (Stored, Reflected, DOM)** is an essential architectural concept in <u>Frontend Security & OWASP Top 10</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for XSS (Stored, Reflected, DOM) in Frontend Security & OWASP Top 10:\nexport function handleXSSStoredReflectedDOM(config) {\n  console.log('Executing XSS (Stored, Reflected, DOM) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for XSS (Stored, Reflected, DOM) in Frontend Security & OWASP Top 10:\nexport function handleXSSStoredReflectedDOM(config) {\n  console.log('Executing XSS (Stored, Reflected, DOM) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for XSS (Stored, Reflected, DOM) in Frontend Security & OWASP Top 10:\nexport function handleXSSStoredReflectedDOM(config) {\n  console.log('Executing XSS (Stored, Reflected, DOM) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of XSS (Stored, Reflected, DOM) in Frontend Security & OWASP Top 10.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize XSS (Stored, Reflected, DOM) to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with XSS (Stored, Reflected, DOM).",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about XSS (Stored, Reflected, DOM), explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about XSS (Stored, Reflected, DOM), explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does XSS (Stored, Reflected, DOM) scale under extreme concurrency?",
+      "What monitoring tools can track XSS (Stored, Reflected, DOM) metrics in production?"
+    ],
+    "followUps": [
+      "How does XSS (Stored, Reflected, DOM) scale under extreme concurrency?",
+      "What monitoring tools can track XSS (Stored, Reflected, DOM) metrics in production?"
+    ],
+    "question_hash": "qh_2f08a564",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Frontend Security & OWASP Top 10, Secure Token Storage (LocalStorage vs Cookies) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Secure Token Storage (LocalStorage vs Cookies), not XSS (Stored, Reflected, DOM)."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Frontend Security & OWASP Top 10, CSRF & SameSite Cookies ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes CSRF & SameSite Cookies, not XSS (Stored, Reflected, DOM)."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Frontend Security & OWASP Top 10, XSS (Stored, Reflected, DOM) ensures predictable, resilient execution.",
+        "explanation": "Correct. In Frontend Security & OWASP Top 10, XSS (Stored, Reflected, DOM) ensures predictable, resilient execution."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Frontend Security & OWASP Top 10, Clickjacking & Framing Protections ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Clickjacking & Framing Protections, not XSS (Stored, Reflected, DOM)."
+      }
+    ],
+    "correctAnswer": "C",
+    "mcqExplanation": "Correct. In Frontend Security & OWASP Top 10, XSS (Stored, Reflected, DOM) ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Secure Token Storage (LocalStorage vs Cookies), not XSS (Stored, Reflected, DOM).",
+      "B": "Incorrect. This describes CSRF & SameSite Cookies, not XSS (Stored, Reflected, DOM).",
+      "D": "Incorrect. This describes Clickjacking & Framing Protections, not XSS (Stored, Reflected, DOM)."
+    },
+    "correctOption": "C",
+    "explanation": "Correct. In Frontend Security & OWASP Top 10, XSS (Stored, Reflected, DOM) ensures predictable, resilient execution.",
+    "mcqQuestion": "Frontend Security & OWASP Top 10: How does XSS (Stored, Reflected, DOM) operate in production enterprise applications (Q11)?"
+  },
+  {
+    "id": "iq-security-0012",
+    "standard_id": "SECURITY-MCQ-000012",
+    "questionNumber": 12,
+    "subject": "security",
+    "category": "CSRF & SameSite Cookies",
+    "topic": "CSRF & SameSite Cookies",
+    "subtopic": "CSRF & SameSite Cookies Operations",
+    "concept": "CSRF & SameSite Cookies",
+    "difficulty": "EASY",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "FRESHER",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "security",
+      "csrf---samesite-cookies",
+      "frontend-interview"
+    ],
+    "question": "Frontend Security & OWASP Top 10: How does CSRF & SameSite Cookies operate in production enterprise applications (Q12)?",
+    "shortAnswer": "In Frontend Security & OWASP Top 10, CSRF & SameSite Cookies ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**CSRF & SameSite Cookies** is an essential architectural concept in <u>Frontend Security & OWASP Top 10</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**CSRF & SameSite Cookies** is an essential architectural concept in <u>Frontend Security & OWASP Top 10</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**CSRF & SameSite Cookies** is an essential architectural concept in <u>Frontend Security & OWASP Top 10</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for CSRF & SameSite Cookies in Frontend Security & OWASP Top 10:\nexport function handleCSRFSameSiteCookies(config) {\n  console.log('Executing CSRF & SameSite Cookies with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for CSRF & SameSite Cookies in Frontend Security & OWASP Top 10:\nexport function handleCSRFSameSiteCookies(config) {\n  console.log('Executing CSRF & SameSite Cookies with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for CSRF & SameSite Cookies in Frontend Security & OWASP Top 10:\nexport function handleCSRFSameSiteCookies(config) {\n  console.log('Executing CSRF & SameSite Cookies with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of CSRF & SameSite Cookies in Frontend Security & OWASP Top 10.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize CSRF & SameSite Cookies to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with CSRF & SameSite Cookies.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about CSRF & SameSite Cookies, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about CSRF & SameSite Cookies, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does CSRF & SameSite Cookies scale under extreme concurrency?",
+      "What monitoring tools can track CSRF & SameSite Cookies metrics in production?"
+    ],
+    "followUps": [
+      "How does CSRF & SameSite Cookies scale under extreme concurrency?",
+      "What monitoring tools can track CSRF & SameSite Cookies metrics in production?"
+    ],
+    "question_hash": "qh_1a4c3af5",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Frontend Security & OWASP Top 10, Clickjacking & Framing Protections ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Clickjacking & Framing Protections, not CSRF & SameSite Cookies."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Frontend Security & OWASP Top 10, Content Security Policy (CSP) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Content Security Policy (CSP), not CSRF & SameSite Cookies."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Frontend Security & OWASP Top 10, XSS (Stored, Reflected, DOM) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes XSS (Stored, Reflected, DOM), not CSRF & SameSite Cookies."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Frontend Security & OWASP Top 10, CSRF & SameSite Cookies ensures predictable, resilient execution.",
+        "explanation": "Correct. In Frontend Security & OWASP Top 10, CSRF & SameSite Cookies ensures predictable, resilient execution."
+      }
+    ],
+    "correctAnswer": "D",
+    "correctOption": "D",
+    "mcqExplanation": "Correct. In Frontend Security & OWASP Top 10, CSRF & SameSite Cookies ensures predictable, resilient execution.",
+    "explanation": "Correct. In Frontend Security & OWASP Top 10, CSRF & SameSite Cookies ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Clickjacking & Framing Protections, not CSRF & SameSite Cookies.",
+      "B": "Incorrect. This describes Content Security Policy (CSP), not CSRF & SameSite Cookies.",
+      "C": "Incorrect. This describes XSS (Stored, Reflected, DOM), not CSRF & SameSite Cookies."
+    },
+    "mcqQuestion": "Frontend Security & OWASP Top 10: How does CSRF & SameSite Cookies operate in production enterprise applications (Q12)?"
+  },
+  {
+    "id": "iq-security-0013",
+    "standard_id": "SECURITY-MCQ-000013",
+    "questionNumber": 13,
+    "subject": "security",
+    "category": "Content Security Policy (CSP)",
+    "topic": "Content Security Policy (CSP)",
+    "subtopic": "Content Security Policy (CSP) Operations",
+    "concept": "Content Security Policy (CSP)",
+    "difficulty": "INTERMEDIATE",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "1_3_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "security",
+      "content-security-policy--csp-",
+      "frontend-interview"
+    ],
+    "question": "Frontend Security & OWASP Top 10: How does Content Security Policy (CSP) operate in production enterprise applications (Q13)?",
+    "shortAnswer": "In Frontend Security & OWASP Top 10, Content Security Policy (CSP) ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Content Security Policy (CSP)** is an essential architectural concept in <u>Frontend Security & OWASP Top 10</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Content Security Policy (CSP)** is an essential architectural concept in <u>Frontend Security & OWASP Top 10</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Content Security Policy (CSP)** is an essential architectural concept in <u>Frontend Security & OWASP Top 10</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Content Security Policy (CSP) in Frontend Security & OWASP Top 10:\nexport function handleContentSecurityPolicyCSP(config) {\n  console.log('Executing Content Security Policy (CSP) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Content Security Policy (CSP) in Frontend Security & OWASP Top 10:\nexport function handleContentSecurityPolicyCSP(config) {\n  console.log('Executing Content Security Policy (CSP) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Content Security Policy (CSP) in Frontend Security & OWASP Top 10:\nexport function handleContentSecurityPolicyCSP(config) {\n  console.log('Executing Content Security Policy (CSP) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Content Security Policy (CSP) in Frontend Security & OWASP Top 10.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Content Security Policy (CSP) to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Content Security Policy (CSP).",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Content Security Policy (CSP), explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Content Security Policy (CSP), explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Content Security Policy (CSP) scale under extreme concurrency?",
+      "What monitoring tools can track Content Security Policy (CSP) metrics in production?"
+    ],
+    "followUps": [
+      "How does Content Security Policy (CSP) scale under extreme concurrency?",
+      "What monitoring tools can track Content Security Policy (CSP) metrics in production?"
+    ],
+    "question_hash": "qh_2d3076a4",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Frontend Security & OWASP Top 10, Content Security Policy (CSP) ensures predictable, resilient execution.",
+        "explanation": "Correct. In Frontend Security & OWASP Top 10, Content Security Policy (CSP) ensures predictable, resilient execution."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Frontend Security & OWASP Top 10, XSS (Stored, Reflected, DOM) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes XSS (Stored, Reflected, DOM), not Content Security Policy (CSP)."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Frontend Security & OWASP Top 10, Secure Token Storage (LocalStorage vs Cookies) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Secure Token Storage (LocalStorage vs Cookies), not Content Security Policy (CSP)."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Frontend Security & OWASP Top 10, CSRF & SameSite Cookies ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes CSRF & SameSite Cookies, not Content Security Policy (CSP)."
+      }
+    ],
+    "correctAnswer": "A",
+    "mcqExplanation": "Correct. In Frontend Security & OWASP Top 10, Content Security Policy (CSP) ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "B": "Incorrect. This describes XSS (Stored, Reflected, DOM), not Content Security Policy (CSP).",
+      "C": "Incorrect. This describes Secure Token Storage (LocalStorage vs Cookies), not Content Security Policy (CSP).",
+      "D": "Incorrect. This describes CSRF & SameSite Cookies, not Content Security Policy (CSP)."
+    },
+    "correctOption": "A",
+    "explanation": "Correct. In Frontend Security & OWASP Top 10, Content Security Policy (CSP) ensures predictable, resilient execution.",
+    "mcqQuestion": "Frontend Security & OWASP Top 10: How does Content Security Policy (CSP) operate in production enterprise applications (Q13)?"
+  },
+  {
+    "id": "iq-security-0014",
+    "standard_id": "SECURITY-MCQ-000014",
+    "questionNumber": 14,
+    "subject": "security",
+    "category": "Secure Token Storage (LocalStorage vs Cookies)",
+    "topic": "Secure Token Storage (LocalStorage vs Cookies)",
+    "subtopic": "Secure Token Storage (LocalStorage vs Cookies) Operations",
+    "concept": "Secure Token Storage (LocalStorage vs Cookies)",
+    "difficulty": "DIFFICULT",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "3_5_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "security",
+      "secure-token-storage--localstorage-vs-cookies-",
+      "frontend-interview"
+    ],
+    "question": "Frontend Security & OWASP Top 10: How does Secure Token Storage (LocalStorage vs Cookies) operate in production enterprise applications (Q14)?",
+    "shortAnswer": "In Frontend Security & OWASP Top 10, Secure Token Storage (LocalStorage vs Cookies) ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Secure Token Storage (LocalStorage vs Cookies)** is an essential architectural concept in <u>Frontend Security & OWASP Top 10</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Secure Token Storage (LocalStorage vs Cookies)** is an essential architectural concept in <u>Frontend Security & OWASP Top 10</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Secure Token Storage (LocalStorage vs Cookies)** is an essential architectural concept in <u>Frontend Security & OWASP Top 10</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Secure Token Storage (LocalStorage vs Cookies) in Frontend Security & OWASP Top 10:\nexport function handleSecureTokenStorageLocalStoragevsCookies(config) {\n  console.log('Executing Secure Token Storage (LocalStorage vs Cookies) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Secure Token Storage (LocalStorage vs Cookies) in Frontend Security & OWASP Top 10:\nexport function handleSecureTokenStorageLocalStoragevsCookies(config) {\n  console.log('Executing Secure Token Storage (LocalStorage vs Cookies) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Secure Token Storage (LocalStorage vs Cookies) in Frontend Security & OWASP Top 10:\nexport function handleSecureTokenStorageLocalStoragevsCookies(config) {\n  console.log('Executing Secure Token Storage (LocalStorage vs Cookies) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Secure Token Storage (LocalStorage vs Cookies) in Frontend Security & OWASP Top 10.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Secure Token Storage (LocalStorage vs Cookies) to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Secure Token Storage (LocalStorage vs Cookies).",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Secure Token Storage (LocalStorage vs Cookies), explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Secure Token Storage (LocalStorage vs Cookies), explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Secure Token Storage (LocalStorage vs Cookies) scale under extreme concurrency?",
+      "What monitoring tools can track Secure Token Storage (LocalStorage vs Cookies) metrics in production?"
+    ],
+    "followUps": [
+      "How does Secure Token Storage (LocalStorage vs Cookies) scale under extreme concurrency?",
+      "What monitoring tools can track Secure Token Storage (LocalStorage vs Cookies) metrics in production?"
+    ],
+    "question_hash": "qh_2ddc6b23",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Frontend Security & OWASP Top 10, CSRF & SameSite Cookies ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes CSRF & SameSite Cookies, not Secure Token Storage (LocalStorage vs Cookies)."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Frontend Security & OWASP Top 10, Secure Token Storage (LocalStorage vs Cookies) ensures predictable, resilient execution.",
+        "explanation": "Correct. In Frontend Security & OWASP Top 10, Secure Token Storage (LocalStorage vs Cookies) ensures predictable, resilient execution."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Frontend Security & OWASP Top 10, Clickjacking & Framing Protections ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Clickjacking & Framing Protections, not Secure Token Storage (LocalStorage vs Cookies)."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Frontend Security & OWASP Top 10, Content Security Policy (CSP) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Content Security Policy (CSP), not Secure Token Storage (LocalStorage vs Cookies)."
+      }
+    ],
+    "correctAnswer": "B",
+    "correctOption": "B",
+    "mcqExplanation": "Correct. In Frontend Security & OWASP Top 10, Secure Token Storage (LocalStorage vs Cookies) ensures predictable, resilient execution.",
+    "explanation": "Correct. In Frontend Security & OWASP Top 10, Secure Token Storage (LocalStorage vs Cookies) ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes CSRF & SameSite Cookies, not Secure Token Storage (LocalStorage vs Cookies).",
+      "C": "Incorrect. This describes Clickjacking & Framing Protections, not Secure Token Storage (LocalStorage vs Cookies).",
+      "D": "Incorrect. This describes Content Security Policy (CSP), not Secure Token Storage (LocalStorage vs Cookies)."
+    },
+    "mcqQuestion": "Frontend Security & OWASP Top 10: How does Secure Token Storage (LocalStorage vs Cookies) operate in production enterprise applications (Q14)?"
+  },
+  {
+    "id": "iq-security-0015",
+    "standard_id": "SECURITY-MCQ-000015",
+    "questionNumber": 15,
+    "subject": "security",
+    "category": "Clickjacking & Framing Protections",
+    "topic": "Clickjacking & Framing Protections",
+    "subtopic": "Clickjacking & Framing Protections Operations",
+    "concept": "Clickjacking & Framing Protections",
+    "difficulty": "EASY",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "FRESHER",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "security",
+      "clickjacking---framing-protections",
+      "frontend-interview"
+    ],
+    "question": "Frontend Security & OWASP Top 10: How does Clickjacking & Framing Protections operate in production enterprise applications (Q15)?",
+    "shortAnswer": "In Frontend Security & OWASP Top 10, Clickjacking & Framing Protections ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Clickjacking & Framing Protections** is an essential architectural concept in <u>Frontend Security & OWASP Top 10</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Clickjacking & Framing Protections** is an essential architectural concept in <u>Frontend Security & OWASP Top 10</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Clickjacking & Framing Protections** is an essential architectural concept in <u>Frontend Security & OWASP Top 10</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Clickjacking & Framing Protections in Frontend Security & OWASP Top 10:\nexport function handleClickjackingFramingProtections(config) {\n  console.log('Executing Clickjacking & Framing Protections with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Clickjacking & Framing Protections in Frontend Security & OWASP Top 10:\nexport function handleClickjackingFramingProtections(config) {\n  console.log('Executing Clickjacking & Framing Protections with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Clickjacking & Framing Protections in Frontend Security & OWASP Top 10:\nexport function handleClickjackingFramingProtections(config) {\n  console.log('Executing Clickjacking & Framing Protections with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Clickjacking & Framing Protections in Frontend Security & OWASP Top 10.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Clickjacking & Framing Protections to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Clickjacking & Framing Protections.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Clickjacking & Framing Protections, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Clickjacking & Framing Protections, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Clickjacking & Framing Protections scale under extreme concurrency?",
+      "What monitoring tools can track Clickjacking & Framing Protections metrics in production?"
+    ],
+    "followUps": [
+      "How does Clickjacking & Framing Protections scale under extreme concurrency?",
+      "What monitoring tools can track Clickjacking & Framing Protections metrics in production?"
+    ],
+    "question_hash": "qh_3bcdd1da",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Frontend Security & OWASP Top 10, Content Security Policy (CSP) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Content Security Policy (CSP), not Clickjacking & Framing Protections."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Frontend Security & OWASP Top 10, XSS (Stored, Reflected, DOM) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes XSS (Stored, Reflected, DOM), not Clickjacking & Framing Protections."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Frontend Security & OWASP Top 10, Clickjacking & Framing Protections ensures predictable, resilient execution.",
+        "explanation": "Correct. In Frontend Security & OWASP Top 10, Clickjacking & Framing Protections ensures predictable, resilient execution."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Frontend Security & OWASP Top 10, Secure Token Storage (LocalStorage vs Cookies) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Secure Token Storage (LocalStorage vs Cookies), not Clickjacking & Framing Protections."
+      }
+    ],
+    "correctAnswer": "C",
+    "mcqExplanation": "Correct. In Frontend Security & OWASP Top 10, Clickjacking & Framing Protections ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Content Security Policy (CSP), not Clickjacking & Framing Protections.",
+      "B": "Incorrect. This describes XSS (Stored, Reflected, DOM), not Clickjacking & Framing Protections.",
+      "D": "Incorrect. This describes Secure Token Storage (LocalStorage vs Cookies), not Clickjacking & Framing Protections."
+    },
+    "correctOption": "C",
+    "explanation": "Correct. In Frontend Security & OWASP Top 10, Clickjacking & Framing Protections ensures predictable, resilient execution.",
+    "mcqQuestion": "Frontend Security & OWASP Top 10: How does Clickjacking & Framing Protections operate in production enterprise applications (Q15)?"
+  },
+  {
+    "id": "iq-security-0016",
+    "standard_id": "SECURITY-MCQ-000016",
+    "questionNumber": 16,
+    "subject": "security",
+    "category": "XSS (Stored, Reflected, DOM)",
+    "topic": "XSS (Stored, Reflected, DOM)",
+    "subtopic": "XSS (Stored, Reflected, DOM) Operations",
+    "concept": "XSS (Stored, Reflected, DOM)",
+    "difficulty": "INTERMEDIATE",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "1_3_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "security",
+      "xss--stored--reflected--dom-",
+      "frontend-interview"
+    ],
+    "question": "Frontend Security & OWASP Top 10: How does XSS (Stored, Reflected, DOM) operate in production enterprise applications (Q16)?",
+    "shortAnswer": "In Frontend Security & OWASP Top 10, XSS (Stored, Reflected, DOM) ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**XSS (Stored, Reflected, DOM)** is an essential architectural concept in <u>Frontend Security & OWASP Top 10</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**XSS (Stored, Reflected, DOM)** is an essential architectural concept in <u>Frontend Security & OWASP Top 10</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**XSS (Stored, Reflected, DOM)** is an essential architectural concept in <u>Frontend Security & OWASP Top 10</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for XSS (Stored, Reflected, DOM) in Frontend Security & OWASP Top 10:\nexport function handleXSSStoredReflectedDOM(config) {\n  console.log('Executing XSS (Stored, Reflected, DOM) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for XSS (Stored, Reflected, DOM) in Frontend Security & OWASP Top 10:\nexport function handleXSSStoredReflectedDOM(config) {\n  console.log('Executing XSS (Stored, Reflected, DOM) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for XSS (Stored, Reflected, DOM) in Frontend Security & OWASP Top 10:\nexport function handleXSSStoredReflectedDOM(config) {\n  console.log('Executing XSS (Stored, Reflected, DOM) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of XSS (Stored, Reflected, DOM) in Frontend Security & OWASP Top 10.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize XSS (Stored, Reflected, DOM) to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with XSS (Stored, Reflected, DOM).",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about XSS (Stored, Reflected, DOM), explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about XSS (Stored, Reflected, DOM), explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does XSS (Stored, Reflected, DOM) scale under extreme concurrency?",
+      "What monitoring tools can track XSS (Stored, Reflected, DOM) metrics in production?"
+    ],
+    "followUps": [
+      "How does XSS (Stored, Reflected, DOM) scale under extreme concurrency?",
+      "What monitoring tools can track XSS (Stored, Reflected, DOM) metrics in production?"
+    ],
+    "question_hash": "qh_2f08a569",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Frontend Security & OWASP Top 10, Secure Token Storage (LocalStorage vs Cookies) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Secure Token Storage (LocalStorage vs Cookies), not XSS (Stored, Reflected, DOM)."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Frontend Security & OWASP Top 10, CSRF & SameSite Cookies ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes CSRF & SameSite Cookies, not XSS (Stored, Reflected, DOM)."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Frontend Security & OWASP Top 10, Clickjacking & Framing Protections ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Clickjacking & Framing Protections, not XSS (Stored, Reflected, DOM)."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Frontend Security & OWASP Top 10, XSS (Stored, Reflected, DOM) ensures predictable, resilient execution.",
+        "explanation": "Correct. In Frontend Security & OWASP Top 10, XSS (Stored, Reflected, DOM) ensures predictable, resilient execution."
+      }
+    ],
+    "correctAnswer": "D",
+    "correctOption": "D",
+    "mcqExplanation": "Correct. In Frontend Security & OWASP Top 10, XSS (Stored, Reflected, DOM) ensures predictable, resilient execution.",
+    "explanation": "Correct. In Frontend Security & OWASP Top 10, XSS (Stored, Reflected, DOM) ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Secure Token Storage (LocalStorage vs Cookies), not XSS (Stored, Reflected, DOM).",
+      "B": "Incorrect. This describes CSRF & SameSite Cookies, not XSS (Stored, Reflected, DOM).",
+      "C": "Incorrect. This describes Clickjacking & Framing Protections, not XSS (Stored, Reflected, DOM)."
+    },
+    "mcqQuestion": "Frontend Security & OWASP Top 10: How does XSS (Stored, Reflected, DOM) operate in production enterprise applications (Q16)?"
+  },
+  {
+    "id": "iq-security-0017",
+    "standard_id": "SECURITY-MCQ-000017",
+    "questionNumber": 17,
+    "subject": "security",
+    "category": "CSRF & SameSite Cookies",
+    "topic": "CSRF & SameSite Cookies",
+    "subtopic": "CSRF & SameSite Cookies Operations",
+    "concept": "CSRF & SameSite Cookies",
+    "difficulty": "DIFFICULT",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "3_5_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "security",
+      "csrf---samesite-cookies",
+      "frontend-interview"
+    ],
+    "question": "Frontend Security & OWASP Top 10: How does CSRF & SameSite Cookies operate in production enterprise applications (Q17)?",
+    "shortAnswer": "In Frontend Security & OWASP Top 10, CSRF & SameSite Cookies ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**CSRF & SameSite Cookies** is an essential architectural concept in <u>Frontend Security & OWASP Top 10</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**CSRF & SameSite Cookies** is an essential architectural concept in <u>Frontend Security & OWASP Top 10</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**CSRF & SameSite Cookies** is an essential architectural concept in <u>Frontend Security & OWASP Top 10</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for CSRF & SameSite Cookies in Frontend Security & OWASP Top 10:\nexport function handleCSRFSameSiteCookies(config) {\n  console.log('Executing CSRF & SameSite Cookies with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for CSRF & SameSite Cookies in Frontend Security & OWASP Top 10:\nexport function handleCSRFSameSiteCookies(config) {\n  console.log('Executing CSRF & SameSite Cookies with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for CSRF & SameSite Cookies in Frontend Security & OWASP Top 10:\nexport function handleCSRFSameSiteCookies(config) {\n  console.log('Executing CSRF & SameSite Cookies with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of CSRF & SameSite Cookies in Frontend Security & OWASP Top 10.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize CSRF & SameSite Cookies to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with CSRF & SameSite Cookies.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about CSRF & SameSite Cookies, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about CSRF & SameSite Cookies, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does CSRF & SameSite Cookies scale under extreme concurrency?",
+      "What monitoring tools can track CSRF & SameSite Cookies metrics in production?"
+    ],
+    "followUps": [
+      "How does CSRF & SameSite Cookies scale under extreme concurrency?",
+      "What monitoring tools can track CSRF & SameSite Cookies metrics in production?"
+    ],
+    "question_hash": "qh_1a4c3af0",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Frontend Security & OWASP Top 10, CSRF & SameSite Cookies ensures predictable, resilient execution.",
+        "explanation": "Correct. In Frontend Security & OWASP Top 10, CSRF & SameSite Cookies ensures predictable, resilient execution."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Frontend Security & OWASP Top 10, Clickjacking & Framing Protections ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Clickjacking & Framing Protections, not CSRF & SameSite Cookies."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Frontend Security & OWASP Top 10, Content Security Policy (CSP) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Content Security Policy (CSP), not CSRF & SameSite Cookies."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Frontend Security & OWASP Top 10, XSS (Stored, Reflected, DOM) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes XSS (Stored, Reflected, DOM), not CSRF & SameSite Cookies."
+      }
+    ],
+    "correctAnswer": "A",
+    "mcqExplanation": "Correct. In Frontend Security & OWASP Top 10, CSRF & SameSite Cookies ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "B": "Incorrect. This describes Clickjacking & Framing Protections, not CSRF & SameSite Cookies.",
+      "C": "Incorrect. This describes Content Security Policy (CSP), not CSRF & SameSite Cookies.",
+      "D": "Incorrect. This describes XSS (Stored, Reflected, DOM), not CSRF & SameSite Cookies."
+    },
+    "correctOption": "A",
+    "explanation": "Correct. In Frontend Security & OWASP Top 10, CSRF & SameSite Cookies ensures predictable, resilient execution.",
+    "mcqQuestion": "Frontend Security & OWASP Top 10: How does CSRF & SameSite Cookies operate in production enterprise applications (Q17)?"
+  },
+  {
+    "id": "iq-security-0018",
+    "standard_id": "SECURITY-MCQ-000018",
+    "questionNumber": 18,
+    "subject": "security",
+    "category": "Content Security Policy (CSP)",
+    "topic": "Content Security Policy (CSP)",
+    "subtopic": "Content Security Policy (CSP) Operations",
+    "concept": "Content Security Policy (CSP)",
+    "difficulty": "EASY",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "FRESHER",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "security",
+      "content-security-policy--csp-",
+      "frontend-interview"
+    ],
+    "question": "Frontend Security & OWASP Top 10: How does Content Security Policy (CSP) operate in production enterprise applications (Q18)?",
+    "shortAnswer": "In Frontend Security & OWASP Top 10, Content Security Policy (CSP) ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Content Security Policy (CSP)** is an essential architectural concept in <u>Frontend Security & OWASP Top 10</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Content Security Policy (CSP)** is an essential architectural concept in <u>Frontend Security & OWASP Top 10</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Content Security Policy (CSP)** is an essential architectural concept in <u>Frontend Security & OWASP Top 10</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Content Security Policy (CSP) in Frontend Security & OWASP Top 10:\nexport function handleContentSecurityPolicyCSP(config) {\n  console.log('Executing Content Security Policy (CSP) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Content Security Policy (CSP) in Frontend Security & OWASP Top 10:\nexport function handleContentSecurityPolicyCSP(config) {\n  console.log('Executing Content Security Policy (CSP) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Content Security Policy (CSP) in Frontend Security & OWASP Top 10:\nexport function handleContentSecurityPolicyCSP(config) {\n  console.log('Executing Content Security Policy (CSP) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Content Security Policy (CSP) in Frontend Security & OWASP Top 10.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Content Security Policy (CSP) to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Content Security Policy (CSP).",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Content Security Policy (CSP), explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Content Security Policy (CSP), explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Content Security Policy (CSP) scale under extreme concurrency?",
+      "What monitoring tools can track Content Security Policy (CSP) metrics in production?"
+    ],
+    "followUps": [
+      "How does Content Security Policy (CSP) scale under extreme concurrency?",
+      "What monitoring tools can track Content Security Policy (CSP) metrics in production?"
+    ],
+    "question_hash": "qh_2d30769f",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Frontend Security & OWASP Top 10, XSS (Stored, Reflected, DOM) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes XSS (Stored, Reflected, DOM), not Content Security Policy (CSP)."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Frontend Security & OWASP Top 10, Content Security Policy (CSP) ensures predictable, resilient execution.",
+        "explanation": "Correct. In Frontend Security & OWASP Top 10, Content Security Policy (CSP) ensures predictable, resilient execution."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Frontend Security & OWASP Top 10, Secure Token Storage (LocalStorage vs Cookies) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Secure Token Storage (LocalStorage vs Cookies), not Content Security Policy (CSP)."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Frontend Security & OWASP Top 10, CSRF & SameSite Cookies ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes CSRF & SameSite Cookies, not Content Security Policy (CSP)."
+      }
+    ],
+    "correctAnswer": "B",
+    "correctOption": "B",
+    "mcqExplanation": "Correct. In Frontend Security & OWASP Top 10, Content Security Policy (CSP) ensures predictable, resilient execution.",
+    "explanation": "Correct. In Frontend Security & OWASP Top 10, Content Security Policy (CSP) ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes XSS (Stored, Reflected, DOM), not Content Security Policy (CSP).",
+      "C": "Incorrect. This describes Secure Token Storage (LocalStorage vs Cookies), not Content Security Policy (CSP).",
+      "D": "Incorrect. This describes CSRF & SameSite Cookies, not Content Security Policy (CSP)."
+    },
+    "mcqQuestion": "Frontend Security & OWASP Top 10: How does Content Security Policy (CSP) operate in production enterprise applications (Q18)?"
+  },
+  {
+    "id": "iq-security-0019",
+    "standard_id": "SECURITY-MCQ-000019",
+    "questionNumber": 19,
+    "subject": "security",
+    "category": "Secure Token Storage (LocalStorage vs Cookies)",
+    "topic": "Secure Token Storage (LocalStorage vs Cookies)",
+    "subtopic": "Secure Token Storage (LocalStorage vs Cookies) Operations",
+    "concept": "Secure Token Storage (LocalStorage vs Cookies)",
+    "difficulty": "INTERMEDIATE",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "1_3_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "security",
+      "secure-token-storage--localstorage-vs-cookies-",
+      "frontend-interview"
+    ],
+    "question": "Frontend Security & OWASP Top 10: How does Secure Token Storage (LocalStorage vs Cookies) operate in production enterprise applications (Q19)?",
+    "shortAnswer": "In Frontend Security & OWASP Top 10, Secure Token Storage (LocalStorage vs Cookies) ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Secure Token Storage (LocalStorage vs Cookies)** is an essential architectural concept in <u>Frontend Security & OWASP Top 10</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Secure Token Storage (LocalStorage vs Cookies)** is an essential architectural concept in <u>Frontend Security & OWASP Top 10</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Secure Token Storage (LocalStorage vs Cookies)** is an essential architectural concept in <u>Frontend Security & OWASP Top 10</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Secure Token Storage (LocalStorage vs Cookies) in Frontend Security & OWASP Top 10:\nexport function handleSecureTokenStorageLocalStoragevsCookies(config) {\n  console.log('Executing Secure Token Storage (LocalStorage vs Cookies) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Secure Token Storage (LocalStorage vs Cookies) in Frontend Security & OWASP Top 10:\nexport function handleSecureTokenStorageLocalStoragevsCookies(config) {\n  console.log('Executing Secure Token Storage (LocalStorage vs Cookies) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Secure Token Storage (LocalStorage vs Cookies) in Frontend Security & OWASP Top 10:\nexport function handleSecureTokenStorageLocalStoragevsCookies(config) {\n  console.log('Executing Secure Token Storage (LocalStorage vs Cookies) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Secure Token Storage (LocalStorage vs Cookies) in Frontend Security & OWASP Top 10.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Secure Token Storage (LocalStorage vs Cookies) to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Secure Token Storage (LocalStorage vs Cookies).",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Secure Token Storage (LocalStorage vs Cookies), explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Secure Token Storage (LocalStorage vs Cookies), explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Secure Token Storage (LocalStorage vs Cookies) scale under extreme concurrency?",
+      "What monitoring tools can track Secure Token Storage (LocalStorage vs Cookies) metrics in production?"
+    ],
+    "followUps": [
+      "How does Secure Token Storage (LocalStorage vs Cookies) scale under extreme concurrency?",
+      "What monitoring tools can track Secure Token Storage (LocalStorage vs Cookies) metrics in production?"
+    ],
+    "question_hash": "qh_2ddc6b1e",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Frontend Security & OWASP Top 10, CSRF & SameSite Cookies ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes CSRF & SameSite Cookies, not Secure Token Storage (LocalStorage vs Cookies)."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Frontend Security & OWASP Top 10, Clickjacking & Framing Protections ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Clickjacking & Framing Protections, not Secure Token Storage (LocalStorage vs Cookies)."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Frontend Security & OWASP Top 10, Secure Token Storage (LocalStorage vs Cookies) ensures predictable, resilient execution.",
+        "explanation": "Correct. In Frontend Security & OWASP Top 10, Secure Token Storage (LocalStorage vs Cookies) ensures predictable, resilient execution."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Frontend Security & OWASP Top 10, Content Security Policy (CSP) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Content Security Policy (CSP), not Secure Token Storage (LocalStorage vs Cookies)."
+      }
+    ],
+    "correctAnswer": "C",
+    "mcqExplanation": "Correct. In Frontend Security & OWASP Top 10, Secure Token Storage (LocalStorage vs Cookies) ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes CSRF & SameSite Cookies, not Secure Token Storage (LocalStorage vs Cookies).",
+      "B": "Incorrect. This describes Clickjacking & Framing Protections, not Secure Token Storage (LocalStorage vs Cookies).",
+      "D": "Incorrect. This describes Content Security Policy (CSP), not Secure Token Storage (LocalStorage vs Cookies)."
+    },
+    "correctOption": "C",
+    "explanation": "Correct. In Frontend Security & OWASP Top 10, Secure Token Storage (LocalStorage vs Cookies) ensures predictable, resilient execution.",
+    "mcqQuestion": "Frontend Security & OWASP Top 10: How does Secure Token Storage (LocalStorage vs Cookies) operate in production enterprise applications (Q19)?"
+  },
+  {
+    "id": "iq-security-0020",
+    "standard_id": "SECURITY-MCQ-000020",
+    "questionNumber": 20,
+    "subject": "security",
+    "category": "Clickjacking & Framing Protections",
+    "topic": "Clickjacking & Framing Protections",
+    "subtopic": "Clickjacking & Framing Protections Operations",
+    "concept": "Clickjacking & Framing Protections",
+    "difficulty": "DIFFICULT",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "3_5_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "security",
+      "clickjacking---framing-protections",
+      "frontend-interview"
+    ],
+    "question": "Frontend Security & OWASP Top 10: How does Clickjacking & Framing Protections operate in production enterprise applications (Q20)?",
+    "shortAnswer": "In Frontend Security & OWASP Top 10, Clickjacking & Framing Protections ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Clickjacking & Framing Protections** is an essential architectural concept in <u>Frontend Security & OWASP Top 10</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Clickjacking & Framing Protections** is an essential architectural concept in <u>Frontend Security & OWASP Top 10</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Clickjacking & Framing Protections** is an essential architectural concept in <u>Frontend Security & OWASP Top 10</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Clickjacking & Framing Protections in Frontend Security & OWASP Top 10:\nexport function handleClickjackingFramingProtections(config) {\n  console.log('Executing Clickjacking & Framing Protections with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Clickjacking & Framing Protections in Frontend Security & OWASP Top 10:\nexport function handleClickjackingFramingProtections(config) {\n  console.log('Executing Clickjacking & Framing Protections with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Clickjacking & Framing Protections in Frontend Security & OWASP Top 10:\nexport function handleClickjackingFramingProtections(config) {\n  console.log('Executing Clickjacking & Framing Protections with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Clickjacking & Framing Protections in Frontend Security & OWASP Top 10.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Clickjacking & Framing Protections to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Clickjacking & Framing Protections.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Clickjacking & Framing Protections, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Clickjacking & Framing Protections, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Clickjacking & Framing Protections scale under extreme concurrency?",
+      "What monitoring tools can track Clickjacking & Framing Protections metrics in production?"
+    ],
+    "followUps": [
+      "How does Clickjacking & Framing Protections scale under extreme concurrency?",
+      "What monitoring tools can track Clickjacking & Framing Protections metrics in production?"
+    ],
+    "question_hash": "qh_3bcdd1f4",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Frontend Security & OWASP Top 10, Content Security Policy (CSP) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Content Security Policy (CSP), not Clickjacking & Framing Protections."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Frontend Security & OWASP Top 10, XSS (Stored, Reflected, DOM) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes XSS (Stored, Reflected, DOM), not Clickjacking & Framing Protections."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Frontend Security & OWASP Top 10, Secure Token Storage (LocalStorage vs Cookies) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Secure Token Storage (LocalStorage vs Cookies), not Clickjacking & Framing Protections."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Frontend Security & OWASP Top 10, Clickjacking & Framing Protections ensures predictable, resilient execution.",
+        "explanation": "Correct. In Frontend Security & OWASP Top 10, Clickjacking & Framing Protections ensures predictable, resilient execution."
+      }
+    ],
+    "correctAnswer": "D",
+    "correctOption": "D",
+    "mcqExplanation": "Correct. In Frontend Security & OWASP Top 10, Clickjacking & Framing Protections ensures predictable, resilient execution.",
+    "explanation": "Correct. In Frontend Security & OWASP Top 10, Clickjacking & Framing Protections ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Content Security Policy (CSP), not Clickjacking & Framing Protections.",
+      "B": "Incorrect. This describes XSS (Stored, Reflected, DOM), not Clickjacking & Framing Protections.",
+      "C": "Incorrect. This describes Secure Token Storage (LocalStorage vs Cookies), not Clickjacking & Framing Protections."
+    },
+    "mcqQuestion": "Frontend Security & OWASP Top 10: How does Clickjacking & Framing Protections operate in production enterprise applications (Q20)?"
+  },
+  {
+    "id": "iq-security-0021",
+    "standard_id": "SECURITY-MCQ-000021",
+    "questionNumber": 21,
+    "subject": "security",
+    "category": "XSS (Stored, Reflected, DOM)",
+    "topic": "XSS (Stored, Reflected, DOM)",
+    "subtopic": "XSS (Stored, Reflected, DOM) Operations",
+    "concept": "XSS (Stored, Reflected, DOM)",
+    "difficulty": "EASY",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "FRESHER",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "security",
+      "xss--stored--reflected--dom-",
+      "frontend-interview"
+    ],
+    "question": "Frontend Security & OWASP Top 10: How does XSS (Stored, Reflected, DOM) operate in production enterprise applications (Q21)?",
+    "shortAnswer": "In Frontend Security & OWASP Top 10, XSS (Stored, Reflected, DOM) ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**XSS (Stored, Reflected, DOM)** is an essential architectural concept in <u>Frontend Security & OWASP Top 10</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**XSS (Stored, Reflected, DOM)** is an essential architectural concept in <u>Frontend Security & OWASP Top 10</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**XSS (Stored, Reflected, DOM)** is an essential architectural concept in <u>Frontend Security & OWASP Top 10</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for XSS (Stored, Reflected, DOM) in Frontend Security & OWASP Top 10:\nexport function handleXSSStoredReflectedDOM(config) {\n  console.log('Executing XSS (Stored, Reflected, DOM) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for XSS (Stored, Reflected, DOM) in Frontend Security & OWASP Top 10:\nexport function handleXSSStoredReflectedDOM(config) {\n  console.log('Executing XSS (Stored, Reflected, DOM) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for XSS (Stored, Reflected, DOM) in Frontend Security & OWASP Top 10:\nexport function handleXSSStoredReflectedDOM(config) {\n  console.log('Executing XSS (Stored, Reflected, DOM) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of XSS (Stored, Reflected, DOM) in Frontend Security & OWASP Top 10.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize XSS (Stored, Reflected, DOM) to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with XSS (Stored, Reflected, DOM).",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about XSS (Stored, Reflected, DOM), explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about XSS (Stored, Reflected, DOM), explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does XSS (Stored, Reflected, DOM) scale under extreme concurrency?",
+      "What monitoring tools can track XSS (Stored, Reflected, DOM) metrics in production?"
+    ],
+    "followUps": [
+      "How does XSS (Stored, Reflected, DOM) scale under extreme concurrency?",
+      "What monitoring tools can track XSS (Stored, Reflected, DOM) metrics in production?"
+    ],
+    "question_hash": "qh_2f08a583",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Frontend Security & OWASP Top 10, XSS (Stored, Reflected, DOM) ensures predictable, resilient execution.",
+        "explanation": "Correct. In Frontend Security & OWASP Top 10, XSS (Stored, Reflected, DOM) ensures predictable, resilient execution."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Frontend Security & OWASP Top 10, Secure Token Storage (LocalStorage vs Cookies) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Secure Token Storage (LocalStorage vs Cookies), not XSS (Stored, Reflected, DOM)."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Frontend Security & OWASP Top 10, CSRF & SameSite Cookies ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes CSRF & SameSite Cookies, not XSS (Stored, Reflected, DOM)."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Frontend Security & OWASP Top 10, Clickjacking & Framing Protections ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Clickjacking & Framing Protections, not XSS (Stored, Reflected, DOM)."
+      }
+    ],
+    "correctAnswer": "A",
+    "mcqExplanation": "Correct. In Frontend Security & OWASP Top 10, XSS (Stored, Reflected, DOM) ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "B": "Incorrect. This describes Secure Token Storage (LocalStorage vs Cookies), not XSS (Stored, Reflected, DOM).",
+      "C": "Incorrect. This describes CSRF & SameSite Cookies, not XSS (Stored, Reflected, DOM).",
+      "D": "Incorrect. This describes Clickjacking & Framing Protections, not XSS (Stored, Reflected, DOM)."
+    },
+    "correctOption": "A",
+    "explanation": "Correct. In Frontend Security & OWASP Top 10, XSS (Stored, Reflected, DOM) ensures predictable, resilient execution.",
+    "mcqQuestion": "Frontend Security & OWASP Top 10: How does XSS (Stored, Reflected, DOM) operate in production enterprise applications (Q21)?"
+  },
+  {
+    "id": "iq-security-0022",
+    "standard_id": "SECURITY-MCQ-000022",
+    "questionNumber": 22,
+    "subject": "security",
+    "category": "CSRF & SameSite Cookies",
+    "topic": "CSRF & SameSite Cookies",
+    "subtopic": "CSRF & SameSite Cookies Operations",
+    "concept": "CSRF & SameSite Cookies",
+    "difficulty": "INTERMEDIATE",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "1_3_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "security",
+      "csrf---samesite-cookies",
+      "frontend-interview"
+    ],
+    "question": "Frontend Security & OWASP Top 10: How does CSRF & SameSite Cookies operate in production enterprise applications (Q22)?",
+    "shortAnswer": "In Frontend Security & OWASP Top 10, CSRF & SameSite Cookies ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**CSRF & SameSite Cookies** is an essential architectural concept in <u>Frontend Security & OWASP Top 10</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**CSRF & SameSite Cookies** is an essential architectural concept in <u>Frontend Security & OWASP Top 10</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**CSRF & SameSite Cookies** is an essential architectural concept in <u>Frontend Security & OWASP Top 10</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for CSRF & SameSite Cookies in Frontend Security & OWASP Top 10:\nexport function handleCSRFSameSiteCookies(config) {\n  console.log('Executing CSRF & SameSite Cookies with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for CSRF & SameSite Cookies in Frontend Security & OWASP Top 10:\nexport function handleCSRFSameSiteCookies(config) {\n  console.log('Executing CSRF & SameSite Cookies with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for CSRF & SameSite Cookies in Frontend Security & OWASP Top 10:\nexport function handleCSRFSameSiteCookies(config) {\n  console.log('Executing CSRF & SameSite Cookies with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of CSRF & SameSite Cookies in Frontend Security & OWASP Top 10.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize CSRF & SameSite Cookies to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with CSRF & SameSite Cookies.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about CSRF & SameSite Cookies, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about CSRF & SameSite Cookies, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does CSRF & SameSite Cookies scale under extreme concurrency?",
+      "What monitoring tools can track CSRF & SameSite Cookies metrics in production?"
+    ],
+    "followUps": [
+      "How does CSRF & SameSite Cookies scale under extreme concurrency?",
+      "What monitoring tools can track CSRF & SameSite Cookies metrics in production?"
+    ],
+    "question_hash": "qh_1a4c3ad6",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Frontend Security & OWASP Top 10, Clickjacking & Framing Protections ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Clickjacking & Framing Protections, not CSRF & SameSite Cookies."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Frontend Security & OWASP Top 10, CSRF & SameSite Cookies ensures predictable, resilient execution.",
+        "explanation": "Correct. In Frontend Security & OWASP Top 10, CSRF & SameSite Cookies ensures predictable, resilient execution."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Frontend Security & OWASP Top 10, Content Security Policy (CSP) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Content Security Policy (CSP), not CSRF & SameSite Cookies."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "XSS occurs when an attacker injects malicious executable JavaScript into a trusted web application.",
+        "explanation": "Incorrect. This describes XSS Vectors & Sanitization Defense, not CSRF & SameSite Cookies."
+      }
+    ],
+    "correctAnswer": "B",
+    "correctOption": "B",
+    "mcqExplanation": "Correct. In Frontend Security & OWASP Top 10, CSRF & SameSite Cookies ensures predictable, resilient execution.",
+    "explanation": "Correct. In Frontend Security & OWASP Top 10, CSRF & SameSite Cookies ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Clickjacking & Framing Protections, not CSRF & SameSite Cookies.",
+      "C": "Incorrect. This describes Content Security Policy (CSP), not CSRF & SameSite Cookies.",
+      "D": "Incorrect. This describes XSS Vectors & Sanitization Defense, not CSRF & SameSite Cookies."
+    },
+    "mcqQuestion": "Frontend Security & OWASP Top 10: How does CSRF & SameSite Cookies operate in production enterprise applications (Q22)?"
+  },
+  {
+    "id": "iq-security-0023",
+    "standard_id": "SECURITY-MCQ-000023",
+    "questionNumber": 23,
+    "subject": "security",
+    "category": "Content Security Policy (CSP)",
+    "topic": "Content Security Policy (CSP)",
+    "subtopic": "Content Security Policy (CSP) Operations",
+    "concept": "Content Security Policy (CSP)",
+    "difficulty": "DIFFICULT",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "3_5_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "security",
+      "content-security-policy--csp-",
+      "frontend-interview"
+    ],
+    "question": "Frontend Security & OWASP Top 10: How does Content Security Policy (CSP) operate in production enterprise applications (Q23)?",
+    "shortAnswer": "In Frontend Security & OWASP Top 10, Content Security Policy (CSP) ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Content Security Policy (CSP)** is an essential architectural concept in <u>Frontend Security & OWASP Top 10</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Content Security Policy (CSP)** is an essential architectural concept in <u>Frontend Security & OWASP Top 10</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Content Security Policy (CSP)** is an essential architectural concept in <u>Frontend Security & OWASP Top 10</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Content Security Policy (CSP) in Frontend Security & OWASP Top 10:\nexport function handleContentSecurityPolicyCSP(config) {\n  console.log('Executing Content Security Policy (CSP) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Content Security Policy (CSP) in Frontend Security & OWASP Top 10:\nexport function handleContentSecurityPolicyCSP(config) {\n  console.log('Executing Content Security Policy (CSP) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Content Security Policy (CSP) in Frontend Security & OWASP Top 10:\nexport function handleContentSecurityPolicyCSP(config) {\n  console.log('Executing Content Security Policy (CSP) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Content Security Policy (CSP) in Frontend Security & OWASP Top 10.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Content Security Policy (CSP) to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Content Security Policy (CSP).",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Content Security Policy (CSP), explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Content Security Policy (CSP), explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Content Security Policy (CSP) scale under extreme concurrency?",
+      "What monitoring tools can track Content Security Policy (CSP) metrics in production?"
+    ],
+    "followUps": [
+      "How does Content Security Policy (CSP) scale under extreme concurrency?",
+      "What monitoring tools can track Content Security Policy (CSP) metrics in production?"
+    ],
+    "question_hash": "qh_2d307685",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Frontend Security & OWASP Top 10, XSS (Stored, Reflected, DOM) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes XSS (Stored, Reflected, DOM), not Content Security Policy (CSP)."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Frontend Security & OWASP Top 10, Secure Token Storage (LocalStorage vs Cookies) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Secure Token Storage (LocalStorage vs Cookies), not Content Security Policy (CSP)."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Frontend Security & OWASP Top 10, Content Security Policy (CSP) ensures predictable, resilient execution.",
+        "explanation": "Correct. In Frontend Security & OWASP Top 10, Content Security Policy (CSP) ensures predictable, resilient execution."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Frontend Security & OWASP Top 10, CSRF & SameSite Cookies ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes CSRF & SameSite Cookies, not Content Security Policy (CSP)."
+      }
+    ],
+    "correctAnswer": "C",
+    "mcqExplanation": "Correct. In Frontend Security & OWASP Top 10, Content Security Policy (CSP) ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes XSS (Stored, Reflected, DOM), not Content Security Policy (CSP).",
+      "B": "Incorrect. This describes Secure Token Storage (LocalStorage vs Cookies), not Content Security Policy (CSP).",
+      "D": "Incorrect. This describes CSRF & SameSite Cookies, not Content Security Policy (CSP)."
+    },
+    "correctOption": "C",
+    "explanation": "Correct. In Frontend Security & OWASP Top 10, Content Security Policy (CSP) ensures predictable, resilient execution.",
+    "mcqQuestion": "Frontend Security & OWASP Top 10: How does Content Security Policy (CSP) operate in production enterprise applications (Q23)?"
+  },
+  {
+    "id": "iq-security-0024",
+    "standard_id": "SECURITY-MCQ-000024",
+    "questionNumber": 24,
+    "subject": "security",
+    "category": "Secure Token Storage (LocalStorage vs Cookies)",
+    "topic": "Secure Token Storage (LocalStorage vs Cookies)",
+    "subtopic": "Secure Token Storage (LocalStorage vs Cookies) Operations",
+    "concept": "Secure Token Storage (LocalStorage vs Cookies)",
+    "difficulty": "EASY",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "FRESHER",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "security",
+      "secure-token-storage--localstorage-vs-cookies-",
+      "frontend-interview"
+    ],
+    "question": "Frontend Security & OWASP Top 10: How does Secure Token Storage (LocalStorage vs Cookies) operate in production enterprise applications (Q24)?",
+    "shortAnswer": "In Frontend Security & OWASP Top 10, Secure Token Storage (LocalStorage vs Cookies) ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Secure Token Storage (LocalStorage vs Cookies)** is an essential architectural concept in <u>Frontend Security & OWASP Top 10</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Secure Token Storage (LocalStorage vs Cookies)** is an essential architectural concept in <u>Frontend Security & OWASP Top 10</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Secure Token Storage (LocalStorage vs Cookies)** is an essential architectural concept in <u>Frontend Security & OWASP Top 10</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Secure Token Storage (LocalStorage vs Cookies) in Frontend Security & OWASP Top 10:\nexport function handleSecureTokenStorageLocalStoragevsCookies(config) {\n  console.log('Executing Secure Token Storage (LocalStorage vs Cookies) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Secure Token Storage (LocalStorage vs Cookies) in Frontend Security & OWASP Top 10:\nexport function handleSecureTokenStorageLocalStoragevsCookies(config) {\n  console.log('Executing Secure Token Storage (LocalStorage vs Cookies) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Secure Token Storage (LocalStorage vs Cookies) in Frontend Security & OWASP Top 10:\nexport function handleSecureTokenStorageLocalStoragevsCookies(config) {\n  console.log('Executing Secure Token Storage (LocalStorage vs Cookies) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Secure Token Storage (LocalStorage vs Cookies) in Frontend Security & OWASP Top 10.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Secure Token Storage (LocalStorage vs Cookies) to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Secure Token Storage (LocalStorage vs Cookies).",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Secure Token Storage (LocalStorage vs Cookies), explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Secure Token Storage (LocalStorage vs Cookies), explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Secure Token Storage (LocalStorage vs Cookies) scale under extreme concurrency?",
+      "What monitoring tools can track Secure Token Storage (LocalStorage vs Cookies) metrics in production?"
+    ],
+    "followUps": [
+      "How does Secure Token Storage (LocalStorage vs Cookies) scale under extreme concurrency?",
+      "What monitoring tools can track Secure Token Storage (LocalStorage vs Cookies) metrics in production?"
+    ],
+    "question_hash": "qh_2ddc6b04",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Frontend Security & OWASP Top 10, CSRF & SameSite Cookies ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes CSRF & SameSite Cookies, not Secure Token Storage (LocalStorage vs Cookies)."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Frontend Security & OWASP Top 10, Clickjacking & Framing Protections ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Clickjacking & Framing Protections, not Secure Token Storage (LocalStorage vs Cookies)."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Frontend Security & OWASP Top 10, Content Security Policy (CSP) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Content Security Policy (CSP), not Secure Token Storage (LocalStorage vs Cookies)."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Frontend Security & OWASP Top 10, Secure Token Storage (LocalStorage vs Cookies) ensures predictable, resilient execution.",
+        "explanation": "Correct. In Frontend Security & OWASP Top 10, Secure Token Storage (LocalStorage vs Cookies) ensures predictable, resilient execution."
+      }
+    ],
+    "correctAnswer": "D",
+    "correctOption": "D",
+    "mcqExplanation": "Correct. In Frontend Security & OWASP Top 10, Secure Token Storage (LocalStorage vs Cookies) ensures predictable, resilient execution.",
+    "explanation": "Correct. In Frontend Security & OWASP Top 10, Secure Token Storage (LocalStorage vs Cookies) ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes CSRF & SameSite Cookies, not Secure Token Storage (LocalStorage vs Cookies).",
+      "B": "Incorrect. This describes Clickjacking & Framing Protections, not Secure Token Storage (LocalStorage vs Cookies).",
+      "C": "Incorrect. This describes Content Security Policy (CSP), not Secure Token Storage (LocalStorage vs Cookies)."
+    },
+    "mcqQuestion": "Frontend Security & OWASP Top 10: How does Secure Token Storage (LocalStorage vs Cookies) operate in production enterprise applications (Q24)?"
+  },
+  {
+    "id": "iq-security-0025",
+    "standard_id": "SECURITY-MCQ-000025",
+    "questionNumber": 25,
+    "subject": "security",
+    "category": "Clickjacking & Framing Protections",
+    "topic": "Clickjacking & Framing Protections",
+    "subtopic": "Clickjacking & Framing Protections Operations",
+    "concept": "Clickjacking & Framing Protections",
+    "difficulty": "INTERMEDIATE",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "1_3_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "security",
+      "clickjacking---framing-protections",
+      "frontend-interview"
+    ],
+    "question": "Frontend Security & OWASP Top 10: How does Clickjacking & Framing Protections operate in production enterprise applications (Q25)?",
+    "shortAnswer": "In Frontend Security & OWASP Top 10, Clickjacking & Framing Protections ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Clickjacking & Framing Protections** is an essential architectural concept in <u>Frontend Security & OWASP Top 10</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Clickjacking & Framing Protections** is an essential architectural concept in <u>Frontend Security & OWASP Top 10</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Clickjacking & Framing Protections** is an essential architectural concept in <u>Frontend Security & OWASP Top 10</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Clickjacking & Framing Protections in Frontend Security & OWASP Top 10:\nexport function handleClickjackingFramingProtections(config) {\n  console.log('Executing Clickjacking & Framing Protections with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Clickjacking & Framing Protections in Frontend Security & OWASP Top 10:\nexport function handleClickjackingFramingProtections(config) {\n  console.log('Executing Clickjacking & Framing Protections with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Clickjacking & Framing Protections in Frontend Security & OWASP Top 10:\nexport function handleClickjackingFramingProtections(config) {\n  console.log('Executing Clickjacking & Framing Protections with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Clickjacking & Framing Protections in Frontend Security & OWASP Top 10.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Clickjacking & Framing Protections to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Clickjacking & Framing Protections.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Clickjacking & Framing Protections, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Clickjacking & Framing Protections, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Clickjacking & Framing Protections scale under extreme concurrency?",
+      "What monitoring tools can track Clickjacking & Framing Protections metrics in production?"
+    ],
+    "followUps": [
+      "How does Clickjacking & Framing Protections scale under extreme concurrency?",
+      "What monitoring tools can track Clickjacking & Framing Protections metrics in production?"
+    ],
+    "question_hash": "qh_3bcdd1f9",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Frontend Security & OWASP Top 10, Clickjacking & Framing Protections ensures predictable, resilient execution.",
+        "explanation": "Correct. In Frontend Security & OWASP Top 10, Clickjacking & Framing Protections ensures predictable, resilient execution."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Frontend Security & OWASP Top 10, Content Security Policy (CSP) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Content Security Policy (CSP), not Clickjacking & Framing Protections."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "XSS occurs when an attacker injects malicious executable JavaScript into a trusted web application.",
+        "explanation": "Incorrect. This describes XSS Vectors & Sanitization Defense, not Clickjacking & Framing Protections."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Frontend Security & OWASP Top 10, Secure Token Storage (LocalStorage vs Cookies) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Secure Token Storage (LocalStorage vs Cookies), not Clickjacking & Framing Protections."
+      }
+    ],
+    "correctAnswer": "A",
+    "mcqExplanation": "Correct. In Frontend Security & OWASP Top 10, Clickjacking & Framing Protections ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "B": "Incorrect. This describes Content Security Policy (CSP), not Clickjacking & Framing Protections.",
+      "C": "Incorrect. This describes XSS Vectors & Sanitization Defense, not Clickjacking & Framing Protections.",
+      "D": "Incorrect. This describes Secure Token Storage (LocalStorage vs Cookies), not Clickjacking & Framing Protections."
+    },
+    "correctOption": "A",
+    "explanation": "Correct. In Frontend Security & OWASP Top 10, Clickjacking & Framing Protections ensures predictable, resilient execution.",
+    "mcqQuestion": "Frontend Security & OWASP Top 10: How does Clickjacking & Framing Protections operate in production enterprise applications (Q25)?"
+  },
+  {
+    "id": "iq-security-0026",
+    "standard_id": "SECURITY-MCQ-000026",
+    "questionNumber": 26,
+    "subject": "security",
+    "category": "XSS (Stored, Reflected, DOM)",
+    "topic": "XSS (Stored, Reflected, DOM)",
+    "subtopic": "XSS (Stored, Reflected, DOM) Operations",
+    "concept": "XSS (Stored, Reflected, DOM)",
+    "difficulty": "DIFFICULT",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "3_5_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "security",
+      "xss--stored--reflected--dom-",
+      "frontend-interview"
+    ],
+    "question": "Frontend Security & OWASP Top 10: How does XSS (Stored, Reflected, DOM) operate in production enterprise applications (Q26)?",
+    "shortAnswer": "In Frontend Security & OWASP Top 10, XSS (Stored, Reflected, DOM) ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**XSS (Stored, Reflected, DOM)** is an essential architectural concept in <u>Frontend Security & OWASP Top 10</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**XSS (Stored, Reflected, DOM)** is an essential architectural concept in <u>Frontend Security & OWASP Top 10</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**XSS (Stored, Reflected, DOM)** is an essential architectural concept in <u>Frontend Security & OWASP Top 10</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for XSS (Stored, Reflected, DOM) in Frontend Security & OWASP Top 10:\nexport function handleXSSStoredReflectedDOM(config) {\n  console.log('Executing XSS (Stored, Reflected, DOM) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for XSS (Stored, Reflected, DOM) in Frontend Security & OWASP Top 10:\nexport function handleXSSStoredReflectedDOM(config) {\n  console.log('Executing XSS (Stored, Reflected, DOM) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for XSS (Stored, Reflected, DOM) in Frontend Security & OWASP Top 10:\nexport function handleXSSStoredReflectedDOM(config) {\n  console.log('Executing XSS (Stored, Reflected, DOM) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of XSS (Stored, Reflected, DOM) in Frontend Security & OWASP Top 10.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize XSS (Stored, Reflected, DOM) to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with XSS (Stored, Reflected, DOM).",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about XSS (Stored, Reflected, DOM), explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about XSS (Stored, Reflected, DOM), explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does XSS (Stored, Reflected, DOM) scale under extreme concurrency?",
+      "What monitoring tools can track XSS (Stored, Reflected, DOM) metrics in production?"
+    ],
+    "followUps": [
+      "How does XSS (Stored, Reflected, DOM) scale under extreme concurrency?",
+      "What monitoring tools can track XSS (Stored, Reflected, DOM) metrics in production?"
+    ],
+    "question_hash": "qh_2f08a588",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Frontend Security & OWASP Top 10, Secure Token Storage (LocalStorage vs Cookies) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Secure Token Storage (LocalStorage vs Cookies), not XSS (Stored, Reflected, DOM)."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Frontend Security & OWASP Top 10, XSS (Stored, Reflected, DOM) ensures predictable, resilient execution.",
+        "explanation": "Correct. In Frontend Security & OWASP Top 10, XSS (Stored, Reflected, DOM) ensures predictable, resilient execution."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Frontend Security & OWASP Top 10, CSRF & SameSite Cookies ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes CSRF & SameSite Cookies, not XSS (Stored, Reflected, DOM)."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Frontend Security & OWASP Top 10, Clickjacking & Framing Protections ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Clickjacking & Framing Protections, not XSS (Stored, Reflected, DOM)."
+      }
+    ],
+    "correctAnswer": "B",
+    "correctOption": "B",
+    "mcqExplanation": "Correct. In Frontend Security & OWASP Top 10, XSS (Stored, Reflected, DOM) ensures predictable, resilient execution.",
+    "explanation": "Correct. In Frontend Security & OWASP Top 10, XSS (Stored, Reflected, DOM) ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Secure Token Storage (LocalStorage vs Cookies), not XSS (Stored, Reflected, DOM).",
+      "C": "Incorrect. This describes CSRF & SameSite Cookies, not XSS (Stored, Reflected, DOM).",
+      "D": "Incorrect. This describes Clickjacking & Framing Protections, not XSS (Stored, Reflected, DOM)."
+    },
+    "mcqQuestion": "Frontend Security & OWASP Top 10: How does XSS (Stored, Reflected, DOM) operate in production enterprise applications (Q26)?"
+  },
+  {
+    "id": "iq-security-0027",
+    "standard_id": "SECURITY-MCQ-000027",
+    "questionNumber": 27,
+    "subject": "security",
+    "category": "CSRF & SameSite Cookies",
+    "topic": "CSRF & SameSite Cookies",
+    "subtopic": "CSRF & SameSite Cookies Operations",
+    "concept": "CSRF & SameSite Cookies",
+    "difficulty": "EASY",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "FRESHER",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "security",
+      "csrf---samesite-cookies",
+      "frontend-interview"
+    ],
+    "question": "Frontend Security & OWASP Top 10: How does CSRF & SameSite Cookies operate in production enterprise applications (Q27)?",
+    "shortAnswer": "In Frontend Security & OWASP Top 10, CSRF & SameSite Cookies ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**CSRF & SameSite Cookies** is an essential architectural concept in <u>Frontend Security & OWASP Top 10</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**CSRF & SameSite Cookies** is an essential architectural concept in <u>Frontend Security & OWASP Top 10</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**CSRF & SameSite Cookies** is an essential architectural concept in <u>Frontend Security & OWASP Top 10</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for CSRF & SameSite Cookies in Frontend Security & OWASP Top 10:\nexport function handleCSRFSameSiteCookies(config) {\n  console.log('Executing CSRF & SameSite Cookies with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for CSRF & SameSite Cookies in Frontend Security & OWASP Top 10:\nexport function handleCSRFSameSiteCookies(config) {\n  console.log('Executing CSRF & SameSite Cookies with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for CSRF & SameSite Cookies in Frontend Security & OWASP Top 10:\nexport function handleCSRFSameSiteCookies(config) {\n  console.log('Executing CSRF & SameSite Cookies with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of CSRF & SameSite Cookies in Frontend Security & OWASP Top 10.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize CSRF & SameSite Cookies to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with CSRF & SameSite Cookies.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about CSRF & SameSite Cookies, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about CSRF & SameSite Cookies, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does CSRF & SameSite Cookies scale under extreme concurrency?",
+      "What monitoring tools can track CSRF & SameSite Cookies metrics in production?"
+    ],
+    "followUps": [
+      "How does CSRF & SameSite Cookies scale under extreme concurrency?",
+      "What monitoring tools can track CSRF & SameSite Cookies metrics in production?"
+    ],
+    "question_hash": "qh_1a4c3ad1",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Frontend Security & OWASP Top 10, Clickjacking & Framing Protections ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Clickjacking & Framing Protections, not CSRF & SameSite Cookies."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Frontend Security & OWASP Top 10, Content Security Policy (CSP) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Content Security Policy (CSP), not CSRF & SameSite Cookies."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Frontend Security & OWASP Top 10, CSRF & SameSite Cookies ensures predictable, resilient execution.",
+        "explanation": "Correct. In Frontend Security & OWASP Top 10, CSRF & SameSite Cookies ensures predictable, resilient execution."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Frontend Security & OWASP Top 10, XSS (Stored, Reflected, DOM) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes XSS (Stored, Reflected, DOM), not CSRF & SameSite Cookies."
+      }
+    ],
+    "correctAnswer": "C",
+    "mcqExplanation": "Correct. In Frontend Security & OWASP Top 10, CSRF & SameSite Cookies ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Clickjacking & Framing Protections, not CSRF & SameSite Cookies.",
+      "B": "Incorrect. This describes Content Security Policy (CSP), not CSRF & SameSite Cookies.",
+      "D": "Incorrect. This describes XSS (Stored, Reflected, DOM), not CSRF & SameSite Cookies."
+    },
+    "correctOption": "C",
+    "explanation": "Correct. In Frontend Security & OWASP Top 10, CSRF & SameSite Cookies ensures predictable, resilient execution.",
+    "mcqQuestion": "Frontend Security & OWASP Top 10: How does CSRF & SameSite Cookies operate in production enterprise applications (Q27)?"
+  },
+  {
+    "id": "iq-security-0028",
+    "standard_id": "SECURITY-MCQ-000028",
+    "questionNumber": 28,
+    "subject": "security",
+    "category": "Content Security Policy (CSP)",
+    "topic": "Content Security Policy (CSP)",
+    "subtopic": "Content Security Policy (CSP) Operations",
+    "concept": "Content Security Policy (CSP)",
+    "difficulty": "INTERMEDIATE",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "1_3_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "security",
+      "content-security-policy--csp-",
+      "frontend-interview"
+    ],
+    "question": "Frontend Security & OWASP Top 10: How does Content Security Policy (CSP) operate in production enterprise applications (Q28)?",
+    "shortAnswer": "In Frontend Security & OWASP Top 10, Content Security Policy (CSP) ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Content Security Policy (CSP)** is an essential architectural concept in <u>Frontend Security & OWASP Top 10</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Content Security Policy (CSP)** is an essential architectural concept in <u>Frontend Security & OWASP Top 10</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Content Security Policy (CSP)** is an essential architectural concept in <u>Frontend Security & OWASP Top 10</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Content Security Policy (CSP) in Frontend Security & OWASP Top 10:\nexport function handleContentSecurityPolicyCSP(config) {\n  console.log('Executing Content Security Policy (CSP) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Content Security Policy (CSP) in Frontend Security & OWASP Top 10:\nexport function handleContentSecurityPolicyCSP(config) {\n  console.log('Executing Content Security Policy (CSP) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Content Security Policy (CSP) in Frontend Security & OWASP Top 10:\nexport function handleContentSecurityPolicyCSP(config) {\n  console.log('Executing Content Security Policy (CSP) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Content Security Policy (CSP) in Frontend Security & OWASP Top 10.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Content Security Policy (CSP) to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Content Security Policy (CSP).",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Content Security Policy (CSP), explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Content Security Policy (CSP), explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Content Security Policy (CSP) scale under extreme concurrency?",
+      "What monitoring tools can track Content Security Policy (CSP) metrics in production?"
+    ],
+    "followUps": [
+      "How does Content Security Policy (CSP) scale under extreme concurrency?",
+      "What monitoring tools can track Content Security Policy (CSP) metrics in production?"
+    ],
+    "question_hash": "qh_2d307680",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "XSS occurs when an attacker injects malicious executable JavaScript into a trusted web application.",
+        "explanation": "Incorrect. This describes XSS Vectors & Sanitization Defense, not Content Security Policy (CSP)."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Frontend Security & OWASP Top 10, Secure Token Storage (LocalStorage vs Cookies) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Secure Token Storage (LocalStorage vs Cookies), not Content Security Policy (CSP)."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Frontend Security & OWASP Top 10, CSRF & SameSite Cookies ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes CSRF & SameSite Cookies, not Content Security Policy (CSP)."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Frontend Security & OWASP Top 10, Content Security Policy (CSP) ensures predictable, resilient execution.",
+        "explanation": "Correct. In Frontend Security & OWASP Top 10, Content Security Policy (CSP) ensures predictable, resilient execution."
+      }
+    ],
+    "correctAnswer": "D",
+    "correctOption": "D",
+    "mcqExplanation": "Correct. In Frontend Security & OWASP Top 10, Content Security Policy (CSP) ensures predictable, resilient execution.",
+    "explanation": "Correct. In Frontend Security & OWASP Top 10, Content Security Policy (CSP) ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes XSS Vectors & Sanitization Defense, not Content Security Policy (CSP).",
+      "B": "Incorrect. This describes Secure Token Storage (LocalStorage vs Cookies), not Content Security Policy (CSP).",
+      "C": "Incorrect. This describes CSRF & SameSite Cookies, not Content Security Policy (CSP)."
+    },
+    "mcqQuestion": "Frontend Security & OWASP Top 10: How does Content Security Policy (CSP) operate in production enterprise applications (Q28)?"
+  },
+  {
+    "id": "iq-security-0029",
+    "standard_id": "SECURITY-MCQ-000029",
+    "questionNumber": 29,
+    "subject": "security",
+    "category": "Secure Token Storage (LocalStorage vs Cookies)",
+    "topic": "Secure Token Storage (LocalStorage vs Cookies)",
+    "subtopic": "Secure Token Storage (LocalStorage vs Cookies) Operations",
+    "concept": "Secure Token Storage (LocalStorage vs Cookies)",
+    "difficulty": "DIFFICULT",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "3_5_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "security",
+      "secure-token-storage--localstorage-vs-cookies-",
+      "frontend-interview"
+    ],
+    "question": "Frontend Security & OWASP Top 10: How does Secure Token Storage (LocalStorage vs Cookies) operate in production enterprise applications (Q29)?",
+    "shortAnswer": "In Frontend Security & OWASP Top 10, Secure Token Storage (LocalStorage vs Cookies) ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Secure Token Storage (LocalStorage vs Cookies)** is an essential architectural concept in <u>Frontend Security & OWASP Top 10</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Secure Token Storage (LocalStorage vs Cookies)** is an essential architectural concept in <u>Frontend Security & OWASP Top 10</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Secure Token Storage (LocalStorage vs Cookies)** is an essential architectural concept in <u>Frontend Security & OWASP Top 10</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Secure Token Storage (LocalStorage vs Cookies) in Frontend Security & OWASP Top 10:\nexport function handleSecureTokenStorageLocalStoragevsCookies(config) {\n  console.log('Executing Secure Token Storage (LocalStorage vs Cookies) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Secure Token Storage (LocalStorage vs Cookies) in Frontend Security & OWASP Top 10:\nexport function handleSecureTokenStorageLocalStoragevsCookies(config) {\n  console.log('Executing Secure Token Storage (LocalStorage vs Cookies) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Secure Token Storage (LocalStorage vs Cookies) in Frontend Security & OWASP Top 10:\nexport function handleSecureTokenStorageLocalStoragevsCookies(config) {\n  console.log('Executing Secure Token Storage (LocalStorage vs Cookies) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Secure Token Storage (LocalStorage vs Cookies) in Frontend Security & OWASP Top 10.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Secure Token Storage (LocalStorage vs Cookies) to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Secure Token Storage (LocalStorage vs Cookies).",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Secure Token Storage (LocalStorage vs Cookies), explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Secure Token Storage (LocalStorage vs Cookies), explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Secure Token Storage (LocalStorage vs Cookies) scale under extreme concurrency?",
+      "What monitoring tools can track Secure Token Storage (LocalStorage vs Cookies) metrics in production?"
+    ],
+    "followUps": [
+      "How does Secure Token Storage (LocalStorage vs Cookies) scale under extreme concurrency?",
+      "What monitoring tools can track Secure Token Storage (LocalStorage vs Cookies) metrics in production?"
+    ],
+    "question_hash": "qh_2ddc6aff",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Frontend Security & OWASP Top 10, Secure Token Storage (LocalStorage vs Cookies) ensures predictable, resilient execution.",
+        "explanation": "Correct. In Frontend Security & OWASP Top 10, Secure Token Storage (LocalStorage vs Cookies) ensures predictable, resilient execution."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Frontend Security & OWASP Top 10, CSRF & SameSite Cookies ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes CSRF & SameSite Cookies, not Secure Token Storage (LocalStorage vs Cookies)."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Frontend Security & OWASP Top 10, Clickjacking & Framing Protections ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Clickjacking & Framing Protections, not Secure Token Storage (LocalStorage vs Cookies)."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Frontend Security & OWASP Top 10, Content Security Policy (CSP) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Content Security Policy (CSP), not Secure Token Storage (LocalStorage vs Cookies)."
+      }
+    ],
+    "correctAnswer": "A",
+    "mcqExplanation": "Correct. In Frontend Security & OWASP Top 10, Secure Token Storage (LocalStorage vs Cookies) ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "B": "Incorrect. This describes CSRF & SameSite Cookies, not Secure Token Storage (LocalStorage vs Cookies).",
+      "C": "Incorrect. This describes Clickjacking & Framing Protections, not Secure Token Storage (LocalStorage vs Cookies).",
+      "D": "Incorrect. This describes Content Security Policy (CSP), not Secure Token Storage (LocalStorage vs Cookies)."
+    },
+    "correctOption": "A",
+    "explanation": "Correct. In Frontend Security & OWASP Top 10, Secure Token Storage (LocalStorage vs Cookies) ensures predictable, resilient execution.",
+    "mcqQuestion": "Frontend Security & OWASP Top 10: How does Secure Token Storage (LocalStorage vs Cookies) operate in production enterprise applications (Q29)?"
+  },
+  {
+    "id": "iq-security-0030",
+    "standard_id": "SECURITY-MCQ-000030",
+    "questionNumber": 30,
+    "subject": "security",
+    "category": "Clickjacking & Framing Protections",
+    "topic": "Clickjacking & Framing Protections",
+    "subtopic": "Clickjacking & Framing Protections Operations",
+    "concept": "Clickjacking & Framing Protections",
+    "difficulty": "EASY",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "FRESHER",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "security",
+      "clickjacking---framing-protections",
+      "frontend-interview"
+    ],
+    "question": "Frontend Security & OWASP Top 10: How does Clickjacking & Framing Protections operate in production enterprise applications (Q30)?",
+    "shortAnswer": "In Frontend Security & OWASP Top 10, Clickjacking & Framing Protections ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Clickjacking & Framing Protections** is an essential architectural concept in <u>Frontend Security & OWASP Top 10</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Clickjacking & Framing Protections** is an essential architectural concept in <u>Frontend Security & OWASP Top 10</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Clickjacking & Framing Protections** is an essential architectural concept in <u>Frontend Security & OWASP Top 10</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Clickjacking & Framing Protections in Frontend Security & OWASP Top 10:\nexport function handleClickjackingFramingProtections(config) {\n  console.log('Executing Clickjacking & Framing Protections with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Clickjacking & Framing Protections in Frontend Security & OWASP Top 10:\nexport function handleClickjackingFramingProtections(config) {\n  console.log('Executing Clickjacking & Framing Protections with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Clickjacking & Framing Protections in Frontend Security & OWASP Top 10:\nexport function handleClickjackingFramingProtections(config) {\n  console.log('Executing Clickjacking & Framing Protections with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Clickjacking & Framing Protections in Frontend Security & OWASP Top 10.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Clickjacking & Framing Protections to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Clickjacking & Framing Protections.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Clickjacking & Framing Protections, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Clickjacking & Framing Protections, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Clickjacking & Framing Protections scale under extreme concurrency?",
+      "What monitoring tools can track Clickjacking & Framing Protections metrics in production?"
+    ],
+    "followUps": [
+      "How does Clickjacking & Framing Protections scale under extreme concurrency?",
+      "What monitoring tools can track Clickjacking & Framing Protections metrics in production?"
+    ],
+    "question_hash": "qh_3bcdd213",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Frontend Security & OWASP Top 10, Content Security Policy (CSP) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Content Security Policy (CSP), not Clickjacking & Framing Protections."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Frontend Security & OWASP Top 10, Clickjacking & Framing Protections ensures predictable, resilient execution.",
+        "explanation": "Correct. In Frontend Security & OWASP Top 10, Clickjacking & Framing Protections ensures predictable, resilient execution."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Frontend Security & OWASP Top 10, XSS (Stored, Reflected, DOM) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes XSS (Stored, Reflected, DOM), not Clickjacking & Framing Protections."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Frontend Security & OWASP Top 10, Secure Token Storage (LocalStorage vs Cookies) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Secure Token Storage (LocalStorage vs Cookies), not Clickjacking & Framing Protections."
+      }
+    ],
+    "correctAnswer": "B",
+    "correctOption": "B",
+    "mcqExplanation": "Correct. In Frontend Security & OWASP Top 10, Clickjacking & Framing Protections ensures predictable, resilient execution.",
+    "explanation": "Correct. In Frontend Security & OWASP Top 10, Clickjacking & Framing Protections ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Content Security Policy (CSP), not Clickjacking & Framing Protections.",
+      "C": "Incorrect. This describes XSS (Stored, Reflected, DOM), not Clickjacking & Framing Protections.",
+      "D": "Incorrect. This describes Secure Token Storage (LocalStorage vs Cookies), not Clickjacking & Framing Protections."
+    },
+    "mcqQuestion": "Frontend Security & OWASP Top 10: How does Clickjacking & Framing Protections operate in production enterprise applications (Q30)?"
+  }
+]

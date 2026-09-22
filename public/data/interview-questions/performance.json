@@ -1,0 +1,2756 @@
+[
+  {
+    "id": "iq-performance-0001",
+    "standard_id": "PERFORMANCE-MCQ-000001",
+    "questionNumber": 1,
+    "subject": "performance",
+    "category": "Core Web Vitals (LCP, INP, CLS)",
+    "topic": "Core Web Vitals (LCP, INP, CLS)",
+    "subtopic": "LCP, INP, CLS Optimization Strategies",
+    "concept": "LCP, INP, CLS Optimization Strategies",
+    "difficulty": "INTERMEDIATE",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "1_3_YEARS",
+    "isHighFrequency": true,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Netflix"
+    ],
+    "tags": [
+      "performance",
+      "frontend-interview",
+      "core-web-vitals--lcp--inp--cls-"
+    ],
+    "question": "What are the three Core Web Vitals (LCP, INP, CLS) and how do you optimize each of them?",
+    "shortAnswer": "LCP (Largest Contentful Paint) measures loading speed (target < 2.5s). INP (Interaction to Next Paint) measures user responsiveness across page interactions (target < 200ms). CLS (Cumulative Layout Shift) measures visual stability against unexpected jumps (target < 0.1).",
+    "simpleExplanation": "**LCP**: How fast the biggest hero banner or text block appears on screen.\n\n**INP**: How fast the screen updates after a user clicks or taps (replaces FID).\n\n**CLS**: Preventing buttons or text from jumping around while images load.",
+    "detailedAnswer": "**LCP**: How fast the biggest hero banner or text block appears on screen.\n\n**INP**: How fast the screen updates after a user clicks or taps (replaces FID).\n\n**CLS**: Preventing buttons or text from jumping around while images load.",
+    "detailedExplanation": "**LCP**: How fast the biggest hero banner or text block appears on screen.\n\n**INP**: How fast the screen updates after a user clicks or taps (replaces FID).\n\n**CLS**: Preventing buttons or text from jumping around while images load.",
+    "howItWorks": "1. Optimize LCP: Preload hero images (`<link rel='preload'>`), use modern formats (AVIF/WebP), and implement CDN edge caching.\n2. Optimize INP: Break long tasks on the main thread using `scheduler.yield()` or `requestIdleCallback`.\n3. Optimize CLS: Always reserve width and height dimensions on images and dynamic ads.",
+    "codeExample": "<!-- 1. Optimizing LCP: High priority hero image -->\n<link rel=\"preload\" as=\"image\" href=\"/hero.webp\" fetchpriority=\"high\" />\n\n<!-- 2. Optimizing CLS: Always set aspect-ratio or explicit dimensions -->\n<img src=\"/card.webp\" width=\"400\" height=\"250\" style=\"aspect-ratio: 16/9;\" alt=\"Card\" />",
+    "example": "<!-- 1. Optimizing LCP: High priority hero image -->\n<link rel=\"preload\" as=\"image\" href=\"/hero.webp\" fetchpriority=\"high\" />\n\n<!-- 2. Optimizing CLS: Always set aspect-ratio or explicit dimensions -->\n<img src=\"/card.webp\" width=\"400\" height=\"250\" style=\"aspect-ratio: 16/9;\" alt=\"Card\" />",
+    "codeSnippet": "<!-- 1. Optimizing LCP: High priority hero image -->\n<link rel=\"preload\" as=\"image\" href=\"/hero.webp\" fetchpriority=\"high\" />\n\n<!-- 2. Optimizing CLS: Always set aspect-ratio or explicit dimensions -->\n<img src=\"/card.webp\" width=\"400\" height=\"250\" style=\"aspect-ratio: 16/9;\" alt=\"Card\" />",
+    "codeExplanationSpeech": "This code illustrates the architecture and implementation of LCP, INP, CLS Optimization Strategies in modern frontend systems.",
+    "realWorldExample": "Google's search algorithm directly factors Core Web Vitals into search rankings; improving LCP and CLS increases organic search traffic and conversion rates.",
+    "commonMistakes": [
+      "Using lazy loading (loading='lazy') on the LCP hero image, which actually delays LCP."
+    ],
+    "interviewTip": "Remember that INP officially replaced FID (First Input Delay) in March 2024 as a primary Core Web Vital.",
+    "interviewTips": [
+      "Remember that INP officially replaced FID (First Input Delay) in March 2024 as a primary Core Web Vital."
+    ],
+    "followUpQuestions": [
+      "How does scheduler.yield() differ from setTimeout(fn, 0) for breaking up long tasks?",
+      "What tools do you use to measure field data versus lab data for CWV?"
+    ],
+    "followUps": [
+      "How does scheduler.yield() differ from setTimeout(fn, 0) for breaking up long tasks?",
+      "What tools do you use to measure field data versus lab data for CWV?"
+    ],
+    "question_hash": "qh_7e1b77a5",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "text": "It provides standardized, predictable behavior for LCP, INP, CLS Optimization Strategies across all client environments.",
+        "explanation": "Correct. Follows modern web platform and architectural specifications."
+      },
+      {
+        "key": "B",
+        "text": "It bypasses the browser JavaScript runtime and executes as machine code on the GPU.",
+        "explanation": "Incorrect. Frontend code executes within the browser engine thread."
+      },
+      {
+        "key": "C",
+        "text": "It disables all browser caching and forces fresh HTTP 1.0 TCP handshakes on every interaction.",
+        "explanation": "Incorrect. Caching and networking follow standard browser protocols."
+      },
+      {
+        "key": "D",
+        "text": "It automatically converts all async operations into synchronous blocking code.",
+        "explanation": "Incorrect. The browser event loop remains asynchronous."
+      }
+    ],
+    "correctAnswer": "A",
+    "mcqExplanation": "In Web Performance & Core Web Vitals, LCP, INP, CLS Optimization Strategies provides robust, scalable execution per standard architectural patterns.",
+    "wrongOptionExplanations": {
+      "B": "UI logic executes in the browser JavaScript engine or V8 runtime.",
+      "C": "Browser caching mechanisms operate in accordance with HTTP headers.",
+      "D": "JavaScript remains single-threaded and non-blocking."
+    },
+    "correctOption": "A",
+    "explanation": "In Web Performance & Core Web Vitals, LCP, INP, CLS Optimization Strategies provides robust, scalable execution per standard architectural patterns."
+  },
+  {
+    "id": "iq-performance-0002",
+    "standard_id": "PERFORMANCE-MCQ-000002",
+    "questionNumber": 2,
+    "subject": "performance",
+    "category": "Asset Optimization & Compression",
+    "topic": "Asset Optimization & Compression",
+    "subtopic": "Asset Optimization & Compression Operations",
+    "concept": "Asset Optimization & Compression",
+    "difficulty": "DIFFICULT",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "3_5_YEARS",
+    "isHighFrequency": true,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "performance",
+      "asset-optimization---compression",
+      "frontend-interview"
+    ],
+    "question": "Web Performance & Core Web Vitals: How does Asset Optimization & Compression operate in production enterprise applications (Q2)?",
+    "shortAnswer": "In Web Performance & Core Web Vitals, Asset Optimization & Compression ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Asset Optimization & Compression** is an essential architectural concept in <u>Web Performance & Core Web Vitals</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Asset Optimization & Compression** is an essential architectural concept in <u>Web Performance & Core Web Vitals</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Asset Optimization & Compression** is an essential architectural concept in <u>Web Performance & Core Web Vitals</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Asset Optimization & Compression in Web Performance & Core Web Vitals:\nexport function handleAssetOptimizationCompression(config) {\n  console.log('Executing Asset Optimization & Compression with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Asset Optimization & Compression in Web Performance & Core Web Vitals:\nexport function handleAssetOptimizationCompression(config) {\n  console.log('Executing Asset Optimization & Compression with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Asset Optimization & Compression in Web Performance & Core Web Vitals:\nexport function handleAssetOptimizationCompression(config) {\n  console.log('Executing Asset Optimization & Compression with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Asset Optimization & Compression in Web Performance & Core Web Vitals.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Asset Optimization & Compression to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Asset Optimization & Compression.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Asset Optimization & Compression, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Asset Optimization & Compression, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Asset Optimization & Compression scale under extreme concurrency?",
+      "What monitoring tools can track Asset Optimization & Compression metrics in production?"
+    ],
+    "followUps": [
+      "How does Asset Optimization & Compression scale under extreme concurrency?",
+      "What monitoring tools can track Asset Optimization & Compression metrics in production?"
+    ],
+    "question_hash": "qh_5181fde6",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Web Performance & Core Web Vitals, Virtualization & Memory Profiling ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Virtualization & Memory Profiling, not Asset Optimization & Compression."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Web Performance & Core Web Vitals, Asset Optimization & Compression ensures predictable, resilient execution.",
+        "explanation": "Correct. In Web Performance & Core Web Vitals, Asset Optimization & Compression ensures predictable, resilient execution."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Web Performance & Core Web Vitals, Resource Hints (preload, prefetch) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Resource Hints (preload, prefetch), not Asset Optimization & Compression."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Web Performance & Core Web Vitals, Core Web Vitals (LCP, INP, CLS) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Core Web Vitals (LCP, INP, CLS), not Asset Optimization & Compression."
+      }
+    ],
+    "correctAnswer": "B",
+    "correctOption": "B",
+    "mcqExplanation": "Correct. In Web Performance & Core Web Vitals, Asset Optimization & Compression ensures predictable, resilient execution.",
+    "explanation": "Correct. In Web Performance & Core Web Vitals, Asset Optimization & Compression ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Virtualization & Memory Profiling, not Asset Optimization & Compression.",
+      "C": "Incorrect. This describes Resource Hints (preload, prefetch), not Asset Optimization & Compression.",
+      "D": "Incorrect. This describes Core Web Vitals (LCP, INP, CLS), not Asset Optimization & Compression."
+    },
+    "mcqQuestion": "Web Performance & Core Web Vitals: How does Asset Optimization & Compression operate in production enterprise applications (Q2)?"
+  },
+  {
+    "id": "iq-performance-0003",
+    "standard_id": "PERFORMANCE-MCQ-000003",
+    "questionNumber": 3,
+    "subject": "performance",
+    "category": "Resource Hints (preload, prefetch)",
+    "topic": "Resource Hints (preload, prefetch)",
+    "subtopic": "Resource Hints (preload, prefetch) Operations",
+    "concept": "Resource Hints (preload, prefetch)",
+    "difficulty": "EASY",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "FRESHER",
+    "isHighFrequency": true,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "performance",
+      "resource-hints--preload--prefetch-",
+      "frontend-interview"
+    ],
+    "question": "Web Performance & Core Web Vitals: How does Resource Hints (preload, prefetch) operate in production enterprise applications (Q3)?",
+    "shortAnswer": "In Web Performance & Core Web Vitals, Resource Hints (preload, prefetch) ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Resource Hints (preload, prefetch)** is an essential architectural concept in <u>Web Performance & Core Web Vitals</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Resource Hints (preload, prefetch)** is an essential architectural concept in <u>Web Performance & Core Web Vitals</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Resource Hints (preload, prefetch)** is an essential architectural concept in <u>Web Performance & Core Web Vitals</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Resource Hints (preload, prefetch) in Web Performance & Core Web Vitals:\nexport function handleResourceHintspreloadprefetch(config) {\n  console.log('Executing Resource Hints (preload, prefetch) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Resource Hints (preload, prefetch) in Web Performance & Core Web Vitals:\nexport function handleResourceHintspreloadprefetch(config) {\n  console.log('Executing Resource Hints (preload, prefetch) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Resource Hints (preload, prefetch) in Web Performance & Core Web Vitals:\nexport function handleResourceHintspreloadprefetch(config) {\n  console.log('Executing Resource Hints (preload, prefetch) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Resource Hints (preload, prefetch) in Web Performance & Core Web Vitals.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Resource Hints (preload, prefetch) to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Resource Hints (preload, prefetch).",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Resource Hints (preload, prefetch), explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Resource Hints (preload, prefetch), explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Resource Hints (preload, prefetch) scale under extreme concurrency?",
+      "What monitoring tools can track Resource Hints (preload, prefetch) metrics in production?"
+    ],
+    "followUps": [
+      "How does Resource Hints (preload, prefetch) scale under extreme concurrency?",
+      "What monitoring tools can track Resource Hints (preload, prefetch) metrics in production?"
+    ],
+    "question_hash": "qh_73d0eb4f",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Web Performance & Core Web Vitals, Core Web Vitals (LCP, INP, CLS) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Core Web Vitals (LCP, INP, CLS), not Resource Hints (preload, prefetch)."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Web Performance & Core Web Vitals, Code Splitting & Dynamic Imports ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Code Splitting & Dynamic Imports, not Resource Hints (preload, prefetch)."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Web Performance & Core Web Vitals, Resource Hints (preload, prefetch) ensures predictable, resilient execution.",
+        "explanation": "Correct. In Web Performance & Core Web Vitals, Resource Hints (preload, prefetch) ensures predictable, resilient execution."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Web Performance & Core Web Vitals, Asset Optimization & Compression ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Asset Optimization & Compression, not Resource Hints (preload, prefetch)."
+      }
+    ],
+    "correctAnswer": "C",
+    "mcqExplanation": "Correct. In Web Performance & Core Web Vitals, Resource Hints (preload, prefetch) ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Core Web Vitals (LCP, INP, CLS), not Resource Hints (preload, prefetch).",
+      "B": "Incorrect. This describes Code Splitting & Dynamic Imports, not Resource Hints (preload, prefetch).",
+      "D": "Incorrect. This describes Asset Optimization & Compression, not Resource Hints (preload, prefetch)."
+    },
+    "correctOption": "C",
+    "explanation": "Correct. In Web Performance & Core Web Vitals, Resource Hints (preload, prefetch) ensures predictable, resilient execution.",
+    "mcqQuestion": "Web Performance & Core Web Vitals: How does Resource Hints (preload, prefetch) operate in production enterprise applications (Q3)?"
+  },
+  {
+    "id": "iq-performance-0004",
+    "standard_id": "PERFORMANCE-MCQ-000004",
+    "questionNumber": 4,
+    "subject": "performance",
+    "category": "Code Splitting & Dynamic Imports",
+    "topic": "Code Splitting & Dynamic Imports",
+    "subtopic": "Code Splitting & Dynamic Imports Operations",
+    "concept": "Code Splitting & Dynamic Imports",
+    "difficulty": "INTERMEDIATE",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "1_3_YEARS",
+    "isHighFrequency": true,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "performance",
+      "code-splitting---dynamic-imports",
+      "frontend-interview"
+    ],
+    "question": "Web Performance & Core Web Vitals: How does Code Splitting & Dynamic Imports operate in production enterprise applications (Q4)?",
+    "shortAnswer": "In Web Performance & Core Web Vitals, Code Splitting & Dynamic Imports ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Code Splitting & Dynamic Imports** is an essential architectural concept in <u>Web Performance & Core Web Vitals</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Code Splitting & Dynamic Imports** is an essential architectural concept in <u>Web Performance & Core Web Vitals</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Code Splitting & Dynamic Imports** is an essential architectural concept in <u>Web Performance & Core Web Vitals</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Code Splitting & Dynamic Imports in Web Performance & Core Web Vitals:\nexport function handleCodeSplittingDynamicImports(config) {\n  console.log('Executing Code Splitting & Dynamic Imports with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Code Splitting & Dynamic Imports in Web Performance & Core Web Vitals:\nexport function handleCodeSplittingDynamicImports(config) {\n  console.log('Executing Code Splitting & Dynamic Imports with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Code Splitting & Dynamic Imports in Web Performance & Core Web Vitals:\nexport function handleCodeSplittingDynamicImports(config) {\n  console.log('Executing Code Splitting & Dynamic Imports with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Code Splitting & Dynamic Imports in Web Performance & Core Web Vitals.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Code Splitting & Dynamic Imports to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Code Splitting & Dynamic Imports.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Code Splitting & Dynamic Imports, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Code Splitting & Dynamic Imports, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Code Splitting & Dynamic Imports scale under extreme concurrency?",
+      "What monitoring tools can track Code Splitting & Dynamic Imports metrics in production?"
+    ],
+    "followUps": [
+      "How does Code Splitting & Dynamic Imports scale under extreme concurrency?",
+      "What monitoring tools can track Code Splitting & Dynamic Imports metrics in production?"
+    ],
+    "question_hash": "qh_3512425c",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Web Performance & Core Web Vitals, Asset Optimization & Compression ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Asset Optimization & Compression, not Code Splitting & Dynamic Imports."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Web Performance & Core Web Vitals, Virtualization & Memory Profiling ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Virtualization & Memory Profiling, not Code Splitting & Dynamic Imports."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Web Performance & Core Web Vitals, Resource Hints (preload, prefetch) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Resource Hints (preload, prefetch), not Code Splitting & Dynamic Imports."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Web Performance & Core Web Vitals, Code Splitting & Dynamic Imports ensures predictable, resilient execution.",
+        "explanation": "Correct. In Web Performance & Core Web Vitals, Code Splitting & Dynamic Imports ensures predictable, resilient execution."
+      }
+    ],
+    "correctAnswer": "D",
+    "correctOption": "D",
+    "mcqExplanation": "Correct. In Web Performance & Core Web Vitals, Code Splitting & Dynamic Imports ensures predictable, resilient execution.",
+    "explanation": "Correct. In Web Performance & Core Web Vitals, Code Splitting & Dynamic Imports ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Asset Optimization & Compression, not Code Splitting & Dynamic Imports.",
+      "B": "Incorrect. This describes Virtualization & Memory Profiling, not Code Splitting & Dynamic Imports.",
+      "C": "Incorrect. This describes Resource Hints (preload, prefetch), not Code Splitting & Dynamic Imports."
+    },
+    "mcqQuestion": "Web Performance & Core Web Vitals: How does Code Splitting & Dynamic Imports operate in production enterprise applications (Q4)?"
+  },
+  {
+    "id": "iq-performance-0005",
+    "standard_id": "PERFORMANCE-MCQ-000005",
+    "questionNumber": 5,
+    "subject": "performance",
+    "category": "Virtualization & Memory Profiling",
+    "topic": "Virtualization & Memory Profiling",
+    "subtopic": "Virtualization & Memory Profiling Operations",
+    "concept": "Virtualization & Memory Profiling",
+    "difficulty": "DIFFICULT",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "3_5_YEARS",
+    "isHighFrequency": true,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "performance",
+      "virtualization---memory-profiling",
+      "frontend-interview"
+    ],
+    "question": "Web Performance & Core Web Vitals: How does Virtualization & Memory Profiling operate in production enterprise applications (Q5)?",
+    "shortAnswer": "In Web Performance & Core Web Vitals, Virtualization & Memory Profiling ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Virtualization & Memory Profiling** is an essential architectural concept in <u>Web Performance & Core Web Vitals</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Virtualization & Memory Profiling** is an essential architectural concept in <u>Web Performance & Core Web Vitals</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Virtualization & Memory Profiling** is an essential architectural concept in <u>Web Performance & Core Web Vitals</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Virtualization & Memory Profiling in Web Performance & Core Web Vitals:\nexport function handleVirtualizationMemoryProfiling(config) {\n  console.log('Executing Virtualization & Memory Profiling with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Virtualization & Memory Profiling in Web Performance & Core Web Vitals:\nexport function handleVirtualizationMemoryProfiling(config) {\n  console.log('Executing Virtualization & Memory Profiling with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Virtualization & Memory Profiling in Web Performance & Core Web Vitals:\nexport function handleVirtualizationMemoryProfiling(config) {\n  console.log('Executing Virtualization & Memory Profiling with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Virtualization & Memory Profiling in Web Performance & Core Web Vitals.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Virtualization & Memory Profiling to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Virtualization & Memory Profiling.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Virtualization & Memory Profiling, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Virtualization & Memory Profiling, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Virtualization & Memory Profiling scale under extreme concurrency?",
+      "What monitoring tools can track Virtualization & Memory Profiling metrics in production?"
+    ],
+    "followUps": [
+      "How does Virtualization & Memory Profiling scale under extreme concurrency?",
+      "What monitoring tools can track Virtualization & Memory Profiling metrics in production?"
+    ],
+    "question_hash": "qh_6ff258a9",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Web Performance & Core Web Vitals, Virtualization & Memory Profiling ensures predictable, resilient execution.",
+        "explanation": "Correct. In Web Performance & Core Web Vitals, Virtualization & Memory Profiling ensures predictable, resilient execution."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Web Performance & Core Web Vitals, Resource Hints (preload, prefetch) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Resource Hints (preload, prefetch), not Virtualization & Memory Profiling."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Web Performance & Core Web Vitals, Core Web Vitals (LCP, INP, CLS) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Core Web Vitals (LCP, INP, CLS), not Virtualization & Memory Profiling."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Web Performance & Core Web Vitals, Code Splitting & Dynamic Imports ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Code Splitting & Dynamic Imports, not Virtualization & Memory Profiling."
+      }
+    ],
+    "correctAnswer": "A",
+    "mcqExplanation": "Correct. In Web Performance & Core Web Vitals, Virtualization & Memory Profiling ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "B": "Incorrect. This describes Resource Hints (preload, prefetch), not Virtualization & Memory Profiling.",
+      "C": "Incorrect. This describes Core Web Vitals (LCP, INP, CLS), not Virtualization & Memory Profiling.",
+      "D": "Incorrect. This describes Code Splitting & Dynamic Imports, not Virtualization & Memory Profiling."
+    },
+    "correctOption": "A",
+    "explanation": "Correct. In Web Performance & Core Web Vitals, Virtualization & Memory Profiling ensures predictable, resilient execution.",
+    "mcqQuestion": "Web Performance & Core Web Vitals: How does Virtualization & Memory Profiling operate in production enterprise applications (Q5)?"
+  },
+  {
+    "id": "iq-performance-0006",
+    "standard_id": "PERFORMANCE-MCQ-000006",
+    "questionNumber": 6,
+    "subject": "performance",
+    "category": "Core Web Vitals (LCP, INP, CLS)",
+    "topic": "Core Web Vitals (LCP, INP, CLS)",
+    "subtopic": "Core Web Vitals (LCP, INP, CLS) Operations",
+    "concept": "Core Web Vitals (LCP, INP, CLS)",
+    "difficulty": "EASY",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "FRESHER",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "performance",
+      "core-web-vitals--lcp--inp--cls-",
+      "frontend-interview"
+    ],
+    "question": "Web Performance & Core Web Vitals: How does Core Web Vitals (LCP, INP, CLS) operate in production enterprise applications (Q6)?",
+    "shortAnswer": "In Web Performance & Core Web Vitals, Core Web Vitals (LCP, INP, CLS) ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Core Web Vitals (LCP, INP, CLS)** is an essential architectural concept in <u>Web Performance & Core Web Vitals</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Core Web Vitals (LCP, INP, CLS)** is an essential architectural concept in <u>Web Performance & Core Web Vitals</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Core Web Vitals (LCP, INP, CLS)** is an essential architectural concept in <u>Web Performance & Core Web Vitals</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Core Web Vitals (LCP, INP, CLS) in Web Performance & Core Web Vitals:\nexport function handleCoreWebVitalsLCPINPCLS(config) {\n  console.log('Executing Core Web Vitals (LCP, INP, CLS) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Core Web Vitals (LCP, INP, CLS) in Web Performance & Core Web Vitals:\nexport function handleCoreWebVitalsLCPINPCLS(config) {\n  console.log('Executing Core Web Vitals (LCP, INP, CLS) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Core Web Vitals (LCP, INP, CLS) in Web Performance & Core Web Vitals:\nexport function handleCoreWebVitalsLCPINPCLS(config) {\n  console.log('Executing Core Web Vitals (LCP, INP, CLS) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Core Web Vitals (LCP, INP, CLS) in Web Performance & Core Web Vitals.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Core Web Vitals (LCP, INP, CLS) to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Core Web Vitals (LCP, INP, CLS).",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Core Web Vitals (LCP, INP, CLS), explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Core Web Vitals (LCP, INP, CLS), explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Core Web Vitals (LCP, INP, CLS) scale under extreme concurrency?",
+      "What monitoring tools can track Core Web Vitals (LCP, INP, CLS) metrics in production?"
+    ],
+    "followUps": [
+      "How does Core Web Vitals (LCP, INP, CLS) scale under extreme concurrency?",
+      "What monitoring tools can track Core Web Vitals (LCP, INP, CLS) metrics in production?"
+    ],
+    "question_hash": "qh_199a9ce0",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Web Performance & Core Web Vitals, Code Splitting & Dynamic Imports ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Code Splitting & Dynamic Imports, not Core Web Vitals (LCP, INP, CLS)."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Web Performance & Core Web Vitals, Core Web Vitals (LCP, INP, CLS) ensures predictable, resilient execution.",
+        "explanation": "Correct. In Web Performance & Core Web Vitals, Core Web Vitals (LCP, INP, CLS) ensures predictable, resilient execution."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Web Performance & Core Web Vitals, Asset Optimization & Compression ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Asset Optimization & Compression, not Core Web Vitals (LCP, INP, CLS)."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Web Performance & Core Web Vitals, Virtualization & Memory Profiling ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Virtualization & Memory Profiling, not Core Web Vitals (LCP, INP, CLS)."
+      }
+    ],
+    "correctAnswer": "B",
+    "correctOption": "B",
+    "mcqExplanation": "Correct. In Web Performance & Core Web Vitals, Core Web Vitals (LCP, INP, CLS) ensures predictable, resilient execution.",
+    "explanation": "Correct. In Web Performance & Core Web Vitals, Core Web Vitals (LCP, INP, CLS) ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Code Splitting & Dynamic Imports, not Core Web Vitals (LCP, INP, CLS).",
+      "C": "Incorrect. This describes Asset Optimization & Compression, not Core Web Vitals (LCP, INP, CLS).",
+      "D": "Incorrect. This describes Virtualization & Memory Profiling, not Core Web Vitals (LCP, INP, CLS)."
+    },
+    "mcqQuestion": "Web Performance & Core Web Vitals: How does Core Web Vitals (LCP, INP, CLS) operate in production enterprise applications (Q6)?"
+  },
+  {
+    "id": "iq-performance-0007",
+    "standard_id": "PERFORMANCE-MCQ-000007",
+    "questionNumber": 7,
+    "subject": "performance",
+    "category": "Asset Optimization & Compression",
+    "topic": "Asset Optimization & Compression",
+    "subtopic": "Asset Optimization & Compression Operations",
+    "concept": "Asset Optimization & Compression",
+    "difficulty": "INTERMEDIATE",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "1_3_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "performance",
+      "asset-optimization---compression",
+      "frontend-interview"
+    ],
+    "question": "Web Performance & Core Web Vitals: How does Asset Optimization & Compression operate in production enterprise applications (Q7)?",
+    "shortAnswer": "In Web Performance & Core Web Vitals, Asset Optimization & Compression ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Asset Optimization & Compression** is an essential architectural concept in <u>Web Performance & Core Web Vitals</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Asset Optimization & Compression** is an essential architectural concept in <u>Web Performance & Core Web Vitals</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Asset Optimization & Compression** is an essential architectural concept in <u>Web Performance & Core Web Vitals</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Asset Optimization & Compression in Web Performance & Core Web Vitals:\nexport function handleAssetOptimizationCompression(config) {\n  console.log('Executing Asset Optimization & Compression with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Asset Optimization & Compression in Web Performance & Core Web Vitals:\nexport function handleAssetOptimizationCompression(config) {\n  console.log('Executing Asset Optimization & Compression with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Asset Optimization & Compression in Web Performance & Core Web Vitals:\nexport function handleAssetOptimizationCompression(config) {\n  console.log('Executing Asset Optimization & Compression with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Asset Optimization & Compression in Web Performance & Core Web Vitals.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Asset Optimization & Compression to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Asset Optimization & Compression.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Asset Optimization & Compression, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Asset Optimization & Compression, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Asset Optimization & Compression scale under extreme concurrency?",
+      "What monitoring tools can track Asset Optimization & Compression metrics in production?"
+    ],
+    "followUps": [
+      "How does Asset Optimization & Compression scale under extreme concurrency?",
+      "What monitoring tools can track Asset Optimization & Compression metrics in production?"
+    ],
+    "question_hash": "qh_5181fde1",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Web Performance & Core Web Vitals, Virtualization & Memory Profiling ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Virtualization & Memory Profiling, not Asset Optimization & Compression."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Web Performance & Core Web Vitals, Resource Hints (preload, prefetch) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Resource Hints (preload, prefetch), not Asset Optimization & Compression."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Web Performance & Core Web Vitals, Asset Optimization & Compression ensures predictable, resilient execution.",
+        "explanation": "Correct. In Web Performance & Core Web Vitals, Asset Optimization & Compression ensures predictable, resilient execution."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Web Performance & Core Web Vitals, Core Web Vitals (LCP, INP, CLS) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Core Web Vitals (LCP, INP, CLS), not Asset Optimization & Compression."
+      }
+    ],
+    "correctAnswer": "C",
+    "mcqExplanation": "Correct. In Web Performance & Core Web Vitals, Asset Optimization & Compression ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Virtualization & Memory Profiling, not Asset Optimization & Compression.",
+      "B": "Incorrect. This describes Resource Hints (preload, prefetch), not Asset Optimization & Compression.",
+      "D": "Incorrect. This describes Core Web Vitals (LCP, INP, CLS), not Asset Optimization & Compression."
+    },
+    "correctOption": "C",
+    "explanation": "Correct. In Web Performance & Core Web Vitals, Asset Optimization & Compression ensures predictable, resilient execution.",
+    "mcqQuestion": "Web Performance & Core Web Vitals: How does Asset Optimization & Compression operate in production enterprise applications (Q7)?"
+  },
+  {
+    "id": "iq-performance-0008",
+    "standard_id": "PERFORMANCE-MCQ-000008",
+    "questionNumber": 8,
+    "subject": "performance",
+    "category": "Resource Hints (preload, prefetch)",
+    "topic": "Resource Hints (preload, prefetch)",
+    "subtopic": "Resource Hints (preload, prefetch) Operations",
+    "concept": "Resource Hints (preload, prefetch)",
+    "difficulty": "DIFFICULT",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "3_5_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "performance",
+      "resource-hints--preload--prefetch-",
+      "frontend-interview"
+    ],
+    "question": "Web Performance & Core Web Vitals: How does Resource Hints (preload, prefetch) operate in production enterprise applications (Q8)?",
+    "shortAnswer": "In Web Performance & Core Web Vitals, Resource Hints (preload, prefetch) ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Resource Hints (preload, prefetch)** is an essential architectural concept in <u>Web Performance & Core Web Vitals</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Resource Hints (preload, prefetch)** is an essential architectural concept in <u>Web Performance & Core Web Vitals</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Resource Hints (preload, prefetch)** is an essential architectural concept in <u>Web Performance & Core Web Vitals</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Resource Hints (preload, prefetch) in Web Performance & Core Web Vitals:\nexport function handleResourceHintspreloadprefetch(config) {\n  console.log('Executing Resource Hints (preload, prefetch) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Resource Hints (preload, prefetch) in Web Performance & Core Web Vitals:\nexport function handleResourceHintspreloadprefetch(config) {\n  console.log('Executing Resource Hints (preload, prefetch) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Resource Hints (preload, prefetch) in Web Performance & Core Web Vitals:\nexport function handleResourceHintspreloadprefetch(config) {\n  console.log('Executing Resource Hints (preload, prefetch) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Resource Hints (preload, prefetch) in Web Performance & Core Web Vitals.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Resource Hints (preload, prefetch) to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Resource Hints (preload, prefetch).",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Resource Hints (preload, prefetch), explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Resource Hints (preload, prefetch), explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Resource Hints (preload, prefetch) scale under extreme concurrency?",
+      "What monitoring tools can track Resource Hints (preload, prefetch) metrics in production?"
+    ],
+    "followUps": [
+      "How does Resource Hints (preload, prefetch) scale under extreme concurrency?",
+      "What monitoring tools can track Resource Hints (preload, prefetch) metrics in production?"
+    ],
+    "question_hash": "qh_73d0eb4a",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Web Performance & Core Web Vitals, Core Web Vitals (LCP, INP, CLS) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Core Web Vitals (LCP, INP, CLS), not Resource Hints (preload, prefetch)."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Web Performance & Core Web Vitals, Code Splitting & Dynamic Imports ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Code Splitting & Dynamic Imports, not Resource Hints (preload, prefetch)."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Web Performance & Core Web Vitals, Asset Optimization & Compression ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Asset Optimization & Compression, not Resource Hints (preload, prefetch)."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Web Performance & Core Web Vitals, Resource Hints (preload, prefetch) ensures predictable, resilient execution.",
+        "explanation": "Correct. In Web Performance & Core Web Vitals, Resource Hints (preload, prefetch) ensures predictable, resilient execution."
+      }
+    ],
+    "correctAnswer": "D",
+    "correctOption": "D",
+    "mcqExplanation": "Correct. In Web Performance & Core Web Vitals, Resource Hints (preload, prefetch) ensures predictable, resilient execution.",
+    "explanation": "Correct. In Web Performance & Core Web Vitals, Resource Hints (preload, prefetch) ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Core Web Vitals (LCP, INP, CLS), not Resource Hints (preload, prefetch).",
+      "B": "Incorrect. This describes Code Splitting & Dynamic Imports, not Resource Hints (preload, prefetch).",
+      "C": "Incorrect. This describes Asset Optimization & Compression, not Resource Hints (preload, prefetch)."
+    },
+    "mcqQuestion": "Web Performance & Core Web Vitals: How does Resource Hints (preload, prefetch) operate in production enterprise applications (Q8)?"
+  },
+  {
+    "id": "iq-performance-0009",
+    "standard_id": "PERFORMANCE-MCQ-000009",
+    "questionNumber": 9,
+    "subject": "performance",
+    "category": "Code Splitting & Dynamic Imports",
+    "topic": "Code Splitting & Dynamic Imports",
+    "subtopic": "Code Splitting & Dynamic Imports Operations",
+    "concept": "Code Splitting & Dynamic Imports",
+    "difficulty": "EASY",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "FRESHER",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "performance",
+      "code-splitting---dynamic-imports",
+      "frontend-interview"
+    ],
+    "question": "Web Performance & Core Web Vitals: How does Code Splitting & Dynamic Imports operate in production enterprise applications (Q9)?",
+    "shortAnswer": "In Web Performance & Core Web Vitals, Code Splitting & Dynamic Imports ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Code Splitting & Dynamic Imports** is an essential architectural concept in <u>Web Performance & Core Web Vitals</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Code Splitting & Dynamic Imports** is an essential architectural concept in <u>Web Performance & Core Web Vitals</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Code Splitting & Dynamic Imports** is an essential architectural concept in <u>Web Performance & Core Web Vitals</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Code Splitting & Dynamic Imports in Web Performance & Core Web Vitals:\nexport function handleCodeSplittingDynamicImports(config) {\n  console.log('Executing Code Splitting & Dynamic Imports with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Code Splitting & Dynamic Imports in Web Performance & Core Web Vitals:\nexport function handleCodeSplittingDynamicImports(config) {\n  console.log('Executing Code Splitting & Dynamic Imports with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Code Splitting & Dynamic Imports in Web Performance & Core Web Vitals:\nexport function handleCodeSplittingDynamicImports(config) {\n  console.log('Executing Code Splitting & Dynamic Imports with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Code Splitting & Dynamic Imports in Web Performance & Core Web Vitals.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Code Splitting & Dynamic Imports to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Code Splitting & Dynamic Imports.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Code Splitting & Dynamic Imports, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Code Splitting & Dynamic Imports, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Code Splitting & Dynamic Imports scale under extreme concurrency?",
+      "What monitoring tools can track Code Splitting & Dynamic Imports metrics in production?"
+    ],
+    "followUps": [
+      "How does Code Splitting & Dynamic Imports scale under extreme concurrency?",
+      "What monitoring tools can track Code Splitting & Dynamic Imports metrics in production?"
+    ],
+    "question_hash": "qh_35124261",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Web Performance & Core Web Vitals, Code Splitting & Dynamic Imports ensures predictable, resilient execution.",
+        "explanation": "Correct. In Web Performance & Core Web Vitals, Code Splitting & Dynamic Imports ensures predictable, resilient execution."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Web Performance & Core Web Vitals, Asset Optimization & Compression ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Asset Optimization & Compression, not Code Splitting & Dynamic Imports."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Web Performance & Core Web Vitals, Virtualization & Memory Profiling ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Virtualization & Memory Profiling, not Code Splitting & Dynamic Imports."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Web Performance & Core Web Vitals, Resource Hints (preload, prefetch) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Resource Hints (preload, prefetch), not Code Splitting & Dynamic Imports."
+      }
+    ],
+    "correctAnswer": "A",
+    "mcqExplanation": "Correct. In Web Performance & Core Web Vitals, Code Splitting & Dynamic Imports ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "B": "Incorrect. This describes Asset Optimization & Compression, not Code Splitting & Dynamic Imports.",
+      "C": "Incorrect. This describes Virtualization & Memory Profiling, not Code Splitting & Dynamic Imports.",
+      "D": "Incorrect. This describes Resource Hints (preload, prefetch), not Code Splitting & Dynamic Imports."
+    },
+    "correctOption": "A",
+    "explanation": "Correct. In Web Performance & Core Web Vitals, Code Splitting & Dynamic Imports ensures predictable, resilient execution.",
+    "mcqQuestion": "Web Performance & Core Web Vitals: How does Code Splitting & Dynamic Imports operate in production enterprise applications (Q9)?"
+  },
+  {
+    "id": "iq-performance-0010",
+    "standard_id": "PERFORMANCE-MCQ-000010",
+    "questionNumber": 10,
+    "subject": "performance",
+    "category": "Virtualization & Memory Profiling",
+    "topic": "Virtualization & Memory Profiling",
+    "subtopic": "Virtualization & Memory Profiling Operations",
+    "concept": "Virtualization & Memory Profiling",
+    "difficulty": "INTERMEDIATE",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "1_3_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "performance",
+      "virtualization---memory-profiling",
+      "frontend-interview"
+    ],
+    "question": "Web Performance & Core Web Vitals: How does Virtualization & Memory Profiling operate in production enterprise applications (Q10)?",
+    "shortAnswer": "In Web Performance & Core Web Vitals, Virtualization & Memory Profiling ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Virtualization & Memory Profiling** is an essential architectural concept in <u>Web Performance & Core Web Vitals</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Virtualization & Memory Profiling** is an essential architectural concept in <u>Web Performance & Core Web Vitals</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Virtualization & Memory Profiling** is an essential architectural concept in <u>Web Performance & Core Web Vitals</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Virtualization & Memory Profiling in Web Performance & Core Web Vitals:\nexport function handleVirtualizationMemoryProfiling(config) {\n  console.log('Executing Virtualization & Memory Profiling with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Virtualization & Memory Profiling in Web Performance & Core Web Vitals:\nexport function handleVirtualizationMemoryProfiling(config) {\n  console.log('Executing Virtualization & Memory Profiling with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Virtualization & Memory Profiling in Web Performance & Core Web Vitals:\nexport function handleVirtualizationMemoryProfiling(config) {\n  console.log('Executing Virtualization & Memory Profiling with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Virtualization & Memory Profiling in Web Performance & Core Web Vitals.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Virtualization & Memory Profiling to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Virtualization & Memory Profiling.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Virtualization & Memory Profiling, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Virtualization & Memory Profiling, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Virtualization & Memory Profiling scale under extreme concurrency?",
+      "What monitoring tools can track Virtualization & Memory Profiling metrics in production?"
+    ],
+    "followUps": [
+      "How does Virtualization & Memory Profiling scale under extreme concurrency?",
+      "What monitoring tools can track Virtualization & Memory Profiling metrics in production?"
+    ],
+    "question_hash": "qh_71a743d5",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Web Performance & Core Web Vitals, Resource Hints (preload, prefetch) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Resource Hints (preload, prefetch), not Virtualization & Memory Profiling."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Web Performance & Core Web Vitals, Virtualization & Memory Profiling ensures predictable, resilient execution.",
+        "explanation": "Correct. In Web Performance & Core Web Vitals, Virtualization & Memory Profiling ensures predictable, resilient execution."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Web Performance & Core Web Vitals, Core Web Vitals (LCP, INP, CLS) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Core Web Vitals (LCP, INP, CLS), not Virtualization & Memory Profiling."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Web Performance & Core Web Vitals, Code Splitting & Dynamic Imports ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Code Splitting & Dynamic Imports, not Virtualization & Memory Profiling."
+      }
+    ],
+    "correctAnswer": "B",
+    "correctOption": "B",
+    "mcqExplanation": "Correct. In Web Performance & Core Web Vitals, Virtualization & Memory Profiling ensures predictable, resilient execution.",
+    "explanation": "Correct. In Web Performance & Core Web Vitals, Virtualization & Memory Profiling ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Resource Hints (preload, prefetch), not Virtualization & Memory Profiling.",
+      "C": "Incorrect. This describes Core Web Vitals (LCP, INP, CLS), not Virtualization & Memory Profiling.",
+      "D": "Incorrect. This describes Code Splitting & Dynamic Imports, not Virtualization & Memory Profiling."
+    },
+    "mcqQuestion": "Web Performance & Core Web Vitals: How does Virtualization & Memory Profiling operate in production enterprise applications (Q10)?"
+  },
+  {
+    "id": "iq-performance-0011",
+    "standard_id": "PERFORMANCE-MCQ-000011",
+    "questionNumber": 11,
+    "subject": "performance",
+    "category": "Core Web Vitals (LCP, INP, CLS)",
+    "topic": "Core Web Vitals (LCP, INP, CLS)",
+    "subtopic": "Core Web Vitals (LCP, INP, CLS) Operations",
+    "concept": "Core Web Vitals (LCP, INP, CLS)",
+    "difficulty": "DIFFICULT",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "3_5_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "performance",
+      "core-web-vitals--lcp--inp--cls-",
+      "frontend-interview"
+    ],
+    "question": "Web Performance & Core Web Vitals: How does Core Web Vitals (LCP, INP, CLS) operate in production enterprise applications (Q11)?",
+    "shortAnswer": "In Web Performance & Core Web Vitals, Core Web Vitals (LCP, INP, CLS) ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Core Web Vitals (LCP, INP, CLS)** is an essential architectural concept in <u>Web Performance & Core Web Vitals</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Core Web Vitals (LCP, INP, CLS)** is an essential architectural concept in <u>Web Performance & Core Web Vitals</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Core Web Vitals (LCP, INP, CLS)** is an essential architectural concept in <u>Web Performance & Core Web Vitals</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Core Web Vitals (LCP, INP, CLS) in Web Performance & Core Web Vitals:\nexport function handleCoreWebVitalsLCPINPCLS(config) {\n  console.log('Executing Core Web Vitals (LCP, INP, CLS) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Core Web Vitals (LCP, INP, CLS) in Web Performance & Core Web Vitals:\nexport function handleCoreWebVitalsLCPINPCLS(config) {\n  console.log('Executing Core Web Vitals (LCP, INP, CLS) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Core Web Vitals (LCP, INP, CLS) in Web Performance & Core Web Vitals:\nexport function handleCoreWebVitalsLCPINPCLS(config) {\n  console.log('Executing Core Web Vitals (LCP, INP, CLS) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Core Web Vitals (LCP, INP, CLS) in Web Performance & Core Web Vitals.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Core Web Vitals (LCP, INP, CLS) to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Core Web Vitals (LCP, INP, CLS).",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Core Web Vitals (LCP, INP, CLS), explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Core Web Vitals (LCP, INP, CLS), explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Core Web Vitals (LCP, INP, CLS) scale under extreme concurrency?",
+      "What monitoring tools can track Core Web Vitals (LCP, INP, CLS) metrics in production?"
+    ],
+    "followUps": [
+      "How does Core Web Vitals (LCP, INP, CLS) scale under extreme concurrency?",
+      "What monitoring tools can track Core Web Vitals (LCP, INP, CLS) metrics in production?"
+    ],
+    "question_hash": "qh_19b8ff8a",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Web Performance & Core Web Vitals, Code Splitting & Dynamic Imports ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Code Splitting & Dynamic Imports, not Core Web Vitals (LCP, INP, CLS)."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Web Performance & Core Web Vitals, Asset Optimization & Compression ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Asset Optimization & Compression, not Core Web Vitals (LCP, INP, CLS)."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Web Performance & Core Web Vitals, Core Web Vitals (LCP, INP, CLS) ensures predictable, resilient execution.",
+        "explanation": "Correct. In Web Performance & Core Web Vitals, Core Web Vitals (LCP, INP, CLS) ensures predictable, resilient execution."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Web Performance & Core Web Vitals, Virtualization & Memory Profiling ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Virtualization & Memory Profiling, not Core Web Vitals (LCP, INP, CLS)."
+      }
+    ],
+    "correctAnswer": "C",
+    "mcqExplanation": "Correct. In Web Performance & Core Web Vitals, Core Web Vitals (LCP, INP, CLS) ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Code Splitting & Dynamic Imports, not Core Web Vitals (LCP, INP, CLS).",
+      "B": "Incorrect. This describes Asset Optimization & Compression, not Core Web Vitals (LCP, INP, CLS).",
+      "D": "Incorrect. This describes Virtualization & Memory Profiling, not Core Web Vitals (LCP, INP, CLS)."
+    },
+    "correctOption": "C",
+    "explanation": "Correct. In Web Performance & Core Web Vitals, Core Web Vitals (LCP, INP, CLS) ensures predictable, resilient execution.",
+    "mcqQuestion": "Web Performance & Core Web Vitals: How does Core Web Vitals (LCP, INP, CLS) operate in production enterprise applications (Q11)?"
+  },
+  {
+    "id": "iq-performance-0012",
+    "standard_id": "PERFORMANCE-MCQ-000012",
+    "questionNumber": 12,
+    "subject": "performance",
+    "category": "Asset Optimization & Compression",
+    "topic": "Asset Optimization & Compression",
+    "subtopic": "Asset Optimization & Compression Operations",
+    "concept": "Asset Optimization & Compression",
+    "difficulty": "EASY",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "FRESHER",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "performance",
+      "asset-optimization---compression",
+      "frontend-interview"
+    ],
+    "question": "Web Performance & Core Web Vitals: How does Asset Optimization & Compression operate in production enterprise applications (Q12)?",
+    "shortAnswer": "In Web Performance & Core Web Vitals, Asset Optimization & Compression ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Asset Optimization & Compression** is an essential architectural concept in <u>Web Performance & Core Web Vitals</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Asset Optimization & Compression** is an essential architectural concept in <u>Web Performance & Core Web Vitals</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Asset Optimization & Compression** is an essential architectural concept in <u>Web Performance & Core Web Vitals</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Asset Optimization & Compression in Web Performance & Core Web Vitals:\nexport function handleAssetOptimizationCompression(config) {\n  console.log('Executing Asset Optimization & Compression with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Asset Optimization & Compression in Web Performance & Core Web Vitals:\nexport function handleAssetOptimizationCompression(config) {\n  console.log('Executing Asset Optimization & Compression with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Asset Optimization & Compression in Web Performance & Core Web Vitals:\nexport function handleAssetOptimizationCompression(config) {\n  console.log('Executing Asset Optimization & Compression with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Asset Optimization & Compression in Web Performance & Core Web Vitals.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Asset Optimization & Compression to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Asset Optimization & Compression.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Asset Optimization & Compression, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Asset Optimization & Compression, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Asset Optimization & Compression scale under extreme concurrency?",
+      "What monitoring tools can track Asset Optimization & Compression metrics in production?"
+    ],
+    "followUps": [
+      "How does Asset Optimization & Compression scale under extreme concurrency?",
+      "What monitoring tools can track Asset Optimization & Compression metrics in production?"
+    ],
+    "question_hash": "qh_21424139",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Web Performance & Core Web Vitals, Virtualization & Memory Profiling ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Virtualization & Memory Profiling, not Asset Optimization & Compression."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Web Performance & Core Web Vitals, Resource Hints (preload, prefetch) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Resource Hints (preload, prefetch), not Asset Optimization & Compression."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Web Performance & Core Web Vitals, Core Web Vitals (LCP, INP, CLS) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Core Web Vitals (LCP, INP, CLS), not Asset Optimization & Compression."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Web Performance & Core Web Vitals, Asset Optimization & Compression ensures predictable, resilient execution.",
+        "explanation": "Correct. In Web Performance & Core Web Vitals, Asset Optimization & Compression ensures predictable, resilient execution."
+      }
+    ],
+    "correctAnswer": "D",
+    "correctOption": "D",
+    "mcqExplanation": "Correct. In Web Performance & Core Web Vitals, Asset Optimization & Compression ensures predictable, resilient execution.",
+    "explanation": "Correct. In Web Performance & Core Web Vitals, Asset Optimization & Compression ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Virtualization & Memory Profiling, not Asset Optimization & Compression.",
+      "B": "Incorrect. This describes Resource Hints (preload, prefetch), not Asset Optimization & Compression.",
+      "C": "Incorrect. This describes Core Web Vitals (LCP, INP, CLS), not Asset Optimization & Compression."
+    },
+    "mcqQuestion": "Web Performance & Core Web Vitals: How does Asset Optimization & Compression operate in production enterprise applications (Q12)?"
+  },
+  {
+    "id": "iq-performance-0013",
+    "standard_id": "PERFORMANCE-MCQ-000013",
+    "questionNumber": 13,
+    "subject": "performance",
+    "category": "Resource Hints (preload, prefetch)",
+    "topic": "Resource Hints (preload, prefetch)",
+    "subtopic": "Resource Hints (preload, prefetch) Operations",
+    "concept": "Resource Hints (preload, prefetch)",
+    "difficulty": "INTERMEDIATE",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "1_3_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "performance",
+      "resource-hints--preload--prefetch-",
+      "frontend-interview"
+    ],
+    "question": "Web Performance & Core Web Vitals: How does Resource Hints (preload, prefetch) operate in production enterprise applications (Q13)?",
+    "shortAnswer": "In Web Performance & Core Web Vitals, Resource Hints (preload, prefetch) ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Resource Hints (preload, prefetch)** is an essential architectural concept in <u>Web Performance & Core Web Vitals</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Resource Hints (preload, prefetch)** is an essential architectural concept in <u>Web Performance & Core Web Vitals</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Resource Hints (preload, prefetch)** is an essential architectural concept in <u>Web Performance & Core Web Vitals</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Resource Hints (preload, prefetch) in Web Performance & Core Web Vitals:\nexport function handleResourceHintspreloadprefetch(config) {\n  console.log('Executing Resource Hints (preload, prefetch) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Resource Hints (preload, prefetch) in Web Performance & Core Web Vitals:\nexport function handleResourceHintspreloadprefetch(config) {\n  console.log('Executing Resource Hints (preload, prefetch) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Resource Hints (preload, prefetch) in Web Performance & Core Web Vitals:\nexport function handleResourceHintspreloadprefetch(config) {\n  console.log('Executing Resource Hints (preload, prefetch) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Resource Hints (preload, prefetch) in Web Performance & Core Web Vitals.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Resource Hints (preload, prefetch) to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Resource Hints (preload, prefetch).",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Resource Hints (preload, prefetch), explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Resource Hints (preload, prefetch), explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Resource Hints (preload, prefetch) scale under extreme concurrency?",
+      "What monitoring tools can track Resource Hints (preload, prefetch) metrics in production?"
+    ],
+    "followUps": [
+      "How does Resource Hints (preload, prefetch) scale under extreme concurrency?",
+      "What monitoring tools can track Resource Hints (preload, prefetch) metrics in production?"
+    ],
+    "question_hash": "qh_64c7e9c",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Web Performance & Core Web Vitals, Resource Hints (preload, prefetch) ensures predictable, resilient execution.",
+        "explanation": "Correct. In Web Performance & Core Web Vitals, Resource Hints (preload, prefetch) ensures predictable, resilient execution."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Web Performance & Core Web Vitals, Core Web Vitals (LCP, INP, CLS) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Core Web Vitals (LCP, INP, CLS), not Resource Hints (preload, prefetch)."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Web Performance & Core Web Vitals, Code Splitting & Dynamic Imports ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Code Splitting & Dynamic Imports, not Resource Hints (preload, prefetch)."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Web Performance & Core Web Vitals, Asset Optimization & Compression ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Asset Optimization & Compression, not Resource Hints (preload, prefetch)."
+      }
+    ],
+    "correctAnswer": "A",
+    "mcqExplanation": "Correct. In Web Performance & Core Web Vitals, Resource Hints (preload, prefetch) ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "B": "Incorrect. This describes Core Web Vitals (LCP, INP, CLS), not Resource Hints (preload, prefetch).",
+      "C": "Incorrect. This describes Code Splitting & Dynamic Imports, not Resource Hints (preload, prefetch).",
+      "D": "Incorrect. This describes Asset Optimization & Compression, not Resource Hints (preload, prefetch)."
+    },
+    "correctOption": "A",
+    "explanation": "Correct. In Web Performance & Core Web Vitals, Resource Hints (preload, prefetch) ensures predictable, resilient execution.",
+    "mcqQuestion": "Web Performance & Core Web Vitals: How does Resource Hints (preload, prefetch) operate in production enterprise applications (Q13)?"
+  },
+  {
+    "id": "iq-performance-0014",
+    "standard_id": "PERFORMANCE-MCQ-000014",
+    "questionNumber": 14,
+    "subject": "performance",
+    "category": "Code Splitting & Dynamic Imports",
+    "topic": "Code Splitting & Dynamic Imports",
+    "subtopic": "Code Splitting & Dynamic Imports Operations",
+    "concept": "Code Splitting & Dynamic Imports",
+    "difficulty": "DIFFICULT",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "3_5_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "performance",
+      "code-splitting---dynamic-imports",
+      "frontend-interview"
+    ],
+    "question": "Web Performance & Core Web Vitals: How does Code Splitting & Dynamic Imports operate in production enterprise applications (Q14)?",
+    "shortAnswer": "In Web Performance & Core Web Vitals, Code Splitting & Dynamic Imports ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Code Splitting & Dynamic Imports** is an essential architectural concept in <u>Web Performance & Core Web Vitals</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Code Splitting & Dynamic Imports** is an essential architectural concept in <u>Web Performance & Core Web Vitals</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Code Splitting & Dynamic Imports** is an essential architectural concept in <u>Web Performance & Core Web Vitals</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Code Splitting & Dynamic Imports in Web Performance & Core Web Vitals:\nexport function handleCodeSplittingDynamicImports(config) {\n  console.log('Executing Code Splitting & Dynamic Imports with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Code Splitting & Dynamic Imports in Web Performance & Core Web Vitals:\nexport function handleCodeSplittingDynamicImports(config) {\n  console.log('Executing Code Splitting & Dynamic Imports with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Code Splitting & Dynamic Imports in Web Performance & Core Web Vitals:\nexport function handleCodeSplittingDynamicImports(config) {\n  console.log('Executing Code Splitting & Dynamic Imports with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Code Splitting & Dynamic Imports in Web Performance & Core Web Vitals.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Code Splitting & Dynamic Imports to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Code Splitting & Dynamic Imports.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Code Splitting & Dynamic Imports, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Code Splitting & Dynamic Imports, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Code Splitting & Dynamic Imports scale under extreme concurrency?",
+      "What monitoring tools can track Code Splitting & Dynamic Imports metrics in production?"
+    ],
+    "followUps": [
+      "How does Code Splitting & Dynamic Imports scale under extreme concurrency?",
+      "What monitoring tools can track Code Splitting & Dynamic Imports metrics in production?"
+    ],
+    "question_hash": "qh_6d3608fb",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Web Performance & Core Web Vitals, Asset Optimization & Compression ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Asset Optimization & Compression, not Code Splitting & Dynamic Imports."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Web Performance & Core Web Vitals, Code Splitting & Dynamic Imports ensures predictable, resilient execution.",
+        "explanation": "Correct. In Web Performance & Core Web Vitals, Code Splitting & Dynamic Imports ensures predictable, resilient execution."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Web Performance & Core Web Vitals, Virtualization & Memory Profiling ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Virtualization & Memory Profiling, not Code Splitting & Dynamic Imports."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Web Performance & Core Web Vitals, Resource Hints (preload, prefetch) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Resource Hints (preload, prefetch), not Code Splitting & Dynamic Imports."
+      }
+    ],
+    "correctAnswer": "B",
+    "correctOption": "B",
+    "mcqExplanation": "Correct. In Web Performance & Core Web Vitals, Code Splitting & Dynamic Imports ensures predictable, resilient execution.",
+    "explanation": "Correct. In Web Performance & Core Web Vitals, Code Splitting & Dynamic Imports ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Asset Optimization & Compression, not Code Splitting & Dynamic Imports.",
+      "C": "Incorrect. This describes Virtualization & Memory Profiling, not Code Splitting & Dynamic Imports.",
+      "D": "Incorrect. This describes Resource Hints (preload, prefetch), not Code Splitting & Dynamic Imports."
+    },
+    "mcqQuestion": "Web Performance & Core Web Vitals: How does Code Splitting & Dynamic Imports operate in production enterprise applications (Q14)?"
+  },
+  {
+    "id": "iq-performance-0015",
+    "standard_id": "PERFORMANCE-MCQ-000015",
+    "questionNumber": 15,
+    "subject": "performance",
+    "category": "Virtualization & Memory Profiling",
+    "topic": "Virtualization & Memory Profiling",
+    "subtopic": "Virtualization & Memory Profiling Operations",
+    "concept": "Virtualization & Memory Profiling",
+    "difficulty": "EASY",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "FRESHER",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "performance",
+      "virtualization---memory-profiling",
+      "frontend-interview"
+    ],
+    "question": "Web Performance & Core Web Vitals: How does Virtualization & Memory Profiling operate in production enterprise applications (Q15)?",
+    "shortAnswer": "In Web Performance & Core Web Vitals, Virtualization & Memory Profiling ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Virtualization & Memory Profiling** is an essential architectural concept in <u>Web Performance & Core Web Vitals</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Virtualization & Memory Profiling** is an essential architectural concept in <u>Web Performance & Core Web Vitals</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Virtualization & Memory Profiling** is an essential architectural concept in <u>Web Performance & Core Web Vitals</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Virtualization & Memory Profiling in Web Performance & Core Web Vitals:\nexport function handleVirtualizationMemoryProfiling(config) {\n  console.log('Executing Virtualization & Memory Profiling with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Virtualization & Memory Profiling in Web Performance & Core Web Vitals:\nexport function handleVirtualizationMemoryProfiling(config) {\n  console.log('Executing Virtualization & Memory Profiling with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Virtualization & Memory Profiling in Web Performance & Core Web Vitals:\nexport function handleVirtualizationMemoryProfiling(config) {\n  console.log('Executing Virtualization & Memory Profiling with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Virtualization & Memory Profiling in Web Performance & Core Web Vitals.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Virtualization & Memory Profiling to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Virtualization & Memory Profiling.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Virtualization & Memory Profiling, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Virtualization & Memory Profiling, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Virtualization & Memory Profiling scale under extreme concurrency?",
+      "What monitoring tools can track Virtualization & Memory Profiling metrics in production?"
+    ],
+    "followUps": [
+      "How does Virtualization & Memory Profiling scale under extreme concurrency?",
+      "What monitoring tools can track Virtualization & Memory Profiling metrics in production?"
+    ],
+    "question_hash": "qh_71a743d0",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Web Performance & Core Web Vitals, Resource Hints (preload, prefetch) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Resource Hints (preload, prefetch), not Virtualization & Memory Profiling."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Web Performance & Core Web Vitals, Core Web Vitals (LCP, INP, CLS) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Core Web Vitals (LCP, INP, CLS), not Virtualization & Memory Profiling."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Web Performance & Core Web Vitals, Virtualization & Memory Profiling ensures predictable, resilient execution.",
+        "explanation": "Correct. In Web Performance & Core Web Vitals, Virtualization & Memory Profiling ensures predictable, resilient execution."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Web Performance & Core Web Vitals, Code Splitting & Dynamic Imports ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Code Splitting & Dynamic Imports, not Virtualization & Memory Profiling."
+      }
+    ],
+    "correctAnswer": "C",
+    "mcqExplanation": "Correct. In Web Performance & Core Web Vitals, Virtualization & Memory Profiling ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Resource Hints (preload, prefetch), not Virtualization & Memory Profiling.",
+      "B": "Incorrect. This describes Core Web Vitals (LCP, INP, CLS), not Virtualization & Memory Profiling.",
+      "D": "Incorrect. This describes Code Splitting & Dynamic Imports, not Virtualization & Memory Profiling."
+    },
+    "correctOption": "C",
+    "explanation": "Correct. In Web Performance & Core Web Vitals, Virtualization & Memory Profiling ensures predictable, resilient execution.",
+    "mcqQuestion": "Web Performance & Core Web Vitals: How does Virtualization & Memory Profiling operate in production enterprise applications (Q15)?"
+  },
+  {
+    "id": "iq-performance-0016",
+    "standard_id": "PERFORMANCE-MCQ-000016",
+    "questionNumber": 16,
+    "subject": "performance",
+    "category": "Core Web Vitals (LCP, INP, CLS)",
+    "topic": "Core Web Vitals (LCP, INP, CLS)",
+    "subtopic": "Core Web Vitals (LCP, INP, CLS) Operations",
+    "concept": "Core Web Vitals (LCP, INP, CLS)",
+    "difficulty": "INTERMEDIATE",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "1_3_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "performance",
+      "core-web-vitals--lcp--inp--cls-",
+      "frontend-interview"
+    ],
+    "question": "Web Performance & Core Web Vitals: How does Core Web Vitals (LCP, INP, CLS) operate in production enterprise applications (Q16)?",
+    "shortAnswer": "In Web Performance & Core Web Vitals, Core Web Vitals (LCP, INP, CLS) ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Core Web Vitals (LCP, INP, CLS)** is an essential architectural concept in <u>Web Performance & Core Web Vitals</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Core Web Vitals (LCP, INP, CLS)** is an essential architectural concept in <u>Web Performance & Core Web Vitals</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Core Web Vitals (LCP, INP, CLS)** is an essential architectural concept in <u>Web Performance & Core Web Vitals</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Core Web Vitals (LCP, INP, CLS) in Web Performance & Core Web Vitals:\nexport function handleCoreWebVitalsLCPINPCLS(config) {\n  console.log('Executing Core Web Vitals (LCP, INP, CLS) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Core Web Vitals (LCP, INP, CLS) in Web Performance & Core Web Vitals:\nexport function handleCoreWebVitalsLCPINPCLS(config) {\n  console.log('Executing Core Web Vitals (LCP, INP, CLS) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Core Web Vitals (LCP, INP, CLS) in Web Performance & Core Web Vitals:\nexport function handleCoreWebVitalsLCPINPCLS(config) {\n  console.log('Executing Core Web Vitals (LCP, INP, CLS) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Core Web Vitals (LCP, INP, CLS) in Web Performance & Core Web Vitals.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Core Web Vitals (LCP, INP, CLS) to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Core Web Vitals (LCP, INP, CLS).",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Core Web Vitals (LCP, INP, CLS), explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Core Web Vitals (LCP, INP, CLS), explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Core Web Vitals (LCP, INP, CLS) scale under extreme concurrency?",
+      "What monitoring tools can track Core Web Vitals (LCP, INP, CLS) metrics in production?"
+    ],
+    "followUps": [
+      "How does Core Web Vitals (LCP, INP, CLS) scale under extreme concurrency?",
+      "What monitoring tools can track Core Web Vitals (LCP, INP, CLS) metrics in production?"
+    ],
+    "question_hash": "qh_19b8ff85",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Web Performance & Core Web Vitals, Code Splitting & Dynamic Imports ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Code Splitting & Dynamic Imports, not Core Web Vitals (LCP, INP, CLS)."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Web Performance & Core Web Vitals, Asset Optimization & Compression ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Asset Optimization & Compression, not Core Web Vitals (LCP, INP, CLS)."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Web Performance & Core Web Vitals, Virtualization & Memory Profiling ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Virtualization & Memory Profiling, not Core Web Vitals (LCP, INP, CLS)."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Web Performance & Core Web Vitals, Core Web Vitals (LCP, INP, CLS) ensures predictable, resilient execution.",
+        "explanation": "Correct. In Web Performance & Core Web Vitals, Core Web Vitals (LCP, INP, CLS) ensures predictable, resilient execution."
+      }
+    ],
+    "correctAnswer": "D",
+    "correctOption": "D",
+    "mcqExplanation": "Correct. In Web Performance & Core Web Vitals, Core Web Vitals (LCP, INP, CLS) ensures predictable, resilient execution.",
+    "explanation": "Correct. In Web Performance & Core Web Vitals, Core Web Vitals (LCP, INP, CLS) ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Code Splitting & Dynamic Imports, not Core Web Vitals (LCP, INP, CLS).",
+      "B": "Incorrect. This describes Asset Optimization & Compression, not Core Web Vitals (LCP, INP, CLS).",
+      "C": "Incorrect. This describes Virtualization & Memory Profiling, not Core Web Vitals (LCP, INP, CLS)."
+    },
+    "mcqQuestion": "Web Performance & Core Web Vitals: How does Core Web Vitals (LCP, INP, CLS) operate in production enterprise applications (Q16)?"
+  },
+  {
+    "id": "iq-performance-0017",
+    "standard_id": "PERFORMANCE-MCQ-000017",
+    "questionNumber": 17,
+    "subject": "performance",
+    "category": "Asset Optimization & Compression",
+    "topic": "Asset Optimization & Compression",
+    "subtopic": "Asset Optimization & Compression Operations",
+    "concept": "Asset Optimization & Compression",
+    "difficulty": "DIFFICULT",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "3_5_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "performance",
+      "asset-optimization---compression",
+      "frontend-interview"
+    ],
+    "question": "Web Performance & Core Web Vitals: How does Asset Optimization & Compression operate in production enterprise applications (Q17)?",
+    "shortAnswer": "In Web Performance & Core Web Vitals, Asset Optimization & Compression ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Asset Optimization & Compression** is an essential architectural concept in <u>Web Performance & Core Web Vitals</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Asset Optimization & Compression** is an essential architectural concept in <u>Web Performance & Core Web Vitals</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Asset Optimization & Compression** is an essential architectural concept in <u>Web Performance & Core Web Vitals</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Asset Optimization & Compression in Web Performance & Core Web Vitals:\nexport function handleAssetOptimizationCompression(config) {\n  console.log('Executing Asset Optimization & Compression with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Asset Optimization & Compression in Web Performance & Core Web Vitals:\nexport function handleAssetOptimizationCompression(config) {\n  console.log('Executing Asset Optimization & Compression with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Asset Optimization & Compression in Web Performance & Core Web Vitals:\nexport function handleAssetOptimizationCompression(config) {\n  console.log('Executing Asset Optimization & Compression with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Asset Optimization & Compression in Web Performance & Core Web Vitals.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Asset Optimization & Compression to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Asset Optimization & Compression.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Asset Optimization & Compression, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Asset Optimization & Compression, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Asset Optimization & Compression scale under extreme concurrency?",
+      "What monitoring tools can track Asset Optimization & Compression metrics in production?"
+    ],
+    "followUps": [
+      "How does Asset Optimization & Compression scale under extreme concurrency?",
+      "What monitoring tools can track Asset Optimization & Compression metrics in production?"
+    ],
+    "question_hash": "qh_2142413e",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Web Performance & Core Web Vitals, Asset Optimization & Compression ensures predictable, resilient execution.",
+        "explanation": "Correct. In Web Performance & Core Web Vitals, Asset Optimization & Compression ensures predictable, resilient execution."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Web Performance & Core Web Vitals, Virtualization & Memory Profiling ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Virtualization & Memory Profiling, not Asset Optimization & Compression."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Web Performance & Core Web Vitals, Resource Hints (preload, prefetch) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Resource Hints (preload, prefetch), not Asset Optimization & Compression."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Web Performance & Core Web Vitals, Core Web Vitals (LCP, INP, CLS) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Core Web Vitals (LCP, INP, CLS), not Asset Optimization & Compression."
+      }
+    ],
+    "correctAnswer": "A",
+    "mcqExplanation": "Correct. In Web Performance & Core Web Vitals, Asset Optimization & Compression ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "B": "Incorrect. This describes Virtualization & Memory Profiling, not Asset Optimization & Compression.",
+      "C": "Incorrect. This describes Resource Hints (preload, prefetch), not Asset Optimization & Compression.",
+      "D": "Incorrect. This describes Core Web Vitals (LCP, INP, CLS), not Asset Optimization & Compression."
+    },
+    "correctOption": "A",
+    "explanation": "Correct. In Web Performance & Core Web Vitals, Asset Optimization & Compression ensures predictable, resilient execution.",
+    "mcqQuestion": "Web Performance & Core Web Vitals: How does Asset Optimization & Compression operate in production enterprise applications (Q17)?"
+  },
+  {
+    "id": "iq-performance-0018",
+    "standard_id": "PERFORMANCE-MCQ-000018",
+    "questionNumber": 18,
+    "subject": "performance",
+    "category": "Resource Hints (preload, prefetch)",
+    "topic": "Resource Hints (preload, prefetch)",
+    "subtopic": "Resource Hints (preload, prefetch) Operations",
+    "concept": "Resource Hints (preload, prefetch)",
+    "difficulty": "EASY",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "FRESHER",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "performance",
+      "resource-hints--preload--prefetch-",
+      "frontend-interview"
+    ],
+    "question": "Web Performance & Core Web Vitals: How does Resource Hints (preload, prefetch) operate in production enterprise applications (Q18)?",
+    "shortAnswer": "In Web Performance & Core Web Vitals, Resource Hints (preload, prefetch) ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Resource Hints (preload, prefetch)** is an essential architectural concept in <u>Web Performance & Core Web Vitals</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Resource Hints (preload, prefetch)** is an essential architectural concept in <u>Web Performance & Core Web Vitals</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Resource Hints (preload, prefetch)** is an essential architectural concept in <u>Web Performance & Core Web Vitals</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Resource Hints (preload, prefetch) in Web Performance & Core Web Vitals:\nexport function handleResourceHintspreloadprefetch(config) {\n  console.log('Executing Resource Hints (preload, prefetch) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Resource Hints (preload, prefetch) in Web Performance & Core Web Vitals:\nexport function handleResourceHintspreloadprefetch(config) {\n  console.log('Executing Resource Hints (preload, prefetch) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Resource Hints (preload, prefetch) in Web Performance & Core Web Vitals:\nexport function handleResourceHintspreloadprefetch(config) {\n  console.log('Executing Resource Hints (preload, prefetch) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Resource Hints (preload, prefetch) in Web Performance & Core Web Vitals.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Resource Hints (preload, prefetch) to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Resource Hints (preload, prefetch).",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Resource Hints (preload, prefetch), explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Resource Hints (preload, prefetch), explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Resource Hints (preload, prefetch) scale under extreme concurrency?",
+      "What monitoring tools can track Resource Hints (preload, prefetch) metrics in production?"
+    ],
+    "followUps": [
+      "How does Resource Hints (preload, prefetch) scale under extreme concurrency?",
+      "What monitoring tools can track Resource Hints (preload, prefetch) metrics in production?"
+    ],
+    "question_hash": "qh_64c7e97",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Web Performance & Core Web Vitals, Core Web Vitals (LCP, INP, CLS) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Core Web Vitals (LCP, INP, CLS), not Resource Hints (preload, prefetch)."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Web Performance & Core Web Vitals, Resource Hints (preload, prefetch) ensures predictable, resilient execution.",
+        "explanation": "Correct. In Web Performance & Core Web Vitals, Resource Hints (preload, prefetch) ensures predictable, resilient execution."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Web Performance & Core Web Vitals, Code Splitting & Dynamic Imports ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Code Splitting & Dynamic Imports, not Resource Hints (preload, prefetch)."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Web Performance & Core Web Vitals, Asset Optimization & Compression ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Asset Optimization & Compression, not Resource Hints (preload, prefetch)."
+      }
+    ],
+    "correctAnswer": "B",
+    "correctOption": "B",
+    "mcqExplanation": "Correct. In Web Performance & Core Web Vitals, Resource Hints (preload, prefetch) ensures predictable, resilient execution.",
+    "explanation": "Correct. In Web Performance & Core Web Vitals, Resource Hints (preload, prefetch) ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Core Web Vitals (LCP, INP, CLS), not Resource Hints (preload, prefetch).",
+      "C": "Incorrect. This describes Code Splitting & Dynamic Imports, not Resource Hints (preload, prefetch).",
+      "D": "Incorrect. This describes Asset Optimization & Compression, not Resource Hints (preload, prefetch)."
+    },
+    "mcqQuestion": "Web Performance & Core Web Vitals: How does Resource Hints (preload, prefetch) operate in production enterprise applications (Q18)?"
+  },
+  {
+    "id": "iq-performance-0019",
+    "standard_id": "PERFORMANCE-MCQ-000019",
+    "questionNumber": 19,
+    "subject": "performance",
+    "category": "Code Splitting & Dynamic Imports",
+    "topic": "Code Splitting & Dynamic Imports",
+    "subtopic": "Code Splitting & Dynamic Imports Operations",
+    "concept": "Code Splitting & Dynamic Imports",
+    "difficulty": "INTERMEDIATE",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "1_3_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "performance",
+      "code-splitting---dynamic-imports",
+      "frontend-interview"
+    ],
+    "question": "Web Performance & Core Web Vitals: How does Code Splitting & Dynamic Imports operate in production enterprise applications (Q19)?",
+    "shortAnswer": "In Web Performance & Core Web Vitals, Code Splitting & Dynamic Imports ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Code Splitting & Dynamic Imports** is an essential architectural concept in <u>Web Performance & Core Web Vitals</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Code Splitting & Dynamic Imports** is an essential architectural concept in <u>Web Performance & Core Web Vitals</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Code Splitting & Dynamic Imports** is an essential architectural concept in <u>Web Performance & Core Web Vitals</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Code Splitting & Dynamic Imports in Web Performance & Core Web Vitals:\nexport function handleCodeSplittingDynamicImports(config) {\n  console.log('Executing Code Splitting & Dynamic Imports with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Code Splitting & Dynamic Imports in Web Performance & Core Web Vitals:\nexport function handleCodeSplittingDynamicImports(config) {\n  console.log('Executing Code Splitting & Dynamic Imports with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Code Splitting & Dynamic Imports in Web Performance & Core Web Vitals:\nexport function handleCodeSplittingDynamicImports(config) {\n  console.log('Executing Code Splitting & Dynamic Imports with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Code Splitting & Dynamic Imports in Web Performance & Core Web Vitals.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Code Splitting & Dynamic Imports to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Code Splitting & Dynamic Imports.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Code Splitting & Dynamic Imports, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Code Splitting & Dynamic Imports, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Code Splitting & Dynamic Imports scale under extreme concurrency?",
+      "What monitoring tools can track Code Splitting & Dynamic Imports metrics in production?"
+    ],
+    "followUps": [
+      "How does Code Splitting & Dynamic Imports scale under extreme concurrency?",
+      "What monitoring tools can track Code Splitting & Dynamic Imports metrics in production?"
+    ],
+    "question_hash": "qh_6d360900",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Web Performance & Core Web Vitals, Asset Optimization & Compression ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Asset Optimization & Compression, not Code Splitting & Dynamic Imports."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Web Performance & Core Web Vitals, Virtualization & Memory Profiling ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Virtualization & Memory Profiling, not Code Splitting & Dynamic Imports."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Web Performance & Core Web Vitals, Code Splitting & Dynamic Imports ensures predictable, resilient execution.",
+        "explanation": "Correct. In Web Performance & Core Web Vitals, Code Splitting & Dynamic Imports ensures predictable, resilient execution."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Web Performance & Core Web Vitals, Resource Hints (preload, prefetch) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Resource Hints (preload, prefetch), not Code Splitting & Dynamic Imports."
+      }
+    ],
+    "correctAnswer": "C",
+    "mcqExplanation": "Correct. In Web Performance & Core Web Vitals, Code Splitting & Dynamic Imports ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Asset Optimization & Compression, not Code Splitting & Dynamic Imports.",
+      "B": "Incorrect. This describes Virtualization & Memory Profiling, not Code Splitting & Dynamic Imports.",
+      "D": "Incorrect. This describes Resource Hints (preload, prefetch), not Code Splitting & Dynamic Imports."
+    },
+    "correctOption": "C",
+    "explanation": "Correct. In Web Performance & Core Web Vitals, Code Splitting & Dynamic Imports ensures predictable, resilient execution.",
+    "mcqQuestion": "Web Performance & Core Web Vitals: How does Code Splitting & Dynamic Imports operate in production enterprise applications (Q19)?"
+  },
+  {
+    "id": "iq-performance-0020",
+    "standard_id": "PERFORMANCE-MCQ-000020",
+    "questionNumber": 20,
+    "subject": "performance",
+    "category": "Virtualization & Memory Profiling",
+    "topic": "Virtualization & Memory Profiling",
+    "subtopic": "Virtualization & Memory Profiling Operations",
+    "concept": "Virtualization & Memory Profiling",
+    "difficulty": "DIFFICULT",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "3_5_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "performance",
+      "virtualization---memory-profiling",
+      "frontend-interview"
+    ],
+    "question": "Web Performance & Core Web Vitals: How does Virtualization & Memory Profiling operate in production enterprise applications (Q20)?",
+    "shortAnswer": "In Web Performance & Core Web Vitals, Virtualization & Memory Profiling ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Virtualization & Memory Profiling** is an essential architectural concept in <u>Web Performance & Core Web Vitals</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Virtualization & Memory Profiling** is an essential architectural concept in <u>Web Performance & Core Web Vitals</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Virtualization & Memory Profiling** is an essential architectural concept in <u>Web Performance & Core Web Vitals</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Virtualization & Memory Profiling in Web Performance & Core Web Vitals:\nexport function handleVirtualizationMemoryProfiling(config) {\n  console.log('Executing Virtualization & Memory Profiling with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Virtualization & Memory Profiling in Web Performance & Core Web Vitals:\nexport function handleVirtualizationMemoryProfiling(config) {\n  console.log('Executing Virtualization & Memory Profiling with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Virtualization & Memory Profiling in Web Performance & Core Web Vitals:\nexport function handleVirtualizationMemoryProfiling(config) {\n  console.log('Executing Virtualization & Memory Profiling with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Virtualization & Memory Profiling in Web Performance & Core Web Vitals.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Virtualization & Memory Profiling to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Virtualization & Memory Profiling.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Virtualization & Memory Profiling, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Virtualization & Memory Profiling, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Virtualization & Memory Profiling scale under extreme concurrency?",
+      "What monitoring tools can track Virtualization & Memory Profiling metrics in production?"
+    ],
+    "followUps": [
+      "How does Virtualization & Memory Profiling scale under extreme concurrency?",
+      "What monitoring tools can track Virtualization & Memory Profiling metrics in production?"
+    ],
+    "question_hash": "qh_71a743b6",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Web Performance & Core Web Vitals, Resource Hints (preload, prefetch) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Resource Hints (preload, prefetch), not Virtualization & Memory Profiling."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Web Performance & Core Web Vitals, Core Web Vitals (LCP, INP, CLS) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Core Web Vitals (LCP, INP, CLS), not Virtualization & Memory Profiling."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Web Performance & Core Web Vitals, Code Splitting & Dynamic Imports ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Code Splitting & Dynamic Imports, not Virtualization & Memory Profiling."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Web Performance & Core Web Vitals, Virtualization & Memory Profiling ensures predictable, resilient execution.",
+        "explanation": "Correct. In Web Performance & Core Web Vitals, Virtualization & Memory Profiling ensures predictable, resilient execution."
+      }
+    ],
+    "correctAnswer": "D",
+    "correctOption": "D",
+    "mcqExplanation": "Correct. In Web Performance & Core Web Vitals, Virtualization & Memory Profiling ensures predictable, resilient execution.",
+    "explanation": "Correct. In Web Performance & Core Web Vitals, Virtualization & Memory Profiling ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Resource Hints (preload, prefetch), not Virtualization & Memory Profiling.",
+      "B": "Incorrect. This describes Core Web Vitals (LCP, INP, CLS), not Virtualization & Memory Profiling.",
+      "C": "Incorrect. This describes Code Splitting & Dynamic Imports, not Virtualization & Memory Profiling."
+    },
+    "mcqQuestion": "Web Performance & Core Web Vitals: How does Virtualization & Memory Profiling operate in production enterprise applications (Q20)?"
+  },
+  {
+    "id": "iq-performance-0021",
+    "standard_id": "PERFORMANCE-MCQ-000021",
+    "questionNumber": 21,
+    "subject": "performance",
+    "category": "Core Web Vitals (LCP, INP, CLS)",
+    "topic": "Core Web Vitals (LCP, INP, CLS)",
+    "subtopic": "Core Web Vitals (LCP, INP, CLS) Operations",
+    "concept": "Core Web Vitals (LCP, INP, CLS)",
+    "difficulty": "EASY",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "FRESHER",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "performance",
+      "core-web-vitals--lcp--inp--cls-",
+      "frontend-interview"
+    ],
+    "question": "Web Performance & Core Web Vitals: How does Core Web Vitals (LCP, INP, CLS) operate in production enterprise applications (Q21)?",
+    "shortAnswer": "In Web Performance & Core Web Vitals, Core Web Vitals (LCP, INP, CLS) ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Core Web Vitals (LCP, INP, CLS)** is an essential architectural concept in <u>Web Performance & Core Web Vitals</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Core Web Vitals (LCP, INP, CLS)** is an essential architectural concept in <u>Web Performance & Core Web Vitals</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Core Web Vitals (LCP, INP, CLS)** is an essential architectural concept in <u>Web Performance & Core Web Vitals</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Core Web Vitals (LCP, INP, CLS) in Web Performance & Core Web Vitals:\nexport function handleCoreWebVitalsLCPINPCLS(config) {\n  console.log('Executing Core Web Vitals (LCP, INP, CLS) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Core Web Vitals (LCP, INP, CLS) in Web Performance & Core Web Vitals:\nexport function handleCoreWebVitalsLCPINPCLS(config) {\n  console.log('Executing Core Web Vitals (LCP, INP, CLS) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Core Web Vitals (LCP, INP, CLS) in Web Performance & Core Web Vitals:\nexport function handleCoreWebVitalsLCPINPCLS(config) {\n  console.log('Executing Core Web Vitals (LCP, INP, CLS) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Core Web Vitals (LCP, INP, CLS) in Web Performance & Core Web Vitals.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Core Web Vitals (LCP, INP, CLS) to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Core Web Vitals (LCP, INP, CLS).",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Core Web Vitals (LCP, INP, CLS), explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Core Web Vitals (LCP, INP, CLS), explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Core Web Vitals (LCP, INP, CLS) scale under extreme concurrency?",
+      "What monitoring tools can track Core Web Vitals (LCP, INP, CLS) metrics in production?"
+    ],
+    "followUps": [
+      "How does Core Web Vitals (LCP, INP, CLS) scale under extreme concurrency?",
+      "What monitoring tools can track Core Web Vitals (LCP, INP, CLS) metrics in production?"
+    ],
+    "question_hash": "qh_19b8ff6b",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Web Performance & Core Web Vitals, Core Web Vitals (LCP, INP, CLS) ensures predictable, resilient execution.",
+        "explanation": "Correct. In Web Performance & Core Web Vitals, Core Web Vitals (LCP, INP, CLS) ensures predictable, resilient execution."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Web Performance & Core Web Vitals, Code Splitting & Dynamic Imports ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Code Splitting & Dynamic Imports, not Core Web Vitals (LCP, INP, CLS)."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Web Performance & Core Web Vitals, Asset Optimization & Compression ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Asset Optimization & Compression, not Core Web Vitals (LCP, INP, CLS)."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Web Performance & Core Web Vitals, Virtualization & Memory Profiling ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Virtualization & Memory Profiling, not Core Web Vitals (LCP, INP, CLS)."
+      }
+    ],
+    "correctAnswer": "A",
+    "mcqExplanation": "Correct. In Web Performance & Core Web Vitals, Core Web Vitals (LCP, INP, CLS) ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "B": "Incorrect. This describes Code Splitting & Dynamic Imports, not Core Web Vitals (LCP, INP, CLS).",
+      "C": "Incorrect. This describes Asset Optimization & Compression, not Core Web Vitals (LCP, INP, CLS).",
+      "D": "Incorrect. This describes Virtualization & Memory Profiling, not Core Web Vitals (LCP, INP, CLS)."
+    },
+    "correctOption": "A",
+    "explanation": "Correct. In Web Performance & Core Web Vitals, Core Web Vitals (LCP, INP, CLS) ensures predictable, resilient execution.",
+    "mcqQuestion": "Web Performance & Core Web Vitals: How does Core Web Vitals (LCP, INP, CLS) operate in production enterprise applications (Q21)?"
+  },
+  {
+    "id": "iq-performance-0022",
+    "standard_id": "PERFORMANCE-MCQ-000022",
+    "questionNumber": 22,
+    "subject": "performance",
+    "category": "Asset Optimization & Compression",
+    "topic": "Asset Optimization & Compression",
+    "subtopic": "Asset Optimization & Compression Operations",
+    "concept": "Asset Optimization & Compression",
+    "difficulty": "INTERMEDIATE",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "1_3_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "performance",
+      "asset-optimization---compression",
+      "frontend-interview"
+    ],
+    "question": "Web Performance & Core Web Vitals: How does Asset Optimization & Compression operate in production enterprise applications (Q22)?",
+    "shortAnswer": "In Web Performance & Core Web Vitals, Asset Optimization & Compression ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Asset Optimization & Compression** is an essential architectural concept in <u>Web Performance & Core Web Vitals</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Asset Optimization & Compression** is an essential architectural concept in <u>Web Performance & Core Web Vitals</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Asset Optimization & Compression** is an essential architectural concept in <u>Web Performance & Core Web Vitals</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Asset Optimization & Compression in Web Performance & Core Web Vitals:\nexport function handleAssetOptimizationCompression(config) {\n  console.log('Executing Asset Optimization & Compression with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Asset Optimization & Compression in Web Performance & Core Web Vitals:\nexport function handleAssetOptimizationCompression(config) {\n  console.log('Executing Asset Optimization & Compression with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Asset Optimization & Compression in Web Performance & Core Web Vitals:\nexport function handleAssetOptimizationCompression(config) {\n  console.log('Executing Asset Optimization & Compression with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Asset Optimization & Compression in Web Performance & Core Web Vitals.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Asset Optimization & Compression to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Asset Optimization & Compression.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Asset Optimization & Compression, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Asset Optimization & Compression, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Asset Optimization & Compression scale under extreme concurrency?",
+      "What monitoring tools can track Asset Optimization & Compression metrics in production?"
+    ],
+    "followUps": [
+      "How does Asset Optimization & Compression scale under extreme concurrency?",
+      "What monitoring tools can track Asset Optimization & Compression metrics in production?"
+    ],
+    "question_hash": "qh_21424158",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Web Performance & Core Web Vitals, Virtualization & Memory Profiling ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Virtualization & Memory Profiling, not Asset Optimization & Compression."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Web Performance & Core Web Vitals, Asset Optimization & Compression ensures predictable, resilient execution.",
+        "explanation": "Correct. In Web Performance & Core Web Vitals, Asset Optimization & Compression ensures predictable, resilient execution."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Web Performance & Core Web Vitals, Resource Hints (preload, prefetch) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Resource Hints (preload, prefetch), not Asset Optimization & Compression."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "LCP (Largest Contentful Paint) measures loading speed (target < 2.5s). INP (Interaction to Next Paint) measures user responsiveness across page interactions (target < 200ms).",
+        "explanation": "Incorrect. This describes LCP, INP, CLS Optimization Strategies, not Asset Optimization & Compression."
+      }
+    ],
+    "correctAnswer": "B",
+    "correctOption": "B",
+    "mcqExplanation": "Correct. In Web Performance & Core Web Vitals, Asset Optimization & Compression ensures predictable, resilient execution.",
+    "explanation": "Correct. In Web Performance & Core Web Vitals, Asset Optimization & Compression ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Virtualization & Memory Profiling, not Asset Optimization & Compression.",
+      "C": "Incorrect. This describes Resource Hints (preload, prefetch), not Asset Optimization & Compression.",
+      "D": "Incorrect. This describes LCP, INP, CLS Optimization Strategies, not Asset Optimization & Compression."
+    },
+    "mcqQuestion": "Web Performance & Core Web Vitals: How does Asset Optimization & Compression operate in production enterprise applications (Q22)?"
+  },
+  {
+    "id": "iq-performance-0023",
+    "standard_id": "PERFORMANCE-MCQ-000023",
+    "questionNumber": 23,
+    "subject": "performance",
+    "category": "Resource Hints (preload, prefetch)",
+    "topic": "Resource Hints (preload, prefetch)",
+    "subtopic": "Resource Hints (preload, prefetch) Operations",
+    "concept": "Resource Hints (preload, prefetch)",
+    "difficulty": "DIFFICULT",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "3_5_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "performance",
+      "resource-hints--preload--prefetch-",
+      "frontend-interview"
+    ],
+    "question": "Web Performance & Core Web Vitals: How does Resource Hints (preload, prefetch) operate in production enterprise applications (Q23)?",
+    "shortAnswer": "In Web Performance & Core Web Vitals, Resource Hints (preload, prefetch) ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Resource Hints (preload, prefetch)** is an essential architectural concept in <u>Web Performance & Core Web Vitals</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Resource Hints (preload, prefetch)** is an essential architectural concept in <u>Web Performance & Core Web Vitals</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Resource Hints (preload, prefetch)** is an essential architectural concept in <u>Web Performance & Core Web Vitals</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Resource Hints (preload, prefetch) in Web Performance & Core Web Vitals:\nexport function handleResourceHintspreloadprefetch(config) {\n  console.log('Executing Resource Hints (preload, prefetch) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Resource Hints (preload, prefetch) in Web Performance & Core Web Vitals:\nexport function handleResourceHintspreloadprefetch(config) {\n  console.log('Executing Resource Hints (preload, prefetch) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Resource Hints (preload, prefetch) in Web Performance & Core Web Vitals:\nexport function handleResourceHintspreloadprefetch(config) {\n  console.log('Executing Resource Hints (preload, prefetch) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Resource Hints (preload, prefetch) in Web Performance & Core Web Vitals.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Resource Hints (preload, prefetch) to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Resource Hints (preload, prefetch).",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Resource Hints (preload, prefetch), explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Resource Hints (preload, prefetch), explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Resource Hints (preload, prefetch) scale under extreme concurrency?",
+      "What monitoring tools can track Resource Hints (preload, prefetch) metrics in production?"
+    ],
+    "followUps": [
+      "How does Resource Hints (preload, prefetch) scale under extreme concurrency?",
+      "What monitoring tools can track Resource Hints (preload, prefetch) metrics in production?"
+    ],
+    "question_hash": "qh_64c7e7d",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Web Performance & Core Web Vitals, Core Web Vitals (LCP, INP, CLS) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Core Web Vitals (LCP, INP, CLS), not Resource Hints (preload, prefetch)."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Web Performance & Core Web Vitals, Code Splitting & Dynamic Imports ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Code Splitting & Dynamic Imports, not Resource Hints (preload, prefetch)."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Web Performance & Core Web Vitals, Resource Hints (preload, prefetch) ensures predictable, resilient execution.",
+        "explanation": "Correct. In Web Performance & Core Web Vitals, Resource Hints (preload, prefetch) ensures predictable, resilient execution."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Web Performance & Core Web Vitals, Asset Optimization & Compression ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Asset Optimization & Compression, not Resource Hints (preload, prefetch)."
+      }
+    ],
+    "correctAnswer": "C",
+    "mcqExplanation": "Correct. In Web Performance & Core Web Vitals, Resource Hints (preload, prefetch) ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Core Web Vitals (LCP, INP, CLS), not Resource Hints (preload, prefetch).",
+      "B": "Incorrect. This describes Code Splitting & Dynamic Imports, not Resource Hints (preload, prefetch).",
+      "D": "Incorrect. This describes Asset Optimization & Compression, not Resource Hints (preload, prefetch)."
+    },
+    "correctOption": "C",
+    "explanation": "Correct. In Web Performance & Core Web Vitals, Resource Hints (preload, prefetch) ensures predictable, resilient execution.",
+    "mcqQuestion": "Web Performance & Core Web Vitals: How does Resource Hints (preload, prefetch) operate in production enterprise applications (Q23)?"
+  },
+  {
+    "id": "iq-performance-0024",
+    "standard_id": "PERFORMANCE-MCQ-000024",
+    "questionNumber": 24,
+    "subject": "performance",
+    "category": "Code Splitting & Dynamic Imports",
+    "topic": "Code Splitting & Dynamic Imports",
+    "subtopic": "Code Splitting & Dynamic Imports Operations",
+    "concept": "Code Splitting & Dynamic Imports",
+    "difficulty": "EASY",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "FRESHER",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "performance",
+      "code-splitting---dynamic-imports",
+      "frontend-interview"
+    ],
+    "question": "Web Performance & Core Web Vitals: How does Code Splitting & Dynamic Imports operate in production enterprise applications (Q24)?",
+    "shortAnswer": "In Web Performance & Core Web Vitals, Code Splitting & Dynamic Imports ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Code Splitting & Dynamic Imports** is an essential architectural concept in <u>Web Performance & Core Web Vitals</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Code Splitting & Dynamic Imports** is an essential architectural concept in <u>Web Performance & Core Web Vitals</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Code Splitting & Dynamic Imports** is an essential architectural concept in <u>Web Performance & Core Web Vitals</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Code Splitting & Dynamic Imports in Web Performance & Core Web Vitals:\nexport function handleCodeSplittingDynamicImports(config) {\n  console.log('Executing Code Splitting & Dynamic Imports with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Code Splitting & Dynamic Imports in Web Performance & Core Web Vitals:\nexport function handleCodeSplittingDynamicImports(config) {\n  console.log('Executing Code Splitting & Dynamic Imports with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Code Splitting & Dynamic Imports in Web Performance & Core Web Vitals:\nexport function handleCodeSplittingDynamicImports(config) {\n  console.log('Executing Code Splitting & Dynamic Imports with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Code Splitting & Dynamic Imports in Web Performance & Core Web Vitals.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Code Splitting & Dynamic Imports to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Code Splitting & Dynamic Imports.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Code Splitting & Dynamic Imports, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Code Splitting & Dynamic Imports, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Code Splitting & Dynamic Imports scale under extreme concurrency?",
+      "What monitoring tools can track Code Splitting & Dynamic Imports metrics in production?"
+    ],
+    "followUps": [
+      "How does Code Splitting & Dynamic Imports scale under extreme concurrency?",
+      "What monitoring tools can track Code Splitting & Dynamic Imports metrics in production?"
+    ],
+    "question_hash": "qh_6d36091a",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Web Performance & Core Web Vitals, Asset Optimization & Compression ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Asset Optimization & Compression, not Code Splitting & Dynamic Imports."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Web Performance & Core Web Vitals, Virtualization & Memory Profiling ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Virtualization & Memory Profiling, not Code Splitting & Dynamic Imports."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Web Performance & Core Web Vitals, Resource Hints (preload, prefetch) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Resource Hints (preload, prefetch), not Code Splitting & Dynamic Imports."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Web Performance & Core Web Vitals, Code Splitting & Dynamic Imports ensures predictable, resilient execution.",
+        "explanation": "Correct. In Web Performance & Core Web Vitals, Code Splitting & Dynamic Imports ensures predictable, resilient execution."
+      }
+    ],
+    "correctAnswer": "D",
+    "correctOption": "D",
+    "mcqExplanation": "Correct. In Web Performance & Core Web Vitals, Code Splitting & Dynamic Imports ensures predictable, resilient execution.",
+    "explanation": "Correct. In Web Performance & Core Web Vitals, Code Splitting & Dynamic Imports ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Asset Optimization & Compression, not Code Splitting & Dynamic Imports.",
+      "B": "Incorrect. This describes Virtualization & Memory Profiling, not Code Splitting & Dynamic Imports.",
+      "C": "Incorrect. This describes Resource Hints (preload, prefetch), not Code Splitting & Dynamic Imports."
+    },
+    "mcqQuestion": "Web Performance & Core Web Vitals: How does Code Splitting & Dynamic Imports operate in production enterprise applications (Q24)?"
+  },
+  {
+    "id": "iq-performance-0025",
+    "standard_id": "PERFORMANCE-MCQ-000025",
+    "questionNumber": 25,
+    "subject": "performance",
+    "category": "Virtualization & Memory Profiling",
+    "topic": "Virtualization & Memory Profiling",
+    "subtopic": "Virtualization & Memory Profiling Operations",
+    "concept": "Virtualization & Memory Profiling",
+    "difficulty": "INTERMEDIATE",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "1_3_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "performance",
+      "virtualization---memory-profiling",
+      "frontend-interview"
+    ],
+    "question": "Web Performance & Core Web Vitals: How does Virtualization & Memory Profiling operate in production enterprise applications (Q25)?",
+    "shortAnswer": "In Web Performance & Core Web Vitals, Virtualization & Memory Profiling ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Virtualization & Memory Profiling** is an essential architectural concept in <u>Web Performance & Core Web Vitals</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Virtualization & Memory Profiling** is an essential architectural concept in <u>Web Performance & Core Web Vitals</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Virtualization & Memory Profiling** is an essential architectural concept in <u>Web Performance & Core Web Vitals</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Virtualization & Memory Profiling in Web Performance & Core Web Vitals:\nexport function handleVirtualizationMemoryProfiling(config) {\n  console.log('Executing Virtualization & Memory Profiling with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Virtualization & Memory Profiling in Web Performance & Core Web Vitals:\nexport function handleVirtualizationMemoryProfiling(config) {\n  console.log('Executing Virtualization & Memory Profiling with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Virtualization & Memory Profiling in Web Performance & Core Web Vitals:\nexport function handleVirtualizationMemoryProfiling(config) {\n  console.log('Executing Virtualization & Memory Profiling with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Virtualization & Memory Profiling in Web Performance & Core Web Vitals.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Virtualization & Memory Profiling to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Virtualization & Memory Profiling.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Virtualization & Memory Profiling, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Virtualization & Memory Profiling, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Virtualization & Memory Profiling scale under extreme concurrency?",
+      "What monitoring tools can track Virtualization & Memory Profiling metrics in production?"
+    ],
+    "followUps": [
+      "How does Virtualization & Memory Profiling scale under extreme concurrency?",
+      "What monitoring tools can track Virtualization & Memory Profiling metrics in production?"
+    ],
+    "question_hash": "qh_71a743b1",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Web Performance & Core Web Vitals, Virtualization & Memory Profiling ensures predictable, resilient execution.",
+        "explanation": "Correct. In Web Performance & Core Web Vitals, Virtualization & Memory Profiling ensures predictable, resilient execution."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Web Performance & Core Web Vitals, Resource Hints (preload, prefetch) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Resource Hints (preload, prefetch), not Virtualization & Memory Profiling."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "LCP (Largest Contentful Paint) measures loading speed (target < 2.5s). INP (Interaction to Next Paint) measures user responsiveness across page interactions (target < 200ms).",
+        "explanation": "Incorrect. This describes LCP, INP, CLS Optimization Strategies, not Virtualization & Memory Profiling."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Web Performance & Core Web Vitals, Code Splitting & Dynamic Imports ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Code Splitting & Dynamic Imports, not Virtualization & Memory Profiling."
+      }
+    ],
+    "correctAnswer": "A",
+    "mcqExplanation": "Correct. In Web Performance & Core Web Vitals, Virtualization & Memory Profiling ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "B": "Incorrect. This describes Resource Hints (preload, prefetch), not Virtualization & Memory Profiling.",
+      "C": "Incorrect. This describes LCP, INP, CLS Optimization Strategies, not Virtualization & Memory Profiling.",
+      "D": "Incorrect. This describes Code Splitting & Dynamic Imports, not Virtualization & Memory Profiling."
+    },
+    "correctOption": "A",
+    "explanation": "Correct. In Web Performance & Core Web Vitals, Virtualization & Memory Profiling ensures predictable, resilient execution.",
+    "mcqQuestion": "Web Performance & Core Web Vitals: How does Virtualization & Memory Profiling operate in production enterprise applications (Q25)?"
+  },
+  {
+    "id": "iq-performance-0026",
+    "standard_id": "PERFORMANCE-MCQ-000026",
+    "questionNumber": 26,
+    "subject": "performance",
+    "category": "Core Web Vitals (LCP, INP, CLS)",
+    "topic": "Core Web Vitals (LCP, INP, CLS)",
+    "subtopic": "Core Web Vitals (LCP, INP, CLS) Operations",
+    "concept": "Core Web Vitals (LCP, INP, CLS)",
+    "difficulty": "DIFFICULT",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "3_5_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "performance",
+      "core-web-vitals--lcp--inp--cls-",
+      "frontend-interview"
+    ],
+    "question": "Web Performance & Core Web Vitals: How does Core Web Vitals (LCP, INP, CLS) operate in production enterprise applications (Q26)?",
+    "shortAnswer": "In Web Performance & Core Web Vitals, Core Web Vitals (LCP, INP, CLS) ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Core Web Vitals (LCP, INP, CLS)** is an essential architectural concept in <u>Web Performance & Core Web Vitals</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Core Web Vitals (LCP, INP, CLS)** is an essential architectural concept in <u>Web Performance & Core Web Vitals</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Core Web Vitals (LCP, INP, CLS)** is an essential architectural concept in <u>Web Performance & Core Web Vitals</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Core Web Vitals (LCP, INP, CLS) in Web Performance & Core Web Vitals:\nexport function handleCoreWebVitalsLCPINPCLS(config) {\n  console.log('Executing Core Web Vitals (LCP, INP, CLS) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Core Web Vitals (LCP, INP, CLS) in Web Performance & Core Web Vitals:\nexport function handleCoreWebVitalsLCPINPCLS(config) {\n  console.log('Executing Core Web Vitals (LCP, INP, CLS) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Core Web Vitals (LCP, INP, CLS) in Web Performance & Core Web Vitals:\nexport function handleCoreWebVitalsLCPINPCLS(config) {\n  console.log('Executing Core Web Vitals (LCP, INP, CLS) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Core Web Vitals (LCP, INP, CLS) in Web Performance & Core Web Vitals.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Core Web Vitals (LCP, INP, CLS) to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Core Web Vitals (LCP, INP, CLS).",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Core Web Vitals (LCP, INP, CLS), explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Core Web Vitals (LCP, INP, CLS), explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Core Web Vitals (LCP, INP, CLS) scale under extreme concurrency?",
+      "What monitoring tools can track Core Web Vitals (LCP, INP, CLS) metrics in production?"
+    ],
+    "followUps": [
+      "How does Core Web Vitals (LCP, INP, CLS) scale under extreme concurrency?",
+      "What monitoring tools can track Core Web Vitals (LCP, INP, CLS) metrics in production?"
+    ],
+    "question_hash": "qh_19b8ff66",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Web Performance & Core Web Vitals, Code Splitting & Dynamic Imports ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Code Splitting & Dynamic Imports, not Core Web Vitals (LCP, INP, CLS)."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Web Performance & Core Web Vitals, Core Web Vitals (LCP, INP, CLS) ensures predictable, resilient execution.",
+        "explanation": "Correct. In Web Performance & Core Web Vitals, Core Web Vitals (LCP, INP, CLS) ensures predictable, resilient execution."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Web Performance & Core Web Vitals, Asset Optimization & Compression ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Asset Optimization & Compression, not Core Web Vitals (LCP, INP, CLS)."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Web Performance & Core Web Vitals, Virtualization & Memory Profiling ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Virtualization & Memory Profiling, not Core Web Vitals (LCP, INP, CLS)."
+      }
+    ],
+    "correctAnswer": "B",
+    "correctOption": "B",
+    "mcqExplanation": "Correct. In Web Performance & Core Web Vitals, Core Web Vitals (LCP, INP, CLS) ensures predictable, resilient execution.",
+    "explanation": "Correct. In Web Performance & Core Web Vitals, Core Web Vitals (LCP, INP, CLS) ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Code Splitting & Dynamic Imports, not Core Web Vitals (LCP, INP, CLS).",
+      "C": "Incorrect. This describes Asset Optimization & Compression, not Core Web Vitals (LCP, INP, CLS).",
+      "D": "Incorrect. This describes Virtualization & Memory Profiling, not Core Web Vitals (LCP, INP, CLS)."
+    },
+    "mcqQuestion": "Web Performance & Core Web Vitals: How does Core Web Vitals (LCP, INP, CLS) operate in production enterprise applications (Q26)?"
+  },
+  {
+    "id": "iq-performance-0027",
+    "standard_id": "PERFORMANCE-MCQ-000027",
+    "questionNumber": 27,
+    "subject": "performance",
+    "category": "Asset Optimization & Compression",
+    "topic": "Asset Optimization & Compression",
+    "subtopic": "Asset Optimization & Compression Operations",
+    "concept": "Asset Optimization & Compression",
+    "difficulty": "EASY",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "FRESHER",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "performance",
+      "asset-optimization---compression",
+      "frontend-interview"
+    ],
+    "question": "Web Performance & Core Web Vitals: How does Asset Optimization & Compression operate in production enterprise applications (Q27)?",
+    "shortAnswer": "In Web Performance & Core Web Vitals, Asset Optimization & Compression ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Asset Optimization & Compression** is an essential architectural concept in <u>Web Performance & Core Web Vitals</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Asset Optimization & Compression** is an essential architectural concept in <u>Web Performance & Core Web Vitals</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Asset Optimization & Compression** is an essential architectural concept in <u>Web Performance & Core Web Vitals</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Asset Optimization & Compression in Web Performance & Core Web Vitals:\nexport function handleAssetOptimizationCompression(config) {\n  console.log('Executing Asset Optimization & Compression with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Asset Optimization & Compression in Web Performance & Core Web Vitals:\nexport function handleAssetOptimizationCompression(config) {\n  console.log('Executing Asset Optimization & Compression with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Asset Optimization & Compression in Web Performance & Core Web Vitals:\nexport function handleAssetOptimizationCompression(config) {\n  console.log('Executing Asset Optimization & Compression with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Asset Optimization & Compression in Web Performance & Core Web Vitals.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Asset Optimization & Compression to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Asset Optimization & Compression.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Asset Optimization & Compression, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Asset Optimization & Compression, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Asset Optimization & Compression scale under extreme concurrency?",
+      "What monitoring tools can track Asset Optimization & Compression metrics in production?"
+    ],
+    "followUps": [
+      "How does Asset Optimization & Compression scale under extreme concurrency?",
+      "What monitoring tools can track Asset Optimization & Compression metrics in production?"
+    ],
+    "question_hash": "qh_2142415d",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Web Performance & Core Web Vitals, Virtualization & Memory Profiling ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Virtualization & Memory Profiling, not Asset Optimization & Compression."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Web Performance & Core Web Vitals, Resource Hints (preload, prefetch) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Resource Hints (preload, prefetch), not Asset Optimization & Compression."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Web Performance & Core Web Vitals, Asset Optimization & Compression ensures predictable, resilient execution.",
+        "explanation": "Correct. In Web Performance & Core Web Vitals, Asset Optimization & Compression ensures predictable, resilient execution."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Web Performance & Core Web Vitals, Core Web Vitals (LCP, INP, CLS) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Core Web Vitals (LCP, INP, CLS), not Asset Optimization & Compression."
+      }
+    ],
+    "correctAnswer": "C",
+    "mcqExplanation": "Correct. In Web Performance & Core Web Vitals, Asset Optimization & Compression ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Virtualization & Memory Profiling, not Asset Optimization & Compression.",
+      "B": "Incorrect. This describes Resource Hints (preload, prefetch), not Asset Optimization & Compression.",
+      "D": "Incorrect. This describes Core Web Vitals (LCP, INP, CLS), not Asset Optimization & Compression."
+    },
+    "correctOption": "C",
+    "explanation": "Correct. In Web Performance & Core Web Vitals, Asset Optimization & Compression ensures predictable, resilient execution.",
+    "mcqQuestion": "Web Performance & Core Web Vitals: How does Asset Optimization & Compression operate in production enterprise applications (Q27)?"
+  },
+  {
+    "id": "iq-performance-0028",
+    "standard_id": "PERFORMANCE-MCQ-000028",
+    "questionNumber": 28,
+    "subject": "performance",
+    "category": "Resource Hints (preload, prefetch)",
+    "topic": "Resource Hints (preload, prefetch)",
+    "subtopic": "Resource Hints (preload, prefetch) Operations",
+    "concept": "Resource Hints (preload, prefetch)",
+    "difficulty": "INTERMEDIATE",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "1_3_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "performance",
+      "resource-hints--preload--prefetch-",
+      "frontend-interview"
+    ],
+    "question": "Web Performance & Core Web Vitals: How does Resource Hints (preload, prefetch) operate in production enterprise applications (Q28)?",
+    "shortAnswer": "In Web Performance & Core Web Vitals, Resource Hints (preload, prefetch) ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Resource Hints (preload, prefetch)** is an essential architectural concept in <u>Web Performance & Core Web Vitals</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Resource Hints (preload, prefetch)** is an essential architectural concept in <u>Web Performance & Core Web Vitals</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Resource Hints (preload, prefetch)** is an essential architectural concept in <u>Web Performance & Core Web Vitals</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Resource Hints (preload, prefetch) in Web Performance & Core Web Vitals:\nexport function handleResourceHintspreloadprefetch(config) {\n  console.log('Executing Resource Hints (preload, prefetch) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Resource Hints (preload, prefetch) in Web Performance & Core Web Vitals:\nexport function handleResourceHintspreloadprefetch(config) {\n  console.log('Executing Resource Hints (preload, prefetch) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Resource Hints (preload, prefetch) in Web Performance & Core Web Vitals:\nexport function handleResourceHintspreloadprefetch(config) {\n  console.log('Executing Resource Hints (preload, prefetch) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Resource Hints (preload, prefetch) in Web Performance & Core Web Vitals.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Resource Hints (preload, prefetch) to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Resource Hints (preload, prefetch).",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Resource Hints (preload, prefetch), explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Resource Hints (preload, prefetch), explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Resource Hints (preload, prefetch) scale under extreme concurrency?",
+      "What monitoring tools can track Resource Hints (preload, prefetch) metrics in production?"
+    ],
+    "followUps": [
+      "How does Resource Hints (preload, prefetch) scale under extreme concurrency?",
+      "What monitoring tools can track Resource Hints (preload, prefetch) metrics in production?"
+    ],
+    "question_hash": "qh_64c7e78",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "LCP (Largest Contentful Paint) measures loading speed (target < 2.5s). INP (Interaction to Next Paint) measures user responsiveness across page interactions (target < 200ms).",
+        "explanation": "Incorrect. This describes LCP, INP, CLS Optimization Strategies, not Resource Hints (preload, prefetch)."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Web Performance & Core Web Vitals, Code Splitting & Dynamic Imports ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Code Splitting & Dynamic Imports, not Resource Hints (preload, prefetch)."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Web Performance & Core Web Vitals, Asset Optimization & Compression ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Asset Optimization & Compression, not Resource Hints (preload, prefetch)."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Web Performance & Core Web Vitals, Resource Hints (preload, prefetch) ensures predictable, resilient execution.",
+        "explanation": "Correct. In Web Performance & Core Web Vitals, Resource Hints (preload, prefetch) ensures predictable, resilient execution."
+      }
+    ],
+    "correctAnswer": "D",
+    "correctOption": "D",
+    "mcqExplanation": "Correct. In Web Performance & Core Web Vitals, Resource Hints (preload, prefetch) ensures predictable, resilient execution.",
+    "explanation": "Correct. In Web Performance & Core Web Vitals, Resource Hints (preload, prefetch) ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes LCP, INP, CLS Optimization Strategies, not Resource Hints (preload, prefetch).",
+      "B": "Incorrect. This describes Code Splitting & Dynamic Imports, not Resource Hints (preload, prefetch).",
+      "C": "Incorrect. This describes Asset Optimization & Compression, not Resource Hints (preload, prefetch)."
+    },
+    "mcqQuestion": "Web Performance & Core Web Vitals: How does Resource Hints (preload, prefetch) operate in production enterprise applications (Q28)?"
+  },
+  {
+    "id": "iq-performance-0029",
+    "standard_id": "PERFORMANCE-MCQ-000029",
+    "questionNumber": 29,
+    "subject": "performance",
+    "category": "Code Splitting & Dynamic Imports",
+    "topic": "Code Splitting & Dynamic Imports",
+    "subtopic": "Code Splitting & Dynamic Imports Operations",
+    "concept": "Code Splitting & Dynamic Imports",
+    "difficulty": "DIFFICULT",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "3_5_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "performance",
+      "code-splitting---dynamic-imports",
+      "frontend-interview"
+    ],
+    "question": "Web Performance & Core Web Vitals: How does Code Splitting & Dynamic Imports operate in production enterprise applications (Q29)?",
+    "shortAnswer": "In Web Performance & Core Web Vitals, Code Splitting & Dynamic Imports ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Code Splitting & Dynamic Imports** is an essential architectural concept in <u>Web Performance & Core Web Vitals</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Code Splitting & Dynamic Imports** is an essential architectural concept in <u>Web Performance & Core Web Vitals</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Code Splitting & Dynamic Imports** is an essential architectural concept in <u>Web Performance & Core Web Vitals</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Code Splitting & Dynamic Imports in Web Performance & Core Web Vitals:\nexport function handleCodeSplittingDynamicImports(config) {\n  console.log('Executing Code Splitting & Dynamic Imports with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Code Splitting & Dynamic Imports in Web Performance & Core Web Vitals:\nexport function handleCodeSplittingDynamicImports(config) {\n  console.log('Executing Code Splitting & Dynamic Imports with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Code Splitting & Dynamic Imports in Web Performance & Core Web Vitals:\nexport function handleCodeSplittingDynamicImports(config) {\n  console.log('Executing Code Splitting & Dynamic Imports with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Code Splitting & Dynamic Imports in Web Performance & Core Web Vitals.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Code Splitting & Dynamic Imports to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Code Splitting & Dynamic Imports.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Code Splitting & Dynamic Imports, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Code Splitting & Dynamic Imports, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Code Splitting & Dynamic Imports scale under extreme concurrency?",
+      "What monitoring tools can track Code Splitting & Dynamic Imports metrics in production?"
+    ],
+    "followUps": [
+      "How does Code Splitting & Dynamic Imports scale under extreme concurrency?",
+      "What monitoring tools can track Code Splitting & Dynamic Imports metrics in production?"
+    ],
+    "question_hash": "qh_6d36091f",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Web Performance & Core Web Vitals, Code Splitting & Dynamic Imports ensures predictable, resilient execution.",
+        "explanation": "Correct. In Web Performance & Core Web Vitals, Code Splitting & Dynamic Imports ensures predictable, resilient execution."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Web Performance & Core Web Vitals, Asset Optimization & Compression ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Asset Optimization & Compression, not Code Splitting & Dynamic Imports."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Web Performance & Core Web Vitals, Virtualization & Memory Profiling ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Virtualization & Memory Profiling, not Code Splitting & Dynamic Imports."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Web Performance & Core Web Vitals, Resource Hints (preload, prefetch) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Resource Hints (preload, prefetch), not Code Splitting & Dynamic Imports."
+      }
+    ],
+    "correctAnswer": "A",
+    "mcqExplanation": "Correct. In Web Performance & Core Web Vitals, Code Splitting & Dynamic Imports ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "B": "Incorrect. This describes Asset Optimization & Compression, not Code Splitting & Dynamic Imports.",
+      "C": "Incorrect. This describes Virtualization & Memory Profiling, not Code Splitting & Dynamic Imports.",
+      "D": "Incorrect. This describes Resource Hints (preload, prefetch), not Code Splitting & Dynamic Imports."
+    },
+    "correctOption": "A",
+    "explanation": "Correct. In Web Performance & Core Web Vitals, Code Splitting & Dynamic Imports ensures predictable, resilient execution.",
+    "mcqQuestion": "Web Performance & Core Web Vitals: How does Code Splitting & Dynamic Imports operate in production enterprise applications (Q29)?"
+  },
+  {
+    "id": "iq-performance-0030",
+    "standard_id": "PERFORMANCE-MCQ-000030",
+    "questionNumber": 30,
+    "subject": "performance",
+    "category": "Virtualization & Memory Profiling",
+    "topic": "Virtualization & Memory Profiling",
+    "subtopic": "Virtualization & Memory Profiling Operations",
+    "concept": "Virtualization & Memory Profiling",
+    "difficulty": "EASY",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "FRESHER",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "performance",
+      "virtualization---memory-profiling",
+      "frontend-interview"
+    ],
+    "question": "Web Performance & Core Web Vitals: How does Virtualization & Memory Profiling operate in production enterprise applications (Q30)?",
+    "shortAnswer": "In Web Performance & Core Web Vitals, Virtualization & Memory Profiling ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Virtualization & Memory Profiling** is an essential architectural concept in <u>Web Performance & Core Web Vitals</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Virtualization & Memory Profiling** is an essential architectural concept in <u>Web Performance & Core Web Vitals</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Virtualization & Memory Profiling** is an essential architectural concept in <u>Web Performance & Core Web Vitals</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Virtualization & Memory Profiling in Web Performance & Core Web Vitals:\nexport function handleVirtualizationMemoryProfiling(config) {\n  console.log('Executing Virtualization & Memory Profiling with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Virtualization & Memory Profiling in Web Performance & Core Web Vitals:\nexport function handleVirtualizationMemoryProfiling(config) {\n  console.log('Executing Virtualization & Memory Profiling with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Virtualization & Memory Profiling in Web Performance & Core Web Vitals:\nexport function handleVirtualizationMemoryProfiling(config) {\n  console.log('Executing Virtualization & Memory Profiling with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Virtualization & Memory Profiling in Web Performance & Core Web Vitals.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Virtualization & Memory Profiling to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Virtualization & Memory Profiling.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Virtualization & Memory Profiling, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Virtualization & Memory Profiling, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Virtualization & Memory Profiling scale under extreme concurrency?",
+      "What monitoring tools can track Virtualization & Memory Profiling metrics in production?"
+    ],
+    "followUps": [
+      "How does Virtualization & Memory Profiling scale under extreme concurrency?",
+      "What monitoring tools can track Virtualization & Memory Profiling metrics in production?"
+    ],
+    "question_hash": "qh_71a74397",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Web Performance & Core Web Vitals, Resource Hints (preload, prefetch) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Resource Hints (preload, prefetch), not Virtualization & Memory Profiling."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Web Performance & Core Web Vitals, Virtualization & Memory Profiling ensures predictable, resilient execution.",
+        "explanation": "Correct. In Web Performance & Core Web Vitals, Virtualization & Memory Profiling ensures predictable, resilient execution."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Web Performance & Core Web Vitals, Core Web Vitals (LCP, INP, CLS) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Core Web Vitals (LCP, INP, CLS), not Virtualization & Memory Profiling."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Web Performance & Core Web Vitals, Code Splitting & Dynamic Imports ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Code Splitting & Dynamic Imports, not Virtualization & Memory Profiling."
+      }
+    ],
+    "correctAnswer": "B",
+    "correctOption": "B",
+    "mcqExplanation": "Correct. In Web Performance & Core Web Vitals, Virtualization & Memory Profiling ensures predictable, resilient execution.",
+    "explanation": "Correct. In Web Performance & Core Web Vitals, Virtualization & Memory Profiling ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Resource Hints (preload, prefetch), not Virtualization & Memory Profiling.",
+      "C": "Incorrect. This describes Core Web Vitals (LCP, INP, CLS), not Virtualization & Memory Profiling.",
+      "D": "Incorrect. This describes Code Splitting & Dynamic Imports, not Virtualization & Memory Profiling."
+    },
+    "mcqQuestion": "Web Performance & Core Web Vitals: How does Virtualization & Memory Profiling operate in production enterprise applications (Q30)?"
+  }
+]

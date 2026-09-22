@@ -7,8 +7,13 @@ import type {
   SocketData,
 } from './types.js';
 import { authenticateSocket } from './auth.js';
-import { getInterviewRoom, canJoinSession, canMonitorSession } from './rooms.js';
+import { getInterviewRoom, getMeetingRoom, canJoinSession, canMonitorSession, canAccessMeeting, getAppChatConversationRoom, getAppChatUserRoom } from './rooms.js';
 import { sessionStateManager } from './sessionState.js';
+import { chatService } from '../meetings/chatService.ts';
+import { meetingService } from '../meetings/meetingService.ts';
+import { tokenService } from '../auth/tokenService.ts';
+import { appChatService } from '../chat/appChatService.ts';
+import { redisPresenceService } from '../chat/redisPresenceService.ts';
 
 let ioInstance: SocketIOServer<ClientToServerEvents, ServerToClientEvents, Record<string, never>, SocketData> | null = null;
 
@@ -38,6 +43,21 @@ export function initSocketServer(server: HTTPServer | Http2SecureServer): Socket
     const user = socket.data.user;
     if (process.env.NODE_ENV !== 'production') {
       console.log(`[Socket.IO] Client connected: ${socket.id} (${user?.name} / ${user?.role})`);
+    }
+
+    // ── Phase 7: Application Chat Presence & User Room ────────────────────
+    if (user?.id) {
+      const userRoom = getAppChatUserRoom(user.id);
+      socket.join(userRoom);
+
+      const { statusChanged, presence } = redisPresenceService.registerConnection(user.id, socket.id);
+      if (statusChanged) {
+        io.emit('app:chat:presence:update', {
+          userId: user.id,
+          status: 'ONLINE',
+          lastSeen: presence.lastSeen,
+        });
+      }
     }
 
     // ── Candidate: session:join ───────────────────────────────────────────
@@ -292,6 +312,417 @@ export function initSocketServer(server: HTTPServer | Http2SecureServer): Socket
       socket.data.subscribedSessions.delete(sessionId);
     });
 
+    // ══════════════════════════════════════════════════════════════════════
+    // ── Phase 6: Meeting Chat Real-Time Handlers ─────────────────────────
+    // ══════════════════════════════════════════════════════════════════════
+
+    // ── Meeting: Join Meeting Room ────────────────────────────────────────
+    socket.on('meeting:join', async (data: { meetingId: string; meetingToken?: string }, callback?: any) => {
+      const { meetingId, meetingToken } = data || {};
+      if (!meetingId) {
+        callback?.({ success: false, error: 'Missing meetingId' });
+        return;
+      }
+
+      // Verify meeting access authorization
+      const hasAccess = await canAccessMeeting(socket.data.user, meetingId);
+      if (!hasAccess) {
+        callback?.({ success: false, error: 'Unauthorized to join meeting' });
+        return;
+      }
+
+      // Resolve meeting role from token if provided
+      let callerMeetingRole = (socket.data.user?.role === 'admin' ? 'HOST' : 'PARTICIPANT') as any;
+      if (meetingToken) {
+        const verified = tokenService.verifyMeetingToken(meetingToken);
+        if (verified.valid && verified.claims?.meetingRole) {
+          callerMeetingRole = verified.claims.meetingRole;
+        }
+      }
+      socket.data.role = callerMeetingRole === 'HOST' ? 'admin' : 'candidate';
+
+      const room = getMeetingRoom(meetingId);
+      await socket.join(room);
+      socket.data.meetingId = meetingId;
+      if (!socket.data.subscribedMeetings) {
+        socket.data.subscribedMeetings = new Set();
+      }
+      socket.data.subscribedMeetings.add(meetingId);
+
+      const meeting = meetingService.getMeetingById(meetingId);
+      const allowChat = meeting?.settings?.allowChat !== false;
+
+      // Broadcast system message to room: participant joined
+      const joinMsg = chatService.sendSystemMessage(
+        meetingId,
+        `${socket.data.user.name} joined the meeting.`,
+        { type: 'PARTICIPANT_JOINED', userId: socket.data.user.id }
+      );
+      socket.to(room).emit('meeting:chat:system', joinMsg);
+
+      callback?.({ success: true, allowChat });
+    });
+
+    // ── Meeting: Leave Meeting Room ───────────────────────────────────────
+    socket.on('meeting:leave', ({ meetingId }: { meetingId: string }) => {
+      if (!meetingId) return;
+      const room = getMeetingRoom(meetingId);
+      socket.leave(room);
+      if (socket.data.subscribedMeetings) {
+        socket.data.subscribedMeetings.delete(meetingId);
+      }
+
+      const leaveMsg = chatService.sendSystemMessage(
+        meetingId,
+        `${socket.data.user.name} left the meeting.`,
+        { type: 'PARTICIPANT_LEFT', userId: socket.data.user.id }
+      );
+      socket.to(room).emit('meeting:chat:system', leaveMsg);
+    });
+
+    // ── Meeting: Chat Send Message ────────────────────────────────────────
+    socket.on('meeting:chat:send', async (data: any, callback?: any) => {
+      const meetingId = data?.meetingId || socket.data.meetingId;
+      if (!meetingId) {
+        callback?.({ success: false, error: 'Missing meetingId', code: 'MISSING_MEETING_ID' });
+        return;
+      }
+
+      const caller = {
+        id: socket.data.user.id,
+        email: socket.data.user.email || 'candidate@dev.local',
+        name: socket.data.user.name,
+        role: (socket.data.user.role === 'admin' ? 'admin' : 'candidate') as any,
+        meetingRole: (socket.data.user.role === 'admin' ? 'HOST' : 'PARTICIPANT') as any,
+        permissions: [] as string[],
+      };
+
+      const result = chatService.sendMessage(caller, {
+        meetingId,
+        content: data?.content,
+        messageType: data?.messageType,
+        codeLanguage: data?.codeLanguage,
+        replyToMessageId: data?.replyToMessageId,
+        correlationId: data?.correlationId,
+      });
+
+      if (!result.success) {
+        socket.emit('meeting:chat:error', {
+          code: result.code || 'SEND_FAILED',
+          message: result.error || 'Failed to send message',
+          correlationId: data?.correlationId,
+        });
+        callback?.(result);
+        return;
+      }
+
+      const room = getMeetingRoom(meetingId);
+      // Broadcast to all participants in meeting room
+      io.to(room).emit('meeting:chat:message', result.message);
+      callback?.({ success: true, message: result.message });
+    });
+
+    // ── Meeting: Chat Delete Message ──────────────────────────────────────
+    socket.on('meeting:chat:delete', (data: { meetingId: string; messageId: string }, callback?: any) => {
+      const { meetingId, messageId } = data || {};
+      if (!meetingId || !messageId) {
+        callback?.({ success: false, error: 'Missing meetingId or messageId', code: 'BAD_REQUEST' });
+        return;
+      }
+
+      const caller = {
+        id: socket.data.user.id,
+        email: socket.data.user.email || 'candidate@dev.local',
+        name: socket.data.user.name,
+        role: (socket.data.user.role === 'admin' ? 'admin' : 'candidate') as any,
+        meetingRole: (socket.data.user.role === 'admin' ? 'HOST' : 'PARTICIPANT') as any,
+        permissions: [] as string[],
+      };
+
+      const result = chatService.deleteMessage(caller, messageId);
+      if (!result.success) {
+        callback?.(result);
+        return;
+      }
+
+      const room = getMeetingRoom(meetingId);
+      io.to(room).emit('meeting:chat:deleted', {
+        meetingId,
+        messageId,
+        deletedBy: socket.data.user.id,
+      });
+      callback?.({ success: true });
+    });
+
+    // ── Meeting: Chat Add/Toggle Reaction ─────────────────────────────────
+    socket.on('meeting:chat:reaction', (data: { meetingId: string; messageId: string; emoji: string }, callback?: any) => {
+      const { meetingId, messageId, emoji } = data || {};
+      if (!meetingId || !messageId || !emoji) {
+        callback?.({ success: false, error: 'Missing reaction fields' });
+        return;
+      }
+
+      const result = chatService.addReaction(socket.data.user.id, {
+        meetingId,
+        messageId,
+        emoji,
+      });
+
+      if (result.success && result.reactions) {
+        const room = getMeetingRoom(meetingId);
+        io.to(room).emit('meeting:chat:reaction', {
+          meetingId,
+          messageId,
+          reactions: result.reactions,
+        });
+      }
+      callback?.(result);
+    });
+
+    // ── Meeting: Chat Toggle (Host Enable/Disable) ────────────────────────
+    socket.on('meeting:chat:toggle', (data: { meetingId: string; allowChat: boolean }, callback?: any) => {
+      const { meetingId, allowChat } = data || {};
+      if (!meetingId) {
+        callback?.({ success: false, error: 'Missing meetingId' });
+        return;
+      }
+
+      const caller = {
+        id: socket.data.user.id,
+        email: socket.data.user.email || 'candidate@dev.local',
+        name: socket.data.user.name,
+        role: (socket.data.user.role === 'admin' ? 'admin' : 'candidate') as any,
+        meetingRole: (socket.data.user.role === 'admin' ? 'HOST' : 'PARTICIPANT') as any,
+        permissions: [] as string[],
+      };
+
+      const result = chatService.toggleChat(caller, meetingId, allowChat);
+      if (!result.success) {
+        callback?.(result);
+        return;
+      }
+
+      const room = getMeetingRoom(meetingId);
+      io.to(room).emit('meeting:chat:status', {
+        meetingId,
+        allowChat: !!result.allowChat,
+        updatedBy: socket.data.user.id,
+      });
+      if (result.systemMessage) {
+        io.to(room).emit('meeting:chat:system', result.systemMessage);
+      }
+      callback?.({ success: true, allowChat: result.allowChat });
+    });
+
+    // ── Meeting: Host Announcement ────────────────────────────────────────
+    socket.on('meeting:chat:announce', (data: { meetingId: string; content: string; correlationId?: string }, callback?: any) => {
+      const { meetingId, content, correlationId } = data || {};
+      if (!meetingId || !content) {
+        callback?.({ success: false, error: 'Missing announcement fields' });
+        return;
+      }
+
+      const caller = {
+        id: socket.data.user.id,
+        email: socket.data.user.email || 'candidate@dev.local',
+        name: socket.data.user.name,
+        role: (socket.data.user.role === 'admin' ? 'admin' : 'candidate') as any,
+        meetingRole: (socket.data.user.role === 'admin' ? 'HOST' : 'PARTICIPANT') as any,
+        permissions: [] as string[],
+      };
+
+      const result = chatService.sendAnnouncement(caller, meetingId, content, correlationId);
+      if (!result.success) {
+        callback?.(result);
+        return;
+      }
+
+      const room = getMeetingRoom(meetingId);
+      io.to(room).emit('meeting:chat:announcement', result.message);
+      callback?.({ success: true, message: result.message });
+    });
+
+    // ── Meeting: Reconnect Sync ───────────────────────────────────────────
+    socket.on('meeting:chat:sync', (data: { meetingId: string; sinceTimestamp?: string }, callback?: any) => {
+      const { meetingId, sinceTimestamp } = data || {};
+      if (!meetingId) {
+        callback?.({ success: false, messages: [] });
+        return;
+      }
+
+      const messages = chatService.getMessagesSince(
+        socket.data.user.id,
+        meetingId,
+        sinceTimestamp || new Date(0).toISOString()
+      );
+      callback?.({ success: true, messages });
+    });
+
+    // ── Phase 7: Application Chat Events ──────────────────────────────────
+
+    // Subscribe to conversations or join room
+    socket.on('app:chat:subscribe', (data: { conversationIds?: string[] }, callback?: any) => {
+      const convIds = data?.conversationIds || [];
+      for (const id of convIds) {
+        if (appChatService.isMember(id, user.id)) {
+          socket.join(getAppChatConversationRoom(id));
+        }
+      }
+      callback?.({ success: true });
+    });
+
+    socket.on('app:chat:join', (data: { conversationId: string }, callback?: any) => {
+      const { conversationId } = data || {};
+      if (!conversationId) {
+        callback?.({ success: false, error: 'Missing conversationId' });
+        return;
+      }
+      if (!appChatService.isMember(conversationId, user.id)) {
+        callback?.({ success: false, error: 'Access denied: not an active member' });
+        return;
+      }
+      socket.join(getAppChatConversationRoom(conversationId));
+      callback?.({ success: true });
+    });
+
+    socket.on('app:chat:leave', (data: { conversationId: string }) => {
+      if (data?.conversationId) {
+        socket.leave(getAppChatConversationRoom(data.conversationId));
+      }
+    });
+
+    // Send Application Chat Message
+    socket.on('app:chat:message:send', async (data: any, callback?: any) => {
+      const { conversationId, content, clientMessageId, metadata } = data || {};
+      if (!conversationId || !content) {
+        callback?.({ success: false, error: 'Missing required fields', code: 'BAD_REQUEST' });
+        return;
+      }
+
+      const result = await appChatService.sendMessage(
+        { id: user.id, name: user.name },
+        { conversationId, content, clientMessageId, metadata }
+      );
+
+      if (!result.success || !result.message) {
+        callback?.(result);
+        return;
+      }
+
+      const convRoom = getAppChatConversationRoom(conversationId);
+      // 1. Broadcast to active conversation room
+      io.to(convRoom).emit('app:chat:message:created', result.message);
+
+      // 2. Also emit to user rooms of participants for real-time conversation list updates
+      const partsMap = appChatService.participants.get(conversationId);
+      if (partsMap) {
+        for (const p of partsMap.values()) {
+          if (!p.leftAt) {
+            io.to(getAppChatUserRoom(p.userId)).emit('app:chat:message:created', result.message);
+          }
+        }
+      }
+
+      callback?.({ success: true, message: result.message, reused: result.reused });
+    });
+
+    // Delete Message
+    socket.on('app:chat:message:delete', (data: { conversationId: string; messageId: string }, callback?: any) => {
+      const { conversationId, messageId } = data || {};
+      if (!conversationId || !messageId) {
+        callback?.({ success: false, error: 'Missing conversationId or messageId', code: 'BAD_REQUEST' });
+        return;
+      }
+
+      const result = appChatService.deleteMessage(user.id, conversationId, messageId);
+      if (!result.success) {
+        callback?.(result);
+        return;
+      }
+
+      const convRoom = getAppChatConversationRoom(conversationId);
+      io.to(convRoom).emit('app:chat:message:deleted', {
+        conversationId,
+        messageId,
+        deletedBy: user.id,
+      });
+
+      callback?.({ success: true });
+    });
+
+    // Read Message / Mark Read
+    socket.on('app:chat:message:read', (data: { conversationId: string; messageId?: string }, callback?: any) => {
+      const { conversationId, messageId } = data || {};
+      if (!conversationId) {
+        callback?.({ success: false, error: 'Missing conversationId', code: 'BAD_REQUEST' });
+        return;
+      }
+
+      const result = appChatService.markConversationRead(conversationId, user.id, messageId);
+      if (!result.success) {
+        callback?.(result);
+        return;
+      }
+
+      const convRoom = getAppChatConversationRoom(conversationId);
+      io.to(convRoom).emit('app:chat:message:read', {
+        conversationId,
+        userId: user.id,
+        lastReadMessageId: result.lastReadMessageId!,
+        lastReadAt: result.lastReadAt!,
+      });
+
+      callback?.({ success: true, lastReadMessageId: result.lastReadMessageId, lastReadAt: result.lastReadAt });
+    });
+
+    // Typing Indicators
+    socket.on('app:chat:typing:start', (data: { conversationId: string }) => {
+      const { conversationId } = data || {};
+      if (!conversationId || !appChatService.isMember(conversationId, user.id)) return;
+
+      const started = redisPresenceService.startTyping(
+        conversationId,
+        user.id,
+        user.name,
+        (cId, uId, uName) => {
+          io.to(getAppChatConversationRoom(cId)).emit('app:chat:typing:update', {
+            conversationId: cId,
+            userId: uId,
+            userName: uName,
+            isTyping: false,
+          });
+        }
+      );
+
+      if (started) {
+        socket.to(getAppChatConversationRoom(conversationId)).emit('app:chat:typing:update', {
+          conversationId,
+          userId: user.id,
+          userName: user.name,
+          isTyping: true,
+        });
+      }
+    });
+
+    socket.on('app:chat:typing:stop', (data: { conversationId: string }) => {
+      const { conversationId } = data || {};
+      if (!conversationId) return;
+
+      redisPresenceService.stopTyping(conversationId, user.id);
+      socket.to(getAppChatConversationRoom(conversationId)).emit('app:chat:typing:update', {
+        conversationId,
+        userId: user.id,
+        userName: user.name,
+        isTyping: false,
+      });
+    });
+
+    // Presence Subscription Query
+    socket.on('app:chat:presence:subscribe', (data: { userIds: string[] }, callback?: any) => {
+      const presences = redisPresenceService.getPresences(data?.userIds || []);
+      callback?.({ success: true, presences });
+    });
+
     // ── Disconnect ────────────────────────────────────────────────────────
     socket.on('disconnect', () => {
       if (process.env.NODE_ENV !== 'production') {
@@ -306,6 +737,18 @@ export function initSocketServer(server: HTTPServer | Http2SecureServer): Socket
           presence: 'disconnected',
           timestamp: Date.now(),
         });
+      }
+
+      // Application Chat multi-tab presence cleanup
+      if (user?.id) {
+        const { statusChanged, presence } = redisPresenceService.unregisterConnection(user.id, socket.id);
+        if (statusChanged) {
+          io.emit('app:chat:presence:update', {
+            userId: user.id,
+            status: 'OFFLINE',
+            lastSeen: presence.lastSeen,
+          });
+        }
       }
     });
   });

@@ -1,8 +1,36 @@
-import { supabase } from '../../src/lib/supabase/client.js';
+import { supabase } from '../../src/lib/supabase/client.ts';
 import type { AuthenticatedUser } from './types.js';
 
 export function getInterviewRoom(sessionId: string): string {
   return `interview:${sessionId.trim()}`;
+}
+
+export function getMeetingRoom(meetingId: string): string {
+  return `meeting:${meetingId.trim()}`;
+}
+
+export function getAppChatConversationRoom(conversationId: string): string {
+  return `app:chat:conv:${conversationId.trim()}`;
+}
+
+export function getAppChatUserRoom(userId: string): string {
+  return `app:chat:user:${userId.trim()}`;
+}
+
+/**
+ * Validates if the user is authorized to participate in the meeting.
+ */
+export async function canAccessMeeting(user: AuthenticatedUser, meetingId: string): Promise<boolean> {
+  if (!meetingId) return false;
+  // Admins and interviewers can access any meeting
+  if (user.role === 'admin' || user.role === 'interviewer') {
+    return true;
+  }
+  // In development, allow candidates with valid session/token or testing accounts
+  if (process.env.NODE_ENV !== 'production') {
+    return true;
+  }
+  return false;
 }
 
 /**

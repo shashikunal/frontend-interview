@@ -1,0 +1,2756 @@
+[
+  {
+    "id": "iq-frontend-architecture-0001",
+    "standard_id": "FRONTENDARCHITECTURE-MCQ-000001",
+    "questionNumber": 1,
+    "subject": "frontend-architecture",
+    "category": "Feature-Sliced Architecture (FSD)",
+    "topic": "Feature-Sliced Architecture (FSD)",
+    "subtopic": "Layers, Slices, Segments & Public API Exports",
+    "concept": "Layers, Slices, Segments & Public API Exports",
+    "difficulty": "INTERMEDIATE",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "1_3_YEARS",
+    "isHighFrequency": true,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Netflix"
+    ],
+    "tags": [
+      "frontend-architecture",
+      "frontend-interview",
+      "feature-sliced-architecture--fsd-"
+    ],
+    "question": "What is Feature-Sliced Design (FSD) and how does it prevent spaghetti architecture in enterprise codebases?",
+    "shortAnswer": "Feature-Sliced Design is an architectural methodology for frontend apps that organizes code into standardized hierarchical layers (app, pages, widgets, features, entities, shared). Each layer has strict one-way import rules, preventing circular dependencies and spaghetti coupling.",
+    "simpleExplanation": "In messy projects, code is organized by technical folders: all components in one folder, all hooks in another.\n\nIn **Feature-Sliced Design**, code is organized around business features (e.g. `auth`, `payment`, `user-profile`).\n\nHigher layers can import lower layers, but a lower layer can never import from a higher layer.",
+    "detailedAnswer": "In messy projects, code is organized by technical folders: all components in one folder, all hooks in another.\n\nIn **Feature-Sliced Design**, code is organized around business features (e.g. `auth`, `payment`, `user-profile`).\n\nHigher layers can import lower layers, but a lower layer can never import from a higher layer.",
+    "detailedExplanation": "In messy projects, code is organized by technical folders: all components in one folder, all hooks in another.\n\nIn **Feature-Sliced Design**, code is organized around business features (e.g. `auth`, `payment`, `user-profile`).\n\nHigher layers can import lower layers, but a lower layer can never import from a higher layer.",
+    "howItWorks": "1. The hierarchy is strictly top-down: App -> Pages -> Widgets -> Features -> Entities -> Shared.\n2. Slices expose functionality exclusively via an `index.ts` public API.\n3. Internal slice implementations cannot be imported by external slices.",
+    "codeExample": "// Standard Feature-Sliced Design directory layout:\n// src/\n// ├── app/         (Providers, global router, global styles)\n// ├── pages/       (Route views composed of widgets)\n// ├── widgets/     (Self-contained UI blocks like Header, Feed)\n// ├── features/    (User actions like auth-by-email, add-to-cart)\n// ├── entities/    (Business domain entities: User, Product)\n// └── shared/      (Reusable UI primitives, Axios client, utils)",
+    "example": "// Standard Feature-Sliced Design directory layout:\n// src/\n// ├── app/         (Providers, global router, global styles)\n// ├── pages/       (Route views composed of widgets)\n// ├── widgets/     (Self-contained UI blocks like Header, Feed)\n// ├── features/    (User actions like auth-by-email, add-to-cart)\n// ├── entities/    (Business domain entities: User, Product)\n// └── shared/      (Reusable UI primitives, Axios client, utils)",
+    "codeSnippet": "// Standard Feature-Sliced Design directory layout:\n// src/\n// ├── app/         (Providers, global router, global styles)\n// ├── pages/       (Route views composed of widgets)\n// ├── widgets/     (Self-contained UI blocks like Header, Feed)\n// ├── features/    (User actions like auth-by-email, add-to-cart)\n// ├── entities/    (Business domain entities: User, Product)\n// └── shared/      (Reusable UI primitives, Axios client, utils)",
+    "codeExplanationSpeech": "This code illustrates the architecture and implementation of Layers, Slices, Segments & Public API Exports in modern frontend systems.",
+    "realWorldExample": "Large fintech and banking enterprises with 50+ frontend developers use FSD to maintain clean code boundaries and prevent regressions across multi-team releases.",
+    "commonMistakes": [
+      "Allowing cross-imports between sibling slices in the same layer, which re-introduces tight coupling."
+    ],
+    "interviewTip": "Emphasize how FSD isolates changes: refactoring the internals of an entity never breaks features as long as the public index.ts contract remains stable.",
+    "interviewTips": [
+      "Emphasize how FSD isolates changes: refactoring the internals of an entity never breaks features as long as the public index.ts contract remains stable."
+    ],
+    "followUpQuestions": [
+      "What are the advantages of using Turborepo or Nx for managing enterprise frontend monorepos?",
+      "How do you design a centralized API client layer with Axios and TypeScript?"
+    ],
+    "followUps": [
+      "What are the advantages of using Turborepo or Nx for managing enterprise frontend monorepos?",
+      "How do you design a centralized API client layer with Axios and TypeScript?"
+    ],
+    "question_hash": "qh_76aab829",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "text": "It provides standardized, predictable behavior for Layers, Slices, Segments & Public API Exports across all client environments.",
+        "explanation": "Correct. Follows modern web platform and architectural specifications."
+      },
+      {
+        "key": "B",
+        "text": "It bypasses the browser JavaScript runtime and executes as machine code on the GPU.",
+        "explanation": "Incorrect. Frontend code executes within the browser engine thread."
+      },
+      {
+        "key": "C",
+        "text": "It disables all browser caching and forces fresh HTTP 1.0 TCP handshakes on every interaction.",
+        "explanation": "Incorrect. Caching and networking follow standard browser protocols."
+      },
+      {
+        "key": "D",
+        "text": "It automatically converts all async operations into synchronous blocking code.",
+        "explanation": "Incorrect. The browser event loop remains asynchronous."
+      }
+    ],
+    "correctAnswer": "A",
+    "mcqExplanation": "In Frontend Architecture & Scalability, Layers, Slices, Segments & Public API Exports provides robust, scalable execution per standard architectural patterns.",
+    "wrongOptionExplanations": {
+      "B": "UI logic executes in the browser JavaScript engine or V8 runtime.",
+      "C": "Browser caching mechanisms operate in accordance with HTTP headers.",
+      "D": "JavaScript remains single-threaded and non-blocking."
+    },
+    "correctOption": "A",
+    "explanation": "In Frontend Architecture & Scalability, Layers, Slices, Segments & Public API Exports provides robust, scalable execution per standard architectural patterns."
+  },
+  {
+    "id": "iq-frontend-architecture-0002",
+    "standard_id": "FRONTENDARCHITECTURE-MCQ-000002",
+    "questionNumber": 2,
+    "subject": "frontend-architecture",
+    "category": "Monorepos & Workspace Tooling",
+    "topic": "Monorepos & Workspace Tooling",
+    "subtopic": "Monorepos & Workspace Tooling Operations",
+    "concept": "Monorepos & Workspace Tooling",
+    "difficulty": "DIFFICULT",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "3_5_YEARS",
+    "isHighFrequency": true,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "frontend-architecture",
+      "monorepos---workspace-tooling",
+      "frontend-interview"
+    ],
+    "question": "Frontend Architecture & Scalability: How does Monorepos & Workspace Tooling operate in production enterprise applications (Q2)?",
+    "shortAnswer": "In Frontend Architecture & Scalability, Monorepos & Workspace Tooling ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Monorepos & Workspace Tooling** is an essential architectural concept in <u>Frontend Architecture & Scalability</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Monorepos & Workspace Tooling** is an essential architectural concept in <u>Frontend Architecture & Scalability</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Monorepos & Workspace Tooling** is an essential architectural concept in <u>Frontend Architecture & Scalability</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Monorepos & Workspace Tooling in Frontend Architecture & Scalability:\nexport function handleMonoreposWorkspaceTooling(config) {\n  console.log('Executing Monorepos & Workspace Tooling with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Monorepos & Workspace Tooling in Frontend Architecture & Scalability:\nexport function handleMonoreposWorkspaceTooling(config) {\n  console.log('Executing Monorepos & Workspace Tooling with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Monorepos & Workspace Tooling in Frontend Architecture & Scalability:\nexport function handleMonoreposWorkspaceTooling(config) {\n  console.log('Executing Monorepos & Workspace Tooling with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Monorepos & Workspace Tooling in Frontend Architecture & Scalability.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Monorepos & Workspace Tooling to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Monorepos & Workspace Tooling.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Monorepos & Workspace Tooling, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Monorepos & Workspace Tooling, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Monorepos & Workspace Tooling scale under extreme concurrency?",
+      "What monitoring tools can track Monorepos & Workspace Tooling metrics in production?"
+    ],
+    "followUps": [
+      "How does Monorepos & Workspace Tooling scale under extreme concurrency?",
+      "What monitoring tools can track Monorepos & Workspace Tooling metrics in production?"
+    ],
+    "question_hash": "qh_5d1908f6",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Frontend Architecture & Scalability, Design System Governance ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Design System Governance, not Monorepos & Workspace Tooling."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Frontend Architecture & Scalability, Monorepos & Workspace Tooling ensures predictable, resilient execution.",
+        "explanation": "Correct. In Frontend Architecture & Scalability, Monorepos & Workspace Tooling ensures predictable, resilient execution."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Frontend Architecture & Scalability, API Layer & Repository Pattern ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes API Layer & Repository Pattern, not Monorepos & Workspace Tooling."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Frontend Architecture & Scalability, Feature-Sliced Architecture (FSD) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Feature-Sliced Architecture (FSD), not Monorepos & Workspace Tooling."
+      }
+    ],
+    "correctAnswer": "B",
+    "correctOption": "B",
+    "mcqExplanation": "Correct. In Frontend Architecture & Scalability, Monorepos & Workspace Tooling ensures predictable, resilient execution.",
+    "explanation": "Correct. In Frontend Architecture & Scalability, Monorepos & Workspace Tooling ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Design System Governance, not Monorepos & Workspace Tooling.",
+      "C": "Incorrect. This describes API Layer & Repository Pattern, not Monorepos & Workspace Tooling.",
+      "D": "Incorrect. This describes Feature-Sliced Architecture (FSD), not Monorepos & Workspace Tooling."
+    },
+    "mcqQuestion": "Frontend Architecture & Scalability: How does Monorepos & Workspace Tooling operate in production enterprise applications (Q2)?"
+  },
+  {
+    "id": "iq-frontend-architecture-0003",
+    "standard_id": "FRONTENDARCHITECTURE-MCQ-000003",
+    "questionNumber": 3,
+    "subject": "frontend-architecture",
+    "category": "API Layer & Repository Pattern",
+    "topic": "API Layer & Repository Pattern",
+    "subtopic": "API Layer & Repository Pattern Operations",
+    "concept": "API Layer & Repository Pattern",
+    "difficulty": "EASY",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "FRESHER",
+    "isHighFrequency": true,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "frontend-architecture",
+      "api-layer---repository-pattern",
+      "frontend-interview"
+    ],
+    "question": "Frontend Architecture & Scalability: How does API Layer & Repository Pattern operate in production enterprise applications (Q3)?",
+    "shortAnswer": "In Frontend Architecture & Scalability, API Layer & Repository Pattern ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**API Layer & Repository Pattern** is an essential architectural concept in <u>Frontend Architecture & Scalability</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**API Layer & Repository Pattern** is an essential architectural concept in <u>Frontend Architecture & Scalability</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**API Layer & Repository Pattern** is an essential architectural concept in <u>Frontend Architecture & Scalability</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for API Layer & Repository Pattern in Frontend Architecture & Scalability:\nexport function handleAPILayerRepositoryPattern(config) {\n  console.log('Executing API Layer & Repository Pattern with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for API Layer & Repository Pattern in Frontend Architecture & Scalability:\nexport function handleAPILayerRepositoryPattern(config) {\n  console.log('Executing API Layer & Repository Pattern with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for API Layer & Repository Pattern in Frontend Architecture & Scalability:\nexport function handleAPILayerRepositoryPattern(config) {\n  console.log('Executing API Layer & Repository Pattern with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of API Layer & Repository Pattern in Frontend Architecture & Scalability.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize API Layer & Repository Pattern to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with API Layer & Repository Pattern.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about API Layer & Repository Pattern, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about API Layer & Repository Pattern, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does API Layer & Repository Pattern scale under extreme concurrency?",
+      "What monitoring tools can track API Layer & Repository Pattern metrics in production?"
+    ],
+    "followUps": [
+      "How does API Layer & Repository Pattern scale under extreme concurrency?",
+      "What monitoring tools can track API Layer & Repository Pattern metrics in production?"
+    ],
+    "question_hash": "qh_3b410e3",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Frontend Architecture & Scalability, Feature-Sliced Architecture (FSD) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Feature-Sliced Architecture (FSD), not API Layer & Repository Pattern."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Frontend Architecture & Scalability, Error Boundaries & Fallback Strategies ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Error Boundaries & Fallback Strategies, not API Layer & Repository Pattern."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Frontend Architecture & Scalability, API Layer & Repository Pattern ensures predictable, resilient execution.",
+        "explanation": "Correct. In Frontend Architecture & Scalability, API Layer & Repository Pattern ensures predictable, resilient execution."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Frontend Architecture & Scalability, Monorepos & Workspace Tooling ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Monorepos & Workspace Tooling, not API Layer & Repository Pattern."
+      }
+    ],
+    "correctAnswer": "C",
+    "mcqExplanation": "Correct. In Frontend Architecture & Scalability, API Layer & Repository Pattern ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Feature-Sliced Architecture (FSD), not API Layer & Repository Pattern.",
+      "B": "Incorrect. This describes Error Boundaries & Fallback Strategies, not API Layer & Repository Pattern.",
+      "D": "Incorrect. This describes Monorepos & Workspace Tooling, not API Layer & Repository Pattern."
+    },
+    "correctOption": "C",
+    "explanation": "Correct. In Frontend Architecture & Scalability, API Layer & Repository Pattern ensures predictable, resilient execution.",
+    "mcqQuestion": "Frontend Architecture & Scalability: How does API Layer & Repository Pattern operate in production enterprise applications (Q3)?"
+  },
+  {
+    "id": "iq-frontend-architecture-0004",
+    "standard_id": "FRONTENDARCHITECTURE-MCQ-000004",
+    "questionNumber": 4,
+    "subject": "frontend-architecture",
+    "category": "Error Boundaries & Fallback Strategies",
+    "topic": "Error Boundaries & Fallback Strategies",
+    "subtopic": "Error Boundaries & Fallback Strategies Operations",
+    "concept": "Error Boundaries & Fallback Strategies",
+    "difficulty": "INTERMEDIATE",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "1_3_YEARS",
+    "isHighFrequency": true,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "frontend-architecture",
+      "error-boundaries---fallback-strategies",
+      "frontend-interview"
+    ],
+    "question": "Frontend Architecture & Scalability: How does Error Boundaries & Fallback Strategies operate in production enterprise applications (Q4)?",
+    "shortAnswer": "In Frontend Architecture & Scalability, Error Boundaries & Fallback Strategies ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Error Boundaries & Fallback Strategies** is an essential architectural concept in <u>Frontend Architecture & Scalability</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Error Boundaries & Fallback Strategies** is an essential architectural concept in <u>Frontend Architecture & Scalability</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Error Boundaries & Fallback Strategies** is an essential architectural concept in <u>Frontend Architecture & Scalability</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Error Boundaries & Fallback Strategies in Frontend Architecture & Scalability:\nexport function handleErrorBoundariesFallbackStrategies(config) {\n  console.log('Executing Error Boundaries & Fallback Strategies with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Error Boundaries & Fallback Strategies in Frontend Architecture & Scalability:\nexport function handleErrorBoundariesFallbackStrategies(config) {\n  console.log('Executing Error Boundaries & Fallback Strategies with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Error Boundaries & Fallback Strategies in Frontend Architecture & Scalability:\nexport function handleErrorBoundariesFallbackStrategies(config) {\n  console.log('Executing Error Boundaries & Fallback Strategies with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Error Boundaries & Fallback Strategies in Frontend Architecture & Scalability.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Error Boundaries & Fallback Strategies to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Error Boundaries & Fallback Strategies.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Error Boundaries & Fallback Strategies, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Error Boundaries & Fallback Strategies, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Error Boundaries & Fallback Strategies scale under extreme concurrency?",
+      "What monitoring tools can track Error Boundaries & Fallback Strategies metrics in production?"
+    ],
+    "followUps": [
+      "How does Error Boundaries & Fallback Strategies scale under extreme concurrency?",
+      "What monitoring tools can track Error Boundaries & Fallback Strategies metrics in production?"
+    ],
+    "question_hash": "qh_56891ae2",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Frontend Architecture & Scalability, Monorepos & Workspace Tooling ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Monorepos & Workspace Tooling, not Error Boundaries & Fallback Strategies."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Frontend Architecture & Scalability, Design System Governance ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Design System Governance, not Error Boundaries & Fallback Strategies."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Frontend Architecture & Scalability, API Layer & Repository Pattern ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes API Layer & Repository Pattern, not Error Boundaries & Fallback Strategies."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Frontend Architecture & Scalability, Error Boundaries & Fallback Strategies ensures predictable, resilient execution.",
+        "explanation": "Correct. In Frontend Architecture & Scalability, Error Boundaries & Fallback Strategies ensures predictable, resilient execution."
+      }
+    ],
+    "correctAnswer": "D",
+    "correctOption": "D",
+    "mcqExplanation": "Correct. In Frontend Architecture & Scalability, Error Boundaries & Fallback Strategies ensures predictable, resilient execution.",
+    "explanation": "Correct. In Frontend Architecture & Scalability, Error Boundaries & Fallback Strategies ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Monorepos & Workspace Tooling, not Error Boundaries & Fallback Strategies.",
+      "B": "Incorrect. This describes Design System Governance, not Error Boundaries & Fallback Strategies.",
+      "C": "Incorrect. This describes API Layer & Repository Pattern, not Error Boundaries & Fallback Strategies."
+    },
+    "mcqQuestion": "Frontend Architecture & Scalability: How does Error Boundaries & Fallback Strategies operate in production enterprise applications (Q4)?"
+  },
+  {
+    "id": "iq-frontend-architecture-0005",
+    "standard_id": "FRONTENDARCHITECTURE-MCQ-000005",
+    "questionNumber": 5,
+    "subject": "frontend-architecture",
+    "category": "Design System Governance",
+    "topic": "Design System Governance",
+    "subtopic": "Design System Governance Operations",
+    "concept": "Design System Governance",
+    "difficulty": "DIFFICULT",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "3_5_YEARS",
+    "isHighFrequency": true,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "frontend-architecture",
+      "design-system-governance",
+      "frontend-interview"
+    ],
+    "question": "Frontend Architecture & Scalability: How does Design System Governance operate in production enterprise applications (Q5)?",
+    "shortAnswer": "In Frontend Architecture & Scalability, Design System Governance ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Design System Governance** is an essential architectural concept in <u>Frontend Architecture & Scalability</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Design System Governance** is an essential architectural concept in <u>Frontend Architecture & Scalability</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Design System Governance** is an essential architectural concept in <u>Frontend Architecture & Scalability</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Design System Governance in Frontend Architecture & Scalability:\nexport function handleDesignSystemGovernance(config) {\n  console.log('Executing Design System Governance with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Design System Governance in Frontend Architecture & Scalability:\nexport function handleDesignSystemGovernance(config) {\n  console.log('Executing Design System Governance with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Design System Governance in Frontend Architecture & Scalability:\nexport function handleDesignSystemGovernance(config) {\n  console.log('Executing Design System Governance with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Design System Governance in Frontend Architecture & Scalability.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Design System Governance to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Design System Governance.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Design System Governance, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Design System Governance, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Design System Governance scale under extreme concurrency?",
+      "What monitoring tools can track Design System Governance metrics in production?"
+    ],
+    "followUps": [
+      "How does Design System Governance scale under extreme concurrency?",
+      "What monitoring tools can track Design System Governance metrics in production?"
+    ],
+    "question_hash": "qh_65417797",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Frontend Architecture & Scalability, Design System Governance ensures predictable, resilient execution.",
+        "explanation": "Correct. In Frontend Architecture & Scalability, Design System Governance ensures predictable, resilient execution."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Frontend Architecture & Scalability, API Layer & Repository Pattern ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes API Layer & Repository Pattern, not Design System Governance."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Frontend Architecture & Scalability, Feature-Sliced Architecture (FSD) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Feature-Sliced Architecture (FSD), not Design System Governance."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Frontend Architecture & Scalability, Error Boundaries & Fallback Strategies ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Error Boundaries & Fallback Strategies, not Design System Governance."
+      }
+    ],
+    "correctAnswer": "A",
+    "mcqExplanation": "Correct. In Frontend Architecture & Scalability, Design System Governance ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "B": "Incorrect. This describes API Layer & Repository Pattern, not Design System Governance.",
+      "C": "Incorrect. This describes Feature-Sliced Architecture (FSD), not Design System Governance.",
+      "D": "Incorrect. This describes Error Boundaries & Fallback Strategies, not Design System Governance."
+    },
+    "correctOption": "A",
+    "explanation": "Correct. In Frontend Architecture & Scalability, Design System Governance ensures predictable, resilient execution.",
+    "mcqQuestion": "Frontend Architecture & Scalability: How does Design System Governance operate in production enterprise applications (Q5)?"
+  },
+  {
+    "id": "iq-frontend-architecture-0006",
+    "standard_id": "FRONTENDARCHITECTURE-MCQ-000006",
+    "questionNumber": 6,
+    "subject": "frontend-architecture",
+    "category": "Feature-Sliced Architecture (FSD)",
+    "topic": "Feature-Sliced Architecture (FSD)",
+    "subtopic": "Feature-Sliced Architecture (FSD) Operations",
+    "concept": "Feature-Sliced Architecture (FSD)",
+    "difficulty": "EASY",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "FRESHER",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "frontend-architecture",
+      "feature-sliced-architecture--fsd-",
+      "frontend-interview"
+    ],
+    "question": "Frontend Architecture & Scalability: How does Feature-Sliced Architecture (FSD) operate in production enterprise applications (Q6)?",
+    "shortAnswer": "In Frontend Architecture & Scalability, Feature-Sliced Architecture (FSD) ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Feature-Sliced Architecture (FSD)** is an essential architectural concept in <u>Frontend Architecture & Scalability</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Feature-Sliced Architecture (FSD)** is an essential architectural concept in <u>Frontend Architecture & Scalability</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Feature-Sliced Architecture (FSD)** is an essential architectural concept in <u>Frontend Architecture & Scalability</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Feature-Sliced Architecture (FSD) in Frontend Architecture & Scalability:\nexport function handleFeatureSlicedArchitectureFSD(config) {\n  console.log('Executing Feature-Sliced Architecture (FSD) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Feature-Sliced Architecture (FSD) in Frontend Architecture & Scalability:\nexport function handleFeatureSlicedArchitectureFSD(config) {\n  console.log('Executing Feature-Sliced Architecture (FSD) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Feature-Sliced Architecture (FSD) in Frontend Architecture & Scalability:\nexport function handleFeatureSlicedArchitectureFSD(config) {\n  console.log('Executing Feature-Sliced Architecture (FSD) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Feature-Sliced Architecture (FSD) in Frontend Architecture & Scalability.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Feature-Sliced Architecture (FSD) to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Feature-Sliced Architecture (FSD).",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Feature-Sliced Architecture (FSD), explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Feature-Sliced Architecture (FSD), explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Feature-Sliced Architecture (FSD) scale under extreme concurrency?",
+      "What monitoring tools can track Feature-Sliced Architecture (FSD) metrics in production?"
+    ],
+    "followUps": [
+      "How does Feature-Sliced Architecture (FSD) scale under extreme concurrency?",
+      "What monitoring tools can track Feature-Sliced Architecture (FSD) metrics in production?"
+    ],
+    "question_hash": "qh_2b9a5e94",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Frontend Architecture & Scalability, Error Boundaries & Fallback Strategies ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Error Boundaries & Fallback Strategies, not Feature-Sliced Architecture (FSD)."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Frontend Architecture & Scalability, Feature-Sliced Architecture (FSD) ensures predictable, resilient execution.",
+        "explanation": "Correct. In Frontend Architecture & Scalability, Feature-Sliced Architecture (FSD) ensures predictable, resilient execution."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Frontend Architecture & Scalability, Monorepos & Workspace Tooling ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Monorepos & Workspace Tooling, not Feature-Sliced Architecture (FSD)."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Frontend Architecture & Scalability, Design System Governance ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Design System Governance, not Feature-Sliced Architecture (FSD)."
+      }
+    ],
+    "correctAnswer": "B",
+    "correctOption": "B",
+    "mcqExplanation": "Correct. In Frontend Architecture & Scalability, Feature-Sliced Architecture (FSD) ensures predictable, resilient execution.",
+    "explanation": "Correct. In Frontend Architecture & Scalability, Feature-Sliced Architecture (FSD) ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Error Boundaries & Fallback Strategies, not Feature-Sliced Architecture (FSD).",
+      "C": "Incorrect. This describes Monorepos & Workspace Tooling, not Feature-Sliced Architecture (FSD).",
+      "D": "Incorrect. This describes Design System Governance, not Feature-Sliced Architecture (FSD)."
+    },
+    "mcqQuestion": "Frontend Architecture & Scalability: How does Feature-Sliced Architecture (FSD) operate in production enterprise applications (Q6)?"
+  },
+  {
+    "id": "iq-frontend-architecture-0007",
+    "standard_id": "FRONTENDARCHITECTURE-MCQ-000007",
+    "questionNumber": 7,
+    "subject": "frontend-architecture",
+    "category": "Monorepos & Workspace Tooling",
+    "topic": "Monorepos & Workspace Tooling",
+    "subtopic": "Monorepos & Workspace Tooling Operations",
+    "concept": "Monorepos & Workspace Tooling",
+    "difficulty": "INTERMEDIATE",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "1_3_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "frontend-architecture",
+      "monorepos---workspace-tooling",
+      "frontend-interview"
+    ],
+    "question": "Frontend Architecture & Scalability: How does Monorepos & Workspace Tooling operate in production enterprise applications (Q7)?",
+    "shortAnswer": "In Frontend Architecture & Scalability, Monorepos & Workspace Tooling ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Monorepos & Workspace Tooling** is an essential architectural concept in <u>Frontend Architecture & Scalability</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Monorepos & Workspace Tooling** is an essential architectural concept in <u>Frontend Architecture & Scalability</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Monorepos & Workspace Tooling** is an essential architectural concept in <u>Frontend Architecture & Scalability</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Monorepos & Workspace Tooling in Frontend Architecture & Scalability:\nexport function handleMonoreposWorkspaceTooling(config) {\n  console.log('Executing Monorepos & Workspace Tooling with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Monorepos & Workspace Tooling in Frontend Architecture & Scalability:\nexport function handleMonoreposWorkspaceTooling(config) {\n  console.log('Executing Monorepos & Workspace Tooling with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Monorepos & Workspace Tooling in Frontend Architecture & Scalability:\nexport function handleMonoreposWorkspaceTooling(config) {\n  console.log('Executing Monorepos & Workspace Tooling with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Monorepos & Workspace Tooling in Frontend Architecture & Scalability.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Monorepos & Workspace Tooling to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Monorepos & Workspace Tooling.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Monorepos & Workspace Tooling, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Monorepos & Workspace Tooling, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Monorepos & Workspace Tooling scale under extreme concurrency?",
+      "What monitoring tools can track Monorepos & Workspace Tooling metrics in production?"
+    ],
+    "followUps": [
+      "How does Monorepos & Workspace Tooling scale under extreme concurrency?",
+      "What monitoring tools can track Monorepos & Workspace Tooling metrics in production?"
+    ],
+    "question_hash": "qh_5d1908f1",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Frontend Architecture & Scalability, Design System Governance ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Design System Governance, not Monorepos & Workspace Tooling."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Frontend Architecture & Scalability, API Layer & Repository Pattern ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes API Layer & Repository Pattern, not Monorepos & Workspace Tooling."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Frontend Architecture & Scalability, Monorepos & Workspace Tooling ensures predictable, resilient execution.",
+        "explanation": "Correct. In Frontend Architecture & Scalability, Monorepos & Workspace Tooling ensures predictable, resilient execution."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Frontend Architecture & Scalability, Feature-Sliced Architecture (FSD) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Feature-Sliced Architecture (FSD), not Monorepos & Workspace Tooling."
+      }
+    ],
+    "correctAnswer": "C",
+    "mcqExplanation": "Correct. In Frontend Architecture & Scalability, Monorepos & Workspace Tooling ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Design System Governance, not Monorepos & Workspace Tooling.",
+      "B": "Incorrect. This describes API Layer & Repository Pattern, not Monorepos & Workspace Tooling.",
+      "D": "Incorrect. This describes Feature-Sliced Architecture (FSD), not Monorepos & Workspace Tooling."
+    },
+    "correctOption": "C",
+    "explanation": "Correct. In Frontend Architecture & Scalability, Monorepos & Workspace Tooling ensures predictable, resilient execution.",
+    "mcqQuestion": "Frontend Architecture & Scalability: How does Monorepos & Workspace Tooling operate in production enterprise applications (Q7)?"
+  },
+  {
+    "id": "iq-frontend-architecture-0008",
+    "standard_id": "FRONTENDARCHITECTURE-MCQ-000008",
+    "questionNumber": 8,
+    "subject": "frontend-architecture",
+    "category": "API Layer & Repository Pattern",
+    "topic": "API Layer & Repository Pattern",
+    "subtopic": "API Layer & Repository Pattern Operations",
+    "concept": "API Layer & Repository Pattern",
+    "difficulty": "DIFFICULT",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "3_5_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "frontend-architecture",
+      "api-layer---repository-pattern",
+      "frontend-interview"
+    ],
+    "question": "Frontend Architecture & Scalability: How does API Layer & Repository Pattern operate in production enterprise applications (Q8)?",
+    "shortAnswer": "In Frontend Architecture & Scalability, API Layer & Repository Pattern ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**API Layer & Repository Pattern** is an essential architectural concept in <u>Frontend Architecture & Scalability</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**API Layer & Repository Pattern** is an essential architectural concept in <u>Frontend Architecture & Scalability</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**API Layer & Repository Pattern** is an essential architectural concept in <u>Frontend Architecture & Scalability</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for API Layer & Repository Pattern in Frontend Architecture & Scalability:\nexport function handleAPILayerRepositoryPattern(config) {\n  console.log('Executing API Layer & Repository Pattern with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for API Layer & Repository Pattern in Frontend Architecture & Scalability:\nexport function handleAPILayerRepositoryPattern(config) {\n  console.log('Executing API Layer & Repository Pattern with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for API Layer & Repository Pattern in Frontend Architecture & Scalability:\nexport function handleAPILayerRepositoryPattern(config) {\n  console.log('Executing API Layer & Repository Pattern with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of API Layer & Repository Pattern in Frontend Architecture & Scalability.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize API Layer & Repository Pattern to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with API Layer & Repository Pattern.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about API Layer & Repository Pattern, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about API Layer & Repository Pattern, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does API Layer & Repository Pattern scale under extreme concurrency?",
+      "What monitoring tools can track API Layer & Repository Pattern metrics in production?"
+    ],
+    "followUps": [
+      "How does API Layer & Repository Pattern scale under extreme concurrency?",
+      "What monitoring tools can track API Layer & Repository Pattern metrics in production?"
+    ],
+    "question_hash": "qh_3b410de",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Frontend Architecture & Scalability, Feature-Sliced Architecture (FSD) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Feature-Sliced Architecture (FSD), not API Layer & Repository Pattern."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Frontend Architecture & Scalability, Error Boundaries & Fallback Strategies ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Error Boundaries & Fallback Strategies, not API Layer & Repository Pattern."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Frontend Architecture & Scalability, Monorepos & Workspace Tooling ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Monorepos & Workspace Tooling, not API Layer & Repository Pattern."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Frontend Architecture & Scalability, API Layer & Repository Pattern ensures predictable, resilient execution.",
+        "explanation": "Correct. In Frontend Architecture & Scalability, API Layer & Repository Pattern ensures predictable, resilient execution."
+      }
+    ],
+    "correctAnswer": "D",
+    "correctOption": "D",
+    "mcqExplanation": "Correct. In Frontend Architecture & Scalability, API Layer & Repository Pattern ensures predictable, resilient execution.",
+    "explanation": "Correct. In Frontend Architecture & Scalability, API Layer & Repository Pattern ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Feature-Sliced Architecture (FSD), not API Layer & Repository Pattern.",
+      "B": "Incorrect. This describes Error Boundaries & Fallback Strategies, not API Layer & Repository Pattern.",
+      "C": "Incorrect. This describes Monorepos & Workspace Tooling, not API Layer & Repository Pattern."
+    },
+    "mcqQuestion": "Frontend Architecture & Scalability: How does API Layer & Repository Pattern operate in production enterprise applications (Q8)?"
+  },
+  {
+    "id": "iq-frontend-architecture-0009",
+    "standard_id": "FRONTENDARCHITECTURE-MCQ-000009",
+    "questionNumber": 9,
+    "subject": "frontend-architecture",
+    "category": "Error Boundaries & Fallback Strategies",
+    "topic": "Error Boundaries & Fallback Strategies",
+    "subtopic": "Error Boundaries & Fallback Strategies Operations",
+    "concept": "Error Boundaries & Fallback Strategies",
+    "difficulty": "EASY",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "FRESHER",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "frontend-architecture",
+      "error-boundaries---fallback-strategies",
+      "frontend-interview"
+    ],
+    "question": "Frontend Architecture & Scalability: How does Error Boundaries & Fallback Strategies operate in production enterprise applications (Q9)?",
+    "shortAnswer": "In Frontend Architecture & Scalability, Error Boundaries & Fallback Strategies ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Error Boundaries & Fallback Strategies** is an essential architectural concept in <u>Frontend Architecture & Scalability</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Error Boundaries & Fallback Strategies** is an essential architectural concept in <u>Frontend Architecture & Scalability</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Error Boundaries & Fallback Strategies** is an essential architectural concept in <u>Frontend Architecture & Scalability</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Error Boundaries & Fallback Strategies in Frontend Architecture & Scalability:\nexport function handleErrorBoundariesFallbackStrategies(config) {\n  console.log('Executing Error Boundaries & Fallback Strategies with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Error Boundaries & Fallback Strategies in Frontend Architecture & Scalability:\nexport function handleErrorBoundariesFallbackStrategies(config) {\n  console.log('Executing Error Boundaries & Fallback Strategies with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Error Boundaries & Fallback Strategies in Frontend Architecture & Scalability:\nexport function handleErrorBoundariesFallbackStrategies(config) {\n  console.log('Executing Error Boundaries & Fallback Strategies with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Error Boundaries & Fallback Strategies in Frontend Architecture & Scalability.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Error Boundaries & Fallback Strategies to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Error Boundaries & Fallback Strategies.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Error Boundaries & Fallback Strategies, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Error Boundaries & Fallback Strategies, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Error Boundaries & Fallback Strategies scale under extreme concurrency?",
+      "What monitoring tools can track Error Boundaries & Fallback Strategies metrics in production?"
+    ],
+    "followUps": [
+      "How does Error Boundaries & Fallback Strategies scale under extreme concurrency?",
+      "What monitoring tools can track Error Boundaries & Fallback Strategies metrics in production?"
+    ],
+    "question_hash": "qh_56891add",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Frontend Architecture & Scalability, Error Boundaries & Fallback Strategies ensures predictable, resilient execution.",
+        "explanation": "Correct. In Frontend Architecture & Scalability, Error Boundaries & Fallback Strategies ensures predictable, resilient execution."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Frontend Architecture & Scalability, Monorepos & Workspace Tooling ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Monorepos & Workspace Tooling, not Error Boundaries & Fallback Strategies."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Frontend Architecture & Scalability, Design System Governance ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Design System Governance, not Error Boundaries & Fallback Strategies."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Frontend Architecture & Scalability, API Layer & Repository Pattern ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes API Layer & Repository Pattern, not Error Boundaries & Fallback Strategies."
+      }
+    ],
+    "correctAnswer": "A",
+    "mcqExplanation": "Correct. In Frontend Architecture & Scalability, Error Boundaries & Fallback Strategies ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "B": "Incorrect. This describes Monorepos & Workspace Tooling, not Error Boundaries & Fallback Strategies.",
+      "C": "Incorrect. This describes Design System Governance, not Error Boundaries & Fallback Strategies.",
+      "D": "Incorrect. This describes API Layer & Repository Pattern, not Error Boundaries & Fallback Strategies."
+    },
+    "correctOption": "A",
+    "explanation": "Correct. In Frontend Architecture & Scalability, Error Boundaries & Fallback Strategies ensures predictable, resilient execution.",
+    "mcqQuestion": "Frontend Architecture & Scalability: How does Error Boundaries & Fallback Strategies operate in production enterprise applications (Q9)?"
+  },
+  {
+    "id": "iq-frontend-architecture-0010",
+    "standard_id": "FRONTENDARCHITECTURE-MCQ-000010",
+    "questionNumber": 10,
+    "subject": "frontend-architecture",
+    "category": "Design System Governance",
+    "topic": "Design System Governance",
+    "subtopic": "Design System Governance Operations",
+    "concept": "Design System Governance",
+    "difficulty": "INTERMEDIATE",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "1_3_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "frontend-architecture",
+      "design-system-governance",
+      "frontend-interview"
+    ],
+    "question": "Frontend Architecture & Scalability: How does Design System Governance operate in production enterprise applications (Q10)?",
+    "shortAnswer": "In Frontend Architecture & Scalability, Design System Governance ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Design System Governance** is an essential architectural concept in <u>Frontend Architecture & Scalability</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Design System Governance** is an essential architectural concept in <u>Frontend Architecture & Scalability</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Design System Governance** is an essential architectural concept in <u>Frontend Architecture & Scalability</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Design System Governance in Frontend Architecture & Scalability:\nexport function handleDesignSystemGovernance(config) {\n  console.log('Executing Design System Governance with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Design System Governance in Frontend Architecture & Scalability:\nexport function handleDesignSystemGovernance(config) {\n  console.log('Executing Design System Governance with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Design System Governance in Frontend Architecture & Scalability:\nexport function handleDesignSystemGovernance(config) {\n  console.log('Executing Design System Governance with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Design System Governance in Frontend Architecture & Scalability.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Design System Governance to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Design System Governance.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Design System Governance, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Design System Governance, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Design System Governance scale under extreme concurrency?",
+      "What monitoring tools can track Design System Governance metrics in production?"
+    ],
+    "followUps": [
+      "How does Design System Governance scale under extreme concurrency?",
+      "What monitoring tools can track Design System Governance metrics in production?"
+    ],
+    "question_hash": "qh_42ed7afd",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Frontend Architecture & Scalability, API Layer & Repository Pattern ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes API Layer & Repository Pattern, not Design System Governance."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Frontend Architecture & Scalability, Design System Governance ensures predictable, resilient execution.",
+        "explanation": "Correct. In Frontend Architecture & Scalability, Design System Governance ensures predictable, resilient execution."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Frontend Architecture & Scalability, Feature-Sliced Architecture (FSD) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Feature-Sliced Architecture (FSD), not Design System Governance."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Frontend Architecture & Scalability, Error Boundaries & Fallback Strategies ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Error Boundaries & Fallback Strategies, not Design System Governance."
+      }
+    ],
+    "correctAnswer": "B",
+    "correctOption": "B",
+    "mcqExplanation": "Correct. In Frontend Architecture & Scalability, Design System Governance ensures predictable, resilient execution.",
+    "explanation": "Correct. In Frontend Architecture & Scalability, Design System Governance ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes API Layer & Repository Pattern, not Design System Governance.",
+      "C": "Incorrect. This describes Feature-Sliced Architecture (FSD), not Design System Governance.",
+      "D": "Incorrect. This describes Error Boundaries & Fallback Strategies, not Design System Governance."
+    },
+    "mcqQuestion": "Frontend Architecture & Scalability: How does Design System Governance operate in production enterprise applications (Q10)?"
+  },
+  {
+    "id": "iq-frontend-architecture-0011",
+    "standard_id": "FRONTENDARCHITECTURE-MCQ-000011",
+    "questionNumber": 11,
+    "subject": "frontend-architecture",
+    "category": "Feature-Sliced Architecture (FSD)",
+    "topic": "Feature-Sliced Architecture (FSD)",
+    "subtopic": "Feature-Sliced Architecture (FSD) Operations",
+    "concept": "Feature-Sliced Architecture (FSD)",
+    "difficulty": "DIFFICULT",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "3_5_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "frontend-architecture",
+      "feature-sliced-architecture--fsd-",
+      "frontend-interview"
+    ],
+    "question": "Frontend Architecture & Scalability: How does Feature-Sliced Architecture (FSD) operate in production enterprise applications (Q11)?",
+    "shortAnswer": "In Frontend Architecture & Scalability, Feature-Sliced Architecture (FSD) ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Feature-Sliced Architecture (FSD)** is an essential architectural concept in <u>Frontend Architecture & Scalability</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Feature-Sliced Architecture (FSD)** is an essential architectural concept in <u>Frontend Architecture & Scalability</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Feature-Sliced Architecture (FSD)** is an essential architectural concept in <u>Frontend Architecture & Scalability</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Feature-Sliced Architecture (FSD) in Frontend Architecture & Scalability:\nexport function handleFeatureSlicedArchitectureFSD(config) {\n  console.log('Executing Feature-Sliced Architecture (FSD) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Feature-Sliced Architecture (FSD) in Frontend Architecture & Scalability:\nexport function handleFeatureSlicedArchitectureFSD(config) {\n  console.log('Executing Feature-Sliced Architecture (FSD) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Feature-Sliced Architecture (FSD) in Frontend Architecture & Scalability:\nexport function handleFeatureSlicedArchitectureFSD(config) {\n  console.log('Executing Feature-Sliced Architecture (FSD) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Feature-Sliced Architecture (FSD) in Frontend Architecture & Scalability.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Feature-Sliced Architecture (FSD) to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Feature-Sliced Architecture (FSD).",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Feature-Sliced Architecture (FSD), explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Feature-Sliced Architecture (FSD), explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Feature-Sliced Architecture (FSD) scale under extreme concurrency?",
+      "What monitoring tools can track Feature-Sliced Architecture (FSD) metrics in production?"
+    ],
+    "followUps": [
+      "How does Feature-Sliced Architecture (FSD) scale under extreme concurrency?",
+      "What monitoring tools can track Feature-Sliced Architecture (FSD) metrics in production?"
+    ],
+    "question_hash": "qh_47b17456",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Frontend Architecture & Scalability, Error Boundaries & Fallback Strategies ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Error Boundaries & Fallback Strategies, not Feature-Sliced Architecture (FSD)."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Frontend Architecture & Scalability, Monorepos & Workspace Tooling ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Monorepos & Workspace Tooling, not Feature-Sliced Architecture (FSD)."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Frontend Architecture & Scalability, Feature-Sliced Architecture (FSD) ensures predictable, resilient execution.",
+        "explanation": "Correct. In Frontend Architecture & Scalability, Feature-Sliced Architecture (FSD) ensures predictable, resilient execution."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Frontend Architecture & Scalability, Design System Governance ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Design System Governance, not Feature-Sliced Architecture (FSD)."
+      }
+    ],
+    "correctAnswer": "C",
+    "mcqExplanation": "Correct. In Frontend Architecture & Scalability, Feature-Sliced Architecture (FSD) ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Error Boundaries & Fallback Strategies, not Feature-Sliced Architecture (FSD).",
+      "B": "Incorrect. This describes Monorepos & Workspace Tooling, not Feature-Sliced Architecture (FSD).",
+      "D": "Incorrect. This describes Design System Governance, not Feature-Sliced Architecture (FSD)."
+    },
+    "correctOption": "C",
+    "explanation": "Correct. In Frontend Architecture & Scalability, Feature-Sliced Architecture (FSD) ensures predictable, resilient execution.",
+    "mcqQuestion": "Frontend Architecture & Scalability: How does Feature-Sliced Architecture (FSD) operate in production enterprise applications (Q11)?"
+  },
+  {
+    "id": "iq-frontend-architecture-0012",
+    "standard_id": "FRONTENDARCHITECTURE-MCQ-000012",
+    "questionNumber": 12,
+    "subject": "frontend-architecture",
+    "category": "Monorepos & Workspace Tooling",
+    "topic": "Monorepos & Workspace Tooling",
+    "subtopic": "Monorepos & Workspace Tooling Operations",
+    "concept": "Monorepos & Workspace Tooling",
+    "difficulty": "EASY",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "FRESHER",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "frontend-architecture",
+      "monorepos---workspace-tooling",
+      "frontend-interview"
+    ],
+    "question": "Frontend Architecture & Scalability: How does Monorepos & Workspace Tooling operate in production enterprise applications (Q12)?",
+    "shortAnswer": "In Frontend Architecture & Scalability, Monorepos & Workspace Tooling ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Monorepos & Workspace Tooling** is an essential architectural concept in <u>Frontend Architecture & Scalability</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Monorepos & Workspace Tooling** is an essential architectural concept in <u>Frontend Architecture & Scalability</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Monorepos & Workspace Tooling** is an essential architectural concept in <u>Frontend Architecture & Scalability</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Monorepos & Workspace Tooling in Frontend Architecture & Scalability:\nexport function handleMonoreposWorkspaceTooling(config) {\n  console.log('Executing Monorepos & Workspace Tooling with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Monorepos & Workspace Tooling in Frontend Architecture & Scalability:\nexport function handleMonoreposWorkspaceTooling(config) {\n  console.log('Executing Monorepos & Workspace Tooling with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Monorepos & Workspace Tooling in Frontend Architecture & Scalability:\nexport function handleMonoreposWorkspaceTooling(config) {\n  console.log('Executing Monorepos & Workspace Tooling with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Monorepos & Workspace Tooling in Frontend Architecture & Scalability.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Monorepos & Workspace Tooling to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Monorepos & Workspace Tooling.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Monorepos & Workspace Tooling, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Monorepos & Workspace Tooling, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Monorepos & Workspace Tooling scale under extreme concurrency?",
+      "What monitoring tools can track Monorepos & Workspace Tooling metrics in production?"
+    ],
+    "followUps": [
+      "How does Monorepos & Workspace Tooling scale under extreme concurrency?",
+      "What monitoring tools can track Monorepos & Workspace Tooling metrics in production?"
+    ],
+    "question_hash": "qh_460815b7",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Frontend Architecture & Scalability, Design System Governance ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Design System Governance, not Monorepos & Workspace Tooling."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Frontend Architecture & Scalability, API Layer & Repository Pattern ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes API Layer & Repository Pattern, not Monorepos & Workspace Tooling."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Frontend Architecture & Scalability, Feature-Sliced Architecture (FSD) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Feature-Sliced Architecture (FSD), not Monorepos & Workspace Tooling."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Frontend Architecture & Scalability, Monorepos & Workspace Tooling ensures predictable, resilient execution.",
+        "explanation": "Correct. In Frontend Architecture & Scalability, Monorepos & Workspace Tooling ensures predictable, resilient execution."
+      }
+    ],
+    "correctAnswer": "D",
+    "correctOption": "D",
+    "mcqExplanation": "Correct. In Frontend Architecture & Scalability, Monorepos & Workspace Tooling ensures predictable, resilient execution.",
+    "explanation": "Correct. In Frontend Architecture & Scalability, Monorepos & Workspace Tooling ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Design System Governance, not Monorepos & Workspace Tooling.",
+      "B": "Incorrect. This describes API Layer & Repository Pattern, not Monorepos & Workspace Tooling.",
+      "C": "Incorrect. This describes Feature-Sliced Architecture (FSD), not Monorepos & Workspace Tooling."
+    },
+    "mcqQuestion": "Frontend Architecture & Scalability: How does Monorepos & Workspace Tooling operate in production enterprise applications (Q12)?"
+  },
+  {
+    "id": "iq-frontend-architecture-0013",
+    "standard_id": "FRONTENDARCHITECTURE-MCQ-000013",
+    "questionNumber": 13,
+    "subject": "frontend-architecture",
+    "category": "API Layer & Repository Pattern",
+    "topic": "API Layer & Repository Pattern",
+    "subtopic": "API Layer & Repository Pattern Operations",
+    "concept": "API Layer & Repository Pattern",
+    "difficulty": "INTERMEDIATE",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "1_3_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "frontend-architecture",
+      "api-layer---repository-pattern",
+      "frontend-interview"
+    ],
+    "question": "Frontend Architecture & Scalability: How does API Layer & Repository Pattern operate in production enterprise applications (Q13)?",
+    "shortAnswer": "In Frontend Architecture & Scalability, API Layer & Repository Pattern ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**API Layer & Repository Pattern** is an essential architectural concept in <u>Frontend Architecture & Scalability</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**API Layer & Repository Pattern** is an essential architectural concept in <u>Frontend Architecture & Scalability</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**API Layer & Repository Pattern** is an essential architectural concept in <u>Frontend Architecture & Scalability</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for API Layer & Repository Pattern in Frontend Architecture & Scalability:\nexport function handleAPILayerRepositoryPattern(config) {\n  console.log('Executing API Layer & Repository Pattern with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for API Layer & Repository Pattern in Frontend Architecture & Scalability:\nexport function handleAPILayerRepositoryPattern(config) {\n  console.log('Executing API Layer & Repository Pattern with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for API Layer & Repository Pattern in Frontend Architecture & Scalability:\nexport function handleAPILayerRepositoryPattern(config) {\n  console.log('Executing API Layer & Repository Pattern with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of API Layer & Repository Pattern in Frontend Architecture & Scalability.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize API Layer & Repository Pattern to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with API Layer & Repository Pattern.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about API Layer & Repository Pattern, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about API Layer & Repository Pattern, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does API Layer & Repository Pattern scale under extreme concurrency?",
+      "What monitoring tools can track API Layer & Repository Pattern metrics in production?"
+    ],
+    "followUps": [
+      "How does API Layer & Repository Pattern scale under extreme concurrency?",
+      "What monitoring tools can track API Layer & Repository Pattern metrics in production?"
+    ],
+    "question_hash": "qh_72ce0b88",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Frontend Architecture & Scalability, API Layer & Repository Pattern ensures predictable, resilient execution.",
+        "explanation": "Correct. In Frontend Architecture & Scalability, API Layer & Repository Pattern ensures predictable, resilient execution."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Frontend Architecture & Scalability, Feature-Sliced Architecture (FSD) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Feature-Sliced Architecture (FSD), not API Layer & Repository Pattern."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Frontend Architecture & Scalability, Error Boundaries & Fallback Strategies ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Error Boundaries & Fallback Strategies, not API Layer & Repository Pattern."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Frontend Architecture & Scalability, Monorepos & Workspace Tooling ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Monorepos & Workspace Tooling, not API Layer & Repository Pattern."
+      }
+    ],
+    "correctAnswer": "A",
+    "mcqExplanation": "Correct. In Frontend Architecture & Scalability, API Layer & Repository Pattern ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "B": "Incorrect. This describes Feature-Sliced Architecture (FSD), not API Layer & Repository Pattern.",
+      "C": "Incorrect. This describes Error Boundaries & Fallback Strategies, not API Layer & Repository Pattern.",
+      "D": "Incorrect. This describes Monorepos & Workspace Tooling, not API Layer & Repository Pattern."
+    },
+    "correctOption": "A",
+    "explanation": "Correct. In Frontend Architecture & Scalability, API Layer & Repository Pattern ensures predictable, resilient execution.",
+    "mcqQuestion": "Frontend Architecture & Scalability: How does API Layer & Repository Pattern operate in production enterprise applications (Q13)?"
+  },
+  {
+    "id": "iq-frontend-architecture-0014",
+    "standard_id": "FRONTENDARCHITECTURE-MCQ-000014",
+    "questionNumber": 14,
+    "subject": "frontend-architecture",
+    "category": "Error Boundaries & Fallback Strategies",
+    "topic": "Error Boundaries & Fallback Strategies",
+    "subtopic": "Error Boundaries & Fallback Strategies Operations",
+    "concept": "Error Boundaries & Fallback Strategies",
+    "difficulty": "DIFFICULT",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "3_5_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "frontend-architecture",
+      "error-boundaries---fallback-strategies",
+      "frontend-interview"
+    ],
+    "question": "Frontend Architecture & Scalability: How does Error Boundaries & Fallback Strategies operate in production enterprise applications (Q14)?",
+    "shortAnswer": "In Frontend Architecture & Scalability, Error Boundaries & Fallback Strategies ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Error Boundaries & Fallback Strategies** is an essential architectural concept in <u>Frontend Architecture & Scalability</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Error Boundaries & Fallback Strategies** is an essential architectural concept in <u>Frontend Architecture & Scalability</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Error Boundaries & Fallback Strategies** is an essential architectural concept in <u>Frontend Architecture & Scalability</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Error Boundaries & Fallback Strategies in Frontend Architecture & Scalability:\nexport function handleErrorBoundariesFallbackStrategies(config) {\n  console.log('Executing Error Boundaries & Fallback Strategies with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Error Boundaries & Fallback Strategies in Frontend Architecture & Scalability:\nexport function handleErrorBoundariesFallbackStrategies(config) {\n  console.log('Executing Error Boundaries & Fallback Strategies with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Error Boundaries & Fallback Strategies in Frontend Architecture & Scalability:\nexport function handleErrorBoundariesFallbackStrategies(config) {\n  console.log('Executing Error Boundaries & Fallback Strategies with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Error Boundaries & Fallback Strategies in Frontend Architecture & Scalability.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Error Boundaries & Fallback Strategies to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Error Boundaries & Fallback Strategies.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Error Boundaries & Fallback Strategies, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Error Boundaries & Fallback Strategies, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Error Boundaries & Fallback Strategies scale under extreme concurrency?",
+      "What monitoring tools can track Error Boundaries & Fallback Strategies metrics in production?"
+    ],
+    "followUps": [
+      "How does Error Boundaries & Fallback Strategies scale under extreme concurrency?",
+      "What monitoring tools can track Error Boundaries & Fallback Strategies metrics in production?"
+    ],
+    "question_hash": "qh_7a9a4187",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Frontend Architecture & Scalability, Monorepos & Workspace Tooling ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Monorepos & Workspace Tooling, not Error Boundaries & Fallback Strategies."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Frontend Architecture & Scalability, Error Boundaries & Fallback Strategies ensures predictable, resilient execution.",
+        "explanation": "Correct. In Frontend Architecture & Scalability, Error Boundaries & Fallback Strategies ensures predictable, resilient execution."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Frontend Architecture & Scalability, Design System Governance ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Design System Governance, not Error Boundaries & Fallback Strategies."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Frontend Architecture & Scalability, API Layer & Repository Pattern ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes API Layer & Repository Pattern, not Error Boundaries & Fallback Strategies."
+      }
+    ],
+    "correctAnswer": "B",
+    "correctOption": "B",
+    "mcqExplanation": "Correct. In Frontend Architecture & Scalability, Error Boundaries & Fallback Strategies ensures predictable, resilient execution.",
+    "explanation": "Correct. In Frontend Architecture & Scalability, Error Boundaries & Fallback Strategies ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Monorepos & Workspace Tooling, not Error Boundaries & Fallback Strategies.",
+      "C": "Incorrect. This describes Design System Governance, not Error Boundaries & Fallback Strategies.",
+      "D": "Incorrect. This describes API Layer & Repository Pattern, not Error Boundaries & Fallback Strategies."
+    },
+    "mcqQuestion": "Frontend Architecture & Scalability: How does Error Boundaries & Fallback Strategies operate in production enterprise applications (Q14)?"
+  },
+  {
+    "id": "iq-frontend-architecture-0015",
+    "standard_id": "FRONTENDARCHITECTURE-MCQ-000015",
+    "questionNumber": 15,
+    "subject": "frontend-architecture",
+    "category": "Design System Governance",
+    "topic": "Design System Governance",
+    "subtopic": "Design System Governance Operations",
+    "concept": "Design System Governance",
+    "difficulty": "EASY",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "FRESHER",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "frontend-architecture",
+      "design-system-governance",
+      "frontend-interview"
+    ],
+    "question": "Frontend Architecture & Scalability: How does Design System Governance operate in production enterprise applications (Q15)?",
+    "shortAnswer": "In Frontend Architecture & Scalability, Design System Governance ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Design System Governance** is an essential architectural concept in <u>Frontend Architecture & Scalability</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Design System Governance** is an essential architectural concept in <u>Frontend Architecture & Scalability</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Design System Governance** is an essential architectural concept in <u>Frontend Architecture & Scalability</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Design System Governance in Frontend Architecture & Scalability:\nexport function handleDesignSystemGovernance(config) {\n  console.log('Executing Design System Governance with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Design System Governance in Frontend Architecture & Scalability:\nexport function handleDesignSystemGovernance(config) {\n  console.log('Executing Design System Governance with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Design System Governance in Frontend Architecture & Scalability:\nexport function handleDesignSystemGovernance(config) {\n  console.log('Executing Design System Governance with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Design System Governance in Frontend Architecture & Scalability.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Design System Governance to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Design System Governance.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Design System Governance, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Design System Governance, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Design System Governance scale under extreme concurrency?",
+      "What monitoring tools can track Design System Governance metrics in production?"
+    ],
+    "followUps": [
+      "How does Design System Governance scale under extreme concurrency?",
+      "What monitoring tools can track Design System Governance metrics in production?"
+    ],
+    "question_hash": "qh_42ed7b02",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Frontend Architecture & Scalability, API Layer & Repository Pattern ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes API Layer & Repository Pattern, not Design System Governance."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Frontend Architecture & Scalability, Feature-Sliced Architecture (FSD) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Feature-Sliced Architecture (FSD), not Design System Governance."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Frontend Architecture & Scalability, Design System Governance ensures predictable, resilient execution.",
+        "explanation": "Correct. In Frontend Architecture & Scalability, Design System Governance ensures predictable, resilient execution."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Frontend Architecture & Scalability, Error Boundaries & Fallback Strategies ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Error Boundaries & Fallback Strategies, not Design System Governance."
+      }
+    ],
+    "correctAnswer": "C",
+    "mcqExplanation": "Correct. In Frontend Architecture & Scalability, Design System Governance ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes API Layer & Repository Pattern, not Design System Governance.",
+      "B": "Incorrect. This describes Feature-Sliced Architecture (FSD), not Design System Governance.",
+      "D": "Incorrect. This describes Error Boundaries & Fallback Strategies, not Design System Governance."
+    },
+    "correctOption": "C",
+    "explanation": "Correct. In Frontend Architecture & Scalability, Design System Governance ensures predictable, resilient execution.",
+    "mcqQuestion": "Frontend Architecture & Scalability: How does Design System Governance operate in production enterprise applications (Q15)?"
+  },
+  {
+    "id": "iq-frontend-architecture-0016",
+    "standard_id": "FRONTENDARCHITECTURE-MCQ-000016",
+    "questionNumber": 16,
+    "subject": "frontend-architecture",
+    "category": "Feature-Sliced Architecture (FSD)",
+    "topic": "Feature-Sliced Architecture (FSD)",
+    "subtopic": "Feature-Sliced Architecture (FSD) Operations",
+    "concept": "Feature-Sliced Architecture (FSD)",
+    "difficulty": "INTERMEDIATE",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "1_3_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "frontend-architecture",
+      "feature-sliced-architecture--fsd-",
+      "frontend-interview"
+    ],
+    "question": "Frontend Architecture & Scalability: How does Feature-Sliced Architecture (FSD) operate in production enterprise applications (Q16)?",
+    "shortAnswer": "In Frontend Architecture & Scalability, Feature-Sliced Architecture (FSD) ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Feature-Sliced Architecture (FSD)** is an essential architectural concept in <u>Frontend Architecture & Scalability</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Feature-Sliced Architecture (FSD)** is an essential architectural concept in <u>Frontend Architecture & Scalability</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Feature-Sliced Architecture (FSD)** is an essential architectural concept in <u>Frontend Architecture & Scalability</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Feature-Sliced Architecture (FSD) in Frontend Architecture & Scalability:\nexport function handleFeatureSlicedArchitectureFSD(config) {\n  console.log('Executing Feature-Sliced Architecture (FSD) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Feature-Sliced Architecture (FSD) in Frontend Architecture & Scalability:\nexport function handleFeatureSlicedArchitectureFSD(config) {\n  console.log('Executing Feature-Sliced Architecture (FSD) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Feature-Sliced Architecture (FSD) in Frontend Architecture & Scalability:\nexport function handleFeatureSlicedArchitectureFSD(config) {\n  console.log('Executing Feature-Sliced Architecture (FSD) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Feature-Sliced Architecture (FSD) in Frontend Architecture & Scalability.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Feature-Sliced Architecture (FSD) to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Feature-Sliced Architecture (FSD).",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Feature-Sliced Architecture (FSD), explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Feature-Sliced Architecture (FSD), explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Feature-Sliced Architecture (FSD) scale under extreme concurrency?",
+      "What monitoring tools can track Feature-Sliced Architecture (FSD) metrics in production?"
+    ],
+    "followUps": [
+      "How does Feature-Sliced Architecture (FSD) scale under extreme concurrency?",
+      "What monitoring tools can track Feature-Sliced Architecture (FSD) metrics in production?"
+    ],
+    "question_hash": "qh_47b17451",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Frontend Architecture & Scalability, Error Boundaries & Fallback Strategies ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Error Boundaries & Fallback Strategies, not Feature-Sliced Architecture (FSD)."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Frontend Architecture & Scalability, Monorepos & Workspace Tooling ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Monorepos & Workspace Tooling, not Feature-Sliced Architecture (FSD)."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Frontend Architecture & Scalability, Design System Governance ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Design System Governance, not Feature-Sliced Architecture (FSD)."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Frontend Architecture & Scalability, Feature-Sliced Architecture (FSD) ensures predictable, resilient execution.",
+        "explanation": "Correct. In Frontend Architecture & Scalability, Feature-Sliced Architecture (FSD) ensures predictable, resilient execution."
+      }
+    ],
+    "correctAnswer": "D",
+    "correctOption": "D",
+    "mcqExplanation": "Correct. In Frontend Architecture & Scalability, Feature-Sliced Architecture (FSD) ensures predictable, resilient execution.",
+    "explanation": "Correct. In Frontend Architecture & Scalability, Feature-Sliced Architecture (FSD) ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Error Boundaries & Fallback Strategies, not Feature-Sliced Architecture (FSD).",
+      "B": "Incorrect. This describes Monorepos & Workspace Tooling, not Feature-Sliced Architecture (FSD).",
+      "C": "Incorrect. This describes Design System Governance, not Feature-Sliced Architecture (FSD)."
+    },
+    "mcqQuestion": "Frontend Architecture & Scalability: How does Feature-Sliced Architecture (FSD) operate in production enterprise applications (Q16)?"
+  },
+  {
+    "id": "iq-frontend-architecture-0017",
+    "standard_id": "FRONTENDARCHITECTURE-MCQ-000017",
+    "questionNumber": 17,
+    "subject": "frontend-architecture",
+    "category": "Monorepos & Workspace Tooling",
+    "topic": "Monorepos & Workspace Tooling",
+    "subtopic": "Monorepos & Workspace Tooling Operations",
+    "concept": "Monorepos & Workspace Tooling",
+    "difficulty": "DIFFICULT",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "3_5_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "frontend-architecture",
+      "monorepos---workspace-tooling",
+      "frontend-interview"
+    ],
+    "question": "Frontend Architecture & Scalability: How does Monorepos & Workspace Tooling operate in production enterprise applications (Q17)?",
+    "shortAnswer": "In Frontend Architecture & Scalability, Monorepos & Workspace Tooling ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Monorepos & Workspace Tooling** is an essential architectural concept in <u>Frontend Architecture & Scalability</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Monorepos & Workspace Tooling** is an essential architectural concept in <u>Frontend Architecture & Scalability</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Monorepos & Workspace Tooling** is an essential architectural concept in <u>Frontend Architecture & Scalability</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Monorepos & Workspace Tooling in Frontend Architecture & Scalability:\nexport function handleMonoreposWorkspaceTooling(config) {\n  console.log('Executing Monorepos & Workspace Tooling with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Monorepos & Workspace Tooling in Frontend Architecture & Scalability:\nexport function handleMonoreposWorkspaceTooling(config) {\n  console.log('Executing Monorepos & Workspace Tooling with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Monorepos & Workspace Tooling in Frontend Architecture & Scalability:\nexport function handleMonoreposWorkspaceTooling(config) {\n  console.log('Executing Monorepos & Workspace Tooling with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Monorepos & Workspace Tooling in Frontend Architecture & Scalability.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Monorepos & Workspace Tooling to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Monorepos & Workspace Tooling.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Monorepos & Workspace Tooling, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Monorepos & Workspace Tooling, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Monorepos & Workspace Tooling scale under extreme concurrency?",
+      "What monitoring tools can track Monorepos & Workspace Tooling metrics in production?"
+    ],
+    "followUps": [
+      "How does Monorepos & Workspace Tooling scale under extreme concurrency?",
+      "What monitoring tools can track Monorepos & Workspace Tooling metrics in production?"
+    ],
+    "question_hash": "qh_460815b2",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Frontend Architecture & Scalability, Monorepos & Workspace Tooling ensures predictable, resilient execution.",
+        "explanation": "Correct. In Frontend Architecture & Scalability, Monorepos & Workspace Tooling ensures predictable, resilient execution."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Frontend Architecture & Scalability, Design System Governance ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Design System Governance, not Monorepos & Workspace Tooling."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Frontend Architecture & Scalability, API Layer & Repository Pattern ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes API Layer & Repository Pattern, not Monorepos & Workspace Tooling."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Frontend Architecture & Scalability, Feature-Sliced Architecture (FSD) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Feature-Sliced Architecture (FSD), not Monorepos & Workspace Tooling."
+      }
+    ],
+    "correctAnswer": "A",
+    "mcqExplanation": "Correct. In Frontend Architecture & Scalability, Monorepos & Workspace Tooling ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "B": "Incorrect. This describes Design System Governance, not Monorepos & Workspace Tooling.",
+      "C": "Incorrect. This describes API Layer & Repository Pattern, not Monorepos & Workspace Tooling.",
+      "D": "Incorrect. This describes Feature-Sliced Architecture (FSD), not Monorepos & Workspace Tooling."
+    },
+    "correctOption": "A",
+    "explanation": "Correct. In Frontend Architecture & Scalability, Monorepos & Workspace Tooling ensures predictable, resilient execution.",
+    "mcqQuestion": "Frontend Architecture & Scalability: How does Monorepos & Workspace Tooling operate in production enterprise applications (Q17)?"
+  },
+  {
+    "id": "iq-frontend-architecture-0018",
+    "standard_id": "FRONTENDARCHITECTURE-MCQ-000018",
+    "questionNumber": 18,
+    "subject": "frontend-architecture",
+    "category": "API Layer & Repository Pattern",
+    "topic": "API Layer & Repository Pattern",
+    "subtopic": "API Layer & Repository Pattern Operations",
+    "concept": "API Layer & Repository Pattern",
+    "difficulty": "EASY",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "FRESHER",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "frontend-architecture",
+      "api-layer---repository-pattern",
+      "frontend-interview"
+    ],
+    "question": "Frontend Architecture & Scalability: How does API Layer & Repository Pattern operate in production enterprise applications (Q18)?",
+    "shortAnswer": "In Frontend Architecture & Scalability, API Layer & Repository Pattern ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**API Layer & Repository Pattern** is an essential architectural concept in <u>Frontend Architecture & Scalability</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**API Layer & Repository Pattern** is an essential architectural concept in <u>Frontend Architecture & Scalability</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**API Layer & Repository Pattern** is an essential architectural concept in <u>Frontend Architecture & Scalability</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for API Layer & Repository Pattern in Frontend Architecture & Scalability:\nexport function handleAPILayerRepositoryPattern(config) {\n  console.log('Executing API Layer & Repository Pattern with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for API Layer & Repository Pattern in Frontend Architecture & Scalability:\nexport function handleAPILayerRepositoryPattern(config) {\n  console.log('Executing API Layer & Repository Pattern with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for API Layer & Repository Pattern in Frontend Architecture & Scalability:\nexport function handleAPILayerRepositoryPattern(config) {\n  console.log('Executing API Layer & Repository Pattern with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of API Layer & Repository Pattern in Frontend Architecture & Scalability.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize API Layer & Repository Pattern to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with API Layer & Repository Pattern.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about API Layer & Repository Pattern, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about API Layer & Repository Pattern, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does API Layer & Repository Pattern scale under extreme concurrency?",
+      "What monitoring tools can track API Layer & Repository Pattern metrics in production?"
+    ],
+    "followUps": [
+      "How does API Layer & Repository Pattern scale under extreme concurrency?",
+      "What monitoring tools can track API Layer & Repository Pattern metrics in production?"
+    ],
+    "question_hash": "qh_72ce0b83",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Frontend Architecture & Scalability, Feature-Sliced Architecture (FSD) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Feature-Sliced Architecture (FSD), not API Layer & Repository Pattern."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Frontend Architecture & Scalability, API Layer & Repository Pattern ensures predictable, resilient execution.",
+        "explanation": "Correct. In Frontend Architecture & Scalability, API Layer & Repository Pattern ensures predictable, resilient execution."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Frontend Architecture & Scalability, Error Boundaries & Fallback Strategies ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Error Boundaries & Fallback Strategies, not API Layer & Repository Pattern."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Frontend Architecture & Scalability, Monorepos & Workspace Tooling ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Monorepos & Workspace Tooling, not API Layer & Repository Pattern."
+      }
+    ],
+    "correctAnswer": "B",
+    "correctOption": "B",
+    "mcqExplanation": "Correct. In Frontend Architecture & Scalability, API Layer & Repository Pattern ensures predictable, resilient execution.",
+    "explanation": "Correct. In Frontend Architecture & Scalability, API Layer & Repository Pattern ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Feature-Sliced Architecture (FSD), not API Layer & Repository Pattern.",
+      "C": "Incorrect. This describes Error Boundaries & Fallback Strategies, not API Layer & Repository Pattern.",
+      "D": "Incorrect. This describes Monorepos & Workspace Tooling, not API Layer & Repository Pattern."
+    },
+    "mcqQuestion": "Frontend Architecture & Scalability: How does API Layer & Repository Pattern operate in production enterprise applications (Q18)?"
+  },
+  {
+    "id": "iq-frontend-architecture-0019",
+    "standard_id": "FRONTENDARCHITECTURE-MCQ-000019",
+    "questionNumber": 19,
+    "subject": "frontend-architecture",
+    "category": "Error Boundaries & Fallback Strategies",
+    "topic": "Error Boundaries & Fallback Strategies",
+    "subtopic": "Error Boundaries & Fallback Strategies Operations",
+    "concept": "Error Boundaries & Fallback Strategies",
+    "difficulty": "INTERMEDIATE",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "1_3_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "frontend-architecture",
+      "error-boundaries---fallback-strategies",
+      "frontend-interview"
+    ],
+    "question": "Frontend Architecture & Scalability: How does Error Boundaries & Fallback Strategies operate in production enterprise applications (Q19)?",
+    "shortAnswer": "In Frontend Architecture & Scalability, Error Boundaries & Fallback Strategies ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Error Boundaries & Fallback Strategies** is an essential architectural concept in <u>Frontend Architecture & Scalability</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Error Boundaries & Fallback Strategies** is an essential architectural concept in <u>Frontend Architecture & Scalability</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Error Boundaries & Fallback Strategies** is an essential architectural concept in <u>Frontend Architecture & Scalability</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Error Boundaries & Fallback Strategies in Frontend Architecture & Scalability:\nexport function handleErrorBoundariesFallbackStrategies(config) {\n  console.log('Executing Error Boundaries & Fallback Strategies with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Error Boundaries & Fallback Strategies in Frontend Architecture & Scalability:\nexport function handleErrorBoundariesFallbackStrategies(config) {\n  console.log('Executing Error Boundaries & Fallback Strategies with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Error Boundaries & Fallback Strategies in Frontend Architecture & Scalability:\nexport function handleErrorBoundariesFallbackStrategies(config) {\n  console.log('Executing Error Boundaries & Fallback Strategies with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Error Boundaries & Fallback Strategies in Frontend Architecture & Scalability.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Error Boundaries & Fallback Strategies to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Error Boundaries & Fallback Strategies.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Error Boundaries & Fallback Strategies, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Error Boundaries & Fallback Strategies, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Error Boundaries & Fallback Strategies scale under extreme concurrency?",
+      "What monitoring tools can track Error Boundaries & Fallback Strategies metrics in production?"
+    ],
+    "followUps": [
+      "How does Error Boundaries & Fallback Strategies scale under extreme concurrency?",
+      "What monitoring tools can track Error Boundaries & Fallback Strategies metrics in production?"
+    ],
+    "question_hash": "qh_7a9a4182",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Frontend Architecture & Scalability, Monorepos & Workspace Tooling ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Monorepos & Workspace Tooling, not Error Boundaries & Fallback Strategies."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Frontend Architecture & Scalability, Design System Governance ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Design System Governance, not Error Boundaries & Fallback Strategies."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Frontend Architecture & Scalability, Error Boundaries & Fallback Strategies ensures predictable, resilient execution.",
+        "explanation": "Correct. In Frontend Architecture & Scalability, Error Boundaries & Fallback Strategies ensures predictable, resilient execution."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Frontend Architecture & Scalability, API Layer & Repository Pattern ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes API Layer & Repository Pattern, not Error Boundaries & Fallback Strategies."
+      }
+    ],
+    "correctAnswer": "C",
+    "mcqExplanation": "Correct. In Frontend Architecture & Scalability, Error Boundaries & Fallback Strategies ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Monorepos & Workspace Tooling, not Error Boundaries & Fallback Strategies.",
+      "B": "Incorrect. This describes Design System Governance, not Error Boundaries & Fallback Strategies.",
+      "D": "Incorrect. This describes API Layer & Repository Pattern, not Error Boundaries & Fallback Strategies."
+    },
+    "correctOption": "C",
+    "explanation": "Correct. In Frontend Architecture & Scalability, Error Boundaries & Fallback Strategies ensures predictable, resilient execution.",
+    "mcqQuestion": "Frontend Architecture & Scalability: How does Error Boundaries & Fallback Strategies operate in production enterprise applications (Q19)?"
+  },
+  {
+    "id": "iq-frontend-architecture-0020",
+    "standard_id": "FRONTENDARCHITECTURE-MCQ-000020",
+    "questionNumber": 20,
+    "subject": "frontend-architecture",
+    "category": "Design System Governance",
+    "topic": "Design System Governance",
+    "subtopic": "Design System Governance Operations",
+    "concept": "Design System Governance",
+    "difficulty": "DIFFICULT",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "3_5_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "frontend-architecture",
+      "design-system-governance",
+      "frontend-interview"
+    ],
+    "question": "Frontend Architecture & Scalability: How does Design System Governance operate in production enterprise applications (Q20)?",
+    "shortAnswer": "In Frontend Architecture & Scalability, Design System Governance ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Design System Governance** is an essential architectural concept in <u>Frontend Architecture & Scalability</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Design System Governance** is an essential architectural concept in <u>Frontend Architecture & Scalability</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Design System Governance** is an essential architectural concept in <u>Frontend Architecture & Scalability</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Design System Governance in Frontend Architecture & Scalability:\nexport function handleDesignSystemGovernance(config) {\n  console.log('Executing Design System Governance with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Design System Governance in Frontend Architecture & Scalability:\nexport function handleDesignSystemGovernance(config) {\n  console.log('Executing Design System Governance with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Design System Governance in Frontend Architecture & Scalability:\nexport function handleDesignSystemGovernance(config) {\n  console.log('Executing Design System Governance with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Design System Governance in Frontend Architecture & Scalability.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Design System Governance to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Design System Governance.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Design System Governance, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Design System Governance, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Design System Governance scale under extreme concurrency?",
+      "What monitoring tools can track Design System Governance metrics in production?"
+    ],
+    "followUps": [
+      "How does Design System Governance scale under extreme concurrency?",
+      "What monitoring tools can track Design System Governance metrics in production?"
+    ],
+    "question_hash": "qh_42ed7b1c",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Frontend Architecture & Scalability, API Layer & Repository Pattern ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes API Layer & Repository Pattern, not Design System Governance."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Frontend Architecture & Scalability, Feature-Sliced Architecture (FSD) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Feature-Sliced Architecture (FSD), not Design System Governance."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Frontend Architecture & Scalability, Error Boundaries & Fallback Strategies ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Error Boundaries & Fallback Strategies, not Design System Governance."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Frontend Architecture & Scalability, Design System Governance ensures predictable, resilient execution.",
+        "explanation": "Correct. In Frontend Architecture & Scalability, Design System Governance ensures predictable, resilient execution."
+      }
+    ],
+    "correctAnswer": "D",
+    "correctOption": "D",
+    "mcqExplanation": "Correct. In Frontend Architecture & Scalability, Design System Governance ensures predictable, resilient execution.",
+    "explanation": "Correct. In Frontend Architecture & Scalability, Design System Governance ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes API Layer & Repository Pattern, not Design System Governance.",
+      "B": "Incorrect. This describes Feature-Sliced Architecture (FSD), not Design System Governance.",
+      "C": "Incorrect. This describes Error Boundaries & Fallback Strategies, not Design System Governance."
+    },
+    "mcqQuestion": "Frontend Architecture & Scalability: How does Design System Governance operate in production enterprise applications (Q20)?"
+  },
+  {
+    "id": "iq-frontend-architecture-0021",
+    "standard_id": "FRONTENDARCHITECTURE-MCQ-000021",
+    "questionNumber": 21,
+    "subject": "frontend-architecture",
+    "category": "Feature-Sliced Architecture (FSD)",
+    "topic": "Feature-Sliced Architecture (FSD)",
+    "subtopic": "Feature-Sliced Architecture (FSD) Operations",
+    "concept": "Feature-Sliced Architecture (FSD)",
+    "difficulty": "EASY",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "FRESHER",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "frontend-architecture",
+      "feature-sliced-architecture--fsd-",
+      "frontend-interview"
+    ],
+    "question": "Frontend Architecture & Scalability: How does Feature-Sliced Architecture (FSD) operate in production enterprise applications (Q21)?",
+    "shortAnswer": "In Frontend Architecture & Scalability, Feature-Sliced Architecture (FSD) ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Feature-Sliced Architecture (FSD)** is an essential architectural concept in <u>Frontend Architecture & Scalability</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Feature-Sliced Architecture (FSD)** is an essential architectural concept in <u>Frontend Architecture & Scalability</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Feature-Sliced Architecture (FSD)** is an essential architectural concept in <u>Frontend Architecture & Scalability</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Feature-Sliced Architecture (FSD) in Frontend Architecture & Scalability:\nexport function handleFeatureSlicedArchitectureFSD(config) {\n  console.log('Executing Feature-Sliced Architecture (FSD) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Feature-Sliced Architecture (FSD) in Frontend Architecture & Scalability:\nexport function handleFeatureSlicedArchitectureFSD(config) {\n  console.log('Executing Feature-Sliced Architecture (FSD) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Feature-Sliced Architecture (FSD) in Frontend Architecture & Scalability:\nexport function handleFeatureSlicedArchitectureFSD(config) {\n  console.log('Executing Feature-Sliced Architecture (FSD) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Feature-Sliced Architecture (FSD) in Frontend Architecture & Scalability.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Feature-Sliced Architecture (FSD) to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Feature-Sliced Architecture (FSD).",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Feature-Sliced Architecture (FSD), explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Feature-Sliced Architecture (FSD), explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Feature-Sliced Architecture (FSD) scale under extreme concurrency?",
+      "What monitoring tools can track Feature-Sliced Architecture (FSD) metrics in production?"
+    ],
+    "followUps": [
+      "How does Feature-Sliced Architecture (FSD) scale under extreme concurrency?",
+      "What monitoring tools can track Feature-Sliced Architecture (FSD) metrics in production?"
+    ],
+    "question_hash": "qh_47b17437",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Frontend Architecture & Scalability, Feature-Sliced Architecture (FSD) ensures predictable, resilient execution.",
+        "explanation": "Correct. In Frontend Architecture & Scalability, Feature-Sliced Architecture (FSD) ensures predictable, resilient execution."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Frontend Architecture & Scalability, Error Boundaries & Fallback Strategies ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Error Boundaries & Fallback Strategies, not Feature-Sliced Architecture (FSD)."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Frontend Architecture & Scalability, Monorepos & Workspace Tooling ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Monorepos & Workspace Tooling, not Feature-Sliced Architecture (FSD)."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Frontend Architecture & Scalability, Design System Governance ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Design System Governance, not Feature-Sliced Architecture (FSD)."
+      }
+    ],
+    "correctAnswer": "A",
+    "mcqExplanation": "Correct. In Frontend Architecture & Scalability, Feature-Sliced Architecture (FSD) ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "B": "Incorrect. This describes Error Boundaries & Fallback Strategies, not Feature-Sliced Architecture (FSD).",
+      "C": "Incorrect. This describes Monorepos & Workspace Tooling, not Feature-Sliced Architecture (FSD).",
+      "D": "Incorrect. This describes Design System Governance, not Feature-Sliced Architecture (FSD)."
+    },
+    "correctOption": "A",
+    "explanation": "Correct. In Frontend Architecture & Scalability, Feature-Sliced Architecture (FSD) ensures predictable, resilient execution.",
+    "mcqQuestion": "Frontend Architecture & Scalability: How does Feature-Sliced Architecture (FSD) operate in production enterprise applications (Q21)?"
+  },
+  {
+    "id": "iq-frontend-architecture-0022",
+    "standard_id": "FRONTENDARCHITECTURE-MCQ-000022",
+    "questionNumber": 22,
+    "subject": "frontend-architecture",
+    "category": "Monorepos & Workspace Tooling",
+    "topic": "Monorepos & Workspace Tooling",
+    "subtopic": "Monorepos & Workspace Tooling Operations",
+    "concept": "Monorepos & Workspace Tooling",
+    "difficulty": "INTERMEDIATE",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "1_3_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "frontend-architecture",
+      "monorepos---workspace-tooling",
+      "frontend-interview"
+    ],
+    "question": "Frontend Architecture & Scalability: How does Monorepos & Workspace Tooling operate in production enterprise applications (Q22)?",
+    "shortAnswer": "In Frontend Architecture & Scalability, Monorepos & Workspace Tooling ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Monorepos & Workspace Tooling** is an essential architectural concept in <u>Frontend Architecture & Scalability</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Monorepos & Workspace Tooling** is an essential architectural concept in <u>Frontend Architecture & Scalability</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Monorepos & Workspace Tooling** is an essential architectural concept in <u>Frontend Architecture & Scalability</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Monorepos & Workspace Tooling in Frontend Architecture & Scalability:\nexport function handleMonoreposWorkspaceTooling(config) {\n  console.log('Executing Monorepos & Workspace Tooling with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Monorepos & Workspace Tooling in Frontend Architecture & Scalability:\nexport function handleMonoreposWorkspaceTooling(config) {\n  console.log('Executing Monorepos & Workspace Tooling with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Monorepos & Workspace Tooling in Frontend Architecture & Scalability:\nexport function handleMonoreposWorkspaceTooling(config) {\n  console.log('Executing Monorepos & Workspace Tooling with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Monorepos & Workspace Tooling in Frontend Architecture & Scalability.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Monorepos & Workspace Tooling to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Monorepos & Workspace Tooling.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Monorepos & Workspace Tooling, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Monorepos & Workspace Tooling, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Monorepos & Workspace Tooling scale under extreme concurrency?",
+      "What monitoring tools can track Monorepos & Workspace Tooling metrics in production?"
+    ],
+    "followUps": [
+      "How does Monorepos & Workspace Tooling scale under extreme concurrency?",
+      "What monitoring tools can track Monorepos & Workspace Tooling metrics in production?"
+    ],
+    "question_hash": "qh_46081598",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Frontend Architecture & Scalability, Design System Governance ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Design System Governance, not Monorepos & Workspace Tooling."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Frontend Architecture & Scalability, Monorepos & Workspace Tooling ensures predictable, resilient execution.",
+        "explanation": "Correct. In Frontend Architecture & Scalability, Monorepos & Workspace Tooling ensures predictable, resilient execution."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Frontend Architecture & Scalability, API Layer & Repository Pattern ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes API Layer & Repository Pattern, not Monorepos & Workspace Tooling."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "Feature-Sliced Design is an architectural methodology for frontend apps that organizes code into standardized hierarchical layers (app, pages, widgets, features, entities, shared).",
+        "explanation": "Incorrect. This describes Layers, Slices, Segments & Public API Exports, not Monorepos & Workspace Tooling."
+      }
+    ],
+    "correctAnswer": "B",
+    "correctOption": "B",
+    "mcqExplanation": "Correct. In Frontend Architecture & Scalability, Monorepos & Workspace Tooling ensures predictable, resilient execution.",
+    "explanation": "Correct. In Frontend Architecture & Scalability, Monorepos & Workspace Tooling ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Design System Governance, not Monorepos & Workspace Tooling.",
+      "C": "Incorrect. This describes API Layer & Repository Pattern, not Monorepos & Workspace Tooling.",
+      "D": "Incorrect. This describes Layers, Slices, Segments & Public API Exports, not Monorepos & Workspace Tooling."
+    },
+    "mcqQuestion": "Frontend Architecture & Scalability: How does Monorepos & Workspace Tooling operate in production enterprise applications (Q22)?"
+  },
+  {
+    "id": "iq-frontend-architecture-0023",
+    "standard_id": "FRONTENDARCHITECTURE-MCQ-000023",
+    "questionNumber": 23,
+    "subject": "frontend-architecture",
+    "category": "API Layer & Repository Pattern",
+    "topic": "API Layer & Repository Pattern",
+    "subtopic": "API Layer & Repository Pattern Operations",
+    "concept": "API Layer & Repository Pattern",
+    "difficulty": "DIFFICULT",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "3_5_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "frontend-architecture",
+      "api-layer---repository-pattern",
+      "frontend-interview"
+    ],
+    "question": "Frontend Architecture & Scalability: How does API Layer & Repository Pattern operate in production enterprise applications (Q23)?",
+    "shortAnswer": "In Frontend Architecture & Scalability, API Layer & Repository Pattern ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**API Layer & Repository Pattern** is an essential architectural concept in <u>Frontend Architecture & Scalability</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**API Layer & Repository Pattern** is an essential architectural concept in <u>Frontend Architecture & Scalability</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**API Layer & Repository Pattern** is an essential architectural concept in <u>Frontend Architecture & Scalability</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for API Layer & Repository Pattern in Frontend Architecture & Scalability:\nexport function handleAPILayerRepositoryPattern(config) {\n  console.log('Executing API Layer & Repository Pattern with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for API Layer & Repository Pattern in Frontend Architecture & Scalability:\nexport function handleAPILayerRepositoryPattern(config) {\n  console.log('Executing API Layer & Repository Pattern with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for API Layer & Repository Pattern in Frontend Architecture & Scalability:\nexport function handleAPILayerRepositoryPattern(config) {\n  console.log('Executing API Layer & Repository Pattern with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of API Layer & Repository Pattern in Frontend Architecture & Scalability.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize API Layer & Repository Pattern to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with API Layer & Repository Pattern.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about API Layer & Repository Pattern, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about API Layer & Repository Pattern, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does API Layer & Repository Pattern scale under extreme concurrency?",
+      "What monitoring tools can track API Layer & Repository Pattern metrics in production?"
+    ],
+    "followUps": [
+      "How does API Layer & Repository Pattern scale under extreme concurrency?",
+      "What monitoring tools can track API Layer & Repository Pattern metrics in production?"
+    ],
+    "question_hash": "qh_72ce0b69",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Frontend Architecture & Scalability, Feature-Sliced Architecture (FSD) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Feature-Sliced Architecture (FSD), not API Layer & Repository Pattern."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Frontend Architecture & Scalability, Error Boundaries & Fallback Strategies ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Error Boundaries & Fallback Strategies, not API Layer & Repository Pattern."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Frontend Architecture & Scalability, API Layer & Repository Pattern ensures predictable, resilient execution.",
+        "explanation": "Correct. In Frontend Architecture & Scalability, API Layer & Repository Pattern ensures predictable, resilient execution."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Frontend Architecture & Scalability, Monorepos & Workspace Tooling ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Monorepos & Workspace Tooling, not API Layer & Repository Pattern."
+      }
+    ],
+    "correctAnswer": "C",
+    "mcqExplanation": "Correct. In Frontend Architecture & Scalability, API Layer & Repository Pattern ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Feature-Sliced Architecture (FSD), not API Layer & Repository Pattern.",
+      "B": "Incorrect. This describes Error Boundaries & Fallback Strategies, not API Layer & Repository Pattern.",
+      "D": "Incorrect. This describes Monorepos & Workspace Tooling, not API Layer & Repository Pattern."
+    },
+    "correctOption": "C",
+    "explanation": "Correct. In Frontend Architecture & Scalability, API Layer & Repository Pattern ensures predictable, resilient execution.",
+    "mcqQuestion": "Frontend Architecture & Scalability: How does API Layer & Repository Pattern operate in production enterprise applications (Q23)?"
+  },
+  {
+    "id": "iq-frontend-architecture-0024",
+    "standard_id": "FRONTENDARCHITECTURE-MCQ-000024",
+    "questionNumber": 24,
+    "subject": "frontend-architecture",
+    "category": "Error Boundaries & Fallback Strategies",
+    "topic": "Error Boundaries & Fallback Strategies",
+    "subtopic": "Error Boundaries & Fallback Strategies Operations",
+    "concept": "Error Boundaries & Fallback Strategies",
+    "difficulty": "EASY",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "FRESHER",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "frontend-architecture",
+      "error-boundaries---fallback-strategies",
+      "frontend-interview"
+    ],
+    "question": "Frontend Architecture & Scalability: How does Error Boundaries & Fallback Strategies operate in production enterprise applications (Q24)?",
+    "shortAnswer": "In Frontend Architecture & Scalability, Error Boundaries & Fallback Strategies ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Error Boundaries & Fallback Strategies** is an essential architectural concept in <u>Frontend Architecture & Scalability</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Error Boundaries & Fallback Strategies** is an essential architectural concept in <u>Frontend Architecture & Scalability</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Error Boundaries & Fallback Strategies** is an essential architectural concept in <u>Frontend Architecture & Scalability</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Error Boundaries & Fallback Strategies in Frontend Architecture & Scalability:\nexport function handleErrorBoundariesFallbackStrategies(config) {\n  console.log('Executing Error Boundaries & Fallback Strategies with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Error Boundaries & Fallback Strategies in Frontend Architecture & Scalability:\nexport function handleErrorBoundariesFallbackStrategies(config) {\n  console.log('Executing Error Boundaries & Fallback Strategies with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Error Boundaries & Fallback Strategies in Frontend Architecture & Scalability:\nexport function handleErrorBoundariesFallbackStrategies(config) {\n  console.log('Executing Error Boundaries & Fallback Strategies with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Error Boundaries & Fallback Strategies in Frontend Architecture & Scalability.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Error Boundaries & Fallback Strategies to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Error Boundaries & Fallback Strategies.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Error Boundaries & Fallback Strategies, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Error Boundaries & Fallback Strategies, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Error Boundaries & Fallback Strategies scale under extreme concurrency?",
+      "What monitoring tools can track Error Boundaries & Fallback Strategies metrics in production?"
+    ],
+    "followUps": [
+      "How does Error Boundaries & Fallback Strategies scale under extreme concurrency?",
+      "What monitoring tools can track Error Boundaries & Fallback Strategies metrics in production?"
+    ],
+    "question_hash": "qh_7a9a4168",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Frontend Architecture & Scalability, Monorepos & Workspace Tooling ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Monorepos & Workspace Tooling, not Error Boundaries & Fallback Strategies."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Frontend Architecture & Scalability, Design System Governance ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Design System Governance, not Error Boundaries & Fallback Strategies."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Frontend Architecture & Scalability, API Layer & Repository Pattern ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes API Layer & Repository Pattern, not Error Boundaries & Fallback Strategies."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Frontend Architecture & Scalability, Error Boundaries & Fallback Strategies ensures predictable, resilient execution.",
+        "explanation": "Correct. In Frontend Architecture & Scalability, Error Boundaries & Fallback Strategies ensures predictable, resilient execution."
+      }
+    ],
+    "correctAnswer": "D",
+    "correctOption": "D",
+    "mcqExplanation": "Correct. In Frontend Architecture & Scalability, Error Boundaries & Fallback Strategies ensures predictable, resilient execution.",
+    "explanation": "Correct. In Frontend Architecture & Scalability, Error Boundaries & Fallback Strategies ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Monorepos & Workspace Tooling, not Error Boundaries & Fallback Strategies.",
+      "B": "Incorrect. This describes Design System Governance, not Error Boundaries & Fallback Strategies.",
+      "C": "Incorrect. This describes API Layer & Repository Pattern, not Error Boundaries & Fallback Strategies."
+    },
+    "mcqQuestion": "Frontend Architecture & Scalability: How does Error Boundaries & Fallback Strategies operate in production enterprise applications (Q24)?"
+  },
+  {
+    "id": "iq-frontend-architecture-0025",
+    "standard_id": "FRONTENDARCHITECTURE-MCQ-000025",
+    "questionNumber": 25,
+    "subject": "frontend-architecture",
+    "category": "Design System Governance",
+    "topic": "Design System Governance",
+    "subtopic": "Design System Governance Operations",
+    "concept": "Design System Governance",
+    "difficulty": "INTERMEDIATE",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "1_3_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "frontend-architecture",
+      "design-system-governance",
+      "frontend-interview"
+    ],
+    "question": "Frontend Architecture & Scalability: How does Design System Governance operate in production enterprise applications (Q25)?",
+    "shortAnswer": "In Frontend Architecture & Scalability, Design System Governance ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Design System Governance** is an essential architectural concept in <u>Frontend Architecture & Scalability</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Design System Governance** is an essential architectural concept in <u>Frontend Architecture & Scalability</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Design System Governance** is an essential architectural concept in <u>Frontend Architecture & Scalability</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Design System Governance in Frontend Architecture & Scalability:\nexport function handleDesignSystemGovernance(config) {\n  console.log('Executing Design System Governance with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Design System Governance in Frontend Architecture & Scalability:\nexport function handleDesignSystemGovernance(config) {\n  console.log('Executing Design System Governance with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Design System Governance in Frontend Architecture & Scalability:\nexport function handleDesignSystemGovernance(config) {\n  console.log('Executing Design System Governance with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Design System Governance in Frontend Architecture & Scalability.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Design System Governance to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Design System Governance.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Design System Governance, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Design System Governance, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Design System Governance scale under extreme concurrency?",
+      "What monitoring tools can track Design System Governance metrics in production?"
+    ],
+    "followUps": [
+      "How does Design System Governance scale under extreme concurrency?",
+      "What monitoring tools can track Design System Governance metrics in production?"
+    ],
+    "question_hash": "qh_42ed7b21",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Frontend Architecture & Scalability, Design System Governance ensures predictable, resilient execution.",
+        "explanation": "Correct. In Frontend Architecture & Scalability, Design System Governance ensures predictable, resilient execution."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Frontend Architecture & Scalability, API Layer & Repository Pattern ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes API Layer & Repository Pattern, not Design System Governance."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "Feature-Sliced Design is an architectural methodology for frontend apps that organizes code into standardized hierarchical layers (app, pages, widgets, features, entities, shared).",
+        "explanation": "Incorrect. This describes Layers, Slices, Segments & Public API Exports, not Design System Governance."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Frontend Architecture & Scalability, Error Boundaries & Fallback Strategies ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Error Boundaries & Fallback Strategies, not Design System Governance."
+      }
+    ],
+    "correctAnswer": "A",
+    "mcqExplanation": "Correct. In Frontend Architecture & Scalability, Design System Governance ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "B": "Incorrect. This describes API Layer & Repository Pattern, not Design System Governance.",
+      "C": "Incorrect. This describes Layers, Slices, Segments & Public API Exports, not Design System Governance.",
+      "D": "Incorrect. This describes Error Boundaries & Fallback Strategies, not Design System Governance."
+    },
+    "correctOption": "A",
+    "explanation": "Correct. In Frontend Architecture & Scalability, Design System Governance ensures predictable, resilient execution.",
+    "mcqQuestion": "Frontend Architecture & Scalability: How does Design System Governance operate in production enterprise applications (Q25)?"
+  },
+  {
+    "id": "iq-frontend-architecture-0026",
+    "standard_id": "FRONTENDARCHITECTURE-MCQ-000026",
+    "questionNumber": 26,
+    "subject": "frontend-architecture",
+    "category": "Feature-Sliced Architecture (FSD)",
+    "topic": "Feature-Sliced Architecture (FSD)",
+    "subtopic": "Feature-Sliced Architecture (FSD) Operations",
+    "concept": "Feature-Sliced Architecture (FSD)",
+    "difficulty": "DIFFICULT",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "3_5_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "frontend-architecture",
+      "feature-sliced-architecture--fsd-",
+      "frontend-interview"
+    ],
+    "question": "Frontend Architecture & Scalability: How does Feature-Sliced Architecture (FSD) operate in production enterprise applications (Q26)?",
+    "shortAnswer": "In Frontend Architecture & Scalability, Feature-Sliced Architecture (FSD) ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Feature-Sliced Architecture (FSD)** is an essential architectural concept in <u>Frontend Architecture & Scalability</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Feature-Sliced Architecture (FSD)** is an essential architectural concept in <u>Frontend Architecture & Scalability</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Feature-Sliced Architecture (FSD)** is an essential architectural concept in <u>Frontend Architecture & Scalability</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Feature-Sliced Architecture (FSD) in Frontend Architecture & Scalability:\nexport function handleFeatureSlicedArchitectureFSD(config) {\n  console.log('Executing Feature-Sliced Architecture (FSD) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Feature-Sliced Architecture (FSD) in Frontend Architecture & Scalability:\nexport function handleFeatureSlicedArchitectureFSD(config) {\n  console.log('Executing Feature-Sliced Architecture (FSD) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Feature-Sliced Architecture (FSD) in Frontend Architecture & Scalability:\nexport function handleFeatureSlicedArchitectureFSD(config) {\n  console.log('Executing Feature-Sliced Architecture (FSD) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Feature-Sliced Architecture (FSD) in Frontend Architecture & Scalability.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Feature-Sliced Architecture (FSD) to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Feature-Sliced Architecture (FSD).",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Feature-Sliced Architecture (FSD), explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Feature-Sliced Architecture (FSD), explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Feature-Sliced Architecture (FSD) scale under extreme concurrency?",
+      "What monitoring tools can track Feature-Sliced Architecture (FSD) metrics in production?"
+    ],
+    "followUps": [
+      "How does Feature-Sliced Architecture (FSD) scale under extreme concurrency?",
+      "What monitoring tools can track Feature-Sliced Architecture (FSD) metrics in production?"
+    ],
+    "question_hash": "qh_47b17432",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Frontend Architecture & Scalability, Error Boundaries & Fallback Strategies ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Error Boundaries & Fallback Strategies, not Feature-Sliced Architecture (FSD)."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Frontend Architecture & Scalability, Feature-Sliced Architecture (FSD) ensures predictable, resilient execution.",
+        "explanation": "Correct. In Frontend Architecture & Scalability, Feature-Sliced Architecture (FSD) ensures predictable, resilient execution."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Frontend Architecture & Scalability, Monorepos & Workspace Tooling ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Monorepos & Workspace Tooling, not Feature-Sliced Architecture (FSD)."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Frontend Architecture & Scalability, Design System Governance ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Design System Governance, not Feature-Sliced Architecture (FSD)."
+      }
+    ],
+    "correctAnswer": "B",
+    "correctOption": "B",
+    "mcqExplanation": "Correct. In Frontend Architecture & Scalability, Feature-Sliced Architecture (FSD) ensures predictable, resilient execution.",
+    "explanation": "Correct. In Frontend Architecture & Scalability, Feature-Sliced Architecture (FSD) ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Error Boundaries & Fallback Strategies, not Feature-Sliced Architecture (FSD).",
+      "C": "Incorrect. This describes Monorepos & Workspace Tooling, not Feature-Sliced Architecture (FSD).",
+      "D": "Incorrect. This describes Design System Governance, not Feature-Sliced Architecture (FSD)."
+    },
+    "mcqQuestion": "Frontend Architecture & Scalability: How does Feature-Sliced Architecture (FSD) operate in production enterprise applications (Q26)?"
+  },
+  {
+    "id": "iq-frontend-architecture-0027",
+    "standard_id": "FRONTENDARCHITECTURE-MCQ-000027",
+    "questionNumber": 27,
+    "subject": "frontend-architecture",
+    "category": "Monorepos & Workspace Tooling",
+    "topic": "Monorepos & Workspace Tooling",
+    "subtopic": "Monorepos & Workspace Tooling Operations",
+    "concept": "Monorepos & Workspace Tooling",
+    "difficulty": "EASY",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "FRESHER",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "frontend-architecture",
+      "monorepos---workspace-tooling",
+      "frontend-interview"
+    ],
+    "question": "Frontend Architecture & Scalability: How does Monorepos & Workspace Tooling operate in production enterprise applications (Q27)?",
+    "shortAnswer": "In Frontend Architecture & Scalability, Monorepos & Workspace Tooling ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Monorepos & Workspace Tooling** is an essential architectural concept in <u>Frontend Architecture & Scalability</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Monorepos & Workspace Tooling** is an essential architectural concept in <u>Frontend Architecture & Scalability</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Monorepos & Workspace Tooling** is an essential architectural concept in <u>Frontend Architecture & Scalability</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Monorepos & Workspace Tooling in Frontend Architecture & Scalability:\nexport function handleMonoreposWorkspaceTooling(config) {\n  console.log('Executing Monorepos & Workspace Tooling with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Monorepos & Workspace Tooling in Frontend Architecture & Scalability:\nexport function handleMonoreposWorkspaceTooling(config) {\n  console.log('Executing Monorepos & Workspace Tooling with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Monorepos & Workspace Tooling in Frontend Architecture & Scalability:\nexport function handleMonoreposWorkspaceTooling(config) {\n  console.log('Executing Monorepos & Workspace Tooling with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Monorepos & Workspace Tooling in Frontend Architecture & Scalability.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Monorepos & Workspace Tooling to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Monorepos & Workspace Tooling.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Monorepos & Workspace Tooling, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Monorepos & Workspace Tooling, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Monorepos & Workspace Tooling scale under extreme concurrency?",
+      "What monitoring tools can track Monorepos & Workspace Tooling metrics in production?"
+    ],
+    "followUps": [
+      "How does Monorepos & Workspace Tooling scale under extreme concurrency?",
+      "What monitoring tools can track Monorepos & Workspace Tooling metrics in production?"
+    ],
+    "question_hash": "qh_46081593",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Frontend Architecture & Scalability, Design System Governance ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Design System Governance, not Monorepos & Workspace Tooling."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Frontend Architecture & Scalability, API Layer & Repository Pattern ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes API Layer & Repository Pattern, not Monorepos & Workspace Tooling."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Frontend Architecture & Scalability, Monorepos & Workspace Tooling ensures predictable, resilient execution.",
+        "explanation": "Correct. In Frontend Architecture & Scalability, Monorepos & Workspace Tooling ensures predictable, resilient execution."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Frontend Architecture & Scalability, Feature-Sliced Architecture (FSD) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Feature-Sliced Architecture (FSD), not Monorepos & Workspace Tooling."
+      }
+    ],
+    "correctAnswer": "C",
+    "mcqExplanation": "Correct. In Frontend Architecture & Scalability, Monorepos & Workspace Tooling ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Design System Governance, not Monorepos & Workspace Tooling.",
+      "B": "Incorrect. This describes API Layer & Repository Pattern, not Monorepos & Workspace Tooling.",
+      "D": "Incorrect. This describes Feature-Sliced Architecture (FSD), not Monorepos & Workspace Tooling."
+    },
+    "correctOption": "C",
+    "explanation": "Correct. In Frontend Architecture & Scalability, Monorepos & Workspace Tooling ensures predictable, resilient execution.",
+    "mcqQuestion": "Frontend Architecture & Scalability: How does Monorepos & Workspace Tooling operate in production enterprise applications (Q27)?"
+  },
+  {
+    "id": "iq-frontend-architecture-0028",
+    "standard_id": "FRONTENDARCHITECTURE-MCQ-000028",
+    "questionNumber": 28,
+    "subject": "frontend-architecture",
+    "category": "API Layer & Repository Pattern",
+    "topic": "API Layer & Repository Pattern",
+    "subtopic": "API Layer & Repository Pattern Operations",
+    "concept": "API Layer & Repository Pattern",
+    "difficulty": "INTERMEDIATE",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "1_3_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "frontend-architecture",
+      "api-layer---repository-pattern",
+      "frontend-interview"
+    ],
+    "question": "Frontend Architecture & Scalability: How does API Layer & Repository Pattern operate in production enterprise applications (Q28)?",
+    "shortAnswer": "In Frontend Architecture & Scalability, API Layer & Repository Pattern ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**API Layer & Repository Pattern** is an essential architectural concept in <u>Frontend Architecture & Scalability</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**API Layer & Repository Pattern** is an essential architectural concept in <u>Frontend Architecture & Scalability</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**API Layer & Repository Pattern** is an essential architectural concept in <u>Frontend Architecture & Scalability</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for API Layer & Repository Pattern in Frontend Architecture & Scalability:\nexport function handleAPILayerRepositoryPattern(config) {\n  console.log('Executing API Layer & Repository Pattern with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for API Layer & Repository Pattern in Frontend Architecture & Scalability:\nexport function handleAPILayerRepositoryPattern(config) {\n  console.log('Executing API Layer & Repository Pattern with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for API Layer & Repository Pattern in Frontend Architecture & Scalability:\nexport function handleAPILayerRepositoryPattern(config) {\n  console.log('Executing API Layer & Repository Pattern with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of API Layer & Repository Pattern in Frontend Architecture & Scalability.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize API Layer & Repository Pattern to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with API Layer & Repository Pattern.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about API Layer & Repository Pattern, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about API Layer & Repository Pattern, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does API Layer & Repository Pattern scale under extreme concurrency?",
+      "What monitoring tools can track API Layer & Repository Pattern metrics in production?"
+    ],
+    "followUps": [
+      "How does API Layer & Repository Pattern scale under extreme concurrency?",
+      "What monitoring tools can track API Layer & Repository Pattern metrics in production?"
+    ],
+    "question_hash": "qh_72ce0b64",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "Feature-Sliced Design is an architectural methodology for frontend apps that organizes code into standardized hierarchical layers (app, pages, widgets, features, entities, shared).",
+        "explanation": "Incorrect. This describes Layers, Slices, Segments & Public API Exports, not API Layer & Repository Pattern."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Frontend Architecture & Scalability, Error Boundaries & Fallback Strategies ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Error Boundaries & Fallback Strategies, not API Layer & Repository Pattern."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Frontend Architecture & Scalability, Monorepos & Workspace Tooling ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Monorepos & Workspace Tooling, not API Layer & Repository Pattern."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Frontend Architecture & Scalability, API Layer & Repository Pattern ensures predictable, resilient execution.",
+        "explanation": "Correct. In Frontend Architecture & Scalability, API Layer & Repository Pattern ensures predictable, resilient execution."
+      }
+    ],
+    "correctAnswer": "D",
+    "correctOption": "D",
+    "mcqExplanation": "Correct. In Frontend Architecture & Scalability, API Layer & Repository Pattern ensures predictable, resilient execution.",
+    "explanation": "Correct. In Frontend Architecture & Scalability, API Layer & Repository Pattern ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Layers, Slices, Segments & Public API Exports, not API Layer & Repository Pattern.",
+      "B": "Incorrect. This describes Error Boundaries & Fallback Strategies, not API Layer & Repository Pattern.",
+      "C": "Incorrect. This describes Monorepos & Workspace Tooling, not API Layer & Repository Pattern."
+    },
+    "mcqQuestion": "Frontend Architecture & Scalability: How does API Layer & Repository Pattern operate in production enterprise applications (Q28)?"
+  },
+  {
+    "id": "iq-frontend-architecture-0029",
+    "standard_id": "FRONTENDARCHITECTURE-MCQ-000029",
+    "questionNumber": 29,
+    "subject": "frontend-architecture",
+    "category": "Error Boundaries & Fallback Strategies",
+    "topic": "Error Boundaries & Fallback Strategies",
+    "subtopic": "Error Boundaries & Fallback Strategies Operations",
+    "concept": "Error Boundaries & Fallback Strategies",
+    "difficulty": "DIFFICULT",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "3_5_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "frontend-architecture",
+      "error-boundaries---fallback-strategies",
+      "frontend-interview"
+    ],
+    "question": "Frontend Architecture & Scalability: How does Error Boundaries & Fallback Strategies operate in production enterprise applications (Q29)?",
+    "shortAnswer": "In Frontend Architecture & Scalability, Error Boundaries & Fallback Strategies ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Error Boundaries & Fallback Strategies** is an essential architectural concept in <u>Frontend Architecture & Scalability</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Error Boundaries & Fallback Strategies** is an essential architectural concept in <u>Frontend Architecture & Scalability</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Error Boundaries & Fallback Strategies** is an essential architectural concept in <u>Frontend Architecture & Scalability</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Error Boundaries & Fallback Strategies in Frontend Architecture & Scalability:\nexport function handleErrorBoundariesFallbackStrategies(config) {\n  console.log('Executing Error Boundaries & Fallback Strategies with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Error Boundaries & Fallback Strategies in Frontend Architecture & Scalability:\nexport function handleErrorBoundariesFallbackStrategies(config) {\n  console.log('Executing Error Boundaries & Fallback Strategies with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Error Boundaries & Fallback Strategies in Frontend Architecture & Scalability:\nexport function handleErrorBoundariesFallbackStrategies(config) {\n  console.log('Executing Error Boundaries & Fallback Strategies with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Error Boundaries & Fallback Strategies in Frontend Architecture & Scalability.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Error Boundaries & Fallback Strategies to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Error Boundaries & Fallback Strategies.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Error Boundaries & Fallback Strategies, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Error Boundaries & Fallback Strategies, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Error Boundaries & Fallback Strategies scale under extreme concurrency?",
+      "What monitoring tools can track Error Boundaries & Fallback Strategies metrics in production?"
+    ],
+    "followUps": [
+      "How does Error Boundaries & Fallback Strategies scale under extreme concurrency?",
+      "What monitoring tools can track Error Boundaries & Fallback Strategies metrics in production?"
+    ],
+    "question_hash": "qh_7a9a4163",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Frontend Architecture & Scalability, Error Boundaries & Fallback Strategies ensures predictable, resilient execution.",
+        "explanation": "Correct. In Frontend Architecture & Scalability, Error Boundaries & Fallback Strategies ensures predictable, resilient execution."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Frontend Architecture & Scalability, Monorepos & Workspace Tooling ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Monorepos & Workspace Tooling, not Error Boundaries & Fallback Strategies."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Frontend Architecture & Scalability, Design System Governance ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Design System Governance, not Error Boundaries & Fallback Strategies."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Frontend Architecture & Scalability, API Layer & Repository Pattern ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes API Layer & Repository Pattern, not Error Boundaries & Fallback Strategies."
+      }
+    ],
+    "correctAnswer": "A",
+    "mcqExplanation": "Correct. In Frontend Architecture & Scalability, Error Boundaries & Fallback Strategies ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "B": "Incorrect. This describes Monorepos & Workspace Tooling, not Error Boundaries & Fallback Strategies.",
+      "C": "Incorrect. This describes Design System Governance, not Error Boundaries & Fallback Strategies.",
+      "D": "Incorrect. This describes API Layer & Repository Pattern, not Error Boundaries & Fallback Strategies."
+    },
+    "correctOption": "A",
+    "explanation": "Correct. In Frontend Architecture & Scalability, Error Boundaries & Fallback Strategies ensures predictable, resilient execution.",
+    "mcqQuestion": "Frontend Architecture & Scalability: How does Error Boundaries & Fallback Strategies operate in production enterprise applications (Q29)?"
+  },
+  {
+    "id": "iq-frontend-architecture-0030",
+    "standard_id": "FRONTENDARCHITECTURE-MCQ-000030",
+    "questionNumber": 30,
+    "subject": "frontend-architecture",
+    "category": "Design System Governance",
+    "topic": "Design System Governance",
+    "subtopic": "Design System Governance Operations",
+    "concept": "Design System Governance",
+    "difficulty": "EASY",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "FRESHER",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "frontend-architecture",
+      "design-system-governance",
+      "frontend-interview"
+    ],
+    "question": "Frontend Architecture & Scalability: How does Design System Governance operate in production enterprise applications (Q30)?",
+    "shortAnswer": "In Frontend Architecture & Scalability, Design System Governance ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Design System Governance** is an essential architectural concept in <u>Frontend Architecture & Scalability</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Design System Governance** is an essential architectural concept in <u>Frontend Architecture & Scalability</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Design System Governance** is an essential architectural concept in <u>Frontend Architecture & Scalability</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Design System Governance in Frontend Architecture & Scalability:\nexport function handleDesignSystemGovernance(config) {\n  console.log('Executing Design System Governance with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Design System Governance in Frontend Architecture & Scalability:\nexport function handleDesignSystemGovernance(config) {\n  console.log('Executing Design System Governance with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Design System Governance in Frontend Architecture & Scalability:\nexport function handleDesignSystemGovernance(config) {\n  console.log('Executing Design System Governance with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Design System Governance in Frontend Architecture & Scalability.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Design System Governance to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Design System Governance.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Design System Governance, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Design System Governance, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Design System Governance scale under extreme concurrency?",
+      "What monitoring tools can track Design System Governance metrics in production?"
+    ],
+    "followUps": [
+      "How does Design System Governance scale under extreme concurrency?",
+      "What monitoring tools can track Design System Governance metrics in production?"
+    ],
+    "question_hash": "qh_42ed7b3b",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Frontend Architecture & Scalability, API Layer & Repository Pattern ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes API Layer & Repository Pattern, not Design System Governance."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Frontend Architecture & Scalability, Design System Governance ensures predictable, resilient execution.",
+        "explanation": "Correct. In Frontend Architecture & Scalability, Design System Governance ensures predictable, resilient execution."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Frontend Architecture & Scalability, Feature-Sliced Architecture (FSD) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Feature-Sliced Architecture (FSD), not Design System Governance."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Frontend Architecture & Scalability, Error Boundaries & Fallback Strategies ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Error Boundaries & Fallback Strategies, not Design System Governance."
+      }
+    ],
+    "correctAnswer": "B",
+    "correctOption": "B",
+    "mcqExplanation": "Correct. In Frontend Architecture & Scalability, Design System Governance ensures predictable, resilient execution.",
+    "explanation": "Correct. In Frontend Architecture & Scalability, Design System Governance ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes API Layer & Repository Pattern, not Design System Governance.",
+      "C": "Incorrect. This describes Feature-Sliced Architecture (FSD), not Design System Governance.",
+      "D": "Incorrect. This describes Error Boundaries & Fallback Strategies, not Design System Governance."
+    },
+    "mcqQuestion": "Frontend Architecture & Scalability: How does Design System Governance operate in production enterprise applications (Q30)?"
+  }
+]

@@ -1,0 +1,2756 @@
+[
+  {
+    "id": "iq-micro-frontends-0001",
+    "standard_id": "MICROFRONTENDS-MCQ-000001",
+    "questionNumber": 1,
+    "subject": "micro-frontends",
+    "category": "Module Federation Architecture",
+    "topic": "Module Federation Architecture",
+    "subtopic": "Host and Remote Container Orchestration",
+    "concept": "Host and Remote Container Orchestration",
+    "difficulty": "INTERMEDIATE",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "1_3_YEARS",
+    "isHighFrequency": true,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Netflix"
+    ],
+    "tags": [
+      "micro-frontends",
+      "frontend-interview",
+      "module-federation-architecture"
+    ],
+    "question": "What is Webpack 5 Module Federation and how does it enable micro frontend architecture?",
+    "shortAnswer": "Module Federation allows multiple independent Webpack builds to dynamically share code and render remote components at runtime without re-deploying the host application or publishing shared components as separate npm packages.",
+    "simpleExplanation": "Imagine a company with separate engineering teams for the **Navigation Header**, the **Shopping Cart**, and the **Search Page**.\n\nWith **Module Federation**, each team can develop and deploy their application independently.\n\nThe main website acts as a 'host' and loads the latest version of the cart from the team's server at runtime.",
+    "detailedAnswer": "Imagine a company with separate engineering teams for the **Navigation Header**, the **Shopping Cart**, and the **Search Page**.\n\nWith **Module Federation**, each team can develop and deploy their application independently.\n\nThe main website acts as a 'host' and loads the latest version of the cart from the team's server at runtime.",
+    "detailedExplanation": "Imagine a company with separate engineering teams for the **Navigation Header**, the **Shopping Cart**, and the **Search Page**.\n\nWith **Module Federation**, each team can develop and deploy their application independently.\n\nThe main website acts as a 'host' and loads the latest version of the cart from the team's server at runtime.",
+    "howItWorks": "1. The Remote app exposes components via `exposes: { './Button': './src/Button' }`.\n2. The Host app declares the remote entry URL via `remotes: { cart: 'cart@https://cdn.example.com/remoteEntry.js' }`.\n3. Common libraries like React and ReactDOM are shared as singletons to avoid duplicate bundle downloads.",
+    "codeExample": "// Host webpack.config.js:\nconst ModuleFederationPlugin = require('webpack/lib/container/ModuleFederationPlugin');\n\nmodule.exports = {\n  plugins: [\n    new ModuleFederationPlugin({\n      name: 'host_app',\n      remotes: {\n        cartApp: 'cartApp@https://cart.example.com/remoteEntry.js',\n      },\n      shared: { react: { singleton: true }, 'react-dom': { singleton: true } },\n    }),\n  ],\n};",
+    "example": "// Host webpack.config.js:\nconst ModuleFederationPlugin = require('webpack/lib/container/ModuleFederationPlugin');\n\nmodule.exports = {\n  plugins: [\n    new ModuleFederationPlugin({\n      name: 'host_app',\n      remotes: {\n        cartApp: 'cartApp@https://cart.example.com/remoteEntry.js',\n      },\n      shared: { react: { singleton: true }, 'react-dom': { singleton: true } },\n    }),\n  ],\n};",
+    "codeSnippet": "// Host webpack.config.js:\nconst ModuleFederationPlugin = require('webpack/lib/container/ModuleFederationPlugin');\n\nmodule.exports = {\n  plugins: [\n    new ModuleFederationPlugin({\n      name: 'host_app',\n      remotes: {\n        cartApp: 'cartApp@https://cart.example.com/remoteEntry.js',\n      },\n      shared: { react: { singleton: true }, 'react-dom': { singleton: true } },\n    }),\n  ],\n};",
+    "codeExplanationSpeech": "This code illustrates the architecture and implementation of Host and Remote Container Orchestration in modern frontend systems.",
+    "realWorldExample": "Amazon, Spotify, and IKEA use micro frontend architecture so thousands of engineers can push code to production dozens of times daily without stepping on other teams.",
+    "commonMistakes": [
+      "Over-engineering small or medium applications with micro frontends when a modular monolith is vastly simpler."
+    ],
+    "interviewTip": "Mention how shared singleton libraries prevent multiple copies of React from causing hook execution errors at runtime.",
+    "interviewTips": [
+      "Mention how shared singleton libraries prevent multiple copies of React from causing hook execution errors at runtime."
+    ],
+    "followUpQuestions": [
+      "How do you coordinate global routing across micro frontends?",
+      "What are the tradeoffs of iframes versus Module Federation?"
+    ],
+    "followUps": [
+      "How do you coordinate global routing across micro frontends?",
+      "What are the tradeoffs of iframes versus Module Federation?"
+    ],
+    "question_hash": "qh_3b22508",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "text": "It provides standardized, predictable behavior for Host and Remote Container Orchestration across all client environments.",
+        "explanation": "Correct. Follows modern web platform and architectural specifications."
+      },
+      {
+        "key": "B",
+        "text": "It bypasses the browser JavaScript runtime and executes as machine code on the GPU.",
+        "explanation": "Incorrect. Frontend code executes within the browser engine thread."
+      },
+      {
+        "key": "C",
+        "text": "It disables all browser caching and forces fresh HTTP 1.0 TCP handshakes on every interaction.",
+        "explanation": "Incorrect. Caching and networking follow standard browser protocols."
+      },
+      {
+        "key": "D",
+        "text": "It automatically converts all async operations into synchronous blocking code.",
+        "explanation": "Incorrect. The browser event loop remains asynchronous."
+      }
+    ],
+    "correctAnswer": "A",
+    "mcqExplanation": "In Micro Frontends & Module Federation, Host and Remote Container Orchestration provides robust, scalable execution per standard architectural patterns.",
+    "wrongOptionExplanations": {
+      "B": "UI logic executes in the browser JavaScript engine or V8 runtime.",
+      "C": "Browser caching mechanisms operate in accordance with HTTP headers.",
+      "D": "JavaScript remains single-threaded and non-blocking."
+    },
+    "correctOption": "A",
+    "explanation": "In Micro Frontends & Module Federation, Host and Remote Container Orchestration provides robust, scalable execution per standard architectural patterns."
+  },
+  {
+    "id": "iq-micro-frontends-0002",
+    "standard_id": "MICROFRONTENDS-MCQ-000002",
+    "questionNumber": 2,
+    "subject": "micro-frontends",
+    "category": "Host vs Remote Applications",
+    "topic": "Host vs Remote Applications",
+    "subtopic": "Host vs Remote Applications Operations",
+    "concept": "Host vs Remote Applications",
+    "difficulty": "DIFFICULT",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "3_5_YEARS",
+    "isHighFrequency": true,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "micro-frontends",
+      "host-vs-remote-applications",
+      "frontend-interview"
+    ],
+    "question": "Micro Frontends & Module Federation: How does Host vs Remote Applications operate in production enterprise applications (Q2)?",
+    "shortAnswer": "In Micro Frontends & Module Federation, Host vs Remote Applications ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Host vs Remote Applications** is an essential architectural concept in <u>Micro Frontends & Module Federation</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Host vs Remote Applications** is an essential architectural concept in <u>Micro Frontends & Module Federation</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Host vs Remote Applications** is an essential architectural concept in <u>Micro Frontends & Module Federation</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Host vs Remote Applications in Micro Frontends & Module Federation:\nexport function handleHostvsRemoteApplications(config) {\n  console.log('Executing Host vs Remote Applications with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Host vs Remote Applications in Micro Frontends & Module Federation:\nexport function handleHostvsRemoteApplications(config) {\n  console.log('Executing Host vs Remote Applications with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Host vs Remote Applications in Micro Frontends & Module Federation:\nexport function handleHostvsRemoteApplications(config) {\n  console.log('Executing Host vs Remote Applications with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Host vs Remote Applications in Micro Frontends & Module Federation.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Host vs Remote Applications to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Host vs Remote Applications.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Host vs Remote Applications, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Host vs Remote Applications, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Host vs Remote Applications scale under extreme concurrency?",
+      "What monitoring tools can track Host vs Remote Applications metrics in production?"
+    ],
+    "followUps": [
+      "How does Host vs Remote Applications scale under extreme concurrency?",
+      "What monitoring tools can track Host vs Remote Applications metrics in production?"
+    ],
+    "question_hash": "qh_789e0c2",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Micro Frontends & Module Federation, Routing & State Isolation ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Routing & State Isolation, not Host vs Remote Applications."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Micro Frontends & Module Federation, Host vs Remote Applications ensures predictable, resilient execution.",
+        "explanation": "Correct. In Micro Frontends & Module Federation, Host vs Remote Applications ensures predictable, resilient execution."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Micro Frontends & Module Federation, Shared Dependencies & Versioning ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Shared Dependencies & Versioning, not Host vs Remote Applications."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Micro Frontends & Module Federation, Module Federation Architecture ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Module Federation Architecture, not Host vs Remote Applications."
+      }
+    ],
+    "correctAnswer": "B",
+    "correctOption": "B",
+    "mcqExplanation": "Correct. In Micro Frontends & Module Federation, Host vs Remote Applications ensures predictable, resilient execution.",
+    "explanation": "Correct. In Micro Frontends & Module Federation, Host vs Remote Applications ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Routing & State Isolation, not Host vs Remote Applications.",
+      "C": "Incorrect. This describes Shared Dependencies & Versioning, not Host vs Remote Applications.",
+      "D": "Incorrect. This describes Module Federation Architecture, not Host vs Remote Applications."
+    },
+    "mcqQuestion": "Micro Frontends & Module Federation: How does Host vs Remote Applications operate in production enterprise applications (Q2)?"
+  },
+  {
+    "id": "iq-micro-frontends-0003",
+    "standard_id": "MICROFRONTENDS-MCQ-000003",
+    "questionNumber": 3,
+    "subject": "micro-frontends",
+    "category": "Shared Dependencies & Versioning",
+    "topic": "Shared Dependencies & Versioning",
+    "subtopic": "Shared Dependencies & Versioning Operations",
+    "concept": "Shared Dependencies & Versioning",
+    "difficulty": "EASY",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "FRESHER",
+    "isHighFrequency": true,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "micro-frontends",
+      "shared-dependencies---versioning",
+      "frontend-interview"
+    ],
+    "question": "Micro Frontends & Module Federation: How does Shared Dependencies & Versioning operate in production enterprise applications (Q3)?",
+    "shortAnswer": "In Micro Frontends & Module Federation, Shared Dependencies & Versioning ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Shared Dependencies & Versioning** is an essential architectural concept in <u>Micro Frontends & Module Federation</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Shared Dependencies & Versioning** is an essential architectural concept in <u>Micro Frontends & Module Federation</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Shared Dependencies & Versioning** is an essential architectural concept in <u>Micro Frontends & Module Federation</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Shared Dependencies & Versioning in Micro Frontends & Module Federation:\nexport function handleSharedDependenciesVersioning(config) {\n  console.log('Executing Shared Dependencies & Versioning with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Shared Dependencies & Versioning in Micro Frontends & Module Federation:\nexport function handleSharedDependenciesVersioning(config) {\n  console.log('Executing Shared Dependencies & Versioning with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Shared Dependencies & Versioning in Micro Frontends & Module Federation:\nexport function handleSharedDependenciesVersioning(config) {\n  console.log('Executing Shared Dependencies & Versioning with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Shared Dependencies & Versioning in Micro Frontends & Module Federation.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Shared Dependencies & Versioning to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Shared Dependencies & Versioning.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Shared Dependencies & Versioning, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Shared Dependencies & Versioning, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Shared Dependencies & Versioning scale under extreme concurrency?",
+      "What monitoring tools can track Shared Dependencies & Versioning metrics in production?"
+    ],
+    "followUps": [
+      "How does Shared Dependencies & Versioning scale under extreme concurrency?",
+      "What monitoring tools can track Shared Dependencies & Versioning metrics in production?"
+    ],
+    "question_hash": "qh_3f52ecb1",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Micro Frontends & Module Federation, Module Federation Architecture ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Module Federation Architecture, not Shared Dependencies & Versioning."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Micro Frontends & Module Federation, Cross-Micro-Frontend Communication ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Cross-Micro-Frontend Communication, not Shared Dependencies & Versioning."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Micro Frontends & Module Federation, Shared Dependencies & Versioning ensures predictable, resilient execution.",
+        "explanation": "Correct. In Micro Frontends & Module Federation, Shared Dependencies & Versioning ensures predictable, resilient execution."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Micro Frontends & Module Federation, Host vs Remote Applications ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Host vs Remote Applications, not Shared Dependencies & Versioning."
+      }
+    ],
+    "correctAnswer": "C",
+    "mcqExplanation": "Correct. In Micro Frontends & Module Federation, Shared Dependencies & Versioning ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Module Federation Architecture, not Shared Dependencies & Versioning.",
+      "B": "Incorrect. This describes Cross-Micro-Frontend Communication, not Shared Dependencies & Versioning.",
+      "D": "Incorrect. This describes Host vs Remote Applications, not Shared Dependencies & Versioning."
+    },
+    "correctOption": "C",
+    "explanation": "Correct. In Micro Frontends & Module Federation, Shared Dependencies & Versioning ensures predictable, resilient execution.",
+    "mcqQuestion": "Micro Frontends & Module Federation: How does Shared Dependencies & Versioning operate in production enterprise applications (Q3)?"
+  },
+  {
+    "id": "iq-micro-frontends-0004",
+    "standard_id": "MICROFRONTENDS-MCQ-000004",
+    "questionNumber": 4,
+    "subject": "micro-frontends",
+    "category": "Cross-Micro-Frontend Communication",
+    "topic": "Cross-Micro-Frontend Communication",
+    "subtopic": "Cross-Micro-Frontend Communication Operations",
+    "concept": "Cross-Micro-Frontend Communication",
+    "difficulty": "INTERMEDIATE",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "1_3_YEARS",
+    "isHighFrequency": true,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "micro-frontends",
+      "cross-micro-frontend-communication",
+      "frontend-interview"
+    ],
+    "question": "Micro Frontends & Module Federation: How does Cross-Micro-Frontend Communication operate in production enterprise applications (Q4)?",
+    "shortAnswer": "In Micro Frontends & Module Federation, Cross-Micro-Frontend Communication ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Cross-Micro-Frontend Communication** is an essential architectural concept in <u>Micro Frontends & Module Federation</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Cross-Micro-Frontend Communication** is an essential architectural concept in <u>Micro Frontends & Module Federation</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Cross-Micro-Frontend Communication** is an essential architectural concept in <u>Micro Frontends & Module Federation</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Cross-Micro-Frontend Communication in Micro Frontends & Module Federation:\nexport function handleCrossMicroFrontendCommunication(config) {\n  console.log('Executing Cross-Micro-Frontend Communication with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Cross-Micro-Frontend Communication in Micro Frontends & Module Federation:\nexport function handleCrossMicroFrontendCommunication(config) {\n  console.log('Executing Cross-Micro-Frontend Communication with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Cross-Micro-Frontend Communication in Micro Frontends & Module Federation:\nexport function handleCrossMicroFrontendCommunication(config) {\n  console.log('Executing Cross-Micro-Frontend Communication with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Cross-Micro-Frontend Communication in Micro Frontends & Module Federation.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Cross-Micro-Frontend Communication to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Cross-Micro-Frontend Communication.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Cross-Micro-Frontend Communication, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Cross-Micro-Frontend Communication, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Cross-Micro-Frontend Communication scale under extreme concurrency?",
+      "What monitoring tools can track Cross-Micro-Frontend Communication metrics in production?"
+    ],
+    "followUps": [
+      "How does Cross-Micro-Frontend Communication scale under extreme concurrency?",
+      "What monitoring tools can track Cross-Micro-Frontend Communication metrics in production?"
+    ],
+    "question_hash": "qh_447fa666",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Micro Frontends & Module Federation, Host vs Remote Applications ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Host vs Remote Applications, not Cross-Micro-Frontend Communication."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Micro Frontends & Module Federation, Routing & State Isolation ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Routing & State Isolation, not Cross-Micro-Frontend Communication."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Micro Frontends & Module Federation, Shared Dependencies & Versioning ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Shared Dependencies & Versioning, not Cross-Micro-Frontend Communication."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Micro Frontends & Module Federation, Cross-Micro-Frontend Communication ensures predictable, resilient execution.",
+        "explanation": "Correct. In Micro Frontends & Module Federation, Cross-Micro-Frontend Communication ensures predictable, resilient execution."
+      }
+    ],
+    "correctAnswer": "D",
+    "correctOption": "D",
+    "mcqExplanation": "Correct. In Micro Frontends & Module Federation, Cross-Micro-Frontend Communication ensures predictable, resilient execution.",
+    "explanation": "Correct. In Micro Frontends & Module Federation, Cross-Micro-Frontend Communication ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Host vs Remote Applications, not Cross-Micro-Frontend Communication.",
+      "B": "Incorrect. This describes Routing & State Isolation, not Cross-Micro-Frontend Communication.",
+      "C": "Incorrect. This describes Shared Dependencies & Versioning, not Cross-Micro-Frontend Communication."
+    },
+    "mcqQuestion": "Micro Frontends & Module Federation: How does Cross-Micro-Frontend Communication operate in production enterprise applications (Q4)?"
+  },
+  {
+    "id": "iq-micro-frontends-0005",
+    "standard_id": "MICROFRONTENDS-MCQ-000005",
+    "questionNumber": 5,
+    "subject": "micro-frontends",
+    "category": "Routing & State Isolation",
+    "topic": "Routing & State Isolation",
+    "subtopic": "Routing & State Isolation Operations",
+    "concept": "Routing & State Isolation",
+    "difficulty": "DIFFICULT",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "3_5_YEARS",
+    "isHighFrequency": true,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "micro-frontends",
+      "routing---state-isolation",
+      "frontend-interview"
+    ],
+    "question": "Micro Frontends & Module Federation: How does Routing & State Isolation operate in production enterprise applications (Q5)?",
+    "shortAnswer": "In Micro Frontends & Module Federation, Routing & State Isolation ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Routing & State Isolation** is an essential architectural concept in <u>Micro Frontends & Module Federation</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Routing & State Isolation** is an essential architectural concept in <u>Micro Frontends & Module Federation</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Routing & State Isolation** is an essential architectural concept in <u>Micro Frontends & Module Federation</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Routing & State Isolation in Micro Frontends & Module Federation:\nexport function handleRoutingStateIsolation(config) {\n  console.log('Executing Routing & State Isolation with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Routing & State Isolation in Micro Frontends & Module Federation:\nexport function handleRoutingStateIsolation(config) {\n  console.log('Executing Routing & State Isolation with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Routing & State Isolation in Micro Frontends & Module Federation:\nexport function handleRoutingStateIsolation(config) {\n  console.log('Executing Routing & State Isolation with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Routing & State Isolation in Micro Frontends & Module Federation.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Routing & State Isolation to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Routing & State Isolation.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Routing & State Isolation, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Routing & State Isolation, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Routing & State Isolation scale under extreme concurrency?",
+      "What monitoring tools can track Routing & State Isolation metrics in production?"
+    ],
+    "followUps": [
+      "How does Routing & State Isolation scale under extreme concurrency?",
+      "What monitoring tools can track Routing & State Isolation metrics in production?"
+    ],
+    "question_hash": "qh_166aaa21",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Micro Frontends & Module Federation, Routing & State Isolation ensures predictable, resilient execution.",
+        "explanation": "Correct. In Micro Frontends & Module Federation, Routing & State Isolation ensures predictable, resilient execution."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Micro Frontends & Module Federation, Shared Dependencies & Versioning ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Shared Dependencies & Versioning, not Routing & State Isolation."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Micro Frontends & Module Federation, Module Federation Architecture ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Module Federation Architecture, not Routing & State Isolation."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Micro Frontends & Module Federation, Cross-Micro-Frontend Communication ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Cross-Micro-Frontend Communication, not Routing & State Isolation."
+      }
+    ],
+    "correctAnswer": "A",
+    "mcqExplanation": "Correct. In Micro Frontends & Module Federation, Routing & State Isolation ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "B": "Incorrect. This describes Shared Dependencies & Versioning, not Routing & State Isolation.",
+      "C": "Incorrect. This describes Module Federation Architecture, not Routing & State Isolation.",
+      "D": "Incorrect. This describes Cross-Micro-Frontend Communication, not Routing & State Isolation."
+    },
+    "correctOption": "A",
+    "explanation": "Correct. In Micro Frontends & Module Federation, Routing & State Isolation ensures predictable, resilient execution.",
+    "mcqQuestion": "Micro Frontends & Module Federation: How does Routing & State Isolation operate in production enterprise applications (Q5)?"
+  },
+  {
+    "id": "iq-micro-frontends-0006",
+    "standard_id": "MICROFRONTENDS-MCQ-000006",
+    "questionNumber": 6,
+    "subject": "micro-frontends",
+    "category": "Module Federation Architecture",
+    "topic": "Module Federation Architecture",
+    "subtopic": "Module Federation Architecture Operations",
+    "concept": "Module Federation Architecture",
+    "difficulty": "EASY",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "FRESHER",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "micro-frontends",
+      "module-federation-architecture",
+      "frontend-interview"
+    ],
+    "question": "Micro Frontends & Module Federation: How does Module Federation Architecture operate in production enterprise applications (Q6)?",
+    "shortAnswer": "In Micro Frontends & Module Federation, Module Federation Architecture ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Module Federation Architecture** is an essential architectural concept in <u>Micro Frontends & Module Federation</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Module Federation Architecture** is an essential architectural concept in <u>Micro Frontends & Module Federation</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Module Federation Architecture** is an essential architectural concept in <u>Micro Frontends & Module Federation</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Module Federation Architecture in Micro Frontends & Module Federation:\nexport function handleModuleFederationArchitecture(config) {\n  console.log('Executing Module Federation Architecture with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Module Federation Architecture in Micro Frontends & Module Federation:\nexport function handleModuleFederationArchitecture(config) {\n  console.log('Executing Module Federation Architecture with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Module Federation Architecture in Micro Frontends & Module Federation:\nexport function handleModuleFederationArchitecture(config) {\n  console.log('Executing Module Federation Architecture with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Module Federation Architecture in Micro Frontends & Module Federation.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Module Federation Architecture to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Module Federation Architecture.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Module Federation Architecture, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Module Federation Architecture, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Module Federation Architecture scale under extreme concurrency?",
+      "What monitoring tools can track Module Federation Architecture metrics in production?"
+    ],
+    "followUps": [
+      "How does Module Federation Architecture scale under extreme concurrency?",
+      "What monitoring tools can track Module Federation Architecture metrics in production?"
+    ],
+    "question_hash": "qh_5fced332",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Micro Frontends & Module Federation, Cross-Micro-Frontend Communication ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Cross-Micro-Frontend Communication, not Module Federation Architecture."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Micro Frontends & Module Federation, Module Federation Architecture ensures predictable, resilient execution.",
+        "explanation": "Correct. In Micro Frontends & Module Federation, Module Federation Architecture ensures predictable, resilient execution."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Micro Frontends & Module Federation, Host vs Remote Applications ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Host vs Remote Applications, not Module Federation Architecture."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Micro Frontends & Module Federation, Routing & State Isolation ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Routing & State Isolation, not Module Federation Architecture."
+      }
+    ],
+    "correctAnswer": "B",
+    "correctOption": "B",
+    "mcqExplanation": "Correct. In Micro Frontends & Module Federation, Module Federation Architecture ensures predictable, resilient execution.",
+    "explanation": "Correct. In Micro Frontends & Module Federation, Module Federation Architecture ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Cross-Micro-Frontend Communication, not Module Federation Architecture.",
+      "C": "Incorrect. This describes Host vs Remote Applications, not Module Federation Architecture.",
+      "D": "Incorrect. This describes Routing & State Isolation, not Module Federation Architecture."
+    },
+    "mcqQuestion": "Micro Frontends & Module Federation: How does Module Federation Architecture operate in production enterprise applications (Q6)?"
+  },
+  {
+    "id": "iq-micro-frontends-0007",
+    "standard_id": "MICROFRONTENDS-MCQ-000007",
+    "questionNumber": 7,
+    "subject": "micro-frontends",
+    "category": "Host vs Remote Applications",
+    "topic": "Host vs Remote Applications",
+    "subtopic": "Host vs Remote Applications Operations",
+    "concept": "Host vs Remote Applications",
+    "difficulty": "INTERMEDIATE",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "1_3_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "micro-frontends",
+      "host-vs-remote-applications",
+      "frontend-interview"
+    ],
+    "question": "Micro Frontends & Module Federation: How does Host vs Remote Applications operate in production enterprise applications (Q7)?",
+    "shortAnswer": "In Micro Frontends & Module Federation, Host vs Remote Applications ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Host vs Remote Applications** is an essential architectural concept in <u>Micro Frontends & Module Federation</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Host vs Remote Applications** is an essential architectural concept in <u>Micro Frontends & Module Federation</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Host vs Remote Applications** is an essential architectural concept in <u>Micro Frontends & Module Federation</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Host vs Remote Applications in Micro Frontends & Module Federation:\nexport function handleHostvsRemoteApplications(config) {\n  console.log('Executing Host vs Remote Applications with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Host vs Remote Applications in Micro Frontends & Module Federation:\nexport function handleHostvsRemoteApplications(config) {\n  console.log('Executing Host vs Remote Applications with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Host vs Remote Applications in Micro Frontends & Module Federation:\nexport function handleHostvsRemoteApplications(config) {\n  console.log('Executing Host vs Remote Applications with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Host vs Remote Applications in Micro Frontends & Module Federation.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Host vs Remote Applications to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Host vs Remote Applications.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Host vs Remote Applications, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Host vs Remote Applications, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Host vs Remote Applications scale under extreme concurrency?",
+      "What monitoring tools can track Host vs Remote Applications metrics in production?"
+    ],
+    "followUps": [
+      "How does Host vs Remote Applications scale under extreme concurrency?",
+      "What monitoring tools can track Host vs Remote Applications metrics in production?"
+    ],
+    "question_hash": "qh_789e0c7",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Micro Frontends & Module Federation, Routing & State Isolation ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Routing & State Isolation, not Host vs Remote Applications."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Micro Frontends & Module Federation, Shared Dependencies & Versioning ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Shared Dependencies & Versioning, not Host vs Remote Applications."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Micro Frontends & Module Federation, Host vs Remote Applications ensures predictable, resilient execution.",
+        "explanation": "Correct. In Micro Frontends & Module Federation, Host vs Remote Applications ensures predictable, resilient execution."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Micro Frontends & Module Federation, Module Federation Architecture ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Module Federation Architecture, not Host vs Remote Applications."
+      }
+    ],
+    "correctAnswer": "C",
+    "mcqExplanation": "Correct. In Micro Frontends & Module Federation, Host vs Remote Applications ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Routing & State Isolation, not Host vs Remote Applications.",
+      "B": "Incorrect. This describes Shared Dependencies & Versioning, not Host vs Remote Applications.",
+      "D": "Incorrect. This describes Module Federation Architecture, not Host vs Remote Applications."
+    },
+    "correctOption": "C",
+    "explanation": "Correct. In Micro Frontends & Module Federation, Host vs Remote Applications ensures predictable, resilient execution.",
+    "mcqQuestion": "Micro Frontends & Module Federation: How does Host vs Remote Applications operate in production enterprise applications (Q7)?"
+  },
+  {
+    "id": "iq-micro-frontends-0008",
+    "standard_id": "MICROFRONTENDS-MCQ-000008",
+    "questionNumber": 8,
+    "subject": "micro-frontends",
+    "category": "Shared Dependencies & Versioning",
+    "topic": "Shared Dependencies & Versioning",
+    "subtopic": "Shared Dependencies & Versioning Operations",
+    "concept": "Shared Dependencies & Versioning",
+    "difficulty": "DIFFICULT",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "3_5_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "micro-frontends",
+      "shared-dependencies---versioning",
+      "frontend-interview"
+    ],
+    "question": "Micro Frontends & Module Federation: How does Shared Dependencies & Versioning operate in production enterprise applications (Q8)?",
+    "shortAnswer": "In Micro Frontends & Module Federation, Shared Dependencies & Versioning ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Shared Dependencies & Versioning** is an essential architectural concept in <u>Micro Frontends & Module Federation</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Shared Dependencies & Versioning** is an essential architectural concept in <u>Micro Frontends & Module Federation</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Shared Dependencies & Versioning** is an essential architectural concept in <u>Micro Frontends & Module Federation</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Shared Dependencies & Versioning in Micro Frontends & Module Federation:\nexport function handleSharedDependenciesVersioning(config) {\n  console.log('Executing Shared Dependencies & Versioning with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Shared Dependencies & Versioning in Micro Frontends & Module Federation:\nexport function handleSharedDependenciesVersioning(config) {\n  console.log('Executing Shared Dependencies & Versioning with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Shared Dependencies & Versioning in Micro Frontends & Module Federation:\nexport function handleSharedDependenciesVersioning(config) {\n  console.log('Executing Shared Dependencies & Versioning with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Shared Dependencies & Versioning in Micro Frontends & Module Federation.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Shared Dependencies & Versioning to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Shared Dependencies & Versioning.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Shared Dependencies & Versioning, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Shared Dependencies & Versioning, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Shared Dependencies & Versioning scale under extreme concurrency?",
+      "What monitoring tools can track Shared Dependencies & Versioning metrics in production?"
+    ],
+    "followUps": [
+      "How does Shared Dependencies & Versioning scale under extreme concurrency?",
+      "What monitoring tools can track Shared Dependencies & Versioning metrics in production?"
+    ],
+    "question_hash": "qh_3f52ecb6",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Micro Frontends & Module Federation, Module Federation Architecture ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Module Federation Architecture, not Shared Dependencies & Versioning."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Micro Frontends & Module Federation, Cross-Micro-Frontend Communication ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Cross-Micro-Frontend Communication, not Shared Dependencies & Versioning."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Micro Frontends & Module Federation, Host vs Remote Applications ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Host vs Remote Applications, not Shared Dependencies & Versioning."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Micro Frontends & Module Federation, Shared Dependencies & Versioning ensures predictable, resilient execution.",
+        "explanation": "Correct. In Micro Frontends & Module Federation, Shared Dependencies & Versioning ensures predictable, resilient execution."
+      }
+    ],
+    "correctAnswer": "D",
+    "correctOption": "D",
+    "mcqExplanation": "Correct. In Micro Frontends & Module Federation, Shared Dependencies & Versioning ensures predictable, resilient execution.",
+    "explanation": "Correct. In Micro Frontends & Module Federation, Shared Dependencies & Versioning ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Module Federation Architecture, not Shared Dependencies & Versioning.",
+      "B": "Incorrect. This describes Cross-Micro-Frontend Communication, not Shared Dependencies & Versioning.",
+      "C": "Incorrect. This describes Host vs Remote Applications, not Shared Dependencies & Versioning."
+    },
+    "mcqQuestion": "Micro Frontends & Module Federation: How does Shared Dependencies & Versioning operate in production enterprise applications (Q8)?"
+  },
+  {
+    "id": "iq-micro-frontends-0009",
+    "standard_id": "MICROFRONTENDS-MCQ-000009",
+    "questionNumber": 9,
+    "subject": "micro-frontends",
+    "category": "Cross-Micro-Frontend Communication",
+    "topic": "Cross-Micro-Frontend Communication",
+    "subtopic": "Cross-Micro-Frontend Communication Operations",
+    "concept": "Cross-Micro-Frontend Communication",
+    "difficulty": "EASY",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "FRESHER",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "micro-frontends",
+      "cross-micro-frontend-communication",
+      "frontend-interview"
+    ],
+    "question": "Micro Frontends & Module Federation: How does Cross-Micro-Frontend Communication operate in production enterprise applications (Q9)?",
+    "shortAnswer": "In Micro Frontends & Module Federation, Cross-Micro-Frontend Communication ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Cross-Micro-Frontend Communication** is an essential architectural concept in <u>Micro Frontends & Module Federation</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Cross-Micro-Frontend Communication** is an essential architectural concept in <u>Micro Frontends & Module Federation</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Cross-Micro-Frontend Communication** is an essential architectural concept in <u>Micro Frontends & Module Federation</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Cross-Micro-Frontend Communication in Micro Frontends & Module Federation:\nexport function handleCrossMicroFrontendCommunication(config) {\n  console.log('Executing Cross-Micro-Frontend Communication with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Cross-Micro-Frontend Communication in Micro Frontends & Module Federation:\nexport function handleCrossMicroFrontendCommunication(config) {\n  console.log('Executing Cross-Micro-Frontend Communication with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Cross-Micro-Frontend Communication in Micro Frontends & Module Federation:\nexport function handleCrossMicroFrontendCommunication(config) {\n  console.log('Executing Cross-Micro-Frontend Communication with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Cross-Micro-Frontend Communication in Micro Frontends & Module Federation.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Cross-Micro-Frontend Communication to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Cross-Micro-Frontend Communication.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Cross-Micro-Frontend Communication, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Cross-Micro-Frontend Communication, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Cross-Micro-Frontend Communication scale under extreme concurrency?",
+      "What monitoring tools can track Cross-Micro-Frontend Communication metrics in production?"
+    ],
+    "followUps": [
+      "How does Cross-Micro-Frontend Communication scale under extreme concurrency?",
+      "What monitoring tools can track Cross-Micro-Frontend Communication metrics in production?"
+    ],
+    "question_hash": "qh_447fa66b",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Micro Frontends & Module Federation, Cross-Micro-Frontend Communication ensures predictable, resilient execution.",
+        "explanation": "Correct. In Micro Frontends & Module Federation, Cross-Micro-Frontend Communication ensures predictable, resilient execution."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Micro Frontends & Module Federation, Host vs Remote Applications ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Host vs Remote Applications, not Cross-Micro-Frontend Communication."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Micro Frontends & Module Federation, Routing & State Isolation ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Routing & State Isolation, not Cross-Micro-Frontend Communication."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Micro Frontends & Module Federation, Shared Dependencies & Versioning ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Shared Dependencies & Versioning, not Cross-Micro-Frontend Communication."
+      }
+    ],
+    "correctAnswer": "A",
+    "mcqExplanation": "Correct. In Micro Frontends & Module Federation, Cross-Micro-Frontend Communication ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "B": "Incorrect. This describes Host vs Remote Applications, not Cross-Micro-Frontend Communication.",
+      "C": "Incorrect. This describes Routing & State Isolation, not Cross-Micro-Frontend Communication.",
+      "D": "Incorrect. This describes Shared Dependencies & Versioning, not Cross-Micro-Frontend Communication."
+    },
+    "correctOption": "A",
+    "explanation": "Correct. In Micro Frontends & Module Federation, Cross-Micro-Frontend Communication ensures predictable, resilient execution.",
+    "mcqQuestion": "Micro Frontends & Module Federation: How does Cross-Micro-Frontend Communication operate in production enterprise applications (Q9)?"
+  },
+  {
+    "id": "iq-micro-frontends-0010",
+    "standard_id": "MICROFRONTENDS-MCQ-000010",
+    "questionNumber": 10,
+    "subject": "micro-frontends",
+    "category": "Routing & State Isolation",
+    "topic": "Routing & State Isolation",
+    "subtopic": "Routing & State Isolation Operations",
+    "concept": "Routing & State Isolation",
+    "difficulty": "INTERMEDIATE",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "1_3_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "micro-frontends",
+      "routing---state-isolation",
+      "frontend-interview"
+    ],
+    "question": "Micro Frontends & Module Federation: How does Routing & State Isolation operate in production enterprise applications (Q10)?",
+    "shortAnswer": "In Micro Frontends & Module Federation, Routing & State Isolation ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Routing & State Isolation** is an essential architectural concept in <u>Micro Frontends & Module Federation</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Routing & State Isolation** is an essential architectural concept in <u>Micro Frontends & Module Federation</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Routing & State Isolation** is an essential architectural concept in <u>Micro Frontends & Module Federation</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Routing & State Isolation in Micro Frontends & Module Federation:\nexport function handleRoutingStateIsolation(config) {\n  console.log('Executing Routing & State Isolation with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Routing & State Isolation in Micro Frontends & Module Federation:\nexport function handleRoutingStateIsolation(config) {\n  console.log('Executing Routing & State Isolation with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Routing & State Isolation in Micro Frontends & Module Federation:\nexport function handleRoutingStateIsolation(config) {\n  console.log('Executing Routing & State Isolation with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Routing & State Isolation in Micro Frontends & Module Federation.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Routing & State Isolation to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Routing & State Isolation.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Routing & State Isolation, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Routing & State Isolation, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Routing & State Isolation scale under extreme concurrency?",
+      "What monitoring tools can track Routing & State Isolation metrics in production?"
+    ],
+    "followUps": [
+      "How does Routing & State Isolation scale under extreme concurrency?",
+      "What monitoring tools can track Routing & State Isolation metrics in production?"
+    ],
+    "question_hash": "qh_4915664d",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Micro Frontends & Module Federation, Shared Dependencies & Versioning ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Shared Dependencies & Versioning, not Routing & State Isolation."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Micro Frontends & Module Federation, Routing & State Isolation ensures predictable, resilient execution.",
+        "explanation": "Correct. In Micro Frontends & Module Federation, Routing & State Isolation ensures predictable, resilient execution."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Micro Frontends & Module Federation, Module Federation Architecture ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Module Federation Architecture, not Routing & State Isolation."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Micro Frontends & Module Federation, Cross-Micro-Frontend Communication ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Cross-Micro-Frontend Communication, not Routing & State Isolation."
+      }
+    ],
+    "correctAnswer": "B",
+    "correctOption": "B",
+    "mcqExplanation": "Correct. In Micro Frontends & Module Federation, Routing & State Isolation ensures predictable, resilient execution.",
+    "explanation": "Correct. In Micro Frontends & Module Federation, Routing & State Isolation ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Shared Dependencies & Versioning, not Routing & State Isolation.",
+      "C": "Incorrect. This describes Module Federation Architecture, not Routing & State Isolation.",
+      "D": "Incorrect. This describes Cross-Micro-Frontend Communication, not Routing & State Isolation."
+    },
+    "mcqQuestion": "Micro Frontends & Module Federation: How does Routing & State Isolation operate in production enterprise applications (Q10)?"
+  },
+  {
+    "id": "iq-micro-frontends-0011",
+    "standard_id": "MICROFRONTENDS-MCQ-000011",
+    "questionNumber": 11,
+    "subject": "micro-frontends",
+    "category": "Module Federation Architecture",
+    "topic": "Module Federation Architecture",
+    "subtopic": "Module Federation Architecture Operations",
+    "concept": "Module Federation Architecture",
+    "difficulty": "DIFFICULT",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "3_5_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "micro-frontends",
+      "module-federation-architecture",
+      "frontend-interview"
+    ],
+    "question": "Micro Frontends & Module Federation: How does Module Federation Architecture operate in production enterprise applications (Q11)?",
+    "shortAnswer": "In Micro Frontends & Module Federation, Module Federation Architecture ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Module Federation Architecture** is an essential architectural concept in <u>Micro Frontends & Module Federation</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Module Federation Architecture** is an essential architectural concept in <u>Micro Frontends & Module Federation</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Module Federation Architecture** is an essential architectural concept in <u>Micro Frontends & Module Federation</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Module Federation Architecture in Micro Frontends & Module Federation:\nexport function handleModuleFederationArchitecture(config) {\n  console.log('Executing Module Federation Architecture with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Module Federation Architecture in Micro Frontends & Module Federation:\nexport function handleModuleFederationArchitecture(config) {\n  console.log('Executing Module Federation Architecture with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Module Federation Architecture in Micro Frontends & Module Federation:\nexport function handleModuleFederationArchitecture(config) {\n  console.log('Executing Module Federation Architecture with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Module Federation Architecture in Micro Frontends & Module Federation.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Module Federation Architecture to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Module Federation Architecture.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Module Federation Architecture, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Module Federation Architecture, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Module Federation Architecture scale under extreme concurrency?",
+      "What monitoring tools can track Module Federation Architecture metrics in production?"
+    ],
+    "followUps": [
+      "How does Module Federation Architecture scale under extreme concurrency?",
+      "What monitoring tools can track Module Federation Architecture metrics in production?"
+    ],
+    "question_hash": "qh_65f46c88",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Micro Frontends & Module Federation, Cross-Micro-Frontend Communication ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Cross-Micro-Frontend Communication, not Module Federation Architecture."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Micro Frontends & Module Federation, Host vs Remote Applications ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Host vs Remote Applications, not Module Federation Architecture."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Micro Frontends & Module Federation, Module Federation Architecture ensures predictable, resilient execution.",
+        "explanation": "Correct. In Micro Frontends & Module Federation, Module Federation Architecture ensures predictable, resilient execution."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Micro Frontends & Module Federation, Routing & State Isolation ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Routing & State Isolation, not Module Federation Architecture."
+      }
+    ],
+    "correctAnswer": "C",
+    "mcqExplanation": "Correct. In Micro Frontends & Module Federation, Module Federation Architecture ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Cross-Micro-Frontend Communication, not Module Federation Architecture.",
+      "B": "Incorrect. This describes Host vs Remote Applications, not Module Federation Architecture.",
+      "D": "Incorrect. This describes Routing & State Isolation, not Module Federation Architecture."
+    },
+    "correctOption": "C",
+    "explanation": "Correct. In Micro Frontends & Module Federation, Module Federation Architecture ensures predictable, resilient execution.",
+    "mcqQuestion": "Micro Frontends & Module Federation: How does Module Federation Architecture operate in production enterprise applications (Q11)?"
+  },
+  {
+    "id": "iq-micro-frontends-0012",
+    "standard_id": "MICROFRONTENDS-MCQ-000012",
+    "questionNumber": 12,
+    "subject": "micro-frontends",
+    "category": "Host vs Remote Applications",
+    "topic": "Host vs Remote Applications",
+    "subtopic": "Host vs Remote Applications Operations",
+    "concept": "Host vs Remote Applications",
+    "difficulty": "EASY",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "FRESHER",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "micro-frontends",
+      "host-vs-remote-applications",
+      "frontend-interview"
+    ],
+    "question": "Micro Frontends & Module Federation: How does Host vs Remote Applications operate in production enterprise applications (Q12)?",
+    "shortAnswer": "In Micro Frontends & Module Federation, Host vs Remote Applications ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Host vs Remote Applications** is an essential architectural concept in <u>Micro Frontends & Module Federation</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Host vs Remote Applications** is an essential architectural concept in <u>Micro Frontends & Module Federation</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Host vs Remote Applications** is an essential architectural concept in <u>Micro Frontends & Module Federation</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Host vs Remote Applications in Micro Frontends & Module Federation:\nexport function handleHostvsRemoteApplications(config) {\n  console.log('Executing Host vs Remote Applications with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Host vs Remote Applications in Micro Frontends & Module Federation:\nexport function handleHostvsRemoteApplications(config) {\n  console.log('Executing Host vs Remote Applications with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Host vs Remote Applications in Micro Frontends & Module Federation:\nexport function handleHostvsRemoteApplications(config) {\n  console.log('Executing Host vs Remote Applications with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Host vs Remote Applications in Micro Frontends & Module Federation.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Host vs Remote Applications to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Host vs Remote Applications.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Host vs Remote Applications, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Host vs Remote Applications, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Host vs Remote Applications scale under extreme concurrency?",
+      "What monitoring tools can track Host vs Remote Applications metrics in production?"
+    ],
+    "followUps": [
+      "How does Host vs Remote Applications scale under extreme concurrency?",
+      "What monitoring tools can track Host vs Remote Applications metrics in production?"
+    ],
+    "question_hash": "qh_164dc86f",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Micro Frontends & Module Federation, Routing & State Isolation ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Routing & State Isolation, not Host vs Remote Applications."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Micro Frontends & Module Federation, Shared Dependencies & Versioning ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Shared Dependencies & Versioning, not Host vs Remote Applications."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Micro Frontends & Module Federation, Module Federation Architecture ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Module Federation Architecture, not Host vs Remote Applications."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Micro Frontends & Module Federation, Host vs Remote Applications ensures predictable, resilient execution.",
+        "explanation": "Correct. In Micro Frontends & Module Federation, Host vs Remote Applications ensures predictable, resilient execution."
+      }
+    ],
+    "correctAnswer": "D",
+    "correctOption": "D",
+    "mcqExplanation": "Correct. In Micro Frontends & Module Federation, Host vs Remote Applications ensures predictable, resilient execution.",
+    "explanation": "Correct. In Micro Frontends & Module Federation, Host vs Remote Applications ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Routing & State Isolation, not Host vs Remote Applications.",
+      "B": "Incorrect. This describes Shared Dependencies & Versioning, not Host vs Remote Applications.",
+      "C": "Incorrect. This describes Module Federation Architecture, not Host vs Remote Applications."
+    },
+    "mcqQuestion": "Micro Frontends & Module Federation: How does Host vs Remote Applications operate in production enterprise applications (Q12)?"
+  },
+  {
+    "id": "iq-micro-frontends-0013",
+    "standard_id": "MICROFRONTENDS-MCQ-000013",
+    "questionNumber": 13,
+    "subject": "micro-frontends",
+    "category": "Shared Dependencies & Versioning",
+    "topic": "Shared Dependencies & Versioning",
+    "subtopic": "Shared Dependencies & Versioning Operations",
+    "concept": "Shared Dependencies & Versioning",
+    "difficulty": "INTERMEDIATE",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "1_3_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "micro-frontends",
+      "shared-dependencies---versioning",
+      "frontend-interview"
+    ],
+    "question": "Micro Frontends & Module Federation: How does Shared Dependencies & Versioning operate in production enterprise applications (Q13)?",
+    "shortAnswer": "In Micro Frontends & Module Federation, Shared Dependencies & Versioning ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Shared Dependencies & Versioning** is an essential architectural concept in <u>Micro Frontends & Module Federation</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Shared Dependencies & Versioning** is an essential architectural concept in <u>Micro Frontends & Module Federation</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Shared Dependencies & Versioning** is an essential architectural concept in <u>Micro Frontends & Module Federation</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Shared Dependencies & Versioning in Micro Frontends & Module Federation:\nexport function handleSharedDependenciesVersioning(config) {\n  console.log('Executing Shared Dependencies & Versioning with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Shared Dependencies & Versioning in Micro Frontends & Module Federation:\nexport function handleSharedDependenciesVersioning(config) {\n  console.log('Executing Shared Dependencies & Versioning with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Shared Dependencies & Versioning in Micro Frontends & Module Federation:\nexport function handleSharedDependenciesVersioning(config) {\n  console.log('Executing Shared Dependencies & Versioning with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Shared Dependencies & Versioning in Micro Frontends & Module Federation.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Shared Dependencies & Versioning to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Shared Dependencies & Versioning.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Shared Dependencies & Versioning, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Shared Dependencies & Versioning, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Shared Dependencies & Versioning scale under extreme concurrency?",
+      "What monitoring tools can track Shared Dependencies & Versioning metrics in production?"
+    ],
+    "followUps": [
+      "How does Shared Dependencies & Versioning scale under extreme concurrency?",
+      "What monitoring tools can track Shared Dependencies & Versioning metrics in production?"
+    ],
+    "question_hash": "qh_54f5569c",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Micro Frontends & Module Federation, Shared Dependencies & Versioning ensures predictable, resilient execution.",
+        "explanation": "Correct. In Micro Frontends & Module Federation, Shared Dependencies & Versioning ensures predictable, resilient execution."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Micro Frontends & Module Federation, Module Federation Architecture ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Module Federation Architecture, not Shared Dependencies & Versioning."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Micro Frontends & Module Federation, Cross-Micro-Frontend Communication ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Cross-Micro-Frontend Communication, not Shared Dependencies & Versioning."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Micro Frontends & Module Federation, Host vs Remote Applications ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Host vs Remote Applications, not Shared Dependencies & Versioning."
+      }
+    ],
+    "correctAnswer": "A",
+    "mcqExplanation": "Correct. In Micro Frontends & Module Federation, Shared Dependencies & Versioning ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "B": "Incorrect. This describes Module Federation Architecture, not Shared Dependencies & Versioning.",
+      "C": "Incorrect. This describes Cross-Micro-Frontend Communication, not Shared Dependencies & Versioning.",
+      "D": "Incorrect. This describes Host vs Remote Applications, not Shared Dependencies & Versioning."
+    },
+    "correctOption": "A",
+    "explanation": "Correct. In Micro Frontends & Module Federation, Shared Dependencies & Versioning ensures predictable, resilient execution.",
+    "mcqQuestion": "Micro Frontends & Module Federation: How does Shared Dependencies & Versioning operate in production enterprise applications (Q13)?"
+  },
+  {
+    "id": "iq-micro-frontends-0014",
+    "standard_id": "MICROFRONTENDS-MCQ-000014",
+    "questionNumber": 14,
+    "subject": "micro-frontends",
+    "category": "Cross-Micro-Frontend Communication",
+    "topic": "Cross-Micro-Frontend Communication",
+    "subtopic": "Cross-Micro-Frontend Communication Operations",
+    "concept": "Cross-Micro-Frontend Communication",
+    "difficulty": "DIFFICULT",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "3_5_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "micro-frontends",
+      "cross-micro-frontend-communication",
+      "frontend-interview"
+    ],
+    "question": "Micro Frontends & Module Federation: How does Cross-Micro-Frontend Communication operate in production enterprise applications (Q14)?",
+    "shortAnswer": "In Micro Frontends & Module Federation, Cross-Micro-Frontend Communication ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Cross-Micro-Frontend Communication** is an essential architectural concept in <u>Micro Frontends & Module Federation</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Cross-Micro-Frontend Communication** is an essential architectural concept in <u>Micro Frontends & Module Federation</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Cross-Micro-Frontend Communication** is an essential architectural concept in <u>Micro Frontends & Module Federation</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Cross-Micro-Frontend Communication in Micro Frontends & Module Federation:\nexport function handleCrossMicroFrontendCommunication(config) {\n  console.log('Executing Cross-Micro-Frontend Communication with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Cross-Micro-Frontend Communication in Micro Frontends & Module Federation:\nexport function handleCrossMicroFrontendCommunication(config) {\n  console.log('Executing Cross-Micro-Frontend Communication with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Cross-Micro-Frontend Communication in Micro Frontends & Module Federation:\nexport function handleCrossMicroFrontendCommunication(config) {\n  console.log('Executing Cross-Micro-Frontend Communication with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Cross-Micro-Frontend Communication in Micro Frontends & Module Federation.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Cross-Micro-Frontend Communication to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Cross-Micro-Frontend Communication.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Cross-Micro-Frontend Communication, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Cross-Micro-Frontend Communication, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Cross-Micro-Frontend Communication scale under extreme concurrency?",
+      "What monitoring tools can track Cross-Micro-Frontend Communication metrics in production?"
+    ],
+    "followUps": [
+      "How does Cross-Micro-Frontend Communication scale under extreme concurrency?",
+      "What monitoring tools can track Cross-Micro-Frontend Communication metrics in production?"
+    ],
+    "question_hash": "qh_4b752631",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Micro Frontends & Module Federation, Host vs Remote Applications ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Host vs Remote Applications, not Cross-Micro-Frontend Communication."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Micro Frontends & Module Federation, Cross-Micro-Frontend Communication ensures predictable, resilient execution.",
+        "explanation": "Correct. In Micro Frontends & Module Federation, Cross-Micro-Frontend Communication ensures predictable, resilient execution."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Micro Frontends & Module Federation, Routing & State Isolation ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Routing & State Isolation, not Cross-Micro-Frontend Communication."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Micro Frontends & Module Federation, Shared Dependencies & Versioning ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Shared Dependencies & Versioning, not Cross-Micro-Frontend Communication."
+      }
+    ],
+    "correctAnswer": "B",
+    "correctOption": "B",
+    "mcqExplanation": "Correct. In Micro Frontends & Module Federation, Cross-Micro-Frontend Communication ensures predictable, resilient execution.",
+    "explanation": "Correct. In Micro Frontends & Module Federation, Cross-Micro-Frontend Communication ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Host vs Remote Applications, not Cross-Micro-Frontend Communication.",
+      "C": "Incorrect. This describes Routing & State Isolation, not Cross-Micro-Frontend Communication.",
+      "D": "Incorrect. This describes Shared Dependencies & Versioning, not Cross-Micro-Frontend Communication."
+    },
+    "mcqQuestion": "Micro Frontends & Module Federation: How does Cross-Micro-Frontend Communication operate in production enterprise applications (Q14)?"
+  },
+  {
+    "id": "iq-micro-frontends-0015",
+    "standard_id": "MICROFRONTENDS-MCQ-000015",
+    "questionNumber": 15,
+    "subject": "micro-frontends",
+    "category": "Routing & State Isolation",
+    "topic": "Routing & State Isolation",
+    "subtopic": "Routing & State Isolation Operations",
+    "concept": "Routing & State Isolation",
+    "difficulty": "EASY",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "FRESHER",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "micro-frontends",
+      "routing---state-isolation",
+      "frontend-interview"
+    ],
+    "question": "Micro Frontends & Module Federation: How does Routing & State Isolation operate in production enterprise applications (Q15)?",
+    "shortAnswer": "In Micro Frontends & Module Federation, Routing & State Isolation ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Routing & State Isolation** is an essential architectural concept in <u>Micro Frontends & Module Federation</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Routing & State Isolation** is an essential architectural concept in <u>Micro Frontends & Module Federation</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Routing & State Isolation** is an essential architectural concept in <u>Micro Frontends & Module Federation</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Routing & State Isolation in Micro Frontends & Module Federation:\nexport function handleRoutingStateIsolation(config) {\n  console.log('Executing Routing & State Isolation with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Routing & State Isolation in Micro Frontends & Module Federation:\nexport function handleRoutingStateIsolation(config) {\n  console.log('Executing Routing & State Isolation with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Routing & State Isolation in Micro Frontends & Module Federation:\nexport function handleRoutingStateIsolation(config) {\n  console.log('Executing Routing & State Isolation with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Routing & State Isolation in Micro Frontends & Module Federation.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Routing & State Isolation to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Routing & State Isolation.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Routing & State Isolation, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Routing & State Isolation, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Routing & State Isolation scale under extreme concurrency?",
+      "What monitoring tools can track Routing & State Isolation metrics in production?"
+    ],
+    "followUps": [
+      "How does Routing & State Isolation scale under extreme concurrency?",
+      "What monitoring tools can track Routing & State Isolation metrics in production?"
+    ],
+    "question_hash": "qh_49156648",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Micro Frontends & Module Federation, Shared Dependencies & Versioning ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Shared Dependencies & Versioning, not Routing & State Isolation."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Micro Frontends & Module Federation, Module Federation Architecture ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Module Federation Architecture, not Routing & State Isolation."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Micro Frontends & Module Federation, Routing & State Isolation ensures predictable, resilient execution.",
+        "explanation": "Correct. In Micro Frontends & Module Federation, Routing & State Isolation ensures predictable, resilient execution."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Micro Frontends & Module Federation, Cross-Micro-Frontend Communication ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Cross-Micro-Frontend Communication, not Routing & State Isolation."
+      }
+    ],
+    "correctAnswer": "C",
+    "mcqExplanation": "Correct. In Micro Frontends & Module Federation, Routing & State Isolation ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Shared Dependencies & Versioning, not Routing & State Isolation.",
+      "B": "Incorrect. This describes Module Federation Architecture, not Routing & State Isolation.",
+      "D": "Incorrect. This describes Cross-Micro-Frontend Communication, not Routing & State Isolation."
+    },
+    "correctOption": "C",
+    "explanation": "Correct. In Micro Frontends & Module Federation, Routing & State Isolation ensures predictable, resilient execution.",
+    "mcqQuestion": "Micro Frontends & Module Federation: How does Routing & State Isolation operate in production enterprise applications (Q15)?"
+  },
+  {
+    "id": "iq-micro-frontends-0016",
+    "standard_id": "MICROFRONTENDS-MCQ-000016",
+    "questionNumber": 16,
+    "subject": "micro-frontends",
+    "category": "Module Federation Architecture",
+    "topic": "Module Federation Architecture",
+    "subtopic": "Module Federation Architecture Operations",
+    "concept": "Module Federation Architecture",
+    "difficulty": "INTERMEDIATE",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "1_3_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "micro-frontends",
+      "module-federation-architecture",
+      "frontend-interview"
+    ],
+    "question": "Micro Frontends & Module Federation: How does Module Federation Architecture operate in production enterprise applications (Q16)?",
+    "shortAnswer": "In Micro Frontends & Module Federation, Module Federation Architecture ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Module Federation Architecture** is an essential architectural concept in <u>Micro Frontends & Module Federation</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Module Federation Architecture** is an essential architectural concept in <u>Micro Frontends & Module Federation</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Module Federation Architecture** is an essential architectural concept in <u>Micro Frontends & Module Federation</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Module Federation Architecture in Micro Frontends & Module Federation:\nexport function handleModuleFederationArchitecture(config) {\n  console.log('Executing Module Federation Architecture with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Module Federation Architecture in Micro Frontends & Module Federation:\nexport function handleModuleFederationArchitecture(config) {\n  console.log('Executing Module Federation Architecture with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Module Federation Architecture in Micro Frontends & Module Federation:\nexport function handleModuleFederationArchitecture(config) {\n  console.log('Executing Module Federation Architecture with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Module Federation Architecture in Micro Frontends & Module Federation.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Module Federation Architecture to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Module Federation Architecture.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Module Federation Architecture, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Module Federation Architecture, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Module Federation Architecture scale under extreme concurrency?",
+      "What monitoring tools can track Module Federation Architecture metrics in production?"
+    ],
+    "followUps": [
+      "How does Module Federation Architecture scale under extreme concurrency?",
+      "What monitoring tools can track Module Federation Architecture metrics in production?"
+    ],
+    "question_hash": "qh_65f46c8d",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Micro Frontends & Module Federation, Cross-Micro-Frontend Communication ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Cross-Micro-Frontend Communication, not Module Federation Architecture."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Micro Frontends & Module Federation, Host vs Remote Applications ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Host vs Remote Applications, not Module Federation Architecture."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Micro Frontends & Module Federation, Routing & State Isolation ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Routing & State Isolation, not Module Federation Architecture."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Micro Frontends & Module Federation, Module Federation Architecture ensures predictable, resilient execution.",
+        "explanation": "Correct. In Micro Frontends & Module Federation, Module Federation Architecture ensures predictable, resilient execution."
+      }
+    ],
+    "correctAnswer": "D",
+    "correctOption": "D",
+    "mcqExplanation": "Correct. In Micro Frontends & Module Federation, Module Federation Architecture ensures predictable, resilient execution.",
+    "explanation": "Correct. In Micro Frontends & Module Federation, Module Federation Architecture ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Cross-Micro-Frontend Communication, not Module Federation Architecture.",
+      "B": "Incorrect. This describes Host vs Remote Applications, not Module Federation Architecture.",
+      "C": "Incorrect. This describes Routing & State Isolation, not Module Federation Architecture."
+    },
+    "mcqQuestion": "Micro Frontends & Module Federation: How does Module Federation Architecture operate in production enterprise applications (Q16)?"
+  },
+  {
+    "id": "iq-micro-frontends-0017",
+    "standard_id": "MICROFRONTENDS-MCQ-000017",
+    "questionNumber": 17,
+    "subject": "micro-frontends",
+    "category": "Host vs Remote Applications",
+    "topic": "Host vs Remote Applications",
+    "subtopic": "Host vs Remote Applications Operations",
+    "concept": "Host vs Remote Applications",
+    "difficulty": "DIFFICULT",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "3_5_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "micro-frontends",
+      "host-vs-remote-applications",
+      "frontend-interview"
+    ],
+    "question": "Micro Frontends & Module Federation: How does Host vs Remote Applications operate in production enterprise applications (Q17)?",
+    "shortAnswer": "In Micro Frontends & Module Federation, Host vs Remote Applications ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Host vs Remote Applications** is an essential architectural concept in <u>Micro Frontends & Module Federation</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Host vs Remote Applications** is an essential architectural concept in <u>Micro Frontends & Module Federation</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Host vs Remote Applications** is an essential architectural concept in <u>Micro Frontends & Module Federation</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Host vs Remote Applications in Micro Frontends & Module Federation:\nexport function handleHostvsRemoteApplications(config) {\n  console.log('Executing Host vs Remote Applications with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Host vs Remote Applications in Micro Frontends & Module Federation:\nexport function handleHostvsRemoteApplications(config) {\n  console.log('Executing Host vs Remote Applications with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Host vs Remote Applications in Micro Frontends & Module Federation:\nexport function handleHostvsRemoteApplications(config) {\n  console.log('Executing Host vs Remote Applications with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Host vs Remote Applications in Micro Frontends & Module Federation.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Host vs Remote Applications to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Host vs Remote Applications.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Host vs Remote Applications, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Host vs Remote Applications, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Host vs Remote Applications scale under extreme concurrency?",
+      "What monitoring tools can track Host vs Remote Applications metrics in production?"
+    ],
+    "followUps": [
+      "How does Host vs Remote Applications scale under extreme concurrency?",
+      "What monitoring tools can track Host vs Remote Applications metrics in production?"
+    ],
+    "question_hash": "qh_164dc86a",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Micro Frontends & Module Federation, Host vs Remote Applications ensures predictable, resilient execution.",
+        "explanation": "Correct. In Micro Frontends & Module Federation, Host vs Remote Applications ensures predictable, resilient execution."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Micro Frontends & Module Federation, Routing & State Isolation ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Routing & State Isolation, not Host vs Remote Applications."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Micro Frontends & Module Federation, Shared Dependencies & Versioning ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Shared Dependencies & Versioning, not Host vs Remote Applications."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Micro Frontends & Module Federation, Module Federation Architecture ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Module Federation Architecture, not Host vs Remote Applications."
+      }
+    ],
+    "correctAnswer": "A",
+    "mcqExplanation": "Correct. In Micro Frontends & Module Federation, Host vs Remote Applications ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "B": "Incorrect. This describes Routing & State Isolation, not Host vs Remote Applications.",
+      "C": "Incorrect. This describes Shared Dependencies & Versioning, not Host vs Remote Applications.",
+      "D": "Incorrect. This describes Module Federation Architecture, not Host vs Remote Applications."
+    },
+    "correctOption": "A",
+    "explanation": "Correct. In Micro Frontends & Module Federation, Host vs Remote Applications ensures predictable, resilient execution.",
+    "mcqQuestion": "Micro Frontends & Module Federation: How does Host vs Remote Applications operate in production enterprise applications (Q17)?"
+  },
+  {
+    "id": "iq-micro-frontends-0018",
+    "standard_id": "MICROFRONTENDS-MCQ-000018",
+    "questionNumber": 18,
+    "subject": "micro-frontends",
+    "category": "Shared Dependencies & Versioning",
+    "topic": "Shared Dependencies & Versioning",
+    "subtopic": "Shared Dependencies & Versioning Operations",
+    "concept": "Shared Dependencies & Versioning",
+    "difficulty": "EASY",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "FRESHER",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "micro-frontends",
+      "shared-dependencies---versioning",
+      "frontend-interview"
+    ],
+    "question": "Micro Frontends & Module Federation: How does Shared Dependencies & Versioning operate in production enterprise applications (Q18)?",
+    "shortAnswer": "In Micro Frontends & Module Federation, Shared Dependencies & Versioning ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Shared Dependencies & Versioning** is an essential architectural concept in <u>Micro Frontends & Module Federation</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Shared Dependencies & Versioning** is an essential architectural concept in <u>Micro Frontends & Module Federation</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Shared Dependencies & Versioning** is an essential architectural concept in <u>Micro Frontends & Module Federation</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Shared Dependencies & Versioning in Micro Frontends & Module Federation:\nexport function handleSharedDependenciesVersioning(config) {\n  console.log('Executing Shared Dependencies & Versioning with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Shared Dependencies & Versioning in Micro Frontends & Module Federation:\nexport function handleSharedDependenciesVersioning(config) {\n  console.log('Executing Shared Dependencies & Versioning with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Shared Dependencies & Versioning in Micro Frontends & Module Federation:\nexport function handleSharedDependenciesVersioning(config) {\n  console.log('Executing Shared Dependencies & Versioning with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Shared Dependencies & Versioning in Micro Frontends & Module Federation.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Shared Dependencies & Versioning to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Shared Dependencies & Versioning.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Shared Dependencies & Versioning, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Shared Dependencies & Versioning, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Shared Dependencies & Versioning scale under extreme concurrency?",
+      "What monitoring tools can track Shared Dependencies & Versioning metrics in production?"
+    ],
+    "followUps": [
+      "How does Shared Dependencies & Versioning scale under extreme concurrency?",
+      "What monitoring tools can track Shared Dependencies & Versioning metrics in production?"
+    ],
+    "question_hash": "qh_54f55697",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Micro Frontends & Module Federation, Module Federation Architecture ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Module Federation Architecture, not Shared Dependencies & Versioning."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Micro Frontends & Module Federation, Shared Dependencies & Versioning ensures predictable, resilient execution.",
+        "explanation": "Correct. In Micro Frontends & Module Federation, Shared Dependencies & Versioning ensures predictable, resilient execution."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Micro Frontends & Module Federation, Cross-Micro-Frontend Communication ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Cross-Micro-Frontend Communication, not Shared Dependencies & Versioning."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Micro Frontends & Module Federation, Host vs Remote Applications ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Host vs Remote Applications, not Shared Dependencies & Versioning."
+      }
+    ],
+    "correctAnswer": "B",
+    "correctOption": "B",
+    "mcqExplanation": "Correct. In Micro Frontends & Module Federation, Shared Dependencies & Versioning ensures predictable, resilient execution.",
+    "explanation": "Correct. In Micro Frontends & Module Federation, Shared Dependencies & Versioning ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Module Federation Architecture, not Shared Dependencies & Versioning.",
+      "C": "Incorrect. This describes Cross-Micro-Frontend Communication, not Shared Dependencies & Versioning.",
+      "D": "Incorrect. This describes Host vs Remote Applications, not Shared Dependencies & Versioning."
+    },
+    "mcqQuestion": "Micro Frontends & Module Federation: How does Shared Dependencies & Versioning operate in production enterprise applications (Q18)?"
+  },
+  {
+    "id": "iq-micro-frontends-0019",
+    "standard_id": "MICROFRONTENDS-MCQ-000019",
+    "questionNumber": 19,
+    "subject": "micro-frontends",
+    "category": "Cross-Micro-Frontend Communication",
+    "topic": "Cross-Micro-Frontend Communication",
+    "subtopic": "Cross-Micro-Frontend Communication Operations",
+    "concept": "Cross-Micro-Frontend Communication",
+    "difficulty": "INTERMEDIATE",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "1_3_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "micro-frontends",
+      "cross-micro-frontend-communication",
+      "frontend-interview"
+    ],
+    "question": "Micro Frontends & Module Federation: How does Cross-Micro-Frontend Communication operate in production enterprise applications (Q19)?",
+    "shortAnswer": "In Micro Frontends & Module Federation, Cross-Micro-Frontend Communication ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Cross-Micro-Frontend Communication** is an essential architectural concept in <u>Micro Frontends & Module Federation</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Cross-Micro-Frontend Communication** is an essential architectural concept in <u>Micro Frontends & Module Federation</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Cross-Micro-Frontend Communication** is an essential architectural concept in <u>Micro Frontends & Module Federation</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Cross-Micro-Frontend Communication in Micro Frontends & Module Federation:\nexport function handleCrossMicroFrontendCommunication(config) {\n  console.log('Executing Cross-Micro-Frontend Communication with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Cross-Micro-Frontend Communication in Micro Frontends & Module Federation:\nexport function handleCrossMicroFrontendCommunication(config) {\n  console.log('Executing Cross-Micro-Frontend Communication with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Cross-Micro-Frontend Communication in Micro Frontends & Module Federation:\nexport function handleCrossMicroFrontendCommunication(config) {\n  console.log('Executing Cross-Micro-Frontend Communication with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Cross-Micro-Frontend Communication in Micro Frontends & Module Federation.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Cross-Micro-Frontend Communication to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Cross-Micro-Frontend Communication.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Cross-Micro-Frontend Communication, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Cross-Micro-Frontend Communication, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Cross-Micro-Frontend Communication scale under extreme concurrency?",
+      "What monitoring tools can track Cross-Micro-Frontend Communication metrics in production?"
+    ],
+    "followUps": [
+      "How does Cross-Micro-Frontend Communication scale under extreme concurrency?",
+      "What monitoring tools can track Cross-Micro-Frontend Communication metrics in production?"
+    ],
+    "question_hash": "qh_4b752636",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Micro Frontends & Module Federation, Host vs Remote Applications ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Host vs Remote Applications, not Cross-Micro-Frontend Communication."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Micro Frontends & Module Federation, Routing & State Isolation ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Routing & State Isolation, not Cross-Micro-Frontend Communication."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Micro Frontends & Module Federation, Cross-Micro-Frontend Communication ensures predictable, resilient execution.",
+        "explanation": "Correct. In Micro Frontends & Module Federation, Cross-Micro-Frontend Communication ensures predictable, resilient execution."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Micro Frontends & Module Federation, Shared Dependencies & Versioning ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Shared Dependencies & Versioning, not Cross-Micro-Frontend Communication."
+      }
+    ],
+    "correctAnswer": "C",
+    "mcqExplanation": "Correct. In Micro Frontends & Module Federation, Cross-Micro-Frontend Communication ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Host vs Remote Applications, not Cross-Micro-Frontend Communication.",
+      "B": "Incorrect. This describes Routing & State Isolation, not Cross-Micro-Frontend Communication.",
+      "D": "Incorrect. This describes Shared Dependencies & Versioning, not Cross-Micro-Frontend Communication."
+    },
+    "correctOption": "C",
+    "explanation": "Correct. In Micro Frontends & Module Federation, Cross-Micro-Frontend Communication ensures predictable, resilient execution.",
+    "mcqQuestion": "Micro Frontends & Module Federation: How does Cross-Micro-Frontend Communication operate in production enterprise applications (Q19)?"
+  },
+  {
+    "id": "iq-micro-frontends-0020",
+    "standard_id": "MICROFRONTENDS-MCQ-000020",
+    "questionNumber": 20,
+    "subject": "micro-frontends",
+    "category": "Routing & State Isolation",
+    "topic": "Routing & State Isolation",
+    "subtopic": "Routing & State Isolation Operations",
+    "concept": "Routing & State Isolation",
+    "difficulty": "DIFFICULT",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "3_5_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "micro-frontends",
+      "routing---state-isolation",
+      "frontend-interview"
+    ],
+    "question": "Micro Frontends & Module Federation: How does Routing & State Isolation operate in production enterprise applications (Q20)?",
+    "shortAnswer": "In Micro Frontends & Module Federation, Routing & State Isolation ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Routing & State Isolation** is an essential architectural concept in <u>Micro Frontends & Module Federation</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Routing & State Isolation** is an essential architectural concept in <u>Micro Frontends & Module Federation</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Routing & State Isolation** is an essential architectural concept in <u>Micro Frontends & Module Federation</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Routing & State Isolation in Micro Frontends & Module Federation:\nexport function handleRoutingStateIsolation(config) {\n  console.log('Executing Routing & State Isolation with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Routing & State Isolation in Micro Frontends & Module Federation:\nexport function handleRoutingStateIsolation(config) {\n  console.log('Executing Routing & State Isolation with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Routing & State Isolation in Micro Frontends & Module Federation:\nexport function handleRoutingStateIsolation(config) {\n  console.log('Executing Routing & State Isolation with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Routing & State Isolation in Micro Frontends & Module Federation.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Routing & State Isolation to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Routing & State Isolation.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Routing & State Isolation, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Routing & State Isolation, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Routing & State Isolation scale under extreme concurrency?",
+      "What monitoring tools can track Routing & State Isolation metrics in production?"
+    ],
+    "followUps": [
+      "How does Routing & State Isolation scale under extreme concurrency?",
+      "What monitoring tools can track Routing & State Isolation metrics in production?"
+    ],
+    "question_hash": "qh_4915662e",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Micro Frontends & Module Federation, Shared Dependencies & Versioning ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Shared Dependencies & Versioning, not Routing & State Isolation."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Micro Frontends & Module Federation, Module Federation Architecture ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Module Federation Architecture, not Routing & State Isolation."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Micro Frontends & Module Federation, Cross-Micro-Frontend Communication ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Cross-Micro-Frontend Communication, not Routing & State Isolation."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Micro Frontends & Module Federation, Routing & State Isolation ensures predictable, resilient execution.",
+        "explanation": "Correct. In Micro Frontends & Module Federation, Routing & State Isolation ensures predictable, resilient execution."
+      }
+    ],
+    "correctAnswer": "D",
+    "correctOption": "D",
+    "mcqExplanation": "Correct. In Micro Frontends & Module Federation, Routing & State Isolation ensures predictable, resilient execution.",
+    "explanation": "Correct. In Micro Frontends & Module Federation, Routing & State Isolation ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Shared Dependencies & Versioning, not Routing & State Isolation.",
+      "B": "Incorrect. This describes Module Federation Architecture, not Routing & State Isolation.",
+      "C": "Incorrect. This describes Cross-Micro-Frontend Communication, not Routing & State Isolation."
+    },
+    "mcqQuestion": "Micro Frontends & Module Federation: How does Routing & State Isolation operate in production enterprise applications (Q20)?"
+  },
+  {
+    "id": "iq-micro-frontends-0021",
+    "standard_id": "MICROFRONTENDS-MCQ-000021",
+    "questionNumber": 21,
+    "subject": "micro-frontends",
+    "category": "Module Federation Architecture",
+    "topic": "Module Federation Architecture",
+    "subtopic": "Module Federation Architecture Operations",
+    "concept": "Module Federation Architecture",
+    "difficulty": "EASY",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "FRESHER",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "micro-frontends",
+      "module-federation-architecture",
+      "frontend-interview"
+    ],
+    "question": "Micro Frontends & Module Federation: How does Module Federation Architecture operate in production enterprise applications (Q21)?",
+    "shortAnswer": "In Micro Frontends & Module Federation, Module Federation Architecture ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Module Federation Architecture** is an essential architectural concept in <u>Micro Frontends & Module Federation</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Module Federation Architecture** is an essential architectural concept in <u>Micro Frontends & Module Federation</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Module Federation Architecture** is an essential architectural concept in <u>Micro Frontends & Module Federation</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Module Federation Architecture in Micro Frontends & Module Federation:\nexport function handleModuleFederationArchitecture(config) {\n  console.log('Executing Module Federation Architecture with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Module Federation Architecture in Micro Frontends & Module Federation:\nexport function handleModuleFederationArchitecture(config) {\n  console.log('Executing Module Federation Architecture with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Module Federation Architecture in Micro Frontends & Module Federation:\nexport function handleModuleFederationArchitecture(config) {\n  console.log('Executing Module Federation Architecture with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Module Federation Architecture in Micro Frontends & Module Federation.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Module Federation Architecture to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Module Federation Architecture.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Module Federation Architecture, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Module Federation Architecture, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Module Federation Architecture scale under extreme concurrency?",
+      "What monitoring tools can track Module Federation Architecture metrics in production?"
+    ],
+    "followUps": [
+      "How does Module Federation Architecture scale under extreme concurrency?",
+      "What monitoring tools can track Module Federation Architecture metrics in production?"
+    ],
+    "question_hash": "qh_65f46ca7",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Micro Frontends & Module Federation, Module Federation Architecture ensures predictable, resilient execution.",
+        "explanation": "Correct. In Micro Frontends & Module Federation, Module Federation Architecture ensures predictable, resilient execution."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Micro Frontends & Module Federation, Cross-Micro-Frontend Communication ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Cross-Micro-Frontend Communication, not Module Federation Architecture."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Micro Frontends & Module Federation, Host vs Remote Applications ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Host vs Remote Applications, not Module Federation Architecture."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Micro Frontends & Module Federation, Routing & State Isolation ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Routing & State Isolation, not Module Federation Architecture."
+      }
+    ],
+    "correctAnswer": "A",
+    "mcqExplanation": "Correct. In Micro Frontends & Module Federation, Module Federation Architecture ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "B": "Incorrect. This describes Cross-Micro-Frontend Communication, not Module Federation Architecture.",
+      "C": "Incorrect. This describes Host vs Remote Applications, not Module Federation Architecture.",
+      "D": "Incorrect. This describes Routing & State Isolation, not Module Federation Architecture."
+    },
+    "correctOption": "A",
+    "explanation": "Correct. In Micro Frontends & Module Federation, Module Federation Architecture ensures predictable, resilient execution.",
+    "mcqQuestion": "Micro Frontends & Module Federation: How does Module Federation Architecture operate in production enterprise applications (Q21)?"
+  },
+  {
+    "id": "iq-micro-frontends-0022",
+    "standard_id": "MICROFRONTENDS-MCQ-000022",
+    "questionNumber": 22,
+    "subject": "micro-frontends",
+    "category": "Host vs Remote Applications",
+    "topic": "Host vs Remote Applications",
+    "subtopic": "Host vs Remote Applications Operations",
+    "concept": "Host vs Remote Applications",
+    "difficulty": "INTERMEDIATE",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "1_3_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "micro-frontends",
+      "host-vs-remote-applications",
+      "frontend-interview"
+    ],
+    "question": "Micro Frontends & Module Federation: How does Host vs Remote Applications operate in production enterprise applications (Q22)?",
+    "shortAnswer": "In Micro Frontends & Module Federation, Host vs Remote Applications ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Host vs Remote Applications** is an essential architectural concept in <u>Micro Frontends & Module Federation</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Host vs Remote Applications** is an essential architectural concept in <u>Micro Frontends & Module Federation</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Host vs Remote Applications** is an essential architectural concept in <u>Micro Frontends & Module Federation</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Host vs Remote Applications in Micro Frontends & Module Federation:\nexport function handleHostvsRemoteApplications(config) {\n  console.log('Executing Host vs Remote Applications with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Host vs Remote Applications in Micro Frontends & Module Federation:\nexport function handleHostvsRemoteApplications(config) {\n  console.log('Executing Host vs Remote Applications with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Host vs Remote Applications in Micro Frontends & Module Federation:\nexport function handleHostvsRemoteApplications(config) {\n  console.log('Executing Host vs Remote Applications with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Host vs Remote Applications in Micro Frontends & Module Federation.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Host vs Remote Applications to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Host vs Remote Applications.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Host vs Remote Applications, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Host vs Remote Applications, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Host vs Remote Applications scale under extreme concurrency?",
+      "What monitoring tools can track Host vs Remote Applications metrics in production?"
+    ],
+    "followUps": [
+      "How does Host vs Remote Applications scale under extreme concurrency?",
+      "What monitoring tools can track Host vs Remote Applications metrics in production?"
+    ],
+    "question_hash": "qh_164dc850",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Micro Frontends & Module Federation, Routing & State Isolation ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Routing & State Isolation, not Host vs Remote Applications."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Micro Frontends & Module Federation, Host vs Remote Applications ensures predictable, resilient execution.",
+        "explanation": "Correct. In Micro Frontends & Module Federation, Host vs Remote Applications ensures predictable, resilient execution."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Micro Frontends & Module Federation, Shared Dependencies & Versioning ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Shared Dependencies & Versioning, not Host vs Remote Applications."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "Module Federation allows multiple independent Webpack builds to dynamically share code and render remote components at runtime without re-deploying the host application or publishing shared components as...",
+        "explanation": "Incorrect. This describes Host and Remote Container Orchestration, not Host vs Remote Applications."
+      }
+    ],
+    "correctAnswer": "B",
+    "correctOption": "B",
+    "mcqExplanation": "Correct. In Micro Frontends & Module Federation, Host vs Remote Applications ensures predictable, resilient execution.",
+    "explanation": "Correct. In Micro Frontends & Module Federation, Host vs Remote Applications ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Routing & State Isolation, not Host vs Remote Applications.",
+      "C": "Incorrect. This describes Shared Dependencies & Versioning, not Host vs Remote Applications.",
+      "D": "Incorrect. This describes Host and Remote Container Orchestration, not Host vs Remote Applications."
+    },
+    "mcqQuestion": "Micro Frontends & Module Federation: How does Host vs Remote Applications operate in production enterprise applications (Q22)?"
+  },
+  {
+    "id": "iq-micro-frontends-0023",
+    "standard_id": "MICROFRONTENDS-MCQ-000023",
+    "questionNumber": 23,
+    "subject": "micro-frontends",
+    "category": "Shared Dependencies & Versioning",
+    "topic": "Shared Dependencies & Versioning",
+    "subtopic": "Shared Dependencies & Versioning Operations",
+    "concept": "Shared Dependencies & Versioning",
+    "difficulty": "DIFFICULT",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "3_5_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "micro-frontends",
+      "shared-dependencies---versioning",
+      "frontend-interview"
+    ],
+    "question": "Micro Frontends & Module Federation: How does Shared Dependencies & Versioning operate in production enterprise applications (Q23)?",
+    "shortAnswer": "In Micro Frontends & Module Federation, Shared Dependencies & Versioning ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Shared Dependencies & Versioning** is an essential architectural concept in <u>Micro Frontends & Module Federation</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Shared Dependencies & Versioning** is an essential architectural concept in <u>Micro Frontends & Module Federation</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Shared Dependencies & Versioning** is an essential architectural concept in <u>Micro Frontends & Module Federation</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Shared Dependencies & Versioning in Micro Frontends & Module Federation:\nexport function handleSharedDependenciesVersioning(config) {\n  console.log('Executing Shared Dependencies & Versioning with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Shared Dependencies & Versioning in Micro Frontends & Module Federation:\nexport function handleSharedDependenciesVersioning(config) {\n  console.log('Executing Shared Dependencies & Versioning with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Shared Dependencies & Versioning in Micro Frontends & Module Federation:\nexport function handleSharedDependenciesVersioning(config) {\n  console.log('Executing Shared Dependencies & Versioning with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Shared Dependencies & Versioning in Micro Frontends & Module Federation.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Shared Dependencies & Versioning to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Shared Dependencies & Versioning.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Shared Dependencies & Versioning, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Shared Dependencies & Versioning, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Shared Dependencies & Versioning scale under extreme concurrency?",
+      "What monitoring tools can track Shared Dependencies & Versioning metrics in production?"
+    ],
+    "followUps": [
+      "How does Shared Dependencies & Versioning scale under extreme concurrency?",
+      "What monitoring tools can track Shared Dependencies & Versioning metrics in production?"
+    ],
+    "question_hash": "qh_54f5567d",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Micro Frontends & Module Federation, Module Federation Architecture ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Module Federation Architecture, not Shared Dependencies & Versioning."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Micro Frontends & Module Federation, Cross-Micro-Frontend Communication ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Cross-Micro-Frontend Communication, not Shared Dependencies & Versioning."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Micro Frontends & Module Federation, Shared Dependencies & Versioning ensures predictable, resilient execution.",
+        "explanation": "Correct. In Micro Frontends & Module Federation, Shared Dependencies & Versioning ensures predictable, resilient execution."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Micro Frontends & Module Federation, Host vs Remote Applications ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Host vs Remote Applications, not Shared Dependencies & Versioning."
+      }
+    ],
+    "correctAnswer": "C",
+    "mcqExplanation": "Correct. In Micro Frontends & Module Federation, Shared Dependencies & Versioning ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Module Federation Architecture, not Shared Dependencies & Versioning.",
+      "B": "Incorrect. This describes Cross-Micro-Frontend Communication, not Shared Dependencies & Versioning.",
+      "D": "Incorrect. This describes Host vs Remote Applications, not Shared Dependencies & Versioning."
+    },
+    "correctOption": "C",
+    "explanation": "Correct. In Micro Frontends & Module Federation, Shared Dependencies & Versioning ensures predictable, resilient execution.",
+    "mcqQuestion": "Micro Frontends & Module Federation: How does Shared Dependencies & Versioning operate in production enterprise applications (Q23)?"
+  },
+  {
+    "id": "iq-micro-frontends-0024",
+    "standard_id": "MICROFRONTENDS-MCQ-000024",
+    "questionNumber": 24,
+    "subject": "micro-frontends",
+    "category": "Cross-Micro-Frontend Communication",
+    "topic": "Cross-Micro-Frontend Communication",
+    "subtopic": "Cross-Micro-Frontend Communication Operations",
+    "concept": "Cross-Micro-Frontend Communication",
+    "difficulty": "EASY",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "FRESHER",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "micro-frontends",
+      "cross-micro-frontend-communication",
+      "frontend-interview"
+    ],
+    "question": "Micro Frontends & Module Federation: How does Cross-Micro-Frontend Communication operate in production enterprise applications (Q24)?",
+    "shortAnswer": "In Micro Frontends & Module Federation, Cross-Micro-Frontend Communication ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Cross-Micro-Frontend Communication** is an essential architectural concept in <u>Micro Frontends & Module Federation</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Cross-Micro-Frontend Communication** is an essential architectural concept in <u>Micro Frontends & Module Federation</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Cross-Micro-Frontend Communication** is an essential architectural concept in <u>Micro Frontends & Module Federation</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Cross-Micro-Frontend Communication in Micro Frontends & Module Federation:\nexport function handleCrossMicroFrontendCommunication(config) {\n  console.log('Executing Cross-Micro-Frontend Communication with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Cross-Micro-Frontend Communication in Micro Frontends & Module Federation:\nexport function handleCrossMicroFrontendCommunication(config) {\n  console.log('Executing Cross-Micro-Frontend Communication with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Cross-Micro-Frontend Communication in Micro Frontends & Module Federation:\nexport function handleCrossMicroFrontendCommunication(config) {\n  console.log('Executing Cross-Micro-Frontend Communication with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Cross-Micro-Frontend Communication in Micro Frontends & Module Federation.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Cross-Micro-Frontend Communication to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Cross-Micro-Frontend Communication.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Cross-Micro-Frontend Communication, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Cross-Micro-Frontend Communication, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Cross-Micro-Frontend Communication scale under extreme concurrency?",
+      "What monitoring tools can track Cross-Micro-Frontend Communication metrics in production?"
+    ],
+    "followUps": [
+      "How does Cross-Micro-Frontend Communication scale under extreme concurrency?",
+      "What monitoring tools can track Cross-Micro-Frontend Communication metrics in production?"
+    ],
+    "question_hash": "qh_4b752650",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Micro Frontends & Module Federation, Host vs Remote Applications ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Host vs Remote Applications, not Cross-Micro-Frontend Communication."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Micro Frontends & Module Federation, Routing & State Isolation ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Routing & State Isolation, not Cross-Micro-Frontend Communication."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Micro Frontends & Module Federation, Shared Dependencies & Versioning ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Shared Dependencies & Versioning, not Cross-Micro-Frontend Communication."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Micro Frontends & Module Federation, Cross-Micro-Frontend Communication ensures predictable, resilient execution.",
+        "explanation": "Correct. In Micro Frontends & Module Federation, Cross-Micro-Frontend Communication ensures predictable, resilient execution."
+      }
+    ],
+    "correctAnswer": "D",
+    "correctOption": "D",
+    "mcqExplanation": "Correct. In Micro Frontends & Module Federation, Cross-Micro-Frontend Communication ensures predictable, resilient execution.",
+    "explanation": "Correct. In Micro Frontends & Module Federation, Cross-Micro-Frontend Communication ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Host vs Remote Applications, not Cross-Micro-Frontend Communication.",
+      "B": "Incorrect. This describes Routing & State Isolation, not Cross-Micro-Frontend Communication.",
+      "C": "Incorrect. This describes Shared Dependencies & Versioning, not Cross-Micro-Frontend Communication."
+    },
+    "mcqQuestion": "Micro Frontends & Module Federation: How does Cross-Micro-Frontend Communication operate in production enterprise applications (Q24)?"
+  },
+  {
+    "id": "iq-micro-frontends-0025",
+    "standard_id": "MICROFRONTENDS-MCQ-000025",
+    "questionNumber": 25,
+    "subject": "micro-frontends",
+    "category": "Routing & State Isolation",
+    "topic": "Routing & State Isolation",
+    "subtopic": "Routing & State Isolation Operations",
+    "concept": "Routing & State Isolation",
+    "difficulty": "INTERMEDIATE",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "1_3_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "micro-frontends",
+      "routing---state-isolation",
+      "frontend-interview"
+    ],
+    "question": "Micro Frontends & Module Federation: How does Routing & State Isolation operate in production enterprise applications (Q25)?",
+    "shortAnswer": "In Micro Frontends & Module Federation, Routing & State Isolation ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Routing & State Isolation** is an essential architectural concept in <u>Micro Frontends & Module Federation</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Routing & State Isolation** is an essential architectural concept in <u>Micro Frontends & Module Federation</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Routing & State Isolation** is an essential architectural concept in <u>Micro Frontends & Module Federation</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Routing & State Isolation in Micro Frontends & Module Federation:\nexport function handleRoutingStateIsolation(config) {\n  console.log('Executing Routing & State Isolation with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Routing & State Isolation in Micro Frontends & Module Federation:\nexport function handleRoutingStateIsolation(config) {\n  console.log('Executing Routing & State Isolation with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Routing & State Isolation in Micro Frontends & Module Federation:\nexport function handleRoutingStateIsolation(config) {\n  console.log('Executing Routing & State Isolation with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Routing & State Isolation in Micro Frontends & Module Federation.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Routing & State Isolation to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Routing & State Isolation.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Routing & State Isolation, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Routing & State Isolation, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Routing & State Isolation scale under extreme concurrency?",
+      "What monitoring tools can track Routing & State Isolation metrics in production?"
+    ],
+    "followUps": [
+      "How does Routing & State Isolation scale under extreme concurrency?",
+      "What monitoring tools can track Routing & State Isolation metrics in production?"
+    ],
+    "question_hash": "qh_49156629",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Micro Frontends & Module Federation, Routing & State Isolation ensures predictable, resilient execution.",
+        "explanation": "Correct. In Micro Frontends & Module Federation, Routing & State Isolation ensures predictable, resilient execution."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Micro Frontends & Module Federation, Shared Dependencies & Versioning ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Shared Dependencies & Versioning, not Routing & State Isolation."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "Module Federation allows multiple independent Webpack builds to dynamically share code and render remote components at runtime without re-deploying the host application or publishing shared components as...",
+        "explanation": "Incorrect. This describes Host and Remote Container Orchestration, not Routing & State Isolation."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Micro Frontends & Module Federation, Cross-Micro-Frontend Communication ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Cross-Micro-Frontend Communication, not Routing & State Isolation."
+      }
+    ],
+    "correctAnswer": "A",
+    "mcqExplanation": "Correct. In Micro Frontends & Module Federation, Routing & State Isolation ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "B": "Incorrect. This describes Shared Dependencies & Versioning, not Routing & State Isolation.",
+      "C": "Incorrect. This describes Host and Remote Container Orchestration, not Routing & State Isolation.",
+      "D": "Incorrect. This describes Cross-Micro-Frontend Communication, not Routing & State Isolation."
+    },
+    "correctOption": "A",
+    "explanation": "Correct. In Micro Frontends & Module Federation, Routing & State Isolation ensures predictable, resilient execution.",
+    "mcqQuestion": "Micro Frontends & Module Federation: How does Routing & State Isolation operate in production enterprise applications (Q25)?"
+  },
+  {
+    "id": "iq-micro-frontends-0026",
+    "standard_id": "MICROFRONTENDS-MCQ-000026",
+    "questionNumber": 26,
+    "subject": "micro-frontends",
+    "category": "Module Federation Architecture",
+    "topic": "Module Federation Architecture",
+    "subtopic": "Module Federation Architecture Operations",
+    "concept": "Module Federation Architecture",
+    "difficulty": "DIFFICULT",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "3_5_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "micro-frontends",
+      "module-federation-architecture",
+      "frontend-interview"
+    ],
+    "question": "Micro Frontends & Module Federation: How does Module Federation Architecture operate in production enterprise applications (Q26)?",
+    "shortAnswer": "In Micro Frontends & Module Federation, Module Federation Architecture ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Module Federation Architecture** is an essential architectural concept in <u>Micro Frontends & Module Federation</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Module Federation Architecture** is an essential architectural concept in <u>Micro Frontends & Module Federation</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Module Federation Architecture** is an essential architectural concept in <u>Micro Frontends & Module Federation</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Module Federation Architecture in Micro Frontends & Module Federation:\nexport function handleModuleFederationArchitecture(config) {\n  console.log('Executing Module Federation Architecture with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Module Federation Architecture in Micro Frontends & Module Federation:\nexport function handleModuleFederationArchitecture(config) {\n  console.log('Executing Module Federation Architecture with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Module Federation Architecture in Micro Frontends & Module Federation:\nexport function handleModuleFederationArchitecture(config) {\n  console.log('Executing Module Federation Architecture with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Module Federation Architecture in Micro Frontends & Module Federation.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Module Federation Architecture to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Module Federation Architecture.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Module Federation Architecture, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Module Federation Architecture, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Module Federation Architecture scale under extreme concurrency?",
+      "What monitoring tools can track Module Federation Architecture metrics in production?"
+    ],
+    "followUps": [
+      "How does Module Federation Architecture scale under extreme concurrency?",
+      "What monitoring tools can track Module Federation Architecture metrics in production?"
+    ],
+    "question_hash": "qh_65f46cac",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Micro Frontends & Module Federation, Cross-Micro-Frontend Communication ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Cross-Micro-Frontend Communication, not Module Federation Architecture."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Micro Frontends & Module Federation, Module Federation Architecture ensures predictable, resilient execution.",
+        "explanation": "Correct. In Micro Frontends & Module Federation, Module Federation Architecture ensures predictable, resilient execution."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Micro Frontends & Module Federation, Host vs Remote Applications ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Host vs Remote Applications, not Module Federation Architecture."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Micro Frontends & Module Federation, Routing & State Isolation ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Routing & State Isolation, not Module Federation Architecture."
+      }
+    ],
+    "correctAnswer": "B",
+    "correctOption": "B",
+    "mcqExplanation": "Correct. In Micro Frontends & Module Federation, Module Federation Architecture ensures predictable, resilient execution.",
+    "explanation": "Correct. In Micro Frontends & Module Federation, Module Federation Architecture ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Cross-Micro-Frontend Communication, not Module Federation Architecture.",
+      "C": "Incorrect. This describes Host vs Remote Applications, not Module Federation Architecture.",
+      "D": "Incorrect. This describes Routing & State Isolation, not Module Federation Architecture."
+    },
+    "mcqQuestion": "Micro Frontends & Module Federation: How does Module Federation Architecture operate in production enterprise applications (Q26)?"
+  },
+  {
+    "id": "iq-micro-frontends-0027",
+    "standard_id": "MICROFRONTENDS-MCQ-000027",
+    "questionNumber": 27,
+    "subject": "micro-frontends",
+    "category": "Host vs Remote Applications",
+    "topic": "Host vs Remote Applications",
+    "subtopic": "Host vs Remote Applications Operations",
+    "concept": "Host vs Remote Applications",
+    "difficulty": "EASY",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "FRESHER",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "micro-frontends",
+      "host-vs-remote-applications",
+      "frontend-interview"
+    ],
+    "question": "Micro Frontends & Module Federation: How does Host vs Remote Applications operate in production enterprise applications (Q27)?",
+    "shortAnswer": "In Micro Frontends & Module Federation, Host vs Remote Applications ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Host vs Remote Applications** is an essential architectural concept in <u>Micro Frontends & Module Federation</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Host vs Remote Applications** is an essential architectural concept in <u>Micro Frontends & Module Federation</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Host vs Remote Applications** is an essential architectural concept in <u>Micro Frontends & Module Federation</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Host vs Remote Applications in Micro Frontends & Module Federation:\nexport function handleHostvsRemoteApplications(config) {\n  console.log('Executing Host vs Remote Applications with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Host vs Remote Applications in Micro Frontends & Module Federation:\nexport function handleHostvsRemoteApplications(config) {\n  console.log('Executing Host vs Remote Applications with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Host vs Remote Applications in Micro Frontends & Module Federation:\nexport function handleHostvsRemoteApplications(config) {\n  console.log('Executing Host vs Remote Applications with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Host vs Remote Applications in Micro Frontends & Module Federation.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Host vs Remote Applications to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Host vs Remote Applications.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Host vs Remote Applications, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Host vs Remote Applications, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Host vs Remote Applications scale under extreme concurrency?",
+      "What monitoring tools can track Host vs Remote Applications metrics in production?"
+    ],
+    "followUps": [
+      "How does Host vs Remote Applications scale under extreme concurrency?",
+      "What monitoring tools can track Host vs Remote Applications metrics in production?"
+    ],
+    "question_hash": "qh_164dc84b",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Micro Frontends & Module Federation, Routing & State Isolation ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Routing & State Isolation, not Host vs Remote Applications."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Micro Frontends & Module Federation, Shared Dependencies & Versioning ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Shared Dependencies & Versioning, not Host vs Remote Applications."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Micro Frontends & Module Federation, Host vs Remote Applications ensures predictable, resilient execution.",
+        "explanation": "Correct. In Micro Frontends & Module Federation, Host vs Remote Applications ensures predictable, resilient execution."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Micro Frontends & Module Federation, Module Federation Architecture ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Module Federation Architecture, not Host vs Remote Applications."
+      }
+    ],
+    "correctAnswer": "C",
+    "mcqExplanation": "Correct. In Micro Frontends & Module Federation, Host vs Remote Applications ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Routing & State Isolation, not Host vs Remote Applications.",
+      "B": "Incorrect. This describes Shared Dependencies & Versioning, not Host vs Remote Applications.",
+      "D": "Incorrect. This describes Module Federation Architecture, not Host vs Remote Applications."
+    },
+    "correctOption": "C",
+    "explanation": "Correct. In Micro Frontends & Module Federation, Host vs Remote Applications ensures predictable, resilient execution.",
+    "mcqQuestion": "Micro Frontends & Module Federation: How does Host vs Remote Applications operate in production enterprise applications (Q27)?"
+  },
+  {
+    "id": "iq-micro-frontends-0028",
+    "standard_id": "MICROFRONTENDS-MCQ-000028",
+    "questionNumber": 28,
+    "subject": "micro-frontends",
+    "category": "Shared Dependencies & Versioning",
+    "topic": "Shared Dependencies & Versioning",
+    "subtopic": "Shared Dependencies & Versioning Operations",
+    "concept": "Shared Dependencies & Versioning",
+    "difficulty": "INTERMEDIATE",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "1_3_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "micro-frontends",
+      "shared-dependencies---versioning",
+      "frontend-interview"
+    ],
+    "question": "Micro Frontends & Module Federation: How does Shared Dependencies & Versioning operate in production enterprise applications (Q28)?",
+    "shortAnswer": "In Micro Frontends & Module Federation, Shared Dependencies & Versioning ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Shared Dependencies & Versioning** is an essential architectural concept in <u>Micro Frontends & Module Federation</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Shared Dependencies & Versioning** is an essential architectural concept in <u>Micro Frontends & Module Federation</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Shared Dependencies & Versioning** is an essential architectural concept in <u>Micro Frontends & Module Federation</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Shared Dependencies & Versioning in Micro Frontends & Module Federation:\nexport function handleSharedDependenciesVersioning(config) {\n  console.log('Executing Shared Dependencies & Versioning with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Shared Dependencies & Versioning in Micro Frontends & Module Federation:\nexport function handleSharedDependenciesVersioning(config) {\n  console.log('Executing Shared Dependencies & Versioning with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Shared Dependencies & Versioning in Micro Frontends & Module Federation:\nexport function handleSharedDependenciesVersioning(config) {\n  console.log('Executing Shared Dependencies & Versioning with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Shared Dependencies & Versioning in Micro Frontends & Module Federation.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Shared Dependencies & Versioning to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Shared Dependencies & Versioning.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Shared Dependencies & Versioning, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Shared Dependencies & Versioning, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Shared Dependencies & Versioning scale under extreme concurrency?",
+      "What monitoring tools can track Shared Dependencies & Versioning metrics in production?"
+    ],
+    "followUps": [
+      "How does Shared Dependencies & Versioning scale under extreme concurrency?",
+      "What monitoring tools can track Shared Dependencies & Versioning metrics in production?"
+    ],
+    "question_hash": "qh_54f55678",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "Module Federation allows multiple independent Webpack builds to dynamically share code and render remote components at runtime without re-deploying the host application or publishing shared components as...",
+        "explanation": "Incorrect. This describes Host and Remote Container Orchestration, not Shared Dependencies & Versioning."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Micro Frontends & Module Federation, Cross-Micro-Frontend Communication ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Cross-Micro-Frontend Communication, not Shared Dependencies & Versioning."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Micro Frontends & Module Federation, Host vs Remote Applications ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Host vs Remote Applications, not Shared Dependencies & Versioning."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Micro Frontends & Module Federation, Shared Dependencies & Versioning ensures predictable, resilient execution.",
+        "explanation": "Correct. In Micro Frontends & Module Federation, Shared Dependencies & Versioning ensures predictable, resilient execution."
+      }
+    ],
+    "correctAnswer": "D",
+    "correctOption": "D",
+    "mcqExplanation": "Correct. In Micro Frontends & Module Federation, Shared Dependencies & Versioning ensures predictable, resilient execution.",
+    "explanation": "Correct. In Micro Frontends & Module Federation, Shared Dependencies & Versioning ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Host and Remote Container Orchestration, not Shared Dependencies & Versioning.",
+      "B": "Incorrect. This describes Cross-Micro-Frontend Communication, not Shared Dependencies & Versioning.",
+      "C": "Incorrect. This describes Host vs Remote Applications, not Shared Dependencies & Versioning."
+    },
+    "mcqQuestion": "Micro Frontends & Module Federation: How does Shared Dependencies & Versioning operate in production enterprise applications (Q28)?"
+  },
+  {
+    "id": "iq-micro-frontends-0029",
+    "standard_id": "MICROFRONTENDS-MCQ-000029",
+    "questionNumber": 29,
+    "subject": "micro-frontends",
+    "category": "Cross-Micro-Frontend Communication",
+    "topic": "Cross-Micro-Frontend Communication",
+    "subtopic": "Cross-Micro-Frontend Communication Operations",
+    "concept": "Cross-Micro-Frontend Communication",
+    "difficulty": "DIFFICULT",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "3_5_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "micro-frontends",
+      "cross-micro-frontend-communication",
+      "frontend-interview"
+    ],
+    "question": "Micro Frontends & Module Federation: How does Cross-Micro-Frontend Communication operate in production enterprise applications (Q29)?",
+    "shortAnswer": "In Micro Frontends & Module Federation, Cross-Micro-Frontend Communication ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Cross-Micro-Frontend Communication** is an essential architectural concept in <u>Micro Frontends & Module Federation</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Cross-Micro-Frontend Communication** is an essential architectural concept in <u>Micro Frontends & Module Federation</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Cross-Micro-Frontend Communication** is an essential architectural concept in <u>Micro Frontends & Module Federation</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Cross-Micro-Frontend Communication in Micro Frontends & Module Federation:\nexport function handleCrossMicroFrontendCommunication(config) {\n  console.log('Executing Cross-Micro-Frontend Communication with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Cross-Micro-Frontend Communication in Micro Frontends & Module Federation:\nexport function handleCrossMicroFrontendCommunication(config) {\n  console.log('Executing Cross-Micro-Frontend Communication with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Cross-Micro-Frontend Communication in Micro Frontends & Module Federation:\nexport function handleCrossMicroFrontendCommunication(config) {\n  console.log('Executing Cross-Micro-Frontend Communication with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Cross-Micro-Frontend Communication in Micro Frontends & Module Federation.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Cross-Micro-Frontend Communication to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Cross-Micro-Frontend Communication.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Cross-Micro-Frontend Communication, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Cross-Micro-Frontend Communication, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Cross-Micro-Frontend Communication scale under extreme concurrency?",
+      "What monitoring tools can track Cross-Micro-Frontend Communication metrics in production?"
+    ],
+    "followUps": [
+      "How does Cross-Micro-Frontend Communication scale under extreme concurrency?",
+      "What monitoring tools can track Cross-Micro-Frontend Communication metrics in production?"
+    ],
+    "question_hash": "qh_4b752655",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Micro Frontends & Module Federation, Cross-Micro-Frontend Communication ensures predictable, resilient execution.",
+        "explanation": "Correct. In Micro Frontends & Module Federation, Cross-Micro-Frontend Communication ensures predictable, resilient execution."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Micro Frontends & Module Federation, Host vs Remote Applications ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Host vs Remote Applications, not Cross-Micro-Frontend Communication."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Micro Frontends & Module Federation, Routing & State Isolation ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Routing & State Isolation, not Cross-Micro-Frontend Communication."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Micro Frontends & Module Federation, Shared Dependencies & Versioning ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Shared Dependencies & Versioning, not Cross-Micro-Frontend Communication."
+      }
+    ],
+    "correctAnswer": "A",
+    "mcqExplanation": "Correct. In Micro Frontends & Module Federation, Cross-Micro-Frontend Communication ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "B": "Incorrect. This describes Host vs Remote Applications, not Cross-Micro-Frontend Communication.",
+      "C": "Incorrect. This describes Routing & State Isolation, not Cross-Micro-Frontend Communication.",
+      "D": "Incorrect. This describes Shared Dependencies & Versioning, not Cross-Micro-Frontend Communication."
+    },
+    "correctOption": "A",
+    "explanation": "Correct. In Micro Frontends & Module Federation, Cross-Micro-Frontend Communication ensures predictable, resilient execution.",
+    "mcqQuestion": "Micro Frontends & Module Federation: How does Cross-Micro-Frontend Communication operate in production enterprise applications (Q29)?"
+  },
+  {
+    "id": "iq-micro-frontends-0030",
+    "standard_id": "MICROFRONTENDS-MCQ-000030",
+    "questionNumber": 30,
+    "subject": "micro-frontends",
+    "category": "Routing & State Isolation",
+    "topic": "Routing & State Isolation",
+    "subtopic": "Routing & State Isolation Operations",
+    "concept": "Routing & State Isolation",
+    "difficulty": "EASY",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "FRESHER",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "micro-frontends",
+      "routing---state-isolation",
+      "frontend-interview"
+    ],
+    "question": "Micro Frontends & Module Federation: How does Routing & State Isolation operate in production enterprise applications (Q30)?",
+    "shortAnswer": "In Micro Frontends & Module Federation, Routing & State Isolation ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Routing & State Isolation** is an essential architectural concept in <u>Micro Frontends & Module Federation</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Routing & State Isolation** is an essential architectural concept in <u>Micro Frontends & Module Federation</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Routing & State Isolation** is an essential architectural concept in <u>Micro Frontends & Module Federation</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Routing & State Isolation in Micro Frontends & Module Federation:\nexport function handleRoutingStateIsolation(config) {\n  console.log('Executing Routing & State Isolation with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Routing & State Isolation in Micro Frontends & Module Federation:\nexport function handleRoutingStateIsolation(config) {\n  console.log('Executing Routing & State Isolation with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Routing & State Isolation in Micro Frontends & Module Federation:\nexport function handleRoutingStateIsolation(config) {\n  console.log('Executing Routing & State Isolation with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Routing & State Isolation in Micro Frontends & Module Federation.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Routing & State Isolation to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Routing & State Isolation.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Routing & State Isolation, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Routing & State Isolation, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Routing & State Isolation scale under extreme concurrency?",
+      "What monitoring tools can track Routing & State Isolation metrics in production?"
+    ],
+    "followUps": [
+      "How does Routing & State Isolation scale under extreme concurrency?",
+      "What monitoring tools can track Routing & State Isolation metrics in production?"
+    ],
+    "question_hash": "qh_4915660f",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Micro Frontends & Module Federation, Shared Dependencies & Versioning ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Shared Dependencies & Versioning, not Routing & State Isolation."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Micro Frontends & Module Federation, Routing & State Isolation ensures predictable, resilient execution.",
+        "explanation": "Correct. In Micro Frontends & Module Federation, Routing & State Isolation ensures predictable, resilient execution."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Micro Frontends & Module Federation, Module Federation Architecture ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Module Federation Architecture, not Routing & State Isolation."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Micro Frontends & Module Federation, Cross-Micro-Frontend Communication ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Cross-Micro-Frontend Communication, not Routing & State Isolation."
+      }
+    ],
+    "correctAnswer": "B",
+    "correctOption": "B",
+    "mcqExplanation": "Correct. In Micro Frontends & Module Federation, Routing & State Isolation ensures predictable, resilient execution.",
+    "explanation": "Correct. In Micro Frontends & Module Federation, Routing & State Isolation ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Shared Dependencies & Versioning, not Routing & State Isolation.",
+      "C": "Incorrect. This describes Module Federation Architecture, not Routing & State Isolation.",
+      "D": "Incorrect. This describes Cross-Micro-Frontend Communication, not Routing & State Isolation."
+    },
+    "mcqQuestion": "Micro Frontends & Module Federation: How does Routing & State Isolation operate in production enterprise applications (Q30)?"
+  }
+]

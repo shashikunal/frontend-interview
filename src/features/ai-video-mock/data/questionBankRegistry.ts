@@ -47,7 +47,13 @@ for (const q of ALL_MOCK_QUESTIONS) {
 
 export function getMockQuestionById(id: string): MockQuestion | undefined {
   if (!id) return undefined;
-  return mockQuestionByIdMap.get(id) || mockQuestionByIdMap.get(id.toUpperCase());
+  return mockQuestionByIdMap.get(id) || mockQuestionByIdMap.get(id.toLowerCase()) || mockQuestionByIdMap.get(id.toUpperCase());
+}
+
+export function registerDynamicMockQuestion(q: MockQuestion): void {
+  mockQuestionByIdMap.set(q.id, q);
+  mockQuestionByIdMap.set(q.id.toLowerCase(), q);
+  mockQuestionByIdMap.set(q.id.toUpperCase(), q);
 }
 
 export interface QuestionFilterCriteria {

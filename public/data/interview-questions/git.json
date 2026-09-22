@@ -1,0 +1,2756 @@
+[
+  {
+    "id": "iq-git-0001",
+    "standard_id": "GIT-MCQ-000001",
+    "questionNumber": 1,
+    "subject": "git",
+    "category": "Merge vs Rebase Strategies",
+    "topic": "Merge vs Rebase Strategies",
+    "subtopic": "Fast-Forward, Merge Commits & Rebase Mechanics",
+    "concept": "Fast-Forward, Merge Commits & Rebase Mechanics",
+    "difficulty": "INTERMEDIATE",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "1_3_YEARS",
+    "isHighFrequency": true,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Netflix"
+    ],
+    "tags": [
+      "git",
+      "frontend-interview",
+      "merge-vs-rebase-strategies"
+    ],
+    "question": "What is the difference between git merge and git rebase, and when should you use each?",
+    "shortAnswer": "git merge combines divergent branches by creating a new 3-way merge commit that preserves the complete chronological history. git rebase rewrites project history by re-applying commits from the feature branch on top of the target branch, producing a clean, linear commit history.",
+    "simpleExplanation": "**Merge** keeps your exact timeline intact, including every commit and merge bubble.\n\n**Rebase** takes your commits, sets them aside, moves your branch to the very tip of `main`, and reapplies your commits one by one.\n\nThis makes your git history look like a neat straight line without messy merge commits.",
+    "detailedAnswer": "**Merge** keeps your exact timeline intact, including every commit and merge bubble.\n\n**Rebase** takes your commits, sets them aside, moves your branch to the very tip of `main`, and reapplies your commits one by one.\n\nThis makes your git history look like a neat straight line without messy merge commits.",
+    "detailedExplanation": "**Merge** keeps your exact timeline intact, including every commit and merge bubble.\n\n**Rebase** takes your commits, sets them aside, moves your branch to the very tip of `main`, and reapplies your commits one by one.\n\nThis makes your git history look like a neat straight line without messy merge commits.",
+    "howItWorks": "1. `git checkout feature && git rebase main` finds the common ancestor of both branches.\n2. It temporarily saves feature commits to patches.\n3. It advances the feature branch pointer to the tip of main and reapplies each patch.",
+    "codeExample": "# Golden Rule: Never rebase commits that have been pushed to a public shared branch!\n\n# Updating your local feature branch cleanly:\ngit checkout feature/checkout-redesign\ngit fetch origin\ngit rebase origin/main\n\n# If conflicts occur:\n# 1. Resolve conflicting files\n# 2. git add <resolved-files>\n# 3. git rebase --continue",
+    "example": "# Golden Rule: Never rebase commits that have been pushed to a public shared branch!\n\n# Updating your local feature branch cleanly:\ngit checkout feature/checkout-redesign\ngit fetch origin\ngit rebase origin/main\n\n# If conflicts occur:\n# 1. Resolve conflicting files\n# 2. git add <resolved-files>\n# 3. git rebase --continue",
+    "codeSnippet": "# Golden Rule: Never rebase commits that have been pushed to a public shared branch!\n\n# Updating your local feature branch cleanly:\ngit checkout feature/checkout-redesign\ngit fetch origin\ngit rebase origin/main\n\n# If conflicts occur:\n# 1. Resolve conflicting files\n# 2. git add <resolved-files>\n# 3. git rebase --continue",
+    "codeExplanationSpeech": "This code illustrates the architecture and implementation of Fast-Forward, Merge Commits & Rebase Mechanics in modern frontend systems.",
+    "realWorldExample": "High-velocity tech teams practicing Continuous Integration use rebase on feature branches to keep the main branch history linear and easy to rollback.",
+    "commonMistakes": [
+      "Rebasing public shared branches like main, which forces team members to reconcile broken commit histories."
+    ],
+    "interviewTip": "Mention the Golden Rule of Rebasing: Never rebase commits that exist outside your local repository on shared collaborative branches.",
+    "interviewTips": [
+      "Mention the Golden Rule of Rebasing: Never rebase commits that exist outside your local repository on shared collaborative branches."
+    ],
+    "followUpQuestions": [
+      "How does git bisect use binary search to locate the exact commit that introduced a bug?",
+      "What does git cherry-pick do and what are its risks?"
+    ],
+    "followUps": [
+      "How does git bisect use binary search to locate the exact commit that introduced a bug?",
+      "What does git cherry-pick do and what are its risks?"
+    ],
+    "question_hash": "qh_766ec3e8",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "text": "It provides standardized, predictable behavior for Fast-Forward, Merge Commits & Rebase Mechanics across all client environments.",
+        "explanation": "Correct. Follows modern web platform and architectural specifications."
+      },
+      {
+        "key": "B",
+        "text": "It bypasses the browser JavaScript runtime and executes as machine code on the GPU.",
+        "explanation": "Incorrect. Frontend code executes within the browser engine thread."
+      },
+      {
+        "key": "C",
+        "text": "It disables all browser caching and forces fresh HTTP 1.0 TCP handshakes on every interaction.",
+        "explanation": "Incorrect. Caching and networking follow standard browser protocols."
+      },
+      {
+        "key": "D",
+        "text": "It automatically converts all async operations into synchronous blocking code.",
+        "explanation": "Incorrect. The browser event loop remains asynchronous."
+      }
+    ],
+    "correctAnswer": "A",
+    "mcqExplanation": "In Git & GitHub Workflows, Fast-Forward, Merge Commits & Rebase Mechanics provides robust, scalable execution per standard architectural patterns.",
+    "wrongOptionExplanations": {
+      "B": "UI logic executes in the browser JavaScript engine or V8 runtime.",
+      "C": "Browser caching mechanisms operate in accordance with HTTP headers.",
+      "D": "JavaScript remains single-threaded and non-blocking."
+    },
+    "correctOption": "A",
+    "explanation": "In Git & GitHub Workflows, Fast-Forward, Merge Commits & Rebase Mechanics provides robust, scalable execution per standard architectural patterns."
+  },
+  {
+    "id": "iq-git-0002",
+    "standard_id": "GIT-MCQ-000002",
+    "questionNumber": 2,
+    "subject": "git",
+    "category": "Merge vs Rebase Strategies",
+    "topic": "Merge vs Rebase Strategies",
+    "subtopic": "Merge vs Rebase Strategies Operations",
+    "concept": "Merge vs Rebase Strategies",
+    "difficulty": "DIFFICULT",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "3_5_YEARS",
+    "isHighFrequency": true,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "git",
+      "merge-vs-rebase-strategies",
+      "frontend-interview"
+    ],
+    "question": "Git & GitHub Workflows: How does Merge vs Rebase Strategies operate in production enterprise applications (Q2)?",
+    "shortAnswer": "In Git & GitHub Workflows, Merge vs Rebase Strategies ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Merge vs Rebase Strategies** is an essential architectural concept in <u>Git & GitHub Workflows</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Merge vs Rebase Strategies** is an essential architectural concept in <u>Git & GitHub Workflows</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Merge vs Rebase Strategies** is an essential architectural concept in <u>Git & GitHub Workflows</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Merge vs Rebase Strategies in Git & GitHub Workflows:\nexport function handleMergevsRebaseStrategies(config) {\n  console.log('Executing Merge vs Rebase Strategies with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Merge vs Rebase Strategies in Git & GitHub Workflows:\nexport function handleMergevsRebaseStrategies(config) {\n  console.log('Executing Merge vs Rebase Strategies with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Merge vs Rebase Strategies in Git & GitHub Workflows:\nexport function handleMergevsRebaseStrategies(config) {\n  console.log('Executing Merge vs Rebase Strategies with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Merge vs Rebase Strategies in Git & GitHub Workflows.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Merge vs Rebase Strategies to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Merge vs Rebase Strategies.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Merge vs Rebase Strategies, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Merge vs Rebase Strategies, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Merge vs Rebase Strategies scale under extreme concurrency?",
+      "What monitoring tools can track Merge vs Rebase Strategies metrics in production?"
+    ],
+    "followUps": [
+      "How does Merge vs Rebase Strategies scale under extreme concurrency?",
+      "What monitoring tools can track Merge vs Rebase Strategies metrics in production?"
+    ],
+    "question_hash": "qh_5cded9ef",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Git & GitHub Workflows, Trunk-Based vs GitFlow ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Trunk-Based vs GitFlow, not Merge vs Rebase Strategies."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Git & GitHub Workflows, Merge vs Rebase Strategies ensures predictable, resilient execution.",
+        "explanation": "Correct. In Git & GitHub Workflows, Merge vs Rebase Strategies ensures predictable, resilient execution."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Git & GitHub Workflows, Interactive Rebase & Squashing ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Interactive Rebase & Squashing, not Merge vs Rebase Strategies."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Git & GitHub Workflows, Git Internals (Blobs, Trees, Commits) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Git Internals (Blobs, Trees, Commits), not Merge vs Rebase Strategies."
+      }
+    ],
+    "correctAnswer": "B",
+    "correctOption": "B",
+    "mcqExplanation": "Correct. In Git & GitHub Workflows, Merge vs Rebase Strategies ensures predictable, resilient execution.",
+    "explanation": "Correct. In Git & GitHub Workflows, Merge vs Rebase Strategies ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Trunk-Based vs GitFlow, not Merge vs Rebase Strategies.",
+      "C": "Incorrect. This describes Interactive Rebase & Squashing, not Merge vs Rebase Strategies.",
+      "D": "Incorrect. This describes Git Internals (Blobs, Trees, Commits), not Merge vs Rebase Strategies."
+    },
+    "mcqQuestion": "Git & GitHub Workflows: How does Merge vs Rebase Strategies operate in production enterprise applications (Q2)?"
+  },
+  {
+    "id": "iq-git-0003",
+    "standard_id": "GIT-MCQ-000003",
+    "questionNumber": 3,
+    "subject": "git",
+    "category": "Interactive Rebase & Squashing",
+    "topic": "Interactive Rebase & Squashing",
+    "subtopic": "Interactive Rebase & Squashing Operations",
+    "concept": "Interactive Rebase & Squashing",
+    "difficulty": "EASY",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "FRESHER",
+    "isHighFrequency": true,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "git",
+      "interactive-rebase---squashing",
+      "frontend-interview"
+    ],
+    "question": "Git & GitHub Workflows: How does Interactive Rebase & Squashing operate in production enterprise applications (Q3)?",
+    "shortAnswer": "In Git & GitHub Workflows, Interactive Rebase & Squashing ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Interactive Rebase & Squashing** is an essential architectural concept in <u>Git & GitHub Workflows</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Interactive Rebase & Squashing** is an essential architectural concept in <u>Git & GitHub Workflows</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Interactive Rebase & Squashing** is an essential architectural concept in <u>Git & GitHub Workflows</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Interactive Rebase & Squashing in Git & GitHub Workflows:\nexport function handleInteractiveRebaseSquashing(config) {\n  console.log('Executing Interactive Rebase & Squashing with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Interactive Rebase & Squashing in Git & GitHub Workflows:\nexport function handleInteractiveRebaseSquashing(config) {\n  console.log('Executing Interactive Rebase & Squashing with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Interactive Rebase & Squashing in Git & GitHub Workflows:\nexport function handleInteractiveRebaseSquashing(config) {\n  console.log('Executing Interactive Rebase & Squashing with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Interactive Rebase & Squashing in Git & GitHub Workflows.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Interactive Rebase & Squashing to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Interactive Rebase & Squashing.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Interactive Rebase & Squashing, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Interactive Rebase & Squashing, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Interactive Rebase & Squashing scale under extreme concurrency?",
+      "What monitoring tools can track Interactive Rebase & Squashing metrics in production?"
+    ],
+    "followUps": [
+      "How does Interactive Rebase & Squashing scale under extreme concurrency?",
+      "What monitoring tools can track Interactive Rebase & Squashing metrics in production?"
+    ],
+    "question_hash": "qh_2510c1d6",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Git & GitHub Workflows, Git Internals (Blobs, Trees, Commits) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Git Internals (Blobs, Trees, Commits), not Interactive Rebase & Squashing."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Git & GitHub Workflows, Debugging with Git Bisect ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Debugging with Git Bisect, not Interactive Rebase & Squashing."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Git & GitHub Workflows, Interactive Rebase & Squashing ensures predictable, resilient execution.",
+        "explanation": "Correct. In Git & GitHub Workflows, Interactive Rebase & Squashing ensures predictable, resilient execution."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Git & GitHub Workflows, Merge vs Rebase Strategies ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Merge vs Rebase Strategies, not Interactive Rebase & Squashing."
+      }
+    ],
+    "correctAnswer": "C",
+    "mcqExplanation": "Correct. In Git & GitHub Workflows, Interactive Rebase & Squashing ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Git Internals (Blobs, Trees, Commits), not Interactive Rebase & Squashing.",
+      "B": "Incorrect. This describes Debugging with Git Bisect, not Interactive Rebase & Squashing.",
+      "D": "Incorrect. This describes Merge vs Rebase Strategies, not Interactive Rebase & Squashing."
+    },
+    "correctOption": "C",
+    "explanation": "Correct. In Git & GitHub Workflows, Interactive Rebase & Squashing ensures predictable, resilient execution.",
+    "mcqQuestion": "Git & GitHub Workflows: How does Interactive Rebase & Squashing operate in production enterprise applications (Q3)?"
+  },
+  {
+    "id": "iq-git-0004",
+    "standard_id": "GIT-MCQ-000004",
+    "questionNumber": 4,
+    "subject": "git",
+    "category": "Debugging with Git Bisect",
+    "topic": "Debugging with Git Bisect",
+    "subtopic": "Debugging with Git Bisect Operations",
+    "concept": "Debugging with Git Bisect",
+    "difficulty": "INTERMEDIATE",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "1_3_YEARS",
+    "isHighFrequency": true,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "git",
+      "debugging-with-git-bisect",
+      "frontend-interview"
+    ],
+    "question": "Git & GitHub Workflows: How does Debugging with Git Bisect operate in production enterprise applications (Q4)?",
+    "shortAnswer": "In Git & GitHub Workflows, Debugging with Git Bisect ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Debugging with Git Bisect** is an essential architectural concept in <u>Git & GitHub Workflows</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Debugging with Git Bisect** is an essential architectural concept in <u>Git & GitHub Workflows</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Debugging with Git Bisect** is an essential architectural concept in <u>Git & GitHub Workflows</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Debugging with Git Bisect in Git & GitHub Workflows:\nexport function handleDebuggingwithGitBisect(config) {\n  console.log('Executing Debugging with Git Bisect with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Debugging with Git Bisect in Git & GitHub Workflows:\nexport function handleDebuggingwithGitBisect(config) {\n  console.log('Executing Debugging with Git Bisect with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Debugging with Git Bisect in Git & GitHub Workflows:\nexport function handleDebuggingwithGitBisect(config) {\n  console.log('Executing Debugging with Git Bisect with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Debugging with Git Bisect in Git & GitHub Workflows.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Debugging with Git Bisect to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Debugging with Git Bisect.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Debugging with Git Bisect, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Debugging with Git Bisect, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Debugging with Git Bisect scale under extreme concurrency?",
+      "What monitoring tools can track Debugging with Git Bisect metrics in production?"
+    ],
+    "followUps": [
+      "How does Debugging with Git Bisect scale under extreme concurrency?",
+      "What monitoring tools can track Debugging with Git Bisect metrics in production?"
+    ],
+    "question_hash": "qh_3e028f51",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Git & GitHub Workflows, Merge vs Rebase Strategies ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Merge vs Rebase Strategies, not Debugging with Git Bisect."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Git & GitHub Workflows, Trunk-Based vs GitFlow ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Trunk-Based vs GitFlow, not Debugging with Git Bisect."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Git & GitHub Workflows, Interactive Rebase & Squashing ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Interactive Rebase & Squashing, not Debugging with Git Bisect."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Git & GitHub Workflows, Debugging with Git Bisect ensures predictable, resilient execution.",
+        "explanation": "Correct. In Git & GitHub Workflows, Debugging with Git Bisect ensures predictable, resilient execution."
+      }
+    ],
+    "correctAnswer": "D",
+    "correctOption": "D",
+    "mcqExplanation": "Correct. In Git & GitHub Workflows, Debugging with Git Bisect ensures predictable, resilient execution.",
+    "explanation": "Correct. In Git & GitHub Workflows, Debugging with Git Bisect ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Merge vs Rebase Strategies, not Debugging with Git Bisect.",
+      "B": "Incorrect. This describes Trunk-Based vs GitFlow, not Debugging with Git Bisect.",
+      "C": "Incorrect. This describes Interactive Rebase & Squashing, not Debugging with Git Bisect."
+    },
+    "mcqQuestion": "Git & GitHub Workflows: How does Debugging with Git Bisect operate in production enterprise applications (Q4)?"
+  },
+  {
+    "id": "iq-git-0005",
+    "standard_id": "GIT-MCQ-000005",
+    "questionNumber": 5,
+    "subject": "git",
+    "category": "Trunk-Based vs GitFlow",
+    "topic": "Trunk-Based vs GitFlow",
+    "subtopic": "Trunk-Based vs GitFlow Operations",
+    "concept": "Trunk-Based vs GitFlow",
+    "difficulty": "DIFFICULT",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "3_5_YEARS",
+    "isHighFrequency": true,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "git",
+      "trunk-based-vs-gitflow",
+      "frontend-interview"
+    ],
+    "question": "Git & GitHub Workflows: How does Trunk-Based vs GitFlow operate in production enterprise applications (Q5)?",
+    "shortAnswer": "In Git & GitHub Workflows, Trunk-Based vs GitFlow ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Trunk-Based vs GitFlow** is an essential architectural concept in <u>Git & GitHub Workflows</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Trunk-Based vs GitFlow** is an essential architectural concept in <u>Git & GitHub Workflows</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Trunk-Based vs GitFlow** is an essential architectural concept in <u>Git & GitHub Workflows</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Trunk-Based vs GitFlow in Git & GitHub Workflows:\nexport function handleTrunkBasedvsGitFlow(config) {\n  console.log('Executing Trunk-Based vs GitFlow with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Trunk-Based vs GitFlow in Git & GitHub Workflows:\nexport function handleTrunkBasedvsGitFlow(config) {\n  console.log('Executing Trunk-Based vs GitFlow with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Trunk-Based vs GitFlow in Git & GitHub Workflows:\nexport function handleTrunkBasedvsGitFlow(config) {\n  console.log('Executing Trunk-Based vs GitFlow with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Trunk-Based vs GitFlow in Git & GitHub Workflows.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Trunk-Based vs GitFlow to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Trunk-Based vs GitFlow.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Trunk-Based vs GitFlow, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Trunk-Based vs GitFlow, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Trunk-Based vs GitFlow scale under extreme concurrency?",
+      "What monitoring tools can track Trunk-Based vs GitFlow metrics in production?"
+    ],
+    "followUps": [
+      "How does Trunk-Based vs GitFlow scale under extreme concurrency?",
+      "What monitoring tools can track Trunk-Based vs GitFlow metrics in production?"
+    ],
+    "question_hash": "qh_65a2ca38",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Git & GitHub Workflows, Trunk-Based vs GitFlow ensures predictable, resilient execution.",
+        "explanation": "Correct. In Git & GitHub Workflows, Trunk-Based vs GitFlow ensures predictable, resilient execution."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Git & GitHub Workflows, Interactive Rebase & Squashing ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Interactive Rebase & Squashing, not Trunk-Based vs GitFlow."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Git & GitHub Workflows, Git Internals (Blobs, Trees, Commits) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Git Internals (Blobs, Trees, Commits), not Trunk-Based vs GitFlow."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Git & GitHub Workflows, Debugging with Git Bisect ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Debugging with Git Bisect, not Trunk-Based vs GitFlow."
+      }
+    ],
+    "correctAnswer": "A",
+    "mcqExplanation": "Correct. In Git & GitHub Workflows, Trunk-Based vs GitFlow ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "B": "Incorrect. This describes Interactive Rebase & Squashing, not Trunk-Based vs GitFlow.",
+      "C": "Incorrect. This describes Git Internals (Blobs, Trees, Commits), not Trunk-Based vs GitFlow.",
+      "D": "Incorrect. This describes Debugging with Git Bisect, not Trunk-Based vs GitFlow."
+    },
+    "correctOption": "A",
+    "explanation": "Correct. In Git & GitHub Workflows, Trunk-Based vs GitFlow ensures predictable, resilient execution.",
+    "mcqQuestion": "Git & GitHub Workflows: How does Trunk-Based vs GitFlow operate in production enterprise applications (Q5)?"
+  },
+  {
+    "id": "iq-git-0006",
+    "standard_id": "GIT-MCQ-000006",
+    "questionNumber": 6,
+    "subject": "git",
+    "category": "Git Internals (Blobs, Trees, Commits)",
+    "topic": "Git Internals (Blobs, Trees, Commits)",
+    "subtopic": "Git Internals (Blobs, Trees, Commits) Operations",
+    "concept": "Git Internals (Blobs, Trees, Commits)",
+    "difficulty": "EASY",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "FRESHER",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "git",
+      "git-internals--blobs--trees--commits-",
+      "frontend-interview"
+    ],
+    "question": "Git & GitHub Workflows: How does Git Internals (Blobs, Trees, Commits) operate in production enterprise applications (Q6)?",
+    "shortAnswer": "In Git & GitHub Workflows, Git Internals (Blobs, Trees, Commits) ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Git Internals (Blobs, Trees, Commits)** is an essential architectural concept in <u>Git & GitHub Workflows</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Git Internals (Blobs, Trees, Commits)** is an essential architectural concept in <u>Git & GitHub Workflows</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Git Internals (Blobs, Trees, Commits)** is an essential architectural concept in <u>Git & GitHub Workflows</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Git Internals (Blobs, Trees, Commits) in Git & GitHub Workflows:\nexport function handleGitInternalsBlobsTreesCommits(config) {\n  console.log('Executing Git Internals (Blobs, Trees, Commits) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Git Internals (Blobs, Trees, Commits) in Git & GitHub Workflows:\nexport function handleGitInternalsBlobsTreesCommits(config) {\n  console.log('Executing Git Internals (Blobs, Trees, Commits) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Git Internals (Blobs, Trees, Commits) in Git & GitHub Workflows:\nexport function handleGitInternalsBlobsTreesCommits(config) {\n  console.log('Executing Git Internals (Blobs, Trees, Commits) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Git Internals (Blobs, Trees, Commits) in Git & GitHub Workflows.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Git Internals (Blobs, Trees, Commits) to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Git Internals (Blobs, Trees, Commits).",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Git Internals (Blobs, Trees, Commits), explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Git Internals (Blobs, Trees, Commits), explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Git Internals (Blobs, Trees, Commits) scale under extreme concurrency?",
+      "What monitoring tools can track Git Internals (Blobs, Trees, Commits) metrics in production?"
+    ],
+    "followUps": [
+      "How does Git Internals (Blobs, Trees, Commits) scale under extreme concurrency?",
+      "What monitoring tools can track Git Internals (Blobs, Trees, Commits) metrics in production?"
+    ],
+    "question_hash": "qh_730ab093",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Git & GitHub Workflows, Debugging with Git Bisect ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Debugging with Git Bisect, not Git Internals (Blobs, Trees, Commits)."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Git & GitHub Workflows, Git Internals (Blobs, Trees, Commits) ensures predictable, resilient execution.",
+        "explanation": "Correct. In Git & GitHub Workflows, Git Internals (Blobs, Trees, Commits) ensures predictable, resilient execution."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Git & GitHub Workflows, Merge vs Rebase Strategies ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Merge vs Rebase Strategies, not Git Internals (Blobs, Trees, Commits)."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Git & GitHub Workflows, Trunk-Based vs GitFlow ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Trunk-Based vs GitFlow, not Git Internals (Blobs, Trees, Commits)."
+      }
+    ],
+    "correctAnswer": "B",
+    "correctOption": "B",
+    "mcqExplanation": "Correct. In Git & GitHub Workflows, Git Internals (Blobs, Trees, Commits) ensures predictable, resilient execution.",
+    "explanation": "Correct. In Git & GitHub Workflows, Git Internals (Blobs, Trees, Commits) ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Debugging with Git Bisect, not Git Internals (Blobs, Trees, Commits).",
+      "C": "Incorrect. This describes Merge vs Rebase Strategies, not Git Internals (Blobs, Trees, Commits).",
+      "D": "Incorrect. This describes Trunk-Based vs GitFlow, not Git Internals (Blobs, Trees, Commits)."
+    },
+    "mcqQuestion": "Git & GitHub Workflows: How does Git Internals (Blobs, Trees, Commits) operate in production enterprise applications (Q6)?"
+  },
+  {
+    "id": "iq-git-0007",
+    "standard_id": "GIT-MCQ-000007",
+    "questionNumber": 7,
+    "subject": "git",
+    "category": "Merge vs Rebase Strategies",
+    "topic": "Merge vs Rebase Strategies",
+    "subtopic": "Merge vs Rebase Strategies Operations",
+    "concept": "Merge vs Rebase Strategies",
+    "difficulty": "INTERMEDIATE",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "1_3_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "git",
+      "merge-vs-rebase-strategies",
+      "frontend-interview"
+    ],
+    "question": "Git & GitHub Workflows: How does Merge vs Rebase Strategies operate in production enterprise applications (Q7)?",
+    "shortAnswer": "In Git & GitHub Workflows, Merge vs Rebase Strategies ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Merge vs Rebase Strategies** is an essential architectural concept in <u>Git & GitHub Workflows</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Merge vs Rebase Strategies** is an essential architectural concept in <u>Git & GitHub Workflows</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Merge vs Rebase Strategies** is an essential architectural concept in <u>Git & GitHub Workflows</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Merge vs Rebase Strategies in Git & GitHub Workflows:\nexport function handleMergevsRebaseStrategies(config) {\n  console.log('Executing Merge vs Rebase Strategies with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Merge vs Rebase Strategies in Git & GitHub Workflows:\nexport function handleMergevsRebaseStrategies(config) {\n  console.log('Executing Merge vs Rebase Strategies with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Merge vs Rebase Strategies in Git & GitHub Workflows:\nexport function handleMergevsRebaseStrategies(config) {\n  console.log('Executing Merge vs Rebase Strategies with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Merge vs Rebase Strategies in Git & GitHub Workflows.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Merge vs Rebase Strategies to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Merge vs Rebase Strategies.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Merge vs Rebase Strategies, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Merge vs Rebase Strategies, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Merge vs Rebase Strategies scale under extreme concurrency?",
+      "What monitoring tools can track Merge vs Rebase Strategies metrics in production?"
+    ],
+    "followUps": [
+      "How does Merge vs Rebase Strategies scale under extreme concurrency?",
+      "What monitoring tools can track Merge vs Rebase Strategies metrics in production?"
+    ],
+    "question_hash": "qh_5cded9f4",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Git & GitHub Workflows, Trunk-Based vs GitFlow ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Trunk-Based vs GitFlow, not Merge vs Rebase Strategies."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Git & GitHub Workflows, Interactive Rebase & Squashing ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Interactive Rebase & Squashing, not Merge vs Rebase Strategies."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Git & GitHub Workflows, Merge vs Rebase Strategies ensures predictable, resilient execution.",
+        "explanation": "Correct. In Git & GitHub Workflows, Merge vs Rebase Strategies ensures predictable, resilient execution."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Git & GitHub Workflows, Git Internals (Blobs, Trees, Commits) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Git Internals (Blobs, Trees, Commits), not Merge vs Rebase Strategies."
+      }
+    ],
+    "correctAnswer": "C",
+    "mcqExplanation": "Correct. In Git & GitHub Workflows, Merge vs Rebase Strategies ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Trunk-Based vs GitFlow, not Merge vs Rebase Strategies.",
+      "B": "Incorrect. This describes Interactive Rebase & Squashing, not Merge vs Rebase Strategies.",
+      "D": "Incorrect. This describes Git Internals (Blobs, Trees, Commits), not Merge vs Rebase Strategies."
+    },
+    "correctOption": "C",
+    "explanation": "Correct. In Git & GitHub Workflows, Merge vs Rebase Strategies ensures predictable, resilient execution.",
+    "mcqQuestion": "Git & GitHub Workflows: How does Merge vs Rebase Strategies operate in production enterprise applications (Q7)?"
+  },
+  {
+    "id": "iq-git-0008",
+    "standard_id": "GIT-MCQ-000008",
+    "questionNumber": 8,
+    "subject": "git",
+    "category": "Interactive Rebase & Squashing",
+    "topic": "Interactive Rebase & Squashing",
+    "subtopic": "Interactive Rebase & Squashing Operations",
+    "concept": "Interactive Rebase & Squashing",
+    "difficulty": "DIFFICULT",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "3_5_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "git",
+      "interactive-rebase---squashing",
+      "frontend-interview"
+    ],
+    "question": "Git & GitHub Workflows: How does Interactive Rebase & Squashing operate in production enterprise applications (Q8)?",
+    "shortAnswer": "In Git & GitHub Workflows, Interactive Rebase & Squashing ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Interactive Rebase & Squashing** is an essential architectural concept in <u>Git & GitHub Workflows</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Interactive Rebase & Squashing** is an essential architectural concept in <u>Git & GitHub Workflows</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Interactive Rebase & Squashing** is an essential architectural concept in <u>Git & GitHub Workflows</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Interactive Rebase & Squashing in Git & GitHub Workflows:\nexport function handleInteractiveRebaseSquashing(config) {\n  console.log('Executing Interactive Rebase & Squashing with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Interactive Rebase & Squashing in Git & GitHub Workflows:\nexport function handleInteractiveRebaseSquashing(config) {\n  console.log('Executing Interactive Rebase & Squashing with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Interactive Rebase & Squashing in Git & GitHub Workflows:\nexport function handleInteractiveRebaseSquashing(config) {\n  console.log('Executing Interactive Rebase & Squashing with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Interactive Rebase & Squashing in Git & GitHub Workflows.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Interactive Rebase & Squashing to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Interactive Rebase & Squashing.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Interactive Rebase & Squashing, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Interactive Rebase & Squashing, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Interactive Rebase & Squashing scale under extreme concurrency?",
+      "What monitoring tools can track Interactive Rebase & Squashing metrics in production?"
+    ],
+    "followUps": [
+      "How does Interactive Rebase & Squashing scale under extreme concurrency?",
+      "What monitoring tools can track Interactive Rebase & Squashing metrics in production?"
+    ],
+    "question_hash": "qh_2510c1d1",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Git & GitHub Workflows, Git Internals (Blobs, Trees, Commits) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Git Internals (Blobs, Trees, Commits), not Interactive Rebase & Squashing."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Git & GitHub Workflows, Debugging with Git Bisect ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Debugging with Git Bisect, not Interactive Rebase & Squashing."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Git & GitHub Workflows, Merge vs Rebase Strategies ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Merge vs Rebase Strategies, not Interactive Rebase & Squashing."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Git & GitHub Workflows, Interactive Rebase & Squashing ensures predictable, resilient execution.",
+        "explanation": "Correct. In Git & GitHub Workflows, Interactive Rebase & Squashing ensures predictable, resilient execution."
+      }
+    ],
+    "correctAnswer": "D",
+    "correctOption": "D",
+    "mcqExplanation": "Correct. In Git & GitHub Workflows, Interactive Rebase & Squashing ensures predictable, resilient execution.",
+    "explanation": "Correct. In Git & GitHub Workflows, Interactive Rebase & Squashing ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Git Internals (Blobs, Trees, Commits), not Interactive Rebase & Squashing.",
+      "B": "Incorrect. This describes Debugging with Git Bisect, not Interactive Rebase & Squashing.",
+      "C": "Incorrect. This describes Merge vs Rebase Strategies, not Interactive Rebase & Squashing."
+    },
+    "mcqQuestion": "Git & GitHub Workflows: How does Interactive Rebase & Squashing operate in production enterprise applications (Q8)?"
+  },
+  {
+    "id": "iq-git-0009",
+    "standard_id": "GIT-MCQ-000009",
+    "questionNumber": 9,
+    "subject": "git",
+    "category": "Debugging with Git Bisect",
+    "topic": "Debugging with Git Bisect",
+    "subtopic": "Debugging with Git Bisect Operations",
+    "concept": "Debugging with Git Bisect",
+    "difficulty": "EASY",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "FRESHER",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "git",
+      "debugging-with-git-bisect",
+      "frontend-interview"
+    ],
+    "question": "Git & GitHub Workflows: How does Debugging with Git Bisect operate in production enterprise applications (Q9)?",
+    "shortAnswer": "In Git & GitHub Workflows, Debugging with Git Bisect ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Debugging with Git Bisect** is an essential architectural concept in <u>Git & GitHub Workflows</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Debugging with Git Bisect** is an essential architectural concept in <u>Git & GitHub Workflows</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Debugging with Git Bisect** is an essential architectural concept in <u>Git & GitHub Workflows</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Debugging with Git Bisect in Git & GitHub Workflows:\nexport function handleDebuggingwithGitBisect(config) {\n  console.log('Executing Debugging with Git Bisect with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Debugging with Git Bisect in Git & GitHub Workflows:\nexport function handleDebuggingwithGitBisect(config) {\n  console.log('Executing Debugging with Git Bisect with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Debugging with Git Bisect in Git & GitHub Workflows:\nexport function handleDebuggingwithGitBisect(config) {\n  console.log('Executing Debugging with Git Bisect with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Debugging with Git Bisect in Git & GitHub Workflows.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Debugging with Git Bisect to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Debugging with Git Bisect.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Debugging with Git Bisect, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Debugging with Git Bisect, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Debugging with Git Bisect scale under extreme concurrency?",
+      "What monitoring tools can track Debugging with Git Bisect metrics in production?"
+    ],
+    "followUps": [
+      "How does Debugging with Git Bisect scale under extreme concurrency?",
+      "What monitoring tools can track Debugging with Git Bisect metrics in production?"
+    ],
+    "question_hash": "qh_3e028f56",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Git & GitHub Workflows, Debugging with Git Bisect ensures predictable, resilient execution.",
+        "explanation": "Correct. In Git & GitHub Workflows, Debugging with Git Bisect ensures predictable, resilient execution."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Git & GitHub Workflows, Merge vs Rebase Strategies ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Merge vs Rebase Strategies, not Debugging with Git Bisect."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Git & GitHub Workflows, Trunk-Based vs GitFlow ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Trunk-Based vs GitFlow, not Debugging with Git Bisect."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Git & GitHub Workflows, Interactive Rebase & Squashing ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Interactive Rebase & Squashing, not Debugging with Git Bisect."
+      }
+    ],
+    "correctAnswer": "A",
+    "mcqExplanation": "Correct. In Git & GitHub Workflows, Debugging with Git Bisect ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "B": "Incorrect. This describes Merge vs Rebase Strategies, not Debugging with Git Bisect.",
+      "C": "Incorrect. This describes Trunk-Based vs GitFlow, not Debugging with Git Bisect.",
+      "D": "Incorrect. This describes Interactive Rebase & Squashing, not Debugging with Git Bisect."
+    },
+    "correctOption": "A",
+    "explanation": "Correct. In Git & GitHub Workflows, Debugging with Git Bisect ensures predictable, resilient execution.",
+    "mcqQuestion": "Git & GitHub Workflows: How does Debugging with Git Bisect operate in production enterprise applications (Q9)?"
+  },
+  {
+    "id": "iq-git-0010",
+    "standard_id": "GIT-MCQ-000010",
+    "questionNumber": 10,
+    "subject": "git",
+    "category": "Trunk-Based vs GitFlow",
+    "topic": "Trunk-Based vs GitFlow",
+    "subtopic": "Trunk-Based vs GitFlow Operations",
+    "concept": "Trunk-Based vs GitFlow",
+    "difficulty": "INTERMEDIATE",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "1_3_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "git",
+      "trunk-based-vs-gitflow",
+      "frontend-interview"
+    ],
+    "question": "Git & GitHub Workflows: How does Trunk-Based vs GitFlow operate in production enterprise applications (Q10)?",
+    "shortAnswer": "In Git & GitHub Workflows, Trunk-Based vs GitFlow ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Trunk-Based vs GitFlow** is an essential architectural concept in <u>Git & GitHub Workflows</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Trunk-Based vs GitFlow** is an essential architectural concept in <u>Git & GitHub Workflows</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Trunk-Based vs GitFlow** is an essential architectural concept in <u>Git & GitHub Workflows</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Trunk-Based vs GitFlow in Git & GitHub Workflows:\nexport function handleTrunkBasedvsGitFlow(config) {\n  console.log('Executing Trunk-Based vs GitFlow with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Trunk-Based vs GitFlow in Git & GitHub Workflows:\nexport function handleTrunkBasedvsGitFlow(config) {\n  console.log('Executing Trunk-Based vs GitFlow with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Trunk-Based vs GitFlow in Git & GitHub Workflows:\nexport function handleTrunkBasedvsGitFlow(config) {\n  console.log('Executing Trunk-Based vs GitFlow with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Trunk-Based vs GitFlow in Git & GitHub Workflows.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Trunk-Based vs GitFlow to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Trunk-Based vs GitFlow.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Trunk-Based vs GitFlow, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Trunk-Based vs GitFlow, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Trunk-Based vs GitFlow scale under extreme concurrency?",
+      "What monitoring tools can track Trunk-Based vs GitFlow metrics in production?"
+    ],
+    "followUps": [
+      "How does Trunk-Based vs GitFlow scale under extreme concurrency?",
+      "What monitoring tools can track Trunk-Based vs GitFlow metrics in production?"
+    ],
+    "question_hash": "qh_4eb67d14",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Git & GitHub Workflows, Interactive Rebase & Squashing ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Interactive Rebase & Squashing, not Trunk-Based vs GitFlow."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Git & GitHub Workflows, Trunk-Based vs GitFlow ensures predictable, resilient execution.",
+        "explanation": "Correct. In Git & GitHub Workflows, Trunk-Based vs GitFlow ensures predictable, resilient execution."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Git & GitHub Workflows, Git Internals (Blobs, Trees, Commits) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Git Internals (Blobs, Trees, Commits), not Trunk-Based vs GitFlow."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Git & GitHub Workflows, Debugging with Git Bisect ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Debugging with Git Bisect, not Trunk-Based vs GitFlow."
+      }
+    ],
+    "correctAnswer": "B",
+    "correctOption": "B",
+    "mcqExplanation": "Correct. In Git & GitHub Workflows, Trunk-Based vs GitFlow ensures predictable, resilient execution.",
+    "explanation": "Correct. In Git & GitHub Workflows, Trunk-Based vs GitFlow ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Interactive Rebase & Squashing, not Trunk-Based vs GitFlow.",
+      "C": "Incorrect. This describes Git Internals (Blobs, Trees, Commits), not Trunk-Based vs GitFlow.",
+      "D": "Incorrect. This describes Debugging with Git Bisect, not Trunk-Based vs GitFlow."
+    },
+    "mcqQuestion": "Git & GitHub Workflows: How does Trunk-Based vs GitFlow operate in production enterprise applications (Q10)?"
+  },
+  {
+    "id": "iq-git-0011",
+    "standard_id": "GIT-MCQ-000011",
+    "questionNumber": 11,
+    "subject": "git",
+    "category": "Git Internals (Blobs, Trees, Commits)",
+    "topic": "Git Internals (Blobs, Trees, Commits)",
+    "subtopic": "Git Internals (Blobs, Trees, Commits) Operations",
+    "concept": "Git Internals (Blobs, Trees, Commits)",
+    "difficulty": "DIFFICULT",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "3_5_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "git",
+      "git-internals--blobs--trees--commits-",
+      "frontend-interview"
+    ],
+    "question": "Git & GitHub Workflows: How does Git Internals (Blobs, Trees, Commits) operate in production enterprise applications (Q11)?",
+    "shortAnswer": "In Git & GitHub Workflows, Git Internals (Blobs, Trees, Commits) ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Git Internals (Blobs, Trees, Commits)** is an essential architectural concept in <u>Git & GitHub Workflows</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Git Internals (Blobs, Trees, Commits)** is an essential architectural concept in <u>Git & GitHub Workflows</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Git Internals (Blobs, Trees, Commits)** is an essential architectural concept in <u>Git & GitHub Workflows</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Git Internals (Blobs, Trees, Commits) in Git & GitHub Workflows:\nexport function handleGitInternalsBlobsTreesCommits(config) {\n  console.log('Executing Git Internals (Blobs, Trees, Commits) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Git Internals (Blobs, Trees, Commits) in Git & GitHub Workflows:\nexport function handleGitInternalsBlobsTreesCommits(config) {\n  console.log('Executing Git Internals (Blobs, Trees, Commits) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Git Internals (Blobs, Trees, Commits) in Git & GitHub Workflows:\nexport function handleGitInternalsBlobsTreesCommits(config) {\n  console.log('Executing Git Internals (Blobs, Trees, Commits) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Git Internals (Blobs, Trees, Commits) in Git & GitHub Workflows.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Git Internals (Blobs, Trees, Commits) to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Git Internals (Blobs, Trees, Commits).",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Git Internals (Blobs, Trees, Commits), explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Git Internals (Blobs, Trees, Commits), explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Git Internals (Blobs, Trees, Commits) scale under extreme concurrency?",
+      "What monitoring tools can track Git Internals (Blobs, Trees, Commits) metrics in production?"
+    ],
+    "followUps": [
+      "How does Git Internals (Blobs, Trees, Commits) scale under extreme concurrency?",
+      "What monitoring tools can track Git Internals (Blobs, Trees, Commits) metrics in production?"
+    ],
+    "question_hash": "qh_11b49e9d",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Git & GitHub Workflows, Debugging with Git Bisect ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Debugging with Git Bisect, not Git Internals (Blobs, Trees, Commits)."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Git & GitHub Workflows, Merge vs Rebase Strategies ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Merge vs Rebase Strategies, not Git Internals (Blobs, Trees, Commits)."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Git & GitHub Workflows, Git Internals (Blobs, Trees, Commits) ensures predictable, resilient execution.",
+        "explanation": "Correct. In Git & GitHub Workflows, Git Internals (Blobs, Trees, Commits) ensures predictable, resilient execution."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Git & GitHub Workflows, Trunk-Based vs GitFlow ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Trunk-Based vs GitFlow, not Git Internals (Blobs, Trees, Commits)."
+      }
+    ],
+    "correctAnswer": "C",
+    "mcqExplanation": "Correct. In Git & GitHub Workflows, Git Internals (Blobs, Trees, Commits) ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Debugging with Git Bisect, not Git Internals (Blobs, Trees, Commits).",
+      "B": "Incorrect. This describes Merge vs Rebase Strategies, not Git Internals (Blobs, Trees, Commits).",
+      "D": "Incorrect. This describes Trunk-Based vs GitFlow, not Git Internals (Blobs, Trees, Commits)."
+    },
+    "correctOption": "C",
+    "explanation": "Correct. In Git & GitHub Workflows, Git Internals (Blobs, Trees, Commits) ensures predictable, resilient execution.",
+    "mcqQuestion": "Git & GitHub Workflows: How does Git Internals (Blobs, Trees, Commits) operate in production enterprise applications (Q11)?"
+  },
+  {
+    "id": "iq-git-0012",
+    "standard_id": "GIT-MCQ-000012",
+    "questionNumber": 12,
+    "subject": "git",
+    "category": "Merge vs Rebase Strategies",
+    "topic": "Merge vs Rebase Strategies",
+    "subtopic": "Merge vs Rebase Strategies Operations",
+    "concept": "Merge vs Rebase Strategies",
+    "difficulty": "EASY",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "FRESHER",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "git",
+      "merge-vs-rebase-strategies",
+      "frontend-interview"
+    ],
+    "question": "Git & GitHub Workflows: How does Merge vs Rebase Strategies operate in production enterprise applications (Q12)?",
+    "shortAnswer": "In Git & GitHub Workflows, Merge vs Rebase Strategies ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Merge vs Rebase Strategies** is an essential architectural concept in <u>Git & GitHub Workflows</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Merge vs Rebase Strategies** is an essential architectural concept in <u>Git & GitHub Workflows</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Merge vs Rebase Strategies** is an essential architectural concept in <u>Git & GitHub Workflows</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Merge vs Rebase Strategies in Git & GitHub Workflows:\nexport function handleMergevsRebaseStrategies(config) {\n  console.log('Executing Merge vs Rebase Strategies with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Merge vs Rebase Strategies in Git & GitHub Workflows:\nexport function handleMergevsRebaseStrategies(config) {\n  console.log('Executing Merge vs Rebase Strategies with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Merge vs Rebase Strategies in Git & GitHub Workflows:\nexport function handleMergevsRebaseStrategies(config) {\n  console.log('Executing Merge vs Rebase Strategies with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Merge vs Rebase Strategies in Git & GitHub Workflows.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Merge vs Rebase Strategies to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Merge vs Rebase Strategies.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Merge vs Rebase Strategies, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Merge vs Rebase Strategies, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Merge vs Rebase Strategies scale under extreme concurrency?",
+      "What monitoring tools can track Merge vs Rebase Strategies metrics in production?"
+    ],
+    "followUps": [
+      "How does Merge vs Rebase Strategies scale under extreme concurrency?",
+      "What monitoring tools can track Merge vs Rebase Strategies metrics in production?"
+    ],
+    "question_hash": "qh_3efc6404",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Git & GitHub Workflows, Trunk-Based vs GitFlow ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Trunk-Based vs GitFlow, not Merge vs Rebase Strategies."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Git & GitHub Workflows, Interactive Rebase & Squashing ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Interactive Rebase & Squashing, not Merge vs Rebase Strategies."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Git & GitHub Workflows, Git Internals (Blobs, Trees, Commits) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Git Internals (Blobs, Trees, Commits), not Merge vs Rebase Strategies."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Git & GitHub Workflows, Merge vs Rebase Strategies ensures predictable, resilient execution.",
+        "explanation": "Correct. In Git & GitHub Workflows, Merge vs Rebase Strategies ensures predictable, resilient execution."
+      }
+    ],
+    "correctAnswer": "D",
+    "correctOption": "D",
+    "mcqExplanation": "Correct. In Git & GitHub Workflows, Merge vs Rebase Strategies ensures predictable, resilient execution.",
+    "explanation": "Correct. In Git & GitHub Workflows, Merge vs Rebase Strategies ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Trunk-Based vs GitFlow, not Merge vs Rebase Strategies.",
+      "B": "Incorrect. This describes Interactive Rebase & Squashing, not Merge vs Rebase Strategies.",
+      "C": "Incorrect. This describes Git Internals (Blobs, Trees, Commits), not Merge vs Rebase Strategies."
+    },
+    "mcqQuestion": "Git & GitHub Workflows: How does Merge vs Rebase Strategies operate in production enterprise applications (Q12)?"
+  },
+  {
+    "id": "iq-git-0013",
+    "standard_id": "GIT-MCQ-000013",
+    "questionNumber": 13,
+    "subject": "git",
+    "category": "Interactive Rebase & Squashing",
+    "topic": "Interactive Rebase & Squashing",
+    "subtopic": "Interactive Rebase & Squashing Operations",
+    "concept": "Interactive Rebase & Squashing",
+    "difficulty": "INTERMEDIATE",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "1_3_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "git",
+      "interactive-rebase---squashing",
+      "frontend-interview"
+    ],
+    "question": "Git & GitHub Workflows: How does Interactive Rebase & Squashing operate in production enterprise applications (Q13)?",
+    "shortAnswer": "In Git & GitHub Workflows, Interactive Rebase & Squashing ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Interactive Rebase & Squashing** is an essential architectural concept in <u>Git & GitHub Workflows</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Interactive Rebase & Squashing** is an essential architectural concept in <u>Git & GitHub Workflows</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Interactive Rebase & Squashing** is an essential architectural concept in <u>Git & GitHub Workflows</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Interactive Rebase & Squashing in Git & GitHub Workflows:\nexport function handleInteractiveRebaseSquashing(config) {\n  console.log('Executing Interactive Rebase & Squashing with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Interactive Rebase & Squashing in Git & GitHub Workflows:\nexport function handleInteractiveRebaseSquashing(config) {\n  console.log('Executing Interactive Rebase & Squashing with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Interactive Rebase & Squashing in Git & GitHub Workflows:\nexport function handleInteractiveRebaseSquashing(config) {\n  console.log('Executing Interactive Rebase & Squashing with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Interactive Rebase & Squashing in Git & GitHub Workflows.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Interactive Rebase & Squashing to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Interactive Rebase & Squashing.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Interactive Rebase & Squashing, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Interactive Rebase & Squashing, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Interactive Rebase & Squashing scale under extreme concurrency?",
+      "What monitoring tools can track Interactive Rebase & Squashing metrics in production?"
+    ],
+    "followUps": [
+      "How does Interactive Rebase & Squashing scale under extreme concurrency?",
+      "What monitoring tools can track Interactive Rebase & Squashing metrics in production?"
+    ],
+    "question_hash": "qh_7d0778f5",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Git & GitHub Workflows, Interactive Rebase & Squashing ensures predictable, resilient execution.",
+        "explanation": "Correct. In Git & GitHub Workflows, Interactive Rebase & Squashing ensures predictable, resilient execution."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Git & GitHub Workflows, Git Internals (Blobs, Trees, Commits) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Git Internals (Blobs, Trees, Commits), not Interactive Rebase & Squashing."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Git & GitHub Workflows, Debugging with Git Bisect ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Debugging with Git Bisect, not Interactive Rebase & Squashing."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Git & GitHub Workflows, Merge vs Rebase Strategies ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Merge vs Rebase Strategies, not Interactive Rebase & Squashing."
+      }
+    ],
+    "correctAnswer": "A",
+    "mcqExplanation": "Correct. In Git & GitHub Workflows, Interactive Rebase & Squashing ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "B": "Incorrect. This describes Git Internals (Blobs, Trees, Commits), not Interactive Rebase & Squashing.",
+      "C": "Incorrect. This describes Debugging with Git Bisect, not Interactive Rebase & Squashing.",
+      "D": "Incorrect. This describes Merge vs Rebase Strategies, not Interactive Rebase & Squashing."
+    },
+    "correctOption": "A",
+    "explanation": "Correct. In Git & GitHub Workflows, Interactive Rebase & Squashing ensures predictable, resilient execution.",
+    "mcqQuestion": "Git & GitHub Workflows: How does Interactive Rebase & Squashing operate in production enterprise applications (Q13)?"
+  },
+  {
+    "id": "iq-git-0014",
+    "standard_id": "GIT-MCQ-000014",
+    "questionNumber": 14,
+    "subject": "git",
+    "category": "Debugging with Git Bisect",
+    "topic": "Debugging with Git Bisect",
+    "subtopic": "Debugging with Git Bisect Operations",
+    "concept": "Debugging with Git Bisect",
+    "difficulty": "DIFFICULT",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "3_5_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "git",
+      "debugging-with-git-bisect",
+      "frontend-interview"
+    ],
+    "question": "Git & GitHub Workflows: How does Debugging with Git Bisect operate in production enterprise applications (Q14)?",
+    "shortAnswer": "In Git & GitHub Workflows, Debugging with Git Bisect ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Debugging with Git Bisect** is an essential architectural concept in <u>Git & GitHub Workflows</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Debugging with Git Bisect** is an essential architectural concept in <u>Git & GitHub Workflows</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Debugging with Git Bisect** is an essential architectural concept in <u>Git & GitHub Workflows</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Debugging with Git Bisect in Git & GitHub Workflows:\nexport function handleDebuggingwithGitBisect(config) {\n  console.log('Executing Debugging with Git Bisect with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Debugging with Git Bisect in Git & GitHub Workflows:\nexport function handleDebuggingwithGitBisect(config) {\n  console.log('Executing Debugging with Git Bisect with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Debugging with Git Bisect in Git & GitHub Workflows:\nexport function handleDebuggingwithGitBisect(config) {\n  console.log('Executing Debugging with Git Bisect with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Debugging with Git Bisect in Git & GitHub Workflows.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Debugging with Git Bisect to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Debugging with Git Bisect.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Debugging with Git Bisect, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Debugging with Git Bisect, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Debugging with Git Bisect scale under extreme concurrency?",
+      "What monitoring tools can track Debugging with Git Bisect metrics in production?"
+    ],
+    "followUps": [
+      "How does Debugging with Git Bisect scale under extreme concurrency?",
+      "What monitoring tools can track Debugging with Git Bisect metrics in production?"
+    ],
+    "question_hash": "qh_7db0a55a",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Git & GitHub Workflows, Merge vs Rebase Strategies ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Merge vs Rebase Strategies, not Debugging with Git Bisect."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Git & GitHub Workflows, Debugging with Git Bisect ensures predictable, resilient execution.",
+        "explanation": "Correct. In Git & GitHub Workflows, Debugging with Git Bisect ensures predictable, resilient execution."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Git & GitHub Workflows, Trunk-Based vs GitFlow ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Trunk-Based vs GitFlow, not Debugging with Git Bisect."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Git & GitHub Workflows, Interactive Rebase & Squashing ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Interactive Rebase & Squashing, not Debugging with Git Bisect."
+      }
+    ],
+    "correctAnswer": "B",
+    "correctOption": "B",
+    "mcqExplanation": "Correct. In Git & GitHub Workflows, Debugging with Git Bisect ensures predictable, resilient execution.",
+    "explanation": "Correct. In Git & GitHub Workflows, Debugging with Git Bisect ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Merge vs Rebase Strategies, not Debugging with Git Bisect.",
+      "C": "Incorrect. This describes Trunk-Based vs GitFlow, not Debugging with Git Bisect.",
+      "D": "Incorrect. This describes Interactive Rebase & Squashing, not Debugging with Git Bisect."
+    },
+    "mcqQuestion": "Git & GitHub Workflows: How does Debugging with Git Bisect operate in production enterprise applications (Q14)?"
+  },
+  {
+    "id": "iq-git-0015",
+    "standard_id": "GIT-MCQ-000015",
+    "questionNumber": 15,
+    "subject": "git",
+    "category": "Trunk-Based vs GitFlow",
+    "topic": "Trunk-Based vs GitFlow",
+    "subtopic": "Trunk-Based vs GitFlow Operations",
+    "concept": "Trunk-Based vs GitFlow",
+    "difficulty": "EASY",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "FRESHER",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "git",
+      "trunk-based-vs-gitflow",
+      "frontend-interview"
+    ],
+    "question": "Git & GitHub Workflows: How does Trunk-Based vs GitFlow operate in production enterprise applications (Q15)?",
+    "shortAnswer": "In Git & GitHub Workflows, Trunk-Based vs GitFlow ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Trunk-Based vs GitFlow** is an essential architectural concept in <u>Git & GitHub Workflows</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Trunk-Based vs GitFlow** is an essential architectural concept in <u>Git & GitHub Workflows</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Trunk-Based vs GitFlow** is an essential architectural concept in <u>Git & GitHub Workflows</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Trunk-Based vs GitFlow in Git & GitHub Workflows:\nexport function handleTrunkBasedvsGitFlow(config) {\n  console.log('Executing Trunk-Based vs GitFlow with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Trunk-Based vs GitFlow in Git & GitHub Workflows:\nexport function handleTrunkBasedvsGitFlow(config) {\n  console.log('Executing Trunk-Based vs GitFlow with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Trunk-Based vs GitFlow in Git & GitHub Workflows:\nexport function handleTrunkBasedvsGitFlow(config) {\n  console.log('Executing Trunk-Based vs GitFlow with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Trunk-Based vs GitFlow in Git & GitHub Workflows.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Trunk-Based vs GitFlow to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Trunk-Based vs GitFlow.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Trunk-Based vs GitFlow, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Trunk-Based vs GitFlow, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Trunk-Based vs GitFlow scale under extreme concurrency?",
+      "What monitoring tools can track Trunk-Based vs GitFlow metrics in production?"
+    ],
+    "followUps": [
+      "How does Trunk-Based vs GitFlow scale under extreme concurrency?",
+      "What monitoring tools can track Trunk-Based vs GitFlow metrics in production?"
+    ],
+    "question_hash": "qh_4eb67d0f",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Git & GitHub Workflows, Interactive Rebase & Squashing ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Interactive Rebase & Squashing, not Trunk-Based vs GitFlow."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Git & GitHub Workflows, Git Internals (Blobs, Trees, Commits) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Git Internals (Blobs, Trees, Commits), not Trunk-Based vs GitFlow."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Git & GitHub Workflows, Trunk-Based vs GitFlow ensures predictable, resilient execution.",
+        "explanation": "Correct. In Git & GitHub Workflows, Trunk-Based vs GitFlow ensures predictable, resilient execution."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Git & GitHub Workflows, Debugging with Git Bisect ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Debugging with Git Bisect, not Trunk-Based vs GitFlow."
+      }
+    ],
+    "correctAnswer": "C",
+    "mcqExplanation": "Correct. In Git & GitHub Workflows, Trunk-Based vs GitFlow ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Interactive Rebase & Squashing, not Trunk-Based vs GitFlow.",
+      "B": "Incorrect. This describes Git Internals (Blobs, Trees, Commits), not Trunk-Based vs GitFlow.",
+      "D": "Incorrect. This describes Debugging with Git Bisect, not Trunk-Based vs GitFlow."
+    },
+    "correctOption": "C",
+    "explanation": "Correct. In Git & GitHub Workflows, Trunk-Based vs GitFlow ensures predictable, resilient execution.",
+    "mcqQuestion": "Git & GitHub Workflows: How does Trunk-Based vs GitFlow operate in production enterprise applications (Q15)?"
+  },
+  {
+    "id": "iq-git-0016",
+    "standard_id": "GIT-MCQ-000016",
+    "questionNumber": 16,
+    "subject": "git",
+    "category": "Git Internals (Blobs, Trees, Commits)",
+    "topic": "Git Internals (Blobs, Trees, Commits)",
+    "subtopic": "Git Internals (Blobs, Trees, Commits) Operations",
+    "concept": "Git Internals (Blobs, Trees, Commits)",
+    "difficulty": "INTERMEDIATE",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "1_3_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "git",
+      "git-internals--blobs--trees--commits-",
+      "frontend-interview"
+    ],
+    "question": "Git & GitHub Workflows: How does Git Internals (Blobs, Trees, Commits) operate in production enterprise applications (Q16)?",
+    "shortAnswer": "In Git & GitHub Workflows, Git Internals (Blobs, Trees, Commits) ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Git Internals (Blobs, Trees, Commits)** is an essential architectural concept in <u>Git & GitHub Workflows</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Git Internals (Blobs, Trees, Commits)** is an essential architectural concept in <u>Git & GitHub Workflows</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Git Internals (Blobs, Trees, Commits)** is an essential architectural concept in <u>Git & GitHub Workflows</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Git Internals (Blobs, Trees, Commits) in Git & GitHub Workflows:\nexport function handleGitInternalsBlobsTreesCommits(config) {\n  console.log('Executing Git Internals (Blobs, Trees, Commits) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Git Internals (Blobs, Trees, Commits) in Git & GitHub Workflows:\nexport function handleGitInternalsBlobsTreesCommits(config) {\n  console.log('Executing Git Internals (Blobs, Trees, Commits) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Git Internals (Blobs, Trees, Commits) in Git & GitHub Workflows:\nexport function handleGitInternalsBlobsTreesCommits(config) {\n  console.log('Executing Git Internals (Blobs, Trees, Commits) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Git Internals (Blobs, Trees, Commits) in Git & GitHub Workflows.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Git Internals (Blobs, Trees, Commits) to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Git Internals (Blobs, Trees, Commits).",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Git Internals (Blobs, Trees, Commits), explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Git Internals (Blobs, Trees, Commits), explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Git Internals (Blobs, Trees, Commits) scale under extreme concurrency?",
+      "What monitoring tools can track Git Internals (Blobs, Trees, Commits) metrics in production?"
+    ],
+    "followUps": [
+      "How does Git Internals (Blobs, Trees, Commits) scale under extreme concurrency?",
+      "What monitoring tools can track Git Internals (Blobs, Trees, Commits) metrics in production?"
+    ],
+    "question_hash": "qh_11b49e98",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Git & GitHub Workflows, Debugging with Git Bisect ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Debugging with Git Bisect, not Git Internals (Blobs, Trees, Commits)."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Git & GitHub Workflows, Merge vs Rebase Strategies ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Merge vs Rebase Strategies, not Git Internals (Blobs, Trees, Commits)."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Git & GitHub Workflows, Trunk-Based vs GitFlow ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Trunk-Based vs GitFlow, not Git Internals (Blobs, Trees, Commits)."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Git & GitHub Workflows, Git Internals (Blobs, Trees, Commits) ensures predictable, resilient execution.",
+        "explanation": "Correct. In Git & GitHub Workflows, Git Internals (Blobs, Trees, Commits) ensures predictable, resilient execution."
+      }
+    ],
+    "correctAnswer": "D",
+    "correctOption": "D",
+    "mcqExplanation": "Correct. In Git & GitHub Workflows, Git Internals (Blobs, Trees, Commits) ensures predictable, resilient execution.",
+    "explanation": "Correct. In Git & GitHub Workflows, Git Internals (Blobs, Trees, Commits) ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Debugging with Git Bisect, not Git Internals (Blobs, Trees, Commits).",
+      "B": "Incorrect. This describes Merge vs Rebase Strategies, not Git Internals (Blobs, Trees, Commits).",
+      "C": "Incorrect. This describes Trunk-Based vs GitFlow, not Git Internals (Blobs, Trees, Commits)."
+    },
+    "mcqQuestion": "Git & GitHub Workflows: How does Git Internals (Blobs, Trees, Commits) operate in production enterprise applications (Q16)?"
+  },
+  {
+    "id": "iq-git-0017",
+    "standard_id": "GIT-MCQ-000017",
+    "questionNumber": 17,
+    "subject": "git",
+    "category": "Merge vs Rebase Strategies",
+    "topic": "Merge vs Rebase Strategies",
+    "subtopic": "Merge vs Rebase Strategies Operations",
+    "concept": "Merge vs Rebase Strategies",
+    "difficulty": "DIFFICULT",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "3_5_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "git",
+      "merge-vs-rebase-strategies",
+      "frontend-interview"
+    ],
+    "question": "Git & GitHub Workflows: How does Merge vs Rebase Strategies operate in production enterprise applications (Q17)?",
+    "shortAnswer": "In Git & GitHub Workflows, Merge vs Rebase Strategies ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Merge vs Rebase Strategies** is an essential architectural concept in <u>Git & GitHub Workflows</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Merge vs Rebase Strategies** is an essential architectural concept in <u>Git & GitHub Workflows</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Merge vs Rebase Strategies** is an essential architectural concept in <u>Git & GitHub Workflows</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Merge vs Rebase Strategies in Git & GitHub Workflows:\nexport function handleMergevsRebaseStrategies(config) {\n  console.log('Executing Merge vs Rebase Strategies with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Merge vs Rebase Strategies in Git & GitHub Workflows:\nexport function handleMergevsRebaseStrategies(config) {\n  console.log('Executing Merge vs Rebase Strategies with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Merge vs Rebase Strategies in Git & GitHub Workflows:\nexport function handleMergevsRebaseStrategies(config) {\n  console.log('Executing Merge vs Rebase Strategies with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Merge vs Rebase Strategies in Git & GitHub Workflows.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Merge vs Rebase Strategies to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Merge vs Rebase Strategies.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Merge vs Rebase Strategies, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Merge vs Rebase Strategies, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Merge vs Rebase Strategies scale under extreme concurrency?",
+      "What monitoring tools can track Merge vs Rebase Strategies metrics in production?"
+    ],
+    "followUps": [
+      "How does Merge vs Rebase Strategies scale under extreme concurrency?",
+      "What monitoring tools can track Merge vs Rebase Strategies metrics in production?"
+    ],
+    "question_hash": "qh_3efc6409",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Git & GitHub Workflows, Merge vs Rebase Strategies ensures predictable, resilient execution.",
+        "explanation": "Correct. In Git & GitHub Workflows, Merge vs Rebase Strategies ensures predictable, resilient execution."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Git & GitHub Workflows, Trunk-Based vs GitFlow ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Trunk-Based vs GitFlow, not Merge vs Rebase Strategies."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Git & GitHub Workflows, Interactive Rebase & Squashing ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Interactive Rebase & Squashing, not Merge vs Rebase Strategies."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Git & GitHub Workflows, Git Internals (Blobs, Trees, Commits) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Git Internals (Blobs, Trees, Commits), not Merge vs Rebase Strategies."
+      }
+    ],
+    "correctAnswer": "A",
+    "mcqExplanation": "Correct. In Git & GitHub Workflows, Merge vs Rebase Strategies ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "B": "Incorrect. This describes Trunk-Based vs GitFlow, not Merge vs Rebase Strategies.",
+      "C": "Incorrect. This describes Interactive Rebase & Squashing, not Merge vs Rebase Strategies.",
+      "D": "Incorrect. This describes Git Internals (Blobs, Trees, Commits), not Merge vs Rebase Strategies."
+    },
+    "correctOption": "A",
+    "explanation": "Correct. In Git & GitHub Workflows, Merge vs Rebase Strategies ensures predictable, resilient execution.",
+    "mcqQuestion": "Git & GitHub Workflows: How does Merge vs Rebase Strategies operate in production enterprise applications (Q17)?"
+  },
+  {
+    "id": "iq-git-0018",
+    "standard_id": "GIT-MCQ-000018",
+    "questionNumber": 18,
+    "subject": "git",
+    "category": "Interactive Rebase & Squashing",
+    "topic": "Interactive Rebase & Squashing",
+    "subtopic": "Interactive Rebase & Squashing Operations",
+    "concept": "Interactive Rebase & Squashing",
+    "difficulty": "EASY",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "FRESHER",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "git",
+      "interactive-rebase---squashing",
+      "frontend-interview"
+    ],
+    "question": "Git & GitHub Workflows: How does Interactive Rebase & Squashing operate in production enterprise applications (Q18)?",
+    "shortAnswer": "In Git & GitHub Workflows, Interactive Rebase & Squashing ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Interactive Rebase & Squashing** is an essential architectural concept in <u>Git & GitHub Workflows</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Interactive Rebase & Squashing** is an essential architectural concept in <u>Git & GitHub Workflows</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Interactive Rebase & Squashing** is an essential architectural concept in <u>Git & GitHub Workflows</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Interactive Rebase & Squashing in Git & GitHub Workflows:\nexport function handleInteractiveRebaseSquashing(config) {\n  console.log('Executing Interactive Rebase & Squashing with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Interactive Rebase & Squashing in Git & GitHub Workflows:\nexport function handleInteractiveRebaseSquashing(config) {\n  console.log('Executing Interactive Rebase & Squashing with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Interactive Rebase & Squashing in Git & GitHub Workflows:\nexport function handleInteractiveRebaseSquashing(config) {\n  console.log('Executing Interactive Rebase & Squashing with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Interactive Rebase & Squashing in Git & GitHub Workflows.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Interactive Rebase & Squashing to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Interactive Rebase & Squashing.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Interactive Rebase & Squashing, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Interactive Rebase & Squashing, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Interactive Rebase & Squashing scale under extreme concurrency?",
+      "What monitoring tools can track Interactive Rebase & Squashing metrics in production?"
+    ],
+    "followUps": [
+      "How does Interactive Rebase & Squashing scale under extreme concurrency?",
+      "What monitoring tools can track Interactive Rebase & Squashing metrics in production?"
+    ],
+    "question_hash": "qh_7d0778f0",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Git & GitHub Workflows, Git Internals (Blobs, Trees, Commits) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Git Internals (Blobs, Trees, Commits), not Interactive Rebase & Squashing."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Git & GitHub Workflows, Interactive Rebase & Squashing ensures predictable, resilient execution.",
+        "explanation": "Correct. In Git & GitHub Workflows, Interactive Rebase & Squashing ensures predictable, resilient execution."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Git & GitHub Workflows, Debugging with Git Bisect ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Debugging with Git Bisect, not Interactive Rebase & Squashing."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Git & GitHub Workflows, Merge vs Rebase Strategies ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Merge vs Rebase Strategies, not Interactive Rebase & Squashing."
+      }
+    ],
+    "correctAnswer": "B",
+    "correctOption": "B",
+    "mcqExplanation": "Correct. In Git & GitHub Workflows, Interactive Rebase & Squashing ensures predictable, resilient execution.",
+    "explanation": "Correct. In Git & GitHub Workflows, Interactive Rebase & Squashing ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Git Internals (Blobs, Trees, Commits), not Interactive Rebase & Squashing.",
+      "C": "Incorrect. This describes Debugging with Git Bisect, not Interactive Rebase & Squashing.",
+      "D": "Incorrect. This describes Merge vs Rebase Strategies, not Interactive Rebase & Squashing."
+    },
+    "mcqQuestion": "Git & GitHub Workflows: How does Interactive Rebase & Squashing operate in production enterprise applications (Q18)?"
+  },
+  {
+    "id": "iq-git-0019",
+    "standard_id": "GIT-MCQ-000019",
+    "questionNumber": 19,
+    "subject": "git",
+    "category": "Debugging with Git Bisect",
+    "topic": "Debugging with Git Bisect",
+    "subtopic": "Debugging with Git Bisect Operations",
+    "concept": "Debugging with Git Bisect",
+    "difficulty": "INTERMEDIATE",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "1_3_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "git",
+      "debugging-with-git-bisect",
+      "frontend-interview"
+    ],
+    "question": "Git & GitHub Workflows: How does Debugging with Git Bisect operate in production enterprise applications (Q19)?",
+    "shortAnswer": "In Git & GitHub Workflows, Debugging with Git Bisect ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Debugging with Git Bisect** is an essential architectural concept in <u>Git & GitHub Workflows</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Debugging with Git Bisect** is an essential architectural concept in <u>Git & GitHub Workflows</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Debugging with Git Bisect** is an essential architectural concept in <u>Git & GitHub Workflows</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Debugging with Git Bisect in Git & GitHub Workflows:\nexport function handleDebuggingwithGitBisect(config) {\n  console.log('Executing Debugging with Git Bisect with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Debugging with Git Bisect in Git & GitHub Workflows:\nexport function handleDebuggingwithGitBisect(config) {\n  console.log('Executing Debugging with Git Bisect with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Debugging with Git Bisect in Git & GitHub Workflows:\nexport function handleDebuggingwithGitBisect(config) {\n  console.log('Executing Debugging with Git Bisect with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Debugging with Git Bisect in Git & GitHub Workflows.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Debugging with Git Bisect to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Debugging with Git Bisect.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Debugging with Git Bisect, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Debugging with Git Bisect, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Debugging with Git Bisect scale under extreme concurrency?",
+      "What monitoring tools can track Debugging with Git Bisect metrics in production?"
+    ],
+    "followUps": [
+      "How does Debugging with Git Bisect scale under extreme concurrency?",
+      "What monitoring tools can track Debugging with Git Bisect metrics in production?"
+    ],
+    "question_hash": "qh_7db0a555",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Git & GitHub Workflows, Merge vs Rebase Strategies ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Merge vs Rebase Strategies, not Debugging with Git Bisect."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Git & GitHub Workflows, Trunk-Based vs GitFlow ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Trunk-Based vs GitFlow, not Debugging with Git Bisect."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Git & GitHub Workflows, Debugging with Git Bisect ensures predictable, resilient execution.",
+        "explanation": "Correct. In Git & GitHub Workflows, Debugging with Git Bisect ensures predictable, resilient execution."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Git & GitHub Workflows, Interactive Rebase & Squashing ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Interactive Rebase & Squashing, not Debugging with Git Bisect."
+      }
+    ],
+    "correctAnswer": "C",
+    "mcqExplanation": "Correct. In Git & GitHub Workflows, Debugging with Git Bisect ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Merge vs Rebase Strategies, not Debugging with Git Bisect.",
+      "B": "Incorrect. This describes Trunk-Based vs GitFlow, not Debugging with Git Bisect.",
+      "D": "Incorrect. This describes Interactive Rebase & Squashing, not Debugging with Git Bisect."
+    },
+    "correctOption": "C",
+    "explanation": "Correct. In Git & GitHub Workflows, Debugging with Git Bisect ensures predictable, resilient execution.",
+    "mcqQuestion": "Git & GitHub Workflows: How does Debugging with Git Bisect operate in production enterprise applications (Q19)?"
+  },
+  {
+    "id": "iq-git-0020",
+    "standard_id": "GIT-MCQ-000020",
+    "questionNumber": 20,
+    "subject": "git",
+    "category": "Trunk-Based vs GitFlow",
+    "topic": "Trunk-Based vs GitFlow",
+    "subtopic": "Trunk-Based vs GitFlow Operations",
+    "concept": "Trunk-Based vs GitFlow",
+    "difficulty": "DIFFICULT",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "3_5_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "git",
+      "trunk-based-vs-gitflow",
+      "frontend-interview"
+    ],
+    "question": "Git & GitHub Workflows: How does Trunk-Based vs GitFlow operate in production enterprise applications (Q20)?",
+    "shortAnswer": "In Git & GitHub Workflows, Trunk-Based vs GitFlow ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Trunk-Based vs GitFlow** is an essential architectural concept in <u>Git & GitHub Workflows</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Trunk-Based vs GitFlow** is an essential architectural concept in <u>Git & GitHub Workflows</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Trunk-Based vs GitFlow** is an essential architectural concept in <u>Git & GitHub Workflows</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Trunk-Based vs GitFlow in Git & GitHub Workflows:\nexport function handleTrunkBasedvsGitFlow(config) {\n  console.log('Executing Trunk-Based vs GitFlow with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Trunk-Based vs GitFlow in Git & GitHub Workflows:\nexport function handleTrunkBasedvsGitFlow(config) {\n  console.log('Executing Trunk-Based vs GitFlow with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Trunk-Based vs GitFlow in Git & GitHub Workflows:\nexport function handleTrunkBasedvsGitFlow(config) {\n  console.log('Executing Trunk-Based vs GitFlow with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Trunk-Based vs GitFlow in Git & GitHub Workflows.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Trunk-Based vs GitFlow to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Trunk-Based vs GitFlow.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Trunk-Based vs GitFlow, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Trunk-Based vs GitFlow, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Trunk-Based vs GitFlow scale under extreme concurrency?",
+      "What monitoring tools can track Trunk-Based vs GitFlow metrics in production?"
+    ],
+    "followUps": [
+      "How does Trunk-Based vs GitFlow scale under extreme concurrency?",
+      "What monitoring tools can track Trunk-Based vs GitFlow metrics in production?"
+    ],
+    "question_hash": "qh_4eb67cf5",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Git & GitHub Workflows, Interactive Rebase & Squashing ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Interactive Rebase & Squashing, not Trunk-Based vs GitFlow."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Git & GitHub Workflows, Git Internals (Blobs, Trees, Commits) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Git Internals (Blobs, Trees, Commits), not Trunk-Based vs GitFlow."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Git & GitHub Workflows, Debugging with Git Bisect ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Debugging with Git Bisect, not Trunk-Based vs GitFlow."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Git & GitHub Workflows, Trunk-Based vs GitFlow ensures predictable, resilient execution.",
+        "explanation": "Correct. In Git & GitHub Workflows, Trunk-Based vs GitFlow ensures predictable, resilient execution."
+      }
+    ],
+    "correctAnswer": "D",
+    "correctOption": "D",
+    "mcqExplanation": "Correct. In Git & GitHub Workflows, Trunk-Based vs GitFlow ensures predictable, resilient execution.",
+    "explanation": "Correct. In Git & GitHub Workflows, Trunk-Based vs GitFlow ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Interactive Rebase & Squashing, not Trunk-Based vs GitFlow.",
+      "B": "Incorrect. This describes Git Internals (Blobs, Trees, Commits), not Trunk-Based vs GitFlow.",
+      "C": "Incorrect. This describes Debugging with Git Bisect, not Trunk-Based vs GitFlow."
+    },
+    "mcqQuestion": "Git & GitHub Workflows: How does Trunk-Based vs GitFlow operate in production enterprise applications (Q20)?"
+  },
+  {
+    "id": "iq-git-0021",
+    "standard_id": "GIT-MCQ-000021",
+    "questionNumber": 21,
+    "subject": "git",
+    "category": "Git Internals (Blobs, Trees, Commits)",
+    "topic": "Git Internals (Blobs, Trees, Commits)",
+    "subtopic": "Git Internals (Blobs, Trees, Commits) Operations",
+    "concept": "Git Internals (Blobs, Trees, Commits)",
+    "difficulty": "EASY",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "FRESHER",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "git",
+      "git-internals--blobs--trees--commits-",
+      "frontend-interview"
+    ],
+    "question": "Git & GitHub Workflows: How does Git Internals (Blobs, Trees, Commits) operate in production enterprise applications (Q21)?",
+    "shortAnswer": "In Git & GitHub Workflows, Git Internals (Blobs, Trees, Commits) ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Git Internals (Blobs, Trees, Commits)** is an essential architectural concept in <u>Git & GitHub Workflows</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Git Internals (Blobs, Trees, Commits)** is an essential architectural concept in <u>Git & GitHub Workflows</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Git Internals (Blobs, Trees, Commits)** is an essential architectural concept in <u>Git & GitHub Workflows</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Git Internals (Blobs, Trees, Commits) in Git & GitHub Workflows:\nexport function handleGitInternalsBlobsTreesCommits(config) {\n  console.log('Executing Git Internals (Blobs, Trees, Commits) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Git Internals (Blobs, Trees, Commits) in Git & GitHub Workflows:\nexport function handleGitInternalsBlobsTreesCommits(config) {\n  console.log('Executing Git Internals (Blobs, Trees, Commits) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Git Internals (Blobs, Trees, Commits) in Git & GitHub Workflows:\nexport function handleGitInternalsBlobsTreesCommits(config) {\n  console.log('Executing Git Internals (Blobs, Trees, Commits) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Git Internals (Blobs, Trees, Commits) in Git & GitHub Workflows.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Git Internals (Blobs, Trees, Commits) to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Git Internals (Blobs, Trees, Commits).",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Git Internals (Blobs, Trees, Commits), explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Git Internals (Blobs, Trees, Commits), explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Git Internals (Blobs, Trees, Commits) scale under extreme concurrency?",
+      "What monitoring tools can track Git Internals (Blobs, Trees, Commits) metrics in production?"
+    ],
+    "followUps": [
+      "How does Git Internals (Blobs, Trees, Commits) scale under extreme concurrency?",
+      "What monitoring tools can track Git Internals (Blobs, Trees, Commits) metrics in production?"
+    ],
+    "question_hash": "qh_11b49e7e",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Git & GitHub Workflows, Git Internals (Blobs, Trees, Commits) ensures predictable, resilient execution.",
+        "explanation": "Correct. In Git & GitHub Workflows, Git Internals (Blobs, Trees, Commits) ensures predictable, resilient execution."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Git & GitHub Workflows, Debugging with Git Bisect ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Debugging with Git Bisect, not Git Internals (Blobs, Trees, Commits)."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Git & GitHub Workflows, Merge vs Rebase Strategies ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Merge vs Rebase Strategies, not Git Internals (Blobs, Trees, Commits)."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Git & GitHub Workflows, Trunk-Based vs GitFlow ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Trunk-Based vs GitFlow, not Git Internals (Blobs, Trees, Commits)."
+      }
+    ],
+    "correctAnswer": "A",
+    "mcqExplanation": "Correct. In Git & GitHub Workflows, Git Internals (Blobs, Trees, Commits) ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "B": "Incorrect. This describes Debugging with Git Bisect, not Git Internals (Blobs, Trees, Commits).",
+      "C": "Incorrect. This describes Merge vs Rebase Strategies, not Git Internals (Blobs, Trees, Commits).",
+      "D": "Incorrect. This describes Trunk-Based vs GitFlow, not Git Internals (Blobs, Trees, Commits)."
+    },
+    "correctOption": "A",
+    "explanation": "Correct. In Git & GitHub Workflows, Git Internals (Blobs, Trees, Commits) ensures predictable, resilient execution.",
+    "mcqQuestion": "Git & GitHub Workflows: How does Git Internals (Blobs, Trees, Commits) operate in production enterprise applications (Q21)?"
+  },
+  {
+    "id": "iq-git-0022",
+    "standard_id": "GIT-MCQ-000022",
+    "questionNumber": 22,
+    "subject": "git",
+    "category": "Merge vs Rebase Strategies",
+    "topic": "Merge vs Rebase Strategies",
+    "subtopic": "Merge vs Rebase Strategies Operations",
+    "concept": "Merge vs Rebase Strategies",
+    "difficulty": "INTERMEDIATE",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "1_3_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "git",
+      "merge-vs-rebase-strategies",
+      "frontend-interview"
+    ],
+    "question": "Git & GitHub Workflows: How does Merge vs Rebase Strategies operate in production enterprise applications (Q22)?",
+    "shortAnswer": "In Git & GitHub Workflows, Merge vs Rebase Strategies ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Merge vs Rebase Strategies** is an essential architectural concept in <u>Git & GitHub Workflows</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Merge vs Rebase Strategies** is an essential architectural concept in <u>Git & GitHub Workflows</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Merge vs Rebase Strategies** is an essential architectural concept in <u>Git & GitHub Workflows</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Merge vs Rebase Strategies in Git & GitHub Workflows:\nexport function handleMergevsRebaseStrategies(config) {\n  console.log('Executing Merge vs Rebase Strategies with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Merge vs Rebase Strategies in Git & GitHub Workflows:\nexport function handleMergevsRebaseStrategies(config) {\n  console.log('Executing Merge vs Rebase Strategies with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Merge vs Rebase Strategies in Git & GitHub Workflows:\nexport function handleMergevsRebaseStrategies(config) {\n  console.log('Executing Merge vs Rebase Strategies with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Merge vs Rebase Strategies in Git & GitHub Workflows.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Merge vs Rebase Strategies to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Merge vs Rebase Strategies.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Merge vs Rebase Strategies, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Merge vs Rebase Strategies, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Merge vs Rebase Strategies scale under extreme concurrency?",
+      "What monitoring tools can track Merge vs Rebase Strategies metrics in production?"
+    ],
+    "followUps": [
+      "How does Merge vs Rebase Strategies scale under extreme concurrency?",
+      "What monitoring tools can track Merge vs Rebase Strategies metrics in production?"
+    ],
+    "question_hash": "qh_3efc6423",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Git & GitHub Workflows, Trunk-Based vs GitFlow ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Trunk-Based vs GitFlow, not Merge vs Rebase Strategies."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Git & GitHub Workflows, Merge vs Rebase Strategies ensures predictable, resilient execution.",
+        "explanation": "Correct. In Git & GitHub Workflows, Merge vs Rebase Strategies ensures predictable, resilient execution."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Git & GitHub Workflows, Interactive Rebase & Squashing ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Interactive Rebase & Squashing, not Merge vs Rebase Strategies."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "git merge combines divergent branches by creating a new 3-way merge commit that preserves the complete chronological history.",
+        "explanation": "Incorrect. This describes Fast-Forward, Merge Commits & Rebase Mechanics, not Merge vs Rebase Strategies."
+      }
+    ],
+    "correctAnswer": "B",
+    "correctOption": "B",
+    "mcqExplanation": "Correct. In Git & GitHub Workflows, Merge vs Rebase Strategies ensures predictable, resilient execution.",
+    "explanation": "Correct. In Git & GitHub Workflows, Merge vs Rebase Strategies ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Trunk-Based vs GitFlow, not Merge vs Rebase Strategies.",
+      "C": "Incorrect. This describes Interactive Rebase & Squashing, not Merge vs Rebase Strategies.",
+      "D": "Incorrect. This describes Fast-Forward, Merge Commits & Rebase Mechanics, not Merge vs Rebase Strategies."
+    },
+    "mcqQuestion": "Git & GitHub Workflows: How does Merge vs Rebase Strategies operate in production enterprise applications (Q22)?"
+  },
+  {
+    "id": "iq-git-0023",
+    "standard_id": "GIT-MCQ-000023",
+    "questionNumber": 23,
+    "subject": "git",
+    "category": "Interactive Rebase & Squashing",
+    "topic": "Interactive Rebase & Squashing",
+    "subtopic": "Interactive Rebase & Squashing Operations",
+    "concept": "Interactive Rebase & Squashing",
+    "difficulty": "DIFFICULT",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "3_5_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "git",
+      "interactive-rebase---squashing",
+      "frontend-interview"
+    ],
+    "question": "Git & GitHub Workflows: How does Interactive Rebase & Squashing operate in production enterprise applications (Q23)?",
+    "shortAnswer": "In Git & GitHub Workflows, Interactive Rebase & Squashing ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Interactive Rebase & Squashing** is an essential architectural concept in <u>Git & GitHub Workflows</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Interactive Rebase & Squashing** is an essential architectural concept in <u>Git & GitHub Workflows</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Interactive Rebase & Squashing** is an essential architectural concept in <u>Git & GitHub Workflows</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Interactive Rebase & Squashing in Git & GitHub Workflows:\nexport function handleInteractiveRebaseSquashing(config) {\n  console.log('Executing Interactive Rebase & Squashing with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Interactive Rebase & Squashing in Git & GitHub Workflows:\nexport function handleInteractiveRebaseSquashing(config) {\n  console.log('Executing Interactive Rebase & Squashing with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Interactive Rebase & Squashing in Git & GitHub Workflows:\nexport function handleInteractiveRebaseSquashing(config) {\n  console.log('Executing Interactive Rebase & Squashing with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Interactive Rebase & Squashing in Git & GitHub Workflows.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Interactive Rebase & Squashing to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Interactive Rebase & Squashing.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Interactive Rebase & Squashing, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Interactive Rebase & Squashing, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Interactive Rebase & Squashing scale under extreme concurrency?",
+      "What monitoring tools can track Interactive Rebase & Squashing metrics in production?"
+    ],
+    "followUps": [
+      "How does Interactive Rebase & Squashing scale under extreme concurrency?",
+      "What monitoring tools can track Interactive Rebase & Squashing metrics in production?"
+    ],
+    "question_hash": "qh_7d0778d6",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Git & GitHub Workflows, Git Internals (Blobs, Trees, Commits) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Git Internals (Blobs, Trees, Commits), not Interactive Rebase & Squashing."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Git & GitHub Workflows, Debugging with Git Bisect ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Debugging with Git Bisect, not Interactive Rebase & Squashing."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Git & GitHub Workflows, Interactive Rebase & Squashing ensures predictable, resilient execution.",
+        "explanation": "Correct. In Git & GitHub Workflows, Interactive Rebase & Squashing ensures predictable, resilient execution."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Git & GitHub Workflows, Merge vs Rebase Strategies ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Merge vs Rebase Strategies, not Interactive Rebase & Squashing."
+      }
+    ],
+    "correctAnswer": "C",
+    "mcqExplanation": "Correct. In Git & GitHub Workflows, Interactive Rebase & Squashing ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Git Internals (Blobs, Trees, Commits), not Interactive Rebase & Squashing.",
+      "B": "Incorrect. This describes Debugging with Git Bisect, not Interactive Rebase & Squashing.",
+      "D": "Incorrect. This describes Merge vs Rebase Strategies, not Interactive Rebase & Squashing."
+    },
+    "correctOption": "C",
+    "explanation": "Correct. In Git & GitHub Workflows, Interactive Rebase & Squashing ensures predictable, resilient execution.",
+    "mcqQuestion": "Git & GitHub Workflows: How does Interactive Rebase & Squashing operate in production enterprise applications (Q23)?"
+  },
+  {
+    "id": "iq-git-0024",
+    "standard_id": "GIT-MCQ-000024",
+    "questionNumber": 24,
+    "subject": "git",
+    "category": "Debugging with Git Bisect",
+    "topic": "Debugging with Git Bisect",
+    "subtopic": "Debugging with Git Bisect Operations",
+    "concept": "Debugging with Git Bisect",
+    "difficulty": "EASY",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "FRESHER",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "git",
+      "debugging-with-git-bisect",
+      "frontend-interview"
+    ],
+    "question": "Git & GitHub Workflows: How does Debugging with Git Bisect operate in production enterprise applications (Q24)?",
+    "shortAnswer": "In Git & GitHub Workflows, Debugging with Git Bisect ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Debugging with Git Bisect** is an essential architectural concept in <u>Git & GitHub Workflows</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Debugging with Git Bisect** is an essential architectural concept in <u>Git & GitHub Workflows</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Debugging with Git Bisect** is an essential architectural concept in <u>Git & GitHub Workflows</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Debugging with Git Bisect in Git & GitHub Workflows:\nexport function handleDebuggingwithGitBisect(config) {\n  console.log('Executing Debugging with Git Bisect with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Debugging with Git Bisect in Git & GitHub Workflows:\nexport function handleDebuggingwithGitBisect(config) {\n  console.log('Executing Debugging with Git Bisect with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Debugging with Git Bisect in Git & GitHub Workflows:\nexport function handleDebuggingwithGitBisect(config) {\n  console.log('Executing Debugging with Git Bisect with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Debugging with Git Bisect in Git & GitHub Workflows.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Debugging with Git Bisect to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Debugging with Git Bisect.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Debugging with Git Bisect, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Debugging with Git Bisect, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Debugging with Git Bisect scale under extreme concurrency?",
+      "What monitoring tools can track Debugging with Git Bisect metrics in production?"
+    ],
+    "followUps": [
+      "How does Debugging with Git Bisect scale under extreme concurrency?",
+      "What monitoring tools can track Debugging with Git Bisect metrics in production?"
+    ],
+    "question_hash": "qh_7db0a53b",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Git & GitHub Workflows, Merge vs Rebase Strategies ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Merge vs Rebase Strategies, not Debugging with Git Bisect."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Git & GitHub Workflows, Trunk-Based vs GitFlow ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Trunk-Based vs GitFlow, not Debugging with Git Bisect."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Git & GitHub Workflows, Interactive Rebase & Squashing ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Interactive Rebase & Squashing, not Debugging with Git Bisect."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Git & GitHub Workflows, Debugging with Git Bisect ensures predictable, resilient execution.",
+        "explanation": "Correct. In Git & GitHub Workflows, Debugging with Git Bisect ensures predictable, resilient execution."
+      }
+    ],
+    "correctAnswer": "D",
+    "correctOption": "D",
+    "mcqExplanation": "Correct. In Git & GitHub Workflows, Debugging with Git Bisect ensures predictable, resilient execution.",
+    "explanation": "Correct. In Git & GitHub Workflows, Debugging with Git Bisect ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Merge vs Rebase Strategies, not Debugging with Git Bisect.",
+      "B": "Incorrect. This describes Trunk-Based vs GitFlow, not Debugging with Git Bisect.",
+      "C": "Incorrect. This describes Interactive Rebase & Squashing, not Debugging with Git Bisect."
+    },
+    "mcqQuestion": "Git & GitHub Workflows: How does Debugging with Git Bisect operate in production enterprise applications (Q24)?"
+  },
+  {
+    "id": "iq-git-0025",
+    "standard_id": "GIT-MCQ-000025",
+    "questionNumber": 25,
+    "subject": "git",
+    "category": "Trunk-Based vs GitFlow",
+    "topic": "Trunk-Based vs GitFlow",
+    "subtopic": "Trunk-Based vs GitFlow Operations",
+    "concept": "Trunk-Based vs GitFlow",
+    "difficulty": "INTERMEDIATE",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "1_3_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "git",
+      "trunk-based-vs-gitflow",
+      "frontend-interview"
+    ],
+    "question": "Git & GitHub Workflows: How does Trunk-Based vs GitFlow operate in production enterprise applications (Q25)?",
+    "shortAnswer": "In Git & GitHub Workflows, Trunk-Based vs GitFlow ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Trunk-Based vs GitFlow** is an essential architectural concept in <u>Git & GitHub Workflows</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Trunk-Based vs GitFlow** is an essential architectural concept in <u>Git & GitHub Workflows</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Trunk-Based vs GitFlow** is an essential architectural concept in <u>Git & GitHub Workflows</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Trunk-Based vs GitFlow in Git & GitHub Workflows:\nexport function handleTrunkBasedvsGitFlow(config) {\n  console.log('Executing Trunk-Based vs GitFlow with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Trunk-Based vs GitFlow in Git & GitHub Workflows:\nexport function handleTrunkBasedvsGitFlow(config) {\n  console.log('Executing Trunk-Based vs GitFlow with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Trunk-Based vs GitFlow in Git & GitHub Workflows:\nexport function handleTrunkBasedvsGitFlow(config) {\n  console.log('Executing Trunk-Based vs GitFlow with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Trunk-Based vs GitFlow in Git & GitHub Workflows.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Trunk-Based vs GitFlow to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Trunk-Based vs GitFlow.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Trunk-Based vs GitFlow, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Trunk-Based vs GitFlow, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Trunk-Based vs GitFlow scale under extreme concurrency?",
+      "What monitoring tools can track Trunk-Based vs GitFlow metrics in production?"
+    ],
+    "followUps": [
+      "How does Trunk-Based vs GitFlow scale under extreme concurrency?",
+      "What monitoring tools can track Trunk-Based vs GitFlow metrics in production?"
+    ],
+    "question_hash": "qh_4eb67cf0",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Git & GitHub Workflows, Trunk-Based vs GitFlow ensures predictable, resilient execution.",
+        "explanation": "Correct. In Git & GitHub Workflows, Trunk-Based vs GitFlow ensures predictable, resilient execution."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Git & GitHub Workflows, Interactive Rebase & Squashing ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Interactive Rebase & Squashing, not Trunk-Based vs GitFlow."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "git merge combines divergent branches by creating a new 3-way merge commit that preserves the complete chronological history.",
+        "explanation": "Incorrect. This describes Fast-Forward, Merge Commits & Rebase Mechanics, not Trunk-Based vs GitFlow."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Git & GitHub Workflows, Debugging with Git Bisect ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Debugging with Git Bisect, not Trunk-Based vs GitFlow."
+      }
+    ],
+    "correctAnswer": "A",
+    "mcqExplanation": "Correct. In Git & GitHub Workflows, Trunk-Based vs GitFlow ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "B": "Incorrect. This describes Interactive Rebase & Squashing, not Trunk-Based vs GitFlow.",
+      "C": "Incorrect. This describes Fast-Forward, Merge Commits & Rebase Mechanics, not Trunk-Based vs GitFlow.",
+      "D": "Incorrect. This describes Debugging with Git Bisect, not Trunk-Based vs GitFlow."
+    },
+    "correctOption": "A",
+    "explanation": "Correct. In Git & GitHub Workflows, Trunk-Based vs GitFlow ensures predictable, resilient execution.",
+    "mcqQuestion": "Git & GitHub Workflows: How does Trunk-Based vs GitFlow operate in production enterprise applications (Q25)?"
+  },
+  {
+    "id": "iq-git-0026",
+    "standard_id": "GIT-MCQ-000026",
+    "questionNumber": 26,
+    "subject": "git",
+    "category": "Git Internals (Blobs, Trees, Commits)",
+    "topic": "Git Internals (Blobs, Trees, Commits)",
+    "subtopic": "Git Internals (Blobs, Trees, Commits) Operations",
+    "concept": "Git Internals (Blobs, Trees, Commits)",
+    "difficulty": "DIFFICULT",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "3_5_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "git",
+      "git-internals--blobs--trees--commits-",
+      "frontend-interview"
+    ],
+    "question": "Git & GitHub Workflows: How does Git Internals (Blobs, Trees, Commits) operate in production enterprise applications (Q26)?",
+    "shortAnswer": "In Git & GitHub Workflows, Git Internals (Blobs, Trees, Commits) ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Git Internals (Blobs, Trees, Commits)** is an essential architectural concept in <u>Git & GitHub Workflows</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Git Internals (Blobs, Trees, Commits)** is an essential architectural concept in <u>Git & GitHub Workflows</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Git Internals (Blobs, Trees, Commits)** is an essential architectural concept in <u>Git & GitHub Workflows</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Git Internals (Blobs, Trees, Commits) in Git & GitHub Workflows:\nexport function handleGitInternalsBlobsTreesCommits(config) {\n  console.log('Executing Git Internals (Blobs, Trees, Commits) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Git Internals (Blobs, Trees, Commits) in Git & GitHub Workflows:\nexport function handleGitInternalsBlobsTreesCommits(config) {\n  console.log('Executing Git Internals (Blobs, Trees, Commits) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Git Internals (Blobs, Trees, Commits) in Git & GitHub Workflows:\nexport function handleGitInternalsBlobsTreesCommits(config) {\n  console.log('Executing Git Internals (Blobs, Trees, Commits) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Git Internals (Blobs, Trees, Commits) in Git & GitHub Workflows.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Git Internals (Blobs, Trees, Commits) to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Git Internals (Blobs, Trees, Commits).",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Git Internals (Blobs, Trees, Commits), explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Git Internals (Blobs, Trees, Commits), explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Git Internals (Blobs, Trees, Commits) scale under extreme concurrency?",
+      "What monitoring tools can track Git Internals (Blobs, Trees, Commits) metrics in production?"
+    ],
+    "followUps": [
+      "How does Git Internals (Blobs, Trees, Commits) scale under extreme concurrency?",
+      "What monitoring tools can track Git Internals (Blobs, Trees, Commits) metrics in production?"
+    ],
+    "question_hash": "qh_11b49e79",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Git & GitHub Workflows, Debugging with Git Bisect ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Debugging with Git Bisect, not Git Internals (Blobs, Trees, Commits)."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Git & GitHub Workflows, Git Internals (Blobs, Trees, Commits) ensures predictable, resilient execution.",
+        "explanation": "Correct. In Git & GitHub Workflows, Git Internals (Blobs, Trees, Commits) ensures predictable, resilient execution."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Git & GitHub Workflows, Merge vs Rebase Strategies ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Merge vs Rebase Strategies, not Git Internals (Blobs, Trees, Commits)."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Git & GitHub Workflows, Trunk-Based vs GitFlow ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Trunk-Based vs GitFlow, not Git Internals (Blobs, Trees, Commits)."
+      }
+    ],
+    "correctAnswer": "B",
+    "correctOption": "B",
+    "mcqExplanation": "Correct. In Git & GitHub Workflows, Git Internals (Blobs, Trees, Commits) ensures predictable, resilient execution.",
+    "explanation": "Correct. In Git & GitHub Workflows, Git Internals (Blobs, Trees, Commits) ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Debugging with Git Bisect, not Git Internals (Blobs, Trees, Commits).",
+      "C": "Incorrect. This describes Merge vs Rebase Strategies, not Git Internals (Blobs, Trees, Commits).",
+      "D": "Incorrect. This describes Trunk-Based vs GitFlow, not Git Internals (Blobs, Trees, Commits)."
+    },
+    "mcqQuestion": "Git & GitHub Workflows: How does Git Internals (Blobs, Trees, Commits) operate in production enterprise applications (Q26)?"
+  },
+  {
+    "id": "iq-git-0027",
+    "standard_id": "GIT-MCQ-000027",
+    "questionNumber": 27,
+    "subject": "git",
+    "category": "Merge vs Rebase Strategies",
+    "topic": "Merge vs Rebase Strategies",
+    "subtopic": "Merge vs Rebase Strategies Operations",
+    "concept": "Merge vs Rebase Strategies",
+    "difficulty": "EASY",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "FRESHER",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "git",
+      "merge-vs-rebase-strategies",
+      "frontend-interview"
+    ],
+    "question": "Git & GitHub Workflows: How does Merge vs Rebase Strategies operate in production enterprise applications (Q27)?",
+    "shortAnswer": "In Git & GitHub Workflows, Merge vs Rebase Strategies ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Merge vs Rebase Strategies** is an essential architectural concept in <u>Git & GitHub Workflows</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Merge vs Rebase Strategies** is an essential architectural concept in <u>Git & GitHub Workflows</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Merge vs Rebase Strategies** is an essential architectural concept in <u>Git & GitHub Workflows</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Merge vs Rebase Strategies in Git & GitHub Workflows:\nexport function handleMergevsRebaseStrategies(config) {\n  console.log('Executing Merge vs Rebase Strategies with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Merge vs Rebase Strategies in Git & GitHub Workflows:\nexport function handleMergevsRebaseStrategies(config) {\n  console.log('Executing Merge vs Rebase Strategies with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Merge vs Rebase Strategies in Git & GitHub Workflows:\nexport function handleMergevsRebaseStrategies(config) {\n  console.log('Executing Merge vs Rebase Strategies with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Merge vs Rebase Strategies in Git & GitHub Workflows.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Merge vs Rebase Strategies to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Merge vs Rebase Strategies.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Merge vs Rebase Strategies, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Merge vs Rebase Strategies, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Merge vs Rebase Strategies scale under extreme concurrency?",
+      "What monitoring tools can track Merge vs Rebase Strategies metrics in production?"
+    ],
+    "followUps": [
+      "How does Merge vs Rebase Strategies scale under extreme concurrency?",
+      "What monitoring tools can track Merge vs Rebase Strategies metrics in production?"
+    ],
+    "question_hash": "qh_3efc6428",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Git & GitHub Workflows, Trunk-Based vs GitFlow ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Trunk-Based vs GitFlow, not Merge vs Rebase Strategies."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Git & GitHub Workflows, Interactive Rebase & Squashing ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Interactive Rebase & Squashing, not Merge vs Rebase Strategies."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Git & GitHub Workflows, Merge vs Rebase Strategies ensures predictable, resilient execution.",
+        "explanation": "Correct. In Git & GitHub Workflows, Merge vs Rebase Strategies ensures predictable, resilient execution."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Git & GitHub Workflows, Git Internals (Blobs, Trees, Commits) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Git Internals (Blobs, Trees, Commits), not Merge vs Rebase Strategies."
+      }
+    ],
+    "correctAnswer": "C",
+    "mcqExplanation": "Correct. In Git & GitHub Workflows, Merge vs Rebase Strategies ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Trunk-Based vs GitFlow, not Merge vs Rebase Strategies.",
+      "B": "Incorrect. This describes Interactive Rebase & Squashing, not Merge vs Rebase Strategies.",
+      "D": "Incorrect. This describes Git Internals (Blobs, Trees, Commits), not Merge vs Rebase Strategies."
+    },
+    "correctOption": "C",
+    "explanation": "Correct. In Git & GitHub Workflows, Merge vs Rebase Strategies ensures predictable, resilient execution.",
+    "mcqQuestion": "Git & GitHub Workflows: How does Merge vs Rebase Strategies operate in production enterprise applications (Q27)?"
+  },
+  {
+    "id": "iq-git-0028",
+    "standard_id": "GIT-MCQ-000028",
+    "questionNumber": 28,
+    "subject": "git",
+    "category": "Interactive Rebase & Squashing",
+    "topic": "Interactive Rebase & Squashing",
+    "subtopic": "Interactive Rebase & Squashing Operations",
+    "concept": "Interactive Rebase & Squashing",
+    "difficulty": "INTERMEDIATE",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "1_3_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "git",
+      "interactive-rebase---squashing",
+      "frontend-interview"
+    ],
+    "question": "Git & GitHub Workflows: How does Interactive Rebase & Squashing operate in production enterprise applications (Q28)?",
+    "shortAnswer": "In Git & GitHub Workflows, Interactive Rebase & Squashing ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Interactive Rebase & Squashing** is an essential architectural concept in <u>Git & GitHub Workflows</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Interactive Rebase & Squashing** is an essential architectural concept in <u>Git & GitHub Workflows</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Interactive Rebase & Squashing** is an essential architectural concept in <u>Git & GitHub Workflows</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Interactive Rebase & Squashing in Git & GitHub Workflows:\nexport function handleInteractiveRebaseSquashing(config) {\n  console.log('Executing Interactive Rebase & Squashing with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Interactive Rebase & Squashing in Git & GitHub Workflows:\nexport function handleInteractiveRebaseSquashing(config) {\n  console.log('Executing Interactive Rebase & Squashing with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Interactive Rebase & Squashing in Git & GitHub Workflows:\nexport function handleInteractiveRebaseSquashing(config) {\n  console.log('Executing Interactive Rebase & Squashing with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Interactive Rebase & Squashing in Git & GitHub Workflows.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Interactive Rebase & Squashing to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Interactive Rebase & Squashing.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Interactive Rebase & Squashing, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Interactive Rebase & Squashing, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Interactive Rebase & Squashing scale under extreme concurrency?",
+      "What monitoring tools can track Interactive Rebase & Squashing metrics in production?"
+    ],
+    "followUps": [
+      "How does Interactive Rebase & Squashing scale under extreme concurrency?",
+      "What monitoring tools can track Interactive Rebase & Squashing metrics in production?"
+    ],
+    "question_hash": "qh_7d0778d1",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "git merge combines divergent branches by creating a new 3-way merge commit that preserves the complete chronological history.",
+        "explanation": "Incorrect. This describes Fast-Forward, Merge Commits & Rebase Mechanics, not Interactive Rebase & Squashing."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Git & GitHub Workflows, Debugging with Git Bisect ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Debugging with Git Bisect, not Interactive Rebase & Squashing."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Git & GitHub Workflows, Merge vs Rebase Strategies ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Merge vs Rebase Strategies, not Interactive Rebase & Squashing."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Git & GitHub Workflows, Interactive Rebase & Squashing ensures predictable, resilient execution.",
+        "explanation": "Correct. In Git & GitHub Workflows, Interactive Rebase & Squashing ensures predictable, resilient execution."
+      }
+    ],
+    "correctAnswer": "D",
+    "correctOption": "D",
+    "mcqExplanation": "Correct. In Git & GitHub Workflows, Interactive Rebase & Squashing ensures predictable, resilient execution.",
+    "explanation": "Correct. In Git & GitHub Workflows, Interactive Rebase & Squashing ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Fast-Forward, Merge Commits & Rebase Mechanics, not Interactive Rebase & Squashing.",
+      "B": "Incorrect. This describes Debugging with Git Bisect, not Interactive Rebase & Squashing.",
+      "C": "Incorrect. This describes Merge vs Rebase Strategies, not Interactive Rebase & Squashing."
+    },
+    "mcqQuestion": "Git & GitHub Workflows: How does Interactive Rebase & Squashing operate in production enterprise applications (Q28)?"
+  },
+  {
+    "id": "iq-git-0029",
+    "standard_id": "GIT-MCQ-000029",
+    "questionNumber": 29,
+    "subject": "git",
+    "category": "Debugging with Git Bisect",
+    "topic": "Debugging with Git Bisect",
+    "subtopic": "Debugging with Git Bisect Operations",
+    "concept": "Debugging with Git Bisect",
+    "difficulty": "DIFFICULT",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "3_5_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "git",
+      "debugging-with-git-bisect",
+      "frontend-interview"
+    ],
+    "question": "Git & GitHub Workflows: How does Debugging with Git Bisect operate in production enterprise applications (Q29)?",
+    "shortAnswer": "In Git & GitHub Workflows, Debugging with Git Bisect ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Debugging with Git Bisect** is an essential architectural concept in <u>Git & GitHub Workflows</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Debugging with Git Bisect** is an essential architectural concept in <u>Git & GitHub Workflows</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Debugging with Git Bisect** is an essential architectural concept in <u>Git & GitHub Workflows</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Debugging with Git Bisect in Git & GitHub Workflows:\nexport function handleDebuggingwithGitBisect(config) {\n  console.log('Executing Debugging with Git Bisect with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Debugging with Git Bisect in Git & GitHub Workflows:\nexport function handleDebuggingwithGitBisect(config) {\n  console.log('Executing Debugging with Git Bisect with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Debugging with Git Bisect in Git & GitHub Workflows:\nexport function handleDebuggingwithGitBisect(config) {\n  console.log('Executing Debugging with Git Bisect with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Debugging with Git Bisect in Git & GitHub Workflows.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Debugging with Git Bisect to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Debugging with Git Bisect.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Debugging with Git Bisect, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Debugging with Git Bisect, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Debugging with Git Bisect scale under extreme concurrency?",
+      "What monitoring tools can track Debugging with Git Bisect metrics in production?"
+    ],
+    "followUps": [
+      "How does Debugging with Git Bisect scale under extreme concurrency?",
+      "What monitoring tools can track Debugging with Git Bisect metrics in production?"
+    ],
+    "question_hash": "qh_7db0a536",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Git & GitHub Workflows, Debugging with Git Bisect ensures predictable, resilient execution.",
+        "explanation": "Correct. In Git & GitHub Workflows, Debugging with Git Bisect ensures predictable, resilient execution."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Git & GitHub Workflows, Merge vs Rebase Strategies ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Merge vs Rebase Strategies, not Debugging with Git Bisect."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Git & GitHub Workflows, Trunk-Based vs GitFlow ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Trunk-Based vs GitFlow, not Debugging with Git Bisect."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Git & GitHub Workflows, Interactive Rebase & Squashing ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Interactive Rebase & Squashing, not Debugging with Git Bisect."
+      }
+    ],
+    "correctAnswer": "A",
+    "mcqExplanation": "Correct. In Git & GitHub Workflows, Debugging with Git Bisect ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "B": "Incorrect. This describes Merge vs Rebase Strategies, not Debugging with Git Bisect.",
+      "C": "Incorrect. This describes Trunk-Based vs GitFlow, not Debugging with Git Bisect.",
+      "D": "Incorrect. This describes Interactive Rebase & Squashing, not Debugging with Git Bisect."
+    },
+    "correctOption": "A",
+    "explanation": "Correct. In Git & GitHub Workflows, Debugging with Git Bisect ensures predictable, resilient execution.",
+    "mcqQuestion": "Git & GitHub Workflows: How does Debugging with Git Bisect operate in production enterprise applications (Q29)?"
+  },
+  {
+    "id": "iq-git-0030",
+    "standard_id": "GIT-MCQ-000030",
+    "questionNumber": 30,
+    "subject": "git",
+    "category": "Trunk-Based vs GitFlow",
+    "topic": "Trunk-Based vs GitFlow",
+    "subtopic": "Trunk-Based vs GitFlow Operations",
+    "concept": "Trunk-Based vs GitFlow",
+    "difficulty": "EASY",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "FRESHER",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "git",
+      "trunk-based-vs-gitflow",
+      "frontend-interview"
+    ],
+    "question": "Git & GitHub Workflows: How does Trunk-Based vs GitFlow operate in production enterprise applications (Q30)?",
+    "shortAnswer": "In Git & GitHub Workflows, Trunk-Based vs GitFlow ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Trunk-Based vs GitFlow** is an essential architectural concept in <u>Git & GitHub Workflows</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Trunk-Based vs GitFlow** is an essential architectural concept in <u>Git & GitHub Workflows</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Trunk-Based vs GitFlow** is an essential architectural concept in <u>Git & GitHub Workflows</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Trunk-Based vs GitFlow in Git & GitHub Workflows:\nexport function handleTrunkBasedvsGitFlow(config) {\n  console.log('Executing Trunk-Based vs GitFlow with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Trunk-Based vs GitFlow in Git & GitHub Workflows:\nexport function handleTrunkBasedvsGitFlow(config) {\n  console.log('Executing Trunk-Based vs GitFlow with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Trunk-Based vs GitFlow in Git & GitHub Workflows:\nexport function handleTrunkBasedvsGitFlow(config) {\n  console.log('Executing Trunk-Based vs GitFlow with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Trunk-Based vs GitFlow in Git & GitHub Workflows.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Trunk-Based vs GitFlow to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Trunk-Based vs GitFlow.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Trunk-Based vs GitFlow, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Trunk-Based vs GitFlow, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Trunk-Based vs GitFlow scale under extreme concurrency?",
+      "What monitoring tools can track Trunk-Based vs GitFlow metrics in production?"
+    ],
+    "followUps": [
+      "How does Trunk-Based vs GitFlow scale under extreme concurrency?",
+      "What monitoring tools can track Trunk-Based vs GitFlow metrics in production?"
+    ],
+    "question_hash": "qh_4eb67cd6",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In Git & GitHub Workflows, Interactive Rebase & Squashing ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Interactive Rebase & Squashing, not Trunk-Based vs GitFlow."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In Git & GitHub Workflows, Trunk-Based vs GitFlow ensures predictable, resilient execution.",
+        "explanation": "Correct. In Git & GitHub Workflows, Trunk-Based vs GitFlow ensures predictable, resilient execution."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In Git & GitHub Workflows, Git Internals (Blobs, Trees, Commits) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Git Internals (Blobs, Trees, Commits), not Trunk-Based vs GitFlow."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In Git & GitHub Workflows, Debugging with Git Bisect ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Debugging with Git Bisect, not Trunk-Based vs GitFlow."
+      }
+    ],
+    "correctAnswer": "B",
+    "correctOption": "B",
+    "mcqExplanation": "Correct. In Git & GitHub Workflows, Trunk-Based vs GitFlow ensures predictable, resilient execution.",
+    "explanation": "Correct. In Git & GitHub Workflows, Trunk-Based vs GitFlow ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Interactive Rebase & Squashing, not Trunk-Based vs GitFlow.",
+      "C": "Incorrect. This describes Git Internals (Blobs, Trees, Commits), not Trunk-Based vs GitFlow.",
+      "D": "Incorrect. This describes Debugging with Git Bisect, not Trunk-Based vs GitFlow."
+    },
+    "mcqQuestion": "Git & GitHub Workflows: How does Trunk-Based vs GitFlow operate in production enterprise applications (Q30)?"
+  }
+]

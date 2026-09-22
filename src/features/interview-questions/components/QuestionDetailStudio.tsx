@@ -2,7 +2,17 @@ import { useState, useEffect, useRef, useMemo } from 'react'
 import { Link, useParams, useNavigate } from 'react-router-dom'
 import { interviewQuestionsDataService } from '../services/interviewQuestionsDataService'
 import { interviewQuestionsProgressService } from '../services/interviewQuestionsProgressService'
+import { mockSessionService } from '../../ai-video-mock/services/mockSessionService'
 import { MermaidDiagram } from '../../interview-docs/components/common/MermaidDiagram'
+import { FormattedAnswerText } from './FormattedAnswerText'
+import { MCQInteractiveCard } from './MCQInteractiveCard'
+import {
+  getSpeechSentenceSegments,
+  explainCodeInPlainEnglish,
+  getStoredSpeechRate,
+  setStoredSpeechRate,
+} from '../utils/speechSanitizer'
+import { isGenericHowItWorks, isGenericExecutionFlow } from '../utils/contentSanitizer'
 import type {
   MasterSubjectId,
   MasterQuestion,
@@ -28,6 +38,7 @@ export default function QuestionDetailStudio() {
   const [isNeedsReview, setIsNeedsReview] = useState<boolean>(false)
   const [noteText, setNoteText] = useState<string>('')
   const [showNoteSaved, setShowNoteSaved] = useState<boolean>(false)
+  const [copiedSection, setCopiedSection] = useState<string | null>(null)
 
   // Speech Practice Timer
   const [isSpeakingTimerRunning, setIsSpeakingTimerRunning] = useState<boolean>(false)
@@ -38,15 +49,17 @@ export default function QuestionDetailStudio() {
   const [codeRunOutput, setCodeRunOutput] = useState<string | null>(null)
   const [isRunningCode, setIsRunningCode] = useState<boolean>(false)
 
-  // Audio Speech Narrator State with Indian English Accent support
+  // Voice narration & Audio Studio
   const [isPlayingAudio, setIsPlayingAudio] = useState<boolean>(false)
   const [isAudioPaused, setIsAudioPaused] = useState<boolean>(false)
-  const [speechRate, setSpeechRate] = useState<number>(1.0)
-  const [activeSpeechSource, setActiveSpeechSource] = useState<'interview' | 'short'>('interview')
+  const [speechRate, setSpeechRate] = useState<number>(() => getStoredSpeechRate())
+  const [activeSpeechSource, setActiveSpeechSource] = useState<
+    'interview' | 'short' | 'explanation' | 'howItWorks' | 'code' | 'tip' | 'question' | 'output' | 'mcq' | 'custom'
+  >('short')
   const [availableVoices, setAvailableVoices] = useState<SpeechSynthesisVoice[]>([])
   const [selectedVoiceURI, setSelectedVoiceURI] = useState<string>('')
   const [isIndianVoiceActive, setIsIndianVoiceActive] = useState<boolean>(false)
-  const [spokenCharRange, setSpokenCharRange] = useState<{ start: number; end: number }>({ start: -1, end: -1 })
+  const [activeSentenceIndex, setActiveSentenceIndex] = useState<number>(-1)
 
   // Load and auto-select Indian English voice
   useEffect(() => {
@@ -82,15 +95,46 @@ export default function QuestionDetailStudio() {
     window.speechSynthesis.onvoiceschanged = loadVoices
   }, [])
 
-  const handlePlayAudio = (source: 'interview' | 'short' = 'interview') => {
+  const handlePlayAudio = (
+    source: 'interview' | 'short' | 'explanation' | 'howItWorks' | 'code' | 'tip' | 'question' | 'output' | 'mcq' | 'custom' = 'short',
+    customSpeechText?: string
+  ) => {
     if (!('speechSynthesis' in window) || !question) return
     window.speechSynthesis.cancel()
 
-    const text = source === 'interview' ? question.interviewAnswer : question.shortAnswer
-    setActiveSpeechSource(source)
-    setSpokenCharRange({ start: -1, end: -1 })
+    let rawText = ''
+    if (customSpeechText) {
+      rawText = customSpeechText
+    } else if (source === 'interview') {
+      rawText = question.interviewAnswer || question.shortAnswer
+    } else if (source === 'short') {
+      rawText = question.shortAnswer
+    } else if (source === 'explanation') {
+      rawText = question.simpleExplanation || question.detailedAnswer || question.detailedExplanation || ''
+    } else if (source === 'howItWorks') {
+      rawText = question.howItWorks || ''
+    } else if (source === 'code') {
+      rawText = explainCodeInPlainEnglish({
+        codeSnippet: question.codeExample || question.example || question.codeSnippet,
+        customSpeech: question.codeExplanationSpeech,
+        lineExplanations: question.lineByLineExplanation,
+      })
+    } else if (source === 'tip') {
+      rawText = question.interviewTip || (question.interviewTips && question.interviewTips[0]) || ''
+    } else if (source === 'question') {
+      rawText = question.question
+    } else if (source === 'output') {
+      rawText = question.expectedOutput ? `Expected output is: ${question.expectedOutput}` : ''
+    }
 
-    const utter = new SpeechSynthesisUtterance(text)
+    // Clean speech representation - Never speak raw Markdown or HTML tags
+    const speechData = getSpeechSentenceSegments(rawText)
+    if (!speechData.fullSpeechText) return
+
+    setActiveSpeechSource(source)
+    setActiveSentenceIndex(0)
+
+    const utter = new SpeechSynthesisUtterance(speechData.fullSpeechText)
     utter.rate = speechRate
 
     const chosenVoice = availableVoices.find(v => v.voiceURI === selectedVoiceURI)
@@ -103,13 +147,15 @@ export default function QuestionDetailStudio() {
 
     utter.onboundary = (event: SpeechSynthesisEvent) => {
       const charIndex = event.charIndex
-      let charLength = (event as any).charLength || 0
-      if (charLength <= 0) {
-        const slice = text.slice(charIndex)
-        const match = slice.search(/[\s,.;:!?\n()""'']/);
-        charLength = match === -1 ? slice.length : Math.max(1, match);
+      let foundSentenceIdx = 0
+      for (let i = 0; i < speechData.segmentOffsets.length; i++) {
+        if (charIndex >= speechData.segmentOffsets[i]) {
+          foundSentenceIdx = i
+        } else {
+          break
+        }
       }
-      setSpokenCharRange({ start: charIndex, end: charIndex + charLength })
+      setActiveSentenceIndex(foundSentenceIdx)
     }
 
     utter.onstart = () => {
@@ -119,15 +165,23 @@ export default function QuestionDetailStudio() {
     utter.onend = () => {
       setIsPlayingAudio(false)
       setIsAudioPaused(false)
-      setSpokenCharRange({ start: -1, end: -1 })
+      setActiveSentenceIndex(-1)
     }
     utter.onerror = () => {
       setIsPlayingAudio(false)
       setIsAudioPaused(false)
-      setSpokenCharRange({ start: -1, end: -1 })
+      setActiveSentenceIndex(-1)
     }
 
     window.speechSynthesis.speak(utter)
+  }
+
+  const handleSpeechRateChange = (newRate: number) => {
+    setSpeechRate(newRate)
+    setStoredSpeechRate(newRate)
+    if (isPlayingAudio && !isAudioPaused) {
+      handlePlayAudio(activeSpeechSource)
+    }
   }
 
   const handlePauseResumeAudio = () => {
@@ -146,113 +200,13 @@ export default function QuestionDetailStudio() {
       window.speechSynthesis.cancel()
       setIsPlayingAudio(false)
       setIsAudioPaused(false)
-      setSpokenCharRange({ start: -1, end: -1 })
+      setActiveSentenceIndex(-1)
     }
   }
 
-  // Real-Time Speech Text Highlighting with Word Underline & Glowing Color
-  const renderSpokenText = (fullText: string, isCurrentSource: boolean) => {
-    if (
-      !isCurrentSource ||
-      !isPlayingAudio ||
-      spokenCharRange.start < 0 ||
-      spokenCharRange.start >= fullText.length
-    ) {
-      return fullText
-    }
-
-    const start = Math.max(0, spokenCharRange.start)
-    let end = Math.min(fullText.length, spokenCharRange.end)
-    if (end <= start) {
-      const slice = fullText.slice(start)
-      const match = slice.search(/[\s,.;:!?\n]/)
-      end = match === -1 ? fullText.length : start + Math.max(1, match)
-    }
-
-    const before = fullText.slice(0, start)
-    const activeWord = fullText.slice(start, end)
-    const after = fullText.slice(end)
-
-    return (
-      <>
-        {before}
-        <span className="mqb-spoken-active-word">{activeWord}</span>
-        {after}
-      </>
-    )
-  }
-
-  // Parse Executive Short Answer lines into individual structured checklist points
-  const shortAnswerItems = useMemo(() => {
-    if (!question?.shortAnswer) return []
-    const lines = question.shortAnswer.split('\n').filter(l => l.trim().length > 0)
-    let currentOffset = 0
-
-    return lines.map((rawLine, idx) => {
-      const matchIndex = question.shortAnswer.indexOf(rawLine, currentOffset)
-      const lineStart = matchIndex !== -1 ? matchIndex : currentOffset
-      currentOffset = lineStart + rawLine.length
-
-      const numMatch = rawLine.match(/^(\d+)\.\s*(.*)$/)
-      const num = numMatch ? numMatch[1] : String(idx + 1)
-      const content = numMatch ? numMatch[2] : rawLine
-
-      const isAnalogy = num === '2' || rawLine.toLowerCase().includes('analogy:') || rawLine.toLowerCase().includes('real-life analogy')
-      const isTakeaway = idx === lines.length - 1 || rawLine.toLowerCase().includes('key takeaway:') || rawLine.toLowerCase().includes('takeaway:')
-
-      return {
-        num,
-        rawLine,
-        content,
-        startIndex: lineStart,
-        endIndex: lineStart + rawLine.length,
-        isAnalogy,
-        isTakeaway,
-      }
-    })
-  }, [question?.shortAnswer])
-
-  // Speech highlighting for individual card text
-  const renderCardSpokenText = (item: { content: string; startIndex: number; endIndex: number; rawLine: string }) => {
-    if (
-      activeSpeechSource !== 'short' ||
-      !isPlayingAudio ||
-      spokenCharRange.start < item.startIndex ||
-      spokenCharRange.start >= item.endIndex
-    ) {
-      return item.content
-    }
-
-    const prefixLen = item.rawLine.indexOf(item.content)
-    const contentStart = item.startIndex + (prefixLen >= 0 ? prefixLen : 0)
-
-    const relStart = spokenCharRange.start - contentStart
-    const relEnd = (spokenCharRange.end > 0 ? spokenCharRange.end : spokenCharRange.start + 1) - contentStart
-
-    if (relStart < 0 || relStart >= item.content.length) {
-      return item.content
-    }
-
-    const start = Math.max(0, relStart)
-    let end = Math.min(item.content.length, Math.max(start + 1, relEnd))
-    if (end <= start) {
-      const slice = item.content.slice(start)
-      const match = slice.search(/[\s,.;:!?\n]/)
-      end = match === -1 ? item.content.length : start + Math.max(1, match)
-    }
-
-    const before = item.content.slice(0, start)
-    const activeWord = item.content.slice(start, end)
-    const after = item.content.slice(end)
-
-    return (
-      <>
-        {before}
-        <span className="mqb-spoken-active-word">{activeWord}</span>
-        {after}
-      </>
-    )
-  }
+  const followUpList = useMemo(() => {
+    return question?.followUpQuestions || question?.followUps || []
+  }, [question])
 
   useEffect(() => {
     let mounted = true
@@ -353,6 +307,12 @@ export default function QuestionDetailStudio() {
     setTimeout(() => setShowNoteSaved(false), 2000)
   }
 
+  const handleLaunchAIMockPractice = () => {
+    if (!question) return
+    const session = mockSessionService.createQuestionDrillSession('anonymous_candidate', question)
+    navigate(`/ai-video-mock/session/${session.id}`)
+  }
+
   // Interactive Code Playground Runner
   const handleExecuteCode = () => {
     if (!question) return
@@ -446,7 +406,9 @@ export default function QuestionDetailStudio() {
           <div className="mqb-qheader-card" id="mqb-main-qheader">
             <div className="mqb-qheader-top">
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
-                <span className="mqb-qcard-id" style={{ fontSize: '0.9rem' }}>{question.id.toUpperCase()}</span>
+                <span className="mqb-qcard-id" style={{ fontSize: '0.9rem' }}>
+                  {question.questionNumber ? `Q${question.questionNumber}` : question.id.toUpperCase()}
+                </span>
                 <span className={`mqb-diff-pill ${question.difficulty}`}>{question.difficulty}</span>
                 {question.isHighFrequency && (
                   <span className="mqb-highfreq-badge">🔥 FAANG High Frequency</span>
@@ -454,15 +416,47 @@ export default function QuestionDetailStudio() {
                 {question.companyTags && question.companyTags.map(comp => (
                   <span key={comp} className="mqb-company-badge">🏢 {comp}</span>
                 ))}
-                <span className="mqb-type-pill">{question.questionType}</span>
-                <span className="mqb-tag-pill">{question.topic}</span>
-                <span className="mqb-tag-pill" style={{ color: 'var(--mqb-text-muted)' }}>
-                  Level: {question.experienceLevel.replace(/_/g, ' ')}
-                </span>
+                {question.questionType && <span className="mqb-type-pill">{question.questionType}</span>}
+                <span className="mqb-tag-pill">{question.category || question.topic}</span>
+                {question.experienceLevel && (
+                  <span className="mqb-tag-pill" style={{ color: 'var(--mqb-text-muted)' }}>
+                    Level: {question.experienceLevel.replace(/_/g, ' ')}
+                  </span>
+                )}
               </div>
 
-              {/* Quick Status Buttons */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              {/* Quick Status Buttons & AI Mock Practice Button */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap' }}>
+                <button
+                  type="button"
+                  onClick={handleLaunchAIMockPractice}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.45rem',
+                    background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)',
+                    color: '#ffffff',
+                    border: '1px solid rgba(255, 255, 255, 0.25)',
+                    borderRadius: '8px',
+                    padding: '0.42rem 0.95rem',
+                    fontSize: '0.84rem',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    boxShadow: '0 2px 10px rgba(99, 102, 241, 0.35)',
+                    transition: 'all 0.2s ease',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = 'translateY(-1px)'
+                    e.currentTarget.style.boxShadow = '0 4px 14px rgba(99, 102, 241, 0.5)'
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'translateY(0)'
+                    e.currentTarget.style.boxShadow = '0 2px 10px rgba(99, 102, 241, 0.35)'
+                  }}
+                  title="Practice this exact question with interactive AI Video Mock Interviewer"
+                >
+                  <span style={{ fontSize: '1rem' }}>🎙️</span> AI Mock Practice
+                </button>
                 <button
                   type="button"
                   className={`mqb-icon-btn ${isNeedsReview ? 'active-bookmark' : ''}`}
@@ -490,23 +484,155 @@ export default function QuestionDetailStudio() {
               </div>
             </div>
 
-            <h1 className="mqb-qheader-title">{question.question}</h1>
+            <h1 className="mqb-qheader-title">
+              {question.questionNumber ? `Q${question.questionNumber}. ` : ''}{question.question}
+            </h1>
 
             {/* Concept Tag */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.88rem', color: 'var(--mqb-accent-blue)' }}>
               <span>💡 Core Concept:</span>
-              <span style={{ fontWeight: 600 }}>{question.concept}</span>
+              <span style={{ fontWeight: 600 }}>{question.concept || question.question}</span>
+            </div>
+          </div>
+
+          {/* Universal Speech & Audio Studio Player Bar */}
+          <div className="mqb-audio-player-bar" style={{ marginBottom: '1.25rem' }}>
+            <div className="mqb-audio-meta">
+              <div className={`mqb-audio-equalizer ${isPlayingAudio && !isAudioPaused ? 'playing' : ''}`}>
+                <span className="mqb-audio-bar"></span>
+                <span className="mqb-audio-bar"></span>
+                <span className="mqb-audio-bar"></span>
+                <span className="mqb-audio-bar"></span>
+              </div>
+              <span style={{ fontSize: '0.88rem', fontWeight: 600, color: isPlayingAudio ? 'var(--mqb-accent-bright, #818cf8)' : 'var(--mqb-text-secondary)' }}>
+                {isPlayingAudio
+                  ? isAudioPaused
+                    ? '⏸️ Audio Paused'
+                    : activeSpeechSource === 'short'
+                    ? '🔊 Reading Short Answer...'
+                    : activeSpeechSource === 'explanation'
+                    ? '📖 Reading Simple Explanation...'
+                    : activeSpeechSource === 'howItWorks'
+                    ? '⚙️ Reading How It Works...'
+                    : activeSpeechSource === 'code'
+                    ? '💻 Explaining Code in Plain English...'
+                    : activeSpeechSource === 'tip'
+                    ? '💡 Reading Interview Tip...'
+                    : activeSpeechSource === 'interview'
+                    ? '🎙️ Reading Spoken Interview Script...'
+                    : activeSpeechSource === 'output'
+                    ? '🖥️ Reading Expected Output...'
+                    : '🔊 Narrating Aloud...'
+                  : '🎧 AI Audio Narrator Ready'}
+              </span>
+              <span
+                className="mqb-company-badge"
+                style={{
+                  background: isIndianVoiceActive ? 'rgba(16, 185, 129, 0.15)' : 'rgba(99, 102, 241, 0.15)',
+                  color: isIndianVoiceActive ? '#34d399' : '#818cf8',
+                  border: `1px solid ${isIndianVoiceActive ? 'rgba(16, 185, 129, 0.35)' : 'rgba(99, 102, 241, 0.35)'}`,
+                  fontSize: '0.72rem',
+                  padding: '0.15rem 0.5rem',
+                }}
+              >
+                {isIndianVoiceActive ? '🇮🇳 Indian English Accent' : '🗣️ English Voice'}
+              </span>
+            </div>
+
+            <div className="mqb-audio-actions">
+              {!isPlayingAudio ? (
+                <button
+                  type="button"
+                  className="mqb-audio-btn primary"
+                  onClick={() => handlePlayAudio(activeSpeechSource)}
+                  aria-label="Play audio narration"
+                >
+                  ▶ Play
+                </button>
+              ) : (
+                <>
+                  <button
+                    type="button"
+                    className="mqb-audio-btn"
+                    onClick={handlePauseResumeAudio}
+                    aria-label={isAudioPaused ? 'Resume narration' : 'Pause narration'}
+                  >
+                    {isAudioPaused ? '▶ Resume' : '⏸ Pause'}
+                  </button>
+                  <button
+                    type="button"
+                    className="mqb-audio-btn"
+                    onClick={handleStopAudio}
+                    aria-label="Stop narration"
+                  >
+                    ⏹ Stop
+                  </button>
+                  <button
+                    type="button"
+                    className="mqb-audio-btn"
+                    onClick={() => handlePlayAudio(activeSpeechSource)}
+                    aria-label="Replay current audio"
+                  >
+                    🔄 Replay
+                  </button>
+                </>
+              )}
+
+              {/* Speech Speed Control */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                <span style={{ fontSize: '0.72rem', color: 'var(--mqb-text-muted)' }}>Speed:</span>
+                <select
+                  className="mqb-audio-speed-select"
+                  value={speechRate}
+                  onChange={(e) => handleSpeechRateChange(parseFloat(e.target.value))}
+                  aria-label="Speech speed selector"
+                >
+                  <option value={0.75}>0.75x</option>
+                  <option value={1.0}>1.0x</option>
+                  <option value={1.25}>1.25x</option>
+                  <option value={1.5}>1.5x</option>
+                  <option value={2.0}>2.0x</option>
+                </select>
+              </div>
+
+              {/* Voice Selection Dropdown */}
+              {availableVoices.filter(v => v.lang.startsWith('en')).length > 1 && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                  <span style={{ fontSize: '0.72rem', color: 'var(--mqb-text-muted)' }}>Voice:</span>
+                  <select
+                    className="mqb-audio-speed-select"
+                    style={{ maxWidth: '140px' }}
+                    value={selectedVoiceURI}
+                    onChange={(e) => {
+                      setSelectedVoiceURI(e.target.value)
+                      const chosen = availableVoices.find(v => v.voiceURI === e.target.value)
+                      const isInd = !!(chosen && (chosen.lang.includes('IN') || chosen.name.toLowerCase().includes('india') || chosen.name.toLowerCase().includes('ravi') || chosen.name.toLowerCase().includes('heera') || chosen.name.toLowerCase().includes('neerja')))
+                      setIsIndianVoiceActive(isInd)
+                      if (isPlayingAudio) {
+                        handlePlayAudio(activeSpeechSource)
+                      }
+                    }}
+                    aria-label="Voice selection selector"
+                  >
+                    {availableVoices.filter(v => v.lang.startsWith('en')).map(v => (
+                      <option key={v.voiceURI} value={v.voiceURI}>
+                        {v.name.includes('India') || v.lang === 'en-IN' ? `🇮🇳 ${v.name.slice(0, 18)}` : v.name.slice(0, 18)}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
             </div>
           </div>
 
           {/* Navigation Tabs for Deep Breakdown */}
-          <div style={{ display: 'flex', gap: '0.5rem', borderBottom: '1px solid var(--mqb-border)', paddingBottom: '0.5rem', overflowX: 'auto' }}>
+          <div style={{ display: 'flex', gap: '0.5rem', borderBottom: '1px solid var(--mqb-border)', paddingBottom: '0.5rem', overflowX: 'auto', marginBottom: '1.25rem' }}>
             <button
               type="button"
               className={`mqb-subnav-link ${activeTab === 'answer' ? 'active' : ''}`}
               onClick={() => setActiveTab('answer')}
             >
-              🎙️ Interview &amp; Short Answer
+              📖 Reading Mode (Full Breakdown)
             </button>
             <button
               type="button"
@@ -515,7 +641,7 @@ export default function QuestionDetailStudio() {
             >
               🧠 Deep Technical Dive
             </button>
-            {(question.codeSnippet || question.executionFlow) && (
+            {(question.codeSnippet || question.codeExample || question.example || question.executionFlow) && (
               <button
                 type="button"
                 className={`mqb-subnav-link ${activeTab === 'code_execution' ? 'active' : ''}`}
@@ -529,222 +655,672 @@ export default function QuestionDetailStudio() {
               className={`mqb-subnav-link ${activeTab === 'strategy' ? 'active' : ''}`}
               onClick={() => setActiveTab('strategy')}
             >
-              🎯 Traps, Mistakes &amp; Rubrics
+              🎯 Traps &amp; Mistakes
             </button>
-            <button
-              type="button"
-              className={`mqb-subnav-link ${activeTab === 'follow_ups' ? 'active' : ''}`}
-              onClick={() => setActiveTab('follow_ups')}
-            >
-              ❓ Follow-Up Q&amp;A ({question.followUps.length})
-            </button>
+            {followUpList.length > 0 && (
+              <button
+                type="button"
+                className={`mqb-subnav-link ${activeTab === 'follow_ups' ? 'active' : ''}`}
+                onClick={() => setActiveTab('follow_ups')}
+              >
+                ❓ Follow-Up Q&amp;A ({followUpList.length})
+              </button>
+            )}
           </div>
 
-          {/* TAB 1: Interview & Short Answer */}
+          {/* TAB 1: Standardized 10-Step Interview-Ready Reading Flow */}
           {activeTab === 'answer' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-              {/* Executive Short Answer (12-Point Checklist Design with Real-Life Analogy) */}
-              <div className="mqb-executive-card" id="section-short-answer">
-                <div className="mqb-executive-header">
-                  <div className="mqb-executive-title-group">
-                    <span className="mqb-executive-icon">⚡</span>
-                    <div>
-                      <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 700, color: '#f8fafc' }}>
-                        Executive Short Answer (Key Takeaways &amp; Core Principles)
-                      </h3>
-                      <span className="mqb-executive-subtitle">
-                        Structured point-by-point breakdown with real-life analogies and senior interview takeaways
-                      </span>
-                    </div>
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-                    <span className="mqb-executive-badge">🎯 {shortAnswerItems.length || 12} Key Principles</span>
-                    <button
-                      type="button"
-                      className={`mqb-action-pill-btn ${activeSpeechSource === 'short' ? 'primary' : ''}`}
-                      onClick={() => handlePlayAudio('short')}
-                    >
-                      ⚡ Listen to Summary
-                    </button>
-                  </div>
-                </div>
+              {/* Optional MCQ Mode */}
+              {(question.options || question.questionType === 'MCQ') && (
+                <MCQInteractiveCard
+                  question={question}
+                  onSpeakExplanation={(txt) => handlePlayAudio('custom', txt)}
+                />
+              )}
 
-                <div className="mqb-short-answer-container">
-                  {shortAnswerItems.map((item) => {
-                    const isSpoken = activeSpeechSource === 'short' && isPlayingAudio && spokenCharRange.start >= item.startIndex && spokenCharRange.start < item.endIndex
-                    return (
-                      <div
-                        key={item.num}
-                        className={`mqb-short-answer-card ${item.isAnalogy ? 'analogy-card' : ''} ${item.isTakeaway ? 'takeaway-card' : ''} ${isSpoken ? 'active-spoken-card' : ''}`}
-                      >
-                        <span className="mqb-short-answer-badge">
-                          {item.isAnalogy ? '💡' : item.isTakeaway ? '🎯' : item.num.padStart(2, '0')}
+              {/* 1. Short Interview Answer */}
+              <div
+                className={`mqb-section-card ${activeSpeechSource === 'short' && isPlayingAudio ? 'speaking-active' : ''}`}
+                id="section-short-answer"
+                style={{
+                  borderLeft: '4px solid var(--mqb-accent-bright, #818cf8)',
+                  background: activeSpeechSource === 'short' && isPlayingAudio
+                    ? 'linear-gradient(135deg, rgba(99, 102, 241, 0.12) 0%, var(--mqb-bg-card) 100%)'
+                    : 'linear-gradient(135deg, rgba(99, 102, 241, 0.04) 0%, var(--mqb-bg-card) 100%)',
+                  transition: 'all 0.3s ease',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.75rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap' }}>
+                    <span style={{ fontSize: '1.25rem' }}>⚡</span>
+                    <h2 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 700, color: 'var(--mqb-text-primary)' }}>
+                      Short Interview Answer
+                    </h2>
+                    <span className="mqb-company-badge" style={{ background: 'rgba(99, 102, 241, 0.15)', color: 'var(--mqb-accent-bright, #818cf8)', fontWeight: 600 }}>
+                      Ideal 30s Response
+                    </span>
+                    {activeSpeechSource === 'short' && isPlayingAudio && (
+                      <span className="mqb-audio-wave-badge">
+                        <span className="mqb-wave-bar"></span>
+                        <span className="mqb-wave-bar"></span>
+                        <span className="mqb-wave-bar"></span>
+                        <span style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--mqb-accent-bright, #818cf8)', marginLeft: '4px' }}>
+                          {isAudioPaused ? 'PAUSED' : 'SPEAKING'}
                         </span>
-                        <div className="mqb-short-answer-content">
-                          {item.isAnalogy && (
-                            <span className="mqb-analogy-tag">💡 REAL-LIFE MENTOR ANALOGY</span>
-                          )}
-                          {item.isTakeaway && (
-                            <span className="mqb-takeaway-tag">🎯 KEY INTERVIEW TAKEAWAY</span>
-                          )}
-                          <p className="mqb-short-answer-text">
-                            {renderCardSpokenText(item)}
-                          </p>
-                        </div>
-                      </div>
-                    )
-                  })}
-                </div>
-              </div>
-
-              {/* Natural Spoken Interview Script with Full Audio Studio Player */}
-              <div className="mqb-speech-box" id="section-interview-answer">
-                <div className="mqb-speech-header">
-                  <span className="mqb-speech-tag">
-                    <span>🎙️</span> Natural Spoken Interview Answer (Say This Aloud)
-                  </span>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                    <button
-                      type="button"
-                      className={`mqb-action-pill-btn ${activeSpeechSource === 'interview' ? 'primary' : ''}`}
-                      style={{ fontSize: '0.75rem', padding: '0.2rem 0.55rem' }}
-                      onClick={() => handlePlayAudio('interview')}
-                    >
-                      🎙️ Spoken Answer
-                    </button>
-                    <button
-                      type="button"
-                      className={`mqb-action-pill-btn ${activeSpeechSource === 'short' ? 'primary' : ''}`}
-                      style={{ fontSize: '0.75rem', padding: '0.2rem 0.55rem' }}
-                      onClick={() => handlePlayAudio('short')}
-                    >
-                      ⚡ Executive Summary
-                    </button>
+                      </span>
+                    )}
                   </div>
-                </div>
-
-                <p className="mqb-speech-text" style={{ whiteSpace: 'pre-line' }}>
-                  "{renderSpokenText(question.interviewAnswer, activeSpeechSource === 'interview')}"
-                </p>
-
-                {/* Interactive Audio Player Bar */}
-                <div className="mqb-audio-player-bar">
-                  <div className="mqb-audio-meta">
-                    <div className={`mqb-audio-equalizer ${isPlayingAudio && !isAudioPaused ? 'playing' : ''}`}>
-                      <span className="mqb-audio-bar"></span>
-                      <span className="mqb-audio-bar"></span>
-                      <span className="mqb-audio-bar"></span>
-                      <span className="mqb-audio-bar"></span>
-                    </div>
-                    <span style={{ fontSize: '0.85rem', fontWeight: 600, color: isPlayingAudio ? 'var(--mqb-accent-bright, #818cf8)' : 'var(--mqb-text-secondary)' }}>
-                      {isPlayingAudio ? (isAudioPaused ? '⏸️ Audio Paused' : '🔊 Narrating Aloud...') : '🎧 AI Audio Narrator Ready'}
-                    </span>
-                    <span
-                      className="mqb-company-badge"
-                      style={{
-                        background: isIndianVoiceActive ? 'rgba(16, 185, 129, 0.15)' : 'rgba(99, 102, 241, 0.15)',
-                        color: isIndianVoiceActive ? '#34d399' : '#818cf8',
-                        border: `1px solid ${isIndianVoiceActive ? 'rgba(16, 185, 129, 0.35)' : 'rgba(99, 102, 241, 0.35)'}`,
-                        fontSize: '0.72rem',
-                        padding: '0.15rem 0.5rem',
-                      }}
-                    >
-                      {isIndianVoiceActive ? '🇮🇳 Indian English Accent' : '🗣️ English Voice'}
-                    </span>
-                  </div>
-
-                  <div className="mqb-audio-actions">
-                    {!isPlayingAudio ? (
-                      <button
-                        type="button"
-                        className="mqb-audio-btn primary"
-                        onClick={() => handlePlayAudio(activeSpeechSource)}
-                      >
-                        ▶ Play Audio
-                      </button>
-                    ) : (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                    {activeSpeechSource === 'short' && isPlayingAudio ? (
                       <>
                         <button
                           type="button"
-                          className="mqb-audio-btn"
+                          className="mqb-action-pill-btn"
+                          style={{
+                            background: isAudioPaused ? 'rgba(16, 185, 129, 0.15)' : 'rgba(245, 158, 11, 0.15)',
+                            borderColor: isAudioPaused ? '#10b981' : '#f59e0b',
+                            color: isAudioPaused ? '#10b981' : '#f59e0b',
+                            fontWeight: 600,
+                          }}
                           onClick={handlePauseResumeAudio}
+                          title={isAudioPaused ? 'Resume speaking' : 'Pause speaking'}
                         >
-                          {isAudioPaused ? '▶ Resume' : '⏸ Pause'}
+                          {isAudioPaused ? '▶️ Resume' : '⏸ Pause'}
                         </button>
                         <button
                           type="button"
-                          className="mqb-audio-btn"
+                          className="mqb-action-pill-btn"
+                          style={{
+                            background: 'rgba(239, 68, 68, 0.15)',
+                            borderColor: '#ef4444',
+                            color: '#ef4444',
+                            fontWeight: 600,
+                          }}
                           onClick={handleStopAudio}
+                          title="Stop speaking"
                         >
                           ⏹ Stop
                         </button>
-                        <button
-                          type="button"
-                          className="mqb-audio-btn"
-                          onClick={() => handlePlayAudio(activeSpeechSource)}
-                        >
-                          🔄 Replay
-                        </button>
                       </>
-                    )}
-
-                    {/* Speech Rate Control */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
-                      <span style={{ fontSize: '0.72rem', color: 'var(--mqb-text-muted)' }}>Speed:</span>
-                      <select
-                        className="mqb-audio-speed-select"
-                        value={speechRate}
-                        onChange={(e) => {
-                          const newRate = parseFloat(e.target.value)
-                          setSpeechRate(newRate)
-                          if (isPlayingAudio) {
-                            handlePlayAudio(activeSpeechSource)
-                          }
-                        }}
+                    ) : (
+                      <button
+                        type="button"
+                        className="mqb-action-pill-btn primary"
+                        onClick={() => handlePlayAudio('short')}
+                        aria-label="Read short answer aloud"
                       >
-                        <option value={0.8}>0.8x</option>
-                        <option value={1.0}>1.0x (Normal)</option>
-                        <option value={1.25}>1.25x</option>
-                        <option value={1.5}>1.5x</option>
-                      </select>
-                    </div>
-
-                    {/* Voice Selection Dropdown */}
-                    {availableVoices.filter(v => v.lang.startsWith('en')).length > 1 && (
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
-                        <span style={{ fontSize: '0.72rem', color: 'var(--mqb-text-muted)' }}>Voice:</span>
-                        <select
-                          className="mqb-audio-speed-select"
-                          style={{ maxWidth: '140px' }}
-                          value={selectedVoiceURI}
-                          onChange={(e) => {
-                            setSelectedVoiceURI(e.target.value)
-                            const chosen = availableVoices.find(v => v.voiceURI === e.target.value)
-                            const isInd = !!(chosen && (chosen.lang.includes('IN') || chosen.name.toLowerCase().includes('india') || chosen.name.toLowerCase().includes('ravi') || chosen.name.toLowerCase().includes('heera') || chosen.name.toLowerCase().includes('neerja')))
-                            setIsIndianVoiceActive(isInd)
-                            if (isPlayingAudio) {
-                              handlePlayAudio(activeSpeechSource)
-                            }
-                          }}
-                        >
-                          {availableVoices.filter(v => v.lang.startsWith('en')).map(v => (
-                            <option key={v.voiceURI} value={v.voiceURI}>
-                              {v.name.includes('India') || v.lang === 'en-IN' ? `🇮🇳 ${v.name.slice(0, 18)}` : v.name.slice(0, 18)}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
+                        🔊 Listen
+                      </button>
                     )}
+                    <button
+                      type="button"
+                      className="mqb-action-pill-btn"
+                      onClick={() => {
+                        navigator.clipboard.writeText(question.shortAnswer)
+                        setCopiedSection('short')
+                        setTimeout(() => setCopiedSection(null), 2000)
+                      }}
+                      title="Copy short answer"
+                      aria-label="Copy short answer to clipboard"
+                    >
+                      {copiedSection === 'short' ? '✓ Copied!' : '📋 Copy'}
+                    </button>
                   </div>
                 </div>
+                <FormattedAnswerText
+                  text={question.shortAnswer}
+                  isSpeakingSection={activeSpeechSource === 'short' && isPlayingAudio}
+                  activeSentenceIndex={activeSpeechSource === 'short' && isPlayingAudio ? activeSentenceIndex : undefined}
+                />
               </div>
+
+              {/* 2. Simple Explanation */}
+              {(question.simpleExplanation || question.detailedAnswer || question.detailedExplanation) && (
+                <div
+                  className={`mqb-section-card ${activeSpeechSource === 'explanation' && isPlayingAudio ? 'speaking-active' : ''}`}
+                  id="section-simple-explanation"
+                  style={{
+                    borderLeft: '4px solid #0284c7',
+                    background: activeSpeechSource === 'explanation' && isPlayingAudio
+                      ? 'linear-gradient(135deg, rgba(2, 132, 199, 0.12) 0%, var(--mqb-bg-card) 100%)'
+                      : 'linear-gradient(135deg, rgba(2, 132, 199, 0.04) 0%, var(--mqb-bg-card) 100%)',
+                    transition: 'all 0.3s ease',
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.75rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap' }}>
+                      <span style={{ fontSize: '1.25rem' }}>📖</span>
+                      <h2 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 700, color: 'var(--mqb-text-primary)' }}>
+                        Simple Explanation
+                      </h2>
+                      <span className="mqb-company-badge" style={{ background: 'rgba(2, 132, 199, 0.15)', color: '#38bdf8', fontWeight: 600 }}>
+                        Core Concept
+                      </span>
+                      {activeSpeechSource === 'explanation' && isPlayingAudio && (
+                        <span className="mqb-audio-wave-badge" style={{ borderColor: 'rgba(2, 132, 199, 0.3)' }}>
+                          <span className="mqb-wave-bar" style={{ background: '#38bdf8' }}></span>
+                          <span className="mqb-wave-bar" style={{ background: '#38bdf8' }}></span>
+                          <span className="mqb-wave-bar" style={{ background: '#38bdf8' }}></span>
+                          <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#38bdf8', marginLeft: '4px' }}>
+                            {isAudioPaused ? 'PAUSED' : 'SPEAKING'}
+                          </span>
+                        </span>
+                      )}
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                      {activeSpeechSource === 'explanation' && isPlayingAudio ? (
+                        <>
+                          <button
+                            type="button"
+                            className="mqb-action-pill-btn"
+                            style={{
+                              background: isAudioPaused ? 'rgba(16, 185, 129, 0.15)' : 'rgba(245, 158, 11, 0.15)',
+                              borderColor: isAudioPaused ? '#10b981' : '#f59e0b',
+                              color: isAudioPaused ? '#10b981' : '#f59e0b',
+                              fontWeight: 600,
+                            }}
+                            onClick={handlePauseResumeAudio}
+                            title={isAudioPaused ? 'Resume speaking' : 'Pause speaking'}
+                          >
+                            {isAudioPaused ? '▶️ Resume' : '⏸ Pause'}
+                          </button>
+                          <button
+                            type="button"
+                            className="mqb-action-pill-btn"
+                            style={{
+                              background: 'rgba(239, 68, 68, 0.15)',
+                              borderColor: '#ef4444',
+                              color: '#ef4444',
+                              fontWeight: 600,
+                            }}
+                            onClick={handleStopAudio}
+                            title="Stop speaking"
+                          >
+                            ⏹ Stop
+                          </button>
+                        </>
+                      ) : (
+                        <button
+                          type="button"
+                          className="mqb-action-pill-btn"
+                          onClick={() => handlePlayAudio('explanation')}
+                          aria-label="Read simple explanation aloud"
+                        >
+                          🔊 Listen
+                        </button>
+                      )}
+                      <button
+                        type="button"
+                        className="mqb-action-pill-btn"
+                        onClick={() => {
+                          navigator.clipboard.writeText(question.simpleExplanation || question.detailedAnswer || question.detailedExplanation || '')
+                          setCopiedSection('explanation')
+                          setTimeout(() => setCopiedSection(null), 2000)
+                        }}
+                        title="Copy simple explanation"
+                      >
+                        {copiedSection === 'explanation' ? '✓ Copied!' : '📋 Copy'}
+                      </button>
+                    </div>
+                  </div>
+                  <FormattedAnswerText
+                    text={question.simpleExplanation || question.detailedAnswer || question.detailedExplanation}
+                    isSpeakingSection={activeSpeechSource === 'explanation' && isPlayingAudio}
+                    activeSentenceIndex={activeSpeechSource === 'explanation' && isPlayingAudio ? activeSentenceIndex : undefined}
+                  />
+                </div>
+              )}
+
+              {/* 3. How It Works - Only render when authentic and not generic boilerplate */}
+              {question.howItWorks && !isGenericHowItWorks(question.howItWorks) && (
+                <div
+                  className={`mqb-section-card ${activeSpeechSource === 'howItWorks' && isPlayingAudio ? 'speaking-active' : ''}`}
+                  id="section-how-it-works"
+                  style={{
+                    borderLeft: '4px solid #10b981',
+                    background: activeSpeechSource === 'howItWorks' && isPlayingAudio
+                      ? 'linear-gradient(135deg, rgba(16, 185, 129, 0.12) 0%, var(--mqb-bg-card) 100%)'
+                      : 'linear-gradient(135deg, rgba(16, 185, 129, 0.04) 0%, var(--mqb-bg-card) 100%)',
+                    transition: 'all 0.3s ease',
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.75rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap' }}>
+                      <span style={{ fontSize: '1.25rem' }}>⚙️</span>
+                      <h2 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 700, color: 'var(--mqb-text-primary)' }}>
+                        How It Works
+                      </h2>
+                      <span className="mqb-company-badge" style={{ background: 'rgba(16, 185, 129, 0.15)', color: '#34d399', fontWeight: 600 }}>
+                        Execution Flow
+                      </span>
+                      {activeSpeechSource === 'howItWorks' && isPlayingAudio && (
+                        <span className="mqb-audio-wave-badge" style={{ borderColor: 'rgba(16, 185, 129, 0.3)' }}>
+                          <span className="mqb-wave-bar" style={{ background: '#34d399' }}></span>
+                          <span className="mqb-wave-bar" style={{ background: '#34d399' }}></span>
+                          <span className="mqb-wave-bar" style={{ background: '#34d399' }}></span>
+                          <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#34d399', marginLeft: '4px' }}>
+                            {isAudioPaused ? 'PAUSED' : 'SPEAKING'}
+                          </span>
+                        </span>
+                      )}
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                      {activeSpeechSource === 'howItWorks' && isPlayingAudio ? (
+                        <>
+                          <button
+                            type="button"
+                            className="mqb-action-pill-btn"
+                            style={{
+                              background: isAudioPaused ? 'rgba(16, 185, 129, 0.15)' : 'rgba(245, 158, 11, 0.15)',
+                              borderColor: isAudioPaused ? '#10b981' : '#f59e0b',
+                              color: isAudioPaused ? '#10b981' : '#f59e0b',
+                              fontWeight: 600,
+                            }}
+                            onClick={handlePauseResumeAudio}
+                            title={isAudioPaused ? 'Resume speaking' : 'Pause speaking'}
+                          >
+                            {isAudioPaused ? '▶️ Resume' : '⏸ Pause'}
+                          </button>
+                          <button
+                            type="button"
+                            className="mqb-action-pill-btn"
+                            style={{
+                              background: 'rgba(239, 68, 68, 0.15)',
+                              borderColor: '#ef4444',
+                              color: '#ef4444',
+                              fontWeight: 600,
+                            }}
+                            onClick={handleStopAudio}
+                            title="Stop speaking"
+                          >
+                            ⏹ Stop
+                          </button>
+                        </>
+                      ) : (
+                        <button
+                          type="button"
+                          className="mqb-action-pill-btn"
+                          onClick={() => handlePlayAudio('howItWorks')}
+                          aria-label="Read how it works aloud"
+                        >
+                          🔊 Listen
+                        </button>
+                      )}
+                      <button
+                        type="button"
+                        className="mqb-action-pill-btn"
+                        onClick={() => {
+                          navigator.clipboard.writeText(question.howItWorks || '')
+                          setCopiedSection('howItWorks')
+                          setTimeout(() => setCopiedSection(null), 2000)
+                        }}
+                        title="Copy execution flow"
+                      >
+                        {copiedSection === 'howItWorks' ? '✓ Copied!' : '📋 Copy'}
+                      </button>
+                    </div>
+                  </div>
+                  <FormattedAnswerText
+                    text={question.howItWorks}
+                    isSpeakingSection={activeSpeechSource === 'howItWorks' && isPlayingAudio}
+                    activeSentenceIndex={activeSpeechSource === 'howItWorks' && isPlayingAudio ? activeSentenceIndex : undefined}
+                  />
+                </div>
+              )}
+
+              {/* 4. Code Example */}
+              {(question.codeExample || question.example || question.codeSnippet) && (
+                <div
+                  className={`mqb-section-card ${activeSpeechSource === 'code' && isPlayingAudio ? 'speaking-active' : ''}`}
+                  id="section-code-example"
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.85rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <span style={{ fontSize: '1.2rem' }}>💻</span>
+                      <h2 style={{ margin: 0, fontSize: '1.18rem', fontWeight: 700, color: 'var(--mqb-text-primary)' }}>
+                        Code Example
+                      </h2>
+                      {activeSpeechSource === 'code' && isPlayingAudio && (
+                        <span className="mqb-audio-wave-badge">
+                          <span className="mqb-wave-bar"></span>
+                          <span className="mqb-wave-bar"></span>
+                          <span className="mqb-wave-bar"></span>
+                          <span style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--mqb-accent-bright, #818cf8)', marginLeft: '4px' }}>
+                            {isAudioPaused ? 'PAUSED' : 'EXPLAINING'}
+                          </span>
+                        </span>
+                      )}
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      {activeSpeechSource === 'code' && isPlayingAudio ? (
+                        <>
+                          <button
+                            type="button"
+                            className="mqb-action-pill-btn"
+                            style={{
+                              background: isAudioPaused ? 'rgba(16, 185, 129, 0.15)' : 'rgba(245, 158, 11, 0.15)',
+                              borderColor: isAudioPaused ? '#10b981' : '#f59e0b',
+                              color: isAudioPaused ? '#10b981' : '#f59e0b',
+                              fontWeight: 600,
+                            }}
+                            onClick={handlePauseResumeAudio}
+                            title={isAudioPaused ? 'Resume explanation' : 'Pause explanation'}
+                          >
+                            {isAudioPaused ? '▶️ Resume' : '⏸ Pause'}
+                          </button>
+                          <button
+                            type="button"
+                            className="mqb-action-pill-btn"
+                            style={{
+                              background: 'rgba(239, 68, 68, 0.15)',
+                              borderColor: '#ef4444',
+                              color: '#ef4444',
+                              fontWeight: 600,
+                            }}
+                            onClick={handleStopAudio}
+                            title="Stop explanation"
+                          >
+                            ⏹ Stop
+                          </button>
+                        </>
+                      ) : (
+                        <button
+                          type="button"
+                          className="mqb-action-pill-btn"
+                          onClick={() => handlePlayAudio('code')}
+                          aria-label="Explain code aloud in simple English"
+                        >
+                          🔊 Explain Code
+                        </button>
+                      )}
+                      <button
+                        type="button"
+                        className="mqb-action-pill-btn"
+                        onClick={() => {
+                          navigator.clipboard.writeText(question.codeExample || question.example || question.codeSnippet || '')
+                          setCopiedSection('code')
+                          setTimeout(() => setCopiedSection(null), 2000)
+                        }}
+                        aria-label="Copy code example"
+                      >
+                        {copiedSection === 'code' ? '✓ Copied!' : '📋 Copy Code'}
+                      </button>
+                    </div>
+                  </div>
+                  <div className="mqb-code-block">
+                    <pre className="mqb-code-content">{question.codeExample || question.example || question.codeSnippet}</pre>
+                  </div>
+                </div>
+              )}
+
+              {/* 5. Line-by-Line Code Explanation */}
+              {question.lineByLineExplanation && question.lineByLineExplanation.length > 0 && (
+                <div className="mqb-section-card" id="section-line-by-line">
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.85rem' }}>
+                    <span style={{ fontSize: '1.2rem' }}>🔍</span>
+                    <h2 style={{ margin: 0, fontSize: '1.18rem', fontWeight: 700, color: 'var(--mqb-text-primary)' }}>
+                      Line-by-Line Code Explanation
+                    </h2>
+                  </div>
+                  <p style={{ color: 'var(--mqb-text-secondary)', fontSize: '0.92rem', margin: '0 0 1rem' }}>
+                    Understand what each line does in simple English:
+                  </p>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                    {question.lineByLineExplanation.map((lbl, idx) => (
+                      <div
+                        key={lbl.line ?? idx}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'flex-start',
+                          gap: '1rem',
+                          padding: '0.85rem 1rem',
+                          background: 'var(--mqb-card-subtle-bg)',
+                          border: '1px solid var(--mqb-border)',
+                          borderRadius: '10px',
+                          flexWrap: 'wrap',
+                        }}
+                      >
+                        <code
+                          style={{
+                            padding: '0.2rem 0.5rem',
+                            borderRadius: '6px',
+                            fontFamily: 'var(--mqb-font-mono)',
+                            fontSize: '0.88rem',
+                            background: 'rgba(99, 102, 241, 0.1)',
+                            color: 'var(--mqb-accent-bright, #818cf8)',
+                            border: '1px solid rgba(99, 102, 241, 0.25)',
+                            minWidth: '130px',
+                            maxWidth: '280px',
+                            whiteSpace: 'pre',
+                            overflowX: 'auto',
+                          }}
+                        >
+                          {lbl.code}
+                        </code>
+                        <div style={{ flex: 1, minWidth: '220px', fontSize: '0.95rem', lineHeight: '1.6', color: 'var(--mqb-text-primary)' }}>
+                          <FormattedAnswerText text={lbl.explanation} />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* 6. Expected Output / Result */}
+              {question.expectedOutput && (
+                <div
+                  className={`mqb-section-card ${activeSpeechSource === 'output' && isPlayingAudio ? 'speaking-active' : ''}`}
+                  id="section-expected-output"
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.85rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <span style={{ fontSize: '1.2rem' }}>🖥️</span>
+                      <h2 style={{ margin: 0, fontSize: '1.18rem', fontWeight: 700, color: 'var(--mqb-text-primary)' }}>
+                        Expected Output / Result
+                      </h2>
+                      {activeSpeechSource === 'output' && isPlayingAudio && (
+                        <span className="mqb-audio-wave-badge">
+                          <span className="mqb-wave-bar"></span>
+                          <span className="mqb-wave-bar"></span>
+                          <span className="mqb-wave-bar"></span>
+                          <span style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--mqb-accent-bright, #818cf8)', marginLeft: '4px' }}>
+                            {isAudioPaused ? 'PAUSED' : 'SPEAKING'}
+                          </span>
+                        </span>
+                      )}
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      {activeSpeechSource === 'output' && isPlayingAudio ? (
+                        <>
+                          <button
+                            type="button"
+                            className="mqb-action-pill-btn"
+                            style={{
+                              background: isAudioPaused ? 'rgba(16, 185, 129, 0.15)' : 'rgba(245, 158, 11, 0.15)',
+                              borderColor: isAudioPaused ? '#10b981' : '#f59e0b',
+                              color: isAudioPaused ? '#10b981' : '#f59e0b',
+                              fontWeight: 600,
+                            }}
+                            onClick={handlePauseResumeAudio}
+                            title={isAudioPaused ? 'Resume speaking' : 'Pause speaking'}
+                          >
+                            {isAudioPaused ? '▶️ Resume' : '⏸ Pause'}
+                          </button>
+                          <button
+                            type="button"
+                            className="mqb-action-pill-btn"
+                            style={{
+                              background: 'rgba(239, 68, 68, 0.15)',
+                              borderColor: '#ef4444',
+                              color: '#ef4444',
+                              fontWeight: 600,
+                            }}
+                            onClick={handleStopAudio}
+                            title="Stop speaking"
+                          >
+                            ⏹ Stop
+                          </button>
+                        </>
+                      ) : (
+                        <button
+                          type="button"
+                          className="mqb-action-pill-btn"
+                          onClick={() => handlePlayAudio('output')}
+                          aria-label="Read expected output aloud"
+                        >
+                          🔊 Listen
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                  <div style={{ background: 'var(--code-bg, #0d1117)', border: '1px solid var(--mqb-border)', borderRadius: '10px', padding: '1rem' }}>
+                    <pre style={{ margin: 0, fontFamily: 'var(--mqb-font-mono)', color: '#34d399', fontSize: '0.92rem' }}>
+                      {question.expectedOutput}
+                    </pre>
+                  </div>
+                </div>
+              )}
+
+              {/* 7. Real-World Example */}
+              {question.realWorldExample && (
+                <div className="mqb-section-card" id="section-real-world">
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.85rem' }}>
+                    <span style={{ fontSize: '1.2rem' }}>🌐</span>
+                    <h2 style={{ margin: 0, fontSize: '1.18rem', fontWeight: 700, color: 'var(--mqb-text-primary)' }}>
+                      Real-World Example
+                    </h2>
+                  </div>
+                  <FormattedAnswerText text={question.realWorldExample} />
+                </div>
+              )}
+
+              {/* 8. Common Mistakes */}
+              {question.commonMistakes && question.commonMistakes.length > 0 && (
+                <div className="mqb-section-card" id="section-common-mistakes" style={{ borderLeft: '4px solid #f87171' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.85rem' }}>
+                    <span style={{ fontSize: '1.2rem' }}>⚠️</span>
+                    <h2 style={{ margin: 0, fontSize: '1.18rem', fontWeight: 700, color: '#f87171' }}>
+                      Common Mistake{question.commonMistakes.length > 1 ? 's' : ''}
+                    </h2>
+                  </div>
+                  <ul className="mqb-bullet-list" style={{ margin: 0 }}>
+                    {question.commonMistakes.map((m, idx) => (
+                      <li key={idx} style={{ fontSize: '0.95rem', lineHeight: '1.65' }}>
+                        <FormattedAnswerText text={m} />
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* 9. Practical Interview Tip */}
+              {(question.interviewTip || (question.interviewTips && question.interviewTips.length > 0)) && (
+                <div
+                  className={`mqb-section-card ${activeSpeechSource === 'tip' && isPlayingAudio ? 'speaking-active' : ''}`}
+                  id="section-interview-tip"
+                  style={{
+                    borderLeft: '4px solid #38bdf8',
+                    background: activeSpeechSource === 'tip' && isPlayingAudio
+                      ? 'linear-gradient(135deg, rgba(56, 189, 248, 0.12), rgba(99, 102, 241, 0.08))'
+                      : 'linear-gradient(135deg, rgba(56, 189, 248, 0.06), rgba(99, 102, 241, 0.04))',
+                    transition: 'all 0.3s ease',
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.85rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <span style={{ fontSize: '1.2rem' }}>💡</span>
+                      <h2 style={{ margin: 0, fontSize: '1.18rem', fontWeight: 700, color: '#38bdf8' }}>
+                        Interview Tip
+                      </h2>
+                      {activeSpeechSource === 'tip' && isPlayingAudio && (
+                        <span className="mqb-audio-wave-badge" style={{ borderColor: 'rgba(56, 189, 248, 0.4)' }}>
+                          <span className="mqb-wave-bar" style={{ background: '#38bdf8' }}></span>
+                          <span className="mqb-wave-bar" style={{ background: '#38bdf8' }}></span>
+                          <span className="mqb-wave-bar" style={{ background: '#38bdf8' }}></span>
+                          <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#38bdf8', marginLeft: '4px' }}>
+                            {isAudioPaused ? 'PAUSED' : 'SPEAKING'}
+                          </span>
+                        </span>
+                      )}
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      {activeSpeechSource === 'tip' && isPlayingAudio ? (
+                        <>
+                          <button
+                            type="button"
+                            className="mqb-action-pill-btn"
+                            style={{
+                              background: isAudioPaused ? 'rgba(16, 185, 129, 0.15)' : 'rgba(245, 158, 11, 0.15)',
+                              borderColor: isAudioPaused ? '#10b981' : '#f59e0b',
+                              color: isAudioPaused ? '#10b981' : '#f59e0b',
+                              fontWeight: 600,
+                            }}
+                            onClick={handlePauseResumeAudio}
+                            title={isAudioPaused ? 'Resume speaking' : 'Pause speaking'}
+                          >
+                            {isAudioPaused ? '▶️ Resume' : '⏸ Pause'}
+                          </button>
+                          <button
+                            type="button"
+                            className="mqb-action-pill-btn"
+                            style={{
+                              background: 'rgba(239, 68, 68, 0.15)',
+                              borderColor: '#ef4444',
+                              color: '#ef4444',
+                              fontWeight: 600,
+                            }}
+                            onClick={handleStopAudio}
+                            title="Stop speaking"
+                          >
+                            ⏹ Stop
+                          </button>
+                        </>
+                      ) : (
+                        <button
+                          type="button"
+                          className={`mqb-action-pill-btn ${activeSpeechSource === 'tip' && isPlayingAudio ? 'primary' : ''}`}
+                          onClick={() => handlePlayAudio('tip')}
+                          aria-label="Read interview tip aloud"
+                        >
+                          🔊 Listen
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                  <FormattedAnswerText
+                    text={question.interviewTip || (question.interviewTips ? question.interviewTips.join('\n') : '')}
+                    isSpeakingSection={activeSpeechSource === 'tip' && isPlayingAudio}
+                    activeSentenceIndex={activeSpeechSource === 'tip' && isPlayingAudio ? activeSentenceIndex : undefined}
+                  />
+                </div>
+              )}
+
+              {/* 10. Follow-Up Questions */}
+              {followUpList.length > 0 && (
+                <div className="mqb-section-card" id="section-follow-ups">
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.85rem' }}>
+                    <span style={{ fontSize: '1.2rem' }}>❓</span>
+                    <h2 style={{ margin: 0, fontSize: '1.18rem', fontWeight: 700, color: 'var(--mqb-text-primary)' }}>
+                      Follow-Up Questions
+                    </h2>
+                  </div>
+                  <ul className="mqb-bullet-list" style={{ margin: 0 }}>
+                    {followUpList.map((fu, idx) => (
+                      <li key={idx} style={{ fontSize: '0.98rem', lineHeight: '1.7' }}>
+                        <FormattedAnswerText text={fu} />
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
 
               {/* Architecture & State Lifecycle Diagram */}
               {question.diagram && (
                 <div className="mqb-section-card" id="section-diagram">
-                  <h3 className="mqb-section-title">
+                  <h2 className="mqb-section-title">
                     <span>📊</span> Architecture &amp; State Lifecycle Diagram
-                  </h3>
+                  </h2>
                   <p style={{ color: 'var(--mqb-text-secondary)', fontSize: '0.9rem', margin: '0 0 1rem' }}>
                     Visual state machine and runtime transition flow:
                   </p>
@@ -760,9 +1336,9 @@ export default function QuestionDetailStudio() {
               {/* Video Explanation Studio */}
               {question.videoUrl && (
                 <div className="mqb-section-card" id="section-video-lesson">
-                  <h3 className="mqb-section-title">
+                  <h2 className="mqb-section-title">
                     <span>🎬</span> Video Tutorial &amp; Visual Walkthrough
-                  </h3>
+                  </h2>
                   {question.videoTitle && (
                     <p style={{ color: 'var(--mqb-text-secondary)', fontSize: '0.9rem', margin: '0 0 0.85rem' }}>
                       {question.videoTitle}
@@ -780,34 +1356,62 @@ export default function QuestionDetailStudio() {
                 </div>
               )}
 
-              {/* Real World Production Scenario */}
-              <div className="mqb-section-card">
-                <h3 className="mqb-section-title">
-                  <span>🏭</span> Production &amp; Real-World Scenario
-                </h3>
-                <div className="mqb-section-body">
-                  <p style={{ whiteSpace: 'pre-line' }}>{question.realWorldExample}</p>
-                </div>
-              </div>
-
-              {/* Practical Code Example */}
-              <div className="mqb-section-card">
-                <h3 className="mqb-section-title">
-                  <span>💻</span> Practical Implementation Example
-                </h3>
-                <div className="mqb-code-block">
-                  <div className="mqb-code-header">
-                    <span>{subjectId.toUpperCase()} SNIPPET</span>
-                    <button
-                      type="button"
-                      style={{ background: 'none', border: 'none', color: '#38bdf8', cursor: 'pointer', fontSize: '0.75rem' }}
-                      onClick={() => navigator.clipboard.writeText(question.example)}
-                    >
-                      Copy Code
-                    </button>
+              {/* Interactive AI Video Mock Practice Callout */}
+              <div
+                className="mqb-section-card"
+                style={{
+                  background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(168, 85, 247, 0.08) 100%)',
+                  border: '1px solid rgba(99, 102, 241, 0.3)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  gap: '1.25rem',
+                  flexWrap: 'wrap',
+                  padding: '1.5rem',
+                  borderRadius: '12px',
+                }}
+              >
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.35rem' }}>
+                    <span style={{ fontSize: '1.4rem' }}>🎙️</span>
+                    <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 700, color: 'var(--mqb-text-primary)' }}>
+                      Ready to test yourself live?
+                    </h3>
                   </div>
-                  <pre className="mqb-code-content">{question.example}</pre>
+                  <p style={{ margin: 0, fontSize: '0.88rem', color: 'var(--mqb-text-secondary)', maxWidth: '600px', lineHeight: 1.5 }}>
+                    Practice answering <strong style={{ color: 'var(--mqb-text-primary)' }}>&ldquo;{question.question}&rdquo;</strong> in the AI Video Mock Studio with our interactive FAANG interviewer persona, real-time speech evaluation, and instant rubric scoring.
+                  </p>
                 </div>
+                <button
+                  type="button"
+                  onClick={handleLaunchAIMockPractice}
+                  style={{
+                    background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)',
+                    color: '#ffffff',
+                    border: 'none',
+                    borderRadius: '8px',
+                    padding: '0.75rem 1.4rem',
+                    fontSize: '0.92rem',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    boxShadow: '0 4px 14px rgba(99, 102, 241, 0.4)',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                    whiteSpace: 'nowrap',
+                    transition: 'all 0.2s ease',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = 'translateY(-2px)'
+                    e.currentTarget.style.boxShadow = '0 6px 18px rgba(99, 102, 241, 0.55)'
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'translateY(0)'
+                    e.currentTarget.style.boxShadow = '0 4px 14px rgba(99, 102, 241, 0.4)'
+                  }}
+                >
+                  <span>🎙️</span> Start AI Mock Interview
+                </button>
               </div>
             </div>
           )}
@@ -850,15 +1454,17 @@ export default function QuestionDetailStudio() {
                 </div>
               </div>
 
-              {/* How it works internally */}
-              <div className="mqb-section-card">
-                <h3 className="mqb-section-title">
-                  <span>⚙️</span> Internal Engine Execution Mechanism
-                </h3>
-                <div className="mqb-section-body" style={{ whiteSpace: 'pre-line' }}>
-                  {question.howItWorks}
+              {/* How it works internally - Only render when authentic */}
+              {question.howItWorks && !isGenericHowItWorks(question.howItWorks) && (
+                <div className="mqb-section-card">
+                  <h3 className="mqb-section-title">
+                    <span>⚙️</span> Internal Engine Execution Mechanism
+                  </h3>
+                  <div className="mqb-section-body" style={{ whiteSpace: 'pre-line' }}>
+                    {question.howItWorks}
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           )}
 
@@ -946,8 +1552,8 @@ export default function QuestionDetailStudio() {
                 </div>
               )}
 
-              {/* Execution Flow Pipeline */}
-              {question.executionFlow && question.executionFlow.length > 0 && (
+              {/* Execution Flow Pipeline - Only render when authentic */}
+              {question.executionFlow && question.executionFlow.length > 0 && !isGenericExecutionFlow(question.executionFlow) && (
                 <div className="mqb-section-card">
                   <h3 className="mqb-section-title">
                     <span>🔀</span> Internal Execution Flow Pipeline
@@ -995,40 +1601,46 @@ export default function QuestionDetailStudio() {
           {activeTab === 'strategy' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
               {/* Common Candidate Mistakes */}
-              <div className="mqb-section-card">
-                <h3 className="mqb-section-title" style={{ color: '#f87171' }}>
-                  <span>❌</span> Common Candidate Mistakes
-                </h3>
-                <ul className="mqb-bullet-list">
-                  {question.commonMistakes.map((m, idx) => (
-                    <li key={idx}>{m}</li>
-                  ))}
-                </ul>
-              </div>
+              {question.commonMistakes && question.commonMistakes.length > 0 && (
+                <div className="mqb-section-card">
+                  <h3 className="mqb-section-title" style={{ color: '#f87171' }}>
+                    <span>❌</span> Common Candidate Mistakes
+                  </h3>
+                  <ul className="mqb-bullet-list">
+                    {question.commonMistakes.map((m, idx) => (
+                      <li key={idx}>{m}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
 
               {/* Interview Traps */}
-              <div className="mqb-section-card">
-                <h3 className="mqb-section-title" style={{ color: '#fbbf24' }}>
-                  <span>🪤</span> Interviewer Traps &amp; Counter-Intuitive Quirks
-                </h3>
-                <ul className="mqb-bullet-list">
-                  {question.interviewTraps.map((t, idx) => (
-                    <li key={idx}>{t}</li>
-                  ))}
-                </ul>
-              </div>
+              {question.interviewTraps && question.interviewTraps.length > 0 && (
+                <div className="mqb-section-card">
+                  <h3 className="mqb-section-title" style={{ color: '#fbbf24' }}>
+                    <span>🪤</span> Interviewer Traps &amp; Counter-Intuitive Quirks
+                  </h3>
+                  <ul className="mqb-bullet-list">
+                    {question.interviewTraps.map((t, idx) => (
+                      <li key={idx}>{t}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
 
               {/* Interview Tips (What is Evaluated) */}
-              <div className="mqb-section-card">
-                <h3 className="mqb-section-title" style={{ color: '#34d399' }}>
-                  <span>🎯</span> What the Interviewer is Evaluating
-                </h3>
-                <ul className="mqb-bullet-list">
-                  {question.interviewTips.map((tip, idx) => (
-                    <li key={idx}>{tip}</li>
-                  ))}
-                </ul>
-              </div>
+              {question.interviewTips && question.interviewTips.length > 0 && (
+                <div className="mqb-section-card">
+                  <h3 className="mqb-section-title" style={{ color: '#34d399' }}>
+                    <span>🎯</span> What the Interviewer is Evaluating
+                  </h3>
+                  <ul className="mqb-bullet-list">
+                    {question.interviewTips.map((tip, idx) => (
+                      <li key={idx}>{tip}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </div>
           )}
 
@@ -1037,14 +1649,15 @@ export default function QuestionDetailStudio() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <div className="mqb-section-card">
                 <h3 className="mqb-section-title">
-                  <span>❓</span> Senior Follow-Up Questions ({question.followUps.length})
+                  <span>❓</span> Senior Follow-Up Questions ({followUpList.length})
                 </h3>
                 <p style={{ color: 'var(--mqb-text-secondary)', fontSize: '0.9rem', margin: '0 0 1.25rem' }}>
-                  High-tier interviewers always pivot with these follow-ups when you answer correctly:
+                  High-tier interviewers frequently pivot with these follow-up questions:
                 </p>
 
-                {question.followUps.map((fu, idx) => {
+                {followUpList.map((fu, idx) => {
                   const isExpanded = expandedFollowUp === idx
+                  const ans = question.followUpAnswers && question.followUpAnswers[idx]
                   return (
                     <div key={idx} className="mqb-followup-item">
                       <div
@@ -1059,10 +1672,10 @@ export default function QuestionDetailStudio() {
                       {isExpanded && (
                         <div className="mqb-followup-a">
                           <p style={{ margin: '0 0 0.5rem', fontWeight: 600, color: 'var(--mqb-accent-blue)' }}>
-                            Model Follow-Up Answer:
+                            Suggested Response:
                           </p>
                           <p style={{ margin: 0 }}>
-                            {question.followUpAnswers[idx] || 'Refer to deep technical dive for full architectural proof.'}
+                            {ans || 'Articulate the concept clearly with reference to real-world frontend applications.'}
                           </p>
                         </div>
                       )}
@@ -1175,6 +1788,92 @@ export default function QuestionDetailStudio() {
           </div>
         </aside>
       </div>
+
+      {/* Floating Audio Controller Bar */}
+      {isPlayingAudio && (
+        <div className="mqb-floating-audio-bar" role="region" aria-label="Audio player controls">
+          <div className="mqb-floating-audio-info">
+            <span className="mqb-audio-wave-badge" style={{ margin: 0 }}>
+              <span className="mqb-wave-bar"></span>
+              <span className="mqb-wave-bar"></span>
+              <span className="mqb-wave-bar"></span>
+            </span>
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+              <span style={{ fontSize: '0.68rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--mqb-text-secondary)' }}>
+                {isAudioPaused ? '⏸ Audio Paused' : '🔊 Now Listening'}
+              </span>
+              <span style={{ fontSize: '0.88rem', fontWeight: 700, color: 'var(--mqb-text-primary)' }}>
+                {activeSpeechSource === 'short' && '⚡ Short Interview Answer'}
+                {activeSpeechSource === 'explanation' && '📖 Simple Explanation'}
+                {activeSpeechSource === 'howItWorks' && '⚙️ How It Works'}
+                {activeSpeechSource === 'code' && '💻 Code Explanation'}
+                {activeSpeechSource === 'tip' && '💡 Practical Interview Tip'}
+                {activeSpeechSource === 'question' && '❓ Question'}
+                {activeSpeechSource === 'output' && '🖥️ Expected Output'}
+                {activeSpeechSource === 'custom' && '🎯 MCQ Explanation'}
+              </span>
+            </div>
+          </div>
+
+          <div className="mqb-floating-audio-actions">
+            <button
+              type="button"
+              className={`mqb-action-pill-btn ${isAudioPaused ? 'primary' : ''}`}
+              style={{ padding: '0.35rem 0.85rem', fontSize: '0.82rem' }}
+              onClick={handlePauseResumeAudio}
+              aria-label={isAudioPaused ? 'Resume narration' : 'Pause narration'}
+            >
+              {isAudioPaused ? '▶️ Resume' : '⏸ Pause'}
+            </button>
+
+            <button
+              type="button"
+              className="mqb-action-pill-btn"
+              style={{
+                padding: '0.35rem 0.85rem',
+                fontSize: '0.82rem',
+                color: '#ef4444',
+                borderColor: 'rgba(239, 68, 68, 0.4)',
+                background: 'rgba(239, 68, 68, 0.1)',
+              }}
+              onClick={handleStopAudio}
+              aria-label="Stop narration"
+            >
+              ⏹ Stop
+            </button>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+              {[0.75, 1, 1.25, 1.5, 2].map((rate) => (
+                <button
+                  key={rate}
+                  type="button"
+                  className={`mqb-speed-chip ${speechRate === rate ? 'active' : ''}`}
+                  onClick={() => handleSpeechRateChange(rate)}
+                  title={`Play at ${rate}x speed`}
+                >
+                  {rate}x
+                </button>
+              ))}
+            </div>
+
+            <span
+              style={{
+                fontSize: '0.75rem',
+                padding: '0.25rem 0.6rem',
+                borderRadius: '9999px',
+                background: 'rgba(99, 102, 241, 0.15)',
+                color: 'var(--mqb-accent-bright, #818cf8)',
+                fontWeight: 600,
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.3rem',
+              }}
+            >
+              🇮🇳 Indian Voice
+            </span>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

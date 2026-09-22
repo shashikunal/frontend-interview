@@ -1,0 +1,2756 @@
+[
+  {
+    "id": "iq-http-0001",
+    "standard_id": "HTTP-MCQ-000001",
+    "questionNumber": 1,
+    "subject": "http",
+    "category": "HTTP Evolution (1.1, 2, 3)",
+    "topic": "HTTP Evolution (1.1, 2, 3)",
+    "subtopic": "Multiplexing & QUIC Protocol",
+    "concept": "Multiplexing & QUIC Protocol",
+    "difficulty": "INTERMEDIATE",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "1_3_YEARS",
+    "isHighFrequency": true,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Netflix"
+    ],
+    "tags": [
+      "http",
+      "frontend-interview",
+      "http-evolution--1-1--2--3-"
+    ],
+    "question": "What are the major performance differences between HTTP/1.1, HTTP/2, and HTTP/3?",
+    "shortAnswer": "HTTP/1.1 suffered from Head-of-Line (HOL) blocking and required multiple TCP connections. HTTP/2 introduced binary framing and multiplexing over a single TCP connection. HTTP/3 replaced TCP with UDP-based QUIC, eliminating transport-level packet loss blocking.",
+    "simpleExplanation": "**HTTP/1.1** was like a single-lane road: requests had to wait in line for prior requests to finish.\n\n**HTTP/2** allowed hundreds of requests and responses to travel concurrently over a single TCP connection (multiplexing).\n\n**HTTP/3** uses **QUIC over UDP**, which prevents packet loss on one stream from stalling all other data streams.",
+    "detailedAnswer": "**HTTP/1.1** was like a single-lane road: requests had to wait in line for prior requests to finish.\n\n**HTTP/2** allowed hundreds of requests and responses to travel concurrently over a single TCP connection (multiplexing).\n\n**HTTP/3** uses **QUIC over UDP**, which prevents packet loss on one stream from stalling all other data streams.",
+    "detailedExplanation": "**HTTP/1.1** was like a single-lane road: requests had to wait in line for prior requests to finish.\n\n**HTTP/2** allowed hundreds of requests and responses to travel concurrently over a single TCP connection (multiplexing).\n\n**HTTP/3** uses **QUIC over UDP**, which prevents packet loss on one stream from stalling all other data streams.",
+    "howItWorks": "1. HTTP/2 splits messages into binary frames with stream IDs, allowing interleaved transmission.\n2. However, if a TCP packet drops, TCP halts all streams until retransmitted (TCP HOL blocking).\n3. HTTP/3 implements independent streams at the QUIC/UDP layer, so lost packets only delay their specific resource.",
+    "codeExample": "// HTTP/2 Multiplexing in browser network inspector:\n// 1 connection established to https://api.example.com\n// Multiple concurrent assets streamed simultaneously:\n// -> Stream 1: main.js (Priority High)\n// -> Stream 3: styles.css (Priority Urgent)\n// -> Stream 5: logo.svg (Priority Low)",
+    "example": "// HTTP/2 Multiplexing in browser network inspector:\n// 1 connection established to https://api.example.com\n// Multiple concurrent assets streamed simultaneously:\n// -> Stream 1: main.js (Priority High)\n// -> Stream 3: styles.css (Priority Urgent)\n// -> Stream 5: logo.svg (Priority Low)",
+    "codeSnippet": "// HTTP/2 Multiplexing in browser network inspector:\n// 1 connection established to https://api.example.com\n// Multiple concurrent assets streamed simultaneously:\n// -> Stream 1: main.js (Priority High)\n// -> Stream 3: styles.css (Priority Urgent)\n// -> Stream 5: logo.svg (Priority Low)",
+    "codeExplanationSpeech": "This code illustrates the architecture and implementation of Multiplexing & QUIC Protocol in modern frontend systems.",
+    "realWorldExample": "Mobile users traveling through subway tunnels experience seamless video streaming under HTTP/3 because connection migration survives cellular IP address changes.",
+    "commonMistakes": [
+      "Still using domain sharding (assets1.cdn.com, assets2.cdn.com) under HTTP/2 or HTTP/3, which harms performance by wasting connection handshakes."
+    ],
+    "interviewTip": "Highlight that HTTP/2 introduced Server Push, Header Compression (HPACK), and Stream Prioritization.",
+    "interviewTips": [
+      "Highlight that HTTP/2 introduced Server Push, Header Compression (HPACK), and Stream Prioritization."
+    ],
+    "followUpQuestions": [
+      "How does the CORS preflight OPTIONS request work and when is it triggered?",
+      "What is the difference between Cache-Control: no-cache and no-store?"
+    ],
+    "followUps": [
+      "How does the CORS preflight OPTIONS request work and when is it triggered?",
+      "What is the difference between Cache-Control: no-cache and no-store?"
+    ],
+    "question_hash": "qh_27c9c882",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "text": "It provides standardized, predictable behavior for Multiplexing & QUIC Protocol across all client environments.",
+        "explanation": "Correct. Follows modern web platform and architectural specifications."
+      },
+      {
+        "key": "B",
+        "text": "It bypasses the browser JavaScript runtime and executes as machine code on the GPU.",
+        "explanation": "Incorrect. Frontend code executes within the browser engine thread."
+      },
+      {
+        "key": "C",
+        "text": "It disables all browser caching and forces fresh HTTP 1.0 TCP handshakes on every interaction.",
+        "explanation": "Incorrect. Caching and networking follow standard browser protocols."
+      },
+      {
+        "key": "D",
+        "text": "It automatically converts all async operations into synchronous blocking code.",
+        "explanation": "Incorrect. The browser event loop remains asynchronous."
+      }
+    ],
+    "correctAnswer": "A",
+    "mcqExplanation": "In HTTP Protocol & Networking, Multiplexing & QUIC Protocol provides robust, scalable execution per standard architectural patterns.",
+    "wrongOptionExplanations": {
+      "B": "UI logic executes in the browser JavaScript engine or V8 runtime.",
+      "C": "Browser caching mechanisms operate in accordance with HTTP headers.",
+      "D": "JavaScript remains single-threaded and non-blocking."
+    },
+    "correctOption": "A",
+    "explanation": "In HTTP Protocol & Networking, Multiplexing & QUIC Protocol provides robust, scalable execution per standard architectural patterns."
+  },
+  {
+    "id": "iq-http-0002",
+    "standard_id": "HTTP-MCQ-000002",
+    "questionNumber": 2,
+    "subject": "http",
+    "category": "Status Codes & Semantics",
+    "topic": "Status Codes & Semantics",
+    "subtopic": "Status Codes & Semantics Operations",
+    "concept": "Status Codes & Semantics",
+    "difficulty": "DIFFICULT",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "3_5_YEARS",
+    "isHighFrequency": true,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "http",
+      "status-codes---semantics",
+      "frontend-interview"
+    ],
+    "question": "HTTP Protocol & Networking: How does Status Codes & Semantics operate in production enterprise applications (Q2)?",
+    "shortAnswer": "In HTTP Protocol & Networking, Status Codes & Semantics ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Status Codes & Semantics** is an essential architectural concept in <u>HTTP Protocol & Networking</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Status Codes & Semantics** is an essential architectural concept in <u>HTTP Protocol & Networking</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Status Codes & Semantics** is an essential architectural concept in <u>HTTP Protocol & Networking</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Status Codes & Semantics in HTTP Protocol & Networking:\nexport function handleStatusCodesSemantics(config) {\n  console.log('Executing Status Codes & Semantics with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Status Codes & Semantics in HTTP Protocol & Networking:\nexport function handleStatusCodesSemantics(config) {\n  console.log('Executing Status Codes & Semantics with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Status Codes & Semantics in HTTP Protocol & Networking:\nexport function handleStatusCodesSemantics(config) {\n  console.log('Executing Status Codes & Semantics with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Status Codes & Semantics in HTTP Protocol & Networking.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Status Codes & Semantics to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Status Codes & Semantics.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Status Codes & Semantics, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Status Codes & Semantics, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Status Codes & Semantics scale under extreme concurrency?",
+      "What monitoring tools can track Status Codes & Semantics metrics in production?"
+    ],
+    "followUps": [
+      "How does Status Codes & Semantics scale under extreme concurrency?",
+      "What monitoring tools can track Status Codes & Semantics metrics in production?"
+    ],
+    "question_hash": "qh_5537886",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In HTTP Protocol & Networking, TCP & TLS Handshake ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes TCP & TLS Handshake, not Status Codes & Semantics."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In HTTP Protocol & Networking, Status Codes & Semantics ensures predictable, resilient execution.",
+        "explanation": "Correct. In HTTP Protocol & Networking, Status Codes & Semantics ensures predictable, resilient execution."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In HTTP Protocol & Networking, Caching Headers & ETag ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Caching Headers & ETag, not Status Codes & Semantics."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In HTTP Protocol & Networking, HTTP Evolution (1.1, 2, 3) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes HTTP Evolution (1.1, 2, 3), not Status Codes & Semantics."
+      }
+    ],
+    "correctAnswer": "B",
+    "correctOption": "B",
+    "mcqExplanation": "Correct. In HTTP Protocol & Networking, Status Codes & Semantics ensures predictable, resilient execution.",
+    "explanation": "Correct. In HTTP Protocol & Networking, Status Codes & Semantics ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes TCP & TLS Handshake, not Status Codes & Semantics.",
+      "C": "Incorrect. This describes Caching Headers & ETag, not Status Codes & Semantics.",
+      "D": "Incorrect. This describes HTTP Evolution (1.1, 2, 3), not Status Codes & Semantics."
+    },
+    "mcqQuestion": "HTTP Protocol & Networking: How does Status Codes & Semantics operate in production enterprise applications (Q2)?"
+  },
+  {
+    "id": "iq-http-0003",
+    "standard_id": "HTTP-MCQ-000003",
+    "questionNumber": 3,
+    "subject": "http",
+    "category": "Caching Headers & ETag",
+    "topic": "Caching Headers & ETag",
+    "subtopic": "Caching Headers & ETag Operations",
+    "concept": "Caching Headers & ETag",
+    "difficulty": "EASY",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "FRESHER",
+    "isHighFrequency": true,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "http",
+      "caching-headers---etag",
+      "frontend-interview"
+    ],
+    "question": "HTTP Protocol & Networking: How does Caching Headers & ETag operate in production enterprise applications (Q3)?",
+    "shortAnswer": "In HTTP Protocol & Networking, Caching Headers & ETag ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Caching Headers & ETag** is an essential architectural concept in <u>HTTP Protocol & Networking</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Caching Headers & ETag** is an essential architectural concept in <u>HTTP Protocol & Networking</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Caching Headers & ETag** is an essential architectural concept in <u>HTTP Protocol & Networking</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Caching Headers & ETag in HTTP Protocol & Networking:\nexport function handleCachingHeadersETag(config) {\n  console.log('Executing Caching Headers & ETag with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Caching Headers & ETag in HTTP Protocol & Networking:\nexport function handleCachingHeadersETag(config) {\n  console.log('Executing Caching Headers & ETag with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Caching Headers & ETag in HTTP Protocol & Networking:\nexport function handleCachingHeadersETag(config) {\n  console.log('Executing Caching Headers & ETag with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Caching Headers & ETag in HTTP Protocol & Networking.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Caching Headers & ETag to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Caching Headers & ETag.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Caching Headers & ETag, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Caching Headers & ETag, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Caching Headers & ETag scale under extreme concurrency?",
+      "What monitoring tools can track Caching Headers & ETag metrics in production?"
+    ],
+    "followUps": [
+      "How does Caching Headers & ETag scale under extreme concurrency?",
+      "What monitoring tools can track Caching Headers & ETag metrics in production?"
+    ],
+    "question_hash": "qh_19ddc535",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In HTTP Protocol & Networking, HTTP Evolution (1.1, 2, 3) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes HTTP Evolution (1.1, 2, 3), not Caching Headers & ETag."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In HTTP Protocol & Networking, CORS Preflight & Security ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes CORS Preflight & Security, not Caching Headers & ETag."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In HTTP Protocol & Networking, Caching Headers & ETag ensures predictable, resilient execution.",
+        "explanation": "Correct. In HTTP Protocol & Networking, Caching Headers & ETag ensures predictable, resilient execution."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In HTTP Protocol & Networking, Status Codes & Semantics ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Status Codes & Semantics, not Caching Headers & ETag."
+      }
+    ],
+    "correctAnswer": "C",
+    "mcqExplanation": "Correct. In HTTP Protocol & Networking, Caching Headers & ETag ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes HTTP Evolution (1.1, 2, 3), not Caching Headers & ETag.",
+      "B": "Incorrect. This describes CORS Preflight & Security, not Caching Headers & ETag.",
+      "D": "Incorrect. This describes Status Codes & Semantics, not Caching Headers & ETag."
+    },
+    "correctOption": "C",
+    "explanation": "Correct. In HTTP Protocol & Networking, Caching Headers & ETag ensures predictable, resilient execution.",
+    "mcqQuestion": "HTTP Protocol & Networking: How does Caching Headers & ETag operate in production enterprise applications (Q3)?"
+  },
+  {
+    "id": "iq-http-0004",
+    "standard_id": "HTTP-MCQ-000004",
+    "questionNumber": 4,
+    "subject": "http",
+    "category": "CORS Preflight & Security",
+    "topic": "CORS Preflight & Security",
+    "subtopic": "CORS Preflight & Security Operations",
+    "concept": "CORS Preflight & Security",
+    "difficulty": "INTERMEDIATE",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "1_3_YEARS",
+    "isHighFrequency": true,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "http",
+      "cors-preflight---security",
+      "frontend-interview"
+    ],
+    "question": "HTTP Protocol & Networking: How does CORS Preflight & Security operate in production enterprise applications (Q4)?",
+    "shortAnswer": "In HTTP Protocol & Networking, CORS Preflight & Security ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**CORS Preflight & Security** is an essential architectural concept in <u>HTTP Protocol & Networking</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**CORS Preflight & Security** is an essential architectural concept in <u>HTTP Protocol & Networking</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**CORS Preflight & Security** is an essential architectural concept in <u>HTTP Protocol & Networking</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for CORS Preflight & Security in HTTP Protocol & Networking:\nexport function handleCORSPreflightSecurity(config) {\n  console.log('Executing CORS Preflight & Security with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for CORS Preflight & Security in HTTP Protocol & Networking:\nexport function handleCORSPreflightSecurity(config) {\n  console.log('Executing CORS Preflight & Security with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for CORS Preflight & Security in HTTP Protocol & Networking:\nexport function handleCORSPreflightSecurity(config) {\n  console.log('Executing CORS Preflight & Security with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of CORS Preflight & Security in HTTP Protocol & Networking.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize CORS Preflight & Security to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with CORS Preflight & Security.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about CORS Preflight & Security, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about CORS Preflight & Security, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does CORS Preflight & Security scale under extreme concurrency?",
+      "What monitoring tools can track CORS Preflight & Security metrics in production?"
+    ],
+    "followUps": [
+      "How does CORS Preflight & Security scale under extreme concurrency?",
+      "What monitoring tools can track CORS Preflight & Security metrics in production?"
+    ],
+    "question_hash": "qh_3ea9d0c8",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In HTTP Protocol & Networking, Status Codes & Semantics ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Status Codes & Semantics, not CORS Preflight & Security."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In HTTP Protocol & Networking, TCP & TLS Handshake ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes TCP & TLS Handshake, not CORS Preflight & Security."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In HTTP Protocol & Networking, Caching Headers & ETag ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Caching Headers & ETag, not CORS Preflight & Security."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In HTTP Protocol & Networking, CORS Preflight & Security ensures predictable, resilient execution.",
+        "explanation": "Correct. In HTTP Protocol & Networking, CORS Preflight & Security ensures predictable, resilient execution."
+      }
+    ],
+    "correctAnswer": "D",
+    "correctOption": "D",
+    "mcqExplanation": "Correct. In HTTP Protocol & Networking, CORS Preflight & Security ensures predictable, resilient execution.",
+    "explanation": "Correct. In HTTP Protocol & Networking, CORS Preflight & Security ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Status Codes & Semantics, not CORS Preflight & Security.",
+      "B": "Incorrect. This describes TCP & TLS Handshake, not CORS Preflight & Security.",
+      "C": "Incorrect. This describes Caching Headers & ETag, not CORS Preflight & Security."
+    },
+    "mcqQuestion": "HTTP Protocol & Networking: How does CORS Preflight & Security operate in production enterprise applications (Q4)?"
+  },
+  {
+    "id": "iq-http-0005",
+    "standard_id": "HTTP-MCQ-000005",
+    "questionNumber": 5,
+    "subject": "http",
+    "category": "TCP & TLS Handshake",
+    "topic": "TCP & TLS Handshake",
+    "subtopic": "TCP & TLS Handshake Operations",
+    "concept": "TCP & TLS Handshake",
+    "difficulty": "DIFFICULT",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "3_5_YEARS",
+    "isHighFrequency": true,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "http",
+      "tcp---tls-handshake",
+      "frontend-interview"
+    ],
+    "question": "HTTP Protocol & Networking: How does TCP & TLS Handshake operate in production enterprise applications (Q5)?",
+    "shortAnswer": "In HTTP Protocol & Networking, TCP & TLS Handshake ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**TCP & TLS Handshake** is an essential architectural concept in <u>HTTP Protocol & Networking</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**TCP & TLS Handshake** is an essential architectural concept in <u>HTTP Protocol & Networking</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**TCP & TLS Handshake** is an essential architectural concept in <u>HTTP Protocol & Networking</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for TCP & TLS Handshake in HTTP Protocol & Networking:\nexport function handleTCPTLSHandshake(config) {\n  console.log('Executing TCP & TLS Handshake with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for TCP & TLS Handshake in HTTP Protocol & Networking:\nexport function handleTCPTLSHandshake(config) {\n  console.log('Executing TCP & TLS Handshake with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for TCP & TLS Handshake in HTTP Protocol & Networking:\nexport function handleTCPTLSHandshake(config) {\n  console.log('Executing TCP & TLS Handshake with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of TCP & TLS Handshake in HTTP Protocol & Networking.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize TCP & TLS Handshake to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with TCP & TLS Handshake.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about TCP & TLS Handshake, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about TCP & TLS Handshake, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does TCP & TLS Handshake scale under extreme concurrency?",
+      "What monitoring tools can track TCP & TLS Handshake metrics in production?"
+    ],
+    "followUps": [
+      "How does TCP & TLS Handshake scale under extreme concurrency?",
+      "What monitoring tools can track TCP & TLS Handshake metrics in production?"
+    ],
+    "question_hash": "qh_3df6b39d",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In HTTP Protocol & Networking, TCP & TLS Handshake ensures predictable, resilient execution.",
+        "explanation": "Correct. In HTTP Protocol & Networking, TCP & TLS Handshake ensures predictable, resilient execution."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In HTTP Protocol & Networking, Caching Headers & ETag ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Caching Headers & ETag, not TCP & TLS Handshake."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In HTTP Protocol & Networking, HTTP Evolution (1.1, 2, 3) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes HTTP Evolution (1.1, 2, 3), not TCP & TLS Handshake."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In HTTP Protocol & Networking, CORS Preflight & Security ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes CORS Preflight & Security, not TCP & TLS Handshake."
+      }
+    ],
+    "correctAnswer": "A",
+    "mcqExplanation": "Correct. In HTTP Protocol & Networking, TCP & TLS Handshake ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "B": "Incorrect. This describes Caching Headers & ETag, not TCP & TLS Handshake.",
+      "C": "Incorrect. This describes HTTP Evolution (1.1, 2, 3), not TCP & TLS Handshake.",
+      "D": "Incorrect. This describes CORS Preflight & Security, not TCP & TLS Handshake."
+    },
+    "correctOption": "A",
+    "explanation": "Correct. In HTTP Protocol & Networking, TCP & TLS Handshake ensures predictable, resilient execution.",
+    "mcqQuestion": "HTTP Protocol & Networking: How does TCP & TLS Handshake operate in production enterprise applications (Q5)?"
+  },
+  {
+    "id": "iq-http-0006",
+    "standard_id": "HTTP-MCQ-000006",
+    "questionNumber": 6,
+    "subject": "http",
+    "category": "HTTP Evolution (1.1, 2, 3)",
+    "topic": "HTTP Evolution (1.1, 2, 3)",
+    "subtopic": "HTTP Evolution (1.1, 2, 3) Operations",
+    "concept": "HTTP Evolution (1.1, 2, 3)",
+    "difficulty": "EASY",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "FRESHER",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "http",
+      "http-evolution--1-1--2--3-",
+      "frontend-interview"
+    ],
+    "question": "HTTP Protocol & Networking: How does HTTP Evolution (1.1, 2, 3) operate in production enterprise applications (Q6)?",
+    "shortAnswer": "In HTTP Protocol & Networking, HTTP Evolution (1.1, 2, 3) ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**HTTP Evolution (1.1, 2, 3)** is an essential architectural concept in <u>HTTP Protocol & Networking</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**HTTP Evolution (1.1, 2, 3)** is an essential architectural concept in <u>HTTP Protocol & Networking</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**HTTP Evolution (1.1, 2, 3)** is an essential architectural concept in <u>HTTP Protocol & Networking</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for HTTP Evolution (1.1, 2, 3) in HTTP Protocol & Networking:\nexport function handleHTTPEvolution(config) {\n  console.log('Executing HTTP Evolution (1.1, 2, 3) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for HTTP Evolution (1.1, 2, 3) in HTTP Protocol & Networking:\nexport function handleHTTPEvolution(config) {\n  console.log('Executing HTTP Evolution (1.1, 2, 3) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for HTTP Evolution (1.1, 2, 3) in HTTP Protocol & Networking:\nexport function handleHTTPEvolution(config) {\n  console.log('Executing HTTP Evolution (1.1, 2, 3) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of HTTP Evolution (1.1, 2, 3) in HTTP Protocol & Networking.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize HTTP Evolution (1.1, 2, 3) to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with HTTP Evolution (1.1, 2, 3).",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about HTTP Evolution (1.1, 2, 3), explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about HTTP Evolution (1.1, 2, 3), explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does HTTP Evolution (1.1, 2, 3) scale under extreme concurrency?",
+      "What monitoring tools can track HTTP Evolution (1.1, 2, 3) metrics in production?"
+    ],
+    "followUps": [
+      "How does HTTP Evolution (1.1, 2, 3) scale under extreme concurrency?",
+      "What monitoring tools can track HTTP Evolution (1.1, 2, 3) metrics in production?"
+    ],
+    "question_hash": "qh_110c0ae6",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In HTTP Protocol & Networking, CORS Preflight & Security ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes CORS Preflight & Security, not HTTP Evolution (1.1, 2, 3)."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In HTTP Protocol & Networking, HTTP Evolution (1.1, 2, 3) ensures predictable, resilient execution.",
+        "explanation": "Correct. In HTTP Protocol & Networking, HTTP Evolution (1.1, 2, 3) ensures predictable, resilient execution."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In HTTP Protocol & Networking, Status Codes & Semantics ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Status Codes & Semantics, not HTTP Evolution (1.1, 2, 3)."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In HTTP Protocol & Networking, TCP & TLS Handshake ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes TCP & TLS Handshake, not HTTP Evolution (1.1, 2, 3)."
+      }
+    ],
+    "correctAnswer": "B",
+    "correctOption": "B",
+    "mcqExplanation": "Correct. In HTTP Protocol & Networking, HTTP Evolution (1.1, 2, 3) ensures predictable, resilient execution.",
+    "explanation": "Correct. In HTTP Protocol & Networking, HTTP Evolution (1.1, 2, 3) ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes CORS Preflight & Security, not HTTP Evolution (1.1, 2, 3).",
+      "C": "Incorrect. This describes Status Codes & Semantics, not HTTP Evolution (1.1, 2, 3).",
+      "D": "Incorrect. This describes TCP & TLS Handshake, not HTTP Evolution (1.1, 2, 3)."
+    },
+    "mcqQuestion": "HTTP Protocol & Networking: How does HTTP Evolution (1.1, 2, 3) operate in production enterprise applications (Q6)?"
+  },
+  {
+    "id": "iq-http-0007",
+    "standard_id": "HTTP-MCQ-000007",
+    "questionNumber": 7,
+    "subject": "http",
+    "category": "Status Codes & Semantics",
+    "topic": "Status Codes & Semantics",
+    "subtopic": "Status Codes & Semantics Operations",
+    "concept": "Status Codes & Semantics",
+    "difficulty": "INTERMEDIATE",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "1_3_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "http",
+      "status-codes---semantics",
+      "frontend-interview"
+    ],
+    "question": "HTTP Protocol & Networking: How does Status Codes & Semantics operate in production enterprise applications (Q7)?",
+    "shortAnswer": "In HTTP Protocol & Networking, Status Codes & Semantics ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Status Codes & Semantics** is an essential architectural concept in <u>HTTP Protocol & Networking</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Status Codes & Semantics** is an essential architectural concept in <u>HTTP Protocol & Networking</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Status Codes & Semantics** is an essential architectural concept in <u>HTTP Protocol & Networking</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Status Codes & Semantics in HTTP Protocol & Networking:\nexport function handleStatusCodesSemantics(config) {\n  console.log('Executing Status Codes & Semantics with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Status Codes & Semantics in HTTP Protocol & Networking:\nexport function handleStatusCodesSemantics(config) {\n  console.log('Executing Status Codes & Semantics with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Status Codes & Semantics in HTTP Protocol & Networking:\nexport function handleStatusCodesSemantics(config) {\n  console.log('Executing Status Codes & Semantics with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Status Codes & Semantics in HTTP Protocol & Networking.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Status Codes & Semantics to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Status Codes & Semantics.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Status Codes & Semantics, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Status Codes & Semantics, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Status Codes & Semantics scale under extreme concurrency?",
+      "What monitoring tools can track Status Codes & Semantics metrics in production?"
+    ],
+    "followUps": [
+      "How does Status Codes & Semantics scale under extreme concurrency?",
+      "What monitoring tools can track Status Codes & Semantics metrics in production?"
+    ],
+    "question_hash": "qh_553788b",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In HTTP Protocol & Networking, TCP & TLS Handshake ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes TCP & TLS Handshake, not Status Codes & Semantics."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In HTTP Protocol & Networking, Caching Headers & ETag ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Caching Headers & ETag, not Status Codes & Semantics."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In HTTP Protocol & Networking, Status Codes & Semantics ensures predictable, resilient execution.",
+        "explanation": "Correct. In HTTP Protocol & Networking, Status Codes & Semantics ensures predictable, resilient execution."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In HTTP Protocol & Networking, HTTP Evolution (1.1, 2, 3) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes HTTP Evolution (1.1, 2, 3), not Status Codes & Semantics."
+      }
+    ],
+    "correctAnswer": "C",
+    "mcqExplanation": "Correct. In HTTP Protocol & Networking, Status Codes & Semantics ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes TCP & TLS Handshake, not Status Codes & Semantics.",
+      "B": "Incorrect. This describes Caching Headers & ETag, not Status Codes & Semantics.",
+      "D": "Incorrect. This describes HTTP Evolution (1.1, 2, 3), not Status Codes & Semantics."
+    },
+    "correctOption": "C",
+    "explanation": "Correct. In HTTP Protocol & Networking, Status Codes & Semantics ensures predictable, resilient execution.",
+    "mcqQuestion": "HTTP Protocol & Networking: How does Status Codes & Semantics operate in production enterprise applications (Q7)?"
+  },
+  {
+    "id": "iq-http-0008",
+    "standard_id": "HTTP-MCQ-000008",
+    "questionNumber": 8,
+    "subject": "http",
+    "category": "Caching Headers & ETag",
+    "topic": "Caching Headers & ETag",
+    "subtopic": "Caching Headers & ETag Operations",
+    "concept": "Caching Headers & ETag",
+    "difficulty": "DIFFICULT",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "3_5_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "http",
+      "caching-headers---etag",
+      "frontend-interview"
+    ],
+    "question": "HTTP Protocol & Networking: How does Caching Headers & ETag operate in production enterprise applications (Q8)?",
+    "shortAnswer": "In HTTP Protocol & Networking, Caching Headers & ETag ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Caching Headers & ETag** is an essential architectural concept in <u>HTTP Protocol & Networking</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Caching Headers & ETag** is an essential architectural concept in <u>HTTP Protocol & Networking</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Caching Headers & ETag** is an essential architectural concept in <u>HTTP Protocol & Networking</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Caching Headers & ETag in HTTP Protocol & Networking:\nexport function handleCachingHeadersETag(config) {\n  console.log('Executing Caching Headers & ETag with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Caching Headers & ETag in HTTP Protocol & Networking:\nexport function handleCachingHeadersETag(config) {\n  console.log('Executing Caching Headers & ETag with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Caching Headers & ETag in HTTP Protocol & Networking:\nexport function handleCachingHeadersETag(config) {\n  console.log('Executing Caching Headers & ETag with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Caching Headers & ETag in HTTP Protocol & Networking.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Caching Headers & ETag to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Caching Headers & ETag.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Caching Headers & ETag, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Caching Headers & ETag, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Caching Headers & ETag scale under extreme concurrency?",
+      "What monitoring tools can track Caching Headers & ETag metrics in production?"
+    ],
+    "followUps": [
+      "How does Caching Headers & ETag scale under extreme concurrency?",
+      "What monitoring tools can track Caching Headers & ETag metrics in production?"
+    ],
+    "question_hash": "qh_19ddc530",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In HTTP Protocol & Networking, HTTP Evolution (1.1, 2, 3) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes HTTP Evolution (1.1, 2, 3), not Caching Headers & ETag."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In HTTP Protocol & Networking, CORS Preflight & Security ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes CORS Preflight & Security, not Caching Headers & ETag."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In HTTP Protocol & Networking, Status Codes & Semantics ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Status Codes & Semantics, not Caching Headers & ETag."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In HTTP Protocol & Networking, Caching Headers & ETag ensures predictable, resilient execution.",
+        "explanation": "Correct. In HTTP Protocol & Networking, Caching Headers & ETag ensures predictable, resilient execution."
+      }
+    ],
+    "correctAnswer": "D",
+    "correctOption": "D",
+    "mcqExplanation": "Correct. In HTTP Protocol & Networking, Caching Headers & ETag ensures predictable, resilient execution.",
+    "explanation": "Correct. In HTTP Protocol & Networking, Caching Headers & ETag ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes HTTP Evolution (1.1, 2, 3), not Caching Headers & ETag.",
+      "B": "Incorrect. This describes CORS Preflight & Security, not Caching Headers & ETag.",
+      "C": "Incorrect. This describes Status Codes & Semantics, not Caching Headers & ETag."
+    },
+    "mcqQuestion": "HTTP Protocol & Networking: How does Caching Headers & ETag operate in production enterprise applications (Q8)?"
+  },
+  {
+    "id": "iq-http-0009",
+    "standard_id": "HTTP-MCQ-000009",
+    "questionNumber": 9,
+    "subject": "http",
+    "category": "CORS Preflight & Security",
+    "topic": "CORS Preflight & Security",
+    "subtopic": "CORS Preflight & Security Operations",
+    "concept": "CORS Preflight & Security",
+    "difficulty": "EASY",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "FRESHER",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "http",
+      "cors-preflight---security",
+      "frontend-interview"
+    ],
+    "question": "HTTP Protocol & Networking: How does CORS Preflight & Security operate in production enterprise applications (Q9)?",
+    "shortAnswer": "In HTTP Protocol & Networking, CORS Preflight & Security ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**CORS Preflight & Security** is an essential architectural concept in <u>HTTP Protocol & Networking</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**CORS Preflight & Security** is an essential architectural concept in <u>HTTP Protocol & Networking</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**CORS Preflight & Security** is an essential architectural concept in <u>HTTP Protocol & Networking</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for CORS Preflight & Security in HTTP Protocol & Networking:\nexport function handleCORSPreflightSecurity(config) {\n  console.log('Executing CORS Preflight & Security with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for CORS Preflight & Security in HTTP Protocol & Networking:\nexport function handleCORSPreflightSecurity(config) {\n  console.log('Executing CORS Preflight & Security with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for CORS Preflight & Security in HTTP Protocol & Networking:\nexport function handleCORSPreflightSecurity(config) {\n  console.log('Executing CORS Preflight & Security with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of CORS Preflight & Security in HTTP Protocol & Networking.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize CORS Preflight & Security to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with CORS Preflight & Security.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about CORS Preflight & Security, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about CORS Preflight & Security, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does CORS Preflight & Security scale under extreme concurrency?",
+      "What monitoring tools can track CORS Preflight & Security metrics in production?"
+    ],
+    "followUps": [
+      "How does CORS Preflight & Security scale under extreme concurrency?",
+      "What monitoring tools can track CORS Preflight & Security metrics in production?"
+    ],
+    "question_hash": "qh_3ea9d0c3",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In HTTP Protocol & Networking, CORS Preflight & Security ensures predictable, resilient execution.",
+        "explanation": "Correct. In HTTP Protocol & Networking, CORS Preflight & Security ensures predictable, resilient execution."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In HTTP Protocol & Networking, Status Codes & Semantics ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Status Codes & Semantics, not CORS Preflight & Security."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In HTTP Protocol & Networking, TCP & TLS Handshake ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes TCP & TLS Handshake, not CORS Preflight & Security."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In HTTP Protocol & Networking, Caching Headers & ETag ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Caching Headers & ETag, not CORS Preflight & Security."
+      }
+    ],
+    "correctAnswer": "A",
+    "mcqExplanation": "Correct. In HTTP Protocol & Networking, CORS Preflight & Security ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "B": "Incorrect. This describes Status Codes & Semantics, not CORS Preflight & Security.",
+      "C": "Incorrect. This describes TCP & TLS Handshake, not CORS Preflight & Security.",
+      "D": "Incorrect. This describes Caching Headers & ETag, not CORS Preflight & Security."
+    },
+    "correctOption": "A",
+    "explanation": "Correct. In HTTP Protocol & Networking, CORS Preflight & Security ensures predictable, resilient execution.",
+    "mcqQuestion": "HTTP Protocol & Networking: How does CORS Preflight & Security operate in production enterprise applications (Q9)?"
+  },
+  {
+    "id": "iq-http-0010",
+    "standard_id": "HTTP-MCQ-000010",
+    "questionNumber": 10,
+    "subject": "http",
+    "category": "TCP & TLS Handshake",
+    "topic": "TCP & TLS Handshake",
+    "subtopic": "TCP & TLS Handshake Operations",
+    "concept": "TCP & TLS Handshake",
+    "difficulty": "INTERMEDIATE",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "1_3_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "http",
+      "tcp---tls-handshake",
+      "frontend-interview"
+    ],
+    "question": "HTTP Protocol & Networking: How does TCP & TLS Handshake operate in production enterprise applications (Q10)?",
+    "shortAnswer": "In HTTP Protocol & Networking, TCP & TLS Handshake ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**TCP & TLS Handshake** is an essential architectural concept in <u>HTTP Protocol & Networking</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**TCP & TLS Handshake** is an essential architectural concept in <u>HTTP Protocol & Networking</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**TCP & TLS Handshake** is an essential architectural concept in <u>HTTP Protocol & Networking</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for TCP & TLS Handshake in HTTP Protocol & Networking:\nexport function handleTCPTLSHandshake(config) {\n  console.log('Executing TCP & TLS Handshake with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for TCP & TLS Handshake in HTTP Protocol & Networking:\nexport function handleTCPTLSHandshake(config) {\n  console.log('Executing TCP & TLS Handshake with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for TCP & TLS Handshake in HTTP Protocol & Networking:\nexport function handleTCPTLSHandshake(config) {\n  console.log('Executing TCP & TLS Handshake with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of TCP & TLS Handshake in HTTP Protocol & Networking.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize TCP & TLS Handshake to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with TCP & TLS Handshake.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about TCP & TLS Handshake, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about TCP & TLS Handshake, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does TCP & TLS Handshake scale under extreme concurrency?",
+      "What monitoring tools can track TCP & TLS Handshake metrics in production?"
+    ],
+    "followUps": [
+      "How does TCP & TLS Handshake scale under extreme concurrency?",
+      "What monitoring tools can track TCP & TLS Handshake metrics in production?"
+    ],
+    "question_hash": "qh_7f203fb1",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In HTTP Protocol & Networking, Caching Headers & ETag ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Caching Headers & ETag, not TCP & TLS Handshake."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In HTTP Protocol & Networking, TCP & TLS Handshake ensures predictable, resilient execution.",
+        "explanation": "Correct. In HTTP Protocol & Networking, TCP & TLS Handshake ensures predictable, resilient execution."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In HTTP Protocol & Networking, HTTP Evolution (1.1, 2, 3) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes HTTP Evolution (1.1, 2, 3), not TCP & TLS Handshake."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In HTTP Protocol & Networking, CORS Preflight & Security ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes CORS Preflight & Security, not TCP & TLS Handshake."
+      }
+    ],
+    "correctAnswer": "B",
+    "correctOption": "B",
+    "mcqExplanation": "Correct. In HTTP Protocol & Networking, TCP & TLS Handshake ensures predictable, resilient execution.",
+    "explanation": "Correct. In HTTP Protocol & Networking, TCP & TLS Handshake ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Caching Headers & ETag, not TCP & TLS Handshake.",
+      "C": "Incorrect. This describes HTTP Evolution (1.1, 2, 3), not TCP & TLS Handshake.",
+      "D": "Incorrect. This describes CORS Preflight & Security, not TCP & TLS Handshake."
+    },
+    "mcqQuestion": "HTTP Protocol & Networking: How does TCP & TLS Handshake operate in production enterprise applications (Q10)?"
+  },
+  {
+    "id": "iq-http-0011",
+    "standard_id": "HTTP-MCQ-000011",
+    "questionNumber": 11,
+    "subject": "http",
+    "category": "HTTP Evolution (1.1, 2, 3)",
+    "topic": "HTTP Evolution (1.1, 2, 3)",
+    "subtopic": "HTTP Evolution (1.1, 2, 3) Operations",
+    "concept": "HTTP Evolution (1.1, 2, 3)",
+    "difficulty": "DIFFICULT",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "3_5_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "http",
+      "http-evolution--1-1--2--3-",
+      "frontend-interview"
+    ],
+    "question": "HTTP Protocol & Networking: How does HTTP Evolution (1.1, 2, 3) operate in production enterprise applications (Q11)?",
+    "shortAnswer": "In HTTP Protocol & Networking, HTTP Evolution (1.1, 2, 3) ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**HTTP Evolution (1.1, 2, 3)** is an essential architectural concept in <u>HTTP Protocol & Networking</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**HTTP Evolution (1.1, 2, 3)** is an essential architectural concept in <u>HTTP Protocol & Networking</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**HTTP Evolution (1.1, 2, 3)** is an essential architectural concept in <u>HTTP Protocol & Networking</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for HTTP Evolution (1.1, 2, 3) in HTTP Protocol & Networking:\nexport function handleHTTPEvolution(config) {\n  console.log('Executing HTTP Evolution (1.1, 2, 3) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for HTTP Evolution (1.1, 2, 3) in HTTP Protocol & Networking:\nexport function handleHTTPEvolution(config) {\n  console.log('Executing HTTP Evolution (1.1, 2, 3) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for HTTP Evolution (1.1, 2, 3) in HTTP Protocol & Networking:\nexport function handleHTTPEvolution(config) {\n  console.log('Executing HTTP Evolution (1.1, 2, 3) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of HTTP Evolution (1.1, 2, 3) in HTTP Protocol & Networking.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize HTTP Evolution (1.1, 2, 3) to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with HTTP Evolution (1.1, 2, 3).",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about HTTP Evolution (1.1, 2, 3), explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about HTTP Evolution (1.1, 2, 3), explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does HTTP Evolution (1.1, 2, 3) scale under extreme concurrency?",
+      "What monitoring tools can track HTTP Evolution (1.1, 2, 3) metrics in production?"
+    ],
+    "followUps": [
+      "How does HTTP Evolution (1.1, 2, 3) scale under extreme concurrency?",
+      "What monitoring tools can track HTTP Evolution (1.1, 2, 3) metrics in production?"
+    ],
+    "question_hash": "qh_10755170",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In HTTP Protocol & Networking, CORS Preflight & Security ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes CORS Preflight & Security, not HTTP Evolution (1.1, 2, 3)."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In HTTP Protocol & Networking, Status Codes & Semantics ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Status Codes & Semantics, not HTTP Evolution (1.1, 2, 3)."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In HTTP Protocol & Networking, HTTP Evolution (1.1, 2, 3) ensures predictable, resilient execution.",
+        "explanation": "Correct. In HTTP Protocol & Networking, HTTP Evolution (1.1, 2, 3) ensures predictable, resilient execution."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In HTTP Protocol & Networking, TCP & TLS Handshake ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes TCP & TLS Handshake, not HTTP Evolution (1.1, 2, 3)."
+      }
+    ],
+    "correctAnswer": "C",
+    "mcqExplanation": "Correct. In HTTP Protocol & Networking, HTTP Evolution (1.1, 2, 3) ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes CORS Preflight & Security, not HTTP Evolution (1.1, 2, 3).",
+      "B": "Incorrect. This describes Status Codes & Semantics, not HTTP Evolution (1.1, 2, 3).",
+      "D": "Incorrect. This describes TCP & TLS Handshake, not HTTP Evolution (1.1, 2, 3)."
+    },
+    "correctOption": "C",
+    "explanation": "Correct. In HTTP Protocol & Networking, HTTP Evolution (1.1, 2, 3) ensures predictable, resilient execution.",
+    "mcqQuestion": "HTTP Protocol & Networking: How does HTTP Evolution (1.1, 2, 3) operate in production enterprise applications (Q11)?"
+  },
+  {
+    "id": "iq-http-0012",
+    "standard_id": "HTTP-MCQ-000012",
+    "questionNumber": 12,
+    "subject": "http",
+    "category": "Status Codes & Semantics",
+    "topic": "Status Codes & Semantics",
+    "subtopic": "Status Codes & Semantics Operations",
+    "concept": "Status Codes & Semantics",
+    "difficulty": "EASY",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "FRESHER",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "http",
+      "status-codes---semantics",
+      "frontend-interview"
+    ],
+    "question": "HTTP Protocol & Networking: How does Status Codes & Semantics operate in production enterprise applications (Q12)?",
+    "shortAnswer": "In HTTP Protocol & Networking, Status Codes & Semantics ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Status Codes & Semantics** is an essential architectural concept in <u>HTTP Protocol & Networking</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Status Codes & Semantics** is an essential architectural concept in <u>HTTP Protocol & Networking</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Status Codes & Semantics** is an essential architectural concept in <u>HTTP Protocol & Networking</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Status Codes & Semantics in HTTP Protocol & Networking:\nexport function handleStatusCodesSemantics(config) {\n  console.log('Executing Status Codes & Semantics with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Status Codes & Semantics in HTTP Protocol & Networking:\nexport function handleStatusCodesSemantics(config) {\n  console.log('Executing Status Codes & Semantics with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Status Codes & Semantics in HTTP Protocol & Networking:\nexport function handleStatusCodesSemantics(config) {\n  console.log('Executing Status Codes & Semantics with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Status Codes & Semantics in HTTP Protocol & Networking.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Status Codes & Semantics to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Status Codes & Semantics.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Status Codes & Semantics, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Status Codes & Semantics, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Status Codes & Semantics scale under extreme concurrency?",
+      "What monitoring tools can track Status Codes & Semantics metrics in production?"
+    ],
+    "followUps": [
+      "How does Status Codes & Semantics scale under extreme concurrency?",
+      "What monitoring tools can track Status Codes & Semantics metrics in production?"
+    ],
+    "question_hash": "qh_5ae467b3",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In HTTP Protocol & Networking, TCP & TLS Handshake ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes TCP & TLS Handshake, not Status Codes & Semantics."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In HTTP Protocol & Networking, Caching Headers & ETag ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Caching Headers & ETag, not Status Codes & Semantics."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In HTTP Protocol & Networking, HTTP Evolution (1.1, 2, 3) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes HTTP Evolution (1.1, 2, 3), not Status Codes & Semantics."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In HTTP Protocol & Networking, Status Codes & Semantics ensures predictable, resilient execution.",
+        "explanation": "Correct. In HTTP Protocol & Networking, Status Codes & Semantics ensures predictable, resilient execution."
+      }
+    ],
+    "correctAnswer": "D",
+    "correctOption": "D",
+    "mcqExplanation": "Correct. In HTTP Protocol & Networking, Status Codes & Semantics ensures predictable, resilient execution.",
+    "explanation": "Correct. In HTTP Protocol & Networking, Status Codes & Semantics ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes TCP & TLS Handshake, not Status Codes & Semantics.",
+      "B": "Incorrect. This describes Caching Headers & ETag, not Status Codes & Semantics.",
+      "C": "Incorrect. This describes HTTP Evolution (1.1, 2, 3), not Status Codes & Semantics."
+    },
+    "mcqQuestion": "HTTP Protocol & Networking: How does Status Codes & Semantics operate in production enterprise applications (Q12)?"
+  },
+  {
+    "id": "iq-http-0013",
+    "standard_id": "HTTP-MCQ-000013",
+    "questionNumber": 13,
+    "subject": "http",
+    "category": "Caching Headers & ETag",
+    "topic": "Caching Headers & ETag",
+    "subtopic": "Caching Headers & ETag Operations",
+    "concept": "Caching Headers & ETag",
+    "difficulty": "INTERMEDIATE",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "1_3_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "http",
+      "caching-headers---etag",
+      "frontend-interview"
+    ],
+    "question": "HTTP Protocol & Networking: How does Caching Headers & ETag operate in production enterprise applications (Q13)?",
+    "shortAnswer": "In HTTP Protocol & Networking, Caching Headers & ETag ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Caching Headers & ETag** is an essential architectural concept in <u>HTTP Protocol & Networking</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Caching Headers & ETag** is an essential architectural concept in <u>HTTP Protocol & Networking</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Caching Headers & ETag** is an essential architectural concept in <u>HTTP Protocol & Networking</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Caching Headers & ETag in HTTP Protocol & Networking:\nexport function handleCachingHeadersETag(config) {\n  console.log('Executing Caching Headers & ETag with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Caching Headers & ETag in HTTP Protocol & Networking:\nexport function handleCachingHeadersETag(config) {\n  console.log('Executing Caching Headers & ETag with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Caching Headers & ETag in HTTP Protocol & Networking:\nexport function handleCachingHeadersETag(config) {\n  console.log('Executing Caching Headers & ETag with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Caching Headers & ETag in HTTP Protocol & Networking.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Caching Headers & ETag to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Caching Headers & ETag.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Caching Headers & ETag, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Caching Headers & ETag, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Caching Headers & ETag scale under extreme concurrency?",
+      "What monitoring tools can track Caching Headers & ETag metrics in production?"
+    ],
+    "followUps": [
+      "How does Caching Headers & ETag scale under extreme concurrency?",
+      "What monitoring tools can track Caching Headers & ETag metrics in production?"
+    ],
+    "question_hash": "qh_21dae176",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In HTTP Protocol & Networking, Caching Headers & ETag ensures predictable, resilient execution.",
+        "explanation": "Correct. In HTTP Protocol & Networking, Caching Headers & ETag ensures predictable, resilient execution."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In HTTP Protocol & Networking, HTTP Evolution (1.1, 2, 3) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes HTTP Evolution (1.1, 2, 3), not Caching Headers & ETag."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In HTTP Protocol & Networking, CORS Preflight & Security ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes CORS Preflight & Security, not Caching Headers & ETag."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In HTTP Protocol & Networking, Status Codes & Semantics ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Status Codes & Semantics, not Caching Headers & ETag."
+      }
+    ],
+    "correctAnswer": "A",
+    "mcqExplanation": "Correct. In HTTP Protocol & Networking, Caching Headers & ETag ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "B": "Incorrect. This describes HTTP Evolution (1.1, 2, 3), not Caching Headers & ETag.",
+      "C": "Incorrect. This describes CORS Preflight & Security, not Caching Headers & ETag.",
+      "D": "Incorrect. This describes Status Codes & Semantics, not Caching Headers & ETag."
+    },
+    "correctOption": "A",
+    "explanation": "Correct. In HTTP Protocol & Networking, Caching Headers & ETag ensures predictable, resilient execution.",
+    "mcqQuestion": "HTTP Protocol & Networking: How does Caching Headers & ETag operate in production enterprise applications (Q13)?"
+  },
+  {
+    "id": "iq-http-0014",
+    "standard_id": "HTTP-MCQ-000014",
+    "questionNumber": 14,
+    "subject": "http",
+    "category": "CORS Preflight & Security",
+    "topic": "CORS Preflight & Security",
+    "subtopic": "CORS Preflight & Security Operations",
+    "concept": "CORS Preflight & Security",
+    "difficulty": "DIFFICULT",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "3_5_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "http",
+      "cors-preflight---security",
+      "frontend-interview"
+    ],
+    "question": "HTTP Protocol & Networking: How does CORS Preflight & Security operate in production enterprise applications (Q14)?",
+    "shortAnswer": "In HTTP Protocol & Networking, CORS Preflight & Security ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**CORS Preflight & Security** is an essential architectural concept in <u>HTTP Protocol & Networking</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**CORS Preflight & Security** is an essential architectural concept in <u>HTTP Protocol & Networking</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**CORS Preflight & Security** is an essential architectural concept in <u>HTTP Protocol & Networking</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for CORS Preflight & Security in HTTP Protocol & Networking:\nexport function handleCORSPreflightSecurity(config) {\n  console.log('Executing CORS Preflight & Security with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for CORS Preflight & Security in HTTP Protocol & Networking:\nexport function handleCORSPreflightSecurity(config) {\n  console.log('Executing CORS Preflight & Security with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for CORS Preflight & Security in HTTP Protocol & Networking:\nexport function handleCORSPreflightSecurity(config) {\n  console.log('Executing CORS Preflight & Security with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of CORS Preflight & Security in HTTP Protocol & Networking.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize CORS Preflight & Security to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with CORS Preflight & Security.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about CORS Preflight & Security, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about CORS Preflight & Security, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does CORS Preflight & Security scale under extreme concurrency?",
+      "What monitoring tools can track CORS Preflight & Security metrics in production?"
+    ],
+    "followUps": [
+      "How does CORS Preflight & Security scale under extreme concurrency?",
+      "What monitoring tools can track CORS Preflight & Security metrics in production?"
+    ],
+    "question_hash": "qh_696fb79f",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In HTTP Protocol & Networking, Status Codes & Semantics ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Status Codes & Semantics, not CORS Preflight & Security."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In HTTP Protocol & Networking, CORS Preflight & Security ensures predictable, resilient execution.",
+        "explanation": "Correct. In HTTP Protocol & Networking, CORS Preflight & Security ensures predictable, resilient execution."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In HTTP Protocol & Networking, TCP & TLS Handshake ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes TCP & TLS Handshake, not CORS Preflight & Security."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In HTTP Protocol & Networking, Caching Headers & ETag ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Caching Headers & ETag, not CORS Preflight & Security."
+      }
+    ],
+    "correctAnswer": "B",
+    "correctOption": "B",
+    "mcqExplanation": "Correct. In HTTP Protocol & Networking, CORS Preflight & Security ensures predictable, resilient execution.",
+    "explanation": "Correct. In HTTP Protocol & Networking, CORS Preflight & Security ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Status Codes & Semantics, not CORS Preflight & Security.",
+      "C": "Incorrect. This describes TCP & TLS Handshake, not CORS Preflight & Security.",
+      "D": "Incorrect. This describes Caching Headers & ETag, not CORS Preflight & Security."
+    },
+    "mcqQuestion": "HTTP Protocol & Networking: How does CORS Preflight & Security operate in production enterprise applications (Q14)?"
+  },
+  {
+    "id": "iq-http-0015",
+    "standard_id": "HTTP-MCQ-000015",
+    "questionNumber": 15,
+    "subject": "http",
+    "category": "TCP & TLS Handshake",
+    "topic": "TCP & TLS Handshake",
+    "subtopic": "TCP & TLS Handshake Operations",
+    "concept": "TCP & TLS Handshake",
+    "difficulty": "EASY",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "FRESHER",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "http",
+      "tcp---tls-handshake",
+      "frontend-interview"
+    ],
+    "question": "HTTP Protocol & Networking: How does TCP & TLS Handshake operate in production enterprise applications (Q15)?",
+    "shortAnswer": "In HTTP Protocol & Networking, TCP & TLS Handshake ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**TCP & TLS Handshake** is an essential architectural concept in <u>HTTP Protocol & Networking</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**TCP & TLS Handshake** is an essential architectural concept in <u>HTTP Protocol & Networking</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**TCP & TLS Handshake** is an essential architectural concept in <u>HTTP Protocol & Networking</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for TCP & TLS Handshake in HTTP Protocol & Networking:\nexport function handleTCPTLSHandshake(config) {\n  console.log('Executing TCP & TLS Handshake with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for TCP & TLS Handshake in HTTP Protocol & Networking:\nexport function handleTCPTLSHandshake(config) {\n  console.log('Executing TCP & TLS Handshake with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for TCP & TLS Handshake in HTTP Protocol & Networking:\nexport function handleTCPTLSHandshake(config) {\n  console.log('Executing TCP & TLS Handshake with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of TCP & TLS Handshake in HTTP Protocol & Networking.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize TCP & TLS Handshake to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with TCP & TLS Handshake.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about TCP & TLS Handshake, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about TCP & TLS Handshake, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does TCP & TLS Handshake scale under extreme concurrency?",
+      "What monitoring tools can track TCP & TLS Handshake metrics in production?"
+    ],
+    "followUps": [
+      "How does TCP & TLS Handshake scale under extreme concurrency?",
+      "What monitoring tools can track TCP & TLS Handshake metrics in production?"
+    ],
+    "question_hash": "qh_7f203fb6",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In HTTP Protocol & Networking, Caching Headers & ETag ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Caching Headers & ETag, not TCP & TLS Handshake."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In HTTP Protocol & Networking, HTTP Evolution (1.1, 2, 3) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes HTTP Evolution (1.1, 2, 3), not TCP & TLS Handshake."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In HTTP Protocol & Networking, TCP & TLS Handshake ensures predictable, resilient execution.",
+        "explanation": "Correct. In HTTP Protocol & Networking, TCP & TLS Handshake ensures predictable, resilient execution."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In HTTP Protocol & Networking, CORS Preflight & Security ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes CORS Preflight & Security, not TCP & TLS Handshake."
+      }
+    ],
+    "correctAnswer": "C",
+    "mcqExplanation": "Correct. In HTTP Protocol & Networking, TCP & TLS Handshake ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Caching Headers & ETag, not TCP & TLS Handshake.",
+      "B": "Incorrect. This describes HTTP Evolution (1.1, 2, 3), not TCP & TLS Handshake.",
+      "D": "Incorrect. This describes CORS Preflight & Security, not TCP & TLS Handshake."
+    },
+    "correctOption": "C",
+    "explanation": "Correct. In HTTP Protocol & Networking, TCP & TLS Handshake ensures predictable, resilient execution.",
+    "mcqQuestion": "HTTP Protocol & Networking: How does TCP & TLS Handshake operate in production enterprise applications (Q15)?"
+  },
+  {
+    "id": "iq-http-0016",
+    "standard_id": "HTTP-MCQ-000016",
+    "questionNumber": 16,
+    "subject": "http",
+    "category": "HTTP Evolution (1.1, 2, 3)",
+    "topic": "HTTP Evolution (1.1, 2, 3)",
+    "subtopic": "HTTP Evolution (1.1, 2, 3) Operations",
+    "concept": "HTTP Evolution (1.1, 2, 3)",
+    "difficulty": "INTERMEDIATE",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "1_3_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "http",
+      "http-evolution--1-1--2--3-",
+      "frontend-interview"
+    ],
+    "question": "HTTP Protocol & Networking: How does HTTP Evolution (1.1, 2, 3) operate in production enterprise applications (Q16)?",
+    "shortAnswer": "In HTTP Protocol & Networking, HTTP Evolution (1.1, 2, 3) ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**HTTP Evolution (1.1, 2, 3)** is an essential architectural concept in <u>HTTP Protocol & Networking</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**HTTP Evolution (1.1, 2, 3)** is an essential architectural concept in <u>HTTP Protocol & Networking</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**HTTP Evolution (1.1, 2, 3)** is an essential architectural concept in <u>HTTP Protocol & Networking</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for HTTP Evolution (1.1, 2, 3) in HTTP Protocol & Networking:\nexport function handleHTTPEvolution(config) {\n  console.log('Executing HTTP Evolution (1.1, 2, 3) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for HTTP Evolution (1.1, 2, 3) in HTTP Protocol & Networking:\nexport function handleHTTPEvolution(config) {\n  console.log('Executing HTTP Evolution (1.1, 2, 3) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for HTTP Evolution (1.1, 2, 3) in HTTP Protocol & Networking:\nexport function handleHTTPEvolution(config) {\n  console.log('Executing HTTP Evolution (1.1, 2, 3) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of HTTP Evolution (1.1, 2, 3) in HTTP Protocol & Networking.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize HTTP Evolution (1.1, 2, 3) to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with HTTP Evolution (1.1, 2, 3).",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about HTTP Evolution (1.1, 2, 3), explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about HTTP Evolution (1.1, 2, 3), explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does HTTP Evolution (1.1, 2, 3) scale under extreme concurrency?",
+      "What monitoring tools can track HTTP Evolution (1.1, 2, 3) metrics in production?"
+    ],
+    "followUps": [
+      "How does HTTP Evolution (1.1, 2, 3) scale under extreme concurrency?",
+      "What monitoring tools can track HTTP Evolution (1.1, 2, 3) metrics in production?"
+    ],
+    "question_hash": "qh_10755175",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In HTTP Protocol & Networking, CORS Preflight & Security ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes CORS Preflight & Security, not HTTP Evolution (1.1, 2, 3)."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In HTTP Protocol & Networking, Status Codes & Semantics ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Status Codes & Semantics, not HTTP Evolution (1.1, 2, 3)."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In HTTP Protocol & Networking, TCP & TLS Handshake ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes TCP & TLS Handshake, not HTTP Evolution (1.1, 2, 3)."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In HTTP Protocol & Networking, HTTP Evolution (1.1, 2, 3) ensures predictable, resilient execution.",
+        "explanation": "Correct. In HTTP Protocol & Networking, HTTP Evolution (1.1, 2, 3) ensures predictable, resilient execution."
+      }
+    ],
+    "correctAnswer": "D",
+    "correctOption": "D",
+    "mcqExplanation": "Correct. In HTTP Protocol & Networking, HTTP Evolution (1.1, 2, 3) ensures predictable, resilient execution.",
+    "explanation": "Correct. In HTTP Protocol & Networking, HTTP Evolution (1.1, 2, 3) ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes CORS Preflight & Security, not HTTP Evolution (1.1, 2, 3).",
+      "B": "Incorrect. This describes Status Codes & Semantics, not HTTP Evolution (1.1, 2, 3).",
+      "C": "Incorrect. This describes TCP & TLS Handshake, not HTTP Evolution (1.1, 2, 3)."
+    },
+    "mcqQuestion": "HTTP Protocol & Networking: How does HTTP Evolution (1.1, 2, 3) operate in production enterprise applications (Q16)?"
+  },
+  {
+    "id": "iq-http-0017",
+    "standard_id": "HTTP-MCQ-000017",
+    "questionNumber": 17,
+    "subject": "http",
+    "category": "Status Codes & Semantics",
+    "topic": "Status Codes & Semantics",
+    "subtopic": "Status Codes & Semantics Operations",
+    "concept": "Status Codes & Semantics",
+    "difficulty": "DIFFICULT",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "3_5_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "http",
+      "status-codes---semantics",
+      "frontend-interview"
+    ],
+    "question": "HTTP Protocol & Networking: How does Status Codes & Semantics operate in production enterprise applications (Q17)?",
+    "shortAnswer": "In HTTP Protocol & Networking, Status Codes & Semantics ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Status Codes & Semantics** is an essential architectural concept in <u>HTTP Protocol & Networking</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Status Codes & Semantics** is an essential architectural concept in <u>HTTP Protocol & Networking</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Status Codes & Semantics** is an essential architectural concept in <u>HTTP Protocol & Networking</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Status Codes & Semantics in HTTP Protocol & Networking:\nexport function handleStatusCodesSemantics(config) {\n  console.log('Executing Status Codes & Semantics with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Status Codes & Semantics in HTTP Protocol & Networking:\nexport function handleStatusCodesSemantics(config) {\n  console.log('Executing Status Codes & Semantics with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Status Codes & Semantics in HTTP Protocol & Networking:\nexport function handleStatusCodesSemantics(config) {\n  console.log('Executing Status Codes & Semantics with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Status Codes & Semantics in HTTP Protocol & Networking.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Status Codes & Semantics to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Status Codes & Semantics.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Status Codes & Semantics, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Status Codes & Semantics, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Status Codes & Semantics scale under extreme concurrency?",
+      "What monitoring tools can track Status Codes & Semantics metrics in production?"
+    ],
+    "followUps": [
+      "How does Status Codes & Semantics scale under extreme concurrency?",
+      "What monitoring tools can track Status Codes & Semantics metrics in production?"
+    ],
+    "question_hash": "qh_5ae467ae",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In HTTP Protocol & Networking, Status Codes & Semantics ensures predictable, resilient execution.",
+        "explanation": "Correct. In HTTP Protocol & Networking, Status Codes & Semantics ensures predictable, resilient execution."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In HTTP Protocol & Networking, TCP & TLS Handshake ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes TCP & TLS Handshake, not Status Codes & Semantics."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In HTTP Protocol & Networking, Caching Headers & ETag ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Caching Headers & ETag, not Status Codes & Semantics."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In HTTP Protocol & Networking, HTTP Evolution (1.1, 2, 3) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes HTTP Evolution (1.1, 2, 3), not Status Codes & Semantics."
+      }
+    ],
+    "correctAnswer": "A",
+    "mcqExplanation": "Correct. In HTTP Protocol & Networking, Status Codes & Semantics ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "B": "Incorrect. This describes TCP & TLS Handshake, not Status Codes & Semantics.",
+      "C": "Incorrect. This describes Caching Headers & ETag, not Status Codes & Semantics.",
+      "D": "Incorrect. This describes HTTP Evolution (1.1, 2, 3), not Status Codes & Semantics."
+    },
+    "correctOption": "A",
+    "explanation": "Correct. In HTTP Protocol & Networking, Status Codes & Semantics ensures predictable, resilient execution.",
+    "mcqQuestion": "HTTP Protocol & Networking: How does Status Codes & Semantics operate in production enterprise applications (Q17)?"
+  },
+  {
+    "id": "iq-http-0018",
+    "standard_id": "HTTP-MCQ-000018",
+    "questionNumber": 18,
+    "subject": "http",
+    "category": "Caching Headers & ETag",
+    "topic": "Caching Headers & ETag",
+    "subtopic": "Caching Headers & ETag Operations",
+    "concept": "Caching Headers & ETag",
+    "difficulty": "EASY",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "FRESHER",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "http",
+      "caching-headers---etag",
+      "frontend-interview"
+    ],
+    "question": "HTTP Protocol & Networking: How does Caching Headers & ETag operate in production enterprise applications (Q18)?",
+    "shortAnswer": "In HTTP Protocol & Networking, Caching Headers & ETag ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Caching Headers & ETag** is an essential architectural concept in <u>HTTP Protocol & Networking</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Caching Headers & ETag** is an essential architectural concept in <u>HTTP Protocol & Networking</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Caching Headers & ETag** is an essential architectural concept in <u>HTTP Protocol & Networking</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Caching Headers & ETag in HTTP Protocol & Networking:\nexport function handleCachingHeadersETag(config) {\n  console.log('Executing Caching Headers & ETag with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Caching Headers & ETag in HTTP Protocol & Networking:\nexport function handleCachingHeadersETag(config) {\n  console.log('Executing Caching Headers & ETag with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Caching Headers & ETag in HTTP Protocol & Networking:\nexport function handleCachingHeadersETag(config) {\n  console.log('Executing Caching Headers & ETag with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Caching Headers & ETag in HTTP Protocol & Networking.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Caching Headers & ETag to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Caching Headers & ETag.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Caching Headers & ETag, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Caching Headers & ETag, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Caching Headers & ETag scale under extreme concurrency?",
+      "What monitoring tools can track Caching Headers & ETag metrics in production?"
+    ],
+    "followUps": [
+      "How does Caching Headers & ETag scale under extreme concurrency?",
+      "What monitoring tools can track Caching Headers & ETag metrics in production?"
+    ],
+    "question_hash": "qh_21dae171",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In HTTP Protocol & Networking, HTTP Evolution (1.1, 2, 3) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes HTTP Evolution (1.1, 2, 3), not Caching Headers & ETag."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In HTTP Protocol & Networking, Caching Headers & ETag ensures predictable, resilient execution.",
+        "explanation": "Correct. In HTTP Protocol & Networking, Caching Headers & ETag ensures predictable, resilient execution."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In HTTP Protocol & Networking, CORS Preflight & Security ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes CORS Preflight & Security, not Caching Headers & ETag."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In HTTP Protocol & Networking, Status Codes & Semantics ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Status Codes & Semantics, not Caching Headers & ETag."
+      }
+    ],
+    "correctAnswer": "B",
+    "correctOption": "B",
+    "mcqExplanation": "Correct. In HTTP Protocol & Networking, Caching Headers & ETag ensures predictable, resilient execution.",
+    "explanation": "Correct. In HTTP Protocol & Networking, Caching Headers & ETag ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes HTTP Evolution (1.1, 2, 3), not Caching Headers & ETag.",
+      "C": "Incorrect. This describes CORS Preflight & Security, not Caching Headers & ETag.",
+      "D": "Incorrect. This describes Status Codes & Semantics, not Caching Headers & ETag."
+    },
+    "mcqQuestion": "HTTP Protocol & Networking: How does Caching Headers & ETag operate in production enterprise applications (Q18)?"
+  },
+  {
+    "id": "iq-http-0019",
+    "standard_id": "HTTP-MCQ-000019",
+    "questionNumber": 19,
+    "subject": "http",
+    "category": "CORS Preflight & Security",
+    "topic": "CORS Preflight & Security",
+    "subtopic": "CORS Preflight & Security Operations",
+    "concept": "CORS Preflight & Security",
+    "difficulty": "INTERMEDIATE",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "1_3_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "http",
+      "cors-preflight---security",
+      "frontend-interview"
+    ],
+    "question": "HTTP Protocol & Networking: How does CORS Preflight & Security operate in production enterprise applications (Q19)?",
+    "shortAnswer": "In HTTP Protocol & Networking, CORS Preflight & Security ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**CORS Preflight & Security** is an essential architectural concept in <u>HTTP Protocol & Networking</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**CORS Preflight & Security** is an essential architectural concept in <u>HTTP Protocol & Networking</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**CORS Preflight & Security** is an essential architectural concept in <u>HTTP Protocol & Networking</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for CORS Preflight & Security in HTTP Protocol & Networking:\nexport function handleCORSPreflightSecurity(config) {\n  console.log('Executing CORS Preflight & Security with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for CORS Preflight & Security in HTTP Protocol & Networking:\nexport function handleCORSPreflightSecurity(config) {\n  console.log('Executing CORS Preflight & Security with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for CORS Preflight & Security in HTTP Protocol & Networking:\nexport function handleCORSPreflightSecurity(config) {\n  console.log('Executing CORS Preflight & Security with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of CORS Preflight & Security in HTTP Protocol & Networking.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize CORS Preflight & Security to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with CORS Preflight & Security.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about CORS Preflight & Security, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about CORS Preflight & Security, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does CORS Preflight & Security scale under extreme concurrency?",
+      "What monitoring tools can track CORS Preflight & Security metrics in production?"
+    ],
+    "followUps": [
+      "How does CORS Preflight & Security scale under extreme concurrency?",
+      "What monitoring tools can track CORS Preflight & Security metrics in production?"
+    ],
+    "question_hash": "qh_696fb7a4",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In HTTP Protocol & Networking, Status Codes & Semantics ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Status Codes & Semantics, not CORS Preflight & Security."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In HTTP Protocol & Networking, TCP & TLS Handshake ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes TCP & TLS Handshake, not CORS Preflight & Security."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In HTTP Protocol & Networking, CORS Preflight & Security ensures predictable, resilient execution.",
+        "explanation": "Correct. In HTTP Protocol & Networking, CORS Preflight & Security ensures predictable, resilient execution."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In HTTP Protocol & Networking, Caching Headers & ETag ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Caching Headers & ETag, not CORS Preflight & Security."
+      }
+    ],
+    "correctAnswer": "C",
+    "mcqExplanation": "Correct. In HTTP Protocol & Networking, CORS Preflight & Security ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Status Codes & Semantics, not CORS Preflight & Security.",
+      "B": "Incorrect. This describes TCP & TLS Handshake, not CORS Preflight & Security.",
+      "D": "Incorrect. This describes Caching Headers & ETag, not CORS Preflight & Security."
+    },
+    "correctOption": "C",
+    "explanation": "Correct. In HTTP Protocol & Networking, CORS Preflight & Security ensures predictable, resilient execution.",
+    "mcqQuestion": "HTTP Protocol & Networking: How does CORS Preflight & Security operate in production enterprise applications (Q19)?"
+  },
+  {
+    "id": "iq-http-0020",
+    "standard_id": "HTTP-MCQ-000020",
+    "questionNumber": 20,
+    "subject": "http",
+    "category": "TCP & TLS Handshake",
+    "topic": "TCP & TLS Handshake",
+    "subtopic": "TCP & TLS Handshake Operations",
+    "concept": "TCP & TLS Handshake",
+    "difficulty": "DIFFICULT",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "3_5_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "http",
+      "tcp---tls-handshake",
+      "frontend-interview"
+    ],
+    "question": "HTTP Protocol & Networking: How does TCP & TLS Handshake operate in production enterprise applications (Q20)?",
+    "shortAnswer": "In HTTP Protocol & Networking, TCP & TLS Handshake ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**TCP & TLS Handshake** is an essential architectural concept in <u>HTTP Protocol & Networking</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**TCP & TLS Handshake** is an essential architectural concept in <u>HTTP Protocol & Networking</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**TCP & TLS Handshake** is an essential architectural concept in <u>HTTP Protocol & Networking</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for TCP & TLS Handshake in HTTP Protocol & Networking:\nexport function handleTCPTLSHandshake(config) {\n  console.log('Executing TCP & TLS Handshake with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for TCP & TLS Handshake in HTTP Protocol & Networking:\nexport function handleTCPTLSHandshake(config) {\n  console.log('Executing TCP & TLS Handshake with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for TCP & TLS Handshake in HTTP Protocol & Networking:\nexport function handleTCPTLSHandshake(config) {\n  console.log('Executing TCP & TLS Handshake with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of TCP & TLS Handshake in HTTP Protocol & Networking.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize TCP & TLS Handshake to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with TCP & TLS Handshake.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about TCP & TLS Handshake, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about TCP & TLS Handshake, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does TCP & TLS Handshake scale under extreme concurrency?",
+      "What monitoring tools can track TCP & TLS Handshake metrics in production?"
+    ],
+    "followUps": [
+      "How does TCP & TLS Handshake scale under extreme concurrency?",
+      "What monitoring tools can track TCP & TLS Handshake metrics in production?"
+    ],
+    "question_hash": "qh_7f203fd0",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In HTTP Protocol & Networking, Caching Headers & ETag ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Caching Headers & ETag, not TCP & TLS Handshake."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In HTTP Protocol & Networking, HTTP Evolution (1.1, 2, 3) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes HTTP Evolution (1.1, 2, 3), not TCP & TLS Handshake."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In HTTP Protocol & Networking, CORS Preflight & Security ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes CORS Preflight & Security, not TCP & TLS Handshake."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In HTTP Protocol & Networking, TCP & TLS Handshake ensures predictable, resilient execution.",
+        "explanation": "Correct. In HTTP Protocol & Networking, TCP & TLS Handshake ensures predictable, resilient execution."
+      }
+    ],
+    "correctAnswer": "D",
+    "correctOption": "D",
+    "mcqExplanation": "Correct. In HTTP Protocol & Networking, TCP & TLS Handshake ensures predictable, resilient execution.",
+    "explanation": "Correct. In HTTP Protocol & Networking, TCP & TLS Handshake ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Caching Headers & ETag, not TCP & TLS Handshake.",
+      "B": "Incorrect. This describes HTTP Evolution (1.1, 2, 3), not TCP & TLS Handshake.",
+      "C": "Incorrect. This describes CORS Preflight & Security, not TCP & TLS Handshake."
+    },
+    "mcqQuestion": "HTTP Protocol & Networking: How does TCP & TLS Handshake operate in production enterprise applications (Q20)?"
+  },
+  {
+    "id": "iq-http-0021",
+    "standard_id": "HTTP-MCQ-000021",
+    "questionNumber": 21,
+    "subject": "http",
+    "category": "HTTP Evolution (1.1, 2, 3)",
+    "topic": "HTTP Evolution (1.1, 2, 3)",
+    "subtopic": "HTTP Evolution (1.1, 2, 3) Operations",
+    "concept": "HTTP Evolution (1.1, 2, 3)",
+    "difficulty": "EASY",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "FRESHER",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "http",
+      "http-evolution--1-1--2--3-",
+      "frontend-interview"
+    ],
+    "question": "HTTP Protocol & Networking: How does HTTP Evolution (1.1, 2, 3) operate in production enterprise applications (Q21)?",
+    "shortAnswer": "In HTTP Protocol & Networking, HTTP Evolution (1.1, 2, 3) ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**HTTP Evolution (1.1, 2, 3)** is an essential architectural concept in <u>HTTP Protocol & Networking</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**HTTP Evolution (1.1, 2, 3)** is an essential architectural concept in <u>HTTP Protocol & Networking</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**HTTP Evolution (1.1, 2, 3)** is an essential architectural concept in <u>HTTP Protocol & Networking</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for HTTP Evolution (1.1, 2, 3) in HTTP Protocol & Networking:\nexport function handleHTTPEvolution(config) {\n  console.log('Executing HTTP Evolution (1.1, 2, 3) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for HTTP Evolution (1.1, 2, 3) in HTTP Protocol & Networking:\nexport function handleHTTPEvolution(config) {\n  console.log('Executing HTTP Evolution (1.1, 2, 3) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for HTTP Evolution (1.1, 2, 3) in HTTP Protocol & Networking:\nexport function handleHTTPEvolution(config) {\n  console.log('Executing HTTP Evolution (1.1, 2, 3) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of HTTP Evolution (1.1, 2, 3) in HTTP Protocol & Networking.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize HTTP Evolution (1.1, 2, 3) to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with HTTP Evolution (1.1, 2, 3).",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about HTTP Evolution (1.1, 2, 3), explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about HTTP Evolution (1.1, 2, 3), explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does HTTP Evolution (1.1, 2, 3) scale under extreme concurrency?",
+      "What monitoring tools can track HTTP Evolution (1.1, 2, 3) metrics in production?"
+    ],
+    "followUps": [
+      "How does HTTP Evolution (1.1, 2, 3) scale under extreme concurrency?",
+      "What monitoring tools can track HTTP Evolution (1.1, 2, 3) metrics in production?"
+    ],
+    "question_hash": "qh_1075518f",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In HTTP Protocol & Networking, HTTP Evolution (1.1, 2, 3) ensures predictable, resilient execution.",
+        "explanation": "Correct. In HTTP Protocol & Networking, HTTP Evolution (1.1, 2, 3) ensures predictable, resilient execution."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In HTTP Protocol & Networking, CORS Preflight & Security ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes CORS Preflight & Security, not HTTP Evolution (1.1, 2, 3)."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In HTTP Protocol & Networking, Status Codes & Semantics ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Status Codes & Semantics, not HTTP Evolution (1.1, 2, 3)."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In HTTP Protocol & Networking, TCP & TLS Handshake ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes TCP & TLS Handshake, not HTTP Evolution (1.1, 2, 3)."
+      }
+    ],
+    "correctAnswer": "A",
+    "mcqExplanation": "Correct. In HTTP Protocol & Networking, HTTP Evolution (1.1, 2, 3) ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "B": "Incorrect. This describes CORS Preflight & Security, not HTTP Evolution (1.1, 2, 3).",
+      "C": "Incorrect. This describes Status Codes & Semantics, not HTTP Evolution (1.1, 2, 3).",
+      "D": "Incorrect. This describes TCP & TLS Handshake, not HTTP Evolution (1.1, 2, 3)."
+    },
+    "correctOption": "A",
+    "explanation": "Correct. In HTTP Protocol & Networking, HTTP Evolution (1.1, 2, 3) ensures predictable, resilient execution.",
+    "mcqQuestion": "HTTP Protocol & Networking: How does HTTP Evolution (1.1, 2, 3) operate in production enterprise applications (Q21)?"
+  },
+  {
+    "id": "iq-http-0022",
+    "standard_id": "HTTP-MCQ-000022",
+    "questionNumber": 22,
+    "subject": "http",
+    "category": "Status Codes & Semantics",
+    "topic": "Status Codes & Semantics",
+    "subtopic": "Status Codes & Semantics Operations",
+    "concept": "Status Codes & Semantics",
+    "difficulty": "INTERMEDIATE",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "1_3_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "http",
+      "status-codes---semantics",
+      "frontend-interview"
+    ],
+    "question": "HTTP Protocol & Networking: How does Status Codes & Semantics operate in production enterprise applications (Q22)?",
+    "shortAnswer": "In HTTP Protocol & Networking, Status Codes & Semantics ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Status Codes & Semantics** is an essential architectural concept in <u>HTTP Protocol & Networking</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Status Codes & Semantics** is an essential architectural concept in <u>HTTP Protocol & Networking</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Status Codes & Semantics** is an essential architectural concept in <u>HTTP Protocol & Networking</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Status Codes & Semantics in HTTP Protocol & Networking:\nexport function handleStatusCodesSemantics(config) {\n  console.log('Executing Status Codes & Semantics with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Status Codes & Semantics in HTTP Protocol & Networking:\nexport function handleStatusCodesSemantics(config) {\n  console.log('Executing Status Codes & Semantics with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Status Codes & Semantics in HTTP Protocol & Networking:\nexport function handleStatusCodesSemantics(config) {\n  console.log('Executing Status Codes & Semantics with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Status Codes & Semantics in HTTP Protocol & Networking.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Status Codes & Semantics to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Status Codes & Semantics.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Status Codes & Semantics, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Status Codes & Semantics, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Status Codes & Semantics scale under extreme concurrency?",
+      "What monitoring tools can track Status Codes & Semantics metrics in production?"
+    ],
+    "followUps": [
+      "How does Status Codes & Semantics scale under extreme concurrency?",
+      "What monitoring tools can track Status Codes & Semantics metrics in production?"
+    ],
+    "question_hash": "qh_5ae46794",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In HTTP Protocol & Networking, TCP & TLS Handshake ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes TCP & TLS Handshake, not Status Codes & Semantics."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In HTTP Protocol & Networking, Status Codes & Semantics ensures predictable, resilient execution.",
+        "explanation": "Correct. In HTTP Protocol & Networking, Status Codes & Semantics ensures predictable, resilient execution."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In HTTP Protocol & Networking, Caching Headers & ETag ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Caching Headers & ETag, not Status Codes & Semantics."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "HTTP/1.1 suffered from Head-of-Line (HOL) blocking and required multiple TCP connections.",
+        "explanation": "Incorrect. This describes Multiplexing & QUIC Protocol, not Status Codes & Semantics."
+      }
+    ],
+    "correctAnswer": "B",
+    "correctOption": "B",
+    "mcqExplanation": "Correct. In HTTP Protocol & Networking, Status Codes & Semantics ensures predictable, resilient execution.",
+    "explanation": "Correct. In HTTP Protocol & Networking, Status Codes & Semantics ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes TCP & TLS Handshake, not Status Codes & Semantics.",
+      "C": "Incorrect. This describes Caching Headers & ETag, not Status Codes & Semantics.",
+      "D": "Incorrect. This describes Multiplexing & QUIC Protocol, not Status Codes & Semantics."
+    },
+    "mcqQuestion": "HTTP Protocol & Networking: How does Status Codes & Semantics operate in production enterprise applications (Q22)?"
+  },
+  {
+    "id": "iq-http-0023",
+    "standard_id": "HTTP-MCQ-000023",
+    "questionNumber": 23,
+    "subject": "http",
+    "category": "Caching Headers & ETag",
+    "topic": "Caching Headers & ETag",
+    "subtopic": "Caching Headers & ETag Operations",
+    "concept": "Caching Headers & ETag",
+    "difficulty": "DIFFICULT",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "3_5_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "http",
+      "caching-headers---etag",
+      "frontend-interview"
+    ],
+    "question": "HTTP Protocol & Networking: How does Caching Headers & ETag operate in production enterprise applications (Q23)?",
+    "shortAnswer": "In HTTP Protocol & Networking, Caching Headers & ETag ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Caching Headers & ETag** is an essential architectural concept in <u>HTTP Protocol & Networking</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Caching Headers & ETag** is an essential architectural concept in <u>HTTP Protocol & Networking</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Caching Headers & ETag** is an essential architectural concept in <u>HTTP Protocol & Networking</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Caching Headers & ETag in HTTP Protocol & Networking:\nexport function handleCachingHeadersETag(config) {\n  console.log('Executing Caching Headers & ETag with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Caching Headers & ETag in HTTP Protocol & Networking:\nexport function handleCachingHeadersETag(config) {\n  console.log('Executing Caching Headers & ETag with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Caching Headers & ETag in HTTP Protocol & Networking:\nexport function handleCachingHeadersETag(config) {\n  console.log('Executing Caching Headers & ETag with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Caching Headers & ETag in HTTP Protocol & Networking.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Caching Headers & ETag to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Caching Headers & ETag.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Caching Headers & ETag, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Caching Headers & ETag, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Caching Headers & ETag scale under extreme concurrency?",
+      "What monitoring tools can track Caching Headers & ETag metrics in production?"
+    ],
+    "followUps": [
+      "How does Caching Headers & ETag scale under extreme concurrency?",
+      "What monitoring tools can track Caching Headers & ETag metrics in production?"
+    ],
+    "question_hash": "qh_21dae157",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In HTTP Protocol & Networking, HTTP Evolution (1.1, 2, 3) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes HTTP Evolution (1.1, 2, 3), not Caching Headers & ETag."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In HTTP Protocol & Networking, CORS Preflight & Security ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes CORS Preflight & Security, not Caching Headers & ETag."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In HTTP Protocol & Networking, Caching Headers & ETag ensures predictable, resilient execution.",
+        "explanation": "Correct. In HTTP Protocol & Networking, Caching Headers & ETag ensures predictable, resilient execution."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In HTTP Protocol & Networking, Status Codes & Semantics ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Status Codes & Semantics, not Caching Headers & ETag."
+      }
+    ],
+    "correctAnswer": "C",
+    "mcqExplanation": "Correct. In HTTP Protocol & Networking, Caching Headers & ETag ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes HTTP Evolution (1.1, 2, 3), not Caching Headers & ETag.",
+      "B": "Incorrect. This describes CORS Preflight & Security, not Caching Headers & ETag.",
+      "D": "Incorrect. This describes Status Codes & Semantics, not Caching Headers & ETag."
+    },
+    "correctOption": "C",
+    "explanation": "Correct. In HTTP Protocol & Networking, Caching Headers & ETag ensures predictable, resilient execution.",
+    "mcqQuestion": "HTTP Protocol & Networking: How does Caching Headers & ETag operate in production enterprise applications (Q23)?"
+  },
+  {
+    "id": "iq-http-0024",
+    "standard_id": "HTTP-MCQ-000024",
+    "questionNumber": 24,
+    "subject": "http",
+    "category": "CORS Preflight & Security",
+    "topic": "CORS Preflight & Security",
+    "subtopic": "CORS Preflight & Security Operations",
+    "concept": "CORS Preflight & Security",
+    "difficulty": "EASY",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "FRESHER",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "http",
+      "cors-preflight---security",
+      "frontend-interview"
+    ],
+    "question": "HTTP Protocol & Networking: How does CORS Preflight & Security operate in production enterprise applications (Q24)?",
+    "shortAnswer": "In HTTP Protocol & Networking, CORS Preflight & Security ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**CORS Preflight & Security** is an essential architectural concept in <u>HTTP Protocol & Networking</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**CORS Preflight & Security** is an essential architectural concept in <u>HTTP Protocol & Networking</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**CORS Preflight & Security** is an essential architectural concept in <u>HTTP Protocol & Networking</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for CORS Preflight & Security in HTTP Protocol & Networking:\nexport function handleCORSPreflightSecurity(config) {\n  console.log('Executing CORS Preflight & Security with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for CORS Preflight & Security in HTTP Protocol & Networking:\nexport function handleCORSPreflightSecurity(config) {\n  console.log('Executing CORS Preflight & Security with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for CORS Preflight & Security in HTTP Protocol & Networking:\nexport function handleCORSPreflightSecurity(config) {\n  console.log('Executing CORS Preflight & Security with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of CORS Preflight & Security in HTTP Protocol & Networking.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize CORS Preflight & Security to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with CORS Preflight & Security.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about CORS Preflight & Security, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about CORS Preflight & Security, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does CORS Preflight & Security scale under extreme concurrency?",
+      "What monitoring tools can track CORS Preflight & Security metrics in production?"
+    ],
+    "followUps": [
+      "How does CORS Preflight & Security scale under extreme concurrency?",
+      "What monitoring tools can track CORS Preflight & Security metrics in production?"
+    ],
+    "question_hash": "qh_696fb7be",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In HTTP Protocol & Networking, Status Codes & Semantics ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Status Codes & Semantics, not CORS Preflight & Security."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In HTTP Protocol & Networking, TCP & TLS Handshake ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes TCP & TLS Handshake, not CORS Preflight & Security."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In HTTP Protocol & Networking, Caching Headers & ETag ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Caching Headers & ETag, not CORS Preflight & Security."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In HTTP Protocol & Networking, CORS Preflight & Security ensures predictable, resilient execution.",
+        "explanation": "Correct. In HTTP Protocol & Networking, CORS Preflight & Security ensures predictable, resilient execution."
+      }
+    ],
+    "correctAnswer": "D",
+    "correctOption": "D",
+    "mcqExplanation": "Correct. In HTTP Protocol & Networking, CORS Preflight & Security ensures predictable, resilient execution.",
+    "explanation": "Correct. In HTTP Protocol & Networking, CORS Preflight & Security ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Status Codes & Semantics, not CORS Preflight & Security.",
+      "B": "Incorrect. This describes TCP & TLS Handshake, not CORS Preflight & Security.",
+      "C": "Incorrect. This describes Caching Headers & ETag, not CORS Preflight & Security."
+    },
+    "mcqQuestion": "HTTP Protocol & Networking: How does CORS Preflight & Security operate in production enterprise applications (Q24)?"
+  },
+  {
+    "id": "iq-http-0025",
+    "standard_id": "HTTP-MCQ-000025",
+    "questionNumber": 25,
+    "subject": "http",
+    "category": "TCP & TLS Handshake",
+    "topic": "TCP & TLS Handshake",
+    "subtopic": "TCP & TLS Handshake Operations",
+    "concept": "TCP & TLS Handshake",
+    "difficulty": "INTERMEDIATE",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "1_3_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "http",
+      "tcp---tls-handshake",
+      "frontend-interview"
+    ],
+    "question": "HTTP Protocol & Networking: How does TCP & TLS Handshake operate in production enterprise applications (Q25)?",
+    "shortAnswer": "In HTTP Protocol & Networking, TCP & TLS Handshake ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**TCP & TLS Handshake** is an essential architectural concept in <u>HTTP Protocol & Networking</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**TCP & TLS Handshake** is an essential architectural concept in <u>HTTP Protocol & Networking</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**TCP & TLS Handshake** is an essential architectural concept in <u>HTTP Protocol & Networking</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for TCP & TLS Handshake in HTTP Protocol & Networking:\nexport function handleTCPTLSHandshake(config) {\n  console.log('Executing TCP & TLS Handshake with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for TCP & TLS Handshake in HTTP Protocol & Networking:\nexport function handleTCPTLSHandshake(config) {\n  console.log('Executing TCP & TLS Handshake with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for TCP & TLS Handshake in HTTP Protocol & Networking:\nexport function handleTCPTLSHandshake(config) {\n  console.log('Executing TCP & TLS Handshake with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of TCP & TLS Handshake in HTTP Protocol & Networking.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize TCP & TLS Handshake to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with TCP & TLS Handshake.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about TCP & TLS Handshake, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about TCP & TLS Handshake, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does TCP & TLS Handshake scale under extreme concurrency?",
+      "What monitoring tools can track TCP & TLS Handshake metrics in production?"
+    ],
+    "followUps": [
+      "How does TCP & TLS Handshake scale under extreme concurrency?",
+      "What monitoring tools can track TCP & TLS Handshake metrics in production?"
+    ],
+    "question_hash": "qh_7f203fd5",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In HTTP Protocol & Networking, TCP & TLS Handshake ensures predictable, resilient execution.",
+        "explanation": "Correct. In HTTP Protocol & Networking, TCP & TLS Handshake ensures predictable, resilient execution."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In HTTP Protocol & Networking, Caching Headers & ETag ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Caching Headers & ETag, not TCP & TLS Handshake."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "HTTP/1.1 suffered from Head-of-Line (HOL) blocking and required multiple TCP connections.",
+        "explanation": "Incorrect. This describes Multiplexing & QUIC Protocol, not TCP & TLS Handshake."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In HTTP Protocol & Networking, CORS Preflight & Security ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes CORS Preflight & Security, not TCP & TLS Handshake."
+      }
+    ],
+    "correctAnswer": "A",
+    "mcqExplanation": "Correct. In HTTP Protocol & Networking, TCP & TLS Handshake ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "B": "Incorrect. This describes Caching Headers & ETag, not TCP & TLS Handshake.",
+      "C": "Incorrect. This describes Multiplexing & QUIC Protocol, not TCP & TLS Handshake.",
+      "D": "Incorrect. This describes CORS Preflight & Security, not TCP & TLS Handshake."
+    },
+    "correctOption": "A",
+    "explanation": "Correct. In HTTP Protocol & Networking, TCP & TLS Handshake ensures predictable, resilient execution.",
+    "mcqQuestion": "HTTP Protocol & Networking: How does TCP & TLS Handshake operate in production enterprise applications (Q25)?"
+  },
+  {
+    "id": "iq-http-0026",
+    "standard_id": "HTTP-MCQ-000026",
+    "questionNumber": 26,
+    "subject": "http",
+    "category": "HTTP Evolution (1.1, 2, 3)",
+    "topic": "HTTP Evolution (1.1, 2, 3)",
+    "subtopic": "HTTP Evolution (1.1, 2, 3) Operations",
+    "concept": "HTTP Evolution (1.1, 2, 3)",
+    "difficulty": "DIFFICULT",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "3_5_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "http",
+      "http-evolution--1-1--2--3-",
+      "frontend-interview"
+    ],
+    "question": "HTTP Protocol & Networking: How does HTTP Evolution (1.1, 2, 3) operate in production enterprise applications (Q26)?",
+    "shortAnswer": "In HTTP Protocol & Networking, HTTP Evolution (1.1, 2, 3) ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**HTTP Evolution (1.1, 2, 3)** is an essential architectural concept in <u>HTTP Protocol & Networking</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**HTTP Evolution (1.1, 2, 3)** is an essential architectural concept in <u>HTTP Protocol & Networking</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**HTTP Evolution (1.1, 2, 3)** is an essential architectural concept in <u>HTTP Protocol & Networking</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for HTTP Evolution (1.1, 2, 3) in HTTP Protocol & Networking:\nexport function handleHTTPEvolution(config) {\n  console.log('Executing HTTP Evolution (1.1, 2, 3) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for HTTP Evolution (1.1, 2, 3) in HTTP Protocol & Networking:\nexport function handleHTTPEvolution(config) {\n  console.log('Executing HTTP Evolution (1.1, 2, 3) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for HTTP Evolution (1.1, 2, 3) in HTTP Protocol & Networking:\nexport function handleHTTPEvolution(config) {\n  console.log('Executing HTTP Evolution (1.1, 2, 3) with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of HTTP Evolution (1.1, 2, 3) in HTTP Protocol & Networking.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize HTTP Evolution (1.1, 2, 3) to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with HTTP Evolution (1.1, 2, 3).",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about HTTP Evolution (1.1, 2, 3), explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about HTTP Evolution (1.1, 2, 3), explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does HTTP Evolution (1.1, 2, 3) scale under extreme concurrency?",
+      "What monitoring tools can track HTTP Evolution (1.1, 2, 3) metrics in production?"
+    ],
+    "followUps": [
+      "How does HTTP Evolution (1.1, 2, 3) scale under extreme concurrency?",
+      "What monitoring tools can track HTTP Evolution (1.1, 2, 3) metrics in production?"
+    ],
+    "question_hash": "qh_10755194",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In HTTP Protocol & Networking, CORS Preflight & Security ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes CORS Preflight & Security, not HTTP Evolution (1.1, 2, 3)."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In HTTP Protocol & Networking, HTTP Evolution (1.1, 2, 3) ensures predictable, resilient execution.",
+        "explanation": "Correct. In HTTP Protocol & Networking, HTTP Evolution (1.1, 2, 3) ensures predictable, resilient execution."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In HTTP Protocol & Networking, Status Codes & Semantics ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Status Codes & Semantics, not HTTP Evolution (1.1, 2, 3)."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In HTTP Protocol & Networking, TCP & TLS Handshake ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes TCP & TLS Handshake, not HTTP Evolution (1.1, 2, 3)."
+      }
+    ],
+    "correctAnswer": "B",
+    "correctOption": "B",
+    "mcqExplanation": "Correct. In HTTP Protocol & Networking, HTTP Evolution (1.1, 2, 3) ensures predictable, resilient execution.",
+    "explanation": "Correct. In HTTP Protocol & Networking, HTTP Evolution (1.1, 2, 3) ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes CORS Preflight & Security, not HTTP Evolution (1.1, 2, 3).",
+      "C": "Incorrect. This describes Status Codes & Semantics, not HTTP Evolution (1.1, 2, 3).",
+      "D": "Incorrect. This describes TCP & TLS Handshake, not HTTP Evolution (1.1, 2, 3)."
+    },
+    "mcqQuestion": "HTTP Protocol & Networking: How does HTTP Evolution (1.1, 2, 3) operate in production enterprise applications (Q26)?"
+  },
+  {
+    "id": "iq-http-0027",
+    "standard_id": "HTTP-MCQ-000027",
+    "questionNumber": 27,
+    "subject": "http",
+    "category": "Status Codes & Semantics",
+    "topic": "Status Codes & Semantics",
+    "subtopic": "Status Codes & Semantics Operations",
+    "concept": "Status Codes & Semantics",
+    "difficulty": "EASY",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "FRESHER",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "http",
+      "status-codes---semantics",
+      "frontend-interview"
+    ],
+    "question": "HTTP Protocol & Networking: How does Status Codes & Semantics operate in production enterprise applications (Q27)?",
+    "shortAnswer": "In HTTP Protocol & Networking, Status Codes & Semantics ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Status Codes & Semantics** is an essential architectural concept in <u>HTTP Protocol & Networking</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Status Codes & Semantics** is an essential architectural concept in <u>HTTP Protocol & Networking</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Status Codes & Semantics** is an essential architectural concept in <u>HTTP Protocol & Networking</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Status Codes & Semantics in HTTP Protocol & Networking:\nexport function handleStatusCodesSemantics(config) {\n  console.log('Executing Status Codes & Semantics with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Status Codes & Semantics in HTTP Protocol & Networking:\nexport function handleStatusCodesSemantics(config) {\n  console.log('Executing Status Codes & Semantics with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Status Codes & Semantics in HTTP Protocol & Networking:\nexport function handleStatusCodesSemantics(config) {\n  console.log('Executing Status Codes & Semantics with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Status Codes & Semantics in HTTP Protocol & Networking.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Status Codes & Semantics to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Status Codes & Semantics.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Status Codes & Semantics, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Status Codes & Semantics, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Status Codes & Semantics scale under extreme concurrency?",
+      "What monitoring tools can track Status Codes & Semantics metrics in production?"
+    ],
+    "followUps": [
+      "How does Status Codes & Semantics scale under extreme concurrency?",
+      "What monitoring tools can track Status Codes & Semantics metrics in production?"
+    ],
+    "question_hash": "qh_5ae4678f",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In HTTP Protocol & Networking, TCP & TLS Handshake ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes TCP & TLS Handshake, not Status Codes & Semantics."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In HTTP Protocol & Networking, Caching Headers & ETag ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Caching Headers & ETag, not Status Codes & Semantics."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In HTTP Protocol & Networking, Status Codes & Semantics ensures predictable, resilient execution.",
+        "explanation": "Correct. In HTTP Protocol & Networking, Status Codes & Semantics ensures predictable, resilient execution."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In HTTP Protocol & Networking, HTTP Evolution (1.1, 2, 3) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes HTTP Evolution (1.1, 2, 3), not Status Codes & Semantics."
+      }
+    ],
+    "correctAnswer": "C",
+    "mcqExplanation": "Correct. In HTTP Protocol & Networking, Status Codes & Semantics ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes TCP & TLS Handshake, not Status Codes & Semantics.",
+      "B": "Incorrect. This describes Caching Headers & ETag, not Status Codes & Semantics.",
+      "D": "Incorrect. This describes HTTP Evolution (1.1, 2, 3), not Status Codes & Semantics."
+    },
+    "correctOption": "C",
+    "explanation": "Correct. In HTTP Protocol & Networking, Status Codes & Semantics ensures predictable, resilient execution.",
+    "mcqQuestion": "HTTP Protocol & Networking: How does Status Codes & Semantics operate in production enterprise applications (Q27)?"
+  },
+  {
+    "id": "iq-http-0028",
+    "standard_id": "HTTP-MCQ-000028",
+    "questionNumber": 28,
+    "subject": "http",
+    "category": "Caching Headers & ETag",
+    "topic": "Caching Headers & ETag",
+    "subtopic": "Caching Headers & ETag Operations",
+    "concept": "Caching Headers & ETag",
+    "difficulty": "INTERMEDIATE",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "1_3_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "http",
+      "caching-headers---etag",
+      "frontend-interview"
+    ],
+    "question": "HTTP Protocol & Networking: How does Caching Headers & ETag operate in production enterprise applications (Q28)?",
+    "shortAnswer": "In HTTP Protocol & Networking, Caching Headers & ETag ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**Caching Headers & ETag** is an essential architectural concept in <u>HTTP Protocol & Networking</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**Caching Headers & ETag** is an essential architectural concept in <u>HTTP Protocol & Networking</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**Caching Headers & ETag** is an essential architectural concept in <u>HTTP Protocol & Networking</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for Caching Headers & ETag in HTTP Protocol & Networking:\nexport function handleCachingHeadersETag(config) {\n  console.log('Executing Caching Headers & ETag with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for Caching Headers & ETag in HTTP Protocol & Networking:\nexport function handleCachingHeadersETag(config) {\n  console.log('Executing Caching Headers & ETag with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for Caching Headers & ETag in HTTP Protocol & Networking:\nexport function handleCachingHeadersETag(config) {\n  console.log('Executing Caching Headers & ETag with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of Caching Headers & ETag in HTTP Protocol & Networking.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize Caching Headers & ETag to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with Caching Headers & ETag.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about Caching Headers & ETag, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about Caching Headers & ETag, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does Caching Headers & ETag scale under extreme concurrency?",
+      "What monitoring tools can track Caching Headers & ETag metrics in production?"
+    ],
+    "followUps": [
+      "How does Caching Headers & ETag scale under extreme concurrency?",
+      "What monitoring tools can track Caching Headers & ETag metrics in production?"
+    ],
+    "question_hash": "qh_21dae152",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "HTTP/1.1 suffered from Head-of-Line (HOL) blocking and required multiple TCP connections.",
+        "explanation": "Incorrect. This describes Multiplexing & QUIC Protocol, not Caching Headers & ETag."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In HTTP Protocol & Networking, CORS Preflight & Security ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes CORS Preflight & Security, not Caching Headers & ETag."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In HTTP Protocol & Networking, Status Codes & Semantics ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Status Codes & Semantics, not Caching Headers & ETag."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In HTTP Protocol & Networking, Caching Headers & ETag ensures predictable, resilient execution.",
+        "explanation": "Correct. In HTTP Protocol & Networking, Caching Headers & ETag ensures predictable, resilient execution."
+      }
+    ],
+    "correctAnswer": "D",
+    "correctOption": "D",
+    "mcqExplanation": "Correct. In HTTP Protocol & Networking, Caching Headers & ETag ensures predictable, resilient execution.",
+    "explanation": "Correct. In HTTP Protocol & Networking, Caching Headers & ETag ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Multiplexing & QUIC Protocol, not Caching Headers & ETag.",
+      "B": "Incorrect. This describes CORS Preflight & Security, not Caching Headers & ETag.",
+      "C": "Incorrect. This describes Status Codes & Semantics, not Caching Headers & ETag."
+    },
+    "mcqQuestion": "HTTP Protocol & Networking: How does Caching Headers & ETag operate in production enterprise applications (Q28)?"
+  },
+  {
+    "id": "iq-http-0029",
+    "standard_id": "HTTP-MCQ-000029",
+    "questionNumber": 29,
+    "subject": "http",
+    "category": "CORS Preflight & Security",
+    "topic": "CORS Preflight & Security",
+    "subtopic": "CORS Preflight & Security Operations",
+    "concept": "CORS Preflight & Security",
+    "difficulty": "DIFFICULT",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "3_5_YEARS",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "http",
+      "cors-preflight---security",
+      "frontend-interview"
+    ],
+    "question": "HTTP Protocol & Networking: How does CORS Preflight & Security operate in production enterprise applications (Q29)?",
+    "shortAnswer": "In HTTP Protocol & Networking, CORS Preflight & Security ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**CORS Preflight & Security** is an essential architectural concept in <u>HTTP Protocol & Networking</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**CORS Preflight & Security** is an essential architectural concept in <u>HTTP Protocol & Networking</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**CORS Preflight & Security** is an essential architectural concept in <u>HTTP Protocol & Networking</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for CORS Preflight & Security in HTTP Protocol & Networking:\nexport function handleCORSPreflightSecurity(config) {\n  console.log('Executing CORS Preflight & Security with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for CORS Preflight & Security in HTTP Protocol & Networking:\nexport function handleCORSPreflightSecurity(config) {\n  console.log('Executing CORS Preflight & Security with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for CORS Preflight & Security in HTTP Protocol & Networking:\nexport function handleCORSPreflightSecurity(config) {\n  console.log('Executing CORS Preflight & Security with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of CORS Preflight & Security in HTTP Protocol & Networking.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize CORS Preflight & Security to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with CORS Preflight & Security.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about CORS Preflight & Security, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about CORS Preflight & Security, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does CORS Preflight & Security scale under extreme concurrency?",
+      "What monitoring tools can track CORS Preflight & Security metrics in production?"
+    ],
+    "followUps": [
+      "How does CORS Preflight & Security scale under extreme concurrency?",
+      "What monitoring tools can track CORS Preflight & Security metrics in production?"
+    ],
+    "question_hash": "qh_696fb7c3",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In HTTP Protocol & Networking, CORS Preflight & Security ensures predictable, resilient execution.",
+        "explanation": "Correct. In HTTP Protocol & Networking, CORS Preflight & Security ensures predictable, resilient execution."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In HTTP Protocol & Networking, Status Codes & Semantics ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Status Codes & Semantics, not CORS Preflight & Security."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In HTTP Protocol & Networking, TCP & TLS Handshake ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes TCP & TLS Handshake, not CORS Preflight & Security."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In HTTP Protocol & Networking, Caching Headers & ETag ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Caching Headers & ETag, not CORS Preflight & Security."
+      }
+    ],
+    "correctAnswer": "A",
+    "mcqExplanation": "Correct. In HTTP Protocol & Networking, CORS Preflight & Security ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "B": "Incorrect. This describes Status Codes & Semantics, not CORS Preflight & Security.",
+      "C": "Incorrect. This describes TCP & TLS Handshake, not CORS Preflight & Security.",
+      "D": "Incorrect. This describes Caching Headers & ETag, not CORS Preflight & Security."
+    },
+    "correctOption": "A",
+    "explanation": "Correct. In HTTP Protocol & Networking, CORS Preflight & Security ensures predictable, resilient execution.",
+    "mcqQuestion": "HTTP Protocol & Networking: How does CORS Preflight & Security operate in production enterprise applications (Q29)?"
+  },
+  {
+    "id": "iq-http-0030",
+    "standard_id": "HTTP-MCQ-000030",
+    "questionNumber": 30,
+    "subject": "http",
+    "category": "TCP & TLS Handshake",
+    "topic": "TCP & TLS Handshake",
+    "subtopic": "TCP & TLS Handshake Operations",
+    "concept": "TCP & TLS Handshake",
+    "difficulty": "EASY",
+    "questionType": "MCQ",
+    "question_type": "mcq",
+    "experienceLevel": "FRESHER",
+    "isHighFrequency": false,
+    "companyTags": [
+      "Google",
+      "Meta",
+      "Amazon",
+      "Microsoft",
+      "Uber"
+    ],
+    "tags": [
+      "http",
+      "tcp---tls-handshake",
+      "frontend-interview"
+    ],
+    "question": "HTTP Protocol & Networking: How does TCP & TLS Handshake operate in production enterprise applications (Q30)?",
+    "shortAnswer": "In HTTP Protocol & Networking, TCP & TLS Handshake ensures predictable, resilient execution. It abstracts lower-level complexities and adheres to industry-standard patterns.",
+    "simpleExplanation": "**TCP & TLS Handshake** is an essential architectural concept in <u>HTTP Protocol & Networking</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedAnswer": "**TCP & TLS Handshake** is an essential architectural concept in <u>HTTP Protocol & Networking</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "detailedExplanation": "**TCP & TLS Handshake** is an essential architectural concept in <u>HTTP Protocol & Networking</u>.\n\nIt establishes predictable patterns for modern web applications.\n\nWhen implemented effectively, it prevents performance bottlenecks and ensures high maintainability.",
+    "howItWorks": "",
+    "codeExample": "// Production pattern for TCP & TLS Handshake in HTTP Protocol & Networking:\nexport function handleTCPTLSHandshake(config) {\n  console.log('Executing TCP & TLS Handshake with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "example": "// Production pattern for TCP & TLS Handshake in HTTP Protocol & Networking:\nexport function handleTCPTLSHandshake(config) {\n  console.log('Executing TCP & TLS Handshake with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeSnippet": "// Production pattern for TCP & TLS Handshake in HTTP Protocol & Networking:\nexport function handleTCPTLSHandshake(config) {\n  console.log('Executing TCP & TLS Handshake with optimal performance');\n  return { status: 'success', timestamp: Date.now() };\n}",
+    "codeExplanationSpeech": "This code demonstrates the implementation of TCP & TLS Handshake in HTTP Protocol & Networking.",
+    "realWorldExample": "Enterprise high-scale web platforms utilize TCP & TLS Handshake to deliver seamless experiences across global user bases.",
+    "commonMistakes": [
+      "Overlooking edge cases during high-frequency user interactions with TCP & TLS Handshake.",
+      "Not cleaning up async handlers or subscriptions."
+    ],
+    "interviewTip": "When asked about TCP & TLS Handshake, explain the core architectural trade-offs before diving into code.",
+    "interviewTips": [
+      "When asked about TCP & TLS Handshake, explain the core architectural trade-offs before diving into code."
+    ],
+    "followUpQuestions": [
+      "How does TCP & TLS Handshake scale under extreme concurrency?",
+      "What monitoring tools can track TCP & TLS Handshake metrics in production?"
+    ],
+    "followUps": [
+      "How does TCP & TLS Handshake scale under extreme concurrency?",
+      "What monitoring tools can track TCP & TLS Handshake metrics in production?"
+    ],
+    "question_hash": "qh_7f203fef",
+    "status": "published",
+    "options": [
+      {
+        "key": "A",
+        "id": "A",
+        "text": "In HTTP Protocol & Networking, Caching Headers & ETag ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes Caching Headers & ETag, not TCP & TLS Handshake."
+      },
+      {
+        "key": "B",
+        "id": "B",
+        "text": "In HTTP Protocol & Networking, TCP & TLS Handshake ensures predictable, resilient execution.",
+        "explanation": "Correct. In HTTP Protocol & Networking, TCP & TLS Handshake ensures predictable, resilient execution."
+      },
+      {
+        "key": "C",
+        "id": "C",
+        "text": "In HTTP Protocol & Networking, HTTP Evolution (1.1, 2, 3) ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes HTTP Evolution (1.1, 2, 3), not TCP & TLS Handshake."
+      },
+      {
+        "key": "D",
+        "id": "D",
+        "text": "In HTTP Protocol & Networking, CORS Preflight & Security ensures predictable, resilient execution.",
+        "explanation": "Incorrect. This describes CORS Preflight & Security, not TCP & TLS Handshake."
+      }
+    ],
+    "correctAnswer": "B",
+    "correctOption": "B",
+    "mcqExplanation": "Correct. In HTTP Protocol & Networking, TCP & TLS Handshake ensures predictable, resilient execution.",
+    "explanation": "Correct. In HTTP Protocol & Networking, TCP & TLS Handshake ensures predictable, resilient execution.",
+    "wrongOptionExplanations": {
+      "A": "Incorrect. This describes Caching Headers & ETag, not TCP & TLS Handshake.",
+      "C": "Incorrect. This describes HTTP Evolution (1.1, 2, 3), not TCP & TLS Handshake.",
+      "D": "Incorrect. This describes CORS Preflight & Security, not TCP & TLS Handshake."
+    },
+    "mcqQuestion": "HTTP Protocol & Networking: How does TCP & TLS Handshake operate in production enterprise applications (Q30)?"
+  }
+]

@@ -1998,3 +1998,218 @@
   color: var(--mqb-text-secondary);
 }
 
+/* Light Mode Overrides for Speech & Audio Studio */
+[data-theme='light'] .mqb-speech-box {
+  background: linear-gradient(160deg, #ffffff, #f8fafc);
+  border: 1px solid rgba(99, 102, 241, 0.25);
+  box-shadow: 0 4px 20px rgba(99, 102, 241, 0.08);
+}
+
+[data-theme='light'] .mqb-speech-text {
+  color: #1e293b;
+}
+
+[data-theme='light'] .mqb-audio-player-bar {
+  background: #ffffff;
+  border: 1px solid rgba(99, 102, 241, 0.25);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+[data-theme='light'] .mqb-audio-btn {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  color: #1e293b;
+}
+
+[data-theme='light'] .mqb-audio-btn:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+[data-theme='light'] .mqb-audio-btn.primary {
+  background: linear-gradient(135deg, #4f46e5, #4338ca);
+  color: #ffffff;
+}
+
+[data-theme='light'] .mqb-audio-speed-select {
+  background: #ffffff;
+  border-color: #cbd5e1;
+  color: #1e293b;
+}
+
+/* ==========================================================================
+   MASTER INTERVIEW STUDIO - AUDIO CONTROLS & ELEGANT FORMATTING
+   ========================================================================== */
+
+/* Animated Audio Equalizer Waveform */
+.mqb-audio-wave-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 0.25rem 0.65rem;
+  border-radius: 9999px;
+  background: rgba(99, 102, 241, 0.12);
+  border: 1px solid rgba(99, 102, 241, 0.3);
+}
+
+.mqb-wave-bar {
+  display: inline-block;
+  width: 3px;
+  height: 12px;
+  border-radius: 2px;
+  background: var(--mqb-accent-bright, #818cf8);
+  animation: mqbWave 0.8s ease-in-out infinite alternate;
+}
+
+.mqb-wave-bar:nth-child(2) {
+  animation-delay: 0.2s;
+  height: 16px;
+}
+
+.mqb-wave-bar:nth-child(3) {
+  animation-delay: 0.4s;
+  height: 10px;
+}
+
+@keyframes mqbWave {
+  0% { transform: scaleY(0.4); }
+  100% { transform: scaleY(1.35); }
+}
+
+/* Speaking Active Section Card Glow */
+.mqb-section-card.speaking-active {
+  box-shadow: 0 0 0 2px var(--mqb-accent-primary, #6366f1), 0 10px 30px rgba(99, 102, 241, 0.22) !important;
+  border-color: rgba(99, 102, 241, 0.6) !important;
+}
+
+/* Floating Audio Bar (Bottom Center) */
+.mqb-floating-audio-bar {
+  position: fixed;
+  bottom: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  background: var(--mqb-bg-card, #0f172a);
+  border: 1px solid var(--mqb-border, rgba(255, 255, 255, 0.18));
+  border-radius: 9999px;
+  padding: 0.55rem 1.25rem;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(99, 102, 241, 0.3);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem;
+  max-width: 94vw;
+  animation: mqbSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes mqbSlideUp {
+  from { opacity: 0; transform: translate(-50%, 25px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
+}
+
+.mqb-floating-audio-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.mqb-floating-audio-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.mqb-speed-chip {
+  padding: 0.25rem 0.55rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border-radius: 6px;
+  border: 1px solid var(--mqb-border);
+  background: var(--mqb-bg-card);
+  color: var(--mqb-text-secondary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.mqb-speed-chip:hover,
+.mqb-speed-chip.active {
+  background: var(--mqb-accent-primary, #6366f1);
+  color: #ffffff;
+  border-color: var(--mqb-accent-primary, #6366f1);
+}
+
+/* Term highlights: underline and background color */
+.mqb-term-highlight {
+  background: rgba(245, 158, 11, 0.14);
+  color: inherit;
+  border-bottom: 2px solid #f59e0b;
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+  font-weight: 600;
+  display: inline;
+}
+
+.mqb-bold-highlight {
+  background: rgba(99, 102, 241, 0.08);
+  border: 1px solid rgba(99, 102, 241, 0.18);
+  padding: 0.08rem 0.35rem;
+  border-radius: 4px;
+  font-weight: 700;
+  display: inline;
+}
+
+.mqb-active-spoken-word {
+  background: rgba(99, 102, 241, 0.35);
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.6);
+  border-radius: 4px;
+  padding: 0.08rem 0.25rem;
+  color: #ffffff !important;
+  font-weight: 700;
+  text-decoration: underline;
+  text-decoration-color: #818cf8;
+  text-underline-offset: 3px;
+  transition: all 0.1s ease;
+}
+
+[data-theme='light'] .mqb-term-highlight {
+  background: rgba(245, 158, 11, 0.18);
+  border-bottom-color: #d97706;
+  color: #78350f;
+}
+
+[data-theme='light'] .mqb-bold-highlight {
+  background: rgba(99, 102, 241, 0.1);
+  border-color: rgba(99, 102, 241, 0.25);
+  color: #1e1b4b;
+}
+
+[data-theme='light'] .mqb-active-spoken-word {
+  background: rgba(99, 102, 241, 0.25);
+  color: #312e81 !important;
+}
+
+/* Active Spoken Sentence Highlight */
+.mqb-active-spoken-sentence {
+  background: rgba(99, 102, 241, 0.18) !important;
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.35), 0 2px 12px rgba(99, 102, 241, 0.2) !important;
+  border-radius: 4px !important;
+  color: var(--mqb-text-primary) !important;
+  padding: 0.12rem 0.4rem !important;
+  border-left: 3px solid var(--mqb-accent-bright, #818cf8) !important;
+  display: inline !important;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+  margin: 0 !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+[data-theme='light'] .mqb-active-spoken-sentence {
+  background: rgba(99, 102, 241, 0.14) !important;
+  border-left-color: #4f46e5 !important;
+  color: #1e1b4b !important;
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.3), 0 2px 8px rgba(99, 102, 241, 0.1) !important;
+}
+
