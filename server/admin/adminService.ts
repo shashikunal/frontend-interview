@@ -159,18 +159,18 @@ export class AdminService {
         dlqCount: dlqRecords.length,
       },
       infrastructure: {
-        status: depHealth.status,
+        status: (depHealth.status === 'DOWN' ? 'UNHEALTHY' : depHealth.status) as any,
         activeAlertsCount: alertResult.activeCount,
         database: {
-          status: depHealth.dependencies.database.status,
+          status: (depHealth.dependencies.database.status === 'DOWN' ? 'UNHEALTHY' : depHealth.dependencies.database.status) as any,
           latencyMs: depHealth.dependencies.database.latencyMs,
         },
         redis: {
-          status: depHealth.dependencies.redis.status,
+          status: (depHealth.dependencies.redis.status === 'DOWN' ? 'UNHEALTHY' : depHealth.dependencies.redis.status) as any,
           latencyMs: depHealth.dependencies.redis.latencyMs,
         },
         kafka: {
-          status: depHealth.dependencies.kafka.status,
+          status: (depHealth.dependencies.kafka.status === 'DOWN' ? 'UNHEALTHY' : depHealth.dependencies.kafka.status) as any,
           lag: depHealth.dependencies.kafka.details?.consumerDlq || 0,
         },
         websocket: {
