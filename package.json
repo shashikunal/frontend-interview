@@ -8,7 +8,8 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build:api": "esbuild api/_source/gateway.js --bundle --platform=node --format=esm --packages=external --outfile=api/index.js",
+    "build": "npm run build:api && tsc -b && vite build",
     "lint": "oxlint",
     "scrape": "node scripts/scrape-greatfrontend.mjs",
     "scrape:jsasgn": "node scripts/scrape-js-assignments.mjs",
@@ -44,6 +45,7 @@
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.3",
+    "esbuild": "^0.28.2",
     "oxlint": "^1.71.0",
     "playwright": "^1.55.0",
     "typescript": "~6.0.2",
