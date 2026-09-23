@@ -64,9 +64,30 @@ export const MeetingCodeEditor: React.FC<MeetingCodeEditorProps> = ({
     async function loadEditor() {
       try {
         setIsLoading(true);
+        let effectiveToken = meetingToken;
+        if (!effectiveToken && meetingId) {
+          try {
+            const tokenRes = await fetch('/api/v1/auth/token', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                meetingId,
+                userId: currentUserId || 'usr_dev_001',
+                userName: currentUserName || 'Participant',
+                userRole: currentUserRole === 'HOST' ? 'admin' : 'candidate',
+              }),
+            });
+            if (tokenRes.ok) {
+              const tData = await tokenRes.json();
+              if (tData.token) effectiveToken = tData.token;
+            }
+          } catch {
+            // fallback
+          }
+        }
         const { document: doc, templates: tmpls } = await editorClientService.getSnapshot(
           meetingId,
-          meetingToken
+          effectiveToken
         );
         if (isMounted) {
           setDocument(doc);
@@ -93,7 +114,7 @@ export const MeetingCodeEditor: React.FC<MeetingCodeEditorProps> = ({
     return () => {
       isMounted = false;
     };
-  }, [meetingId, meetingToken]);
+  }, [meetingId, meetingToken, currentUserId, currentUserName, currentUserRole]);
 
   // 2. Real-Time BroadcastChannel Subscription
   useEffect(() => {

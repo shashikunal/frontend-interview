@@ -1,6 +1,7 @@
 /**
  * Production Redis Client & Resilient Dual-Layer Connection Manager
  * Phase 8: Redis + Presence + Distributed Rate Limiting
+ * Phase 14: + Circuit Breaker + Timeout guard
  *
  * Features:
  * - Direct ioredis integration with exponential backoff reconnects
@@ -8,9 +9,13 @@
  * - Zero external crash risk: application functions reliably in all environments
  * - Atomic command emulation for in-memory fallback (sets, sorted sets, expirations)
  * - Health metrics & latency tracking
+ * - Phase 14: Circuit breaker prevents retry storms when Redis is down
+ * - Phase 14: Hard timeout (1s) on all Redis commands
  */
 
 import { Redis } from 'ioredis';
+import { redisCircuitBreaker } from '../resilience/circuitBreaker.ts';
+import { redisTimeout } from '../resilience/timeoutWrapper.ts';
 
 export interface RedisHealth {
   status: 'HEALTHY' | 'DEGRADED' | 'DOWN';
@@ -122,7 +127,9 @@ export class RedisClientManager {
     this.commandsCount++;
     if (this.isUsingRedis() && this.client) {
       try {
-        return await this.client.get(key);
+        return await redisCircuitBreaker.call(() =>
+          redisTimeout(() => this.client!.get(key), 'redis.get')
+        );
       } catch {
         this.isDegraded = true;
       }
@@ -142,13 +149,17 @@ export class RedisClientManager {
     this.commandsCount++;
     if (this.isUsingRedis() && this.client) {
       try {
-        if (mode === 'EX' && typeof duration === 'number') {
-          return await this.client.set(key, value, 'EX', duration);
-        }
-        if (mode === 'PX' && typeof duration === 'number') {
-          return await this.client.set(key, value, 'PX', duration);
-        }
-        return await this.client.set(key, value);
+        return await redisCircuitBreaker.call(() =>
+          redisTimeout(() => {
+            if (mode === 'EX' && typeof duration === 'number') {
+              return this.client!.set(key, value, 'EX', duration);
+            }
+            if (mode === 'PX' && typeof duration === 'number') {
+              return this.client!.set(key, value, 'PX', duration);
+            }
+            return this.client!.set(key, value);
+          }, 'redis.set')
+        );
       } catch {
         this.isDegraded = true;
       }

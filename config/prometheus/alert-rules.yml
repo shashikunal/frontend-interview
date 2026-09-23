@@ -1,0 +1,65 @@
+groups:
+  - name: interviewprep-platform-alerts
+    rules:
+      - alert: HighApiErrorRate
+        expr: rate(http_requests_total{status=~"5.."}[5m]) / rate(http_requests_total[5m]) > 0.05
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "High API Error Rate (> 5%)"
+          description: "API is experiencing an elevated 5xx error rate over the last 5 minutes."
+
+      - alert: HighApiLatencyP95
+        expr: histogram_quantile(0.95, rate(http_request_duration_ms_bucket[5m])) > 500
+        for: 3m
+        labels:
+          severity: warning
+        annotations:
+          summary: "P95 API Latency Exceeds 500ms"
+          description: "95th percentile request latency is above 500ms for 3 minutes."
+
+      - alert: DatabaseConnectionDown
+        expr: database_health_status == 0
+        for: 1m
+        labels:
+          severity: page
+        annotations:
+          summary: "PostgreSQL Database Unavailable"
+          description: "The primary database health check probe failed."
+
+      - alert: RedisConnectionDown
+        expr: redis_health_status == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Redis Cache & Presence Unavailable"
+          description: "Redis instance health probe is down. Fallback in-memory presence active."
+
+      - alert: KafkaOutboxBacklogHigh
+        expr: kafka_outbox_pending_events > 1000
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Kafka Outbox Backlog High (> 1000 events)"
+          description: "Outbox publisher has accumulated an unconsumed backlog exceeding 1000 records."
+
+      - alert: MediaProcessingWorkerFailure
+        expr: rate(media_processing_failures_total[5m]) > 0
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Media Processing Failures Detected"
+          description: "Asynchronous recording or transcription worker encountered unhandled errors."
+
+      - alert: RateLimitAbuseSpike
+        expr: rate(rate_limit_exceeded_total[5m]) > 50
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High Rate Limit Exceeded Rate"
+          description: "More than 50 rate limit violations per minute detected across clients."

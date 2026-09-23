@@ -77,7 +77,7 @@ export const authService = {
         cleanEmail === 'admin' ||
         cleanEmail === 'admin@interviewprep.com'
 
-      if (isAdminUser && (password === 'Admin@9999' || password.startsWith('Admin@'))) {
+      if (isAdminUser) {
         try {
           const resp = await fetch('/api/admin-auth', {
             method: 'POST',

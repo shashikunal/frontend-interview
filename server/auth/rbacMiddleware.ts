@@ -7,6 +7,8 @@
 import { tokenService } from './tokenService.ts';
 import type { AuthContextUser, StandardApiErrorResponse } from './tokenTypes.ts';
 import type { UserRole } from '../../src/features/auth/types/auth.types.ts';
+import { extractCorrelationContext, injectCorrelationHeaders } from '../observability/correlation.ts';
+import { authFailuresTotal } from '../observability/metrics.ts';
 
 const ROLE_HIERARCHY: Record<UserRole, number> = {
   guest: 0,
@@ -36,14 +38,19 @@ export function createErrorResponse(
  * Authentication Middleware: Extracts, parses, and cryptographically verifies Bearer token.
  */
 export async function requireAuthMiddleware(req: any, res: any, next: any): Promise<void> {
+  const correlation = extractCorrelationContext(req);
+  injectCorrelationHeaders(res, correlation);
+
   const authHeader = req.headers?.authorization || req.headers?.Authorization;
 
   if (!authHeader || typeof authHeader !== 'string' || !authHeader.startsWith('Bearer ')) {
+    authFailuresTotal.inc({ reason: 'MISSING_TOKEN' });
     res.status(401).json(
       createErrorResponse(
         'Unauthorized',
         'Authentication required. Please provide a valid Bearer token.',
-        'MISSING_TOKEN'
+        'MISSING_TOKEN',
+        correlation.correlationId
       )
     );
     return;
@@ -55,12 +62,14 @@ export async function requireAuthMiddleware(req: any, res: any, next: any): Prom
   const verification = tokenService.verifyMeetingToken(token);
 
   if (!verification.valid || !verification.claims) {
-    const statusCode = verification.errorCode === 'EXPIRED' ? 401 : 401;
+    authFailuresTotal.inc({ reason: verification.errorCode || 'INVALID_TOKEN' });
+    const statusCode = 401;
     res.status(statusCode).json(
       createErrorResponse(
         'Unauthorized',
         verification.error || 'Token verification failed.',
-        verification.errorCode || 'INVALID_TOKEN'
+        verification.errorCode || 'INVALID_TOKEN',
+        correlation.correlationId
       )
     );
     return;

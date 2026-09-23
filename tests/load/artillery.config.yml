@@ -1,0 +1,27 @@
+# Artillery Load Test Configuration
+# Phase 15: Performance, Scalability & Load Testing
+#
+# ⚠️  SAFETY: These tests target ONLY http://localhost:5173 (local dev server).
+#     Production URLs are NOT present in any test configuration.
+#     NEVER modify this file to point at production or staging.
+#
+# Prerequisites:
+#   1. Local dev server running: npm run dev
+#   2. Install Artillery: npx artillery@latest --version
+#   3. Run individual scenarios: npx artillery@latest run tests/load/scenarios/<file>.yml
+
+config:
+  target: "http://localhost:5173"
+  environments:
+    local:
+      target: "http://localhost:5173"
+  http:
+    timeout: 10  # seconds
+    maxSockets: 50
+  defaults:
+    headers:
+      Content-Type: "application/json"
+      Accept: "application/json"
+
+# Shared processor functions (referenced in scenarios)
+processor: "../processor.mjs"

@@ -1,0 +1,30 @@
+[
+  {
+    "id": "load_test_user_001",
+    "email": "loadtest+001@localhost.test",
+    "password": "LoadTest!2026",
+    "role": "candidate",
+    "note": "SYNTHETIC TEST USER - NOT A REAL USER"
+  },
+  {
+    "id": "load_test_user_002",
+    "email": "loadtest+002@localhost.test",
+    "password": "LoadTest!2026",
+    "role": "candidate",
+    "note": "SYNTHETIC TEST USER - NOT A REAL USER"
+  },
+  {
+    "id": "load_test_user_003",
+    "email": "loadtest+003@localhost.test",
+    "password": "LoadTest!2026",
+    "role": "candidate",
+    "note": "SYNTHETIC TEST USER - NOT A REAL USER"
+  },
+  {
+    "id": "load_test_admin_001",
+    "email": "loadtest+admin@localhost.test",
+    "password": "LoadTestAdmin!2026",
+    "role": "admin",
+    "note": "SYNTHETIC TEST ADMIN - NOT A REAL USER"
+  }
+]

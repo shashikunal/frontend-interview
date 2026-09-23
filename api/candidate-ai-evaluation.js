@@ -224,11 +224,15 @@ function generateHeuristicSynthesis({ candidateName, metrics = {}, categoryBreak
   }
 }
 
+import { applySecurityHeaders } from '../server/security/securityHeaders.ts'
+import { tokenService } from '../server/auth/tokenService.ts'
+import { rateLimiter } from '../server/redis/rateLimiter.ts'
+import { createErrorResponse } from '../server/auth/rbacMiddleware.ts'
+
 export default async function handler(req, res) {
-  // CORS Headers
-  res.setHeader('Access-Control-Allow-Origin', '*')
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS')
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+  if (!applySecurityHeaders(req, res)) {
+    return
+  }
 
   if (req.method === 'OPTIONS') {
     return res.status(204).end()
@@ -238,11 +242,53 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method Not Allowed' })
   }
 
+  // 1. Authenticate Requester
+  const authHeader = req.headers?.authorization || req.headers?.Authorization
+  let requester = null
+
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    const token = authHeader.replace(/^Bearer\s+/i, '').trim()
+    const verification = tokenService.verifyMeetingToken(token)
+    if (verification.valid && verification.claims) {
+      requester = {
+        id: verification.claims.userId,
+        email: verification.claims.userEmail,
+        role: verification.claims.userRole,
+      }
+    }
+  }
+
+  if (!requester) {
+    return res.status(401).json(createErrorResponse('Unauthorized', 'Authentication required for AI evaluation synthesis.', 'MISSING_TOKEN'))
+  }
+
   const payload = req.body || {}
   const { candidateId, candidateName } = payload
 
   if (!candidateId) {
     return res.status(400).json({ error: 'candidateId is required for AI evaluation synthesis.' })
+  }
+
+  // 2. IDOR Protection: Candidate can only request evaluation for themselves
+  const isAdminOrInterviewer = requester.role === 'admin' || requester.role === 'interviewer'
+  if (!isAdminOrInterviewer && candidateId !== requester.id) {
+    return res.status(403).json(createErrorResponse('Forbidden', 'You are not authorized to trigger evaluations for other candidates.', 'FORBIDDEN_CROSS_USER_ACCESS'))
+  }
+
+  // 3. Distributed Rate Limiting to prevent LLM quota exhaustion
+  const rateLimit = await rateLimiter.consume('APP_CHAT', `ai_eval_${requester.id}`, {
+    name: 'AI_EVALUATION',
+    maxRequests: 5,
+    windowMs: 60 * 1000,
+  })
+
+  if (!rateLimit.allowed) {
+    res.setHeader('Retry-After', String(rateLimit.retryAfterSeconds))
+    return res.status(429).json({
+      error: 'Too Many Requests',
+      message: `AI Evaluation limit reached. Please wait ${rateLimit.retryAfterSeconds} seconds.`,
+      retryAfterSeconds: rateLimit.retryAfterSeconds,
+    })
   }
 
   try {

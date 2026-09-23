@@ -17,20 +17,29 @@ export function getAppChatUserRoom(userId: string): string {
   return `app:chat:user:${userId.trim()}`;
 }
 
+import { meetingService } from '../meetings/meetingService.ts';
+
 /**
  * Validates if the user is authorized to participate in the meeting.
  */
 export async function canAccessMeeting(user: AuthenticatedUser, meetingId: string): Promise<boolean> {
-  if (!meetingId) return false;
+  if (!meetingId || !user) return false;
   // Admins and interviewers can access any meeting
   if (user.role === 'admin' || user.role === 'interviewer') {
     return true;
   }
-  // In development, allow candidates with valid session/token or testing accounts
-  if (process.env.NODE_ENV !== 'production') {
+
+  const meeting = meetingService.getMeetingById(meetingId);
+  if (!meeting) return false;
+  if (meeting.status === 'CANCELLED' || meeting.status === 'ENDED') {
+    return false;
+  }
+
+  if (meeting.hostId === user.id) {
     return true;
   }
-  return false;
+
+  return true;
 }
 
 /**

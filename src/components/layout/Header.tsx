@@ -186,6 +186,7 @@ export default function Header() {
                 📚 Docs
               </Link>
 
+
               {/* 2. Coding Dropdown */}
               <div className="nav-dropdown-wrap">
                 <button

@@ -1,0 +1,74 @@
+name: CI Quality Gates & Production Build Pipeline
+
+on:
+  push:
+    branches: [main, master, staging]
+  pull_request:
+    branches: [main, master, staging]
+
+permissions:
+  contents: read
+  security-events: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate-and-build:
+    name: Lint, Typecheck, Tests, Security & Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    env:
+      NODE_ENV: test
+      APP_ENV: test
+      JWT_SIGNING_SECRET: test_jwt_signing_secret_at_least_32_characters_long_for_ci
+      MEDIA_JWT_SECRET: test_media_jwt_secret_at_least_32_chars_long_ci
+      STORAGE_SIGNING_SECRET: test_storage_signing_secret_32_chars_long_ci
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22 Runtime
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: "npm"
+
+      - name: Install Dependencies
+        run: npm ci --prefer-offline --no-audit
+
+      - name: 1. Code Quality & Linting (oxlint)
+        run: npm run lint
+
+      - name: 2. Strict TypeScript Typecheck (tsc -b)
+        run: npx tsc -b
+
+      - name: 3. Infrastructure & Architecture Verification Tests
+        run: node scripts/test-phase18-infrastructure-readiness.mjs
+
+      - name: 4. Core Subsystem Regression Tests
+        run: |
+          node scripts/test-phase11-observability.mjs
+          node scripts/test-phase14-reliability.mjs
+          node scripts/test-phase17-recording-pipeline.mjs
+
+      - name: 5. Supply Chain Security & Dependency Audit
+        run: npm audit --omit=dev --audit-level=critical
+
+      - name: 6. Generate Software Bill of Materials (SBOM)
+        run: node scripts/generate-sbom.mjs
+
+      - name: 7. Production Bundle Compilation (vite build)
+        run: npm run build
+
+      - name: 8. Archive Build & Compliance Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: production-artifacts
+          path: |
+            dist/
+            sbom.json
+          retention-days: 7

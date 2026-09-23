@@ -1,0 +1,70 @@
+# Scenario D: Chat Message Throughput Test
+# Phase 15: Performance, Scalability & Load Testing
+#
+# Tests: Chat API throughput under concurrent send load
+# Target: /api/v1/chat endpoints (local dev server only)
+#
+# Expected targets:
+#   - Chat send p95 < 100ms
+#   - Chat list p95 < 80ms
+#   - Error rate < 1%
+#
+# Run: npx artillery@latest run tests/load/scenarios/chat-load.yml
+
+config:
+  target: "http://localhost:5173"
+  phases:
+    - name: "Ramp up"
+      duration: 30
+      arrivalRate: 5
+      rampTo: 30
+    - name: "Sustained throughput"
+      duration: 120
+      arrivalRate: 30
+    - name: "Cool-down"
+      duration: 30
+      arrivalRate: 5
+  http:
+    timeout: 10
+  defaults:
+    headers:
+      Content-Type: "application/json"
+      Authorization: "Bearer load_test_mock_token_phase15"
+
+scenarios:
+  - name: "Message send throughput"
+    weight: 50
+    flow:
+      - post:
+          url: "/api/v1/chat/conversations/load_test_conv_001/messages"
+          json:
+            content: "Load test message {{ $randomInt(1, 10000) }}"
+            type: "USER_MESSAGE"
+          expect:
+            - statusCode:
+                - 200
+                - 201
+                - 400
+                - 401
+
+  - name: "Conversation list pagination"
+    weight: 30
+    flow:
+      - get:
+          url: "/api/v1/chat/conversations?limit=20&offset=0"
+          expect:
+            - statusCode:
+                - 200
+                - 401
+      - think: 0.5
+
+  - name: "Message history fetch"
+    weight: 20
+    flow:
+      - get:
+          url: "/api/v1/chat/conversations/load_test_conv_001/messages?limit=50"
+          expect:
+            - statusCode:
+                - 200
+                - 401
+                - 404

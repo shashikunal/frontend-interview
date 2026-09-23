@@ -1,6 +1,7 @@
 /**
  * Enterprise Google Meet-Style Media Room Component
  * Phase 4: WebRTC + SFU Media Plane
+ * Phase 15: Performance — memoized callbacks, throttled audio-level detection
  */
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
@@ -16,6 +17,7 @@ import { chatClientService } from '../services/chatClientService';
 import { MeetingWhiteboard } from './MeetingWhiteboard';
 import { whiteboardClientService } from '../services/whiteboardClientService';
 import { MeetingCodeEditor } from './MeetingCodeEditor';
+import { meetingCollaborationService } from '../services/meetingCollaborationService';
 import type { ChatMessageRecord, ChatMessageType } from '../../../../server/meetings/chatTypes';
 import type { WhiteboardElement, WhiteboardElementType } from '../../../../server/meetings/whiteboardTypes';
 import type {
@@ -50,6 +52,17 @@ export const MeetingRoom: React.FC = () => {
   const [connectionState, setConnectionState] = useState<RoomConnectionState>('DISCONNECTED');
   const [connectionQuality, setConnectionQuality] = useState<ConnectionQuality>('EXCELLENT');
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  // Phase 16: Collaboration State
+  const [isHandRaised, setIsHandRaised] = useState<boolean>(false);
+  const [activeReactions, setActiveReactions] = useState<Array<{ id: string; emoji: string; userName: string; x: number }>>([]);
+  const [participantReactions, setParticipantReactions] = useState<Map<string, { emoji: string; reactionId: string; timestamp: number }>>(new Map());
+  const [isRemovedFromMeeting, setIsRemovedFromMeeting] = useState<boolean>(false);
+  const [removalReason, setRemovalReason] = useState<string>('');
+  const [isMeetingEndedByHost, setIsMeetingEndedByHost] = useState<boolean>(false);
+  const [hostMuteToast, setHostMuteToast] = useState<boolean>(false);
+  const [isRecording, setIsRecording] = useState<boolean>(false);
+  const [recordingId, setRecordingId] = useState<string | null>(null);
 
   // Layout & Drawers
   const [layoutMode, setLayoutMode] = useState<MeetingRoomLayoutMode>('GRID');
@@ -104,8 +117,33 @@ export const MeetingRoom: React.FC = () => {
   const [devices, setDevices] = useState<MeetingDevice[]>([]);
 
   // Token cache
+  const [sessionToken, setSessionToken] = useState<string>(directMeetingToken);
   const activeSessionTokenRef = useRef<string>(directMeetingToken);
   const cleanupAudioRef = useRef<(() => void) | null>(null);
+  const localStreamRef = useRef<MediaStream | null>(null);
+  const screenStreamRef = useRef<MediaStream | null>(null);
+  const lobbyVideoRef = useRef<HTMLVideoElement | null>(null);
+
+  useEffect(() => {
+    localStreamRef.current = localMedia.stream;
+    screenStreamRef.current = localMedia.screenStream;
+  }, [localMedia.stream, localMedia.screenStream]);
+
+  // Stable lobby preview video stream attachment (prevents black screen and flickering on audioLevel re-renders)
+  useEffect(() => {
+    const el = lobbyVideoRef.current;
+    if (!el) return;
+    if (localMedia.videoEnabled && localMedia.stream) {
+      if (el.srcObject !== localMedia.stream) {
+        el.srcObject = localMedia.stream;
+        el.play().catch(() => {});
+      }
+    } else {
+      if (el.srcObject !== null) {
+        el.srcObject = null;
+      }
+    }
+  }, [localMedia.stream, localMedia.videoEnabled, inLobby]);
 
   // Format Elapsed Time (HH:MM:SS or MM:SS)
   const formatTimer = (totalSeconds: number) => {
@@ -123,9 +161,12 @@ export const MeetingRoom: React.FC = () => {
 
   // 1. Initial Device & Meeting Details Setup
   useEffect(() => {
+    let isMounted = true;
+
     async function initLobby() {
       try {
         const availableDevices = await mediaRoomClientService.enumerateDevices();
+        if (!isMounted) return;
         setDevices(availableDevices);
 
         // Preview stream in lobby
@@ -133,6 +174,15 @@ export const MeetingRoom: React.FC = () => {
           audio: true,
           video: true,
         });
+
+        if (!isMounted) {
+          // If unmounted during StrictMode or route change, immediately shut down all hardware tracks!
+          if (previewStream) {
+            mediaRoomClientService.cleanupStream(previewStream);
+            mediaRoomClientService.stopCamera(previewStream);
+          }
+          return;
+        }
 
         if (previewStream) {
           setLocalMedia(prev => ({
@@ -143,7 +193,9 @@ export const MeetingRoom: React.FC = () => {
           }));
 
           const stopAudio = mediaRoomClientService.setupAudioAnalyzer(previewStream, level => {
-            setLocalMedia(prev => ({ ...prev, audioLevel: level }));
+            if (isMounted) {
+              setLocalMedia(prev => ({ ...prev, audioLevel: prev.audioEnabled ? level : 0 }));
+            }
           });
           cleanupAudioRef.current = stopAudio;
         }
@@ -155,7 +207,7 @@ export const MeetingRoom: React.FC = () => {
               { id: user.id, email: user.email, name: user.name, role: user.role },
               meetingId
             );
-            if (meetingData) {
+            if (isMounted && meetingData) {
               setMeetingTitle(meetingData.title);
             }
           } catch {
@@ -169,8 +221,36 @@ export const MeetingRoom: React.FC = () => {
 
     initLobby();
 
+    // Hot-plug device change listener (headset plugged/unplugged, cam connected)
+    const handleDeviceChange = async () => {
+      try {
+        const updated = await mediaRoomClientService.enumerateDevices();
+        if (isMounted) {
+          setDevices(updated);
+        }
+      } catch {
+        // Ignored
+      }
+    };
+
+    if (typeof navigator !== 'undefined' && navigator.mediaDevices) {
+      navigator.mediaDevices.addEventListener('devicechange', handleDeviceChange);
+    }
+
     return () => {
+      isMounted = false;
       if (cleanupAudioRef.current) cleanupAudioRef.current();
+      if (typeof navigator !== 'undefined' && navigator.mediaDevices) {
+        navigator.mediaDevices.removeEventListener('devicechange', handleDeviceChange);
+      }
+      // Stop and release all physical webcam & microphone hardware
+      mediaRoomClientService.stopAllMedia();
+      if (localStreamRef.current) {
+        mediaRoomClientService.cleanupStream(localStreamRef.current);
+      }
+      if (screenStreamRef.current) {
+        mediaRoomClientService.cleanupStream(screenStreamRef.current);
+      }
     };
   }, [meetingId, user]);
 
@@ -185,22 +265,40 @@ export const MeetingRoom: React.FC = () => {
     return () => clearInterval(timer);
   }, [inLobby, hasLeft]);
 
-  // 3. Dominant Speaker Detection Loop
+  // 3. Dominant Speaker Detection — throttled: only re-runs when speaking threshold crosses
+  //    Phase 15: Previously ran on every audioLevel tick (30-60x/sec), causing full re-render.
+  //    Now uses a ref-based throttle so it only compares speaking boundaries.
+  const dominantSpeakerThrottleRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lastAudioLevelRef = useRef<number>(0);
+  const prevSpeakingRef = useRef<boolean>(false);
+
   useEffect(() => {
     if (inLobby || hasLeft) return;
 
     const localSpeaking = localMedia.audioEnabled && localMedia.audioLevel > 15;
-    const speaker = mediaRoomClientService.getDominantSpeaker(
-      {
-        id: 'local-participant',
-        name: user?.name || 'You',
-        isSpeaking: localSpeaking,
-        audioLevel: localMedia.audioLevel,
-      },
-      participants
-    );
+    const speakingChanged = localSpeaking !== prevSpeakingRef.current;
+    const levelDelta = Math.abs(localMedia.audioLevel - lastAudioLevelRef.current);
 
-    setDominantSpeakerId(speaker ? speaker.id : null);
+    // Only update dominant speaker if speaking state changed or significant level shift
+    if (!speakingChanged && levelDelta < 10) return;
+
+    prevSpeakingRef.current = localSpeaking;
+    lastAudioLevelRef.current = localMedia.audioLevel;
+
+    if (dominantSpeakerThrottleRef.current) return; // coalesce rapid updates
+    dominantSpeakerThrottleRef.current = setTimeout(() => {
+      dominantSpeakerThrottleRef.current = null;
+      const speaker = mediaRoomClientService.getDominantSpeaker(
+        {
+          id: 'local-participant',
+          name: user?.name || 'You',
+          isSpeaking: prevSpeakingRef.current,
+          audioLevel: lastAudioLevelRef.current,
+        },
+        participants
+      );
+      setDominantSpeakerId(speaker ? speaker.id : null);
+    }, 150); // max 6 dominant-speaker evaluations/sec
   }, [localMedia.audioLevel, localMedia.audioEnabled, participants, inLobby, hasLeft, user?.name]);
 
   // 4. Join Meeting Action
@@ -230,6 +328,7 @@ export const MeetingRoom: React.FC = () => {
 
         sessionToken = joinResult.meetingToken;
         activeSessionTokenRef.current = sessionToken;
+        setSessionToken(sessionToken);
         if (joinResult.meetingRole) {
           setMeetingRole(joinResult.meetingRole);
         }
@@ -246,35 +345,13 @@ export const MeetingRoom: React.FC = () => {
       setConnectionQuality('EXCELLENT');
       setInLobby(false);
 
-      // Seed realistic remote participants for collaborative session
-      setParticipants([
-        {
-          id: 'peer_lead_interviewer',
-          name: 'Alex Rivera (Staff Engineer)',
-          role: 'HOST',
-          isHost: true,
-          audioEnabled: true,
-          videoEnabled: false,
-          screenShareEnabled: false,
-          audioLevel: 0,
-          isSpeaking: false,
-          connectionQuality: 'EXCELLENT',
-          avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
-        },
-        {
-          id: 'peer_ai_observer',
-          name: 'Antigravity AI Proctor',
-          role: 'CO_HOST',
-          isHost: false,
-          audioEnabled: false,
-          videoEnabled: false,
-          screenShareEnabled: false,
-          audioLevel: 0,
-          isSpeaking: false,
-          connectionQuality: 'EXCELLENT',
-          avatarUrl: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150&auto=format&fit=crop&q=80',
-        },
-      ]);
+      // Authoritative WebSocket collaboration plane registration
+      const collabResult = await meetingCollaborationService.joinRoom(meetingId, sessionToken);
+      if (collabResult.success && collabResult.participants) {
+        const myUserId = user?.id || 'local-participant';
+        const remoteList = collabResult.participants.filter(p => p.id !== myUserId);
+        setParticipants(remoteList);
+      }
     } catch (err: any) {
       console.error('Join meeting failed:', err);
       setConnectionState('DISCONNECTED');
@@ -283,25 +360,121 @@ export const MeetingRoom: React.FC = () => {
   };
 
   // 5. Media Toggles
-  const handleToggleAudio = () => {
+  const handleToggleAudio = async () => {
     if (!permissions.canPublishAudio) return;
+
+    const nextState = !localMedia.audioEnabled;
 
     if (localMedia.stream) {
       const audioTracks = localMedia.stream.getAudioTracks();
-      const nextState = !localMedia.audioEnabled;
-      audioTracks.forEach(t => (t.enabled = nextState));
-      setLocalMedia(prev => ({ ...prev, audioEnabled: nextState }));
+      if (audioTracks.length > 0) {
+        audioTracks.forEach(t => (t.enabled = nextState));
+      } else if (nextState) {
+        try {
+          const audioStream = await mediaRoomClientService.acquireUserMedia({
+            audio: localMedia.audioInputDeviceId
+              ? { deviceId: localMedia.audioInputDeviceId }
+              : true,
+            video: false,
+          });
+          if (audioStream) {
+            const newAudioTrack = audioStream.getAudioTracks()[0];
+            if (newAudioTrack) {
+              localMedia.stream.addTrack(newAudioTrack);
+              if (cleanupAudioRef.current) cleanupAudioRef.current();
+              cleanupAudioRef.current = mediaRoomClientService.setupAudioAnalyzer(localMedia.stream, level => {
+                setLocalMedia(p => ({ ...p, audioLevel: p.audioEnabled ? level : 0 }));
+              });
+            }
+          }
+        } catch (err) {
+          console.warn('Failed to acquire audio track on unmute:', err);
+        }
+      }
+    }
+
+    setLocalMedia(prev => ({
+      ...prev,
+      audioEnabled: nextState,
+      audioLevel: nextState ? prev.audioLevel : 0,
+    }));
+
+    if (meetingId) {
+      meetingCollaborationService.updateLocalMediaState(meetingId, {
+        micState: nextState,
+      });
     }
   };
 
-  const handleToggleVideo = () => {
+  const handleToggleVideo = async () => {
     if (!permissions.canPublishVideo) return;
 
-    if (localMedia.stream) {
-      const videoTracks = localMedia.stream.getVideoTracks();
-      const nextState = !localMedia.videoEnabled;
-      videoTracks.forEach(t => (t.enabled = nextState));
-      setLocalMedia(prev => ({ ...prev, videoEnabled: nextState }));
+    if (localMedia.videoEnabled) {
+      // 1. Physically stop camera tracks so the laptop webcam light turns OFF immediately
+      if (localMedia.stream) {
+        localMedia.stream.getVideoTracks().forEach(t => {
+          try {
+            t.enabled = false;
+            t.stop();
+          } catch {}
+          localMedia.stream?.removeTrack(t);
+        });
+      }
+      mediaRoomClientService.stopCamera();
+      if (lobbyVideoRef.current) {
+        try {
+          lobbyVideoRef.current.srcObject = null;
+        } catch {}
+      }
+      setLocalMedia(prev => ({ ...prev, videoEnabled: false }));
+      if (meetingId) {
+        meetingCollaborationService.updateLocalMediaState(meetingId, {
+          cameraState: false,
+        });
+      }
+    } else {
+      // 2. Re-acquire video stream from hardware
+      try {
+        const videoStream = await mediaRoomClientService.acquireUserMedia({
+          audio: false,
+          video: localMedia.videoInputDeviceId
+            ? { deviceId: localMedia.videoInputDeviceId }
+            : true,
+        });
+
+        if (videoStream) {
+          const newVideoTrack = videoStream.getVideoTracks()[0];
+          if (newVideoTrack) {
+            let stream = localMedia.stream;
+            if (!stream) {
+              stream = new MediaStream();
+            }
+            // Remove any stopped video tracks
+            stream.getVideoTracks().forEach(t => {
+              try {
+                t.enabled = false;
+                t.stop();
+              } catch {}
+              stream?.removeTrack(t);
+            });
+            stream.addTrack(newVideoTrack);
+
+            setLocalMedia(prev => ({
+              ...prev,
+              videoEnabled: true,
+              stream,
+            }));
+
+            if (meetingId) {
+              meetingCollaborationService.updateLocalMediaState(meetingId, {
+                cameraState: true,
+              });
+            }
+          }
+        }
+      } catch (err) {
+        console.warn('Failed to re-acquire camera video track:', err);
+      }
     }
   };
 
@@ -312,15 +485,30 @@ export const MeetingRoom: React.FC = () => {
       // Stop screen share
       mediaRoomClientService.cleanupStream(localMedia.screenStream);
       setLocalMedia(prev => ({ ...prev, screenShareEnabled: false, screenStream: null }));
+      if (meetingId) {
+        meetingCollaborationService.updateLocalMediaState(meetingId, {
+          screenShareState: false,
+        });
+      }
     } else {
       try {
         const screenStream = await mediaRoomClientService.acquireDisplayMedia();
         if (screenStream) {
           screenStream.getVideoTracks()[0].onended = () => {
             setLocalMedia(prev => ({ ...prev, screenShareEnabled: false, screenStream: null }));
+            if (meetingId) {
+              meetingCollaborationService.updateLocalMediaState(meetingId, {
+                screenShareState: false,
+              });
+            }
           };
           setLocalMedia(prev => ({ ...prev, screenShareEnabled: true, screenStream }));
           setLayoutMode('SCREEN_SHARE_FOCUS');
+          if (meetingId) {
+            meetingCollaborationService.updateLocalMediaState(meetingId, {
+              screenShareState: true,
+            });
+          }
         }
       } catch (err) {
         console.warn('Screen share canceled or denied:', err);
@@ -328,12 +516,53 @@ export const MeetingRoom: React.FC = () => {
     }
   };
 
-  // 6. Device Selection Switch
+  // 6. Collaboration Actions: Hand Raise & Reaction
+  const handleToggleHandRaise = async () => {
+    if (!meetingId) return;
+    if (isHandRaised) {
+      await meetingCollaborationService.lowerHand(meetingId);
+      setIsHandRaised(false);
+    } else {
+      await meetingCollaborationService.raiseHand(meetingId);
+      setIsHandRaised(true);
+    }
+  };
+
+  const handleSendReaction = async (emoji: string) => {
+    if (!meetingId) return;
+    const res = await meetingCollaborationService.sendReaction(meetingId, emoji);
+    if (!res.success && res.error) {
+      setErrorMsg(res.error);
+      setTimeout(() => setErrorMsg(null), 3500);
+    }
+  };
+
+  // Host Moderation Actions
+  const handleHostMute = (targetUserId: string) => {
+    if (!meetingId) return;
+    meetingCollaborationService.hostRequestMute(meetingId, targetUserId);
+  };
+
+  const handleHostLowerHand = (targetUserId: string) => {
+    if (!meetingId) return;
+    meetingCollaborationService.hostLowerHand(meetingId, targetUserId);
+  };
+
+  const handleHostRemove = (targetUserId: string) => {
+    if (!meetingId) return;
+    meetingCollaborationService.hostRemoveParticipant(meetingId, targetUserId);
+  };
+
+  // 7. Device Selection Switch
   const handleSelectDevice = async (kind: 'audioinput' | 'videoinput', deviceId: string) => {
     if (kind === 'audioinput') {
       setLocalMedia(prev => ({ ...prev, audioInputDeviceId: deviceId }));
     } else {
       setLocalMedia(prev => ({ ...prev, videoInputDeviceId: deviceId }));
+      // If camera is currently OFF, do NOT activate hardware or turn on laptop light!
+      if (!localMedia.videoEnabled) {
+        return;
+      }
     }
 
     try {
@@ -347,7 +576,7 @@ export const MeetingRoom: React.FC = () => {
         setLocalMedia(prev => ({ ...prev, stream: newStream }));
         if (cleanupAudioRef.current) cleanupAudioRef.current();
         cleanupAudioRef.current = mediaRoomClientService.setupAudioAnalyzer(newStream, level => {
-          setLocalMedia(p => ({ ...p, audioLevel: level }));
+          setLocalMedia(p => ({ ...p, audioLevel: p.audioEnabled ? level : 0 }));
         });
       }
     } catch (err) {
@@ -355,16 +584,68 @@ export const MeetingRoom: React.FC = () => {
     }
   };
 
-  // 7. Leave Meeting
+  // 8. Leave Meeting
   const handleLeaveMeeting = useCallback(() => {
+    if (meetingId) {
+      meetingCollaborationService.leaveRoom(meetingId);
+    }
     if (cleanupAudioRef.current) cleanupAudioRef.current();
+    mediaRoomClientService.stopAllMedia();
     mediaRoomClientService.cleanupStream(localMedia.stream);
     mediaRoomClientService.cleanupStream(localMedia.screenStream);
+    setLocalMedia(prev => ({
+      ...prev,
+      stream: null,
+      screenStream: null,
+      videoEnabled: false,
+      audioEnabled: false,
+      screenShareEnabled: false,
+    }));
     setHasLeft(true);
     setConnectionState('DISCONNECTED');
-  }, [localMedia.stream, localMedia.screenStream]);
+  }, [meetingId, localMedia.stream, localMedia.screenStream]);
 
-  // 8. End Meeting for All (Host only)
+  // Recording Control (Phase 17)
+  const handleToggleRecording = async () => {
+    const token = activeSessionTokenRef.current;
+    if (!token || !meetingId) return;
+
+    try {
+      if (!isRecording) {
+        const res = await fetch('/api/v1/meetings/recording', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ action: 'START', meetingId }),
+        });
+        const data = await res.json();
+        if (data.success && data.recording) {
+          setIsRecording(true);
+          setRecordingId(data.recording.id);
+        }
+      } else if (recordingId) {
+        const res = await fetch('/api/v1/meetings/recording', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ action: 'STOP', meetingId, recordingId }),
+        });
+        const data = await res.json();
+        if (data.success) {
+          setIsRecording(false);
+          setRecordingId(null);
+        }
+      }
+    } catch (err) {
+      console.error('Failed to toggle recording:', err);
+    }
+  };
+
+  // 9. End Meeting for All (Host only)
   const handleEndMeetingForAll = async () => {
     if (meetingRole !== 'HOST' && user?.role !== 'admin') return;
     if (window.confirm('Are you sure you want to end this meeting for all participants?')) {
@@ -375,6 +656,7 @@ export const MeetingRoom: React.FC = () => {
             meetingId,
             { targetStatus: 'ENDED', reason: 'Host ended meeting' }
           );
+          await meetingCollaborationService.hostEndMeeting(meetingId, 'Host ended meeting');
         }
       } catch {
         // Fallback
@@ -382,6 +664,141 @@ export const MeetingRoom: React.FC = () => {
       handleLeaveMeeting();
     }
   };
+
+  // 10. Realtime Collaboration Event Subscriptions (Phase 16)
+  useEffect(() => {
+    if (inLobby || hasLeft || !meetingId) return;
+
+    const unsubscribe = meetingCollaborationService.subscribe({
+      onParticipantJoined: (p) => {
+        const myUserId = user?.id || 'local-participant';
+        if (p.id === myUserId) return;
+        setParticipants(prev => {
+          if (prev.some(existing => existing.id === p.id)) return prev;
+          return [...prev, p];
+        });
+      },
+      onParticipantLeft: (data) => {
+        setParticipants(prev => prev.filter(p => p.id !== data.userId));
+      },
+      onParticipantUpdated: (updated) => {
+        setParticipants(prev => prev.map(p => (p.id === updated.id ? { ...p, ...updated } : p)));
+      },
+      onHandRaised: (data) => {
+        const myUserId = user?.id || 'local-participant';
+        if (data.userId === myUserId) {
+          setIsHandRaised(true);
+        }
+        setParticipants(prev =>
+          prev.map(p => (p.id === data.userId ? { ...p, handRaised: true, handRaisedAt: data.handRaisedAt } : p))
+        );
+      },
+      onHandLowered: (data) => {
+        const myUserId = user?.id || 'local-participant';
+        if (data.userId === myUserId) {
+          setIsHandRaised(false);
+        }
+        setParticipants(prev =>
+          prev.map(p => (p.id === data.userId ? { ...p, handRaised: false, handRaisedAt: undefined } : p))
+        );
+      },
+      onReaction: (reaction) => {
+        const rxItem = {
+          id: reaction.reactionId,
+          emoji: reaction.emoji,
+          userName: reaction.userName,
+          x: 15 + Math.random() * 70,
+        };
+        setActiveReactions(prev => [...prev.slice(-15), rxItem]);
+        setParticipantReactions(prev => {
+          const next = new Map(prev);
+          next.set(reaction.userId, {
+            emoji: reaction.emoji,
+            reactionId: reaction.reactionId,
+            timestamp: reaction.timestamp,
+          });
+          return next;
+        });
+        setTimeout(() => {
+          setActiveReactions(prev => prev.filter(r => r.id !== rxItem.id));
+        }, 3500);
+      },
+      onMuteRequested: (data) => {
+        const myUserId = user?.id || 'local-participant';
+        if (data.targetUserId === myUserId) {
+          if (localMedia.stream) {
+            localMedia.stream.getAudioTracks().forEach(t => (t.enabled = false));
+          }
+          setLocalMedia(prev => ({ ...prev, audioEnabled: false }));
+          setHostMuteToast(true);
+          setTimeout(() => setHostMuteToast(false), 5000);
+        }
+      },
+      onParticipantRemoved: (data) => {
+        const myUserId = user?.id || 'local-participant';
+        if (data.targetUserId === myUserId) {
+          handleLeaveMeeting();
+          setIsRemovedFromMeeting(true);
+          setRemovalReason(data.reason || 'You have been removed from the meeting by the host.');
+        } else {
+          setParticipants(prev => prev.filter(p => p.id !== data.targetUserId));
+        }
+      },
+      onMeetingEnded: () => {
+        handleLeaveMeeting();
+        setIsMeetingEndedByHost(true);
+      },
+      onStateSynced: (serverParticipants) => {
+        const myUserId = user?.id || 'local-participant';
+        setParticipants(serverParticipants.filter(p => p.id !== myUserId));
+      },
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, [inLobby, hasLeft, meetingId, user?.id, localMedia.stream, handleLeaveMeeting]);
+
+  // 11. Accessibility & Keyboard Shortcuts (Phase 16)
+  const handlersRef = useRef({
+    handleToggleAudio,
+    handleToggleVideo,
+    handleToggleHandRaise,
+  });
+  useEffect(() => {
+    handlersRef.current = {
+      handleToggleAudio,
+      handleToggleVideo,
+      handleToggleHandRaise,
+    };
+  });
+
+  useEffect(() => {
+    if (inLobby || hasLeft) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+
+      // Alt+H: Toggle Raise Hand
+      if (e.altKey && (e.key === 'h' || e.key === 'H')) {
+        e.preventDefault();
+        handlersRef.current.handleToggleHandRaise();
+      }
+      // Ctrl+D: Toggle Microphone
+      if ((e.ctrlKey || e.metaKey) && (e.key === 'd' || e.key === 'D')) {
+        e.preventDefault();
+        handlersRef.current.handleToggleAudio();
+      }
+      // Ctrl+E: Toggle Camera
+      if ((e.ctrlKey || e.metaKey) && (e.key === 'e' || e.key === 'E')) {
+        e.preventDefault();
+        handlersRef.current.handleToggleVideo();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [inLobby, hasLeft]);
 
   // Copy Invite Link
   const handleCopyInviteLink = () => {
@@ -669,6 +1086,57 @@ export const MeetingRoom: React.FC = () => {
     });
   };
 
+  // ─── RENDER: REMOVED BY HOST SCREEN (Phase 16) ───────────────────────────
+  if (isRemovedFromMeeting) {
+    return (
+      <div className="rtc-fullscreen-wrap rtc-post-call-page">
+        <div className="rtc-post-call-card">
+          <div className="rtc-post-call-icon">🚫</div>
+          <h2>Removed from Meeting</h2>
+          <p className="rtc-post-call-subtitle">
+            {removalReason || 'A meeting host has removed you from this session.'}
+          </p>
+          <div className="rtc-post-call-actions">
+            <button
+              type="button"
+              className="rtc-btn rtc-btn-primary"
+              onClick={() => navigate('/')}
+            >
+              Return Home
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ─── RENDER: MEETING ENDED BY HOST SCREEN (Phase 16) ───────────────────────
+  if (isMeetingEndedByHost) {
+    return (
+      <div className="rtc-fullscreen-wrap rtc-post-call-page">
+        <div className="rtc-post-call-card">
+          <div className="rtc-post-call-icon">🏁</div>
+          <h2>Meeting Ended</h2>
+          <p className="rtc-post-call-subtitle">
+            The host has ended this meeting for all participants.
+          </p>
+          <p className="rtc-post-call-subtitle">
+            Total Duration: <strong>{formatTimer(elapsedSeconds)}</strong>
+          </p>
+          <div className="rtc-post-call-actions">
+            <button
+              type="button"
+              className="rtc-btn rtc-btn-primary"
+              onClick={() => navigate('/')}
+            >
+              Return Home
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   // ─── RENDER: POST-CALL SCREEN ─────────────────────────────────────────────
   if (hasLeft) {
     return (
@@ -720,12 +1188,10 @@ export const MeetingRoom: React.FC = () => {
           <div className="rtc-lobby-preview-box">
             {localMedia.videoEnabled && localMedia.stream ? (
               <video
+                ref={lobbyVideoRef}
                 autoPlay
                 playsInline
                 muted
-                ref={el => {
-                  if (el && localMedia.stream) el.srcObject = localMedia.stream;
-                }}
                 className="rtc-video-element rtc-local-mirror"
               />
             ) : (
@@ -838,6 +1304,37 @@ export const MeetingRoom: React.FC = () => {
         </div>
       )}
 
+      {/* Recording in Progress Banner (Phase 17) */}
+      {isRecording && (
+        <div
+          style={{
+            backgroundColor: '#7f1d1d',
+            color: '#fef2f2',
+            padding: '6px 16px',
+            textAlign: 'center',
+            fontSize: '0.85rem',
+            fontWeight: 600,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '8px',
+            borderBottom: '1px solid #991b1b',
+            zIndex: 40,
+          }}
+        >
+          <span
+            style={{
+              display: 'inline-block',
+              width: '10px',
+              height: '10px',
+              borderRadius: '50%',
+              backgroundColor: '#ef4444',
+            }}
+          />
+          <span>Recording in progress — This meeting is being recorded for playback and transcription.</span>
+        </div>
+      )}
+
       {/* Top Header Bar */}
       <header className="rtc-meeting-header">
         <div className="rtc-header-left">
@@ -867,6 +1364,27 @@ export const MeetingRoom: React.FC = () => {
 
       {/* Main Video Arena */}
       <main className="rtc-video-arena">
+        {/* Phase 16: Host Mute Toast Notification */}
+        {hostMuteToast && (
+          <div className="rtc-host-mute-toast-banner">
+            🔇 The meeting host requested that your microphone be muted.
+          </div>
+        )}
+
+        {/* Phase 16: Floating Ephemeral Reactions Overlay */}
+        <div className="rtc-floating-reactions-overlay">
+          {activeReactions.map(r => (
+            <div
+              key={r.id}
+              className="rtc-floating-reaction-badge"
+              style={{ left: `${r.x}%` }}
+            >
+              <span className="rtc-rx-emoji">{r.emoji}</span>
+              <span className="rtc-rx-user">{r.userName}</span>
+            </div>
+          ))}
+        </div>
+
         {isWhiteboardOpen ? (
           <div className="rtc-whiteboard-active-layout">
             {/* Top Filmstrip */}
@@ -884,6 +1402,8 @@ export const MeetingRoom: React.FC = () => {
                 connectionQuality={connectionQuality}
                 stream={localMedia.stream}
                 screenStream={localMedia.screenStream}
+                handRaised={isHandRaised}
+                recentReaction={participantReactions.get(user?.id || 'local-participant')}
               />
               {participants.map(p => (
                 <ParticipantTile
@@ -900,6 +1420,12 @@ export const MeetingRoom: React.FC = () => {
                   stream={p.stream}
                   screenStream={p.screenStream}
                   avatarUrl={p.avatarUrl}
+                  handRaised={p.handRaised}
+                  recentReaction={participantReactions.get(p.id)}
+                  isHostViewer={meetingRole === 'HOST' || user?.role === 'admin'}
+                  onHostMute={() => handleHostMute(p.id)}
+                  onHostLowerHand={() => handleHostLowerHand(p.id)}
+                  onHostRemove={() => handleHostRemove(p.id)}
                 />
               ))}
             </div>
@@ -933,6 +1459,8 @@ export const MeetingRoom: React.FC = () => {
                 connectionQuality={connectionQuality}
                 stream={localMedia.stream}
                 screenStream={localMedia.screenStream}
+                handRaised={isHandRaised}
+                recentReaction={participantReactions.get(user?.id || 'local-participant')}
               />
               {participants.map(p => (
                 <ParticipantTile
@@ -949,6 +1477,12 @@ export const MeetingRoom: React.FC = () => {
                   stream={p.stream}
                   screenStream={p.screenStream}
                   avatarUrl={p.avatarUrl}
+                  handRaised={p.handRaised}
+                  recentReaction={participantReactions.get(p.id)}
+                  isHostViewer={meetingRole === 'HOST' || user?.role === 'admin'}
+                  onHostMute={() => handleHostMute(p.id)}
+                  onHostLowerHand={() => handleHostLowerHand(p.id)}
+                  onHostRemove={() => handleHostRemove(p.id)}
                 />
               ))}
             </div>
@@ -956,7 +1490,7 @@ export const MeetingRoom: React.FC = () => {
             {/* Collaborative Monaco Code Editor */}
             <MeetingCodeEditor
               meetingId={meetingId || ''}
-              meetingToken={activeSessionTokenRef.current}
+              meetingToken={sessionToken || activeSessionTokenRef.current}
               currentUserId={user?.id || 'local-participant'}
               currentUserName={user?.name || 'You'}
               currentUserRole={meetingRole}
@@ -968,6 +1502,7 @@ export const MeetingRoom: React.FC = () => {
             className={`rtc-video-layout rtc-layout-${layoutMode.toLowerCase()} ${
               pinnedParticipantId ? 'has-pinned' : ''
             }`}
+            data-participant-count={allParticipantsCount}
           >
             {/* Local Participant Tile */}
             <ParticipantTile
@@ -984,6 +1519,8 @@ export const MeetingRoom: React.FC = () => {
               stream={localMedia.stream}
               screenStream={localMedia.screenStream}
               isPinned={pinnedParticipantId === 'local-participant'}
+              handRaised={isHandRaised}
+              recentReaction={participantReactions.get(user?.id || 'local-participant')}
               onPinToggle={() =>
                 setPinnedParticipantId(prev => (prev === 'local-participant' ? null : 'local-participant'))
               }
@@ -1006,9 +1543,15 @@ export const MeetingRoom: React.FC = () => {
                 screenStream={p.screenStream}
                 avatarUrl={p.avatarUrl}
                 isPinned={pinnedParticipantId === p.id}
+                handRaised={p.handRaised}
+                recentReaction={participantReactions.get(p.id)}
+                isHostViewer={meetingRole === 'HOST' || user?.role === 'admin'}
                 onPinToggle={() =>
                   setPinnedParticipantId(prev => (prev === p.id ? null : p.id))
                 }
+                onHostMute={() => handleHostMute(p.id)}
+                onHostLowerHand={() => handleHostLowerHand(p.id)}
+                onHostRemove={() => handleHostRemove(p.id)}
               />
             ))}
           </div>
@@ -1039,10 +1582,13 @@ export const MeetingRoom: React.FC = () => {
                     <span className="rtc-drawer-role">{meetingRole}</span>
                   </div>
                 </div>
-                <span className="rtc-drawer-icons">
-                  {localMedia.audioEnabled ? '🎙️' : '🔇'}
-                  {localMedia.videoEnabled ? '📹' : '🚫'}
-                </span>
+                <div className="rtc-drawer-icons-row" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  {isHandRaised && <span className="rtc-drawer-hand" title="Hand Raised" style={{ fontSize: '16px' }}>✋</span>}
+                  <span className="rtc-drawer-icons">
+                    {localMedia.audioEnabled ? '🎙️' : '🔇'}
+                    {localMedia.videoEnabled ? '📹' : '🚫'}
+                  </span>
+                </div>
               </div>
 
               {/* Remotes */}
@@ -1059,10 +1605,50 @@ export const MeetingRoom: React.FC = () => {
                       <span className="rtc-drawer-role">{p.role}</span>
                     </div>
                   </div>
-                  <span className="rtc-drawer-icons">
-                    {p.audioEnabled ? '🎙️' : '🔇'}
-                    {p.videoEnabled ? '📹' : '🚫'}
-                  </span>
+                  <div className="rtc-drawer-actions-row" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    {p.handRaised && <span className="rtc-drawer-hand" title="Hand Raised" style={{ fontSize: '16px' }}>✋</span>}
+                    <span className="rtc-drawer-icons">
+                      {p.audioEnabled ? '🎙️' : '🔇'}
+                      {p.videoEnabled ? '📹' : '🚫'}
+                    </span>
+                    {(meetingRole === 'HOST' || user?.role === 'admin') && (
+                      <div className="rtc-drawer-host-quick-actions" style={{ display: 'flex', gap: '4px' }}>
+                        <button
+                          type="button"
+                          className="rtc-tile-host-menu-btn"
+                          title="Request participant mute"
+                          onClick={() => handleHostMute(p.id)}
+                          style={{ width: '22px', height: '22px', fontSize: '11px' }}
+                        >
+                          🔇
+                        </button>
+                        {p.handRaised && (
+                          <button
+                            type="button"
+                            className="rtc-tile-host-menu-btn"
+                            title="Lower participant hand"
+                            onClick={() => handleHostLowerHand(p.id)}
+                            style={{ width: '22px', height: '22px', fontSize: '11px' }}
+                          >
+                            ✋
+                          </button>
+                        )}
+                        <button
+                          type="button"
+                          className="rtc-tile-host-menu-btn"
+                          title="Remove from meeting"
+                          onClick={() => {
+                            if (window.confirm(`Remove ${p.name} from meeting?`)) {
+                              handleHostRemove(p.id);
+                            }
+                          }}
+                          style={{ width: '22px', height: '22px', fontSize: '11px' }}
+                        >
+                          🚫
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>
@@ -1176,6 +1762,7 @@ export const MeetingRoom: React.FC = () => {
         isCodeEditorOpen={isCodeEditorOpen}
         isSettingsOpen={isSettingsOpen}
         isHost={meetingRole === 'HOST' || user?.role === 'admin'}
+        handRaised={isHandRaised}
         onToggleAudio={handleToggleAudio}
         onToggleVideo={handleToggleVideo}
         onToggleScreenShare={handleToggleScreenShare}
@@ -1187,6 +1774,10 @@ export const MeetingRoom: React.FC = () => {
         onToggleSettings={() => setIsSettingsOpen(prev => !prev)}
         onLeaveMeeting={handleLeaveMeeting}
         onEndMeetingForAll={handleEndMeetingForAll}
+        onToggleHandRaise={handleToggleHandRaise}
+        onSendReaction={handleSendReaction}
+        isRecording={isRecording}
+        onToggleRecording={meetingRole === 'HOST' || user?.role === 'admin' ? handleToggleRecording : undefined}
       />
     </div>
   );

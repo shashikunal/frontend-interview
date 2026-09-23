@@ -46,6 +46,15 @@ export type EventType =
   | 'UserStatusChanged.v1'
   // Notification events
   | 'NotificationRequested.v1'
+  // Recording events
+  | 'RecordingStarted.v1'
+  | 'RecordingStopped.v1'
+  | 'RecordingCompleted.v1'
+  | 'RecordingProcessingStarted.v1'
+  | 'RecordingProcessingCompleted.v1'
+  | 'RecordingProcessingFailed.v1'
+  | 'RecordingDeleted.v1'
+  | 'TranscriptCompleted.v1'
   // Audit & Analytics events
   | 'AuditEventCreated.v1'
   | 'AnalyticsEventCreated.v1'

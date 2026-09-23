@@ -1,0 +1,213 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.5",
+  "serialNumber": "urn:uuid:interviewprep-sbom-1790164595544",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2026-09-23T11:56:35.544Z",
+    "tools": [
+      {
+        "vendor": "InterviewPrep DevOps",
+        "name": "sbom-generator",
+        "version": "1.0.0"
+      }
+    ],
+    "component": {
+      "type": "application",
+      "name": "react-interview-prep",
+      "version": "0.0.0",
+      "description": "Enterprise Real-Time Collaboration & Interview Platform"
+    }
+  },
+  "components": [
+    {
+      "type": "library",
+      "name": "@babel/standalone",
+      "version": "8.0.4",
+      "purl": "pkg:npm/@babel/standalone@8.0.4",
+      "integrity": "sha512-z8WgyJCfEl7qGAfJJksICOL5zQPpfwa6Yew+91Txf1k3xuDtlDdDe5GX2QdIhgx0HD7oYOCLoF8Y6CwNdawJwQ==",
+      "license": "MIT",
+      "scope": "required"
+    },
+    {
+      "type": "library",
+      "name": "@emailjs/browser",
+      "version": "4.4.1",
+      "purl": "pkg:npm/@emailjs/browser@4.4.1",
+      "integrity": "sha512-DGSlP9sPvyFba3to2A50kDtZ+pXVp/0rhmqs2LmbMS3I5J8FSOgLwzY2Xb4qfKlOVHh29EAutLYwe5yuEZmEFg==",
+      "license": "BSD-3-Clause",
+      "scope": "required"
+    },
+    {
+      "type": "library",
+      "name": "@monaco-editor/react",
+      "version": "4.7.0",
+      "purl": "pkg:npm/@monaco-editor/react@4.7.0",
+      "integrity": "sha512-cyzXQCtO47ydzxpQtCGSQGOC8Gk3ZUeBXFAxD+CWXYFo5OqZyZUonFl0DwUlTyAfRHntBfw2p3w4s9R6oe1eCA==",
+      "license": "MIT",
+      "scope": "required"
+    },
+    {
+      "type": "library",
+      "name": "@supabase/supabase-js",
+      "version": "2.113.0",
+      "purl": "pkg:npm/@supabase/supabase-js@2.113.0",
+      "integrity": "sha512-TZgdcDLeShUmf/XpXTmEKCmIpv6mqHgyDemiBh3fxeMOYE23oYz576ArbOB3Sa0lG9yTj+ofh52IauxIKENAOw==",
+      "license": "MIT",
+      "scope": "required"
+    },
+    {
+      "type": "library",
+      "name": "@tanstack/react-virtual",
+      "version": "3.14.12",
+      "purl": "pkg:npm/@tanstack/react-virtual@3.14.12",
+      "integrity": "sha512-EOJkBss/FRqzFrCpX8M96lIh+ZMc0jPt0LILhxWQ3tOHQ3XdVvuE0jceS2yZXpDtayNfpjeg2EnuYPm90CxIlA==",
+      "license": "MIT",
+      "scope": "required"
+    },
+    {
+      "type": "library",
+      "name": "@types/ioredis",
+      "version": "4.28.10",
+      "purl": "pkg:npm/@types/ioredis@4.28.10",
+      "integrity": "sha512-69LyhUgrXdgcNDv7ogs1qXZomnfOEnSmrmMFqKgt1XMJxmoOSG/u3wYy13yACIfKuMJ8IhKgHafDO3sx19zVQQ==",
+      "license": "MIT",
+      "scope": "required"
+    },
+    {
+      "type": "library",
+      "name": "@types/kafkajs",
+      "version": "1.8.2",
+      "purl": "pkg:npm/@types/kafkajs@1.8.2",
+      "integrity": "sha512-2s4zlRg+BiN/RsFBDBrguIZtC52lRbsufj/8afl/S6GMHn+3KN9AVf59Wg96F9pugJZX7E1P4PcGXSnxNPmBXg==",
+      "license": "MIT",
+      "scope": "required"
+    },
+    {
+      "type": "library",
+      "name": "ioredis",
+      "version": "6.0.0",
+      "purl": "pkg:npm/ioredis@6.0.0",
+      "integrity": "sha512-f+Dtubxfpf6KYFq7WVXJoOLn0bk4TJrMrN9SzeE+jrWrCWj7XX3fA6vkryafhADX+GMymRxgDJDOI33COkJc0w==",
+      "license": "MIT",
+      "scope": "required"
+    },
+    {
+      "type": "library",
+      "name": "kafkajs",
+      "version": "2.2.4",
+      "purl": "pkg:npm/kafkajs@2.2.4",
+      "integrity": "sha512-j/YeapB1vfPT2iOIUn/vxdyKEuhuY2PxMBvf5JWux6iSaukAccrMtXEY/Lb7OvavDhOWME589bpLrEdnVHjfjA==",
+      "license": "MIT",
+      "scope": "required"
+    },
+    {
+      "type": "library",
+      "name": "mermaid",
+      "version": "12.0.0",
+      "purl": "pkg:npm/mermaid@12.0.0",
+      "integrity": "sha512-/wQXC9iBxoGV8p3erbvaXs9h77VyLDBH6GdayVjj3hEcSQhFU4N1WUhUppotCEqlIxI2pRMwjwBSwTB1MfZBgQ==",
+      "license": "MIT",
+      "scope": "required"
+    },
+    {
+      "type": "library",
+      "name": "monaco-editor",
+      "version": "0.56.0",
+      "purl": "pkg:npm/monaco-editor@0.56.0",
+      "integrity": "sha512-sXboRm3BeBeLm938eaiyLMe0OxzfXIlZvbv4ir/jVgQy1zDhWjgmny0WoN45fuDKhCCQsYMbBJrv/A6jd8aCUg==",
+      "license": "MIT",
+      "scope": "required"
+    },
+    {
+      "type": "library",
+      "name": "react",
+      "version": "19.2.8",
+      "purl": "pkg:npm/react@19.2.8",
+      "integrity": "sha512-PWaYA1L/q9u2u7xYQi+Y3L3Yfnie7XyLeaJICV1MGD6LprsBxcAqGjYyr0eY3p+QdsA+x/Irkt4Qif8D63+Sbw==",
+      "license": "MIT",
+      "scope": "required"
+    },
+    {
+      "type": "library",
+      "name": "react-dom",
+      "version": "19.2.8",
+      "purl": "pkg:npm/react-dom@19.2.8",
+      "integrity": "sha512-rVprimfGBG3DR+Tq0IQG2DT5PxKth1WIGDmj5yPmlzr4YBe7uyE+Du4oVqTDXZSHGGGXRtTJEGSSePyQCMBglQ==",
+      "license": "MIT",
+      "scope": "required"
+    },
+    {
+      "type": "library",
+      "name": "react-router-dom",
+      "version": "7.18.1",
+      "purl": "pkg:npm/react-router-dom@7.18.1",
+      "integrity": "sha512-KaZh+X/6UtEp28x51AUYZDMg9NGoz2ja3dNHa+ta/tk40vCzKhQ/RypCWBMLbmDr6//E24Vv5uPsrqXFozdkAg==",
+      "license": "MIT",
+      "scope": "required"
+    },
+    {
+      "type": "library",
+      "name": "recharts",
+      "version": "3.10.1",
+      "purl": "pkg:npm/recharts@3.10.1",
+      "integrity": "sha512-QXFrvt6IVcw7eeZCoyXTwkIJAX3Dv1nyVhMicXJ47GsGDDpcN8z6o644DibE9XjpBTThtsomLKnTV6lc+cVFUA==",
+      "license": "MIT",
+      "scope": "required"
+    },
+    {
+      "type": "library",
+      "name": "socket.io",
+      "version": "4.8.3",
+      "purl": "pkg:npm/socket.io@4.8.3",
+      "integrity": "sha512-2Dd78bqzzjE6KPkD5fHZmDAKRNe3J15q+YHDrIsy9WEkqttc7GY+kT9OBLSMaPbQaEd0x1BjcmtMtXkfpc+T5A==",
+      "license": "MIT",
+      "scope": "required"
+    },
+    {
+      "type": "library",
+      "name": "socket.io-client",
+      "version": "4.8.3",
+      "purl": "pkg:npm/socket.io-client@4.8.3",
+      "integrity": "sha512-uP0bpjWrjQmUt5DTHq9RuoCBdFJF10cdX9X+a368j/Ft0wmaVgxlrjvK3kjvgCODOMMOz9lcaRzxmso0bTWZ/g==",
+      "license": "MIT",
+      "scope": "required"
+    },
+    {
+      "type": "library",
+      "name": "y-monaco",
+      "version": "0.1.6",
+      "purl": "pkg:npm/y-monaco@0.1.6",
+      "integrity": "sha512-sYRywMmcylt+Nupl+11AvizD2am06ST8lkVbUXuaEmrtV6Tf+TD4rsEm6u9YGGowYue+Vfg1IJ97SUP2J+PVXg==",
+      "license": "MIT",
+      "scope": "required"
+    },
+    {
+      "type": "library",
+      "name": "y-protocols",
+      "version": "1.0.7",
+      "purl": "pkg:npm/y-protocols@1.0.7",
+      "integrity": "sha512-YSVsLoXxO67J6eE/nV4AtFtT3QEotZf5sK5BHxFBXso7VDUT3Tx07IfA6hsu5Q5OmBdMkQVmFZ9QOA7fikWvnw==",
+      "license": "MIT",
+      "scope": "required"
+    },
+    {
+      "type": "library",
+      "name": "yjs",
+      "version": "13.6.32",
+      "purl": "pkg:npm/yjs@13.6.32",
+      "integrity": "sha512-lfiJIIC4Xayt5ItynE407ehlE03pCjeOc4hkR4yxxvvNJ4kuiN25B0g+Qp8XagYz361LLL7DCzR5bvFJ81QKtQ==",
+      "license": "MIT",
+      "scope": "required"
+    },
+    {
+      "type": "library",
+      "name": "zod",
+      "version": "4.5.4",
+      "purl": "pkg:npm/zod@4.5.4",
+      "integrity": "sha512-sC95tT5iHHH9gtpj6A81kh+NEaRAUFN+qlUPDUbRfOMvNf5QCBqsb3WgvnpVtK5Y+4UfA6KqufotuTvMGiTlsA==",
+      "license": "MIT",
+      "scope": "required"
+    }
+  ]
+}

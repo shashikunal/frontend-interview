@@ -2,6 +2,7 @@ import { defineConfig, type Plugin } from 'vite'
 import react from '@vitejs/plugin-react'
 import fs from 'fs'
 import path from 'path'
+import { pathToFileURL } from 'url'
 import { initSocketServer } from './server/socket/index.js'
 
 // Local Dev Socket.IO Middleware
@@ -417,43 +418,59 @@ function localAdminAuthPlugin(): Plugin {
         }
       })
 
-      // Local Dev Phase 8 Redis Health & Observability Middleware
-      server.middlewares.use('/api/v1/health/redis', async (req: any, res: any) => {
-        try {
-          // @ts-ignore
-          const { default: handler } = await import('./api/v1/health/redis.js')
-          res.status = (code: number) => { res.statusCode = code; return res }
-          res.json = (data: any) => {
-            res.setHeader('Content-Type', 'application/json')
-            res.end(JSON.stringify(data))
-            return res
-          }
-          await handler(req, res)
-        } catch (err: any) {
-          res.statusCode = 500
-          res.setHeader('Content-Type', 'application/json')
-          res.end(JSON.stringify({ error: err?.message || 'Server error' }))
-        }
-      })
+      // Reusable helper for local dev REST API handlers
+      const registerDevEndpoint = (mountPath: string, modulePath: string) => {
+        server.middlewares.use(mountPath, async (req: any, res: any) => {
+          try {
+            const fileUrl = pathToFileURL(path.resolve(process.cwd(), modulePath)).href
+            // @ts-ignore
+            const { default: handler } = await import(fileUrl)
+            const urlObj = new URL(req.url || '/', 'http://localhost')
+            req.query = Object.fromEntries(urlObj.searchParams.entries())
+            res.status = (code: number) => { res.statusCode = code; return res }
+            res.json = (data: any) => {
+              res.setHeader('Content-Type', 'application/json')
+              res.end(JSON.stringify(data))
+              return res
+            }
 
-      // Local Dev Phase 9 Kafka Health & Observability Middleware
-      server.middlewares.use('/api/v1/health/kafka', async (req: any, res: any) => {
-        try {
-          // @ts-ignore
-          const { default: handler } = await import('./api/v1/health/kafka.js')
-          res.status = (code: number) => { res.statusCode = code; return res }
-          res.json = (data: any) => {
+            if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method)) {
+              let body = ''
+              req.on('data', (chunk: any) => { body += chunk })
+              req.on('end', async () => {
+                try { req.body = JSON.parse(body || '{}') } catch { req.body = {} }
+                await handler(req, res)
+              })
+              return
+            }
+
+            await handler(req, res)
+          } catch (err: any) {
+            res.statusCode = 500
             res.setHeader('Content-Type', 'application/json')
-            res.end(JSON.stringify(data))
-            return res
+            res.end(JSON.stringify({ error: err?.message || 'Server error' }))
           }
-          await handler(req, res)
-        } catch (err: any) {
-          res.statusCode = 500
-          res.setHeader('Content-Type', 'application/json')
-          res.end(JSON.stringify({ error: err?.message || 'Server error' }))
-        }
-      })
+        })
+      }
+
+      // Local Dev Phase 12 Admin Operations & Telemetry Middlewares
+      registerDevEndpoint('/api/v1/admin/dashboard', './api/v1/admin/dashboard.js')
+      registerDevEndpoint('/api/v1/admin/meetings', './api/v1/admin/meetings.js')
+      registerDevEndpoint('/api/v1/admin/notifications', './api/v1/admin/notifications.js')
+      registerDevEndpoint('/api/v1/admin/users', './api/v1/admin/users.js')
+
+      // Local Dev Phase 11 Compliance Audit Trail Middleware
+      registerDevEndpoint('/api/v1/audit', './api/v1/audit/index.js')
+
+      // Local Dev Phase 11 Health, Observability & Performance Middlewares
+      registerDevEndpoint('/api/v1/health/dependencies', './api/v1/health/dependencies.js')
+      registerDevEndpoint('/api/v1/health/ready', './api/v1/health/ready.js')
+      registerDevEndpoint('/api/v1/health/redis', './api/v1/health/redis.js')
+      registerDevEndpoint('/api/v1/health/kafka', './api/v1/health/kafka.js')
+      registerDevEndpoint('/api/v1/health', './api/v1/health/index.js')
+      registerDevEndpoint('/api/v1/metrics', './api/v1/metrics.js')
+      registerDevEndpoint('/api/v1/performance', './api/v1/performance.js')
+      registerDevEndpoint('/api/ai-feedback', './api/ai-feedback.js')
     },
   }
 }
@@ -580,16 +597,34 @@ function localAIVideoMockPlugin(): Plugin {
         }
       })
 
-      // 2. Video Upload API (/api/video/upload) -> Saves to local disk
+      // 2. Video Upload API (/api/video/upload) -> Saves to local disk with strict path traversal & size validation
       server.middlewares.use('/api/video/upload', (req, res) => {
         if (req.method === 'POST') {
-          const chunks: Buffer[] = []
-          const userId = (req.headers['x-user-id'] as string) || 'anonymous'
-          const sessionId = (req.headers['x-session-id'] as string) || 'default_session'
-          const answerId = (req.headers['x-answer-id'] as string) || `ans_${Date.now()}`
+          const SAFE_ID_REGEX = /^[a-zA-Z0-9_-]+$/
+          const rawUserId = (req.headers['x-user-id'] as string) || 'anonymous'
+          const rawSessionId = (req.headers['x-session-id'] as string) || 'default_session'
+          const rawAnswerId = (req.headers['x-answer-id'] as string) || `ans_${Date.now()}`
           const durationSec = Number(req.headers['x-duration-seconds'] || 0)
 
-          const sessionDir = path.join(STORAGE_ROOT, userId, sessionId)
+          if (!SAFE_ID_REGEX.test(rawUserId) || !SAFE_ID_REGEX.test(rawSessionId) || !SAFE_ID_REGEX.test(rawAnswerId)) {
+            res.statusCode = 400
+            res.setHeader('Content-Type', 'application/json')
+            res.end(JSON.stringify({ error: 'Invalid identifier: Path traversal or illegal characters detected.' }))
+            return
+          }
+
+          const userId = rawUserId
+          const sessionId = rawSessionId
+          const answerId = rawAnswerId
+
+          const sessionDir = path.resolve(STORAGE_ROOT, userId, sessionId)
+          if (!sessionDir.startsWith(STORAGE_ROOT)) {
+            res.statusCode = 403
+            res.setHeader('Content-Type', 'application/json')
+            res.end(JSON.stringify({ error: 'Path traversal blocked.' }))
+            return
+          }
+
           if (!fs.existsSync(sessionDir)) {
             fs.mkdirSync(sessionDir, { recursive: true })
           }
@@ -597,8 +632,24 @@ function localAIVideoMockPlugin(): Plugin {
           const filePath = path.join(sessionDir, `${answerId}.webm`)
           const metaPath = path.join(sessionDir, `${answerId}.meta.json`)
 
-          req.on('data', chunk => chunks.push(chunk))
+          const chunks: Buffer[] = []
+          let totalBytes = 0
+          const MAX_UPLOAD_BYTES = 100 * 1024 * 1024 // 100MB limit
+
+          req.on('data', chunk => {
+            totalBytes += chunk.length
+            if (totalBytes > MAX_UPLOAD_BYTES) {
+              res.statusCode = 413
+              res.setHeader('Content-Type', 'application/json')
+              res.end(JSON.stringify({ error: 'Payload Too Large: Video exceeds 100MB limit.' }))
+              req.destroy()
+              return
+            }
+            chunks.push(chunk)
+          })
+
           req.on('end', () => {
+            if (totalBytes > MAX_UPLOAD_BYTES) return
             const buffer = Buffer.concat(chunks)
             fs.writeFileSync(filePath, buffer)
 
@@ -633,20 +684,23 @@ function localAIVideoMockPlugin(): Plugin {
         const urlObj = new URL(req.url || '/', 'http://localhost')
         const pathname = urlObj.pathname.replace(/^\//, '')
         const answerId = pathname.split('/')[0]
-        const sessionId = urlObj.searchParams.get('sessionId')
-        const userId = urlObj.searchParams.get('userId') || 'anonymous'
-
-        if (!answerId) {
+        const sessionId = urlObj.searchParams.get('sessionId') || ''
+        const userId = urlObj.searchParams.get('userId') || ''
+        const SAFE_ID_REGEX = /^[a-zA-Z0-9_-]+$/
+        if (!SAFE_ID_REGEX.test(answerId) || (sessionId && !SAFE_ID_REGEX.test(sessionId)) || (userId && !SAFE_ID_REGEX.test(userId))) {
           res.statusCode = 400
-          res.end(JSON.stringify({ error: 'Answer ID is required' }))
+          res.setHeader('Content-Type', 'application/json')
+          res.end(JSON.stringify({ error: 'Invalid identifier: Path traversal rejected.' }))
           return
         }
 
         // Find file path
         let targetFilePath = ''
         if (sessionId) {
-          const directPath = path.join(STORAGE_ROOT, userId, sessionId, `${answerId}.webm`)
-          if (fs.existsSync(directPath)) targetFilePath = directPath
+          const directPath = path.resolve(STORAGE_ROOT, userId, sessionId, `${answerId}.webm`)
+          if (directPath.startsWith(STORAGE_ROOT) && fs.existsSync(directPath)) {
+            targetFilePath = directPath
+          }
         }
 
         if (!targetFilePath) {

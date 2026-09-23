@@ -1,15 +1,13 @@
-// REST API: /api/v1/meetings/chat
-// Media & Realtime Plane: In-Meeting Multi-Party Realtime Chat
-// Phase 6: Handles message dispatch, pagination, reactions, deletion, announcements, and chat controls
-
 import { tokenService } from '../../../../server/auth/tokenService.ts';
 import { chatService } from '../../../../server/meetings/chatService.ts';
+import { meetingService } from '../../../../server/meetings/meetingService.ts';
 import { createErrorResponse } from '../../../../server/auth/rbacMiddleware.ts';
+import { applySecurityHeaders } from '../../../../server/security/securityHeaders.ts';
 
 export default async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  if (!applySecurityHeaders(req, res)) {
+    return;
+  }
 
   if (req.method === 'OPTIONS') {
     return res.status(204).end();
@@ -44,8 +42,17 @@ export default async function handler(req, res) {
       return res.status(400).json(createErrorResponse('BadRequest', 'meetingId query parameter is required.', 'MISSING_MEETING_ID'));
     }
 
-    if (auth.claims.meetingId && meetingId !== auth.claims.meetingId && caller.role !== 'admin') {
-      return res.status(403).json(createErrorResponse('Forbidden', 'Session token does not grant access to this meeting.', 'ACCESS_DENIED'));
+    if (caller.role !== 'admin') {
+      if (auth.claims.meetingId && meetingId !== auth.claims.meetingId) {
+        return res.status(403).json(createErrorResponse('Forbidden', 'Session token does not grant access to this meeting.', 'ACCESS_DENIED'));
+      }
+      const meeting = meetingService.getMeetingById(meetingId);
+      if (!meeting) {
+        return res.status(404).json(createErrorResponse('NotFound', 'Meeting not found.', 'NOT_FOUND'));
+      }
+      if (meeting.hostId !== caller.id && (!auth.claims.meetingId || auth.claims.meetingId !== meetingId)) {
+        return res.status(403).json(createErrorResponse('Forbidden', 'You are not a participant in this meeting.', 'ACCESS_DENIED'));
+      }
     }
 
     const cursor = req.query?.cursor;

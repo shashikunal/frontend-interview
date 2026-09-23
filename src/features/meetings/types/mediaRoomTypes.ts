@@ -44,6 +44,21 @@ export interface RemoteParticipant {
   avatarUrl?: string;
   stream?: MediaStream | null;
   screenStream?: MediaStream | null;
+  // Phase 16: Advanced Collaboration
+  handRaised?: boolean;
+  handRaisedAt?: string;
+  recentReaction?: { emoji: string; reactionId: string; timestamp: number };
+  presence?: 'online' | 'joining' | 'connected' | 'reconnecting' | 'disconnected' | 'left';
+  joinedAt?: string;
+}
+
+export interface EphemeralReactionEvent {
+  meetingId: string;
+  reactionId: string;
+  userId: string;
+  userName: string;
+  emoji: string;
+  timestamp: number;
 }
 
 export interface MediaRoomSession {

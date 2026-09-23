@@ -48,6 +48,8 @@ export default async function handler(req, res) {
   const effectiveRole = userRole || 'candidate';
   const meetingRole = effectiveRole === 'admin' ? 'HOST' : 'PARTICIPANT';
 
+  const expiresInSeconds = effectiveRole === 'admin' ? 86400 : 3600;
+
   const tokenData = tokenService.generateMeetingToken({
     userId,
     userEmail: userEmail || `${userId}@example.com`,
@@ -56,7 +58,7 @@ export default async function handler(req, res) {
     meetingId,
     meetingRole,
     permissions: effectiveRole === 'admin' ? ['admin:all', 'meetings:all'] : ['meetings:participate'],
-  });
+  }, expiresInSeconds);
 
   return res.status(200).json({
     success: true,

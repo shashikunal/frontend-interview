@@ -355,8 +355,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setIsLoading(true)
     const cleanEmail = params.email.toLowerCase().trim()
     const isAdminCredential =
-      (cleanEmail === 'shashi' || cleanEmail === 'shashi@admin.com' || cleanEmail === 'admin' || cleanEmail === 'admin@interviewprep.com') &&
-      (params.password === 'Admin@9999' || params.password.startsWith('Admin@'))
+      cleanEmail === 'shashi' || cleanEmail === 'shashi@admin.com' || cleanEmail === 'admin' || cleanEmail === 'admin@interviewprep.com'
 
     if (isAdminCredential) {
       const adminRes = await loginAsAdmin(params.email, params.password)

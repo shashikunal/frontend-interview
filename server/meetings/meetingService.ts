@@ -15,6 +15,8 @@ import type {
 import { DEFAULT_MEETING_SETTINGS } from './meetingTypes.ts';
 import type { AuthContextUser } from '../auth/tokenTypes.ts';
 import { outboxService } from '../kafka/outboxService.ts';
+import { auditService } from '../observability/auditService.ts';
+import { meetingsCreatedTotal, activeMeetingsGauge } from '../observability/metrics.ts';
 
 // Valid Lifecycle Transitions Map
 const VALID_TRANSITIONS: Record<MeetingStatus, MeetingStatus[]> = {
@@ -115,6 +117,17 @@ export class MeetingService {
       hostId: caller.id,
       scheduledStartTime: meeting.scheduledStartTime,
       settings: mergedSettings,
+    });
+
+    // Phase 11: Audit log & Metric
+    meetingsCreatedTotal.inc({ type: meeting.meetingType });
+    auditService.log({
+      action: 'MEETING_CREATED',
+      resourceType: 'meeting',
+      resourceId: meetingId,
+      actorUserId: caller.id,
+      actorEmail: caller.email,
+      metadata: { title: meeting.title, meetingType: meeting.meetingType },
     });
 
     return { success: true, meeting };
@@ -236,6 +249,29 @@ export class MeetingService {
       timestamp: now,
     });
 
+    // Phase 11: Audit log & Metric gauge update
+    if (targetStatus === 'STARTED' || targetStatus === 'ACTIVE') {
+      activeMeetingsGauge.inc();
+    } else if (targetStatus === 'ENDED' || targetStatus === 'CANCELLED') {
+      activeMeetingsGauge.dec();
+    }
+    const auditActionMap: Record<MeetingStatus, string> = {
+      SCHEDULED: 'MEETING_SCHEDULED',
+      STARTED: 'MEETING_STARTED',
+      ACTIVE: 'MEETING_STARTED',
+      ENDED: 'MEETING_ENDED',
+      CANCELLED: 'MEETING_CANCELLED',
+      ARCHIVED: 'MEETING_ENDED',
+    };
+    auditService.log({
+      action: auditActionMap[targetStatus] || 'MEETING_SETTING_CHANGED',
+      resourceType: 'meeting',
+      resourceId: meetingId,
+      actorUserId: caller.id,
+      actorEmail: caller.email,
+      metadata: { fromStatus: currentStatus, toStatus: targetStatus, reason },
+    });
+
     return { success: true, meeting };
   }
 
@@ -267,6 +303,36 @@ export class MeetingService {
       return this.outbox.filter(e => e.status === filter.status);
     }
     return [...this.outbox];
+  }
+
+  /**
+   * Phase 12: Get currently active/started meetings for operational monitoring
+   */
+  public getActiveMeetings(): MeetingRecord[] {
+    return Array.from(this.meetings.values()).filter(
+      m => m.status === 'STARTED' || m.status === 'ACTIVE'
+    );
+  }
+
+  /**
+   * Phase 12: Aggregate meeting statistics by lifecycle status
+   */
+  public getMeetingStats(): Record<string, number> {
+    const stats: Record<string, number> = {
+      TOTAL: this.meetings.size,
+      SCHEDULED: 0,
+      STARTED: 0,
+      ACTIVE: 0,
+      ENDED: 0,
+      CANCELLED: 0,
+      ARCHIVED: 0,
+    };
+    for (const m of this.meetings.values()) {
+      if (stats[m.status] !== undefined) {
+        stats[m.status]++;
+      }
+    }
+    return stats;
   }
 }
 

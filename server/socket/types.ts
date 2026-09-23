@@ -176,6 +176,17 @@ export interface ClientToServerEvents {
   'app:chat:typing:start': (data: { conversationId: string }) => void;
   'app:chat:typing:stop': (data: { conversationId: string }) => void;
   'app:chat:presence:subscribe': (data: { userIds: string[] }, callback?: (ack: { success: boolean; presences: Record<string, any> }) => void) => void;
+
+  // Phase 16: Advanced Meeting Collaboration Events
+  'meeting:participant:state': (data: { meetingId: string; micState?: boolean; cameraState?: boolean; screenShareState?: boolean; connectionState?: any; connectionQuality?: any }, callback?: (ack: { success: boolean; error?: string }) => void) => void;
+  'meeting:hand:raise': (data: { meetingId: string }, callback?: (ack: { success: boolean; error?: string }) => void) => void;
+  'meeting:hand:lower': (data: { meetingId: string }, callback?: (ack: { success: boolean; error?: string }) => void) => void;
+  'meeting:hand:host-lower': (data: { meetingId: string; targetUserId: string }, callback?: (ack: { success: boolean; error?: string }) => void) => void;
+  'meeting:reaction': (data: { meetingId: string; emoji: string; correlationId?: string }, callback?: (ack: { success: boolean; error?: string }) => void) => void;
+  'meeting:host:mute-participant': (data: { meetingId: string; targetUserId: string }, callback?: (ack: { success: boolean; error?: string }) => void) => void;
+  'meeting:host:remove-participant': (data: { meetingId: string; targetUserId: string; reason?: string }, callback?: (ack: { success: boolean; error?: string }) => void) => void;
+  'meeting:host:end-meeting': (data: { meetingId: string; reason?: string }, callback?: (ack: { success: boolean; error?: string }) => void) => void;
+  'meeting:sync-state': (data: { meetingId: string }, callback?: (ack: { success: boolean; participants: any[]; error?: string }) => void) => void;
 }
 
 export interface ServerToClientEvents {
@@ -213,6 +224,18 @@ export interface ServerToClientEvents {
   'app:chat:conversation:updated': (conversation: any) => void;
   'app:chat:member:updated': (data: { conversationId: string; participant: any; action: 'ADDED' | 'REMOVED' | 'LEFT' }) => void;
   'app:chat:error': (data: { code: string; message: string; correlationId?: string }) => void;
+
+  // Phase 16: Meeting Collaboration Broadcasts
+  'meeting:participant:joined': (participant: any) => void;
+  'meeting:participant:left': (data: { meetingId: string; userId: string; socketId: string }) => void;
+  'meeting:participant:updated': (participant: any) => void;
+  'meeting:hand:raised': (data: { meetingId: string; userId: string; handRaisedAt: string }) => void;
+  'meeting:hand:lowered': (data: { meetingId: string; userId: string }) => void;
+  'meeting:reaction:broadcast': (reaction: { meetingId: string; reactionId: string; userId: string; userName: string; emoji: string; timestamp: number }) => void;
+  'meeting:host:mute-requested': (data: { meetingId: string; targetUserId: string; requestedBy: string }) => void;
+  'meeting:participant:removed': (data: { meetingId: string; targetUserId: string; reason?: string }) => void;
+  'meeting:ended': (data: { meetingId: string; reason?: string }) => void;
+  'meeting:state:synced': (data: { meetingId: string; participants: any[] }) => void;
 }
 
 export interface SocketData {

@@ -1,6 +1,7 @@
-/**
+﻿/**
  * Meeting Chat Drawer Component
  * Phase 6: Production-Grade In-Meeting Realtime Chat
+ * Phase 15: Virtual message list — only renders ~20 visible messages regardless of history size
  * Features:
  * - Realtime room messaging
  * - Host announcements & system messages
@@ -11,7 +12,8 @@
  * - Keyboard navigation & WCAG accessibility
  */
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useVirtualizer } from '@tanstack/react-virtual';
 import type { ChatMessageRecord, ChatMessageType } from '../../../../server/meetings/chatTypes.ts';
 import type { RemoteParticipant } from '../types/mediaRoomTypes.ts';
 
@@ -64,11 +66,24 @@ export const MeetingChatDrawer: React.FC<MeetingChatDrawerProps> = ({
   const [isLoadingOlder, setIsLoadingOlder] = useState<boolean>(false);
   const [statusFeedback, setStatusFeedback] = useState<string | null>(null);
 
+  const messagesContainerRef = useRef<HTMLDivElement | null>(null);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
+
+  // Phase 15: Virtual message list — only DOM-renders the visible window of messages.
+  // Caps DOM nodes to ~20 items regardless of conversation length.
+  const virtualizer = useVirtualizer({
+    count: messages.length,
+    getScrollElement: () => messagesContainerRef.current,
+    estimateSize: useCallback(() => 72, []), // estimated px per message row
+    overscan: 5,
+  });
 
   // Auto-scroll to bottom on new message
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (messages.length > 0) {
+      virtualizer.scrollToIndex(messages.length - 1, { behavior: 'smooth' });
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [messages.length]);
 
   const handleSend = async (e: React.FormEvent) => {
@@ -247,12 +262,14 @@ export const MeetingChatDrawer: React.FC<MeetingChatDrawerProps> = ({
         </select>
       </div>
 
-      {/* Messages Scroll View */}
+      {/* Messages Scroll View — Phase 15: virtual list */}
       <div
+        ref={messagesContainerRef}
         className="rtc-chat-messages-container"
         role="log"
         aria-live="polite"
         aria-relevant="additions text"
+        style={{ overflowY: 'auto', position: 'relative' }}
       >
         {/* Load older messages button */}
         {hasMoreOlderMessages && onLoadOlderMessages && (
@@ -281,196 +298,140 @@ export const MeetingChatDrawer: React.FC<MeetingChatDrawerProps> = ({
             <span className="rtc-chat-empty-sub">Send a question, note, or code snippet!</span>
           </div>
         ) : (
-          messages.map(msg => {
-            const isLocal = msg.senderId === currentUserId;
-            const isDirect = msg.recipientId !== 'ALL';
-            const isSystem = msg.messageType === 'SYSTEM_MESSAGE' || msg.messageType === 'SYSTEM';
-            const isAnnouncement = msg.messageType === 'HOST_ANNOUNCEMENT';
-            const canDelete = !msg.isDeleted && onDeleteMessage && (isLocal || isHost);
+          // Phase 15: Virtual list — total height div + only visible items rendered
+          <div style={{ height: `${virtualizer.getTotalSize()}px`, width: '100%', position: 'relative' }}>
+            {virtualizer.getVirtualItems().map(virtualRow => {
+              const msg = messages[virtualRow.index];
+              if (!msg) return null;
+              const isLocal = msg.senderId === currentUserId;
+              const isDirect = msg.recipientId !== 'ALL';
+              const isSystem = msg.messageType === 'SYSTEM_MESSAGE' || msg.messageType === 'SYSTEM';
+              const isAnnouncement = msg.messageType === 'HOST_ANNOUNCEMENT';
+              const canDelete = !msg.isDeleted && onDeleteMessage && (isLocal || isHost);
 
-            // ── System Messages (Joined, Left, Chat Toggled) ──────────────
-            if (isSystem) {
-              return (
-                <div
-                  key={msg.id}
-                  className="rtc-chat-system-message"
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '6px',
-                    margin: '8px 0',
-                    fontSize: '0.76rem',
-                    color: 'var(--rtc-text-muted, #94a3b8)',
-                    fontStyle: 'italic',
-                  }}
-                >
-                  <span style={{ fontSize: '0.85rem' }}>⚙️</span>
-                  <span>{msg.content}</span>
-                  <span style={{ fontSize: '0.7rem', opacity: 0.7 }}>• {formatTime(msg.createdAt)}</span>
-                </div>
-              );
-            }
+              const style: React.CSSProperties = {
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100%',
+                transform: `translateY(${virtualRow.start}px)`,
+              };
 
-            // ── Host Announcements ─────────────────────────────────────────
-            if (isAnnouncement) {
-              return (
-                <div
-                  key={msg.id}
-                  className="rtc-chat-announcement-card"
-                  style={{
-                    background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(99, 102, 241, 0.12) 100%)',
-                    border: '1px solid rgba(245, 158, 11, 0.4)',
-                    borderRadius: '8px',
-                    padding: '10px 12px',
-                    margin: '10px 0',
-                  }}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
-                    <span style={{ fontWeight: 700, fontSize: '0.82rem', color: '#f59e0b', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                      📢 Host Announcement
-                    </span>
-                    <span style={{ fontSize: '0.72rem', color: 'var(--rtc-text-muted, #94a3b8)' }}>
-                      {formatTime(msg.createdAt)}
-                    </span>
+              // ── System Messages ───────────────────────────────────────────
+              if (isSystem) {
+                return (
+                  <div
+                    key={msg.id}
+                    data-index={virtualRow.index}
+                    ref={virtualizer.measureElement}
+                    style={style}
+                    className="rtc-chat-system-message"
+                  >
+                    <span style={{ fontSize: '0.85rem' }}>⚙️</span>
+                    <span>{msg.content}</span>
+                    <span style={{ fontSize: '0.7rem', opacity: 0.7 }}>• {formatTime(msg.createdAt)}</span>
                   </div>
-                  <p style={{ margin: 0, fontSize: '0.88rem', color: 'var(--rtc-text-primary, #ffffff)', lineHeight: 1.45 }}>
-                    {msg.isDeleted ? 'This announcement was deleted.' : msg.content}
-                  </p>
-                </div>
-              );
-            }
+                );
+              }
 
-            // ── Standard User Messages ─────────────────────────────────────
-            return (
-              <div
-                key={msg.id}
-                className={`rtc-chat-message-item ${isLocal ? 'is-local' : 'is-remote'} ${
-                  isDirect ? 'is-direct' : ''
-                } ${msg.isDeleted ? 'is-deleted' : ''}`}
-              >
-                {/* Message Header */}
-                <div className="rtc-chat-msg-header">
-                  <span className="rtc-chat-msg-author">
-                    {isLocal ? 'You' : msg.senderName}
-                  </span>
-                  {msg.senderRole === 'HOST' && (
-                    <span className="rtc-role-pill rtc-role-host">Host</span>
-                  )}
-                  {msg.senderRole === 'CO_HOST' && (
-                    <span className="rtc-role-pill rtc-role-cohost">Co-Host</span>
-                  )}
-                  {isDirect && (
-                    <span className="rtc-chat-direct-pill">
-                      🔒 Direct {isLocal ? `to ${msg.recipientName || 'Participant'}` : 'to You'}
-                    </span>
-                  )}
-                  <span className="rtc-chat-msg-time">{formatTime(msg.createdAt)}</span>
-
-                  {/* Message Deletion Action */}
-                  {canDelete && (
-                    <button
-                      type="button"
-                      onClick={() => handleDelete(msg.id)}
-                      title="Delete message"
-                      aria-label={`Delete message from ${msg.senderName}`}
-                      style={{
-                        background: 'transparent',
-                        border: 'none',
-                        color: 'var(--rtc-text-muted, #94a3b8)',
-                        cursor: 'pointer',
-                        fontSize: '0.85rem',
-                        marginLeft: 'auto',
-                        padding: '2px 4px',
-                        borderRadius: '4px',
-                        transition: 'color 0.15s ease',
-                      }}
-                      onMouseEnter={(e) => (e.currentTarget.style.color = '#ef4444')}
-                      onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--rtc-text-muted, #94a3b8)')}
-                    >
-                      🗑️
-                    </button>
-                  )}
-                </div>
-
-                {/* Reply To Reference Banner */}
-                {msg.replyToSnippet && !msg.isDeleted && (
-                  <div className="rtc-chat-reply-quote">
-                    <span className="rtc-chat-reply-icon">↩</span>
-                    <span className="rtc-chat-reply-text">{msg.replyToSnippet}...</span>
-                  </div>
-                )}
-
-                {/* Message Body Content */}
-                <div
-                  className={`rtc-chat-msg-body ${
-                    msg.messageType === 'CODE' ? 'rtc-chat-code-snippet' : ''
-                  }`}
-                >
-                  {msg.isDeleted ? (
-                    <p style={{ fontStyle: 'italic', color: 'var(--rtc-text-muted, #94a3b8)', margin: 0 }}>
-                      🚫 This message was deleted.
+              // ── Host Announcements ────────────────────────────────────────
+              if (isAnnouncement) {
+                return (
+                  <div
+                    key={msg.id}
+                    data-index={virtualRow.index}
+                    ref={virtualizer.measureElement}
+                    style={style}
+                    className="rtc-chat-announcement-card"
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
+                      <span style={{ fontWeight: 700, fontSize: '0.82rem', color: '#f59e0b', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        📢 Host Announcement
+                      </span>
+                      <span style={{ fontSize: '0.72rem', color: 'var(--rtc-text-muted, #94a3b8)' }}>
+                        {formatTime(msg.createdAt)}
+                      </span>
+                    </div>
+                    <p style={{ margin: 0, fontSize: '0.88rem', color: 'var(--rtc-text-primary, #ffffff)', lineHeight: 1.45 }}>
+                      {msg.isDeleted ? 'This announcement was deleted.' : msg.content}
                     </p>
-                  ) : msg.messageType === 'CODE' ? (
-                    <pre>
-                      <code>{msg.content}</code>
-                    </pre>
-                  ) : (
-                    <p>{msg.content}</p>
-                  )}
-                </div>
+                  </div>
+                );
+              }
 
-                {/* Reactions Row */}
-                {!msg.isDeleted && (
-                  <div className="rtc-chat-reactions-row">
-                    {Object.entries(msg.reactions || {}).map(([emoji, userIds]) => {
-                      const hasReacted = userIds.includes(currentUserId);
-                      return (
-                        <button
-                          key={emoji}
-                          type="button"
-                          className={`rtc-chat-reaction-pill ${hasReacted ? 'active' : ''}`}
-                          onClick={() => onAddReaction(msg.id, emoji)}
-                          title={`${userIds.length} reaction${userIds.length > 1 ? 's' : ''}`}
-                          aria-label={`React with ${emoji} (${userIds.length})`}
-                        >
-                          <span>{emoji}</span>
-                          <span className="rtc-reaction-count">{userIds.length}</span>
-                        </button>
-                      );
-                    })}
-
-                    {/* Reaction Picker Button */}
-                    <div className="rtc-reaction-hover-picker">
-                      {COMMON_REACTIONS.map(emoji => (
-                        <button
-                          key={emoji}
-                          type="button"
-                          className="rtc-quick-reaction-btn"
-                          onClick={() => onAddReaction(msg.id, emoji)}
-                          aria-label={`Add reaction ${emoji}`}
-                        >
-                          {emoji}
-                        </button>
-                      ))}
+              // ── Standard User Messages ────────────────────────────────────
+              return (
+                <div
+                  key={msg.id}
+                  data-index={virtualRow.index}
+                  ref={virtualizer.measureElement}
+                  style={style}
+                  className={`rtc-chat-message-item ${isLocal ? 'is-local' : 'is-remote'} ${
+                    isDirect ? 'is-direct' : ''
+                  } ${msg.isDeleted ? 'is-deleted' : ''}`}
+                >
+                  <div className="rtc-chat-msg-header">
+                    <span className="rtc-chat-msg-author">{isLocal ? 'You' : msg.senderName}</span>
+                    {msg.senderRole === 'HOST' && <span className="rtc-role-pill rtc-role-host">Host</span>}
+                    {msg.senderRole === 'CO_HOST' && <span className="rtc-role-pill rtc-role-cohost">Co-Host</span>}
+                    {isDirect && (
+                      <span className="rtc-chat-direct-pill">
+                        🔒 Direct {isLocal ? `to ${msg.recipientName || 'Participant'}` : 'to You'}
+                      </span>
+                    )}
+                    <span className="rtc-chat-msg-time">{formatTime(msg.createdAt)}</span>
+                    {canDelete && (
                       <button
                         type="button"
-                        className="rtc-reply-action-btn"
-                        onClick={() => setReplyingTo(msg)}
-                        title="Reply to message"
-                        aria-label={`Reply to message from ${msg.senderName}`}
-                      >
-                        ↩ Reply
-                      </button>
-                    </div>
+                        onClick={() => handleDelete(msg.id)}
+                        title="Delete message"
+                        aria-label={`Delete message from ${msg.senderName}`}
+                        style={{ background: 'transparent', border: 'none', color: 'var(--rtc-text-muted, #94a3b8)', cursor: 'pointer', fontSize: '0.85rem', marginLeft: 'auto', padding: '2px 4px', borderRadius: '4px' }}
+                      >🗑️</button>
+                    )}
                   </div>
-                )}
-              </div>
-            );
-          })
+                  {msg.replyToSnippet && !msg.isDeleted && (
+                    <div className="rtc-chat-reply-quote">
+                      <span className="rtc-chat-reply-icon">↩</span>
+                      <span className="rtc-chat-reply-text">{msg.replyToSnippet}...</span>
+                    </div>
+                  )}
+                  <div className={`rtc-chat-msg-body ${msg.messageType === 'CODE' ? 'rtc-chat-code-snippet' : ''}`}>
+                    {msg.isDeleted ? (
+                      <p style={{ fontStyle: 'italic', color: 'var(--rtc-text-muted, #94a3b8)', margin: 0 }}>🚫 This message was deleted.</p>
+                    ) : msg.messageType === 'CODE' ? (
+                      <pre><code>{msg.content}</code></pre>
+                    ) : (
+                      <p>{msg.content}</p>
+                    )}
+                  </div>
+                  {!msg.isDeleted && (
+                    <div className="rtc-chat-reactions-row">
+                      {Object.entries(msg.reactions || {}).map(([emoji, userIds]) => {
+                        const hasReacted = (userIds as string[]).includes(currentUserId);
+                        return (
+                          <button key={emoji} type="button" className={`rtc-chat-reaction-pill ${hasReacted ? 'active' : ''}`} onClick={() => onAddReaction(msg.id, emoji)}>
+                            <span>{emoji}</span>
+                            <span className="rtc-reaction-count">{(userIds as string[]).length}</span>
+                          </button>
+                        );
+                      })}
+                      <div className="rtc-reaction-hover-picker">
+                        {COMMON_REACTIONS.map(emoji => (
+                          <button key={emoji} type="button" className="rtc-quick-reaction-btn" onClick={() => onAddReaction(msg.id, emoji)}>{emoji}</button>
+                        ))}
+                        <button type="button" className="rtc-reply-action-btn" onClick={() => setReplyingTo(msg)} title="Reply to message">↩ Reply</button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
         )}
         <div ref={messagesEndRef} />
       </div>
+
 
       {/* Reply Banner */}
       {replyingTo && (

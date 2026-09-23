@@ -21,6 +21,7 @@ interface MediaControlsDockProps {
   isCodeEditorOpen: boolean;
   isSettingsOpen: boolean;
   isHost: boolean;
+  handRaised?: boolean;
   onToggleAudio: () => void;
   onToggleVideo: () => void;
   onToggleScreenShare: () => void;
@@ -32,6 +33,10 @@ interface MediaControlsDockProps {
   onToggleSettings: () => void;
   onLeaveMeeting: () => void;
   onEndMeetingForAll?: () => void;
+  onToggleHandRaise?: () => void;
+  onSendReaction?: (emoji: string) => void;
+  isRecording?: boolean;
+  onToggleRecording?: () => void;
 }
 
 export const MediaControlsDock: React.FC<MediaControlsDockProps> = ({
@@ -48,6 +53,7 @@ export const MediaControlsDock: React.FC<MediaControlsDockProps> = ({
   isCodeEditorOpen,
   isSettingsOpen,
   isHost,
+  handRaised = false,
   onToggleAudio,
   onToggleVideo,
   onToggleScreenShare,
@@ -59,7 +65,13 @@ export const MediaControlsDock: React.FC<MediaControlsDockProps> = ({
   onToggleSettings,
   onLeaveMeeting,
   onEndMeetingForAll,
+  onToggleHandRaise,
+  onSendReaction,
+  isRecording = false,
+  onToggleRecording,
 }) => {
+  const [showReactionPicker, setShowReactionPicker] = React.useState<boolean>(false);
+  const reactionEmojis = ['👍', '👏', '❤️', '😂', '🎉'];
   return (
     <div className="rtc-controls-dock-container">
       <div className="rtc-controls-dock">
@@ -162,6 +174,78 @@ export const MediaControlsDock: React.FC<MediaControlsDockProps> = ({
           </svg>
           <span className="rtc-dock-btn-label">Code</span>
         </button>
+
+        {/* Raise Hand Toggle Button */}
+        {onToggleHandRaise && (
+          <button
+            type="button"
+            className={`rtc-dock-btn ${handRaised ? 'highlight-active' : ''}`}
+            onClick={onToggleHandRaise}
+            title={handRaised ? 'Lower your hand' : 'Raise hand (Alt+H)'}
+          >
+            <span style={{ fontSize: '18px', lineHeight: 1 }}>✋</span>
+            <span className="rtc-dock-btn-label">{handRaised ? 'Raised' : 'Hand'}</span>
+          </button>
+        )}
+
+        {/* Ephemeral Reactions Picker Button */}
+        {onSendReaction && (
+          <div style={{ position: 'relative' }}>
+            {showReactionPicker && (
+              <div
+                className="rtc-reaction-picker-popover"
+                onClick={e => e.stopPropagation()}
+              >
+                {reactionEmojis.map(emoji => (
+                  <button
+                    key={emoji}
+                    type="button"
+                    className="rtc-reaction-emoji-btn"
+                    onClick={() => {
+                      onSendReaction(emoji);
+                      setShowReactionPicker(false);
+                    }}
+                    title={`Send ${emoji} reaction`}
+                  >
+                    {emoji}
+                  </button>
+                ))}
+              </div>
+            )}
+            <button
+              type="button"
+              className={`rtc-dock-btn ${showReactionPicker ? 'active' : ''}`}
+              onClick={() => setShowReactionPicker(prev => !prev)}
+              title="Send in-call reaction"
+            >
+              <span style={{ fontSize: '18px', lineHeight: 1 }}>😊</span>
+              <span className="rtc-dock-btn-label">React</span>
+            </button>
+          </div>
+        )}
+
+        {/* Record Button (Host/Admin moderation control) */}
+        {onToggleRecording && (
+          <button
+            type="button"
+            className={`rtc-dock-btn ${isRecording ? 'recording' : ''}`}
+            onClick={onToggleRecording}
+            title={isRecording ? 'Stop Recording' : 'Start Recording'}
+            style={isRecording ? { borderColor: '#ef4444', color: '#ef4444' } : undefined}
+          >
+            <span
+              style={{
+                display: 'inline-block',
+                width: '12px',
+                height: '12px',
+                borderRadius: isRecording ? '2px' : '50%',
+                backgroundColor: isRecording ? '#ef4444' : 'currentColor',
+                animation: isRecording ? 'handPulse 1.5s infinite' : 'none',
+              }}
+            />
+            <span className="rtc-dock-btn-label">{isRecording ? 'Rec ON' : 'Record'}</span>
+          </button>
+        )}
 
         <div className="rtc-dock-separator" />
 

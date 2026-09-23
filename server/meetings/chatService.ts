@@ -28,13 +28,16 @@ import type {
 } from './chatTypes.ts';
 import { supabase } from '../../src/lib/supabase/client.ts';
 
-// Basic HTML/script sanitization to prevent stored XSS
-function sanitizeContent(text: string): string {
+// Strict HTML entity encoding to completely neutralize stored XSS vectors
+export function sanitizeContent(text: string): string {
+  if (!text || typeof text !== 'string') return '';
   return text
-    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
-    .replace(/javascript:/gi, '')
-    .replace(/onerror\s*=/gi, '')
-    .replace(/onload\s*=/gi, '');
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+    .replace(/\//g, '&#x2F;');
 }
 
 export class ChatService {

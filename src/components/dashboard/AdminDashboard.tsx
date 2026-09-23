@@ -17,6 +17,10 @@ import AdminActivityTab from './admin/AdminActivityTab'
 import AdminAnalyticsTab from './admin/AdminAnalyticsTab'
 import AdminRequestsTab from './admin/AdminRequestsTab'
 import AdminTelemetryTab from './admin/AdminTelemetryTab'
+import AdminSystemHealthTab from './admin/AdminSystemHealthTab'
+import AdminControlCenterTab from './admin/AdminControlCenterTab'
+import AdminMeetingManagementTab from './admin/AdminMeetingManagementTab'
+import AdminNotificationMonitorTab from './admin/AdminNotificationMonitorTab'
 import AdminTracksTab, { type TrackStat } from './admin/AdminTracksTab'
 import AdminLiveSessionsTab from './admin/AdminLiveSessionsTab'
 import AdminCandidateManagementTab from '../../features/performance-history/components/admin/AdminCandidateManagementTab'
@@ -50,9 +54,12 @@ import './AdminDashboard.css'
 // No hardcoded activeCandidates or avgScore constants.
 
 export type AdminTab =
+  | 'control_center'
   | 'overview'
   | 'candidates'
   | 'users'
+  | 'meeting_ops'
+  | 'notifications'
   | 'docs'
   | 'master_bank'
   | 'live'
@@ -65,6 +72,7 @@ export type AdminTab =
   | 'requests'
   | 'tracks'
   | 'audit'
+  | 'health'
   | 'profile'
 
 export default function AdminDashboard() {
@@ -99,9 +107,12 @@ export default function AdminDashboard() {
     const rawTab = searchParams.get('tab') || urlTab
     if (!rawTab) return 'overview'
     const clean = rawTab.toLowerCase()
+    if (clean === 'control_center' || clean === 'control-center' || clean === 'ops' || clean === 'operations') return 'control_center'
     if (clean === 'overview') return 'overview'
     if (clean === 'candidates' || clean === 'hiring' || clean === 'evaluations') return 'candidates'
     if (clean === 'users' || clean === 'directory') return 'users'
+    if (clean === 'meeting_ops' || clean === 'meetings' || clean === 'meeting-ops' || clean === 'meeting-management') return 'meeting_ops'
+    if (clean === 'notifications' || clean === 'notification-monitor' || clean === 'dlq') return 'notifications'
     if (clean === 'docs' || clean === 'syllabus' || clean === 'documentation') return 'docs'
     if (clean === 'master_bank' || clean === 'master-bank' || clean === 'interview-bank' || clean === 'interview-questions') return 'master_bank'
     if (clean === 'live' || clean === 'live-sessions') return 'live'
@@ -114,6 +125,7 @@ export default function AdminDashboard() {
     if (clean === 'requests') return 'requests'
     if (clean === 'tracks') return 'tracks'
     if (clean === 'telemetry' || clean === 'audit') return 'audit'
+    if (clean === 'health' || clean === 'system-health' || clean === 'system_health' || clean === 'observability') return 'health'
     if (clean === 'profile') return 'profile'
     return 'overview'
   }, [searchParams, urlTab, isCandidatePerformanceRoute])
@@ -773,6 +785,36 @@ export default function AdminDashboard() {
           <span className="h-nav-section-title">Main Dashboard</span>
           <button
             type="button"
+            className={`h-nav-item ${activeTab === 'control_center' ? 'active' : ''}`}
+            onClick={() => { setActiveTab('control_center'); setIsMobileSidebarOpen(false); }}
+          >
+            <span className="h-nav-icon">🎛️</span>
+            <span>Control Center</span>
+            <span className="h-nav-badge" style={{ background: '#6366f1', color: '#ffffff' }}>LIVE</span>
+          </button>
+
+          <button
+            type="button"
+            className={`h-nav-item ${activeTab === 'meeting_ops' ? 'active' : ''}`}
+            onClick={() => { setActiveTab('meeting_ops'); setIsMobileSidebarOpen(false); }}
+          >
+            <span className="h-nav-icon">📹</span>
+            <span>Meeting Operations</span>
+            <span className="h-nav-badge" style={{ background: '#3b82f6', color: '#ffffff' }}>OPS</span>
+          </button>
+
+          <button
+            type="button"
+            className={`h-nav-item ${activeTab === 'notifications' ? 'active' : ''}`}
+            onClick={() => { setActiveTab('notifications'); setIsMobileSidebarOpen(false); }}
+          >
+            <span className="h-nav-icon">🔔</span>
+            <span>Notification Monitor</span>
+            <span className="h-nav-badge" style={{ background: '#f59e0b', color: '#ffffff' }}>DLQ</span>
+          </button>
+
+          <button
+            type="button"
             className={`h-nav-item ${activeTab === 'overview' ? 'active' : ''}`}
             onClick={() => { setActiveTab('overview'); setIsMobileSidebarOpen(false); }}
           >
@@ -925,6 +967,16 @@ export default function AdminDashboard() {
 
           <button
             type="button"
+            className={`h-nav-item ${activeTab === 'health' ? 'active' : ''}`}
+            onClick={() => { setActiveTab('health'); setIsMobileSidebarOpen(false); }}
+          >
+            <span className="h-nav-icon">🩺</span>
+            <span>System Health</span>
+            <span className="h-nav-badge" style={{ background: '#10b981', color: '#ffffff' }}>LIVE</span>
+          </button>
+
+          <button
+            type="button"
             className={`h-nav-item ${activeTab === 'profile' ? 'active' : ''}`}
             onClick={() => { setActiveTab('profile'); setIsMobileSidebarOpen(false); }}
           >
@@ -996,6 +1048,10 @@ export default function AdminDashboard() {
             </div>
             <h1 className="h-page-title">
               {isCandidatePerformanceRoute && 'Candidate Performance Dossier'}
+              {!isCandidatePerformanceRoute && activeTab === 'control_center' && '🎛️ Operational Command Center'}
+              {!isCandidatePerformanceRoute && activeTab === 'meeting_ops' && '📹 Meeting Operations & Lifecycle Control'}
+              {!isCandidatePerformanceRoute && activeTab === 'notifications' && '🔔 Notification Delivery & DLQ Telemetry'}
+              {!isCandidatePerformanceRoute && activeTab === 'health' && '🩺 System Health & Infrastructure Observability'}
               {!isCandidatePerformanceRoute && activeTab === 'overview' && 'System Operations'}
               {!isCandidatePerformanceRoute && activeTab === 'candidates' && 'Candidate Hiring Management & Evaluations'}
               {!isCandidatePerformanceRoute && activeTab === 'users' && 'Candidate Directory'}
@@ -1170,6 +1226,33 @@ export default function AdminDashboard() {
               </div>
             </div>
           )}
+
+      {/* ================================================================ */}
+      {/* TAB: OPERATIONAL CONTROL CENTER */}
+      {/* ================================================================ */}
+      {activeTab === 'control_center' && (
+        <div className="admin-tab-content">
+          <AdminControlCenterTab onNavigateTab={t => setActiveTab(t as AdminTab)} />
+        </div>
+      )}
+
+      {/* ================================================================ */}
+      {/* TAB: MEETING OPERATIONS & LIFECYCLE MANAGEMENT */}
+      {/* ================================================================ */}
+      {activeTab === 'meeting_ops' && (
+        <div className="admin-tab-content">
+          <AdminMeetingManagementTab />
+        </div>
+      )}
+
+      {/* ================================================================ */}
+      {/* TAB: NOTIFICATION MONITORING & KAFKA DLQ */}
+      {/* ================================================================ */}
+      {activeTab === 'notifications' && (
+        <div className="admin-tab-content">
+          <AdminNotificationMonitorTab />
+        </div>
+      )}
 
       {/* ================================================================ */}
       {/* TAB 0: OVERVIEW COMMAND CENTER */}
@@ -1671,6 +1754,15 @@ export default function AdminDashboard() {
             onInspectUser={(uId: string) => setSelectedUserForDeepDive(uId)}
             onRefresh={loadData}
           />
+        </div>
+      )}
+
+      {/* ================================================================ */}
+      {/* TAB: SYSTEM HEALTH & OBSERVABILITY */}
+      {/* ================================================================ */}
+      {activeTab === 'health' && (
+        <div className="admin-tab-content">
+          <AdminSystemHealthTab />
         </div>
       )}
 

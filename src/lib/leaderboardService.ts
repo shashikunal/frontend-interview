@@ -1072,9 +1072,12 @@ export const leaderboardService = {
     try {
       const client = await ensureReaderAuth()
 
+      const isUuid = (str?: string): boolean =>
+        Boolean(str && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(str))
+
       // Resolve candidate UUID if only email or custom ID is provided
       let targetUuids: string[] = []
-      if (userId) targetUuids.push(userId)
+      if (userId && isUuid(userId)) targetUuids.push(userId)
 
       if (userEmail) {
         const { data: prof } = await client
@@ -1082,25 +1085,29 @@ export const leaderboardService = {
           .select('id')
           .eq('email', userEmail)
           .maybeSingle()
-        if (prof?.id && !targetUuids.includes(prof.id)) {
+        if (prof?.id && isUuid(prof.id) && !targetUuids.includes(prof.id)) {
           targetUuids.push(prof.id)
         }
       }
 
-      // Query Supabase submissions
-      let query = client
-        .from('submissions')
-        .select('*')
-        .order('created_at', { ascending: false })
+      // Query Supabase submissions only if valid UUID targets exist
+      let rawSubs: any[] = []
+      if (targetUuids.length > 0) {
+        let query = client
+          .from('submissions')
+          .select('*')
+          .order('created_at', { ascending: false })
 
-      if (targetUuids.length === 1) {
-        query = query.eq('user_id', targetUuids[0])
-      } else if (targetUuids.length > 1) {
-        query = query.in('user_id', targetUuids)
+        if (targetUuids.length === 1) {
+          query = query.eq('user_id', targetUuids[0])
+        } else if (targetUuids.length > 1) {
+          query = query.in('user_id', targetUuids)
+        }
+
+        const { data, error } = await query
+        if (error) throw error
+        rawSubs = data || []
       }
-
-      const { data: rawSubs, error } = await query
-      if (error) throw error
 
       // Also read locally stored submissions
       let localList: StoredCandidateSubmission[] = []

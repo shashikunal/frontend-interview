@@ -54,6 +54,7 @@ const StudentPerformanceView = lazy(() => import('./features/performance-history
 const DocsPlatform = lazy(() => import('./features/interview-docs/DocsPlatform'))
 const MasterQuestionBankApp = lazy(() => import('./features/interview-questions/MasterQuestionBankApp'))
 const MeetingRoom = lazy(() => import('./features/meetings/components/MeetingRoom'))
+const MeetingRecordingPage = lazy(() => import('./features/meetings/components/MeetingRecordingPage'))
 const AppChatWorkspace = lazy(() => import('./features/chat/components/AppChatWorkspace'))
 const NotFoundPage = lazy(() => import('./components/common/NotFoundPage'))
 import RoleGuard from './components/auth/RoleGuard'
@@ -78,7 +79,7 @@ export default function App() {
     (Boolean(new URLSearchParams(location.search).get('id')) || location.pathname.startsWith('/dsa/DSA') || location.pathname.startsWith('/dsa/question/') || location.pathname.startsWith('/frontend-javascript/question/') || location.pathname.startsWith('/frontend-javascript/FJP') || location.pathname.startsWith('/frontend-js/question/') || location.pathname.startsWith('/frontend-js/FJP') || location.pathname.startsWith('/core-programming/question/') || location.pathname.startsWith('/core-programming/JS-P') || location.pathname.startsWith('/frontend-programming/question/') || location.pathname.startsWith('/frontend-programming/JS-P'))
   const isAIVideoMockLiveSession = location.pathname.startsWith('/ai-video-mock/session')
   const isDocsPlatform = location.pathname.startsWith('/docs')
-  const isMeetingRoom = location.pathname.startsWith('/meet')
+  const isMeetingRoom = location.pathname.startsWith('/meet') || location.pathname.startsWith('/meetings')
   const hideHeader = isAdminDashboard || isMeetingRoom
   const hideFooter = isAdminDashboard || isStudioWorkspace || isAIVideoMockLiveSession || isDocsPlatform || isMeetingRoom
 
@@ -95,6 +96,8 @@ export default function App() {
             <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/meet/:meetingId" element={<MeetingRoom />} />
+          <Route path="/meet/:meetingId/recording/:recordingId" element={<MeetingRecordingPage />} />
+          <Route path="/meetings/:meetingId/recordings/:recordingId" element={<MeetingRecordingPage />} />
           <Route path="/chat" element={<AppChatWorkspace />} />
           <Route path="/app-chat" element={<AppChatWorkspace />} />
           <Route path="/docs/*" element={<DocsPlatform />} />

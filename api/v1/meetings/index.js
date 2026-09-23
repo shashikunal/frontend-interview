@@ -12,6 +12,8 @@ import joinHandler from './_handlers/join.js';
 import lifecycleHandler from './_handlers/lifecycle.js';
 import mediaTokenHandler from './_handlers/media-token.js';
 import whiteboardHandler from './_handlers/whiteboard.js';
+import recordingHandler from './_handlers/recording.js';
+import { applySecurityHeaders } from '../../../server/security/securityHeaders.ts';
 
 export default async function handler(req, res) {
   const urlObj = new URL(req.url || '/', 'http://localhost');
@@ -19,6 +21,9 @@ export default async function handler(req, res) {
   const subpath = (req.query?._subpath || urlObj.searchParams.get('_subpath') || '').toLowerCase();
 
   // Dispatch to sub-handlers when invoked via Vercel rewrite or direct routing
+  if (pathname.endsWith('/recording') || pathname.includes('/recording') || subpath === 'recording') {
+    return recordingHandler(req, res);
+  }
   if (pathname.endsWith('/chat') || pathname.includes('/chat') || subpath === 'chat') {
     return chatHandler(req, res);
   }
@@ -42,9 +47,9 @@ export default async function handler(req, res) {
   }
 
   // Base /api/v1/meetings handler
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  if (!applySecurityHeaders(req, res)) {
+    return;
+  }
 
   if (req.method === 'OPTIONS') {
     return res.status(204).end();
@@ -71,12 +76,15 @@ export default async function handler(req, res) {
     permissions: auth.claims.permissions || [],
   };
 
-  // GET: List Meetings
+  // GET: List Meetings (RBAC Enforced: Non-admins can ONLY view their own meetings)
   if (req.method === 'GET') {
     const status = urlObj.searchParams.get('status') || undefined;
-    const hostId = urlObj.searchParams.get('hostId') || undefined;
+    const requestedHostId = urlObj.searchParams.get('hostId') || undefined;
 
-    const meetings = meetingService.listMeetings({ status, hostId });
+    // RBAC: Non-admins cannot enumerate all meetings across the platform
+    const effectiveHostId = user.role === 'admin' ? (requestedHostId || undefined) : user.id;
+
+    const meetings = meetingService.listMeetings({ status, hostId: effectiveHostId });
     return res.status(200).json({ success: true, count: meetings.length, meetings });
   }
 

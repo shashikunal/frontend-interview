@@ -16,6 +16,7 @@ export const KAFKA_TOPICS = {
   CONVERSATION_EVENTS: 'conversation.events',
   USER_EVENTS: 'user.events',
   NOTIFICATION_EVENTS: 'notification.events',
+  RECORDING_EVENTS: 'recording.events',
   AUDIT_EVENTS: 'audit.events',
   ANALYTICS_EVENTS: 'analytics.events',
   DEAD_LETTER_EVENTS: 'dead-letter.events',
@@ -67,6 +68,13 @@ export const TOPIC_REGISTRY: Record<KafkaTopic, TopicMetadata> = {
     retentionHours: 72, // 3 days
     orderingGuarantee: 'Per-recipient ordering guaranteed within partition',
   },
+  [KAFKA_TOPICS.RECORDING_EVENTS]: {
+    name: KAFKA_TOPICS.RECORDING_EVENTS,
+    description: 'Meeting recording lifecycle, media finalization, and transcription jobs',
+    partitionKeyDescription: 'meetingId',
+    retentionHours: 168,
+    orderingGuarantee: 'Per-meeting ordering guaranteed within partition',
+  },
   [KAFKA_TOPICS.AUDIT_EVENTS]: {
     name: KAFKA_TOPICS.AUDIT_EVENTS,
     description: 'Security, compliance, and governance audit records',
@@ -108,6 +116,9 @@ export function resolveTopicForEvent(eventType: EventType | string): KafkaTopic 
   }
   if (eventType.startsWith('Notification')) {
     return KAFKA_TOPICS.NOTIFICATION_EVENTS;
+  }
+  if (eventType.startsWith('Recording') || eventType.startsWith('Transcript')) {
+    return KAFKA_TOPICS.RECORDING_EVENTS;
   }
   if (eventType.startsWith('Audit')) {
     return KAFKA_TOPICS.AUDIT_EVENTS;

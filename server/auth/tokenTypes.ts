@@ -29,7 +29,7 @@ export interface TokenVerificationResult {
   valid: boolean;
   claims?: DecodedMeetingToken;
   error?: string;
-  errorCode?: 'EXPIRED' | 'INVALID_SIGNATURE' | 'MALFORMED' | 'REVOKED' | 'UNAUTHORIZED';
+  errorCode?: 'EXPIRED' | 'INVALID_SIGNATURE' | 'MALFORMED' | 'REVOKED' | 'UNAUTHORIZED' | 'UNSUPPORTED_ALGORITHM' | 'INVALID_TOKEN_TYPE';
 }
 
 export interface AuthContextUser {

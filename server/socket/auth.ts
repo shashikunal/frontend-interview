@@ -17,17 +17,19 @@ export async function authenticateSocket(
         : null);
 
     if (!token) {
-      // In development, permit fallback guest/demo session with explicit role
-      if (process.env.NODE_ENV !== 'production') {
+      // In development, only permit non-privileged guest candidate if explicitly requested; NEVER permit unverified admin
+      if (process.env.NODE_ENV !== 'production' && socket.handshake.auth?.devUser) {
         const devUser = socket.handshake.auth?.devUser || {};
-        const isDevAdmin = devUser.role === 'admin' || devUser.id?.includes('admin');
+        if (devUser.role === 'admin' || devUser.id?.includes('admin')) {
+          return next(new Error('Authentication failed: Administrative access requires a verified cryptographic token.'));
+        }
         socket.data.user = {
           id: devUser.id || `guest_${socket.id.slice(0, 8)}`,
           email: devUser.email || 'candidate@dev.local',
-          role: isDevAdmin ? 'admin' : 'candidate',
+          role: 'candidate',
           name: devUser.name || 'Candidate',
         };
-        socket.data.role = socket.data.user.role;
+        socket.data.role = 'candidate';
         socket.data.subscribedSessions = new Set();
         return next();
       }

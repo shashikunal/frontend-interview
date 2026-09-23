@@ -95,6 +95,8 @@ export class TokenService {
     return { token, tokenId: jti, expiresAt: exp };
   }
 
+  private userRevocations: Map<string, number> = new Map(); // userId -> revoked before epoch seconds
+
   /**
    * Verifies an incoming JWT with constant-time signature validation and revocation checks
    */
@@ -114,6 +116,31 @@ export class TokenService {
     const [encodedHeader, encodedPayload, encodedSignature] = parts;
 
     try {
+      // 1. Strictly Validate Header (Prevent alg: "none" attacks)
+      const headerJson = base64UrlDecode(encodedHeader);
+      let header: any;
+      try {
+        header = JSON.parse(headerJson);
+      } catch {
+        return { valid: false, error: 'Invalid token header format', errorCode: 'MALFORMED' };
+      }
+
+      if (!header || typeof header !== 'object') {
+        return { valid: false, error: 'Malformed token header', errorCode: 'MALFORMED' };
+      }
+
+      if (header.alg !== 'HS256') {
+        return {
+          valid: false,
+          error: `Unsupported signing algorithm '${header.alg}'. Only HS256 is permitted.`,
+          errorCode: 'UNSUPPORTED_ALGORITHM',
+        };
+      }
+
+      if (header.typ && header.typ !== 'JWT') {
+        return { valid: false, error: 'Invalid token type', errorCode: 'INVALID_TOKEN_TYPE' };
+      }
+
       const signingInput = `${encodedHeader}.${encodedPayload}`;
       const expectedSignature = crypto
         .createHmac('sha256', customSecret || this.secret)
@@ -148,9 +175,17 @@ export class TokenService {
         return { valid: false, error: 'Token has expired', errorCode: 'EXPIRED', claims };
       }
 
-      // Check Revocation Blacklist
+      // Check Revocation Blacklist (Token-level)
       if (this.revokedTokens.has(claims.jti)) {
         return { valid: false, error: 'Token has been revoked', errorCode: 'REVOKED' };
+      }
+
+      // Check User-level Revocation (Logout-all / Suspension)
+      if (claims.userId && this.userRevocations.has(claims.userId)) {
+        const revokedBefore = this.userRevocations.get(claims.userId)!;
+        if (claims.iat <= revokedBefore) {
+          return { valid: false, error: 'Session revoked due to user logout or suspension', errorCode: 'REVOKED' };
+        }
       }
 
       // Check Audience and Issuer
@@ -170,6 +205,14 @@ export class TokenService {
   public revokeToken(jti: string, expiresAt: number): void {
     if (!jti) return;
     this.revokedTokens.set(jti, expiresAt);
+  }
+
+  /**
+   * Revokes all active sessions for a user (e.g., password reset, suspension, logout-all)
+   */
+  public revokeAllUserTokens(userId: string): void {
+    if (!userId) return;
+    this.userRevocations.set(userId, Math.floor(Date.now() / 1000));
   }
 
   /**

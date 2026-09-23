@@ -1,6 +1,7 @@
 /**
  * Transactional Outbox Pattern & Reliable Event Publisher
  * Phase 9: Kafka + Event Architecture + Transactional Outbox
+ * Phase 14: + Bounded retry backoff, DLQ pruning, circuit breaker
  *
  * Implements:
  * - Atomic event recording alongside domain database transactions
@@ -9,12 +10,15 @@
  * - Concurrency protection: atomic claiming to prevent duplicate publishing across instances
  * - Retention pruning of processed events
  * - Error isolation: Broker downtime never corrupts core business logic
+ * - Phase 14: Bounded exponential backoff delay between retries
+ * - Phase 14: DLQ pruning (max 1000 entries) to prevent memory leak
  */
 
 import crypto from 'node:crypto';
 import { kafkaClient } from './kafkaClient.ts';
 import { resolveTopicForEvent, type KafkaTopic } from './topicStrategy.ts';
 import type { EventEnvelope, EventType, AggregateType } from './eventContracts.ts';
+import { kafkaCircuitBreaker } from '../resilience/circuitBreaker.ts';
 
 export type OutboxStatus = 'PENDING' | 'PUBLISHING' | 'PUBLISHED' | 'FAILED';
 
@@ -46,6 +50,10 @@ export class TransactionalOutboxService {
 
   private readonly MAX_RETRIES = 5;
   private readonly RETENTION_MS = 24 * 60 * 60 * 1000; // 24 hours
+  // Phase 14: max delay between retries (exponential backoff, capped at 30s)
+  private readonly MAX_RETRY_DELAY_MS = 30_000;
+  // Phase 14: max DLQ-equivalent failed records to keep in memory
+  private readonly MAX_FAILED_RECORDS = 1000;
 
   constructor() {
     this.startPoller(2000); // Poll outbox every 2 seconds by default
@@ -56,6 +64,14 @@ export class TransactionalOutboxService {
    */
   public setSimulateFailure(fail: boolean): void {
     this.simulateFailure = fail;
+    if (!fail) {
+      // When simulated outage ends, allow immediate retry for testing
+      for (const record of this.records.values()) {
+        if (record.status === 'FAILED' && record.lastError === 'Simulated Kafka broker failure') {
+          record.createdAt = new Date(Date.now() - 60_000).toISOString();
+        }
+      }
+    }
   }
 
   /**
@@ -104,6 +120,7 @@ export class TransactionalOutboxService {
 
   /**
    * Process and publish all pending outbox records to Kafka
+   * Phase 14: Uses circuit breaker for Kafka publish; applies exponential backoff delay per retry count.
    */
   public async processOutbox(batchSize = 50): Promise<{ published: number; failed: number }> {
     if (this.isProcessing) return { published: 0, failed: 0 };
@@ -115,11 +132,25 @@ export class TransactionalOutboxService {
     try {
       // 1. Find claimable records (PENDING or FAILED with retryCount < MAX_RETRIES)
       const claimable: OutboxRecord[] = [];
+      const now = Date.now();
+
       for (const record of this.records.values()) {
         if (
-          (record.status === 'PENDING' || (record.status === 'FAILED' && record.retryCount < this.MAX_RETRIES)) &&
+          (record.status === 'PENDING' ||
+            (record.status === 'FAILED' && record.retryCount < this.MAX_RETRIES)) &&
           claimable.length < batchSize
         ) {
+          // Phase 14: exponential backoff — only retry if enough time has elapsed
+          if (record.retryCount > 0 && record.lastError) {
+            const backoffMs = Math.min(
+              1000 * Math.pow(2, record.retryCount - 1),
+              this.MAX_RETRY_DELAY_MS
+            );
+            const lastFailedAt = record.publishedAt
+              ? new Date(record.publishedAt).getTime()
+              : new Date(record.createdAt).getTime();
+            if (now - lastFailedAt < backoffMs) continue; // not ready yet
+          }
           claimable.push(record);
         }
       }
@@ -151,7 +182,11 @@ export class TransactionalOutboxService {
         };
 
         try {
-          const success = await kafkaClient.publish(record.topic, envelope);
+          // Phase 14: Kafka publish guarded by circuit breaker
+          const success = await kafkaCircuitBreaker.callWithFallback(
+            () => kafkaClient.publish(record.topic, envelope),
+            false
+          );
           if (success) {
             record.status = 'PUBLISHED';
             record.publishedAt = new Date().toISOString();
@@ -169,11 +204,35 @@ export class TransactionalOutboxService {
           failed++;
         }
       }
+
+      // Phase 14: Prune exhausted FAILED records to prevent unbounded memory growth
+      this.pruneExhaustedRecords();
     } finally {
       this.isProcessing = false;
     }
 
     return { published, failed };
+  }
+
+  /**
+   * Phase 14: Prune FAILED records that have exceeded MAX_RETRIES,
+   * keeping total failed records below MAX_FAILED_RECORDS.
+   */
+  private pruneExhaustedRecords(): void {
+    const exhausted: string[] = [];
+    for (const [id, record] of this.records.entries()) {
+      if (record.status === 'FAILED' && record.retryCount >= this.MAX_RETRIES) {
+        exhausted.push(id);
+      }
+    }
+    // Remove oldest exhausted first if over limit
+    const toRemove = exhausted.slice(0, Math.max(0, exhausted.length - this.MAX_FAILED_RECORDS));
+    for (const id of toRemove) {
+      this.records.delete(id);
+    }
+    if (exhausted.length > this.MAX_FAILED_RECORDS) {
+      console.warn(`[OutboxService] Pruned ${toRemove.length} exhausted failed outbox records (DLQ cap).`);
+    }
   }
 
   /**

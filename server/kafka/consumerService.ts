@@ -72,6 +72,17 @@ export class KafkaConsumerService {
     ], async (_envelope) => {
       // Aggregates duration, message volume, and engagement metrics
     });
+
+    // 4. Media Processing Consumer Group (Phase 17)
+    this.registerGroup('media-processing-group', [
+      KAFKA_TOPICS.RECORDING_EVENTS,
+    ], async (envelope) => {
+      // Asynchronous media validation, audio extraction, and transcription
+      if (envelope.eventType === 'RecordingCompleted.v1') {
+        const { mediaProcessingWorker } = await import('../media/mediaProcessingWorker.ts');
+        await mediaProcessingWorker.processJob(envelope.payload);
+      }
+    });
   }
 
   /**

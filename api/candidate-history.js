@@ -3,6 +3,9 @@
 // using server-side admin credentials, bypassing client-side RLS restrictions without exposing passwords.
 
 import { createClient } from '@supabase/supabase-js'
+import { applySecurityHeaders } from '../server/security/securityHeaders.ts'
+import { tokenService } from '../server/auth/tokenService.ts'
+import { createErrorResponse } from '../server/auth/rbacMiddleware.ts'
 
 let memoryCache = {
   timestamp: 0,
@@ -13,10 +16,9 @@ let memoryCache = {
 }
 
 export default async function handler(req, res) {
-  // CORS Headers
-  res.setHeader('Access-Control-Allow-Origin', '*')
-  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS')
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+  if (!applySecurityHeaders(req, res)) {
+    return
+  }
 
   if (req.method === 'OPTIONS') {
     return res.status(204).end()
@@ -26,40 +28,74 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method Not Allowed' })
   }
 
+  // 1. Authenticate Requester
+  const authHeader = req.headers?.authorization || req.headers?.Authorization
+  let requester = null
+
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    const token = authHeader.replace(/^Bearer\s+/i, '').trim()
+    const verification = tokenService.verifyMeetingToken(token)
+    if (verification.valid && verification.claims) {
+      requester = {
+        id: verification.claims.userId,
+        email: verification.claims.userEmail,
+        role: verification.claims.userRole,
+      }
+    }
+  }
+
+  // In non-dev environments or if unauthenticated, reject
+  if (!requester) {
+    return res.status(401).json(createErrorResponse('Unauthorized', 'Authentication required to access candidate history.', 'MISSING_TOKEN'))
+  }
+
   const urlObj = new URL(req.url, 'http://localhost')
   const query = req.query || Object.fromEntries(urlObj.searchParams.entries())
   const userId = query.userId
   const mode = (query.mode || '').toLowerCase()
 
+  // 2. IDOR Enforcement: Non-admins can ONLY view their own records
+  const isAdmin = requester.role === 'admin'
+  if (!isAdmin) {
+    if (mode === 'summaries' || mode === 'profiles' || mode === 'overview' || (userId && userId !== requester.id)) {
+      return res.status(403).json(createErrorResponse('Forbidden', 'Access denied. You cannot view other candidates performance data.', 'FORBIDDEN_CROSS_USER_ACCESS'))
+    }
+  }
+
+  const targetUserId = isAdmin ? (userId || requester.id) : requester.id
+
   const supabaseUrl = process.env.VITE_SUPABASE_URL || 'https://lzjkxfxaiuemjsiflwlv.supabase.co'
   const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx6amt4ZnhhaXVlbWpzaWZsd2x2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg0MDI2ODgsImV4cCI6MjEwMzk3ODY4OH0.PnHnvW9-V8SMLilGdhf3Em9wGIGCYxL0rCRUFpvhdn8'
-  const adminPassword = process.env.ADMIN_PASSWORD || process.env.VITE_ADMIN_PASSWORD || 'Admin@9999'
+  const adminPassword = process.env.ADMIN_PASSWORD || process.env.VITE_ADMIN_PASSWORD || ''
 
   try {
     const sb = createClient(supabaseUrl, supabaseKey, {
       auth: { persistSession: false, autoRefreshToken: false },
     })
 
-    // Authenticate with admin account on the server side to satisfy Postgres RLS
-    await sb.auth.signInWithPassword({
-      email: 'admin@interviewprep.com',
-      password: adminPassword,
-    })
+    if (adminPassword) {
+      try {
+        await sb.auth.signInWithPassword({
+          email: 'admin@interviewprep.com',
+          password: adminPassword,
+        })
+      } catch (_) {}
+    }
 
     // ─── MODE 1: Single Candidate History ───
-    if (userId && userId !== 'all' && mode !== 'summaries' && mode !== 'profiles' && mode !== 'overview') {
+    if (targetUserId && targetUserId !== 'all' && mode !== 'summaries' && mode !== 'profiles' && mode !== 'overview') {
       const [subsRes, cpRes, dsaRes, fjsRes, attRes, profRes] = await Promise.all([
-        sb.from('submissions').select('*').eq('user_id', userId).order('created_at', { ascending: true }),
-        sb.from('core_programming_submissions').select('*').eq('user_id', userId).order('created_at', { ascending: true }),
-        sb.from('dsa_submissions').select('*').eq('user_id', userId).order('created_at', { ascending: true }),
-        sb.from('frontend_js_submissions').select('*').eq('user_id', userId).order('created_at', { ascending: true }),
-        sb.from('question_attempts').select('*').eq('user_id', userId).order('created_at', { ascending: true }),
-        sb.from('profiles').select('*').eq('id', userId).maybeSingle(),
+        sb.from('submissions').select('*').eq('user_id', targetUserId).order('created_at', { ascending: true }),
+        sb.from('core_programming_submissions').select('*').eq('user_id', targetUserId).order('created_at', { ascending: true }),
+        sb.from('dsa_submissions').select('*').eq('user_id', targetUserId).order('created_at', { ascending: true }),
+        sb.from('frontend_js_submissions').select('*').eq('user_id', targetUserId).order('created_at', { ascending: true }),
+        sb.from('question_attempts').select('*').eq('user_id', targetUserId).order('created_at', { ascending: true }),
+        sb.from('profiles').select('*').eq('id', targetUserId).maybeSingle(),
       ])
 
       return res.status(200).json({
         success: true,
-        userId,
+        userId: targetUserId,
         profile: profRes.data || null,
         submissions: subsRes.data || [],
         coreProgrammingSubmissions: cpRes.data || [],

@@ -1,3 +1,4 @@
+import crypto from 'crypto';
 import { Server as SocketIOServer } from 'socket.io';
 import type { Server as HTTPServer } from 'http';
 import type { Http2SecureServer } from 'http2';
@@ -11,9 +12,13 @@ import { getInterviewRoom, getMeetingRoom, canJoinSession, canMonitorSession, ca
 import { sessionStateManager } from './sessionState.js';
 import { chatService } from '../meetings/chatService.ts';
 import { meetingService } from '../meetings/meetingService.ts';
+import { meetingPresenceService } from '../meetings/meetingPresenceService.ts';
 import { tokenService } from '../auth/tokenService.ts';
 import { appChatService } from '../chat/appChatService.ts';
 import { redisPresenceService } from '../chat/redisPresenceService.ts';
+import { activeWebSocketConnectionsGauge } from '../observability/metrics.ts';
+import { logger } from '../observability/logger.ts';
+import { isOriginAllowed } from '../security/securityHeaders.ts';
 
 let ioInstance: SocketIOServer<ClientToServerEvents, ServerToClientEvents, Record<string, never>, SocketData> | null = null;
 
@@ -27,10 +32,17 @@ export function initSocketServer(server: HTTPServer | Http2SecureServer): Socket
     addTrailingSlash: false,
     transports: ['websocket', 'polling'],
     cors: {
-      origin: '*',
+      origin: (requestOrigin, callback) => {
+        if (!requestOrigin || isOriginAllowed(requestOrigin)) {
+          callback(null, true);
+        } else {
+          callback(new Error('CORS origin not allowed'));
+        }
+      },
       methods: ['GET', 'POST'],
       credentials: true,
     },
+    maxHttpBufferSize: 1e6, // 1MB payload ceiling
     pingInterval: 25000,
     pingTimeout: 20000,
   });
@@ -41,9 +53,11 @@ export function initSocketServer(server: HTTPServer | Http2SecureServer): Socket
   // 2. Connection lifecycle
   io.on('connection', (socket) => {
     const user = socket.data.user;
-    if (process.env.NODE_ENV !== 'production') {
-      console.log(`[Socket.IO] Client connected: ${socket.id} (${user?.name} / ${user?.role})`);
-    }
+    activeWebSocketConnectionsGauge.inc();
+    logger.debug(`[Socket.IO] Client connected: ${socket.id}`, {
+      userId: user?.id,
+      role: user?.role,
+    });
 
     // ── Phase 7: Application Chat Presence & User Room ────────────────────
     if (user?.id) {
@@ -341,6 +355,19 @@ export function initSocketServer(server: HTTPServer | Http2SecureServer): Socket
       }
       socket.data.role = callerMeetingRole === 'HOST' ? 'admin' : 'candidate';
 
+      // Authoritative presence registration (validates user is not kicked/blacklisted)
+      const regResult = meetingPresenceService.registerParticipant(meetingId, {
+        userId: socket.data.user.id,
+        socketId: socket.id,
+        displayName: socket.data.user.name,
+        role: callerMeetingRole,
+      });
+
+      if (!regResult.success) {
+        callback?.({ success: false, error: regResult.error });
+        return;
+      }
+
       const room = getMeetingRoom(meetingId);
       await socket.join(room);
       socket.data.meetingId = meetingId;
@@ -352,6 +379,9 @@ export function initSocketServer(server: HTTPServer | Http2SecureServer): Socket
       const meeting = meetingService.getMeetingById(meetingId);
       const allowChat = meeting?.settings?.allowChat !== false;
 
+      // Broadcast new participant to room
+      socket.to(room).emit('meeting:participant:joined', regResult.participant);
+
       // Broadcast system message to room: participant joined
       const joinMsg = chatService.sendSystemMessage(
         meetingId,
@@ -360,7 +390,11 @@ export function initSocketServer(server: HTTPServer | Http2SecureServer): Socket
       );
       socket.to(room).emit('meeting:chat:system', joinMsg);
 
-      callback?.({ success: true, allowChat });
+      callback?.({
+        success: true,
+        allowChat,
+        participants: meetingPresenceService.getRoomParticipants(meetingId),
+      });
     });
 
     // ── Meeting: Leave Meeting Room ───────────────────────────────────────
@@ -371,6 +405,13 @@ export function initSocketServer(server: HTTPServer | Http2SecureServer): Socket
       if (socket.data.subscribedMeetings) {
         socket.data.subscribedMeetings.delete(meetingId);
       }
+
+      meetingPresenceService.removeParticipantBySocket(socket.id);
+      socket.to(room).emit('meeting:participant:left', {
+        meetingId,
+        userId: socket.data.user.id,
+        socketId: socket.id,
+      });
 
       const leaveMsg = chatService.sendSystemMessage(
         meetingId,
@@ -558,6 +599,221 @@ export function initSocketServer(server: HTTPServer | Http2SecureServer): Socket
       callback?.({ success: true, messages });
     });
 
+    // ══════════════════════════════════════════════════════════════════════
+    // ── Phase 16: Advanced Meeting Collaboration & Media Handlers ─────────
+    // ══════════════════════════════════════════════════════════════════════
+
+    // ── Update Participant Media State (Mic, Cam, Screen, Network) ─────────
+    socket.on('meeting:participant:state', (data: any, callback?: any) => {
+      const meetingId = data?.meetingId || socket.data.meetingId;
+      if (!meetingId) {
+        callback?.({ success: false, error: 'Missing meetingId' });
+        return;
+      }
+
+      const updated = meetingPresenceService.updateParticipantState(meetingId, socket.data.user.id, {
+        micState: data.micState,
+        cameraState: data.cameraState,
+        screenShareState: data.screenShareState,
+        connectionState: data.connectionState,
+        connectionQuality: data.connectionQuality,
+      });
+
+      if (updated) {
+        const room = getMeetingRoom(meetingId);
+        socket.to(room).emit('meeting:participant:updated', updated);
+      }
+      callback?.({ success: !!updated });
+    });
+
+    // ── Raise Hand ────────────────────────────────────────────────────────
+    socket.on('meeting:hand:raise', (data: { meetingId: string }, callback?: any) => {
+      const meetingId = data?.meetingId || socket.data.meetingId;
+      if (!meetingId) {
+        callback?.({ success: false, error: 'Missing meetingId' });
+        return;
+      }
+
+      const updated = meetingPresenceService.raiseHand(meetingId, socket.data.user.id);
+      if (updated) {
+        const room = getMeetingRoom(meetingId);
+        io.to(room).emit('meeting:hand:raised', {
+          meetingId,
+          userId: socket.data.user.id,
+          handRaisedAt: updated.handRaisedAt || new Date().toISOString(),
+        });
+      }
+      callback?.({ success: !!updated });
+    });
+
+    // ── Lower Hand ────────────────────────────────────────────────────────
+    socket.on('meeting:hand:lower', (data: { meetingId: string }, callback?: any) => {
+      const meetingId = data?.meetingId || socket.data.meetingId;
+      if (!meetingId) {
+        callback?.({ success: false, error: 'Missing meetingId' });
+        return;
+      }
+
+      const updated = meetingPresenceService.lowerHand(meetingId, socket.data.user.id);
+      if (updated) {
+        const room = getMeetingRoom(meetingId);
+        io.to(room).emit('meeting:hand:lowered', {
+          meetingId,
+          userId: socket.data.user.id,
+        });
+      }
+      callback?.({ success: !!updated });
+    });
+
+    // ── Host Lower Participant's Hand ─────────────────────────────────────
+    socket.on('meeting:hand:host-lower', (data: { meetingId: string; targetUserId: string }, callback?: any) => {
+      const meetingId = data?.meetingId || socket.data.meetingId;
+      if (!meetingId || !data?.targetUserId) {
+        callback?.({ success: false, error: 'Missing meetingId or targetUserId' });
+        return;
+      }
+
+      const res = meetingPresenceService.hostLowerHand(meetingId, socket.data.user.id, data.targetUserId);
+      if (!res.success) {
+        callback?.({ success: false, error: res.error });
+        return;
+      }
+
+      const room = getMeetingRoom(meetingId);
+      io.to(room).emit('meeting:hand:lowered', {
+        meetingId,
+        userId: data.targetUserId,
+      });
+      callback?.({ success: true });
+    });
+
+    // ── Send Ephemeral Reaction (Rate-Limited, Controlled Allowlist) ───────
+    socket.on('meeting:reaction', (data: { meetingId: string; emoji: string; correlationId?: string }, callback?: any) => {
+      const meetingId = data?.meetingId || socket.data.meetingId;
+      if (!meetingId || !data?.emoji) {
+        callback?.({ success: false, error: 'Missing meetingId or emoji' });
+        return;
+      }
+
+      const check = meetingPresenceService.validateReaction(socket.data.user.id, data.emoji);
+      if (!check.allowed) {
+        callback?.({ success: false, error: check.error });
+        return;
+      }
+
+      const reactionPayload = {
+        meetingId,
+        reactionId: `rx_${crypto.randomUUID().slice(0, 8)}`,
+        userId: socket.data.user.id,
+        userName: socket.data.user.name,
+        emoji: data.emoji,
+        timestamp: Date.now(),
+      };
+
+      const room = getMeetingRoom(meetingId);
+      io.to(room).emit('meeting:reaction:broadcast', reactionPayload);
+      callback?.({ success: true });
+    });
+
+    // ── Host: Remote Mute Request ─────────────────────────────────────────
+    socket.on('meeting:host:mute-participant', (data: { meetingId: string; targetUserId: string }, callback?: any) => {
+      const meetingId = data?.meetingId || socket.data.meetingId;
+      if (!meetingId || !data?.targetUserId) {
+        callback?.({ success: false, error: 'Missing meetingId or targetUserId' });
+        return;
+      }
+
+      const res = meetingPresenceService.hostRequestMute(meetingId, socket.data.user.id, data.targetUserId);
+      if (!res.success) {
+        callback?.({ success: false, error: res.error });
+        return;
+      }
+
+      const room = getMeetingRoom(meetingId);
+      io.to(room).emit('meeting:host:mute-requested', {
+        meetingId,
+        targetUserId: data.targetUserId,
+        requestedBy: socket.data.user.id,
+      });
+      callback?.({ success: true });
+    });
+
+    // ── Host: Remove Participant ──────────────────────────────────────────
+    socket.on('meeting:host:remove-participant', (data: { meetingId: string; targetUserId: string; reason?: string }, callback?: any) => {
+      const meetingId = data?.meetingId || socket.data.meetingId;
+      if (!meetingId || !data?.targetUserId) {
+        callback?.({ success: false, error: 'Missing meetingId or targetUserId' });
+        return;
+      }
+
+      const res = meetingPresenceService.hostRemoveParticipant(meetingId, socket.data.user.id, data.targetUserId);
+      if (!res.success) {
+        callback?.({ success: false, error: res.error });
+        return;
+      }
+
+      const room = getMeetingRoom(meetingId);
+      io.to(room).emit('meeting:participant:removed', {
+        meetingId,
+        targetUserId: data.targetUserId,
+        reason: data.reason || 'Removed by host',
+      });
+
+      // Target socket leaves room if connected
+      if (res.targetSocketId) {
+        const targetSocket = io.sockets.sockets.get(res.targetSocketId);
+        targetSocket?.leave(room);
+      }
+
+      callback?.({ success: true });
+    });
+
+    // ── Host: End Meeting For All ─────────────────────────────────────────
+    socket.on('meeting:host:end-meeting', async (data: { meetingId: string; reason?: string }, callback?: any) => {
+      const meetingId = data?.meetingId || socket.data.meetingId;
+      if (!meetingId) {
+        callback?.({ success: false, error: 'Missing meetingId' });
+        return;
+      }
+
+      const caller = {
+        id: socket.data.user.id,
+        email: socket.data.user.email || 'host@dev.local',
+        name: socket.data.user.name,
+        role: (socket.data.user.role === 'admin' ? 'admin' : 'candidate') as any,
+        meetingRole: (socket.data.user.role === 'admin' ? 'HOST' : 'PARTICIPANT') as any,
+        permissions: [] as string[],
+      };
+
+      const trans = meetingService.transitionStatus(caller, meetingId, 'ENDED', data.reason || 'Host ended meeting');
+      if (!trans.success && trans.code !== 'INVALID_TRANSITION') {
+        callback?.({ success: false, error: trans.error });
+        return;
+      }
+
+      meetingPresenceService.terminateRoom(meetingId);
+
+      const room = getMeetingRoom(meetingId);
+      io.to(room).emit('meeting:ended', {
+        meetingId,
+        reason: data.reason || 'Meeting ended by host',
+      });
+
+      callback?.({ success: true });
+    });
+
+    // ── Sync State Snapshot (Reconnect Reconciliation) ────────────────────
+    socket.on('meeting:sync-state', (data: { meetingId: string }, callback?: any) => {
+      const meetingId = data?.meetingId || socket.data.meetingId;
+      if (!meetingId) {
+        callback?.({ success: false, participants: [] });
+        return;
+      }
+
+      const participants = meetingPresenceService.getRoomParticipants(meetingId);
+      callback?.({ success: true, participants });
+    });
+
     // ── Phase 7: Application Chat Events ──────────────────────────────────
 
     // Subscribe to conversations or join room
@@ -725,9 +981,10 @@ export function initSocketServer(server: HTTPServer | Http2SecureServer): Socket
 
     // ── Disconnect ────────────────────────────────────────────────────────
     socket.on('disconnect', () => {
-      if (process.env.NODE_ENV !== 'production') {
-        console.log(`[Socket.IO] Client disconnected: ${socket.id} (${user?.name})`);
-      }
+      activeWebSocketConnectionsGauge.dec();
+      logger.debug(`[Socket.IO] Client disconnected: ${socket.id}`, {
+        userId: user?.id,
+      });
 
       if (socket.data.sessionId) {
         const room = getInterviewRoom(socket.data.sessionId);
@@ -736,6 +993,17 @@ export function initSocketServer(server: HTTPServer | Http2SecureServer): Socket
           sessionId: socket.data.sessionId,
           presence: 'disconnected',
           timestamp: Date.now(),
+        });
+      }
+
+      // Meeting participant presence cleanup
+      const removedMeeting = meetingPresenceService.removeParticipantBySocket(socket.id);
+      if (removedMeeting) {
+        const meetRoom = getMeetingRoom(removedMeeting.meetingId);
+        socket.to(meetRoom).emit('meeting:participant:left', {
+          meetingId: removedMeeting.meetingId,
+          userId: removedMeeting.participant.userId,
+          socketId: socket.id,
         });
       }
 

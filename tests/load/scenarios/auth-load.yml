@@ -1,0 +1,89 @@
+# Scenario A: Authentication Load Test
+# Phase 15: Performance, Scalability & Load Testing
+#
+# Tests: Login → Token refresh → Logout under sustained concurrency
+# Target: /api/v1/auth endpoints (local dev server only)
+#
+# Expected targets (from performance baseline):
+#   - Login p95 < 300ms
+#   - Token refresh p95 < 100ms
+#   - Error rate < 1%
+#
+# Run: npx artillery@latest run tests/load/scenarios/auth-load.yml
+
+config:
+  target: "http://localhost:5173"
+  phases:
+    - name: "Warm-up"
+      duration: 30
+      arrivalRate: 2
+      rampTo: 5
+    - name: "Sustained load"
+      duration: 120
+      arrivalRate: 10
+    - name: "Cool-down"
+      duration: 30
+      arrivalRate: 2
+  http:
+    timeout: 10
+  defaults:
+    headers:
+      Content-Type: "application/json"
+
+scenarios:
+  - name: "Login flow"
+    weight: 60
+    flow:
+      - post:
+          url: "/api/v1/auth/login"
+          json:
+            email: "loadtest+001@localhost.test"
+            password: "LoadTest!2026"
+          capture:
+            - json: "$.token"
+              as: "authToken"
+            - json: "$.refreshToken"
+              as: "refreshToken"
+          expect:
+            - statusCode: 200
+      - think: 1
+
+      # Use the token for an authenticated request
+      - get:
+          url: "/api/v1/health"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          expect:
+            - statusCode: 200
+
+      # Token refresh
+      - post:
+          url: "/api/v1/auth/refresh"
+          json:
+            refreshToken: "{{ refreshToken }}"
+          expect:
+            - statusCode: 200
+      - think: 1
+
+  - name: "Failed login (invalid creds) - tests rate limiting"
+    weight: 10
+    flow:
+      - post:
+          url: "/api/v1/auth/login"
+          json:
+            email: "nonexistent@localhost.test"
+            password: "WrongPassword123"
+          expect:
+            - statusCode: 401
+
+  - name: "Health check only"
+    weight: 30
+    flow:
+      - get:
+          url: "/api/v1/health"
+          expect:
+            - statusCode: 200
+      - get:
+          url: "/api/v1/health/ready"
+          expect:
+            - statusCode: 200

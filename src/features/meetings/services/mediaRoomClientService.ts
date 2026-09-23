@@ -17,6 +17,9 @@ export class MediaRoomClientService {
   private analyserNode: AnalyserNode | null = null;
   private microphoneSource: MediaStreamAudioSourceNode | null = null;
   private audioLevelCheckInterval: number | null = null;
+  private activeVideoTracks: Set<MediaStreamTrack> = new Set();
+  private activeAudioTracks: Set<MediaStreamTrack> = new Set();
+  private activeStreams: Set<MediaStream> = new Set();
 
   /**
    * Request media credentials and room access token from server
@@ -80,7 +83,24 @@ export class MediaRoomClientService {
       video: options.video ? (typeof options.video === 'object' && options.video.deviceId ? { deviceId: { exact: options.video.deviceId }, width: { ideal: 1280 }, height: { ideal: 720 } } : { width: { ideal: 1280 }, height: { ideal: 720 } }) : false,
     };
 
-    return await navigator.mediaDevices.getUserMedia(constraints);
+    const stream = await navigator.mediaDevices.getUserMedia(constraints);
+    if (stream) {
+      this.activeStreams.add(stream);
+      stream.getVideoTracks().forEach(track => {
+        this.activeVideoTracks.add(track);
+        track.addEventListener('ended', () => {
+          this.activeVideoTracks.delete(track);
+        });
+      });
+      stream.getAudioTracks().forEach(track => {
+        this.activeAudioTracks.add(track);
+        track.addEventListener('ended', () => {
+          this.activeAudioTracks.delete(track);
+        });
+      });
+    }
+
+    return stream;
   }
 
   /**
@@ -91,13 +111,19 @@ export class MediaRoomClientService {
       return null;
     }
 
-    return await navigator.mediaDevices.getDisplayMedia({
+    const stream = await navigator.mediaDevices.getDisplayMedia({
       video: {
         displaySurface: 'monitor',
         frameRate: { ideal: 30, max: 60 },
       },
       audio: true,
     });
+
+    if (stream) {
+      this.activeStreams.add(stream);
+    }
+
+    return stream;
   }
 
   /**
@@ -115,13 +141,19 @@ export class MediaRoomClientService {
       const audioTracks = stream.getAudioTracks();
       if (audioTracks.length === 0) return () => {};
 
+      this.stopAudioAnalyzer();
+
       const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
       this.audioContext = new AudioCtx();
       this.analyserNode = this.audioContext.createAnalyser();
       this.analyserNode.fftSize = 256;
       this.analyserNode.smoothingTimeConstant = 0.5;
 
-      this.microphoneSource = this.audioContext.createMediaStreamSource(stream);
+      // CRITICAL: create an audio-only MediaStream so WebAudio does not bind to
+      // or lock any video tracks that may exist in the parent stream, preventing
+      // the camera hardware light from staying lit!
+      const audioOnlyStream = new MediaStream(audioTracks);
+      this.microphoneSource = this.audioContext.createMediaStreamSource(audioOnlyStream);
       this.microphoneSource.connect(this.analyserNode);
 
       const bufferLength = this.analyserNode.frequencyBinCount;
@@ -201,25 +233,53 @@ export class MediaRoomClientService {
     local: { isSpeaking: boolean; audioLevel: number; id: string; name: string },
     remotes: RemoteParticipant[]
   ): { id: string; name: string } | null {
-    let topId = '';
-    let topName = '';
     let maxLevel = 15; // Noise gate threshold
+    let topIdResult = '';
+    let topNameResult = '';
 
     if (local.isSpeaking && local.audioLevel > maxLevel) {
-      topId = local.id;
-      topName = local.name;
+      topIdResult = local.id;
+      topNameResult = local.name;
       maxLevel = local.audioLevel;
     }
 
     for (const p of remotes) {
       if (p.isSpeaking && p.audioLevel > maxLevel) {
-        topId = p.id;
-        topName = p.name;
+        topIdResult = p.id;
+        topNameResult = p.name;
         maxLevel = p.audioLevel;
       }
     }
 
-    return topId ? { id: topId, name: topName } : null;
+    return topIdResult ? { id: topIdResult, name: topNameResult } : null;
+  }
+
+  /**
+   * Stop camera tracks completely so the laptop webcam light turns OFF immediately
+   */
+  public stopCamera(stream?: MediaStream | null): void {
+    if (stream) {
+      const vTracks = stream.getVideoTracks();
+      vTracks.forEach(track => {
+        try {
+          track.enabled = false;
+          track.stop();
+        } catch {}
+        this.activeVideoTracks.delete(track);
+        try {
+          stream.removeTrack(track);
+        } catch {}
+      });
+    } else {
+      // Unconditionally stop every single tracked active video track
+      for (const track of this.activeVideoTracks) {
+        try {
+          track.enabled = false;
+          track.stop();
+        } catch {}
+      }
+      this.activeVideoTracks.clear();
+    }
   }
 
   /**
@@ -229,11 +289,45 @@ export class MediaRoomClientService {
     if (!stream) return;
     try {
       stream.getTracks().forEach(track => {
-        track.stop();
+        try {
+          track.enabled = false;
+          track.stop();
+        } catch {}
+        this.activeVideoTracks.delete(track);
+        this.activeAudioTracks.delete(track);
       });
+      this.activeStreams.delete(stream);
     } catch {
       // Ignored
     }
+  }
+
+  /**
+   * Stop all media tracks and active streams
+   */
+  public stopAllMedia(): void {
+    this.stopAudioAnalyzer();
+    this.stopCamera();
+
+    for (const track of this.activeAudioTracks) {
+      try {
+        track.enabled = false;
+        track.stop();
+      } catch {}
+    }
+    this.activeAudioTracks.clear();
+
+    for (const stream of this.activeStreams) {
+      try {
+        stream.getTracks().forEach(t => {
+          try {
+            t.enabled = false;
+            t.stop();
+          } catch {}
+        });
+      } catch {}
+    }
+    this.activeStreams.clear();
   }
 }
 

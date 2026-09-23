@@ -251,6 +251,31 @@ export class InvitationService {
   public listInvitationsForMeeting(meetingId: string): MeetingInvitationRecord[] {
     return Array.from(this.invitations.values()).filter(i => i.meetingId === meetingId);
   }
+
+  /**
+   * Phase 12: List all invitations across all meetings
+   */
+  public listAllInvitations(): MeetingInvitationRecord[] {
+    return Array.from(this.invitations.values());
+  }
+
+  /**
+   * Phase 12: Aggregate participant metrics across invitations
+   */
+  public getParticipantMetrics(): {
+    totalInvited: number;
+    totalAccepted: number;
+    totalRevoked: number;
+    totalPending: number;
+  } {
+    const records = Array.from(this.invitations.values());
+    return {
+      totalInvited: records.length,
+      totalAccepted: records.filter(r => r.status === 'ACCEPTED').length,
+      totalRevoked: records.filter(r => r.status === 'REVOKED').length,
+      totalPending: records.filter(r => r.status === 'PENDING').length,
+    };
+  }
 }
 
 export const invitationService = new InvitationService();

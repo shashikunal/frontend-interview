@@ -1,7 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
-import { supabase, supabaseUrl, supabaseAnonKey } from '../../../lib/supabase/client'
-import type { AuthUserProfile, UserRole, FeatureEntitlements } from '../types/auth.types'
-import { DEFAULT_ENTITLEMENTS } from '../types/auth.types'
+import { supabase, supabaseUrl, supabaseAnonKey } from '../../../lib/supabase/client.ts'
+import type { AuthUserProfile, UserRole, FeatureEntitlements } from '../types/auth.types.ts'
+import { DEFAULT_ENTITLEMENTS } from '../types/auth.types.ts'
 
 const PROFILES_LOCAL_KEY = 'supabase_profiles_real'
 

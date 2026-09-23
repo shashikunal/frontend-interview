@@ -1,9 +1,11 @@
 /**
  * Participant Tile Component
  * Phase 4: WebRTC + SFU Media Plane
+ * Phase 15: React.memo — prevents re-render on unrelated audio-level ticks
+ * Phase 16: Advanced Collaboration — hand raised badge, ephemeral reactions, host quick actions
  */
 
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState, memo } from 'react';
 import type { ConnectionQuality } from '../../../../server/meetings/mediaTypes.ts';
 import type { MeetingRole } from '../../../../server/auth/tokenTypes.ts';
 
@@ -22,10 +24,17 @@ interface ParticipantTileProps {
   screenStream?: MediaStream | null;
   avatarUrl?: string;
   isPinned?: boolean;
+  handRaised?: boolean;
+  recentReaction?: { emoji: string; reactionId: string; timestamp: number };
+  isHostViewer?: boolean;
   onPinToggle?: () => void;
+  onHostMute?: () => void;
+  onHostRemove?: () => void;
+  onHostLowerHand?: () => void;
 }
 
-export const ParticipantTile: React.FC<ParticipantTileProps> = ({
+export const ParticipantTile: React.FC<ParticipantTileProps> = memo(({
+  id,
   name,
   role,
   isLocal = false,
@@ -39,22 +48,58 @@ export const ParticipantTile: React.FC<ParticipantTileProps> = ({
   screenStream,
   avatarUrl,
   isPinned = false,
+  handRaised = false,
+  recentReaction,
+  isHostViewer = false,
   onPinToggle,
+  onHostMute,
+  onHostRemove,
+  onHostLowerHand,
 }) => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const screenVideoRef = useRef<HTMLVideoElement | null>(null);
+  const [showHostMenu, setShowHostMenu] = useState<boolean>(false);
 
   useEffect(() => {
-    if (videoRef.current && stream && videoEnabled) {
-      videoRef.current.srcObject = stream;
+    const el = videoRef.current;
+    if (!el) return;
+    if (stream && videoEnabled) {
+      if (el.srcObject !== stream) {
+        el.srcObject = stream;
+        el.play().catch(() => {});
+      }
+    } else {
+      if (el.srcObject !== null) {
+        el.srcObject = null;
+      }
     }
   }, [stream, videoEnabled]);
 
   useEffect(() => {
-    if (screenVideoRef.current && screenStream && screenShareEnabled) {
-      screenVideoRef.current.srcObject = screenStream;
+    const el = screenVideoRef.current;
+    if (!el) return;
+    if (screenStream && screenShareEnabled) {
+      if (el.srcObject !== screenStream) {
+        el.srcObject = screenStream;
+        el.play().catch(() => {});
+      }
+    } else {
+      if (el.srcObject !== null) {
+        el.srcObject = null;
+      }
     }
   }, [screenStream, screenShareEnabled]);
+
+  useEffect(() => {
+    return () => {
+      if (videoRef.current) {
+        videoRef.current.srcObject = null;
+      }
+      if (screenVideoRef.current) {
+        screenVideoRef.current.srcObject = null;
+      }
+    };
+  }, []);
 
   const getInitials = (str: string) => {
     return str
@@ -89,6 +134,8 @@ export const ParticipantTile: React.FC<ParticipantTileProps> = ({
 
   return (
     <div
+      id={`participant-tile-${id}`}
+      data-participant-id={id}
       className={`rtc-participant-tile ${isSpeaking ? 'is-speaking' : ''} ${
         isPinned ? 'is-pinned' : ''
       }`}
@@ -99,6 +146,17 @@ export const ParticipantTile: React.FC<ParticipantTileProps> = ({
           className="rtc-speaking-pulse-ring"
           style={{ opacity: Math.min(1, Math.max(0.3, audioLevel / 100)) }}
         />
+      )}
+
+      {/* Floating Reaction Animation Bubble */}
+      {recentReaction && (
+        <div
+          key={recentReaction.reactionId}
+          className="rtc-tile-reaction-bubble"
+          title={`Reaction: ${recentReaction.emoji}`}
+        >
+          {recentReaction.emoji}
+        </div>
       )}
 
       {/* Screen Share Layer (if screen active) */}
@@ -136,17 +194,91 @@ export const ParticipantTile: React.FC<ParticipantTileProps> = ({
 
       {/* Tile Header Overlay */}
       <div className="rtc-tile-header">
-        {onPinToggle && (
-          <button
-            type="button"
-            className={`rtc-pin-btn ${isPinned ? 'active' : ''}`}
-            onClick={onPinToggle}
-            title={isPinned ? 'Unpin participant' : 'Pin participant'}
-          >
-            📌
-          </button>
-        )}
-        {renderQualityIndicator()}
+        <div className="rtc-tile-header-left">
+          {/* Hand Raised Indicator Badge */}
+          {handRaised && (
+            <div className="rtc-tile-hand-badge" title={`${name} raised their hand`}>
+              <span className="rtc-hand-icon">✋</span>
+              <span className="rtc-hand-text">Raised</span>
+            </div>
+          )}
+        </div>
+
+        <div className="rtc-tile-header-right">
+          {/* Host Quick Actions Menu (only for remote participants viewed by host) */}
+          {!isLocal && isHostViewer && (
+            <div className="rtc-host-actions-wrap" style={{ position: 'relative' }}>
+              <button
+                type="button"
+                className="rtc-tile-host-menu-btn"
+                onClick={e => {
+                  e.stopPropagation();
+                  setShowHostMenu(prev => !prev);
+                }}
+                title="Host moderation actions"
+              >
+                ⋮
+              </button>
+              {showHostMenu && (
+                <div
+                  className="rtc-tile-host-dropdown"
+                  onClick={e => e.stopPropagation()}
+                >
+                  {onHostMute && (
+                    <button
+                      type="button"
+                      className="rtc-host-action-btn"
+                      onClick={() => {
+                        onHostMute();
+                        setShowHostMenu(false);
+                      }}
+                    >
+                      🔇 Request Mute
+                    </button>
+                  )}
+                  {handRaised && onHostLowerHand && (
+                    <button
+                      type="button"
+                      className="rtc-host-action-btn"
+                      onClick={() => {
+                        onHostLowerHand();
+                        setShowHostMenu(false);
+                      }}
+                    >
+                      ✋ Lower Hand
+                    </button>
+                  )}
+                  {onHostRemove && (
+                    <button
+                      type="button"
+                      className="rtc-host-action-btn rtc-host-danger-btn"
+                      onClick={() => {
+                        if (window.confirm(`Are you sure you want to remove ${name} from this meeting?`)) {
+                          onHostRemove();
+                          setShowHostMenu(false);
+                        }
+                      }}
+                    >
+                      🚫 Remove User
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+
+          {onPinToggle && (
+            <button
+              type="button"
+              className={`rtc-pin-btn ${isPinned ? 'active' : ''}`}
+              onClick={onPinToggle}
+              title={isPinned ? 'Unpin participant' : 'Pin participant'}
+            >
+              📌
+            </button>
+          )}
+          {renderQualityIndicator()}
+        </div>
       </div>
 
       {/* Tile Footer Overlay */}
@@ -183,4 +315,26 @@ export const ParticipantTile: React.FC<ParticipantTileProps> = ({
       </div>
     </div>
   );
-};
+// Phase 15 & 16: memo comparator — skip re-render if tile's own props haven't changed.
+}, (prev, next) => {
+  return (
+    prev.id === next.id &&
+    prev.name === next.name &&
+    prev.role === next.role &&
+    prev.audioEnabled === next.audioEnabled &&
+    prev.videoEnabled === next.videoEnabled &&
+    prev.screenShareEnabled === next.screenShareEnabled &&
+    prev.isSpeaking === next.isSpeaking &&
+    prev.connectionQuality === next.connectionQuality &&
+    prev.stream === next.stream &&
+    prev.screenStream === next.screenStream &&
+    prev.isPinned === next.isPinned &&
+    prev.handRaised === next.handRaised &&
+    prev.recentReaction?.reactionId === next.recentReaction?.reactionId &&
+    prev.isHostViewer === next.isHostViewer &&
+    prev.onPinToggle === next.onPinToggle &&
+    // Allow audioLevel to trigger re-render only when speaking state changes or significant delta
+    (prev.isSpeaking === next.isSpeaking ||
+      Math.abs((prev.audioLevel ?? 0) - (next.audioLevel ?? 0)) < 5)
+  );
+});
