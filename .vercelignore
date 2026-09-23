@@ -6,7 +6,13 @@ dist-ssr
 scripts
 docs
 *.log
-api
+api/v1/
+api/admin-auth.js
+api/ai-feedback.js
+api/candidate-ai-evaluation.js
+api/candidate-history.js
+api/send-email.js
+api/socket.js
 .env
 .env.*
 !.env.example
