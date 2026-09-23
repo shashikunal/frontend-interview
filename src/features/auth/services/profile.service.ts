@@ -63,7 +63,7 @@ export const profileService = {
         .maybeSingle()
 
       if (error) {
-        if (import.meta.env?.DEV) {
+        if ((import.meta as any).env?.DEV) {
           console.warn('[CORE] profile lookup', { userId, code: (error as { code?: string }).code, message: error.message })
         }
       } else if (data) {
@@ -323,7 +323,7 @@ export const profileService = {
       try {
         const apiRes = await fetch('/api/candidate-history?mode=profiles')
         if (apiRes.ok) {
-          const json = await apiRes.json()
+          const json: any = await apiRes.json()
           if (json.success && Array.isArray(json.profiles) && json.profiles.length > 0) {
             const mapped: AuthUserProfile[] = json.profiles.map((d: any) => ({
               id: d.id,

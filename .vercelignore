@@ -6,6 +6,7 @@ dist-ssr
 scripts
 docs
 *.log
+api
 .env
 .env.*
 !.env.example
