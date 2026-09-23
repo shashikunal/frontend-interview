@@ -1,26 +1,6 @@
 // Master Consolidated Serverless API Gateway
-// Dispatches all /api/* requests to internal handlers while maintaining <= 2 Serverless Functions on Vercel Hobby plan
-
-import adminMeetingsHandler from './_handlers/admin-meetings.js';
-import adminDashboardHandler from './_handlers/admin-dashboard.js';
-import adminNotificationsHandler from './_handlers/admin-notifications.js';
-import adminUsersHandler from './_handlers/admin-users.js';
-import authTokenHandler from './_handlers/auth-token.js';
-import meetingsHandler from './_handlers/meetings.js';
-import chatAppHandler from './_handlers/chat-app.js';
-import auditHandler from './_handlers/audit.js';
-import healthHandler from './_handlers/health.js';
-import healthDepsHandler from './_handlers/health-dependencies.js';
-import healthKafkaHandler from './_handlers/health-kafka.js';
-import healthReadyHandler from './_handlers/health-ready.js';
-import healthRedisHandler from './_handlers/health-redis.js';
-import metricsHandler from './_handlers/metrics.js';
-import performanceHandler from './_handlers/performance.js';
-import adminAuthHandler from './_handlers/admin-auth.js';
-import candidateHistoryHandler from './_handlers/candidate-history.js';
-import candidateAiEvalHandler from './_handlers/candidate-ai-evaluation.js';
-import sendEmailHandler from './_handlers/send-email.js';
-import aiFeedbackHandler from './_handlers/ai-feedback.js';
+// Uses dynamic imports so that individual endpoint handlers load on-demand,
+// eliminating cold-start bloat and top-level module load failures on Vercel.
 
 async function parseBody(req) {
   if (req.body && typeof req.body === 'object') return req.body;
@@ -53,96 +33,125 @@ export default async function handler(req, res) {
     };
   }
 
-  // Parse body if needed for write methods
-  if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method) && !req.body) {
-    req.body = await parseBody(req);
-  }
-
-  // Normalize URL and path
-  const urlObj = new URL(req.url || '/', 'http://localhost');
-  const pathname = urlObj.pathname.toLowerCase().replace(/\/+$/, '');
-
-  // Populate query params onto req.query
-  if (!req.query) {
-    req.query = Object.fromEntries(urlObj.searchParams.entries());
-  } else {
-    for (const [k, v] of urlObj.searchParams.entries()) {
-      if (req.query[k] === undefined) req.query[k] = v;
+  try {
+    // Parse body if needed for write methods
+    if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method) && !req.body) {
+      req.body = await parseBody(req);
     }
-  }
 
-  // 1. Admin Operations
-  if (pathname === '/api/v1/admin/meetings' || pathname.startsWith('/api/v1/admin/meetings/')) {
-    return adminMeetingsHandler(req, res);
-  }
-  if (pathname === '/api/v1/admin/dashboard' || pathname.startsWith('/api/v1/admin/dashboard/')) {
-    return adminDashboardHandler(req, res);
-  }
-  if (pathname === '/api/v1/admin/notifications' || pathname.startsWith('/api/v1/admin/notifications/')) {
-    return adminNotificationsHandler(req, res);
-  }
-  if (pathname === '/api/v1/admin/users' || pathname.startsWith('/api/v1/admin/users/')) {
-    return adminUsersHandler(req, res);
-  }
+    // Normalize URL and path
+    const urlObj = new URL(req.url || '/', 'http://localhost');
+    const pathname = urlObj.pathname.toLowerCase().replace(/\/+$/, '');
 
-  // 2. Auth & Meeting Tokens
-  if (pathname === '/api/v1/auth/token' || pathname.startsWith('/api/v1/auth/token/')) {
-    return authTokenHandler(req, res);
-  }
+    // Populate query params onto req.query
+    if (!req.query) {
+      req.query = Object.fromEntries(urlObj.searchParams.entries());
+    } else {
+      for (const [k, v] of urlObj.searchParams.entries()) {
+        if (req.query[k] === undefined) req.query[k] = v;
+      }
+    }
 
-  // 3. Meeting Operations (Lifecycle, Chat, Editor, Whiteboard, Invite, Join, Media-Token, Recording)
-  if (pathname === '/api/v1/meetings' || pathname.startsWith('/api/v1/meetings/')) {
-    return meetingsHandler(req, res);
-  }
+    // 1. Admin Operations
+    if (pathname === '/api/v1/admin/meetings' || pathname.startsWith('/api/v1/admin/meetings/')) {
+      const { default: h } = await import('./_handlers/admin-meetings.js');
+      return h(req, res);
+    }
+    if (pathname === '/api/v1/admin/dashboard' || pathname.startsWith('/api/v1/admin/dashboard/')) {
+      const { default: h } = await import('./_handlers/admin-dashboard.js');
+      return h(req, res);
+    }
+    if (pathname === '/api/v1/admin/notifications' || pathname.startsWith('/api/v1/admin/notifications/')) {
+      const { default: h } = await import('./_handlers/admin-notifications.js');
+      return h(req, res);
+    }
+    if (pathname === '/api/v1/admin/users' || pathname.startsWith('/api/v1/admin/users/')) {
+      const { default: h } = await import('./_handlers/admin-users.js');
+      return h(req, res);
+    }
 
-  // 4. Application Chat & Audit
-  if (pathname === '/api/v1/chat' || pathname.startsWith('/api/v1/chat/')) {
-    return chatAppHandler(req, res);
-  }
-  if (pathname === '/api/v1/audit' || pathname.startsWith('/api/v1/audit/')) {
-    return auditHandler(req, res);
-  }
+    // 2. Auth & Meeting Tokens
+    if (pathname === '/api/v1/auth/token' || pathname.startsWith('/api/v1/auth/token/')) {
+      const { default: h } = await import('./_handlers/auth-token.js');
+      return h(req, res);
+    }
 
-  // 5. Health Probes & Observability
-  if (pathname === '/api/v1/health/kafka') {
-    return healthKafkaHandler(req, res);
-  }
-  if (pathname === '/api/v1/health/redis') {
-    return healthRedisHandler(req, res);
-  }
-  if (pathname === '/api/v1/health/ready') {
-    return healthReadyHandler(req, res);
-  }
-  if (pathname === '/api/v1/health/dependencies') {
-    return healthDepsHandler(req, res);
-  }
-  if (pathname === '/api/v1/health' || pathname.startsWith('/api/v1/health/')) {
-    return healthHandler(req, res);
-  }
-  if (pathname === '/api/v1/metrics') {
-    return metricsHandler(req, res);
-  }
-  if (pathname === '/api/v1/performance') {
-    return performanceHandler(req, res);
-  }
+    // 3. Meeting Operations (Lifecycle, Chat, Editor, Whiteboard, Invite, Join, Media-Token, Recording)
+    if (pathname === '/api/v1/meetings' || pathname.startsWith('/api/v1/meetings/')) {
+      const { default: h } = await import('./_handlers/meetings.js');
+      return h(req, res);
+    }
 
-  // 6. Candidate, Evaluation & Feedback Services
-  if (pathname === '/api/admin-auth') {
-    return adminAuthHandler(req, res);
-  }
-  if (pathname === '/api/candidate-history') {
-    return candidateHistoryHandler(req, res);
-  }
-  if (pathname === '/api/candidate-ai-evaluation') {
-    return candidateAiEvalHandler(req, res);
-  }
-  if (pathname === '/api/ai-feedback') {
-    return aiFeedbackHandler(req, res);
-  }
-  if (pathname === '/api/send-email') {
-    return sendEmailHandler(req, res);
-  }
+    // 4. Application Chat & Audit
+    if (pathname === '/api/v1/chat' || pathname.startsWith('/api/v1/chat/')) {
+      const { default: h } = await import('./_handlers/chat-app.js');
+      return h(req, res);
+    }
+    if (pathname === '/api/v1/audit' || pathname.startsWith('/api/v1/audit/')) {
+      const { default: h } = await import('./_handlers/audit.js');
+      return h(req, res);
+    }
 
-  // Default Fallback
-  return res.status(404).json({ error: 'Endpoint Not Found', pathname, method: req.method });
+    // 5. Health Probes & Observability
+    if (pathname === '/api/v1/health/kafka') {
+      const { default: h } = await import('./_handlers/health-kafka.js');
+      return h(req, res);
+    }
+    if (pathname === '/api/v1/health/redis') {
+      const { default: h } = await import('./_handlers/health-redis.js');
+      return h(req, res);
+    }
+    if (pathname === '/api/v1/health/ready') {
+      const { default: h } = await import('./_handlers/health-ready.js');
+      return h(req, res);
+    }
+    if (pathname === '/api/v1/health/dependencies') {
+      const { default: h } = await import('./_handlers/health-dependencies.js');
+      return h(req, res);
+    }
+    if (pathname === '/api/v1/health' || pathname.startsWith('/api/v1/health/')) {
+      const { default: h } = await import('./_handlers/health.js');
+      return h(req, res);
+    }
+    if (pathname === '/api/v1/metrics') {
+      const { default: h } = await import('./_handlers/metrics.js');
+      return h(req, res);
+    }
+    if (pathname === '/api/v1/performance') {
+      const { default: h } = await import('./_handlers/performance.js');
+      return h(req, res);
+    }
+
+    // 6. Candidate, Evaluation & Feedback Services
+    if (pathname === '/api/admin-auth') {
+      const { default: h } = await import('./_handlers/admin-auth.js');
+      return h(req, res);
+    }
+    if (pathname === '/api/candidate-history') {
+      const { default: h } = await import('./_handlers/candidate-history.js');
+      return h(req, res);
+    }
+    if (pathname === '/api/candidate-ai-evaluation') {
+      const { default: h } = await import('./_handlers/candidate-ai-evaluation.js');
+      return h(req, res);
+    }
+    if (pathname === '/api/ai-feedback') {
+      const { default: h } = await import('./_handlers/ai-feedback.js');
+      return h(req, res);
+    }
+    if (pathname === '/api/send-email') {
+      const { default: h } = await import('./_handlers/send-email.js');
+      return h(req, res);
+    }
+
+    // Default Fallback
+    return res.status(404).json({ error: 'Endpoint Not Found', pathname, method: req.method });
+  } catch (err) {
+    console.error('[API Gateway Error]', err);
+    return res.status(500).json({
+      error: 'API Gateway Execution Error',
+      message: err?.message || String(err),
+      stack: process.env.NODE_ENV !== 'production' ? err?.stack : undefined,
+    });
+  }
 }
