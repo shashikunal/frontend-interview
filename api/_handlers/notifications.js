@@ -10,7 +10,10 @@ import { meetingOpsService } from '../../server/meetings/meetingOpsService.ts';
 import { meetingService } from '../../server/meetings/meetingService.ts';
 
 // In-memory persistent alert ledger for real-time candidate meeting push notifications
-const activeMeetingAlerts = [];
+if (!globalThis.__ACTIVE_MEETING_ALERTS__) {
+  globalThis.__ACTIVE_MEETING_ALERTS__ = [];
+}
+const activeMeetingAlerts = globalThis.__ACTIVE_MEETING_ALERTS__;
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -33,7 +36,15 @@ export default async function handler(req, res) {
   }
 
   // 1b. Get Active Meeting Alerts for Candidate Dashboard
-  if (req.method === 'GET' && (pathname === '/api/v1/notifications' || pathname.endsWith('/notifications') || pathname.endsWith('/active') || pathname.endsWith('/inbox'))) {
+  if (req.method === 'GET' && (
+    pathname === '' ||
+    pathname === '/' ||
+    pathname === '/api/v1/notifications' ||
+    pathname.endsWith('/notifications') ||
+    pathname.endsWith('/active') ||
+    pathname.endsWith('/inbox') ||
+    pathname.endsWith('/alerts')
+  )) {
     const allMeetings = meetingOpsService.listMeetings({ limit: 10 }).meetings || [];
     const liveMeetingFromOps = allMeetings.find(m => m.status === 'STARTED' || m.status === 'SCHEDULED');
 
@@ -131,7 +142,12 @@ export default async function handler(req, res) {
 
   // 4. Send Meeting Link to Students (Push Notification Dispatch)
   if (req.method === 'POST' && (pathname.endsWith('/send') || req.body?.action === 'send' || req.body?.action === 'send-meeting-link')) {
-    const { meetingId, studentIds, notificationType, customMessage } = req.body || {};
+    const rawMeeting = req.body?.meeting || {};
+    const meetingId = req.body?.meetingId || rawMeeting.id || req.body?.id;
+    const studentIds = req.body?.studentIds || req.body?.recipients;
+    const notificationType = req.body?.notificationType;
+    const customMessage = req.body?.customMessage || req.body?.message;
+
     if (!meetingId) {
       return res.status(400).json(createErrorResponse('BadRequest', 'meetingId is required to send notification link.'));
     }
@@ -143,21 +159,21 @@ export default async function handler(req, res) {
       if (room) {
         meeting = meetingOpsService.registerAdHocMeeting({
           id: room.id,
-          title: room.title || 'Platform Interview Meeting',
-          meeting_url: `/meet/${room.id}`,
+          title: rawMeeting.title || room.title || 'Platform Interview Meeting',
+          meeting_url: rawMeeting.meeting_url || `/meet/${room.id}`,
         });
       } else {
         meeting = {
           id: meetingId,
-          title: 'Live Interview Session',
-          meeting_type: 'Interview',
+          title: rawMeeting.title || 'Live Interview Session',
+          meeting_type: rawMeeting.meeting_type || 'Interview',
           meeting_provider: 'Platform Meet (Built-in)',
-          meeting_url: `/meet/${meetingId}`,
-          start_at: new Date().toISOString(),
-          end_at: new Date(Date.now() + 60 * 60 * 1000).toISOString(),
+          meeting_url: rawMeeting.meeting_url || `/meet/${meetingId}`,
+          start_at: rawMeeting.start_at || new Date().toISOString(),
+          end_at: rawMeeting.end_at || new Date(Date.now() + 60 * 60 * 1000).toISOString(),
           timezone: 'Asia/Kolkata',
           trainer_id: user?.id || 'host',
-          trainer_name: user?.name || 'Session Host',
+          trainer_name: rawMeeting.trainer_name || user?.name || 'Platform Trainer',
           created_by: user?.id || 'host',
           status: 'STARTED',
           capacity: 50,

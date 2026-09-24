@@ -423,7 +423,7 @@ function localAdminAuthPlugin(): Plugin {
           try {
             const fileUrl = pathToFileURL(path.resolve(process.cwd(), modulePath)).href
             // @ts-ignore
-            const { default: handler } = await import(fileUrl)
+            const { default: handler } = await import(`${fileUrl}?t=${Date.now()}`)
             const urlObj = new URL(req.url || '/', 'http://localhost')
             req.query = Object.fromEntries(urlObj.searchParams.entries())
             res.status = (code: number) => { res.statusCode = code; return res }
