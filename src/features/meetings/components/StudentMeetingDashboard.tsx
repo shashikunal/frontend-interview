@@ -214,13 +214,13 @@ export const StudentMeetingDashboard: React.FC = () => {
       if (m.status === 'CANCELLED') return false;
 
       if (activeTab === 'TODAY') {
-        return mDateStr === todayLocalStr;
+        return mDateStr === todayLocalStr || m.status === 'STARTED' || m.status === 'IN_PROGRESS';
       }
       if (activeTab === 'COMPLETED') {
-        return m.status === 'COMPLETED' || endTime < nowTimestamp;
+        return m.status === 'COMPLETED' || (endTime < nowTimestamp && m.status !== 'STARTED' && m.status !== 'IN_PROGRESS');
       }
       if (activeTab === 'UPCOMING') {
-        return startTime >= nowTimestamp && m.status !== 'COMPLETED';
+        return (startTime >= nowTimestamp || m.status === 'STARTED' || m.status === 'IN_PROGRESS' || mDateStr === todayLocalStr) && m.status !== 'COMPLETED';
       }
       return true;
     });
@@ -229,7 +229,7 @@ export const StudentMeetingDashboard: React.FC = () => {
   // Find next upcoming meeting for the Live Countdown Reminder Banner
   const nextMeeting = useMemo(() => {
     const upcoming = meetings
-      .filter(m => m.status !== 'CANCELLED' && m.status !== 'COMPLETED' && new Date(m.end_at).getTime() > nowTimestamp)
+      .filter(m => m.status !== 'CANCELLED' && m.status !== 'COMPLETED' && (new Date(m.end_at).getTime() > nowTimestamp || m.status === 'STARTED' || m.status === 'IN_PROGRESS'))
       .sort((a, b) => new Date(a.start_at).getTime() - new Date(b.start_at).getTime());
     return upcoming[0] || null;
   }, [meetings, nowTimestamp]);
