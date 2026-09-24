@@ -1728,9 +1728,9 @@ var init_meetingOpsService = __esm({
         const now = /* @__PURE__ */ new Date();
         if (options.student_id) {
           const assignedMeetingIds = new Set(
-            Array.from(this.participants.values()).filter((p) => p.student_id === options.student_id).map((p) => p.meeting_id)
+            Array.from(this.participants.values()).filter((p) => p.student_id === options.student_id || options.student_email && p.student_email && p.student_email.toLowerCase() === options.student_email.toLowerCase()).map((p) => p.meeting_id)
           );
-          list = list.filter((m) => assignedMeetingIds.has(m.id));
+          list = list.filter((m) => assignedMeetingIds.has(m.id) || m.status === "STARTED" || !m.batch_id || m.meeting_type === "Interview" || m.meeting_type === "Technical Discussion");
         }
         if (options.status && options.status !== "ALL") {
           list = list.filter((m) => m.status.toUpperCase() === options.status.toUpperCase());
@@ -8408,7 +8408,21 @@ async function handler14(req, res) {
   }
   const isInstantAction = pathname.endsWith("/instant") || req.body?.action === "instant" || urlObj.searchParams.get("action") === "instant";
   const authHeader = req.headers?.authorization || req.headers?.Authorization;
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+  let user = null;
+  if (authHeader && authHeader.startsWith("Bearer ")) {
+    const token = authHeader.replace(/^Bearer\s+/i, "").trim();
+    const auth = tokenService.verifyMeetingToken(token);
+    if (auth.valid && auth.claims) {
+      user = {
+        id: auth.claims.userId,
+        email: auth.claims.userEmail,
+        name: auth.claims.userName,
+        role: auth.claims.userRole,
+        permissions: auth.claims.permissions || []
+      };
+    }
+  }
+  if (!user) {
     if (isInstantAction) {
       const guestId = `usr_${crypto.randomUUID().replace(/-/g, "").slice(0, 8)}`;
       const guestUser = {
@@ -8424,20 +8438,18 @@ async function handler14(req, res) {
         meetingUrl: result.meetingUrl
       });
     }
-    return res.status(401).json(createErrorResponse("Unauthorized", "Authentication required", "MISSING_TOKEN"));
+    if (req.method === "GET") {
+      user = {
+        id: "candidate_guest",
+        email: "guest@interviewprep.com",
+        name: "Candidate",
+        role: "candidate",
+        permissions: ["meetings:participate"]
+      };
+    } else {
+      return res.status(401).json(createErrorResponse("Unauthorized", "Authentication required", "MISSING_TOKEN"));
+    }
   }
-  const token = authHeader.replace(/^Bearer\s+/i, "").trim();
-  const auth = tokenService.verifyMeetingToken(token);
-  if (!auth.valid || !auth.claims) {
-    return res.status(401).json(createErrorResponse("Unauthorized", auth.error || "Invalid token", auth.errorCode || "UNAUTHORIZED"));
-  }
-  const user = {
-    id: auth.claims.userId,
-    email: auth.claims.userEmail,
-    name: auth.claims.userName,
-    role: auth.claims.userRole,
-    permissions: auth.claims.permissions || []
-  };
   if (pathname.endsWith("/ics") || urlObj.searchParams.get("action") === "ics") {
     const meetingId = urlObj.searchParams.get("meetingId") || urlObj.searchParams.get("id");
     if (!meetingId) {
@@ -8483,11 +8495,13 @@ async function handler14(req, res) {
     const search = urlObj.searchParams.get("search") || void 0;
     const page = parseInt(urlObj.searchParams.get("page") || "1", 10);
     const limit = parseInt(urlObj.searchParams.get("limit") || "20", 10);
-    const studentFilter = user.role !== "admin" && user.role !== "interviewer" ? user.id : void 0;
+    const isPrivileged = user.role === "admin" || user.role === "interviewer";
+    const studentFilter = !isPrivileged && user.id !== "candidate_guest" ? user.id : void 0;
     const result = meetingOpsService.listMeetings({
       status,
       timeframe,
       student_id: studentFilter,
+      student_email: user.email,
       search,
       page,
       limit
@@ -11461,6 +11475,7 @@ init_pushNotificationService();
 init_notificationWorker();
 init_meetingOpsService();
 init_meetingService();
+var activeMeetingAlerts = [];
 async function handler29(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, OPTIONS");
@@ -11474,6 +11489,34 @@ async function handler29(req, res) {
     return res.status(200).json({
       success: true,
       publicKey: pushNotificationService.getPublicKey()
+    });
+  }
+  if (req.method === "GET" && (pathname === "/api/v1/notifications" || pathname.endsWith("/notifications") || pathname.endsWith("/active") || pathname.endsWith("/inbox"))) {
+    const allMeetings = meetingOpsService.listMeetings({ limit: 10 }).meetings || [];
+    const liveMeetingFromOps = allMeetings.find((m) => m.status === "STARTED" || m.status === "SCHEDULED");
+    const cutoff = Date.now() - 12 * 60 * 60 * 1e3;
+    const freshAlerts = activeMeetingAlerts.filter((a) => new Date(a.timestamp).getTime() > cutoff);
+    let activeLive = freshAlerts.find((a) => Date.now() - new Date(a.timestamp).getTime() < 4 * 60 * 60 * 1e3) || null;
+    if (!activeLive && liveMeetingFromOps) {
+      activeLive = {
+        id: `alert_${liveMeetingFromOps.id}`,
+        meetingId: liveMeetingFromOps.id,
+        meetingTitle: liveMeetingFromOps.title,
+        meetingUrl: liveMeetingFromOps.meeting_url || `/meet/${liveMeetingFromOps.id}`,
+        meetingType: liveMeetingFromOps.meeting_type || "Interview",
+        customMessage: `Live session: "${liveMeetingFromOps.title}". Host: ${liveMeetingFromOps.trainer_name || "Platform Trainer"}. Click to join now!`,
+        notificationType: "MEETING_STARTED",
+        timestamp: liveMeetingFromOps.start_at || (/* @__PURE__ */ new Date()).toISOString(),
+        trainerName: liveMeetingFromOps.trainer_name || "Platform Trainer",
+        status: liveMeetingFromOps.status
+      };
+    }
+    return res.status(200).json({
+      success: true,
+      alerts: freshAlerts,
+      activeLiveMeeting: activeLive,
+      count: freshAlerts.length,
+      timestamp: (/* @__PURE__ */ new Date()).toISOString()
     });
   }
   const authHeader = req.headers?.authorization || req.headers?.Authorization;
@@ -11594,15 +11637,34 @@ async function handler29(req, res) {
         errors.push(`${studentId}: ${e.message}`);
       }
     }
+    const alertEntry = {
+      id: `alert_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+      meetingId: meeting.id,
+      meetingTitle: meeting.title,
+      meetingUrl: meeting.meeting_url || `/meet/${meeting.id}`,
+      meetingType: meeting.meeting_type || "Interview",
+      customMessage: customMessage || `Interview room is live now! Join via: ${meeting.meeting_url || `/meet/${meeting.id}`}`,
+      notificationType: notificationType || "MEETING_STARTED",
+      timestamp: (/* @__PURE__ */ new Date()).toISOString(),
+      trainerName: meeting.trainer_name || user?.name || "Platform Trainer",
+      status: "ACTIVE"
+    };
+    activeMeetingAlerts.unshift(alertEntry);
+    if (activeMeetingAlerts.length > 50) activeMeetingAlerts.pop();
+    try {
+      meetingOpsService.updateMeetingStatus(meeting.id, "STARTED");
+    } catch (_) {
+    }
     return res.status(200).json({
       success: true,
       message: `Push notification dispatched to ${targets.length} recipient(s).`,
       meetingId: meeting.id,
       meetingTitle: meeting.title,
-      meetingUrl: meeting.meeting_url,
+      meetingUrl: meeting.meeting_url || `/meet/${meeting.id}`,
       recipients: targets,
       sentCount,
       failedCount,
+      alert: alertEntry,
       errors: errors.length > 0 ? errors : void 0
     });
   }

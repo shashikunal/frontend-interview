@@ -1,5 +1,6 @@
 import { useMemo, useState, useEffect } from 'react'
-import { Link, useSearchParams, useParams } from 'react-router-dom'
+import { Link, useSearchParams, useParams, useNavigate } from 'react-router-dom'
+import { pushClientService } from '../../features/notifications/services/pushClientService'
 import { useProgress } from '../../context/ProgressContext'
 import { useBookmarks } from '../../context/BookmarkContext'
 import { useAuth } from '../../context/AuthContext'
@@ -58,12 +59,50 @@ function formatDurationSec(seconds: number): string {
 
 function CandidateDashboard() {
   const { user } = useAuth()
+  const navigate = useNavigate()
   const { questions, loading, error } = useQuestions()
   const { solvedIds, totalSolved, streak, studyDates, quizSessions, mockInterviews, resetProgress } = useProgress()
   const { bookmarkedCount } = useBookmarks()
   const [showResetConfirm, setShowResetConfirm] = useState(false)
   const [assignedTrack, setAssignedTrack] = useState<UserTrackProgress | null>(null)
   const [trackAlert, setTrackAlert] = useState<string | null>(null)
+
+  // Real-time Live Meeting Push Alerts from Admin
+  const [liveMeetingAlert, setLiveMeetingAlert] = useState<{
+    id?: string
+    meetingId: string
+    meetingTitle?: string
+    meetingUrl?: string
+    customMessage?: string
+    trainerName?: string
+    timestamp?: string
+  } | null>(null)
+
+  useEffect(() => {
+    // Initial fetch for active live meeting push alert
+    pushClientService.getActiveMeetingNotification().then(alert => {
+      if (alert) setLiveMeetingAlert(alert)
+    })
+
+    const unsubBroadcast = pushClientService.onNotificationReceived((data) => {
+      setLiveMeetingAlert({
+        meetingId: data.meetingId,
+        meetingTitle: data.title || data.meetingTitle || 'Live Technical Interview Room',
+        meetingUrl: data.url || data.meetingUrl || `/meet/${data.meetingId}`,
+        customMessage: data.body || data.customMessage,
+        timestamp: new Date().toISOString(),
+      })
+    })
+
+    const unsubPoll = pushClientService.startPolling((alert) => {
+      if (alert) setLiveMeetingAlert(alert)
+    })
+
+    return () => {
+      unsubBroadcast()
+      unsubPoll()
+    }
+  }, [])
 
   // Real-time Docs & Full Syllabus Tracking State
   const [docsSyllabusStats, setDocsSyllabusStats] = useState(() => docsProgressService.getSyllabusStats())
@@ -626,6 +665,45 @@ function CandidateDashboard() {
         </div>
       </div>
 
+      {/* Live Admin Meeting Push Notification Banner */}
+      {liveMeetingAlert && (
+        <div className="candidate-live-meeting-push-banner" id="candidate-live-meeting-banner">
+          <div className="clm-left">
+            <div className="clm-badge-pulse">
+              <span className="clm-dot" /> LIVE INTERVIEW SESSION DISPATCHED
+            </div>
+            <h3 className="clm-title">{liveMeetingAlert.meetingTitle || 'Live Technical Interview Room'}</h3>
+            <p className="clm-desc">
+              {liveMeetingAlert.customMessage || 'Your mentor has started the live interview session. Click below to join the call immediately.'}
+            </p>
+            <div className="clm-meta">
+              {liveMeetingAlert.timestamp && (
+                <span>⏰ Sent: {new Date(liveMeetingAlert.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+              )}
+              <span>⚡ Host: {liveMeetingAlert.trainerName || 'Platform Trainer'}</span>
+              <span>🔗 {liveMeetingAlert.meetingUrl || `/meet/${liveMeetingAlert.meetingId}`}</span>
+            </div>
+          </div>
+          <div className="clm-right">
+            <button
+              type="button"
+              className="btn-join-meeting-pulse"
+              onClick={() => navigate(liveMeetingAlert.meetingUrl || `/meet/${liveMeetingAlert.meetingId}`)}
+            >
+              🚀 Join Meeting Room
+            </button>
+            <button
+              type="button"
+              className="btn-clm-dismiss"
+              onClick={() => setLiveMeetingAlert(null)}
+              title="Dismiss alert"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Student Section Switcher */}
       <div className="candidate-section-switcher-bar">
         <button
@@ -669,6 +747,7 @@ function CandidateDashboard() {
           onClick={() => setActiveMainSection('meetings')}
         >
           📅 My Meetings &amp; Sessions
+          {liveMeetingAlert && <span className="cand-meeting-live-badge">1 LIVE</span>}
         </button>
       </div>
 

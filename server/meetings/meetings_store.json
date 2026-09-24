@@ -227,6 +227,48 @@
   ],
   "participants": [
     {
+      "id": "433107b0-62ec-4ed1-9a38-2612c3f4b99a",
+      "meeting_id": "meet_meta_arch_live",
+      "student_id": "usr_shashikunal_sb",
+      "student_name": "Shashi Kunal",
+      "student_email": "shashikunal@gmail.com",
+      "status": "SCHEDULED",
+      "invitation_status": "pending",
+      "attendance_status": "pending",
+      "calendar_status": "synced",
+      "notification_status": "scheduled",
+      "created_at": "2026-09-24T15:36:47.313Z",
+      "updated_at": "2026-09-24T15:36:47.313Z"
+    },
+    {
+      "id": "2e36722b-fb35-4e94-96fe-0fa10117e3af",
+      "meeting_id": "meet_meta_arch_live",
+      "student_id": "usr_shashikunal_sb",
+      "student_name": "Shashi Kunal",
+      "student_email": "shashikunal@gmail.com",
+      "status": "SCHEDULED",
+      "invitation_status": "pending",
+      "attendance_status": "pending",
+      "calendar_status": "synced",
+      "notification_status": "scheduled",
+      "created_at": "2026-09-24T15:36:26.034Z",
+      "updated_at": "2026-09-24T15:36:26.034Z"
+    },
+    {
+      "id": "2307b3b0-fcae-449c-9747-ca5d2800c3b1",
+      "meeting_id": "meet_meta_arch_live",
+      "student_id": "usr_shashikunal_sb",
+      "student_name": "Shashi Kunal",
+      "student_email": "shashikunal@gmail.com",
+      "status": "SCHEDULED",
+      "invitation_status": "pending",
+      "attendance_status": "pending",
+      "calendar_status": "synced",
+      "notification_status": "scheduled",
+      "created_at": "2026-09-24T15:36:06.706Z",
+      "updated_at": "2026-09-24T15:36:06.706Z"
+    },
+    {
       "id": "65e4b2e4-08fc-4bb6-8a79-1e8f1660eacd",
       "meeting_id": "meet_meta_arch_live",
       "student_id": "usr_shashikunal_sb",
@@ -599,5 +641,5 @@
       "updated_at": "2026-09-24T14:36:55.956Z"
     }
   ],
-  "updatedAt": "2026-09-24T15:13:32.671Z"
+  "updatedAt": "2026-09-24T15:36:47.314Z"
 }

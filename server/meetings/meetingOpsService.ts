@@ -536,6 +536,7 @@ export class MeetingOpsService {
     batch_id?: string;
     trainer_id?: string;
     student_id?: string;
+    student_email?: string;
     search?: string;
     page?: number;
     limit?: number;
@@ -543,14 +544,14 @@ export class MeetingOpsService {
     let list = Array.from(this.meetings.values());
     const now = new Date();
 
-    // Student Isolation Filter (Strict RBAC: Student only sees meetings they are assigned to)
+    // Student Isolation Filter (Strict RBAC: Student sees assigned meetings, plus all live/started and cohort interview sessions)
     if (options.student_id) {
       const assignedMeetingIds = new Set(
         Array.from(this.participants.values())
-          .filter(p => p.student_id === options.student_id)
+          .filter(p => p.student_id === options.student_id || (options.student_email && p.student_email && p.student_email.toLowerCase() === options.student_email.toLowerCase()))
           .map(p => p.meeting_id)
       );
-      list = list.filter(m => assignedMeetingIds.has(m.id));
+      list = list.filter(m => assignedMeetingIds.has(m.id) || m.status === 'STARTED' || !m.batch_id || m.meeting_type === 'Interview' || m.meeting_type === 'Technical Discussion');
     }
 
     if (options.status && options.status !== 'ALL') {

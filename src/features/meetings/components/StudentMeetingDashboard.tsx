@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext';
 import { pushClientService, type PushStatus } from '../../notifications/services/pushClientService';
+import { meetingTokenService } from '../../auth/services/meetingTokenService';
 import type { MeetingRecord } from '../../../../server/meetings/meetingOpsTypes';
 import '../styles/StudentMeetingDashboard.css';
 
@@ -56,7 +57,20 @@ export const StudentMeetingDashboard: React.FC = () => {
     setIsLoading(true);
     setErrorMsg(null);
     try {
-      const res = await fetch('/api/v1/meetings');
+      const headers: Record<string, string> = { Accept: 'application/json' };
+      if (user) {
+        try {
+          const token = await meetingTokenService.getMeetingToken('global_list', {
+            id: user.id,
+            email: user.email,
+            name: user.name || user.email.split('@')[0],
+            role: (user.role as any) || 'candidate',
+          });
+          if (token) headers['Authorization'] = `Bearer ${token}`;
+        } catch (_) {}
+      }
+
+      const res = await fetch('/api/v1/meetings', { headers });
       if (!res.ok) {
         throw new Error(`HTTP ${res.status}: Failed to load meetings.`);
       }
@@ -69,21 +83,50 @@ export const StudentMeetingDashboard: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [user]);
 
-  // Check push support and listen for broadcast notifications
+  // Check push support, poll active alerts, and listen for broadcast notifications
   useEffect(() => {
     pushClientService.getStatus().then(setPushStatus);
-    const unsubscribe = pushClientService.onNotificationReceived((data) => {
+
+    // Initial check for active live meeting push alert
+    pushClientService.getActiveMeetingNotification().then(alert => {
+      if (alert) {
+        setLiveAlert({
+          title: alert.meetingTitle ? `🟢 Live Meeting: ${alert.meetingTitle}` : '🟢 Live Meeting Started!',
+          body: alert.customMessage || 'Your interview room is now live. Click to join immediately.',
+          url: alert.meetingUrl || `/meet/${alert.meetingId}`,
+          meetingId: alert.meetingId,
+        });
+      }
+    });
+
+    const unsubscribeBroadcast = pushClientService.onNotificationReceived((data) => {
       setLiveAlert({
-        title: data.title,
-        body: data.body,
-        url: data.url || `/meet/${data.meetingId}`,
+        title: data.title || '🟢 Live Meeting Started: Join Now!',
+        body: data.body || data.customMessage || 'Your interviewer has started the session.',
+        url: data.url || data.meetingUrl || `/meet/${data.meetingId}`,
         meetingId: data.meetingId,
       });
       fetchMyMeetings();
     });
-    return unsubscribe;
+
+    const unsubscribePoll = pushClientService.startPolling((alert) => {
+      if (alert) {
+        setLiveAlert({
+          title: alert.meetingTitle ? `🟢 Live Meeting: ${alert.meetingTitle}` : '🟢 Live Meeting Started!',
+          body: alert.customMessage || 'Your interview room is now live. Click to join immediately.',
+          url: alert.meetingUrl || `/meet/${alert.meetingId}`,
+          meetingId: alert.meetingId,
+        });
+        fetchMyMeetings();
+      }
+    });
+
+    return () => {
+      unsubscribeBroadcast();
+      unsubscribePoll();
+    };
   }, [fetchMyMeetings]);
 
   // Format date and time in student's selected timezone

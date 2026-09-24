@@ -9,6 +9,9 @@ import { meetingOpsService } from '../../server/meetings/meetingOpsService.ts';
 
 import { meetingService } from '../../server/meetings/meetingService.ts';
 
+// In-memory persistent alert ledger for real-time candidate meeting push notifications
+const activeMeetingAlerts = [];
+
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, OPTIONS');
@@ -26,6 +29,41 @@ export default async function handler(req, res) {
     return res.status(200).json({
       success: true,
       publicKey: pushNotificationService.getPublicKey(),
+    });
+  }
+
+  // 1b. Get Active Meeting Alerts for Candidate Dashboard
+  if (req.method === 'GET' && (pathname === '/api/v1/notifications' || pathname.endsWith('/notifications') || pathname.endsWith('/active') || pathname.endsWith('/inbox'))) {
+    const allMeetings = meetingOpsService.listMeetings({ limit: 10 }).meetings || [];
+    const liveMeetingFromOps = allMeetings.find(m => m.status === 'STARTED' || m.status === 'SCHEDULED');
+
+    // Filter alerts from the last 12 hours
+    const cutoff = Date.now() - 12 * 60 * 60 * 1000;
+    const freshAlerts = activeMeetingAlerts.filter(a => new Date(a.timestamp).getTime() > cutoff);
+
+    let activeLive = freshAlerts.find(a => Date.now() - new Date(a.timestamp).getTime() < 4 * 60 * 60 * 1000) || null;
+
+    if (!activeLive && liveMeetingFromOps) {
+      activeLive = {
+        id: `alert_${liveMeetingFromOps.id}`,
+        meetingId: liveMeetingFromOps.id,
+        meetingTitle: liveMeetingFromOps.title,
+        meetingUrl: liveMeetingFromOps.meeting_url || `/meet/${liveMeetingFromOps.id}`,
+        meetingType: liveMeetingFromOps.meeting_type || 'Interview',
+        customMessage: `Live session: "${liveMeetingFromOps.title}". Host: ${liveMeetingFromOps.trainer_name || 'Platform Trainer'}. Click to join now!`,
+        notificationType: 'MEETING_STARTED',
+        timestamp: liveMeetingFromOps.start_at || new Date().toISOString(),
+        trainerName: liveMeetingFromOps.trainer_name || 'Platform Trainer',
+        status: liveMeetingFromOps.status,
+      };
+    }
+
+    return res.status(200).json({
+      success: true,
+      alerts: freshAlerts,
+      activeLiveMeeting: activeLive,
+      count: freshAlerts.length,
+      timestamp: new Date().toISOString(),
     });
   }
 
@@ -169,15 +207,37 @@ export default async function handler(req, res) {
       }
     }
 
+    // Persist alert in activeMeetingAlerts so candidate dashboard polling immediately receives it
+    const alertEntry = {
+      id: `alert_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+      meetingId: meeting.id,
+      meetingTitle: meeting.title,
+      meetingUrl: meeting.meeting_url || `/meet/${meeting.id}`,
+      meetingType: meeting.meeting_type || 'Interview',
+      customMessage: customMessage || `Interview room is live now! Join via: ${meeting.meeting_url || `/meet/${meeting.id}`}`,
+      notificationType: notificationType || 'MEETING_STARTED',
+      timestamp: new Date().toISOString(),
+      trainerName: meeting.trainer_name || user?.name || 'Platform Trainer',
+      status: 'ACTIVE',
+    };
+    activeMeetingAlerts.unshift(alertEntry);
+    if (activeMeetingAlerts.length > 50) activeMeetingAlerts.pop();
+
+    // Ensure meeting status is set to STARTED in meetingOpsService
+    try {
+      meetingOpsService.updateMeetingStatus(meeting.id, 'STARTED');
+    } catch (_) {}
+
     return res.status(200).json({
       success: true,
       message: `Push notification dispatched to ${targets.length} recipient(s).`,
       meetingId: meeting.id,
       meetingTitle: meeting.title,
-      meetingUrl: meeting.meeting_url,
+      meetingUrl: meeting.meeting_url || `/meet/${meeting.id}`,
       recipients: targets,
       sentCount,
       failedCount,
+      alert: alertEntry,
       errors: errors.length > 0 ? errors : undefined,
     });
   }

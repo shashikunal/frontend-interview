@@ -62,7 +62,24 @@ export default async function handler(req, res) {
 
   // Extract and verify Bearer token
   const authHeader = req.headers?.authorization || req.headers?.Authorization;
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+  let user = null;
+
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    const token = authHeader.replace(/^Bearer\s+/i, '').trim();
+    const auth = tokenService.verifyMeetingToken(token);
+    if (auth.valid && auth.claims) {
+      user = {
+        id: auth.claims.userId,
+        email: auth.claims.userEmail,
+        name: auth.claims.userName,
+        role: auth.claims.userRole,
+        permissions: auth.claims.permissions || [],
+      };
+    }
+  }
+
+  // Handle unauthenticated requests
+  if (!user) {
     if (isInstantAction) {
       const guestId = `usr_${crypto.randomUUID().replace(/-/g, '').slice(0, 8)}`;
       const guestUser = {
@@ -78,23 +95,20 @@ export default async function handler(req, res) {
         meetingUrl: result.meetingUrl,
       });
     }
-    return res.status(401).json(createErrorResponse('Unauthorized', 'Authentication required', 'MISSING_TOKEN'));
+
+    // Allow GET /api/v1/meetings for public/candidate guest viewing
+    if (req.method === 'GET') {
+      user = {
+        id: 'candidate_guest',
+        email: 'guest@interviewprep.com',
+        name: 'Candidate',
+        role: 'candidate',
+        permissions: ['meetings:participate'],
+      };
+    } else {
+      return res.status(401).json(createErrorResponse('Unauthorized', 'Authentication required', 'MISSING_TOKEN'));
+    }
   }
-
-  const token = authHeader.replace(/^Bearer\s+/i, '').trim();
-  const auth = tokenService.verifyMeetingToken(token);
-
-  if (!auth.valid || !auth.claims) {
-    return res.status(401).json(createErrorResponse('Unauthorized', auth.error || 'Invalid token', auth.errorCode || 'UNAUTHORIZED'));
-  }
-
-  const user = {
-    id: auth.claims.userId,
-    email: auth.claims.userEmail,
-    name: auth.claims.userName,
-    role: auth.claims.userRole,
-    permissions: auth.claims.permissions || [],
-  };
 
   // 1. Download ICS Calendar Event
   if (pathname.endsWith('/ics') || urlObj.searchParams.get('action') === 'ics') {
@@ -149,13 +163,15 @@ export default async function handler(req, res) {
     const page = parseInt(urlObj.searchParams.get('page') || '1', 10);
     const limit = parseInt(urlObj.searchParams.get('limit') || '20', 10);
 
-    // If student, filter exclusively by their assigned meetings
-    const studentFilter = user.role !== 'admin' && user.role !== 'interviewer' ? user.id : undefined;
+    // If student, filter by assigned meetings, but include live/started cohort sessions
+    const isPrivileged = user.role === 'admin' || user.role === 'interviewer';
+    const studentFilter = !isPrivileged && user.id !== 'candidate_guest' ? user.id : undefined;
 
     const result = meetingOpsService.listMeetings({
       status,
       timeframe: timeframe,
       student_id: studentFilter,
+      student_email: user.email,
       search,
       page,
       limit,

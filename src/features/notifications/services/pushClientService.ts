@@ -223,19 +223,31 @@ export class PushClientService {
       }
 
       // Broadcast across tabs so students with active sessions get immediate alert
-      if (typeof window !== 'undefined' && 'BroadcastChannel' in window) {
+      const alertPayload = {
+        type: 'MEETING_PUSH_DISPATCHED',
+        meetingId: params.meetingId,
+        meetingTitle: data.meetingTitle || 'Live Interview Meeting',
+        title: `🟢 Live Meeting Started: Join Now!`,
+        body: params.customMessage || `Your interviewer has started the session. Click to join!`,
+        url: data.meetingUrl || `/meet/${params.meetingId}`,
+        meetingUrl: data.meetingUrl || `/meet/${params.meetingId}`,
+        customMessage: params.customMessage,
+        timestamp: new Date().toISOString(),
+      };
+
+      if (typeof window !== 'undefined') {
         try {
-          const channel = new BroadcastChannel('meet_notifications_channel');
-          channel.postMessage({
-            type: 'MEETING_PUSH_DISPATCHED',
-            meetingId: params.meetingId,
-            title: `🟢 Live Meeting Started: Join Now!`,
-            body: params.customMessage || `Your interviewer has started the session. Click to join!`,
-            url: data.meetingUrl || `/meet/${params.meetingId}`,
-          });
-          channel.close();
-        } catch (bcErr) {
-          console.warn('[PushClientService] BroadcastChannel post error:', bcErr);
+          localStorage.setItem('last_active_meeting_alert', JSON.stringify(alertPayload));
+        } catch (_) {}
+
+        if ('BroadcastChannel' in window) {
+          try {
+            const channel = new BroadcastChannel('meet_notifications_channel');
+            channel.postMessage(alertPayload);
+            channel.close();
+          } catch (bcErr) {
+            console.warn('[PushClientService] BroadcastChannel post error:', bcErr);
+          }
         }
       }
 
@@ -248,6 +260,88 @@ export class PushClientService {
       console.error('[PushClientService] Send push notification error:', err);
       return { success: false, message: err.message || 'Failed to send push notification.' };
     }
+  }
+
+  /**
+   * Fetch the currently active meeting alert from backend serverless notification ledger
+   */
+  public async getActiveMeetingNotification(): Promise<{
+    id?: string;
+    meetingId: string;
+    meetingTitle: string;
+    meetingUrl: string;
+    customMessage?: string;
+    trainerName?: string;
+    timestamp: string;
+  } | null> {
+    try {
+      const res = await fetch('/api/v1/notifications', {
+        headers: { Accept: 'application/json' },
+      });
+      if (!res.ok) return null;
+      const data = await res.json();
+      if (data.success && data.activeLiveMeeting) {
+        if (typeof window !== 'undefined') {
+          try {
+            localStorage.setItem('last_active_meeting_alert', JSON.stringify(data.activeLiveMeeting));
+          } catch (_) {}
+        }
+        return data.activeLiveMeeting;
+      }
+
+      // Check cached fallback
+      if (typeof window !== 'undefined') {
+        try {
+          const cached = localStorage.getItem('last_active_meeting_alert');
+          if (cached) {
+            const parsed = JSON.parse(cached);
+            if (Date.now() - new Date(parsed.timestamp).getTime() < 2 * 3600 * 1000) {
+              return parsed;
+            }
+          }
+        } catch (_) {}
+      }
+      return null;
+    } catch {
+      return null;
+    }
+  }
+
+  /**
+   * Start lightweight background polling for active meeting notifications (every 4s)
+   * This bridges cross-device and cross-browser live meeting alert distribution.
+   */
+  public startPolling(callback: (alert: any) => void, intervalMs: number = 4000): () => void {
+    let active = true;
+    let lastNotifiedId = '';
+
+    const check = async () => {
+      if (!active) return;
+      try {
+        const alert = await this.getActiveMeetingNotification();
+        if (alert && alert.meetingId) {
+          const alertKey = `${alert.meetingId}_${alert.timestamp}`;
+          if (alertKey !== lastNotifiedId) {
+            lastNotifiedId = alertKey;
+            this.displayLocalNotification({
+              title: alert.meetingTitle ? `🟢 Live Meeting: ${alert.meetingTitle}` : '🟢 Live Meeting Started!',
+              body: alert.customMessage || 'Your interview meeting is now live. Click to join!',
+              url: alert.meetingUrl || `/meet/${alert.meetingId}`,
+              meetingId: alert.meetingId,
+            });
+            callback(alert);
+          }
+        }
+      } catch (_) {}
+    };
+
+    check();
+    const timer = setInterval(check, intervalMs);
+
+    return () => {
+      active = false;
+      clearInterval(timer);
+    };
   }
 
   /**
@@ -265,7 +359,7 @@ export class PushClientService {
         this.displayLocalNotification({
           title: msg.data.title,
           body: msg.data.body,
-          url: msg.data.url,
+          url: msg.data.url || msg.data.meetingUrl,
           meetingId: msg.data.meetingId,
         });
         callback(msg.data);

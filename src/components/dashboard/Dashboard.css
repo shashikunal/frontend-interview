@@ -1594,3 +1594,197 @@
   box-shadow: 0 6px 18px rgba(67, 24, 255, 0.32) !important;
 }
 
+/* --------------------------------------------------------------------------
+   Candidate Live Meeting Push Notification Banner
+   -------------------------------------------------------------------------- */
+.candidate-live-meeting-push-banner {
+  margin: 18px 0 26px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 22px 28px;
+  background: linear-gradient(135deg, rgba(67, 24, 255, 0.08) 0%, rgba(2, 200, 150, 0.12) 100%);
+  border: 1.5px solid rgba(2, 200, 150, 0.45);
+  border-radius: 18px;
+  box-shadow: 0 12px 36px rgba(2, 200, 150, 0.15), 0 0 20px rgba(67, 24, 255, 0.1);
+  position: relative;
+  overflow: hidden;
+  animation: clmBannerSlide 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes clmBannerSlide {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+[data-theme="dark"] .candidate-live-meeting-push-banner {
+  background: linear-gradient(135deg, rgba(20, 24, 55, 0.95) 0%, rgba(10, 36, 45, 0.95) 100%);
+  border-color: rgba(2, 200, 150, 0.4);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.4), 0 0 25px rgba(2, 200, 150, 0.2);
+}
+
+.clm-left {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.clm-badge-pulse {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #05cd99;
+  background: rgba(5, 205, 153, 0.14);
+  padding: 4px 12px;
+  border-radius: 999px;
+  width: fit-content;
+  border: 1px solid rgba(5, 205, 153, 0.3);
+}
+
+.clm-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #05cd99;
+  box-shadow: 0 0 10px #05cd99;
+  animation: clmPulse 1.4s infinite ease-in-out;
+}
+
+@keyframes clmPulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.4);
+    opacity: 0.4;
+  }
+}
+
+.clm-title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+}
+
+.clm-desc {
+  margin: 0;
+  font-size: 0.92rem;
+  color: var(--text-secondary);
+  line-height: 1.45;
+}
+
+.clm-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  font-size: 0.8rem;
+  color: var(--text-muted, #718096);
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+.clm-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.btn-join-meeting-pulse {
+  background: linear-gradient(135deg, #05cd99 0%, #02a378 100%);
+  color: #ffffff;
+  border: none;
+  font-size: 0.95rem;
+  font-weight: 800;
+  padding: 12px 24px;
+  border-radius: 12px;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(5, 205, 153, 0.4);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  animation: btnPulseGlow 2.2s infinite;
+}
+
+@keyframes btnPulseGlow {
+  0%, 100% {
+    box-shadow: 0 6px 20px rgba(5, 205, 153, 0.4);
+    transform: translateY(0);
+  }
+  50% {
+    box-shadow: 0 10px 30px rgba(5, 205, 153, 0.65);
+    transform: translateY(-1px);
+  }
+}
+
+.btn-join-meeting-pulse:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px rgba(5, 205, 153, 0.55);
+}
+
+.btn-clm-dismiss {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.btn-clm-dismiss:hover {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+  border-color: var(--border-hover, #cbd5e1);
+}
+
+.cand-meeting-live-badge {
+  background: #e53e3e;
+  color: #ffffff;
+  font-size: 0.68rem;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: 999px;
+  margin-left: 6px;
+  box-shadow: 0 0 8px rgba(229, 62, 62, 0.6);
+  animation: clmPulse 1.4s infinite ease-in-out;
+}
+
+@media (max-width: 768px) {
+  .candidate-live-meeting-push-banner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .clm-right {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .btn-join-meeting-pulse {
+    flex: 1;
+    justify-content: center;
+  }
+}
+
+
