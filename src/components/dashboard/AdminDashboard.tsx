@@ -1110,6 +1110,16 @@ export default function AdminDashboard() {
 
             <button
               type="button"
+              className="h-topbar-btn secondary"
+              style={{ background: 'rgba(67, 24, 255, 0.08)', borderColor: 'rgba(67, 24, 255, 0.3)', color: '#4318FF', fontWeight: 700 }}
+              onClick={() => navigate('/dashboard?view=candidate')}
+              title="Test & preview portal in Candidate / Student view"
+            >
+              🎓 View as Candidate
+            </button>
+
+            <button
+              type="button"
               className="h-topbar-icon-btn"
               onClick={() => setActiveTab('requests')}
               title="Access notifications"

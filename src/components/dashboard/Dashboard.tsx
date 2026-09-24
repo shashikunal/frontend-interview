@@ -622,6 +622,38 @@ function CandidateDashboard() {
 
   return (
     <div className="dashboard-page page-enter">
+      {/* Admin Testing / Preview Mode Indicator */}
+      {user?.role === 'admin' && (
+        <div style={{
+          background: 'linear-gradient(135deg, rgba(67, 24, 255, 0.12) 0%, rgba(2, 200, 150, 0.15) 100%)',
+          border: '1.5px solid rgba(67, 24, 255, 0.35)',
+          borderRadius: '14px',
+          padding: '12px 20px',
+          marginBottom: '20px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          color: 'var(--text-primary)',
+          boxShadow: '0 4px 16px rgba(67, 24, 255, 0.08)'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <span style={{ fontSize: '1.2rem' }}>👁️</span>
+            <div>
+              <div style={{ fontWeight: 800, fontSize: '0.92rem' }}>Admin Preview Mode Active</div>
+              <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>You are currently testing the portal as a <strong>Candidate (Student)</strong>.</div>
+            </div>
+          </div>
+          <button
+            type="button"
+            className="btn btn-secondary"
+            style={{ padding: '8px 16px', fontSize: '0.84rem', fontWeight: 700, borderRadius: '10px' }}
+            onClick={() => navigate('/dashboard')}
+          >
+            🛡️ Return to Admin Command Center
+          </button>
+        </div>
+      )}
+
       {/* Horizon Candidate Welcome Banner */}
       <div className="candidate-hero-banner card-box">
         <div className="candidate-hero-content">
@@ -2226,7 +2258,10 @@ function CandidateDashboard() {
 
 export default function Dashboard() {
   const { user } = useAuth()
-  if (user?.role === 'admin') {
+  const [searchParams] = useSearchParams()
+  const forcedView = (searchParams.get('view') || searchParams.get('role') || '').toLowerCase()
+
+  if (user?.role === 'admin' && forcedView !== 'candidate' && forcedView !== 'student') {
     return <AdminDashboard />
   }
   return <CandidateDashboard />
