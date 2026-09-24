@@ -21,6 +21,21 @@ export type ChatRealtimeHandlers = {
   onReconnect?: () => void;
 };
 
+/**
+ * Returns true when running on a serverless host (Vercel/Netlify etc.)
+ * where Socket.IO WebSocket connections will always fail.
+ */
+function isServerlessHost(): boolean {
+  if (typeof window === 'undefined') return true;
+  const h = window.location.hostname;
+  return (
+    h.endsWith('.vercel.app') ||
+    h.endsWith('.now.sh') ||
+    h.endsWith('.netlify.app') ||
+    (!h.includes('localhost') && !h.includes('127.0.0.1') && !h.includes('192.168.'))
+  );
+}
+
 export class ChatClientService {
   private socket: Socket | null = null;
   private currentMeetingId: string | null = null;
@@ -29,6 +44,8 @@ export class ChatClientService {
   private broadcastChannels: Map<string, BroadcastChannel> = new Map();
   private latestMessageTimestamp: string | null = null;
   private listeners: Map<string, Set<ChatRealtimeHandlers>> = new Map();
+  /** True when running on Vercel/serverless — WebSockets unavailable */
+  private readonly serverlessMode: boolean = isServerlessHost();
 
   /**
    * Get or create native BroadcastChannel for local cross-tab fallback
@@ -49,7 +66,18 @@ export class ChatClientService {
   /**
    * Initialize Socket.IO connection for meeting chat
    */
-  public initSocket(meetingId: string, meetingToken: string): Socket {
+  /**
+   * Initialize Socket.IO connection for meeting chat.
+   * On serverless hosts (Vercel) returns null — REST polling is the sole transport.
+   */
+  public initSocket(meetingId: string, meetingToken: string): Socket | null {
+    // ── Serverless guard: skip WebSocket on Vercel ─────────────────────────────
+    if (this.serverlessMode) {
+      this.currentMeetingId = meetingId;
+      this.currentMeetingToken = meetingToken;
+      return null;
+    }
+
     if (this.socket && this.socket.connected && this.currentMeetingId === meetingId) {
       return this.socket;
     }
@@ -69,9 +97,9 @@ export class ChatClientService {
         token: meetingToken,
       },
       reconnection: true,
-      reconnectionAttempts: 10,
-      reconnectionDelay: 1000,
-      timeout: 10000,
+      reconnectionAttempts: 5,
+      reconnectionDelay: 2000,
+      timeout: 8000,
     });
 
     this.socket.on('connect', () => {

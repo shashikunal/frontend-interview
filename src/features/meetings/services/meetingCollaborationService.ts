@@ -3,6 +3,11 @@
  * Phase 16: Advanced Meeting Collaboration & Media Experience
  * Realtime WebSocket control-plane client for participants, hand raises, ephemeral reactions,
  * host moderation actions, and reconnect reconciliation.
+ *
+ * Serverless Strategy:
+ * - On Vercel (production serverless): WebSockets are not supported.
+ *   All collaboration state is synced exclusively via REST polling against /api/v1/meetings/signaling.
+ * - On localhost (dev): Socket.IO connects normally for full real-time support.
  */
 
 import { io, type Socket } from 'socket.io-client';
@@ -21,16 +26,43 @@ export interface CollaborationEventHandlers {
   onStateSynced?: (participants: RemoteParticipant[]) => void;
 }
 
+/**
+ * Detect if we are running on a serverless/Vercel host where WebSockets are not supported.
+ * On these hosts we skip Socket.IO entirely and rely on REST polling.
+ */
+function isServerlessHost(): boolean {
+  if (typeof window === 'undefined') return true;
+  const host = window.location.hostname;
+  return (
+    host.endsWith('.vercel.app') ||
+    host.endsWith('.now.sh') ||
+    host.endsWith('.netlify.app') ||
+    // Any non-localhost production host that is not running a local socket server
+    (!host.includes('localhost') && !host.includes('127.0.0.1') && !host.includes('192.168.'))
+  );
+}
+
 export class MeetingCollaborationService {
   private socket: Socket | null = null;
   private currentMeetingId: string | null = null;
   private currentMeetingToken: string | null = null;
   private handlers: Set<CollaborationEventHandlers> = new Set();
+  /** True when running on Vercel/serverless — WebSockets unavailable */
+  private readonly serverlessMode: boolean = isServerlessHost();
 
   /**
-   * Connect or retrieve existing Socket.IO connection
+   * Connect or retrieve existing Socket.IO connection.
+   * On serverless hosts this is a no-op — REST polling is the sole transport.
    */
-  public initSocket(meetingId: string, meetingToken: string): Socket {
+  public initSocket(meetingId: string, meetingToken: string): Socket | null {
+    // ── Serverless guard ──────────────────────────────────────────────────────
+    // Vercel and similar platforms do not support WebSocket connections.
+    // Attempting to connect generates console errors on every reconnect cycle.
+    // We skip Socket.IO entirely and rely on the REST signaling relay instead.
+    if (this.serverlessMode) {
+      return null;
+    }
+
     if (this.socket && this.socket.connected && this.currentMeetingId === meetingId) {
       return this.socket;
     }
@@ -45,12 +77,13 @@ export class MeetingCollaborationService {
     const socketUrl = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:5173';
     this.socket = io(socketUrl, {
       path: '/api/socket',
+      // On localhost we allow both transports; never expose websocket on prod
       transports: ['websocket', 'polling'],
       auth: { token: meetingToken },
       reconnection: true,
-      reconnectionAttempts: 10,
-      reconnectionDelay: 1000,
-      timeout: 10000,
+      reconnectionAttempts: 5,
+      reconnectionDelay: 2000,
+      timeout: 8000,
     });
 
     this.setupListeners();
@@ -186,7 +219,7 @@ export class MeetingCollaborationService {
     this.currentMeetingId = meetingId;
     this.currentMeetingToken = meetingToken;
 
-    // 1. Register with REST signaling relay for bulletproof serverless support
+    // 1. Register presence with REST signaling relay (works on all environments)
     let restParticipants: RemoteParticipant[] = [];
     try {
       await fetch('/api/v1/meetings/signaling', {
@@ -195,10 +228,7 @@ export class MeetingCollaborationService {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${meetingToken}`,
         },
-        body: JSON.stringify({
-          action: 'JOIN',
-          meetingId,
-        }),
+        body: JSON.stringify({ action: 'JOIN', meetingId }),
       });
 
       const getRes = await fetch(`/api/v1/meetings/signaling?meetingId=${encodeURIComponent(meetingId)}`, {
@@ -226,7 +256,13 @@ export class MeetingCollaborationService {
 
     this.startPresencePolling(meetingId, meetingToken);
 
-    // 2. Also connect to Socket.IO if available
+    // 2. On serverless hosts (Vercel) skip Socket.IO entirely — REST is the only transport.
+    //    This prevents the WebSocket error spam in the browser console.
+    if (this.serverlessMode) {
+      return { success: true, participants: restParticipants };
+    }
+
+    // 3. On localhost: attempt Socket.IO with a 1.5s timeout fallback to REST participants
     return new Promise(resolve => {
       let resolved = false;
       const timeout = setTimeout(() => {
@@ -238,6 +274,13 @@ export class MeetingCollaborationService {
 
       try {
         const socket = this.initSocket(meetingId, meetingToken);
+        if (!socket) {
+          // initSocket returned null (serverless guard triggered)
+          clearTimeout(timeout);
+          resolved = true;
+          resolve({ success: true, participants: restParticipants });
+          return;
+        }
         socket.emit('meeting:join', { meetingId, meetingToken }, (ack: any) => {
           if (!resolved) {
             resolved = true;
@@ -246,7 +289,6 @@ export class MeetingCollaborationService {
               resolve({ success: true, participants: restParticipants });
               return;
             }
-
             const participants = (ack.participants || []).map((p: any) => this.mapServerParticipant(p));
             resolve({ success: true, participants: participants.length > 0 ? participants : restParticipants });
           }
