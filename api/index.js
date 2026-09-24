@@ -107,9 +107,9 @@ var init_kafkaClient = __esm({
           topicEvents.shift();
         }
         const handlers = this.localConsumers.get(topic) || [];
-        for (const handler31 of handlers) {
+        for (const handler32 of handlers) {
           try {
-            await handler31(envelope, topic);
+            await handler32(envelope, topic);
             this.consumedCount++;
           } catch (err) {
             console.error(`[Kafka Fallback Dispatch Error] Handler failed on ${topic}:`, err?.message);
@@ -120,14 +120,14 @@ var init_kafkaClient = __esm({
       /**
        * Register a consumer group and topic subscription
        */
-      async registerConsumer(groupId, topics, handler31) {
+      async registerConsumer(groupId, topics, handler32) {
         for (const topic of topics) {
           let list = this.localConsumers.get(topic);
           if (!list) {
             list = [];
             this.localConsumers.set(topic, list);
           }
-          list.push(handler31);
+          list.push(handler32);
         }
         if (this.isUsingBroker() && this.kafka) {
           try {
@@ -141,7 +141,7 @@ var init_kafkaClient = __esm({
                 if (!message.value) return;
                 try {
                   const envelope = JSON.parse(message.value.toString());
-                  await handler31(envelope, topic);
+                  await handler32(envelope, topic);
                   this.consumedCount++;
                 } catch (err) {
                   this.errorCount++;
@@ -4186,9 +4186,9 @@ async function handler(req, res) {
     name: auth.claims.userName,
     role: auth.claims.userRole
   };
-  if (user.role !== "admin" && user.role !== "interviewer") {
+  if (user.role !== "admin") {
     return res.status(403).json(
-      createErrorResponse("Forbidden", "Administrator or Trainer privileges required.", "FORBIDDEN", correlation.correlationId)
+      createErrorResponse("Forbidden", "Only platform administrator (shashi) has rights.", "FORBIDDEN", correlation.correlationId)
     );
   }
   const urlObj = new URL(req.url || "/", "http://localhost");
@@ -4655,21 +4655,21 @@ var KafkaConsumerService = class {
   /**
    * Register a custom handler for a consumer group
    */
-  registerGroup(groupId, topics, handler31) {
+  registerGroup(groupId, topics, handler32) {
     let groupHandlers = this.handlers.get(groupId);
     if (!groupHandlers) {
       groupHandlers = [];
       this.handlers.set(groupId, groupHandlers);
     }
-    groupHandlers.push(handler31);
+    groupHandlers.push(handler32);
     kafkaClient.registerConsumer(groupId, topics, async (envelope, topic) => {
-      await this.processEventWithIdempotencyAndRetry(groupId, envelope, topic, handler31);
+      await this.processEventWithIdempotencyAndRetry(groupId, envelope, topic, handler32);
     });
   }
   /**
    * Process event with idempotency check, retry backoff, and DLQ routing
    */
-  async processEventWithIdempotencyAndRetry(groupId, envelope, topic, handler31) {
+  async processEventWithIdempotencyAndRetry(groupId, envelope, topic, handler32) {
     if (!envelope || !envelope.eventId || !envelope.eventType) {
       await this.routeToDlq(
         envelope?.eventId || "unknown_poison",
@@ -4694,7 +4694,7 @@ var KafkaConsumerService = class {
     let lastError = null;
     while (attempt <= this.MAX_CONSUMER_RETRIES) {
       try {
-        await handler31(envelope);
+        await handler32(envelope);
         groupSet.add(envelope.eventId);
         this.processedCount++;
         return { success: true, isDuplicate: false, sentToDlq: false };
@@ -8371,11 +8371,189 @@ async function handler13(req, res) {
   return res.status(405).json(createErrorResponse("MethodNotAllowed", "Method Not Allowed", "METHOD_NOT_ALLOWED"));
 }
 
-// api/_handlers/meetings.js
+// api/_handlers/meetings/signaling.js
+if (!globalThis.__MEETING_SIGNALING_STATE__) {
+  globalThis.__MEETING_SIGNALING_STATE__ = /* @__PURE__ */ new Map();
+}
+var roomStates = globalThis.__MEETING_SIGNALING_STATE__;
+function getRoom(meetingId) {
+  if (!roomStates.has(meetingId)) {
+    roomStates.set(meetingId, {
+      participants: /* @__PURE__ */ new Map(),
+      // userId -> { userId, name, role, isHost, micState, cameraState, screenShareState, lastSeen }
+      messages: [],
+      // Array of { id, senderId, targetId, type, payload, timestamp }
+      screenShare: null
+      // { presenterId, presenterName, dataUrl, timestamp }
+    });
+  }
+  return roomStates.get(meetingId);
+}
+function sweepStale(room) {
+  const now = Date.now();
+  for (const [userId, p] of room.participants.entries()) {
+    if (now - p.lastSeen > 35e3) {
+      room.participants.delete(userId);
+    }
+  }
+  room.messages = room.messages.filter((m) => now - m.timestamp < 3e4);
+  if (room.screenShare && now - room.screenShare.timestamp > 2e4) {
+    room.screenShare = null;
+  }
+}
 async function handler14(req, res) {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  if (req.method === "OPTIONS") {
+    return res.status(204).end();
+  }
+  const authHeader = req.headers?.authorization || req.headers?.Authorization;
+  let caller = null;
+  if (authHeader && authHeader.startsWith("Bearer ")) {
+    const token = authHeader.replace(/^Bearer\s+/i, "").trim();
+    const auth = tokenService.verifyMeetingToken(token);
+    if (auth.valid && auth.claims) {
+      caller = {
+        id: auth.claims.userId,
+        name: auth.claims.userName,
+        role: auth.claims.userRole,
+        meetingRole: auth.claims.meetingRole
+      };
+    }
+  }
+  if (req.method === "GET") {
+    const meetingId = req.query?.meetingId;
+    const userId = req.query?.userId || caller?.id;
+    if (!meetingId || !userId) {
+      return res.status(400).json(createErrorResponse("BadRequest", "meetingId and userId are required."));
+    }
+    const room = getRoom(meetingId);
+    sweepStale(room);
+    const existing = room.participants.get(userId);
+    if (existing) {
+      existing.lastSeen = Date.now();
+    }
+    const pendingMessages = room.messages.filter((m) => {
+      const isForMe = !m.targetId || m.targetId === userId || m.targetId === "ALL";
+      const isFromOther = m.senderId !== userId;
+      return isForMe && isFromOther;
+    });
+    room.messages = room.messages.filter((m) => {
+      if (m.targetId === userId) return false;
+      return true;
+    });
+    const participantList = Array.from(room.participants.values()).map((p) => ({
+      id: p.userId,
+      name: p.name,
+      role: p.role || "PARTICIPANT",
+      isHost: p.isHost || false,
+      audioEnabled: p.micState !== false,
+      videoEnabled: p.cameraState !== false,
+      screenShareEnabled: p.screenShareState === true,
+      lastSeen: p.lastSeen
+    }));
+    return res.status(200).json({
+      success: true,
+      meetingId,
+      participants: participantList,
+      messages: pendingMessages,
+      screenShare: room.screenShare,
+      timestamp: Date.now()
+    });
+  }
+  if (req.method === "POST") {
+    const body = req.body || {};
+    const {
+      action = "HEARTBEAT",
+      meetingId,
+      userId = caller?.id,
+      userName = caller?.name || "Participant",
+      role = caller?.meetingRole || "PARTICIPANT",
+      isHost = caller?.role === "admin" || caller?.meetingRole === "HOST",
+      micState = true,
+      cameraState = true,
+      screenShareState = false,
+      targetUserId,
+      signalType,
+      payload,
+      screenFrame
+    } = body;
+    if (!meetingId || !userId) {
+      return res.status(400).json(createErrorResponse("BadRequest", "meetingId and userId are required."));
+    }
+    const room = getRoom(meetingId);
+    sweepStale(room);
+    if (action === "JOIN" || action === "HEARTBEAT" || action === "UPDATE_MEDIA") {
+      room.participants.set(userId, {
+        userId,
+        name: userName,
+        role,
+        isHost,
+        micState,
+        cameraState,
+        screenShareState,
+        lastSeen: Date.now()
+      });
+      return res.status(200).json({
+        success: true,
+        meetingId,
+        participantsCount: room.participants.size
+      });
+    }
+    if (action === "SIGNAL") {
+      if (!signalType) {
+        return res.status(400).json(createErrorResponse("BadRequest", "signalType is required for SIGNAL action."));
+      }
+      const msg = {
+        id: `sig_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+        senderId: userId,
+        senderName: userName,
+        targetId: targetUserId || "ALL",
+        type: signalType,
+        payload,
+        timestamp: Date.now()
+      };
+      room.messages.push(msg);
+      return res.status(200).json({ success: true, messageId: msg.id });
+    }
+    if (action === "SCREEN_FRAME") {
+      if (screenFrame) {
+        room.screenShare = {
+          presenterId: userId,
+          presenterName: userName,
+          dataUrl: screenFrame,
+          timestamp: Date.now()
+        };
+        const p = room.participants.get(userId);
+        if (p) p.screenShareState = true;
+      } else {
+        room.screenShare = null;
+        const p = room.participants.get(userId);
+        if (p) p.screenShareState = false;
+      }
+      return res.status(200).json({ success: true, active: !!room.screenShare });
+    }
+    if (action === "LEAVE") {
+      room.participants.delete(userId);
+      if (room.screenShare?.presenterId === userId) {
+        room.screenShare = null;
+      }
+      return res.status(200).json({ success: true, left: true });
+    }
+    return res.status(400).json(createErrorResponse("BadRequest", `Unknown action: ${action}`));
+  }
+  return res.status(405).json(createErrorResponse("MethodNotAllowed", "Method Not Allowed"));
+}
+
+// api/_handlers/meetings.js
+async function handler15(req, res) {
   const urlObj = new URL(req.url || "/", "http://localhost");
   const pathname = urlObj.pathname.toLowerCase().replace(/\/+$/, "");
   const subpath = (req.query?._subpath || urlObj.searchParams.get("_subpath") || "").toLowerCase();
+  if (pathname.endsWith("/signaling") || pathname.includes("/signaling") || subpath === "signaling") {
+    return handler14(req, res);
+  }
   if (pathname.endsWith("/recording") || pathname.includes("/recording") || subpath === "recording") {
     return handler13(req, res);
   }
@@ -8406,7 +8584,6 @@ async function handler14(req, res) {
   if (req.method === "OPTIONS") {
     return res.status(204).end();
   }
-  const isInstantAction = pathname.endsWith("/instant") || req.body?.action === "instant" || urlObj.searchParams.get("action") === "instant";
   const authHeader = req.headers?.authorization || req.headers?.Authorization;
   let user = null;
   if (authHeader && authHeader.startsWith("Bearer ")) {
@@ -8423,21 +8600,6 @@ async function handler14(req, res) {
     }
   }
   if (!user) {
-    if (isInstantAction) {
-      const guestId = `usr_${crypto.randomUUID().replace(/-/g, "").slice(0, 8)}`;
-      const guestUser = {
-        id: guestId,
-        email: "host@interviewprep.com",
-        name: "Meeting Host",
-        role: "guest"
-      };
-      const result = await meetingOpsService.createInstantMeeting(guestUser, req.body || {});
-      return res.status(201).json({
-        success: true,
-        meeting: result.meeting,
-        meetingUrl: result.meetingUrl
-      });
-    }
     if (req.method === "GET") {
       user = {
         id: "candidate_guest",
@@ -8530,6 +8692,11 @@ async function handler14(req, res) {
     });
   }
   if (req.method === "POST" && (pathname.endsWith("/instant") || req.body?.action === "instant" || urlObj.searchParams.get("action") === "instant")) {
+    if (user.role !== "admin") {
+      return res.status(403).json(
+        createErrorResponse("Forbidden", "Only platform administrator (shashi) has rights to create meetings.", "FORBIDDEN")
+      );
+    }
     const result = await meetingOpsService.createInstantMeeting(user, req.body || {});
     if (!result.success) {
       return res.status(400).json(createErrorResponse("BadRequest", result.error || "Failed to create instant meeting."));
@@ -8541,9 +8708,9 @@ async function handler14(req, res) {
     });
   }
   if (req.method === "POST") {
-    if (user.role !== "admin" && user.role !== "interviewer") {
+    if (user.role !== "admin") {
       return res.status(403).json(
-        createErrorResponse("Forbidden", "Only platform administrators or interviewers are permitted to create meetings.", "FORBIDDEN")
+        createErrorResponse("Forbidden", "Only platform administrator (shashi) has rights to create meetings.", "FORBIDDEN")
       );
     }
     const result = await meetingOpsService.createMeeting(user, req.body || {});
@@ -9775,7 +9942,7 @@ var AppChatService = class {
 var appChatService = new AppChatService();
 
 // api/_handlers/chat-app.js
-async function handler15(req, res) {
+async function handler16(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, DELETE, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
@@ -9959,7 +10126,7 @@ async function handler15(req, res) {
 // api/_handlers/audit.js
 init_auditService();
 init_correlation();
-async function handler16(req, res) {
+async function handler17(req, res) {
   const correlation = extractCorrelationContext(req);
   injectCorrelationHeaders(res, correlation);
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -10047,7 +10214,7 @@ async function handler16(req, res) {
 // api/_handlers/health.js
 init_correlation();
 init_metrics();
-async function handler17(req, res) {
+async function handler18(req, res) {
   const correlation = extractCorrelationContext(req);
   injectCorrelationHeaders(res, correlation);
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -10068,7 +10235,7 @@ async function handler17(req, res) {
 // api/_handlers/health-dependencies.js
 init_correlation();
 init_metrics();
-async function handler18(req, res) {
+async function handler19(req, res) {
   const correlation = extractCorrelationContext(req);
   injectCorrelationHeaders(res, correlation);
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -10135,7 +10302,7 @@ async function getKafkaTelemetry() {
 }
 
 // api/_handlers/health-kafka.js
-async function handler19(req, res) {
+async function handler20(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
@@ -10158,7 +10325,7 @@ async function handler19(req, res) {
 // api/_handlers/health-ready.js
 init_correlation();
 init_metrics();
-async function handler20(req, res) {
+async function handler21(req, res) {
   const correlation = extractCorrelationContext(req);
   injectCorrelationHeaders(res, correlation);
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -10395,7 +10562,7 @@ var CacheService = class {
 var cacheService = new CacheService();
 
 // api/_handlers/health-redis.js
-async function handler21(req, res) {
+async function handler22(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
@@ -10427,7 +10594,7 @@ async function handler21(req, res) {
 // api/_handlers/metrics.js
 init_metrics();
 init_correlation();
-async function handler22(req, res) {
+async function handler23(req, res) {
   const correlation = extractCorrelationContext(req);
   injectCorrelationHeaders(res, correlation);
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -10480,7 +10647,7 @@ function getAllRoutePercentiles() {
 // api/_handlers/performance.js
 init_metrics();
 init_correlation();
-async function handler23(req, res) {
+async function handler24(req, res) {
   const correlation = extractCorrelationContext(req);
   injectCorrelationHeaders(res, correlation);
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -10554,7 +10721,7 @@ function secureCompare(a, b) {
   if (bufA.length !== bufB.length) return false;
   return crypto18.timingSafeEqual(bufA, bufB);
 }
-async function handler24(req, res) {
+async function handler25(req, res) {
   if (!applySecurityHeaders(req, res)) {
     return;
   }
@@ -10667,7 +10834,7 @@ var memoryCache = {
   overview: null,
   submissions: null
 };
-async function handler25(req, res) {
+async function handler26(req, res) {
   if (!applySecurityHeaders(req, res)) {
     return;
   }
@@ -11127,7 +11294,7 @@ function generateHeuristicSynthesis({ candidateName, metrics = {}, categoryBreak
     engine: "Deep Engineering Synthesis Engine v2.4 (React & V8 Heuristic Model)"
   };
 }
-async function handler26(req, res) {
+async function handler27(req, res) {
   if (!applySecurityHeaders(req, res)) {
     return;
   }
@@ -11256,7 +11423,7 @@ ${String(s.code || "").slice(0, 2e3)}`).join("\n---\n")}`;
 }
 
 // api/_handlers/send-email.js
-async function handler27(req, res) {
+async function handler28(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method Not Allowed" });
   }
@@ -11355,7 +11522,7 @@ function ruleBasedAnalysis({ code, testsPassed, testsRun, timeSpentSeconds, perQ
     ]
   };
 }
-async function handler28(req, res) {
+async function handler29(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
@@ -11479,7 +11646,7 @@ if (!globalThis.__ACTIVE_MEETING_ALERTS__) {
   globalThis.__ACTIVE_MEETING_ALERTS__ = [];
 }
 var activeMeetingAlerts = globalThis.__ACTIVE_MEETING_ALERTS__;
-async function handler29(req, res) {
+async function handler30(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
@@ -11573,6 +11740,9 @@ async function handler29(req, res) {
     }
   }
   if (req.method === "POST" && (pathname.endsWith("/send") || req.body?.action === "send" || req.body?.action === "send-meeting-link")) {
+    if (user?.role !== "admin") {
+      return res.status(403).json(createErrorResponse("Forbidden", "Only platform administrator (shashi) has rights to push meeting notifications.", "FORBIDDEN"));
+    }
     const rawMeeting = req.body?.meeting || {};
     const meetingId = req.body?.meetingId || rawMeeting.id || req.body?.id;
     const studentIds = req.body?.studentIds || req.body?.recipients;
@@ -11753,7 +11923,7 @@ async function parseBody(req) {
     req.on("error", () => resolve({}));
   });
 }
-async function handler30(req, res) {
+async function handler31(req, res) {
   if (!res.status) {
     res.status = (code) => {
       res.statusCode = code;
@@ -11796,52 +11966,52 @@ async function handler30(req, res) {
       return handler5(req, res);
     }
     if (pathname === "/api/v1/meetings" || pathname.startsWith("/api/v1/meetings/")) {
-      return handler14(req, res);
-    }
-    if (pathname === "/api/v1/notifications" || pathname.startsWith("/api/v1/notifications/")) {
-      return handler29(req, res);
-    }
-    if (pathname === "/api/v1/chat" || pathname.startsWith("/api/v1/chat/")) {
       return handler15(req, res);
     }
-    if (pathname === "/api/v1/audit" || pathname.startsWith("/api/v1/audit/")) {
+    if (pathname === "/api/v1/notifications" || pathname.startsWith("/api/v1/notifications/")) {
+      return handler30(req, res);
+    }
+    if (pathname === "/api/v1/chat" || pathname.startsWith("/api/v1/chat/")) {
       return handler16(req, res);
     }
-    if (pathname === "/api/v1/health/kafka") {
-      return handler19(req, res);
-    }
-    if (pathname === "/api/v1/health/redis") {
-      return handler21(req, res);
-    }
-    if (pathname === "/api/v1/health/ready") {
-      return handler20(req, res);
-    }
-    if (pathname === "/api/v1/health/dependencies") {
-      return handler18(req, res);
-    }
-    if (pathname === "/api/v1/health" || pathname.startsWith("/api/v1/health/")) {
+    if (pathname === "/api/v1/audit" || pathname.startsWith("/api/v1/audit/")) {
       return handler17(req, res);
     }
-    if (pathname === "/api/v1/metrics") {
+    if (pathname === "/api/v1/health/kafka") {
+      return handler20(req, res);
+    }
+    if (pathname === "/api/v1/health/redis") {
       return handler22(req, res);
     }
-    if (pathname === "/api/v1/performance") {
+    if (pathname === "/api/v1/health/ready") {
+      return handler21(req, res);
+    }
+    if (pathname === "/api/v1/health/dependencies") {
+      return handler19(req, res);
+    }
+    if (pathname === "/api/v1/health" || pathname.startsWith("/api/v1/health/")) {
+      return handler18(req, res);
+    }
+    if (pathname === "/api/v1/metrics") {
       return handler23(req, res);
     }
-    if (pathname === "/api/admin-auth") {
+    if (pathname === "/api/v1/performance") {
       return handler24(req, res);
     }
-    if (pathname === "/api/candidate-history") {
+    if (pathname === "/api/admin-auth") {
       return handler25(req, res);
     }
-    if (pathname === "/api/candidate-ai-evaluation") {
+    if (pathname === "/api/candidate-history") {
       return handler26(req, res);
     }
+    if (pathname === "/api/candidate-ai-evaluation") {
+      return handler27(req, res);
+    }
     if (pathname === "/api/ai-feedback") {
-      return handler28(req, res);
+      return handler29(req, res);
     }
     if (pathname === "/api/send-email") {
-      return handler27(req, res);
+      return handler28(req, res);
     }
     return res.status(404).json({ error: "Endpoint Not Found", pathname, method: req.method });
   } catch (err) {
@@ -11854,5 +12024,5 @@ async function handler30(req, res) {
   }
 }
 export {
-  handler30 as default
+  handler31 as default
 };

@@ -133,7 +133,7 @@ export const MeetingRoom: React.FC = () => {
     screenStreamRef.current = localMedia.screenStream;
   }, [localMedia.stream, localMedia.screenStream]);
 
-  // Cross-tab screen frame mirroring listener for multi-tab testing
+  // Cross-tab & network screen frame mirroring listener for multi-participant and multi-browser testing
   useEffect(() => {
     if (!meetingId) return;
     let bc: BroadcastChannel | null = null;
@@ -141,21 +141,43 @@ export const MeetingRoom: React.FC = () => {
       bc = new BroadcastChannel(`meet_screen_${meetingId}`);
       bc.onmessage = (e) => {
         if (e.data?.type === 'screen_frame' && e.data.dataUrl) {
-          setRemoteScreenFrame(e.data.dataUrl);
+          if (e.data.presenterId !== user?.id) {
+            setRemoteScreenFrame(e.data.dataUrl);
+          }
         } else if (e.data?.type === 'screen_stop') {
           setRemoteScreenFrame(null);
         }
       };
     } catch (_) {}
 
+    // Resilient server signaling relay polling for remote screen frames
+    const relayInterval = setInterval(async () => {
+      const token = activeSessionTokenRef.current;
+      if (!token) return;
+      try {
+        const res = await fetch(`/api/v1/meetings/signaling?meetingId=${encodeURIComponent(meetingId)}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.screenShare?.dataUrl && data.screenShare.presenterId !== user?.id) {
+            setRemoteScreenFrame(data.screenShare.dataUrl);
+          } else if (!data.screenShare && !localMedia.screenShareEnabled) {
+            setRemoteScreenFrame(null);
+          }
+        }
+      } catch (_) {}
+    }, 1200);
+
     return () => {
+      clearInterval(relayInterval);
       if (bc) {
         try { bc.close(); } catch (_) {}
       }
     };
-  }, [meetingId]);
+  }, [meetingId, user?.id, localMedia.screenShareEnabled]);
 
-  // Cross-tab screen frame broadcast sender
+  // Screen frame broadcast sender (via BroadcastChannel & serverless signaling relay)
   useEffect(() => {
     if (!localMedia.screenShareEnabled || !localMedia.screenStream || !meetingId) {
       setRemoteScreenFrame(null);
@@ -164,6 +186,7 @@ export const MeetingRoom: React.FC = () => {
 
     let intervalId: any = null;
     let bc: BroadcastChannel | null = null;
+    let frameCount = 0;
     const video = document.createElement('video');
     video.srcObject = localMedia.screenStream;
     video.muted = true;
@@ -179,10 +202,30 @@ export const MeetingRoom: React.FC = () => {
         canvas.height = Math.min(720, video.videoHeight || 720);
 
         intervalId = setInterval(() => {
-          if (video.videoWidth > 0 && ctx && bc) {
+          if (video.videoWidth > 0 && ctx) {
+            frameCount++;
             ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
             const dataUrl = canvas.toDataURL('image/jpeg', 0.65);
-            bc.postMessage({ type: 'screen_frame', dataUrl, presenterId: user?.id || 'local' });
+            if (bc) {
+              bc.postMessage({ type: 'screen_frame', dataUrl, presenterId: user?.id || 'local' });
+            }
+            // Send frame to signaling relay every ~600ms for cross-browser / remote peers
+            if (frameCount % 4 === 0) {
+              const token = activeSessionTokenRef.current;
+              if (token) {
+                fetch('/api/v1/meetings/signaling', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+                  body: JSON.stringify({
+                    action: 'SCREEN_FRAME',
+                    meetingId,
+                    userId: user?.id,
+                    userName: user?.name,
+                    screenFrame: dataUrl,
+                  }),
+                }).catch(() => {});
+              }
+            }
           }
         }, 150);
       };
@@ -202,9 +245,17 @@ export const MeetingRoom: React.FC = () => {
           bc.close();
         } catch (_) {}
       }
+      const token = activeSessionTokenRef.current;
+      if (token) {
+        fetch('/api/v1/meetings/signaling', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+          body: JSON.stringify({ action: 'SCREEN_FRAME', meetingId, screenFrame: null }),
+        }).catch(() => {});
+      }
       video.srcObject = null;
     };
-  }, [localMedia.screenShareEnabled, localMedia.screenStream, meetingId, user?.id]);
+  }, [localMedia.screenShareEnabled, localMedia.screenStream, meetingId, user?.id, user?.name]);
 
   // Stable lobby preview video stream attachment (prevents black screen and flickering on audioLevel re-renders)
   useEffect(() => {
@@ -626,7 +677,7 @@ export const MeetingRoom: React.FC = () => {
       }
     } else {
       try {
-        const screenStream = await mediaRoomClientService.acquireDisplayMedia();
+        const screenStream = await mediaRoomClientService.acquireDisplayMedia(user?.name || 'Presenter');
         if (screenStream) {
           const videoTrack = screenStream.getVideoTracks()[0];
           if (videoTrack) {
@@ -1623,15 +1674,17 @@ export const MeetingRoom: React.FC = () => {
               >
                 {copiedInvite ? '✓ Copied' : '📋 Copy'}
               </button>
-              <button
-                type="button"
-                className="rtc-ready-push-btn"
-                onClick={handlePushLinkToStudents}
-                disabled={isPushSending}
-                title="Send meeting link to students as Web Push notification"
-              >
-                {isPushSending ? 'Dispatching...' : '📲 Send Push to Students'}
-              </button>
+              {user?.role === 'admin' && (
+                <button
+                  type="button"
+                  className="rtc-ready-push-btn"
+                  onClick={handlePushLinkToStudents}
+                  disabled={isPushSending}
+                  title="Send meeting link to students as Web Push notification"
+                >
+                  {isPushSending ? 'Dispatching...' : '📲 Send Push to Students'}
+                </button>
+              )}
             </div>
             {pushFeedback && (
               <div className="rtc-ready-push-feedback" style={{ marginTop: '8px', fontSize: '13px', color: '#01b574', fontWeight: 600 }}>

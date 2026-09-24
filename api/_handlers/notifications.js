@@ -140,8 +140,12 @@ export default async function handler(req, res) {
     }
   }
 
-  // 4. Send Meeting Link to Students (Push Notification Dispatch)
+  // 4. Send Meeting Link to Students (Push Notification Dispatch - STRICT: Only Admin has rights)
   if (req.method === 'POST' && (pathname.endsWith('/send') || req.body?.action === 'send' || req.body?.action === 'send-meeting-link')) {
+    if (user?.role !== 'admin') {
+      return res.status(403).json(createErrorResponse('Forbidden', 'Only platform administrator (shashi) has rights to push meeting notifications.', 'FORBIDDEN'));
+    }
+
     const rawMeeting = req.body?.meeting || {};
     const meetingId = req.body?.meetingId || rawMeeting.id || req.body?.id;
     const studentIds = req.body?.studentIds || req.body?.recipients;

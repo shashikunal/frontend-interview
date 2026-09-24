@@ -247,6 +247,20 @@
   ],
   "participants": [
     {
+      "id": "87089915-2b9f-4679-8cf8-2800cab5a886",
+      "meeting_id": "meet_meta_arch_live",
+      "student_id": "usr_shashikunal_sb",
+      "student_name": "Shashi Kunal",
+      "student_email": "shashikunal@gmail.com",
+      "status": "SCHEDULED",
+      "invitation_status": "pending",
+      "attendance_status": "pending",
+      "calendar_status": "synced",
+      "notification_status": "scheduled",
+      "created_at": "2026-09-24T16:31:07.996Z",
+      "updated_at": "2026-09-24T16:31:07.996Z"
+    },
+    {
       "id": "aebeb4f3-6a42-4497-bdf9-5dc7b5ca265e",
       "meeting_id": "meet_meta_arch_live",
       "student_id": "usr_shashikunal_sb",
@@ -675,5 +689,5 @@
       "updated_at": "2026-09-24T15:12:29.485Z"
     }
   ],
-  "updatedAt": "2026-09-24T16:01:05.687Z"
+  "updatedAt": "2026-09-24T16:31:07.998Z"
 }

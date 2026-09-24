@@ -15,6 +15,7 @@ import lifecycleHandler from './meetings/lifecycle.js';
 import mediaTokenHandler from './meetings/media-token.js';
 import whiteboardHandler from './meetings/whiteboard.js';
 import recordingHandler from './meetings/recording.js';
+import signalingHandler from './meetings/signaling.js';
 import { applySecurityHeaders } from '../../server/security/securityHeaders.ts';
 
 export default async function handler(req, res) {
@@ -23,6 +24,9 @@ export default async function handler(req, res) {
   const subpath = (req.query?._subpath || urlObj.searchParams.get('_subpath') || '').toLowerCase();
 
   // Dispatch to sub-handlers when invoked via Vercel rewrite or direct routing
+  if (pathname.endsWith('/signaling') || pathname.includes('/signaling') || subpath === 'signaling') {
+    return signalingHandler(req, res);
+  }
   if (pathname.endsWith('/recording') || pathname.includes('/recording') || subpath === 'recording') {
     return recordingHandler(req, res);
   }
@@ -57,9 +61,6 @@ export default async function handler(req, res) {
     return res.status(204).end();
   }
 
-  // Allow instant meeting creation for any visitor (Google Meet Style)
-  const isInstantAction = pathname.endsWith('/instant') || req.body?.action === 'instant' || urlObj.searchParams.get('action') === 'instant';
-
   // Extract and verify Bearer token
   const authHeader = req.headers?.authorization || req.headers?.Authorization;
   let user = null;
@@ -80,22 +81,6 @@ export default async function handler(req, res) {
 
   // Handle unauthenticated requests
   if (!user) {
-    if (isInstantAction) {
-      const guestId = `usr_${crypto.randomUUID().replace(/-/g, '').slice(0, 8)}`;
-      const guestUser = {
-        id: guestId,
-        email: 'host@interviewprep.com',
-        name: 'Meeting Host',
-        role: 'guest',
-      };
-      const result = await meetingOpsService.createInstantMeeting(guestUser, req.body || {});
-      return res.status(201).json({
-        success: true,
-        meeting: result.meeting,
-        meetingUrl: result.meetingUrl,
-      });
-    }
-
     // Allow GET /api/v1/meetings for public/candidate guest viewing
     if (req.method === 'GET') {
       user = {
@@ -203,8 +188,14 @@ export default async function handler(req, res) {
     });
   }
 
-  // 4b. POST: Create Instant Meeting (Google Meet Style - Available to all authenticated platform users)
+  // 4b. POST: Create Instant Meeting (STRICT: Only Admin has rights to create meetings)
   if (req.method === 'POST' && (pathname.endsWith('/instant') || req.body?.action === 'instant' || urlObj.searchParams.get('action') === 'instant')) {
+    if (user.role !== 'admin') {
+      return res.status(403).json(
+        createErrorResponse('Forbidden', 'Only platform administrator (shashi) has rights to create meetings.', 'FORBIDDEN')
+      );
+    }
+
     const result = await meetingOpsService.createInstantMeeting(user, req.body || {});
     if (!result.success) {
       return res.status(400).json(createErrorResponse('BadRequest', result.error || 'Failed to create instant meeting.'));
@@ -216,11 +207,11 @@ export default async function handler(req, res) {
     });
   }
 
-  // 5. POST: Admin Create Meeting
+  // 5. POST: Admin Create Meeting (STRICT: Only Admin has rights to create meetings)
   if (req.method === 'POST') {
-    if (user.role !== 'admin' && user.role !== 'interviewer') {
+    if (user.role !== 'admin') {
       return res.status(403).json(
-        createErrorResponse('Forbidden', 'Only platform administrators or interviewers are permitted to create meetings.', 'FORBIDDEN')
+        createErrorResponse('Forbidden', 'Only platform administrator (shashi) has rights to create meetings.', 'FORBIDDEN')
       );
     }
 

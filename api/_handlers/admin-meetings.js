@@ -46,10 +46,10 @@ export default async function handler(req, res) {
     role: auth.claims.userRole,
   };
 
-  // Strict RBAC: Admin or Trainer only
-  if (user.role !== 'admin' && user.role !== 'interviewer') {
+  // Strict RBAC: Admin only
+  if (user.role !== 'admin') {
     return res.status(403).json(
-      createErrorResponse('Forbidden', 'Administrator or Trainer privileges required.', 'FORBIDDEN', correlation.correlationId)
+      createErrorResponse('Forbidden', 'Only platform administrator (shashi) has rights.', 'FORBIDDEN', correlation.correlationId)
     );
   }
 

@@ -128,7 +128,7 @@ export class ChatClientService {
     return this.socket;
   }
 
-  private handleIncomingMessage(meetingId: string, msg: ChatMessageRecord) {
+  private handleIncomingMessage(meetingId: string, msg: ChatMessageRecord, broadcastLocally = true) {
     if (!msg || !msg.id) return;
 
     // Deduplication check: prevent visible duplicate messages
@@ -148,9 +148,11 @@ export class ChatClientService {
     }
 
     // Cross-tab broadcast fallback
-    const channel = this.getBroadcastChannel(meetingId);
-    if (channel) {
-      channel.postMessage({ type: 'NEW_MESSAGE', message: msg });
+    if (broadcastLocally) {
+      const channel = this.getBroadcastChannel(meetingId);
+      if (channel) {
+        channel.postMessage({ type: 'NEW_MESSAGE', message: msg });
+      }
     }
   }
 
@@ -484,7 +486,7 @@ export class ChatClientService {
         if (!data) return;
 
         if (data.type === 'NEW_MESSAGE' && data.message) {
-          handlers.onMessage(data.message);
+          this.handleIncomingMessage(meetingId, data.message, false);
         } else if (data.type === 'REACTION_UPDATED') {
           handlers.onReaction(data.messageId, data.reactions);
         } else if (data.type === 'MESSAGE_DELETED') {
@@ -494,7 +496,25 @@ export class ChatClientService {
       channel.addEventListener('message', channelHandler);
     }
 
+    // Serverless & cross-client resilient polling fallback (every 1.2s)
+    let pollInterval: any = null;
+    pollInterval = setInterval(async () => {
+      const token = this.currentMeetingToken;
+      if (!token) return;
+      try {
+        const res = await this.getMessages(meetingId, token, undefined, 50);
+        if (res.messages && res.messages.length > 0) {
+          res.messages.forEach(msg => {
+            this.handleIncomingMessage(meetingId, msg, false);
+          });
+        }
+      } catch (_) {}
+    }, 1200);
+
     return () => {
+      if (pollInterval) {
+        clearInterval(pollInterval);
+      }
       const set = this.listeners.get(meetingId);
       if (set) {
         set.delete(handlers);
