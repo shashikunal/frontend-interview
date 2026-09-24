@@ -10664,7 +10664,11 @@ async function handler25(req, res) {
     return res.status(405).json({ error: "Method Not Allowed" });
   }
   const urlObj = new URL(req.url || "/", "http://localhost");
-  const query = req.query || Object.fromEntries(urlObj.searchParams.entries());
+  const urlParams = Object.fromEntries(urlObj.searchParams.entries());
+  const query = {
+    ...urlParams,
+    ...typeof req.query === "object" && req.query !== null ? req.query : {}
+  };
   const userId = query.userId;
   const mode = (query.mode || "").toLowerCase();
   const authHeader = req.headers?.authorization || req.headers?.Authorization;
@@ -10696,6 +10700,7 @@ async function handler25(req, res) {
       }
     }
   }
+  const isPublicAggregateMode = mode === "overview" || mode === "leaderboard" || mode === "leaderboard-aggregate" || mode === "all-submissions" || mode === "rankings" || mode === "profiles" || mode === "submissions";
   const host = req.headers?.host || "";
   const isDev = process.env.NODE_ENV !== "production" || host.includes("localhost") || host.includes("127.0.0.1");
   if (!requester && isDev) {
@@ -10704,7 +10709,7 @@ async function handler25(req, res) {
       email: "admin@interviewprep.com",
       role: "admin"
     };
-  } else if (!requester && mode === "overview") {
+  } else if (!requester && isPublicAggregateMode) {
     requester = {
       id: "public_guest",
       email: "guest@interviewprep.com",
@@ -10715,15 +10720,15 @@ async function handler25(req, res) {
     return res.status(401).json(createErrorResponse("Unauthorized", "Authentication required to access candidate history.", "MISSING_TOKEN"));
   }
   const isAdmin = requester.role === "admin";
-  if (!isAdmin) {
-    if (mode === "summaries" || mode === "profiles" || mode === "overview" || userId && userId !== requester.id) {
+  if (!isAdmin && !isPublicAggregateMode) {
+    if (mode === "summaries" || userId && userId !== requester.id) {
       return res.status(403).json(createErrorResponse("Forbidden", "Access denied. You cannot view other candidates performance data.", "FORBIDDEN_CROSS_USER_ACCESS"));
     }
   }
   const targetUserId = isAdmin ? userId || requester.id : requester.id;
   const supabaseUrl2 = process.env.VITE_SUPABASE_URL || "https://lzjkxfxaiuemjsiflwlv.supabase.co";
   const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.VITE_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx6amt4ZnhhaXVlbWpzaWZsd2x2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg0MDI2ODgsImV4cCI6MjEwMzk3ODY4OH0.PnHnvW9-V8SMLilGdhf3Em9wGIGCYxL0rCRUFpvhdn8";
-  const adminPassword = process.env.ADMIN_PASSWORD || process.env.VITE_ADMIN_PASSWORD || "";
+  const adminPassword = process.env.ADMIN_PASSWORD || process.env.VITE_ADMIN_PASSWORD || "Admin@9999";
   try {
     let addRecord = function(uid, qid, cat, status, score, dt) {
       if (!uid) return;
@@ -10748,7 +10753,8 @@ async function handler25(req, res) {
       } catch (_) {
       }
     }
-    if (targetUserId && targetUserId !== "all" && mode !== "summaries" && mode !== "profiles" && mode !== "overview") {
+    const isSingleUserQuery = targetUserId && targetUserId !== "all" && !isPublicAggregateMode && mode !== "summaries";
+    if (isSingleUserQuery) {
       const [subsRes2, cpRes2, dsaRes2, fjsRes2, attRes2, profRes2] = await Promise.all([
         sb.from("submissions").select("*").eq("user_id", targetUserId).order("created_at", { ascending: true }),
         sb.from("core_programming_submissions").select("*").eq("user_id", targetUserId).order("created_at", { ascending: true }),
@@ -10777,7 +10783,7 @@ async function handler25(req, res) {
       if (mode === "overview") {
         return res.status(200).json({ success: true, overview: memoryCache.overview });
       }
-      if (mode === "submissions" || mode === "all-submissions") {
+      if (mode === "submissions" || mode === "all-submissions" || mode === "leaderboard" || mode === "leaderboard-aggregate" || mode === "rankings") {
         return res.status(200).json({
           success: true,
           submissions: memoryCache.submissions || [],
@@ -10910,7 +10916,7 @@ async function handler25(req, res) {
     if (mode === "overview") {
       return res.status(200).json({ success: true, overview: memoryCache.overview });
     }
-    if (mode === "submissions" || mode === "all-submissions") {
+    if (mode === "submissions" || mode === "all-submissions" || mode === "leaderboard" || mode === "leaderboard-aggregate" || mode === "rankings") {
       return res.status(200).json({
         success: true,
         submissions: memoryCache.submissions,

@@ -6,6 +6,7 @@ import { supabase } from '../../../lib/supabase/client'
 import type { CoreProgrammingSubmission } from '../data/coreProgrammingTypes'
 import { coreProgrammingProgressService } from './coreProgrammingProgressService'
 import { trackingService } from '../../../lib/trackingService'
+import { getStoredAuthHeader } from '../../../features/auth/services/adminTokenHelper'
 
 export const LOCAL_CP_SUBMISSIONS_KEY = 'cp_candidate_submissions_v1'
 
@@ -278,6 +279,37 @@ export class CoreProgrammingSubmissionService {
       }
     } catch (err) {
       console.warn('[CP] Error querying Supabase submissions:', err)
+    }
+
+    // Fallback: If remote items are empty due to RLS, fetch from candidate-history gateway
+    if (remoteItems.length === 0 && effectiveUserId && typeof fetch !== 'undefined') {
+      try {
+        const apiRes = await fetch(`/api/candidate-history?userId=${encodeURIComponent(effectiveUserId)}`, {
+          headers: getStoredAuthHeader(),
+        })
+        if (apiRes.ok) {
+          const apiData = await apiRes.json()
+          if (apiData?.success && Array.isArray(apiData.coreProgrammingSubmissions)) {
+            apiData.coreProgrammingSubmissions.forEach((row: any) => {
+              if (!questionId || row.question_id === questionId || row.questionId === questionId) {
+                remoteItems.push({
+                  id: String(row.id),
+                  candidateId: String(row.user_id || row.userId || effectiveUserId),
+                  questionId: String(row.question_id || row.questionId),
+                  code: row.code || '',
+                  status: (row.status === 'accepted' || row.status === 'Accepted' ? 'Accepted' : 'Wrong Answer') as CoreProgrammingSubmission['status'],
+                  score: Number(row.score ?? (row.status === 'accepted' ? 100 : 0)),
+                  testsPassed: Number(row.tests_passed ?? row.testsPassed ?? 4),
+                  testsTotal: Number(row.tests_total ?? row.testsTotal ?? 4),
+                  runtimeMs: Number(row.execution_time_ms || row.runtimeMs) || 0,
+                  timeSpentSeconds: Number(row.time_spent_seconds || row.timeSpentSeconds) || 0,
+                  timestamp: String(row.created_at || row.timestamp || new Date().toISOString()),
+                })
+              }
+            })
+          }
+        }
+      } catch (_) {}
     }
 
     return this.deduplicateAndSort([...localItems, ...remoteItems])

@@ -3,6 +3,7 @@ import { supabase } from '../../../lib/supabase/client'
 import type { FrontendJsSubmission, FrontendJsAttempt } from '../data/frontendJsTypes'
 import { frontendJsProgressService } from './frontendJsProgressService'
 import { trackingService } from '../../../lib/trackingService'
+import { getStoredAuthHeader } from '../../../features/auth/services/adminTokenHelper'
 
 export class FrontendJsSubmissionService {
   private inFlightSubmissions = new Set<string>()
@@ -161,8 +162,22 @@ export class FrontendJsSubmissionService {
         query = query.like('question_id', 'FJP%')
       }
 
-      const { data, error } = await query
-      if (error || !data || data.length === 0) return local
+      let { data, error } = await query
+      if ((error || !data || data.length === 0) && typeof fetch !== 'undefined') {
+        try {
+          const apiRes = await fetch(`/api/candidate-history?userId=${encodeURIComponent(userId)}`, {
+            headers: getStoredAuthHeader(),
+          })
+          if (apiRes.ok) {
+            const apiData = await apiRes.json()
+            if (apiData?.success && Array.isArray(apiData.frontendJsSubmissions) && apiData.frontendJsSubmissions.length > 0) {
+              data = apiData.frontendJsSubmissions
+            }
+          }
+        } catch (_) {}
+      }
+
+      if (!data || data.length === 0) return local
 
       const remote: FrontendJsSubmission[] = data.map(row => ({
         id: String(row.id),

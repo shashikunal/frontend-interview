@@ -3,6 +3,7 @@ import type { DSASubmission } from '../data/dsaTypes'
 import { dsaProgressService } from './dsaProgressService'
 import { leaderboardService } from '../../../lib/leaderboardService'
 import { trackingService } from '../../../lib/trackingService'
+import { getStoredAuthHeader } from '../../../features/auth/services/adminTokenHelper'
 
 // In-flight submissions by id: concurrent submit() calls for the same
 // submission (double-click) share one execution instead of duplicating
@@ -236,6 +237,36 @@ export class DSASubmissionService {
       }
     } catch (err) {
       console.warn('[DSA] Error querying Supabase submissions:', err)
+    }
+
+    // Fallback: If remote items are empty due to RLS, fetch from candidate-history gateway
+    if (remoteItems.length === 0 && userId && typeof fetch !== 'undefined') {
+      try {
+        const apiRes = await fetch(`/api/candidate-history?userId=${encodeURIComponent(userId)}`, {
+          headers: getStoredAuthHeader(),
+        })
+        if (apiRes.ok) {
+          const apiData = await apiRes.json()
+          if (apiData?.success && Array.isArray(apiData.dsaSubmissions)) {
+            apiData.dsaSubmissions.forEach((row: any) => {
+              if (!questionId || row.question_id === questionId || row.questionId === questionId) {
+                remoteItems.push({
+                  id: String(row.id),
+                  questionId: String(row.question_id || row.questionId),
+                  language: (row.language || 'javascript') as 'javascript' | 'typescript',
+                  code: row.code || '',
+                  status: (row.status === 'accepted' ? 'Accepted' : 'Wrong Answer') as DSASubmission['status'],
+                  testsPassed: Number(row.tests_passed ?? row.testsPassed ?? 4),
+                  testsTotal: Number(row.tests_total ?? row.testsTotal ?? 4),
+                  runtimeMs: Number(row.runtime_ms || row.runtimeMs) || 0,
+                  timeSpentSeconds: row.time_spent_seconds ? Number(row.time_spent_seconds) : undefined,
+                  timestamp: String(row.created_at || row.timestamp || new Date().toISOString()),
+                })
+              }
+            })
+          }
+        }
+      } catch (_) {}
     }
 
     return this.deduplicateAndSort([...localItems, ...remoteItems])

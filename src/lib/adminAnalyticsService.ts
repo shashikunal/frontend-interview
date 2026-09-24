@@ -608,8 +608,19 @@ export const adminAnalyticsService = {
           })
           if (apiRes.ok) {
             const json = await apiRes.json()
-            if (json.success && Array.isArray(json.submissions) && json.submissions.length > 0) {
-              mcRows = json.submissions
+            if (json.success) {
+              if (Array.isArray(json.submissions) && json.submissions.length > 0) {
+                mcRows = json.submissions
+              }
+              if (Array.isArray(json.coreProgrammingSubmissions) && json.coreProgrammingSubmissions.length > 0) {
+                cpRows.push(...json.coreProgrammingSubmissions)
+              }
+              if (Array.isArray(json.dsaSubmissions) && json.dsaSubmissions.length > 0) {
+                dsaRows.push(...json.dsaSubmissions)
+              }
+              if (Array.isArray(json.frontendJsSubmissions) && json.frontendJsSubmissions.length > 0) {
+                fjsRows.push(...json.frontendJsSubmissions)
+              }
             }
           }
         } catch (_) {}
@@ -1051,8 +1062,22 @@ export const adminAnalyticsService = {
         client.from('frontend_js_attempts').select('*').order('created_at', { ascending: false }).limit(limit),
       ])
 
-      const qaRows: any[] = qaRes.status === 'fulfilled' && Array.isArray(qaRes.value.data) ? qaRes.value.data : []
+      let qaRows: any[] = qaRes.status === 'fulfilled' && Array.isArray(qaRes.value.data) ? qaRes.value.data : []
       const fjsAttRows: any[] = fjsAttRes.status === 'fulfilled' && Array.isArray(fjsAttRes.value.data) ? fjsAttRes.value.data : []
+
+      if (qaRows.length === 0 && typeof fetch !== 'undefined') {
+        try {
+          const apiRes = await fetch('/api/candidate-history?mode=all-submissions', {
+            headers: getStoredAuthHeader(),
+          })
+          if (apiRes.ok) {
+            const json = await apiRes.json()
+            if (json.success && Array.isArray(json.questionAttempts) && json.questionAttempts.length > 0) {
+              qaRows.push(...json.questionAttempts)
+            }
+          }
+        } catch (_) {}
+      }
 
       // 2. Aggregate user IDs and question IDs for enrichment
       const allUserIds = Array.from(new Set([...qaRows.map(d => d.user_id), ...fjsAttRows.map(d => d.user_id)].filter(Boolean)))

@@ -12,6 +12,7 @@ import { leaderboardService, resolveQuestionTitle, type CandidateMCSubmission } 
 import { gradingService, type EvaluatorReview } from '../../lib/gradingService'
 import { CandidateSkillRadar } from './CandidateSkillRadar'
 import AdminDashboard from './AdminDashboard'
+import Leaderboard from '../leaderboard/Leaderboard'
 import { dsaSubmissionService } from '../dsa/lib/dsaSubmissionService'
 import { dsaProgressService } from '../dsa/lib/dsaProgressService'
 import type { DSASubmission } from '../dsa/data/dsaTypes'
@@ -143,8 +144,14 @@ function CandidateDashboard() {
   const [searchParams] = useSearchParams()
   const { tab: urlTab } = useParams<{ tab?: string }>()
 
-  const [activeMainSection, setActiveMainSection] = useState<'overview' | 'syllabus' | 'performance' | 'meetings'>(() => {
+  const [activeMainSection, setActiveMainSection] = useState<'overview' | 'syllabus' | 'performance' | 'meetings' | 'rankings' | 'submissions'>(() => {
     const rawTab = searchParams.get('tab') || urlTab
+    if (rawTab && (rawTab.toLowerCase() === 'rankings' || rawTab.toLowerCase() === 'leaderboard')) {
+      return 'rankings'
+    }
+    if (rawTab && (rawTab.toLowerCase() === 'submissions' || rawTab.toLowerCase() === 'audit')) {
+      return 'submissions'
+    }
     if (rawTab && (rawTab.toLowerCase() === 'performance' || rawTab.toLowerCase() === 'history' || rawTab.toLowerCase() === 'coding-history')) {
       return 'performance'
     }
@@ -160,7 +167,11 @@ function CandidateDashboard() {
   useEffect(() => {
     const rawTab = searchParams.get('tab') || urlTab
     const rawTrack = searchParams.get('track')
-    if (rawTab && (rawTab.toLowerCase() === 'performance' || rawTab.toLowerCase() === 'history' || rawTab.toLowerCase() === 'coding-history')) {
+    if (rawTab && (rawTab.toLowerCase() === 'rankings' || rawTab.toLowerCase() === 'leaderboard')) {
+      setActiveMainSection('rankings')
+    } else if (rawTab && (rawTab.toLowerCase() === 'submissions' || rawTab.toLowerCase() === 'audit')) {
+      setActiveMainSection('submissions')
+    } else if (rawTab && (rawTab.toLowerCase() === 'performance' || rawTab.toLowerCase() === 'history' || rawTab.toLowerCase() === 'coding-history')) {
       setActiveMainSection('performance')
     } else if (rawTab && (rawTab.toLowerCase() === 'syllabus' || rawTab.toLowerCase() === 'docs' || rawTab.toLowerCase() === 'documentation')) {
       setActiveMainSection('syllabus')
@@ -176,7 +187,7 @@ function CandidateDashboard() {
       else if (t === 'fjs' || t === 'frontend-js') setActiveSubmissionsTab('fjs')
       else if (t === 'mc' || t === 'machine-coding') setActiveSubmissionsTab('mc')
     }
-    if (rawTab && rawTab.toLowerCase() === 'submissions') {
+    if (rawTab && (rawTab.toLowerCase() === 'submissions' || rawTab.toLowerCase() === 'audit')) {
       setTimeout(() => {
         const el = document.getElementById('candidate-submissions-section')
         if (el) {
@@ -626,6 +637,20 @@ function CandidateDashboard() {
         </button>
         <button
           type="button"
+          className={`cand-switcher-btn ${activeMainSection === 'rankings' ? 'active' : ''}`}
+          onClick={() => setActiveMainSection('rankings')}
+        >
+          🏆 Global Rankings &amp; Leaderboard
+        </button>
+        <button
+          type="button"
+          className={`cand-switcher-btn ${activeMainSection === 'submissions' ? 'active' : ''}`}
+          onClick={() => setActiveMainSection('submissions')}
+        >
+          ⚡ Submissions Ledger &amp; Full Audit
+        </button>
+        <button
+          type="button"
           className={`cand-switcher-btn ${activeMainSection === 'syllabus' ? 'active' : ''}`}
           onClick={() => setActiveMainSection('syllabus')}
         >
@@ -647,7 +672,11 @@ function CandidateDashboard() {
         </button>
       </div>
 
-      {activeMainSection === 'performance' ? (
+      {activeMainSection === 'rankings' ? (
+        <div style={{ marginTop: '1.5rem' }}>
+          <Leaderboard compact={false} />
+        </div>
+      ) : activeMainSection === 'performance' ? (
         <StudentPerformanceView />
       ) : activeMainSection === 'syllabus' ? (
         <div id="candidate-syllabus-tracker">
