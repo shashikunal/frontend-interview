@@ -29,6 +29,20 @@ export function ProtectedRoute({
   }
 
   if (!isAuthenticated) {
+    const searchParams = new URLSearchParams(location.search)
+    const tab = (searchParams.get('tab') || '').toLowerCase()
+    const isPublicTab =
+      tab === 'rankings' ||
+      tab === 'leaderboard' ||
+      tab === 'submissions' ||
+      location.pathname.endsWith('/rankings') ||
+      location.pathname.endsWith('/leaderboard') ||
+      location.pathname.endsWith('/submissions')
+
+    if (isPublicTab) {
+      return <>{children}</>
+    }
+
     // Open auth modal for convenience and redirect
     return (
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '50vh' }}>
