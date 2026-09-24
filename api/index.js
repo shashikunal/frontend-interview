@@ -6374,9 +6374,10 @@ async function handler5(req, res) {
     return res.status(405).json(createErrorResponse("MethodNotAllowed", "Method Not Allowed", "METHOD_NOT_ALLOWED"));
   }
   const { meetingId, userId, userEmail, userName, userRole } = req.body || {};
-  if (!meetingId || !userId) {
+  const effectiveMeetingId = meetingId || "global";
+  if (!userId) {
     return res.status(400).json(
-      createErrorResponse("BadRequest", "meetingId and userId are required parameters.", "MISSING_PARAMS")
+      createErrorResponse("BadRequest", "userId is a required parameter.", "MISSING_PARAMS")
     );
   }
   const effectiveRole = userRole || "candidate";
@@ -6387,7 +6388,7 @@ async function handler5(req, res) {
     userEmail: userEmail || `${userId}@example.com`,
     userName: userName || "Participant",
     userRole: effectiveRole,
-    meetingId,
+    meetingId: effectiveMeetingId,
     meetingRole,
     permissions: effectiveRole === "admin" ? ["admin:all", "meetings:all"] : ["meetings:participate"]
   }, expiresInSeconds);

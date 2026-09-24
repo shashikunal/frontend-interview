@@ -243,9 +243,63 @@
       "parent_meeting_id": null,
       "created_at": "2026-09-24T16:01:05.687Z",
       "updated_at": "2026-09-24T16:01:05.687Z"
+    },
+    {
+      "id": "meet_7796fdf868254a46",
+      "title": "System Architecture & WebRTC Interview with Kushal",
+      "description": "Instant ad-hoc collaboration and technical interview session.",
+      "meeting_type": "Technical Discussion",
+      "meeting_provider": "Platform Meet (Built-in)",
+      "meeting_url": "/meet/meet_7796fdf868254a46",
+      "start_at": "2026-09-24T16:38:28.232Z",
+      "end_at": "2026-09-24T17:38:28.232Z",
+      "timezone": "Asia/Kolkata",
+      "trainer_id": "admin_shashi",
+      "trainer_name": "Shashi (Admin)",
+      "created_by": "admin_shashi",
+      "status": "IN_PROGRESS",
+      "capacity": 50,
+      "recurrence_rule": null,
+      "parent_meeting_id": null,
+      "created_at": "2026-09-24T16:38:28.232Z",
+      "updated_at": "2026-09-24T16:38:28.232Z"
+    },
+    {
+      "id": "meet_b4e06ec20eb04128",
+      "title": "System Architecture & WebRTC Interview with Kushal",
+      "description": "Instant ad-hoc collaboration and technical interview session.",
+      "meeting_type": "Technical Discussion",
+      "meeting_provider": "Platform Meet (Built-in)",
+      "meeting_url": "/meet/meet_b4e06ec20eb04128",
+      "start_at": "2026-09-24T16:40:13.467Z",
+      "end_at": "2026-09-24T17:40:13.467Z",
+      "timezone": "Asia/Kolkata",
+      "trainer_id": "admin_shashi",
+      "trainer_name": "Shashi (Admin)",
+      "created_by": "admin_shashi",
+      "status": "IN_PROGRESS",
+      "capacity": 50,
+      "recurrence_rule": null,
+      "parent_meeting_id": null,
+      "created_at": "2026-09-24T16:40:13.467Z",
+      "updated_at": "2026-09-24T16:40:13.467Z"
     }
   ],
   "participants": [
+    {
+      "id": "2607a7a4-07af-4496-9286-1d43941de74e",
+      "meeting_id": "meet_meta_arch_live",
+      "student_id": "usr_shashikunal_sb",
+      "student_name": "Shashi Kunal",
+      "student_email": "shashikunal@gmail.com",
+      "status": "SCHEDULED",
+      "invitation_status": "pending",
+      "attendance_status": "pending",
+      "calendar_status": "synced",
+      "notification_status": "scheduled",
+      "created_at": "2026-09-24T16:37:45.532Z",
+      "updated_at": "2026-09-24T16:37:45.532Z"
+    },
     {
       "id": "87089915-2b9f-4679-8cf8-2800cab5a886",
       "meeting_id": "meet_meta_arch_live",
@@ -687,7 +741,37 @@
       "notification_status": "scheduled",
       "created_at": "2026-09-24T15:12:29.485Z",
       "updated_at": "2026-09-24T15:12:29.485Z"
+    },
+    {
+      "id": "754a2897-efd6-45b8-a2f8-663e4566c6e4",
+      "meeting_id": "meet_7796fdf868254a46",
+      "student_id": "admin_shashi",
+      "student_name": "Shashi (Admin)",
+      "student_email": "shashi@admin.com",
+      "status": "active",
+      "invitation_status": "accepted",
+      "attendance_status": "present",
+      "calendar_status": "synced",
+      "notification_status": "sent",
+      "joined_at": "2026-09-24T16:38:28.232Z",
+      "created_at": "2026-09-24T16:38:28.232Z",
+      "updated_at": "2026-09-24T16:38:28.232Z"
+    },
+    {
+      "id": "4ea8703c-0f11-4e48-bf68-04228b6c3db5",
+      "meeting_id": "meet_b4e06ec20eb04128",
+      "student_id": "admin_shashi",
+      "student_name": "Shashi (Admin)",
+      "student_email": "shashi@admin.com",
+      "status": "active",
+      "invitation_status": "accepted",
+      "attendance_status": "present",
+      "calendar_status": "synced",
+      "notification_status": "sent",
+      "joined_at": "2026-09-24T16:40:13.467Z",
+      "created_at": "2026-09-24T16:40:13.467Z",
+      "updated_at": "2026-09-24T16:40:13.467Z"
     }
   ],
-  "updatedAt": "2026-09-24T16:31:07.998Z"
+  "updatedAt": "2026-09-24T16:40:13.810Z"
 }

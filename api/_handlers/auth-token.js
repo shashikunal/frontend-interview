@@ -38,9 +38,10 @@ export default async function handler(req, res) {
 
   const { meetingId, userId, userEmail, userName, userRole } = req.body || {};
 
-  if (!meetingId || !userId) {
+  const effectiveMeetingId = meetingId || 'global';
+  if (!userId) {
     return res.status(400).json(
-      createErrorResponse('BadRequest', 'meetingId and userId are required parameters.', 'MISSING_PARAMS')
+      createErrorResponse('BadRequest', 'userId is a required parameter.', 'MISSING_PARAMS')
     );
   }
 
@@ -55,7 +56,7 @@ export default async function handler(req, res) {
     userEmail: userEmail || `${userId}@example.com`,
     userName: userName || 'Participant',
     userRole: effectiveRole,
-    meetingId,
+    meetingId: effectiveMeetingId,
     meetingRole,
     permissions: effectiveRole === 'admin' ? ['admin:all', 'meetings:all'] : ['meetings:participate'],
   }, expiresInSeconds);
