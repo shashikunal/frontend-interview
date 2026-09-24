@@ -688,7 +688,14 @@ function CandidateDashboard() {
             <button
               type="button"
               className="btn-join-meeting-pulse"
-              onClick={() => navigate(liveMeetingAlert.meetingUrl || `/meet/${liveMeetingAlert.meetingId}`)}
+              onClick={() => {
+                const targetUrl = liveMeetingAlert.meetingUrl || `/meet/${liveMeetingAlert.meetingId}`
+                if (targetUrl.startsWith('http://') || targetUrl.startsWith('https://')) {
+                  window.open(targetUrl, '_blank', 'noopener,noreferrer')
+                } else {
+                  navigate(targetUrl)
+                }
+              }}
             >
               🚀 Join Meeting Room
             </button>

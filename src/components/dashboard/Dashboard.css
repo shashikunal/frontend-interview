@@ -1725,16 +1725,14 @@
 @keyframes btnPulseGlow {
   0%, 100% {
     box-shadow: 0 6px 20px rgba(5, 205, 153, 0.4);
-    transform: translateY(0);
   }
   50% {
-    box-shadow: 0 10px 30px rgba(5, 205, 153, 0.65);
-    transform: translateY(-1px);
+    box-shadow: 0 10px 30px rgba(5, 205, 153, 0.7);
   }
 }
 
 .btn-join-meeting-pulse:hover {
-  transform: translateY(-2px);
+  filter: brightness(1.08);
   box-shadow: 0 10px 28px rgba(5, 205, 153, 0.55);
 }
 
