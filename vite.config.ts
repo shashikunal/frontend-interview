@@ -3,14 +3,13 @@ import react from '@vitejs/plugin-react'
 import fs from 'fs'
 import path from 'path'
 import { pathToFileURL } from 'url'
-import { initSocketServer } from './server/socket/index.js'
-
 // Local Dev Socket.IO Middleware
 function localSocketIOPlugin(): Plugin {
   return {
     name: 'local-socket-io-middleware',
-    configureServer(server) {
+    async configureServer(server) {
       if (server.httpServer) {
+        const { initSocketServer } = await import('./server/socket/index.js')
         initSocketServer(server.httpServer)
         console.log('🚀 [Socket.IO Dev Server] Attached to Vite HTTP server on /api/socket')
       }
