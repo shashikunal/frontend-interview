@@ -4,6 +4,7 @@ import { MACHINE_CODING_CATALOG } from '../components/machinecoding/data/machine
 import { DSA_QUESTIONS } from '../components/dsa/data/dsaQuestions'
 import { CORE_PROGRAMMING_QUESTIONS } from '../components/coreprogramming/data/coreProgrammingQuestions'
 import { FRONTEND_JS_QUESTIONS } from '../components/frontendjs/data/frontendJsQuestions'
+import { getStoredAuthHeader } from '../features/auth/services/adminTokenHelper'
 
 export type TierName = 'diamond' | 'platinum' | 'gold' | 'silver' | 'bronze'
 export type LeaderboardTimeframe = 'today' | '7days' | '30days' | 'all'
@@ -435,7 +436,9 @@ export const leaderboardService = {
 
       // Unconditionally merge serverless candidate history gateway data so RLS cannot truncate the global leaderboard
       try {
-        const apiRes = await fetch('/api/candidate-history?mode=all-submissions')
+        const apiRes = await fetch('/api/candidate-history?mode=all-submissions', {
+          headers: getStoredAuthHeader(),
+        })
         if (apiRes.ok) {
           const json = await apiRes.json()
           if (json.success) {

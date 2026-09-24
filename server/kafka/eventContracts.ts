@@ -58,8 +58,34 @@ export type EventType =
   // Audit & Analytics events
   | 'AuditEventCreated.v1'
   | 'AnalyticsEventCreated.v1'
+  // Meeting Ops canonical events
+  | 'meeting.created'
+  | 'meeting.updated'
+  | 'meeting.cancelled'
+  | 'meeting.participant.added'
+  | 'meeting.participant.removed'
+  | 'meeting.reminder.scheduled'
+  | 'meeting.reminder.triggered'
+  | 'notification.requested'
+  | 'notification.sent'
+  | 'notification.failed'
+  | 'calendar.sync.requested'
+  | 'calendar.sync.completed'
+  | 'calendar.sync.failed'
   // Dead letter queue
   | 'DeadLetterEvent.v1';
+
+export interface MeetingOpsCanonicalEvent<T = any> {
+  eventId: string;
+  eventType: string;
+  eventVersion: number;
+  occurredAt: string;
+  producer: string;
+  correlationId: string;
+  meetingId: string;
+  userId: string;
+  payload: T;
+}
 
 export interface EventEnvelope<T = any> {
   eventId: string;
@@ -213,6 +239,30 @@ export function createEventEnvelope<T>(
     correlationId: options?.correlationId || `corr_${crypto.randomUUID()}`,
     causationId: options?.causationId,
     partitionKey,
+    payload,
+  };
+}
+
+export function createMeetingOpsEvent<T>(
+  eventType: string,
+  meetingId: string,
+  userId: string,
+  payload: T,
+  options?: {
+    correlationId?: string;
+    producer?: string;
+    eventVersion?: number;
+  }
+): MeetingOpsCanonicalEvent<T> {
+  return {
+    eventId: crypto.randomUUID(),
+    eventType,
+    eventVersion: options?.eventVersion || 1,
+    occurredAt: new Date().toISOString(),
+    producer: options?.producer || 'meeting-service',
+    correlationId: options?.correlationId || crypto.randomUUID(),
+    meetingId,
+    userId,
     payload,
   };
 }

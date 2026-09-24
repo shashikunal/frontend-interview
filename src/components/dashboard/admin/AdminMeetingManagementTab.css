@@ -1,0 +1,405 @@
+/* ==============================================================================
+   Horizon UI Design System - Meeting Operations System CSS
+   ============================================================================== */
+
+/* 8 Overview Stat Cards Grid */
+.amm-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+@media (max-width: 1200px) {
+  .amm-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .amm-stats-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.amm-stat-card {
+  background: var(--h-card, #111c44);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  padding: 18px 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.amm-stat-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(67, 24, 255, 0.4);
+}
+
+.amm-stat-icon-circle {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  flex-shrink: 0;
+}
+
+.amm-stat-icon-circle.blue {
+  background: rgba(67, 24, 255, 0.15);
+  color: #7551ff;
+}
+
+.amm-stat-icon-circle.green {
+  background: rgba(1, 181, 116, 0.15);
+  color: #01b574;
+}
+
+.amm-stat-icon-circle.amber {
+  background: rgba(255, 181, 71, 0.15);
+  color: #ffb547;
+}
+
+.amm-stat-icon-circle.red {
+  background: rgba(238, 93, 80, 0.15);
+  color: #ee5d50;
+}
+
+.amm-stat-icon-circle.purple {
+  background: rgba(134, 140, 255, 0.15);
+  color: #868cff;
+}
+
+.amm-stat-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.amm-stat-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--h-text-muted, #a3aed0);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.amm-stat-val {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--h-text-white, #ffffff);
+  margin: 2px 0 0 0;
+}
+
+/* Filter Toolbar */
+.amm-filter-bar {
+  background: var(--h-card, #111c44);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.amm-search-input {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 8px 14px;
+  color: #ffffff;
+  font-size: 13px;
+  width: 260px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.amm-search-input:focus {
+  border-color: #7551ff;
+}
+
+.amm-filter-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.amm-select {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 8px 12px;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  outline: none;
+}
+
+.amm-select option {
+  background: #111c44;
+  color: #ffffff;
+}
+
+/* Meetings Table */
+.amm-table-card {
+  background: var(--h-card, #111c44);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+}
+
+.amm-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.amm-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.amm-table th {
+  background: rgba(255, 255, 255, 0.02);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 14px 18px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--h-text-muted, #a3aed0);
+  letter-spacing: 0.5px;
+}
+
+.amm-table td {
+  padding: 16px 18px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  font-size: 13px;
+  color: #ffffff;
+  vertical-align: middle;
+}
+
+.amm-table tr:hover td {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.amm-meeting-title-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.amm-title-link {
+  font-weight: 700;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.amm-title-link:hover {
+  color: #7551ff;
+}
+
+.amm-provider-tag {
+  font-size: 11px;
+  color: var(--h-text-muted, #a3aed0);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.amm-badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 6px;
+  text-transform: uppercase;
+  display: inline-block;
+}
+
+.amm-badge.scheduled {
+  background: rgba(67, 24, 255, 0.15);
+  color: #7551ff;
+  border: 1px solid rgba(67, 24, 255, 0.3);
+}
+
+.amm-badge.started {
+  background: rgba(1, 181, 116, 0.15);
+  color: #01b574;
+  border: 1px solid rgba(1, 181, 116, 0.3);
+}
+
+.amm-badge.completed {
+  background: rgba(255, 255, 255, 0.1);
+  color: #a3aed0;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.amm-badge.cancelled {
+  background: rgba(238, 93, 80, 0.15);
+  color: #ee5d50;
+  border: 1px solid rgba(238, 93, 80, 0.3);
+}
+
+.amm-badge.synced {
+  color: #01b574;
+}
+
+.amm-badge.pending {
+  color: #ffb547;
+}
+
+.amm-badge.failed {
+  color: #ee5d50;
+}
+
+/* Actions Menu & Buttons */
+.amm-actions-cell {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.amm-btn-sm {
+  padding: 5px 10px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+  color: #ffffff;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.amm-btn-sm:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.amm-btn-sm.primary {
+  background: var(--h-brand-gradient, linear-gradient(135deg, #7551FF 0%, #4318FF 100%));
+  border: none;
+}
+
+.amm-btn-sm.danger {
+  background: rgba(238, 93, 80, 0.15);
+  border-color: rgba(238, 93, 80, 0.3);
+  color: #ee5d50;
+}
+
+.amm-btn-sm.danger:hover {
+  background: #ee5d50;
+  color: #ffffff;
+}
+
+/* Form Styles inside Modals */
+.amm-modal-card {
+  max-width: 680px;
+  width: 90vw;
+  max-height: 90vh;
+  overflow-y: auto;
+  background: #111c44;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+}
+
+.amm-form-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+@media (max-width: 600px) {
+  .amm-form-grid-2 {
+    grid-template-columns: 1fr;
+  }
+}
+
+.amm-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.amm-form-group label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--h-text-muted, #a3aed0);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.amm-form-input, .amm-form-textarea {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 10px 14px;
+  color: #ffffff;
+  font-size: 13px;
+  outline: none;
+  font-family: inherit;
+  transition: border-color 0.2s;
+}
+
+.amm-form-input option {
+  background: #111c44;
+  color: #ffffff;
+}
+
+.amm-form-input:focus, .amm-form-textarea:focus {
+  border-color: #7551ff;
+}
+
+.amm-checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #ffffff;
+  cursor: pointer;
+  margin-top: 4px;
+}
+
+.amm-checkbox-row input {
+  cursor: pointer;
+  width: 16px;
+  height: 16px;
+}
+
+/* Diagnostic Panel Modal */
+.amm-diag-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 16px;
+  margin-top: 14px;
+}
+
+.amm-diag-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.amm-diag-row:last-child {
+  border-bottom: none;
+}

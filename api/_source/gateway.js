@@ -21,6 +21,7 @@ import candidateHistoryHandler from '../_handlers/candidate-history.js';
 import candidateAiEvalHandler from '../_handlers/candidate-ai-evaluation.js';
 import sendEmailHandler from '../_handlers/send-email.js';
 import aiFeedbackHandler from '../_handlers/ai-feedback.js';
+import notificationsHandler from '../_handlers/notifications.js';
 
 async function parseBody(req) {
   if (req.body && typeof req.body === 'object') return req.body;
@@ -94,6 +95,11 @@ export default async function handler(req, res) {
     // 3. Meeting Operations (Lifecycle, Chat, Editor, Whiteboard, Invite, Join, Media-Token, Recording)
     if (pathname === '/api/v1/meetings' || pathname.startsWith('/api/v1/meetings/')) {
       return meetingsHandler(req, res);
+    }
+
+    // 3b. Push Notifications & Preferences
+    if (pathname === '/api/v1/notifications' || pathname.startsWith('/api/v1/notifications/')) {
+      return notificationsHandler(req, res);
     }
 
     // 4. Application Chat & Audit

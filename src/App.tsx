@@ -53,6 +53,7 @@ const AIVideoMockApp = lazy(() => import('./features/ai-video-mock/AIVideoMockAp
 const StudentPerformanceView = lazy(() => import('./features/performance-history/components/student/StudentPerformanceView'))
 const DocsPlatform = lazy(() => import('./features/interview-docs/DocsPlatform'))
 const MasterQuestionBankApp = lazy(() => import('./features/interview-questions/MasterQuestionBankApp'))
+const InstantMeetingLandingPage = lazy(() => import('./features/meetings/components/InstantMeetingLandingPage'))
 const MeetingRoom = lazy(() => import('./features/meetings/components/MeetingRoom'))
 const MeetingRecordingPage = lazy(() => import('./features/meetings/components/MeetingRecordingPage'))
 const AppChatWorkspace = lazy(() => import('./features/chat/components/AppChatWorkspace'))
@@ -95,6 +96,8 @@ export default function App() {
           <div key={location.pathname} className="app-page-transition">
             <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/meet" element={<InstantMeetingLandingPage />} />
+          <Route path="/meetings" element={<InstantMeetingLandingPage />} />
           <Route path="/meet/:meetingId" element={<MeetingRoom />} />
           <Route path="/meet/:meetingId/recording/:recordingId" element={<MeetingRecordingPage />} />
           <Route path="/meetings/:meetingId/recordings/:recordingId" element={<MeetingRecordingPage />} />

@@ -14,6 +14,7 @@ import { MACHINE_CODING_CATALOG } from '../components/machinecoding/data/machine
 import { DSA_QUESTIONS } from '../components/dsa/data/dsaQuestions'
 import { CORE_PROGRAMMING_QUESTIONS } from '../components/coreprogramming/data/coreProgrammingQuestions'
 import { FRONTEND_JS_QUESTIONS } from '../components/frontendjs/data/frontendJsQuestions'
+import { getStoredAuthHeader } from '../features/auth/services/adminTokenHelper'
 
 export type { SubmissionRecord, QuestionAttempt }
 
@@ -497,7 +498,9 @@ export const adminAnalyticsService = {
     // Fallback to serverless candidate history gateway if RLS dropped rows
     if (totalSubmissions === 0 && totalAttempts === 0) {
       try {
-        const apiRes = await fetch('/api/candidate-history?mode=overview')
+        const apiRes = await fetch('/api/candidate-history?mode=overview', {
+          headers: getStoredAuthHeader(),
+        })
         if (apiRes.ok) {
           const json = await apiRes.json()
           if (json.success && json.overview) {
@@ -600,7 +603,9 @@ export const adminAnalyticsService = {
       // Fallback to serverless candidate history gateway if RLS dropped rows
       if (mcRows.length === 0 && cpRows.length === 0) {
         try {
-          const apiRes = await fetch('/api/candidate-history?mode=submissions')
+          const apiRes = await fetch('/api/candidate-history?mode=submissions', {
+            headers: getStoredAuthHeader(),
+          })
           if (apiRes.ok) {
             const json = await apiRes.json()
             if (json.success && Array.isArray(json.submissions) && json.submissions.length > 0) {
@@ -1505,7 +1510,7 @@ export const adminAnalyticsService = {
         client.from('dsa_submissions').select('*').eq('user_id', userId).order('created_at', { ascending: false }).limit(250),
         client.from('frontend_js_submissions').select('*').eq('user_id', userId).order('created_at', { ascending: false }).limit(250),
         client.from('question_attempts').select('*').eq('user_id', userId).order('created_at', { ascending: false }).limit(100),
-        client.from('core_programming_attempts').select('*').eq('user_id', userId).order('created_at', { ascending: false }).limit(100),
+        Promise.resolve({ data: [] }),
         client.from('frontend_js_attempts').select('*').eq('user_id', userId).order('created_at', { ascending: false }).limit(100),
         client.from('activity_logs').select('*').eq('user_id', userId).order('created_at', { ascending: false }).limit(50),
         client.from('interview_sessions').select('*').or(`candidate_id.eq.${userId},user_id.eq.${userId}`).order('created_at', { ascending: false }).limit(50),
@@ -2037,7 +2042,7 @@ export const adminAnalyticsService = {
       ] = await Promise.allSettled([
         supabase.from('question_attempts').select('id, question_id, status, time_spent, time_spent_seconds').eq('user_id', userId),
         supabase.from('submissions').select('id, question_id, status, score').eq('user_id', userId),
-        supabase.from('core_programming_attempts').select('id, question_id, status').eq('user_id', userId).then(r => r.error ? { data: [] } : r, () => ({ data: [] })),
+        Promise.resolve({ data: [] }),
         supabase.from('core_programming_submissions').select('id, question_id, status, score').eq('user_id', userId),
         supabase.from('frontend_js_attempts').select('id, question_id, status').eq('user_id', userId).then(r => r.error ? { data: [] } : r, () => ({ data: [] })),
         supabase.from('frontend_js_submissions').select('id, question_id, status, score').eq('user_id', userId),

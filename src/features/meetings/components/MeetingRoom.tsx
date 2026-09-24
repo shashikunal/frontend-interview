@@ -18,6 +18,8 @@ import { MeetingWhiteboard } from './MeetingWhiteboard';
 import { whiteboardClientService } from '../services/whiteboardClientService';
 import { MeetingCodeEditor } from './MeetingCodeEditor';
 import { meetingCollaborationService } from '../services/meetingCollaborationService';
+import { webrtcPeerService } from '../services/webrtcPeerService';
+import { pushClientService } from '../../notifications/services/pushClientService';
 import type { ChatMessageRecord, ChatMessageType } from '../../../../server/meetings/chatTypes';
 import type { WhiteboardElement, WhiteboardElementType } from '../../../../server/meetings/whiteboardTypes';
 import type {
@@ -79,6 +81,8 @@ export const MeetingRoom: React.FC = () => {
   const [whiteboardElements, setWhiteboardElements] = useState<WhiteboardElement[]>([]);
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
   const [copiedInvite, setCopiedInvite] = useState<boolean>(false);
+  const [showReadyCard, setShowReadyCard] = useState<boolean>(true);
+  const [remoteScreenFrame, setRemoteScreenFrame] = useState<string | null>(null);
 
   // Active Speaker
   const [dominantSpeakerId, setDominantSpeakerId] = useState<string | null>(null);
@@ -129,6 +133,79 @@ export const MeetingRoom: React.FC = () => {
     screenStreamRef.current = localMedia.screenStream;
   }, [localMedia.stream, localMedia.screenStream]);
 
+  // Cross-tab screen frame mirroring listener for multi-tab testing
+  useEffect(() => {
+    if (!meetingId) return;
+    let bc: BroadcastChannel | null = null;
+    try {
+      bc = new BroadcastChannel(`meet_screen_${meetingId}`);
+      bc.onmessage = (e) => {
+        if (e.data?.type === 'screen_frame' && e.data.dataUrl) {
+          setRemoteScreenFrame(e.data.dataUrl);
+        } else if (e.data?.type === 'screen_stop') {
+          setRemoteScreenFrame(null);
+        }
+      };
+    } catch (_) {}
+
+    return () => {
+      if (bc) {
+        try { bc.close(); } catch (_) {}
+      }
+    };
+  }, [meetingId]);
+
+  // Cross-tab screen frame broadcast sender
+  useEffect(() => {
+    if (!localMedia.screenShareEnabled || !localMedia.screenStream || !meetingId) {
+      setRemoteScreenFrame(null);
+      return;
+    }
+
+    let intervalId: any = null;
+    let bc: BroadcastChannel | null = null;
+    const video = document.createElement('video');
+    video.srcObject = localMedia.screenStream;
+    video.muted = true;
+    video.play().catch(() => {});
+
+    try {
+      bc = new BroadcastChannel(`meet_screen_${meetingId}`);
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+
+      const startBroadcasting = () => {
+        canvas.width = Math.min(1280, video.videoWidth || 1280);
+        canvas.height = Math.min(720, video.videoHeight || 720);
+
+        intervalId = setInterval(() => {
+          if (video.videoWidth > 0 && ctx && bc) {
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const dataUrl = canvas.toDataURL('image/jpeg', 0.65);
+            bc.postMessage({ type: 'screen_frame', dataUrl, presenterId: user?.id || 'local' });
+          }
+        }, 150);
+      };
+
+      if (video.videoWidth > 0) {
+        startBroadcasting();
+      } else {
+        video.onloadedmetadata = startBroadcasting;
+      }
+    } catch (_) {}
+
+    return () => {
+      if (intervalId) clearInterval(intervalId);
+      if (bc) {
+        try {
+          bc.postMessage({ type: 'screen_stop' });
+          bc.close();
+        } catch (_) {}
+      }
+      video.srcObject = null;
+    };
+  }, [localMedia.screenShareEnabled, localMedia.screenStream, meetingId, user?.id]);
+
   // Stable lobby preview video stream attachment (prevents black screen and flickering on audioLevel re-renders)
   useEffect(() => {
     const el = lobbyVideoRef.current;
@@ -173,6 +250,7 @@ export const MeetingRoom: React.FC = () => {
         const previewStream = await mediaRoomClientService.acquireUserMedia({
           audio: true,
           video: true,
+          userName: user?.name || 'Student',
         });
 
         if (!isMounted) {
@@ -351,6 +429,52 @@ export const MeetingRoom: React.FC = () => {
         const myUserId = user?.id || 'local-participant';
         const remoteList = collabResult.participants.filter(p => p.id !== myUserId);
         setParticipants(remoteList);
+
+        // Initialize WebRTC Peer-to-Peer Mesh Connection
+        const socket = meetingCollaborationService.getSocket();
+        if (socket) {
+          webrtcPeerService.init(socket, myUserId, meetingId, {
+            onRemoteStream: (peerUserId, stream, streamType) => {
+              setParticipants(prev =>
+                prev.map(p => {
+                  if (p.id === peerUserId) {
+                    return streamType === 'screen'
+                      ? { ...p, screenStream: stream, screenShareEnabled: true }
+                      : { ...p, stream };
+                  }
+                  return p;
+                })
+              );
+            },
+            onRemoteStreamRemoved: (peerUserId, streamType) => {
+              setParticipants(prev =>
+                prev.map(p => {
+                  if (p.id === peerUserId) {
+                    return streamType === 'screen'
+                      ? { ...p, screenStream: null, screenShareEnabled: false }
+                      : { ...p, stream: null };
+                  }
+                  return p;
+                })
+              );
+            },
+            onPeerDisconnected: (peerUserId) => {
+              setParticipants(prev => prev.filter(p => p.id !== peerUserId));
+            },
+          });
+
+          if (localMedia.stream) {
+            webrtcPeerService.setLocalStream(localMedia.stream);
+          }
+          if (localMedia.screenStream) {
+            webrtcPeerService.setLocalScreenStream(localMedia.screenStream);
+          }
+
+          // Initiate P2P WebRTC handshake to all current room participants
+          remoteList.forEach(p => {
+            webrtcPeerService.connectToPeer(p.id, p.socketId);
+          });
+        }
       }
     } catch (err: any) {
       console.error('Join meeting failed:', err);
@@ -385,6 +509,7 @@ export const MeetingRoom: React.FC = () => {
               cleanupAudioRef.current = mediaRoomClientService.setupAudioAnalyzer(localMedia.stream, level => {
                 setLocalMedia(p => ({ ...p, audioLevel: p.audioEnabled ? level : 0 }));
               });
+              webrtcPeerService.setLocalStream(localMedia.stream);
             }
           }
         } catch (err) {
@@ -427,6 +552,7 @@ export const MeetingRoom: React.FC = () => {
         } catch {}
       }
       setLocalMedia(prev => ({ ...prev, videoEnabled: false }));
+      webrtcPeerService.setLocalStream(localMedia.stream);
       if (meetingId) {
         meetingCollaborationService.updateLocalMediaState(meetingId, {
           cameraState: false,
@@ -437,6 +563,7 @@ export const MeetingRoom: React.FC = () => {
       try {
         const videoStream = await mediaRoomClientService.acquireUserMedia({
           audio: false,
+          userName: user?.name || 'Student',
           video: localMedia.videoInputDeviceId
             ? { deviceId: localMedia.videoInputDeviceId }
             : true,
@@ -464,6 +591,7 @@ export const MeetingRoom: React.FC = () => {
               videoEnabled: true,
               stream,
             }));
+            webrtcPeerService.setLocalStream(stream);
 
             if (meetingId) {
               meetingCollaborationService.updateLocalMediaState(meetingId, {
@@ -479,12 +607,18 @@ export const MeetingRoom: React.FC = () => {
   };
 
   const handleToggleScreenShare = async () => {
-    if (!permissions.canPublishScreen) return;
+    if (!permissions.canPublishScreen) {
+      setErrorMsg('Screen sharing is restricted by meeting host.');
+      setTimeout(() => setErrorMsg(null), 4000);
+      return;
+    }
 
     if (localMedia.screenShareEnabled) {
       // Stop screen share
       mediaRoomClientService.cleanupStream(localMedia.screenStream);
+      webrtcPeerService.setLocalScreenStream(null);
       setLocalMedia(prev => ({ ...prev, screenShareEnabled: false, screenStream: null }));
+      setLayoutMode('GRID');
       if (meetingId) {
         meetingCollaborationService.updateLocalMediaState(meetingId, {
           screenShareState: false,
@@ -494,14 +628,21 @@ export const MeetingRoom: React.FC = () => {
       try {
         const screenStream = await mediaRoomClientService.acquireDisplayMedia();
         if (screenStream) {
-          screenStream.getVideoTracks()[0].onended = () => {
-            setLocalMedia(prev => ({ ...prev, screenShareEnabled: false, screenStream: null }));
-            if (meetingId) {
-              meetingCollaborationService.updateLocalMediaState(meetingId, {
-                screenShareState: false,
-              });
-            }
-          };
+          const videoTrack = screenStream.getVideoTracks()[0];
+          if (videoTrack) {
+            videoTrack.onended = () => {
+              mediaRoomClientService.cleanupStream(screenStream);
+              webrtcPeerService.setLocalScreenStream(null);
+              setLocalMedia(prev => ({ ...prev, screenShareEnabled: false, screenStream: null }));
+              setLayoutMode('GRID');
+              if (meetingId) {
+                meetingCollaborationService.updateLocalMediaState(meetingId, {
+                  screenShareState: false,
+                });
+              }
+            };
+          }
+          webrtcPeerService.setLocalScreenStream(screenStream);
           setLocalMedia(prev => ({ ...prev, screenShareEnabled: true, screenStream }));
           setLayoutMode('SCREEN_SHARE_FOCUS');
           if (meetingId) {
@@ -510,8 +651,14 @@ export const MeetingRoom: React.FC = () => {
             });
           }
         }
-      } catch (err) {
-        console.warn('Screen share canceled or denied:', err);
+      } catch (err: any) {
+        if (err.name === 'NotAllowedError' || err.name === 'AbortError') {
+          console.info('[Screen Share] User dismissed or cancelled the screen share prompt.');
+        } else {
+          console.error('[Screen Share Error]:', err);
+          setErrorMsg(err.message || 'Unable to start screen sharing. Check browser display permissions.');
+          setTimeout(() => setErrorMsg(null), 5000);
+        }
       }
     }
   };
@@ -589,6 +736,7 @@ export const MeetingRoom: React.FC = () => {
     if (meetingId) {
       meetingCollaborationService.leaveRoom(meetingId);
     }
+    webrtcPeerService.destroy();
     if (cleanupAudioRef.current) cleanupAudioRef.current();
     mediaRoomClientService.stopAllMedia();
     mediaRoomClientService.cleanupStream(localMedia.stream);
@@ -647,21 +795,32 @@ export const MeetingRoom: React.FC = () => {
 
   // 9. End Meeting for All (Host only)
   const handleEndMeetingForAll = async () => {
-    if (meetingRole !== 'HOST' && user?.role !== 'admin') return;
+    const isHostOrAdmin = meetingRole === 'HOST' || user?.role === 'admin' || user?.role === 'interviewer';
+    if (!isHostOrAdmin) return;
     if (window.confirm('Are you sure you want to end this meeting for all participants?')) {
-      try {
-        if (meetingId && user) {
-          await meetingClientService.updateLifecycle(
-            { id: user.id, email: user.email, name: user.name, role: user.role },
-            meetingId,
-            { targetStatus: 'ENDED', reason: 'Host ended meeting' }
-          );
-          await meetingCollaborationService.hostEndMeeting(meetingId, 'Host ended meeting');
+      if (meetingId) {
+        // 1. Broadcast immediate realtime termination to all participants
+        try {
+          await meetingCollaborationService.hostEndMeeting(meetingId, 'Meeting ended by host');
+        } catch {
+          // Socket fallback
         }
-      } catch {
-        // Fallback
+
+        // 2. Persist lifecycle state update on server
+        if (user) {
+          try {
+            await meetingClientService.updateLifecycle(
+              { id: user.id, email: user.email, name: user.name, role: user.role },
+              meetingId,
+              { targetStatus: 'ENDED', reason: 'Host ended meeting' }
+            );
+          } catch {
+            // In-memory / socket fallback
+          }
+        }
       }
       handleLeaveMeeting();
+      setIsMeetingEndedByHost(true);
     }
   };
 
@@ -677,8 +836,11 @@ export const MeetingRoom: React.FC = () => {
           if (prev.some(existing => existing.id === p.id)) return prev;
           return [...prev, p];
         });
+        // Establish WebRTC peer-to-peer connection with joined student
+        webrtcPeerService.connectToPeer(p.id, p.socketId);
       },
       onParticipantLeft: (data) => {
+        webrtcPeerService.closePeer(data.userId);
         setParticipants(prev => prev.filter(p => p.id !== data.userId));
       },
       onParticipantUpdated: (updated) => {
@@ -745,7 +907,21 @@ export const MeetingRoom: React.FC = () => {
         }
       },
       onMeetingEnded: () => {
-        handleLeaveMeeting();
+        webrtcPeerService.destroy();
+        if (cleanupAudioRef.current) cleanupAudioRef.current();
+        mediaRoomClientService.stopAllMedia();
+        mediaRoomClientService.cleanupStream(localMedia.stream);
+        mediaRoomClientService.cleanupStream(localMedia.screenStream);
+        setLocalMedia(prev => ({
+          ...prev,
+          stream: null,
+          screenStream: null,
+          videoEnabled: false,
+          audioEnabled: false,
+          screenShareEnabled: false,
+        }));
+        setHasLeft(true);
+        setConnectionState('DISCONNECTED');
         setIsMeetingEndedByHost(true);
       },
       onStateSynced: (serverParticipants) => {
@@ -808,6 +984,34 @@ export const MeetingRoom: React.FC = () => {
     navigator.clipboard.writeText(inviteUrl);
     setCopiedInvite(true);
     setTimeout(() => setCopiedInvite(false), 2500);
+  };
+
+  // Push Notification state & handler
+  const [isPushSending, setIsPushSending] = useState<boolean>(false);
+  const [pushFeedback, setPushFeedback] = useState<string | null>(null);
+
+  const handlePushLinkToStudents = async () => {
+    if (!meetingId) return;
+    setIsPushSending(true);
+    setPushFeedback(null);
+    try {
+      const res = await pushClientService.sendMeetingPushNotification({
+        meetingId,
+        customMessage: `${user?.name || 'Your interviewer'} has opened the live session: "${meetingTitle}". Click to join immediately!`,
+      });
+      if (res.success) {
+        setPushFeedback(`📲 Push sent! (${res.recipientsCount || 1} student notified)`);
+        setTimeout(() => setPushFeedback(null), 5000);
+      } else {
+        setPushFeedback(`⚠️ ${res.message}`);
+        setTimeout(() => setPushFeedback(null), 5000);
+      }
+    } catch (err: any) {
+      setPushFeedback(`⚠️ ${err.message || 'Transmission failed'}`);
+      setTimeout(() => setPushFeedback(null), 5000);
+    } finally {
+      setIsPushSending(false);
+    }
   };
 
   // 9. In-Meeting Real-Time Chat Sync & Broadcast (Phase 6 Production-Grade)
@@ -1385,6 +1589,74 @@ export const MeetingRoom: React.FC = () => {
           ))}
         </div>
 
+        {/* Google Meet Style "Your meeting's ready" Info Card */}
+        {(() => {
+          const remotePresenter = participants.find(p => p.screenShareEnabled);
+          const isLocalScreenShare = localMedia.screenShareEnabled && !!localMedia.screenStream;
+          const isScreenSharingActive = isLocalScreenShare || !!remotePresenter || !!remoteScreenFrame;
+          return participants.length === 0 && showReadyCard && !isWhiteboardOpen && !isCodeEditorOpen && !isScreenSharingActive;
+        })() && (
+          <div className="rtc-instant-ready-card">
+            <div className="rtc-ready-card-header">
+              <span className="rtc-ready-card-title">Your meeting's ready</span>
+              <button
+                type="button"
+                className="rtc-ready-card-close"
+                onClick={() => setShowReadyCard(false)}
+                title="Dismiss"
+              >
+                ✕
+              </button>
+            </div>
+            <p className="rtc-ready-card-subtext">
+              Share this meeting link with candidates or peers you want to meet with:
+            </p>
+            <div className="rtc-ready-link-row">
+              <span className="rtc-ready-link-text">
+                {window.location.origin}/meet/{meetingId}
+              </span>
+              <button
+                type="button"
+                className={`rtc-ready-copy-btn ${copiedInvite ? 'copied' : ''}`}
+                onClick={handleCopyInviteLink}
+                title="Copy meeting link"
+              >
+                {copiedInvite ? '✓ Copied' : '📋 Copy'}
+              </button>
+              <button
+                type="button"
+                className="rtc-ready-push-btn"
+                onClick={handlePushLinkToStudents}
+                disabled={isPushSending}
+                title="Send meeting link to students as Web Push notification"
+              >
+                {isPushSending ? 'Dispatching...' : '📲 Send Push to Students'}
+              </button>
+            </div>
+            {pushFeedback && (
+              <div className="rtc-ready-push-feedback" style={{ marginTop: '8px', fontSize: '13px', color: '#01b574', fontWeight: 600 }}>
+                {pushFeedback}
+              </div>
+            )}
+            <div className="rtc-ready-card-footer">
+              <button
+                type="button"
+                className="rtc-ready-share-btn"
+                onClick={() => setIsParticipantsDrawerOpen(true)}
+              >
+                👥 Add people
+              </button>
+              <button
+                type="button"
+                className="rtc-ready-dismiss-btn"
+                onClick={() => setShowReadyCard(false)}
+              >
+                Got it
+              </button>
+            </div>
+          </div>
+        )}
+
         {isWhiteboardOpen ? (
           <div className="rtc-whiteboard-active-layout">
             {/* Top Filmstrip */}
@@ -1497,6 +1769,105 @@ export const MeetingRoom: React.FC = () => {
               onClose={() => setIsCodeEditorOpen(false)}
             />
           </div>
+        ) : (localMedia.screenShareEnabled && !!localMedia.screenStream) || participants.some(p => p.screenShareEnabled) || !!remoteScreenFrame ? (
+          (() => {
+            const remotePresenter = participants.find(p => p.screenShareEnabled);
+            const isLocalScreenShare = localMedia.screenShareEnabled && !!localMedia.screenStream;
+            const activeScreenStream = isLocalScreenShare ? localMedia.screenStream : remotePresenter?.screenStream;
+            const presenterName = isLocalScreenShare ? (user?.name || 'You') : (remotePresenter?.name || 'Presenter');
+
+            return (
+              <div className="rtc-presentation-mode-container">
+                {/* Top Filmstrip */}
+                <div className="rtc-wb-filmstrip">
+                  <ParticipantTile
+                    id="local-participant"
+                    name={user?.name || 'You'}
+                    role={meetingRole}
+                    isLocal
+                    audioEnabled={localMedia.audioEnabled}
+                    videoEnabled={localMedia.videoEnabled}
+                    screenShareEnabled={false}
+                    audioLevel={localMedia.audioLevel}
+                    isSpeaking={isDominantLocal}
+                    connectionQuality={connectionQuality}
+                    stream={localMedia.stream}
+                    handRaised={isHandRaised}
+                    recentReaction={participantReactions.get(user?.id || 'local-participant')}
+                  />
+                  {participants.map(p => (
+                    <ParticipantTile
+                      key={p.id}
+                      id={p.id}
+                      name={p.name}
+                      role={p.role}
+                      audioEnabled={p.audioEnabled}
+                      videoEnabled={p.videoEnabled}
+                      screenShareEnabled={false}
+                      audioLevel={p.audioLevel}
+                      isSpeaking={dominantSpeakerId === p.id}
+                      connectionQuality={p.connectionQuality}
+                      stream={p.stream}
+                      avatarUrl={p.avatarUrl}
+                      handRaised={p.handRaised}
+                      recentReaction={participantReactions.get(p.id)}
+                      isHostViewer={meetingRole === 'HOST' || user?.role === 'admin'}
+                      onHostMute={() => handleHostMute(p.id)}
+                      onHostLowerHand={() => handleHostLowerHand(p.id)}
+                      onHostRemove={() => handleHostRemove(p.id)}
+                    />
+                  ))}
+                </div>
+
+                {/* Main Stage Presentation */}
+                <div className="rtc-presentation-stage">
+                  <div className="rtc-presentation-header">
+                    <div className="rtc-presentation-title">
+                      <span className="rtc-screen-icon">🖥️</span>
+                      <span>{isLocalScreenShare ? 'You are presenting to everyone' : `${presenterName} is presenting`}</span>
+                    </div>
+                    {isLocalScreenShare && (
+                      <button
+                        type="button"
+                        className="rtc-stop-presenting-btn"
+                        onClick={handleToggleScreenShare}
+                      >
+                        Stop Presenting
+                      </button>
+                    )}
+                  </div>
+                  <div className="rtc-presentation-viewport">
+                    {activeScreenStream ? (
+                      <video
+                        ref={el => {
+                          if (el && activeScreenStream) {
+                            if (el.srcObject !== activeScreenStream) {
+                              el.srcObject = activeScreenStream;
+                            }
+                            el.play().catch(() => {});
+                          }
+                        }}
+                        autoPlay
+                        playsInline
+                        muted={isLocalScreenShare}
+                        className="rtc-presentation-video"
+                      />
+                    ) : remoteScreenFrame ? (
+                      <img
+                        src={remoteScreenFrame}
+                        alt="Screen presentation"
+                        className="rtc-presentation-video"
+                      />
+                    ) : (
+                      <div className="rtc-screen-layer" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff' }}>
+                        <span>Connecting presentation feed...</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            );
+          })()
         ) : (
           <div
             className={`rtc-video-layout rtc-layout-${layoutMode.toLowerCase()} ${
@@ -1569,6 +1940,23 @@ export const MeetingRoom: React.FC = () => {
               >
                 ✕
               </button>
+            </div>
+            {/* Quick Invite & Push to Students Bar */}
+            <div style={{ padding: '10px 16px', background: 'rgba(255, 255, 255, 0.04)', borderBottom: '1px solid rgba(255, 255, 255, 0.08)', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <button
+                type="button"
+                className="rtc-ready-push-btn"
+                onClick={handlePushLinkToStudents}
+                disabled={isPushSending}
+                style={{ width: '100%', padding: '8px 12px', background: '#7551ff', color: '#fff', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 600, fontSize: '13px' }}
+              >
+                {isPushSending ? 'Dispatching Push...' : '📲 Send Meeting Link as Push Notification'}
+              </button>
+              {pushFeedback && (
+                <div style={{ fontSize: '12px', color: '#01b574', textAlign: 'center', fontWeight: 600 }}>
+                  {pushFeedback}
+                </div>
+              )}
             </div>
             <div className="rtc-drawer-content">
               {/* Local item */}
@@ -1761,7 +2149,7 @@ export const MeetingRoom: React.FC = () => {
         isWhiteboardOpen={isWhiteboardOpen}
         isCodeEditorOpen={isCodeEditorOpen}
         isSettingsOpen={isSettingsOpen}
-        isHost={meetingRole === 'HOST' || user?.role === 'admin'}
+        isHost={meetingRole === 'HOST' || user?.role === 'admin' || user?.role === 'interviewer'}
         handRaised={isHandRaised}
         onToggleAudio={handleToggleAudio}
         onToggleVideo={handleToggleVideo}

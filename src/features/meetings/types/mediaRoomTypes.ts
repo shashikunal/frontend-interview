@@ -32,6 +32,7 @@ export interface LocalMediaState {
 
 export interface RemoteParticipant {
   id: string;
+  socketId?: string;
   name: string;
   role: MeetingRole;
   isHost: boolean;

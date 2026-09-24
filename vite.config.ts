@@ -459,6 +459,9 @@ function localAdminAuthPlugin(): Plugin {
       registerDevEndpoint('/api/v1/admin/notifications', './api/v1/admin/notifications.js')
       registerDevEndpoint('/api/v1/admin/users', './api/v1/admin/users.js')
 
+      // Web Push Notifications & Meeting Link Dispatch
+      registerDevEndpoint('/api/v1/notifications', './api/_handlers/notifications.js')
+
       // Local Dev Phase 11 Compliance Audit Trail Middleware
       registerDevEndpoint('/api/v1/audit', './api/v1/audit/index.js')
 

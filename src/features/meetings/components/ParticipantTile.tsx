@@ -163,7 +163,15 @@ export const ParticipantTile: React.FC<ParticipantTileProps> = memo(({
       {screenShareEnabled && screenStream ? (
         <div className="rtc-screen-layer">
           <video
-            ref={screenVideoRef}
+            ref={el => {
+              screenVideoRef.current = el;
+              if (el && screenStream) {
+                if (el.srcObject !== screenStream) {
+                  el.srcObject = screenStream;
+                }
+                el.play().catch(() => {});
+              }
+            }}
             autoPlay
             playsInline
             muted={isLocal}
@@ -174,7 +182,15 @@ export const ParticipantTile: React.FC<ParticipantTileProps> = memo(({
       ) : videoEnabled && stream ? (
         /* Video Stream Layer */
         <video
-          ref={videoRef}
+          ref={el => {
+            videoRef.current = el;
+            if (el && stream) {
+              if (el.srcObject !== stream) {
+                el.srcObject = stream;
+              }
+              el.play().catch(() => {});
+            }
+          }}
           autoPlay
           playsInline
           muted={isLocal}

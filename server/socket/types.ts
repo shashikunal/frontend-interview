@@ -187,6 +187,12 @@ export interface ClientToServerEvents {
   'meeting:host:remove-participant': (data: { meetingId: string; targetUserId: string; reason?: string }, callback?: (ack: { success: boolean; error?: string }) => void) => void;
   'meeting:host:end-meeting': (data: { meetingId: string; reason?: string }, callback?: (ack: { success: boolean; error?: string }) => void) => void;
   'meeting:sync-state': (data: { meetingId: string }, callback?: (ack: { success: boolean; participants: any[]; error?: string }) => void) => void;
+
+  // WebRTC Peer-to-Peer Signaling Events
+  'meeting:webrtc:offer': (data: { meetingId: string; targetSocketId?: string; targetUserId?: string; offer: any; streamType?: string }) => void;
+  'meeting:webrtc:answer': (data: { meetingId: string; targetSocketId?: string; targetUserId?: string; answer: any; streamType?: string }) => void;
+  'meeting:webrtc:ice-candidate': (data: { meetingId: string; targetSocketId?: string; targetUserId?: string; candidate: any; streamType?: string }) => void;
+  'meeting:webrtc:renegotiate': (data: { meetingId: string; streamType?: string }) => void;
 }
 
 export interface ServerToClientEvents {
@@ -236,6 +242,12 @@ export interface ServerToClientEvents {
   'meeting:participant:removed': (data: { meetingId: string; targetUserId: string; reason?: string }) => void;
   'meeting:ended': (data: { meetingId: string; reason?: string }) => void;
   'meeting:state:synced': (data: { meetingId: string; participants: any[] }) => void;
+
+  // WebRTC Peer-to-Peer Signaling Broadcasts
+  'meeting:webrtc:offer': (data: { meetingId: string; senderSocketId: string; senderUserId: string; senderName?: string; offer: any; streamType?: string }) => void;
+  'meeting:webrtc:answer': (data: { meetingId: string; senderSocketId: string; senderUserId: string; senderName?: string; answer: any; streamType?: string }) => void;
+  'meeting:webrtc:ice-candidate': (data: { meetingId: string; senderSocketId: string; senderUserId: string; candidate: any; streamType?: string }) => void;
+  'meeting:webrtc:renegotiate': (data: { meetingId: string; senderSocketId: string; senderUserId: string; streamType?: string }) => void;
 }
 
 export interface SocketData {

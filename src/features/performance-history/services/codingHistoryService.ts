@@ -3,6 +3,7 @@ import { MACHINE_CODING_CATALOG } from '../../../components/machinecoding/data/m
 import { DSA_QUESTIONS } from '../../../components/dsa/data/dsaQuestions';
 import { CORE_PROGRAMMING_QUESTIONS } from '../../../components/coreprogramming/data/coreProgrammingQuestions';
 import { FRONTEND_JS_QUESTIONS } from '../../../components/frontendjs/data/frontendJsQuestions';
+import { getStoredAuthHeader } from '../../auth/services/adminTokenHelper';
 import type { CodingAttempt, UserPerformanceSummary, CategoryPerformance, MockSessionSummary, TrackCategory, UserQuickMetricSummary, DailyActivityItem, DailyQuestionDetail, WeeklyActivityItem } from '../types/history.types';
 
 /**
@@ -305,7 +306,9 @@ class CodingHistoryService {
     // 1b. Fallback to secure server-side gateway if direct client query returned zero records (due to Postgres RLS in unauthenticated browser sessions)
     if (rawRecords.length === 0 && typeof fetch !== 'undefined') {
       try {
-        const apiRes = await fetch(`/api/candidate-history?userId=${encodeURIComponent(userId)}`);
+        const apiRes = await fetch(`/api/candidate-history?userId=${encodeURIComponent(userId)}`, {
+          headers: getStoredAuthHeader(),
+        });
         if (apiRes.ok) {
           const apiData = await apiRes.json();
           if (apiData && apiData.success) {
@@ -969,7 +972,9 @@ class CodingHistoryService {
       // If client-side queries return empty due to RLS, seamlessly fall back to serverless candidate history gateway
       if ((!subsRes.data || subsRes.data.length === 0) && (!cpRes.data || cpRes.data.length === 0)) {
         try {
-          const apiRes = await fetch('/api/candidate-history?mode=summaries');
+          const apiRes = await fetch('/api/candidate-history?mode=summaries', {
+            headers: getStoredAuthHeader(),
+          });
           if (apiRes.ok) {
             const json = await apiRes.json();
             if (json.success && json.summaries && Object.keys(json.summaries).length > 0) {

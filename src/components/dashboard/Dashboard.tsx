@@ -32,6 +32,7 @@ import StudentPerformanceView from '../../features/performance-history/component
 import { CandidateDocsSyllabusTracker } from './CandidateDocsSyllabusTracker'
 import { docsProgressService } from '../../features/interview-docs/services/docsProgressService'
 import CandidateMasterBankCard from '../../features/interview-questions/components/CandidateMasterBankCard'
+import StudentMeetingDashboard from '../../features/meetings/components/StudentMeetingDashboard'
 import './Dashboard.css'
 
 function catClass(name: string): string {
@@ -142,13 +143,16 @@ function CandidateDashboard() {
   const [searchParams] = useSearchParams()
   const { tab: urlTab } = useParams<{ tab?: string }>()
 
-  const [activeMainSection, setActiveMainSection] = useState<'overview' | 'syllabus' | 'performance'>(() => {
+  const [activeMainSection, setActiveMainSection] = useState<'overview' | 'syllabus' | 'performance' | 'meetings'>(() => {
     const rawTab = searchParams.get('tab') || urlTab
     if (rawTab && (rawTab.toLowerCase() === 'performance' || rawTab.toLowerCase() === 'history' || rawTab.toLowerCase() === 'coding-history')) {
       return 'performance'
     }
     if (rawTab && (rawTab.toLowerCase() === 'syllabus' || rawTab.toLowerCase() === 'docs' || rawTab.toLowerCase() === 'documentation')) {
       return 'syllabus'
+    }
+    if (rawTab && (rawTab.toLowerCase() === 'meeting_ops' || rawTab.toLowerCase() === 'meetings' || rawTab.toLowerCase() === 'meeting-ops')) {
+      return 'meetings'
     }
     return 'overview'
   })
@@ -160,6 +164,8 @@ function CandidateDashboard() {
       setActiveMainSection('performance')
     } else if (rawTab && (rawTab.toLowerCase() === 'syllabus' || rawTab.toLowerCase() === 'docs' || rawTab.toLowerCase() === 'documentation')) {
       setActiveMainSection('syllabus')
+    } else if (rawTab && (rawTab.toLowerCase() === 'meeting_ops' || rawTab.toLowerCase() === 'meetings' || rawTab.toLowerCase() === 'meeting-ops')) {
+      setActiveMainSection('meetings')
     } else if (rawTab && rawTab.toLowerCase() === 'overview') {
       setActiveMainSection('overview')
     }
@@ -632,6 +638,13 @@ function CandidateDashboard() {
         >
           📈 My Performance &amp; Complete Coding History
         </button>
+        <button
+          type="button"
+          className={`cand-switcher-btn ${activeMainSection === 'meetings' ? 'active' : ''}`}
+          onClick={() => setActiveMainSection('meetings')}
+        >
+          📅 My Meetings &amp; Sessions
+        </button>
       </div>
 
       {activeMainSection === 'performance' ? (
@@ -640,6 +653,8 @@ function CandidateDashboard() {
         <div id="candidate-syllabus-tracker">
           <CandidateDocsSyllabusTracker />
         </div>
+      ) : activeMainSection === 'meetings' ? (
+        <StudentMeetingDashboard />
       ) : (
         <>
       {trackAlert && (

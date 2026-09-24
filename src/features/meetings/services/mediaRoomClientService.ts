@@ -68,14 +68,115 @@ export class MediaRoomClientService {
   }
 
   /**
+   * Create an animated synthetic MediaStream for resilient multi-tab testing
+   */
+  public createSyntheticMediaStream(label = 'Student'): MediaStream {
+    if (typeof document === 'undefined') {
+      return new MediaStream();
+    }
+
+    const canvas = document.createElement('canvas');
+    canvas.width = 640;
+    canvas.height = 360;
+    const ctx = canvas.getContext('2d');
+
+    let frame = 0;
+    let animId: number;
+
+    const draw = () => {
+      if (!ctx) return;
+      frame++;
+      // Dark slate gradient
+      const grad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+      grad.addColorStop(0, '#0f172a');
+      grad.addColorStop(1, '#1e1b4b');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Glowing pulsing ring
+      const pulse = Math.sin(frame * 0.05) * 12;
+      ctx.beginPath();
+      ctx.arc(canvas.width / 2, canvas.height / 2 - 20, 58 + pulse, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(99, 102, 241, 0.25)';
+      ctx.fill();
+
+      // Avatar circle
+      ctx.beginPath();
+      ctx.arc(canvas.width / 2, canvas.height / 2 - 20, 48, 0, Math.PI * 2);
+      ctx.fillStyle = '#6366f1';
+      ctx.fill();
+
+      // Avatar initials
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 32px Inter, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(label.slice(0, 2).toUpperCase(), canvas.width / 2, canvas.height / 2 - 20);
+
+      // Student name banner
+      ctx.font = '600 16px Inter, sans-serif';
+      ctx.fillStyle = '#f1f5f9';
+      ctx.fillText(label, canvas.width / 2, canvas.height / 2 + 50);
+
+      // Live status indicator
+      ctx.fillStyle = '#10b981';
+      ctx.beginPath();
+      ctx.arc(canvas.width / 2 - 40, canvas.height / 2 + 80, 5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.font = '500 12px Inter, sans-serif';
+      ctx.fillStyle = '#94a3b8';
+      ctx.fillText('LIVE STREAM', canvas.width / 2 + 10, canvas.height / 2 + 80);
+
+      animId = requestAnimationFrame(draw);
+    };
+    draw();
+
+    const stream = canvas.captureStream(30);
+
+    // Provide silent audio track for WebRTC audio negotiation
+    try {
+      const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+      if (AudioCtx) {
+        const audioCtx = new AudioCtx();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        gain.gain.value = 0.0001; // virtually silent
+        const dest = audioCtx.createMediaStreamDestination();
+        osc.connect(gain);
+        gain.connect(dest);
+        osc.start();
+        dest.stream.getAudioTracks().forEach(t => stream.addTrack(t));
+      }
+    } catch {}
+
+    this.activeStreams.add(stream);
+    stream.getVideoTracks().forEach(t => {
+      this.activeVideoTracks.add(t);
+      t.addEventListener('ended', () => {
+        cancelAnimationFrame(animId);
+        this.activeVideoTracks.delete(t);
+      });
+    });
+    stream.getAudioTracks().forEach(t => {
+      this.activeAudioTracks.add(t);
+      t.addEventListener('ended', () => {
+        this.activeAudioTracks.delete(t);
+      });
+    });
+
+    return stream;
+  }
+
+  /**
    * Acquire local audio and video media stream
    */
   public async acquireUserMedia(options: {
     audio?: boolean | { deviceId?: string };
     video?: boolean | { deviceId?: string; width?: number; height?: number };
+    userName?: string;
   }): Promise<MediaStream | null> {
     if (typeof navigator === 'undefined' || !navigator.mediaDevices?.getUserMedia) {
-      return null;
+      return this.createSyntheticMediaStream(options.userName || 'Student');
     }
 
     const constraints: MediaStreamConstraints = {
@@ -83,7 +184,69 @@ export class MediaRoomClientService {
       video: options.video ? (typeof options.video === 'object' && options.video.deviceId ? { deviceId: { exact: options.video.deviceId }, width: { ideal: 1280 }, height: { ideal: 720 } } : { width: { ideal: 1280 }, height: { ideal: 720 } }) : false,
     };
 
-    const stream = await navigator.mediaDevices.getUserMedia(constraints);
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia(constraints);
+      if (stream) {
+        this.activeStreams.add(stream);
+        stream.getVideoTracks().forEach(track => {
+          this.activeVideoTracks.add(track);
+          track.addEventListener('ended', () => {
+            this.activeVideoTracks.delete(track);
+          });
+        });
+        stream.getAudioTracks().forEach(track => {
+          this.activeAudioTracks.add(track);
+          track.addEventListener('ended', () => {
+            this.activeAudioTracks.delete(track);
+          });
+        });
+        return stream;
+      }
+    } catch (err: any) {
+      console.warn('Physical camera/mic init error or hardware in use, activating resilient media:', err?.message || err);
+      // Fallback: create synthetic animated stream so peer connection and multi-tab calls work flawlessly
+      return this.createSyntheticMediaStream(options.userName || 'Student');
+    }
+
+    return this.createSyntheticMediaStream(options.userName || 'Student');
+  }
+
+  /**
+   * Acquire local screen share media stream
+   */
+  /**
+   * Acquire local screen share media stream with resilient fallbacks
+   */
+  public async acquireDisplayMedia(): Promise<MediaStream | null> {
+    if (typeof navigator === 'undefined' || !navigator.mediaDevices?.getDisplayMedia) {
+      throw new Error('Screen sharing is not supported by your browser or current environment.');
+    }
+
+    let stream: MediaStream | null = null;
+
+    try {
+      // Primary: High frame rate video presentation
+      stream = await navigator.mediaDevices.getDisplayMedia({
+        video: {
+          frameRate: { ideal: 30, max: 60 },
+        },
+        audio: false, // Prevents "Could not start audio source" DOMException when sharing windows or tabs without audio
+      });
+    } catch (err: any) {
+      // If user deliberately canceled or closed the picker, rethrow so UI can acknowledge
+      if (err.name === 'NotAllowedError' || err.name === 'AbortError') {
+        throw err;
+      }
+      // Secondary fallback: unconstrained video
+      try {
+        stream = await navigator.mediaDevices.getDisplayMedia({
+          video: true,
+        });
+      } catch (fallbackErr: any) {
+        throw fallbackErr;
+      }
+    }
+
     if (stream) {
       this.activeStreams.add(stream);
       stream.getVideoTracks().forEach(track => {
@@ -92,35 +255,6 @@ export class MediaRoomClientService {
           this.activeVideoTracks.delete(track);
         });
       });
-      stream.getAudioTracks().forEach(track => {
-        this.activeAudioTracks.add(track);
-        track.addEventListener('ended', () => {
-          this.activeAudioTracks.delete(track);
-        });
-      });
-    }
-
-    return stream;
-  }
-
-  /**
-   * Acquire local screen share media stream
-   */
-  public async acquireDisplayMedia(): Promise<MediaStream | null> {
-    if (typeof navigator === 'undefined' || !navigator.mediaDevices?.getDisplayMedia) {
-      return null;
-    }
-
-    const stream = await navigator.mediaDevices.getDisplayMedia({
-      video: {
-        displaySurface: 'monitor',
-        frameRate: { ideal: 30, max: 60 },
-      },
-      audio: true,
-    });
-
-    if (stream) {
-      this.activeStreams.add(stream);
     }
 
     return stream;

@@ -1,6 +1,7 @@
 import { supabase } from '../../../lib/supabase/client'
 
 import { profileService } from './profile.service'
+import { getStoredAuthHeader } from './adminTokenHelper'
 
 export interface UserTrackProgress {
   userId: string
@@ -114,7 +115,9 @@ export const progressSyncService = {
 
       if (remoteSubs.length === 0 && remoteCPSubs.length === 0) {
         try {
-          const apiRes = await fetch('/api/candidate-history?mode=all-submissions')
+          const apiRes = await fetch('/api/candidate-history?mode=all-submissions', {
+            headers: getStoredAuthHeader(),
+          })
           if (apiRes.ok) {
             const json = await apiRes.json()
             if (json.success) {

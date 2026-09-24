@@ -1,0 +1,806 @@
+/* ==========================================================================
+   Google Meet-Style Instant Meeting Landing Hub
+   ========================================================================== */
+
+.instant-meet-hub {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  width: 100%;
+  background-color: var(--color-bg-primary, #090d16);
+  color: var(--color-text-primary, #f8fafc);
+  font-family: -apple-system, BlinkMacSystemFont, 'Google Sans', 'Inter', Roboto, sans-serif;
+  overflow-x: hidden;
+}
+
+/* Header */
+.instant-meet-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 36px;
+  height: 68px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(12px);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.instant-meet-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.instant-meet-logo-badge {
+  width: 38px;
+  height: 38px;
+  background: linear-gradient(135deg, #1a73e8, #34a853);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 14px rgba(26, 115, 232, 0.35);
+}
+
+.instant-meet-cam-icon {
+  font-size: 18px;
+}
+
+.instant-meet-brand-title {
+  font-size: 21px;
+  font-weight: 700;
+  letter-spacing: -0.4px;
+  color: #ffffff;
+}
+
+.instant-meet-highlight {
+  color: #1a73e8;
+  background: linear-gradient(135deg, #4285f4, #34a853);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.instant-meet-header-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.instant-meet-clock {
+  font-size: 15px;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.instant-meet-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #e2e8f0;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.instant-meet-nav-link:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+}
+
+.instant-meet-user-chip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 12px 4px 4px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.instant-meet-user-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.instant-meet-user-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #cbd5e1;
+}
+
+/* Main Layout */
+.instant-meet-main {
+  display: flex;
+  flex: 1;
+  max-width: 1340px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 60px 36px 40px;
+  gap: 60px;
+  align-items: center;
+}
+
+/* Left Hero Column */
+.instant-meet-hero {
+  flex: 1.1;
+  display: flex;
+  flex-direction: column;
+}
+
+.instant-meet-badge-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  background: rgba(26, 115, 232, 0.12);
+  border: 1px solid rgba(26, 115, 232, 0.3);
+  border-radius: 20px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #60a5fa;
+  margin-bottom: 24px;
+  width: fit-content;
+}
+
+.instant-meet-pulse-dot {
+  width: 8px;
+  height: 8px;
+  background-color: #34a853;
+  border-radius: 50%;
+  box-shadow: 0 0 10px #34a853;
+  animation: pulse-ring 2s infinite ease-out;
+}
+
+@keyframes pulse-ring {
+  0% { transform: scale(0.9); opacity: 0.9; }
+  50% { transform: scale(1.3); opacity: 0.5; }
+  100% { transform: scale(0.9); opacity: 0.9; }
+}
+
+.instant-meet-heading {
+  font-size: 44px;
+  line-height: 1.18;
+  font-weight: 800;
+  letter-spacing: -1.2px;
+  color: #ffffff;
+  margin: 0 0 20px 0;
+}
+
+.instant-meet-heading-gradient {
+  background: linear-gradient(135deg, #60a5fa 10%, #34d399 90%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.instant-meet-subtext {
+  font-size: 18px;
+  line-height: 1.6;
+  color: #94a3b8;
+  margin: 0 0 36px 0;
+  max-width: 580px;
+}
+
+/* Action Controls */
+.instant-meet-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.instant-meet-dropdown-wrapper {
+  position: relative;
+}
+
+.instant-meet-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: #1a73e8;
+  color: #ffffff;
+  padding: 13px 22px;
+  border-radius: 28px;
+  font-size: 15px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 14px rgba(26, 115, 232, 0.4);
+}
+
+.instant-meet-btn-primary:hover {
+  background: #1557b0;
+  box-shadow: 0 6px 20px rgba(26, 115, 232, 0.5);
+  transform: translateY(-1px);
+}
+
+.instant-meet-btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.instant-meet-btn-icon {
+  font-size: 16px;
+}
+
+.instant-meet-chevron {
+  font-size: 10px;
+  margin-left: 4px;
+  transition: transform 0.2s ease;
+}
+
+.instant-meet-chevron.open {
+  transform: rotate(180deg);
+}
+
+/* Google Meet Dropdown Menu */
+.instant-meet-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  width: 320px;
+  background: #1e293b;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 14px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6);
+  padding: 8px;
+  z-index: 100;
+  animation: slideDown 0.18s ease-out;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.instant-meet-dropdown-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  width: 100%;
+  padding: 12px 14px;
+  background: transparent;
+  border: none;
+  border-radius: 10px;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  color: #f1f5f9;
+}
+
+.instant-meet-dropdown-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.instant-meet-item-icon {
+  font-size: 18px;
+  margin-top: 2px;
+}
+
+.instant-meet-item-text strong {
+  display: block;
+  font-size: 14px;
+  color: #ffffff;
+  margin-bottom: 2px;
+}
+
+.instant-meet-item-text small {
+  display: block;
+  font-size: 12px;
+  color: #94a3b8;
+  line-height: 1.4;
+}
+
+/* Join Group */
+.instant-meet-join-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.instant-meet-input-wrapper {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 28px;
+  padding: 0 18px;
+  height: 48px;
+  transition: all 0.2s ease;
+}
+
+.instant-meet-input-wrapper:focus-within {
+  border-color: #1a73e8;
+  background: rgba(26, 115, 232, 0.08);
+  box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.25);
+}
+
+.instant-meet-keyboard-icon {
+  margin-right: 10px;
+  font-size: 15px;
+  opacity: 0.6;
+}
+
+.instant-meet-input {
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  font-size: 14.5px;
+  outline: none;
+  width: 190px;
+}
+
+.instant-meet-input::placeholder {
+  color: #64748b;
+}
+
+.instant-meet-btn-join {
+  background: transparent;
+  border: none;
+  color: #64748b;
+  font-size: 15px;
+  font-weight: 600;
+  padding: 10px 18px;
+  border-radius: 20px;
+  cursor: not-allowed;
+  transition: all 0.2s ease;
+}
+
+.instant-meet-btn-join:not(:disabled) {
+  color: #60a5fa;
+  cursor: pointer;
+}
+
+.instant-meet-btn-join:not(:disabled):hover {
+  background: rgba(26, 115, 232, 0.12);
+  color: #93c5fd;
+}
+
+.instant-meet-divider {
+  width: 100%;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.08);
+  margin: 12px 0 20px 0;
+}
+
+.instant-meet-footer-note {
+  font-size: 13px;
+  color: #64748b;
+  line-height: 1.5;
+}
+
+.instant-meet-footer-note strong {
+  color: #94a3b8;
+}
+
+/* Right Feature Showcase Carousel */
+.instant-meet-preview-pane {
+  flex: 0.9;
+  display: flex;
+  justify-content: center;
+}
+
+.instant-meet-carousel-card {
+  width: 100%;
+  max-width: 480px;
+  background: linear-gradient(145deg, #131d33, #0b1324);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+  padding: 24px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+}
+
+.instant-meet-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.instant-meet-card-tag {
+  font-size: 11.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: #38bdf8;
+  background: rgba(56, 189, 248, 0.12);
+  padding: 4px 10px;
+  border-radius: 12px;
+}
+
+.instant-meet-card-icon {
+  font-size: 20px;
+}
+
+/* Mockups inside Card */
+.instant-meet-preview-mockup {
+  height: 210px;
+  background: #070c18;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+
+/* Slide 0: Video Grid Mockup */
+.mockup-video-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  width: 100%;
+  height: 100%;
+}
+
+.mockup-tile {
+  background: #111a2e;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 8px;
+}
+
+.mockup-tile.active-speaker {
+  border: 2px solid #34a853;
+  box-shadow: 0 0 16px rgba(52, 168, 83, 0.25);
+}
+
+.mockup-avatar {
+  font-size: 28px;
+  margin-bottom: 4px;
+}
+
+.mockup-name {
+  font-size: 11px;
+  font-weight: 600;
+  color: #e2e8f0;
+}
+
+.mockup-mic-status {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  font-size: 11px;
+}
+
+/* Slide 1: Code Editor Mockup */
+.mockup-code-editor {
+  width: 100%;
+  height: 100%;
+  background: #0d1117;
+  border-radius: 10px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+}
+
+.mockup-editor-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #21262d;
+}
+
+.mockup-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.mockup-dot.red { background: #ff5f56; }
+.mockup-dot.yellow { background: #ffbd2e; }
+.mockup-dot.green { background: #27c93f; }
+
+.mockup-tab-title {
+  font-size: 11px;
+  color: #8b949e;
+  margin-left: 8px;
+  font-family: monospace;
+}
+
+.mockup-code-lines {
+  margin: 0;
+  font-size: 11px;
+  color: #58a6ff;
+  font-family: 'Fira Code', monospace;
+  line-height: 1.45;
+}
+
+/* Slide 2: Whiteboard Mockup */
+.mockup-whiteboard {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.mockup-wb-box {
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 11.5px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.wb-box-1 { background: rgba(59, 130, 246, 0.2); border: 1px solid #3b82f6; color: #93c5fd; }
+.wb-box-2 { background: rgba(234, 179, 8, 0.2); border: 1px solid #eab308; color: #fde047; }
+.wb-box-3 { background: rgba(34, 197, 94, 0.2); border: 1px solid #22c55e; color: #86efac; }
+
+.mockup-wb-arrow {
+  color: #64748b;
+  font-weight: 800;
+}
+
+/* Slide 3: Attendance Mockup */
+.mockup-attendance {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.mockup-att-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.04);
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  color: #cbd5e1;
+}
+
+.mockup-att-badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 12px;
+}
+
+.mockup-att-badge.present { background: rgba(34, 197, 94, 0.2); color: #4ade80; }
+.mockup-att-badge.synced { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
+.mockup-att-badge.audit { background: rgba(168, 85, 247, 0.2); color: #c084fc; }
+
+/* Card Content & Dots */
+.instant-meet-card-content {
+  margin-bottom: 16px;
+  min-height: 80px;
+}
+
+.instant-meet-card-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 6px 0;
+}
+
+.instant-meet-card-desc {
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: #94a3b8;
+  margin: 0;
+}
+
+.instant-meet-carousel-dots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.instant-meet-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.2s ease;
+}
+
+.instant-meet-dot.active {
+  background: #1a73e8;
+  width: 22px;
+  border-radius: 6px;
+}
+
+/* Google Meet Style Modal */
+.instant-meet-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.instant-meet-modal-card {
+  width: 100%;
+  max-width: 460px;
+  background: #1e293b;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 18px;
+  padding: 24px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+  animation: modalScale 0.2s ease-out;
+}
+
+@keyframes modalScale {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.instant-meet-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.instant-meet-modal-header h2 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0;
+}
+
+.instant-meet-modal-close {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+}
+
+.instant-meet-modal-close:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.instant-meet-modal-subtext {
+  font-size: 13.5px;
+  color: #94a3b8;
+  line-height: 1.5;
+  margin: 0 0 20px 0;
+}
+
+.instant-meet-link-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #0f172a;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  padding: 8px 12px;
+  margin-bottom: 24px;
+  gap: 12px;
+}
+
+.instant-meet-link-text {
+  font-size: 13px;
+  color: #38bdf8;
+  font-family: monospace;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.instant-meet-copy-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.instant-meet-copy-btn:hover {
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.instant-meet-copy-btn.copied {
+  background: #15803d;
+  border-color: #22c55e;
+  color: #ffffff;
+}
+
+.instant-meet-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.instant-meet-btn-secondary {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #cbd5e1;
+  padding: 9px 18px;
+  border-radius: 20px;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.instant-meet-btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+}
+
+/* Responsive Breakpoints */
+@media (max-width: 960px) {
+  .instant-meet-main {
+    flex-direction: column;
+    padding: 30px 20px;
+    gap: 40px;
+  }
+  .instant-meet-hero {
+    text-align: center;
+    align-items: center;
+  }
+  .instant-meet-badge-pill {
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .instant-meet-subtext {
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .instant-meet-actions {
+    justify-content: center;
+  }
+  .instant-meet-heading {
+    font-size: 34px;
+  }
+  .instant-meet-preview-pane {
+    width: 100%;
+  }
+  .instant-meet-header {
+    padding: 12px 18px;
+  }
+  .instant-meet-clock {
+    display: none;
+  }
+}

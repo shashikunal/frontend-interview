@@ -213,6 +213,19 @@ export class InvitationService {
       }
     }
 
+    // Check D: Open Link Access (Google Meet style)
+    // If no explicit private email invitations were issued for this meeting,
+    // anyone with the link can join directly as a PARTICIPANT
+    if (!authorized) {
+      const hasStrictInvitations = Array.from(this.invitations.values()).some(
+        inv => inv.meetingId === meetingId && inv.status !== 'REVOKED'
+      );
+      if (!hasStrictInvitations) {
+        meetingRole = 'PARTICIPANT';
+        authorized = true;
+      }
+    }
+
     if (!authorized) {
       return {
         success: false,

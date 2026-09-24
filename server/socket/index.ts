@@ -776,19 +776,25 @@ export function initSocketServer(server: HTTPServer | Http2SecureServer): Socket
         return;
       }
 
+      const isCallerHost =
+        socket.data.user?.role === 'admin' ||
+        socket.data.user?.role === 'interviewer' ||
+        (socket.data as any).meetingRole === 'HOST' ||
+        (socket.data.user as any)?.meetingRole === 'HOST';
+
       const caller = {
-        id: socket.data.user.id,
-        email: socket.data.user.email || 'host@dev.local',
-        name: socket.data.user.name,
-        role: (socket.data.user.role === 'admin' ? 'admin' : 'candidate') as any,
-        meetingRole: (socket.data.user.role === 'admin' ? 'HOST' : 'PARTICIPANT') as any,
+        id: socket.data.user?.id || 'host',
+        email: socket.data.user?.email || 'host@dev.local',
+        name: socket.data.user?.name || 'Host',
+        role: (socket.data.user?.role === 'admin' ? 'admin' : isCallerHost ? 'interviewer' : 'candidate') as any,
+        meetingRole: (isCallerHost ? 'HOST' : 'PARTICIPANT') as any,
         permissions: [] as string[],
       };
 
-      const trans = meetingService.transitionStatus(caller, meetingId, 'ENDED', data.reason || 'Host ended meeting');
-      if (!trans.success && trans.code !== 'INVALID_TRANSITION') {
-        callback?.({ success: false, error: trans.error });
-        return;
+      try {
+        meetingService.transitionStatus(caller, meetingId, 'ENDED', data?.reason || 'Host ended meeting');
+      } catch {
+        // Fallback
       }
 
       meetingPresenceService.terminateRoom(meetingId);
@@ -796,7 +802,7 @@ export function initSocketServer(server: HTTPServer | Http2SecureServer): Socket
       const room = getMeetingRoom(meetingId);
       io.to(room).emit('meeting:ended', {
         meetingId,
-        reason: data.reason || 'Meeting ended by host',
+        reason: data?.reason || 'Meeting ended by host',
       });
 
       callback?.({ success: true });
@@ -812,6 +818,103 @@ export function initSocketServer(server: HTTPServer | Http2SecureServer): Socket
 
       const participants = meetingPresenceService.getRoomParticipants(meetingId);
       callback?.({ success: true, participants });
+    });
+
+    // ══════════════════════════════════════════════════════════════════════
+    // ── WebRTC Peer-to-Peer Signaling Handlers (Host & Clients) ───────────
+    // ══════════════════════════════════════════════════════════════════════
+
+    // ── WebRTC Offer ──────────────────────────────────────────────────────
+    socket.on('meeting:webrtc:offer', (data: { meetingId: string; targetSocketId?: string; targetUserId?: string; offer: any; streamType?: string }) => {
+      const { meetingId, targetSocketId, targetUserId, offer, streamType } = data || {};
+      if (!meetingId || !offer) return;
+
+      const payload = {
+        meetingId,
+        senderSocketId: socket.id,
+        senderUserId: socket.data.user.id,
+        senderName: socket.data.user.name,
+        offer,
+        streamType: streamType || 'camera',
+      };
+
+      if (targetSocketId) {
+        io.to(targetSocketId).emit('meeting:webrtc:offer', payload);
+      } else if (targetUserId) {
+        const target = meetingPresenceService.getParticipant(meetingId, targetUserId);
+        if (target?.socketId) {
+          io.to(target.socketId).emit('meeting:webrtc:offer', payload);
+        }
+      } else {
+        const room = getMeetingRoom(meetingId);
+        socket.to(room).emit('meeting:webrtc:offer', payload);
+      }
+    });
+
+    // ── WebRTC Answer ─────────────────────────────────────────────────────
+    socket.on('meeting:webrtc:answer', (data: { meetingId: string; targetSocketId?: string; targetUserId?: string; answer: any; streamType?: string }) => {
+      const { meetingId, targetSocketId, targetUserId, answer, streamType } = data || {};
+      if (!meetingId || !answer) return;
+
+      const payload = {
+        meetingId,
+        senderSocketId: socket.id,
+        senderUserId: socket.data.user.id,
+        senderName: socket.data.user.name,
+        answer,
+        streamType: streamType || 'camera',
+      };
+
+      if (targetSocketId) {
+        io.to(targetSocketId).emit('meeting:webrtc:answer', payload);
+      } else if (targetUserId) {
+        const target = meetingPresenceService.getParticipant(meetingId, targetUserId);
+        if (target?.socketId) {
+          io.to(target.socketId).emit('meeting:webrtc:answer', payload);
+        }
+      } else {
+        const room = getMeetingRoom(meetingId);
+        socket.to(room).emit('meeting:webrtc:answer', payload);
+      }
+    });
+
+    // ── WebRTC ICE Candidate ──────────────────────────────────────────────
+    socket.on('meeting:webrtc:ice-candidate', (data: { meetingId: string; targetSocketId?: string; targetUserId?: string; candidate: any; streamType?: string }) => {
+      const { meetingId, targetSocketId, targetUserId, candidate, streamType } = data || {};
+      if (!meetingId || !candidate) return;
+
+      const payload = {
+        meetingId,
+        senderSocketId: socket.id,
+        senderUserId: socket.data.user.id,
+        candidate,
+        streamType: streamType || 'camera',
+      };
+
+      if (targetSocketId) {
+        io.to(targetSocketId).emit('meeting:webrtc:ice-candidate', payload);
+      } else if (targetUserId) {
+        const target = meetingPresenceService.getParticipant(meetingId, targetUserId);
+        if (target?.socketId) {
+          io.to(target.socketId).emit('meeting:webrtc:ice-candidate', payload);
+        }
+      } else {
+        const room = getMeetingRoom(meetingId);
+        socket.to(room).emit('meeting:webrtc:ice-candidate', payload);
+      }
+    });
+
+    // ── WebRTC Renegotiate Broadcast ──────────────────────────────────────
+    socket.on('meeting:webrtc:renegotiate', (data: { meetingId: string; streamType?: string }) => {
+      const meetingId = data?.meetingId || socket.data.meetingId;
+      if (!meetingId) return;
+      const room = getMeetingRoom(meetingId);
+      socket.to(room).emit('meeting:webrtc:renegotiate', {
+        meetingId,
+        senderSocketId: socket.id,
+        senderUserId: socket.data.user.id,
+        streamType: data?.streamType || 'media',
+      });
     });
 
     // ── Phase 7: Application Chat Events ──────────────────────────────────

@@ -63,3 +63,21 @@ export async function getAdminBearerToken(
 
   return '';
 }
+
+export function getStoredAuthHeader(): Record<string, string> {
+  if (typeof window === 'undefined') return {};
+  const token = localStorage.getItem('admin_bearer_token');
+  if (token) {
+    return { Authorization: `Bearer ${token}` };
+  }
+  try {
+    const rawSb = localStorage.getItem('frontend_interview_auth');
+    if (rawSb) {
+      const parsed = JSON.parse(rawSb);
+      if (parsed?.access_token) {
+        return { Authorization: `Bearer ${parsed.access_token}` };
+      }
+    }
+  } catch {}
+  return {};
+}

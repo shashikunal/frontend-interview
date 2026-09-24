@@ -190,4 +190,97 @@ self.addEventListener('message', async (event) => {
       });
     }
   }
+  if (event.data.type === 'SHOW_NOTIFICATION') {
+    const data = event.data.payload || {};
+    self.registration.showNotification(data.title || 'Meeting Notification', {
+      body: data.body || 'You have an interview session.',
+      icon: data.icon || '/favicon.svg',
+      badge: data.badge || '/favicon.svg',
+      tag: data.tag || 'meeting-notification',
+      data: data.data || {},
+      actions: data.actions || [
+        { action: 'join', title: 'Join Meeting' },
+        { action: 'view', title: 'View Details' },
+      ],
+      vibrate: [100, 50, 100],
+      requireInteraction: true,
+    });
+  }
 });
+
+// ─── REAL WEB PUSH NOTIFICATIONS ──────────────────────────────────────────────
+self.addEventListener('push', (event) => {
+  if (!event.data) return;
+
+  let payload = {
+    title: 'Meeting Notification',
+    body: 'You have an upcoming interview session.',
+    icon: '/favicon.svg',
+    badge: '/favicon.svg',
+    data: { url: '/dashboard?tab=meetings' },
+    actions: [
+      { action: 'join', title: 'Join Meeting' },
+      { action: 'view', title: 'View Details' },
+    ],
+  };
+
+  try {
+    const dataJson = event.data.json();
+    payload = {
+      ...payload,
+      ...dataJson,
+      data: { ...payload.data, ...(dataJson.data || {}) },
+      actions: dataJson.actions || payload.actions,
+    };
+  } catch {
+    payload.body = event.data.text() || payload.body;
+  }
+
+  const notificationPromise = self.registration.showNotification(payload.title, {
+    body: payload.body,
+    icon: payload.icon || '/favicon.svg',
+    badge: payload.badge || '/favicon.svg',
+    tag: payload.tag || 'meeting-notification',
+    data: payload.data,
+    actions: payload.actions,
+    vibrate: [100, 50, 100],
+    requireInteraction: true,
+  });
+
+  event.waitUntil(notificationPromise);
+});
+
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+
+  const data = event.notification.data || {};
+  let targetUrl = data.url || '/dashboard?tab=meetings';
+
+  if (event.action === 'join' && data.meetingUrl) {
+    targetUrl = data.meetingUrl;
+  } else if (event.action === 'view' && data.meetingId) {
+    targetUrl = `/meet/${data.meetingId}`;
+  }
+
+  const fullUrl = new URL(targetUrl, self.location.origin).href;
+
+  const promise = self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((windowClients) => {
+    // If a tab is already open, focus it and navigate
+    for (const client of windowClients) {
+      if ('focus' in client) {
+        if ('navigate' in client) {
+          client.navigate(fullUrl);
+        }
+        return client.focus();
+      }
+    }
+    // Otherwise open a new tab
+    if (self.clients.openWindow) {
+      return self.clients.openWindow(fullUrl);
+    }
+    return null;
+  });
+
+  event.waitUntil(promise);
+});
+

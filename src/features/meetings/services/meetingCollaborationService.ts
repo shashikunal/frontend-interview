@@ -61,6 +61,10 @@ export class MeetingCollaborationService {
     return this.currentMeetingToken;
   }
 
+  public getSocket(): Socket | null {
+    return this.socket;
+  }
+
   private setupListeners(): void {
     if (!this.socket) return;
 
@@ -118,6 +122,7 @@ export class MeetingCollaborationService {
   public mapServerParticipant(sp: any): RemoteParticipant {
     return {
       id: sp.userId,
+      socketId: sp.socketId,
       name: sp.displayName,
       role: sp.role,
       isHost: sp.role === 'HOST',

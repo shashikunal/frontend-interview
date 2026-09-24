@@ -39,10 +39,16 @@ export default async function handler(req, res) {
     permissions: auth.claims.permissions || [],
   };
 
-  // RBAC: Only Admin can transition lifecycle states
-  if (user.role !== 'admin') {
+  // RBAC: Admin, Interviewer, or Meeting Host can transition lifecycle states
+  const isHostOrAdmin =
+    user.role === 'admin' ||
+    user.role === 'interviewer' ||
+    auth.claims.meetingRole === 'HOST' ||
+    auth.claims.role === 'HOST';
+
+  if (!isHostOrAdmin) {
     return res.status(403).json(
-      createErrorResponse('Forbidden', 'Only platform administrators may alter meeting lifecycle states.', 'FORBIDDEN')
+      createErrorResponse('Forbidden', 'Only meeting hosts or platform administrators may alter meeting lifecycle states.', 'FORBIDDEN')
     );
   }
 

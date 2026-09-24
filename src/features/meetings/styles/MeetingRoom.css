@@ -189,6 +189,13 @@
   cursor: pointer;
 }
 
+.rtc-select option,
+.rtc-chat-recipient-select option,
+.rtc-editor-select option {
+  background: #0b1437;
+  color: #ffffff;
+}
+
 .rtc-select:focus {
   border-color: #4318ff;
 }
@@ -361,10 +368,12 @@
   padding-bottom: 96px; /* Room for floating controls dock */
   position: relative;
   overflow: hidden;
+  gap: 16px;
 }
 
 .rtc-video-layout {
   flex: 1;
+  min-width: 0;
   display: grid;
   gap: 16px;
   width: 100%;
@@ -449,6 +458,89 @@
   font-size: 12px;
   font-weight: 700;
   color: #ffffff;
+}
+
+/* ─── GOOGLE MEET STYLE SCREEN PRESENTATION STAGE ────────────────────────── */
+.rtc-presentation-mode-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  position: relative;
+}
+
+.rtc-presentation-stage {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  background: #080e29;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+  position: relative;
+}
+
+.rtc-presentation-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 18px;
+  background: rgba(11, 20, 55, 0.95);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  z-index: 2;
+  flex-shrink: 0;
+}
+
+.rtc-presentation-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+}
+
+.rtc-stop-presenting-btn {
+  background: rgba(238, 93, 80, 0.15);
+  color: #ee5d50;
+  border: 1px solid rgba(238, 93, 80, 0.4);
+  padding: 6px 16px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.rtc-stop-presenting-btn:hover {
+  background: #ee5d50;
+  color: #ffffff;
+  box-shadow: 0 4px 15px rgba(238, 93, 80, 0.4);
+}
+
+.rtc-presentation-viewport {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #000000;
+  overflow: hidden;
+  position: relative;
+}
+
+.rtc-presentation-video {
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  background: #000000;
 }
 
 /* Avatar Fallback */
@@ -703,18 +795,32 @@
 
 /* ─── SIDE DRAWERS & MODALS ──────────────────────────────────────────────── */
 .rtc-side-drawer {
-  width: 340px;
+  width: 360px;
+  max-width: 100%;
   height: 100%;
   background: #111c44;
   border-left: 1px solid rgba(255, 255, 255, 0.08);
-  position: absolute;
-  right: 0;
-  top: 0;
-  bottom: 0;
+  position: relative;
   display: flex;
   flex-direction: column;
+  flex-shrink: 0;
   z-index: 25;
+  border-radius: 16px;
   box-shadow: -10px 0 30px rgba(0, 0, 0, 0.4);
+}
+
+@media (max-width: 900px) {
+  .rtc-side-drawer {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    top: auto;
+    width: 100%;
+    height: 75vh;
+    border-radius: 20px 20px 0 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.6);
+  }
 }
 
 .rtc-drawer-header {
@@ -2140,6 +2246,174 @@
   .rtc-reaction-emoji-btn {
     font-size: 18px;
   }
+}
+
+/* ==========================================================================
+   Google Meet-Style "Your Meeting's Ready" Floating Card
+   ========================================================================== */
+
+.rtc-instant-ready-card {
+  position: absolute;
+  top: 76px;
+  left: 24px;
+  width: 360px;
+  max-width: calc(100vw - 48px);
+  background: #1e293b;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 14px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6);
+  padding: 18px 20px;
+  z-index: 80;
+  animation: fadeInReady 0.25s ease-out;
+}
+
+@keyframes fadeInReady {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.rtc-ready-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.rtc-ready-card-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.rtc-ready-card-close {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+}
+
+.rtc-ready-card-close:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+}
+
+.rtc-ready-card-subtext {
+  font-size: 13px;
+  line-height: 1.45;
+  color: #94a3b8;
+  margin: 0 0 14px 0;
+}
+
+.rtc-ready-link-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #0f172a;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  padding: 8px 10px;
+  margin-bottom: 16px;
+  gap: 10px;
+}
+
+.rtc-ready-link-text {
+  font-size: 12.5px;
+  color: #38bdf8;
+  font-family: monospace;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rtc-ready-copy-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: #ffffff;
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.rtc-ready-copy-btn:hover {
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.rtc-ready-copy-btn.copied {
+  background: #16a34a;
+  border-color: #22c55e;
+  color: #ffffff;
+}
+
+.rtc-ready-card-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.rtc-ready-share-btn {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #cbd5e1;
+  padding: 6px 14px;
+  border-radius: 16px;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.rtc-ready-share-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+}
+
+.rtc-ready-dismiss-btn {
+  background: #1a73e8;
+  border: none;
+  color: #ffffff;
+  padding: 6px 16px;
+  border-radius: 16px;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.rtc-ready-dismiss-btn:hover {
+  background: #1557b0;
+}
+
+.rtc-ready-push-btn {
+  background: #7551ff;
+  border: 1px solid #7551ff;
+  color: #ffffff;
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  white-space: nowrap;
+}
+
+.rtc-ready-push-btn:hover:not(:disabled) {
+  background: #5c38ee;
+  border-color: #5c38ee;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(117, 81, 255, 0.35);
+}
+
+.rtc-ready-push-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 
