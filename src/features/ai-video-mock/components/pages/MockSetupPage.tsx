@@ -208,7 +208,7 @@ export default function MockSetupPage() {
                 style={{ width: '100%', padding: '10px', borderRadius: 8, background: 'var(--bg)', color: 'var(--text-primary)', border: '1px solid var(--border)' }}
               >
                 <option value="Quick">Quick Check (5 Questions)</option>
-                <option value="Standard">Standard FAANG Loop (5–10 Questions)</option>
+                <option value="Standard">Standard Interview Loop (5–10 Questions)</option>
                 <option value="Full">Full Comprehensive Round (15 Questions)</option>
                 <option value="Deep">Deep Architecture Dive (20 Questions)</option>
                 <option value="Technical">Technical Theory Only</option>

@@ -280,7 +280,7 @@ export default function Header() {
           <div className="header-auth-wrap">
             {isAuthenticated && (
               <Link
-                to="/profile"
+                to="/dashboard?view=profile"
                 className="header-level-pill"
                 title={`Candidate Level ${levelInfo.level}: ${levelInfo.title} (${levelInfo.currentXp} XP)`}
               >
@@ -301,7 +301,18 @@ export default function Header() {
                   onClick={() => setIsUserMenuOpen(prev => !prev)}
                   title={`Signed in as ${user.email} (${user.role.toUpperCase()})`}
                 >
-                  <span className="u-avatar-icon">👨‍💻</span>
+                  {user.avatarUrl ? (
+                    <img
+                      src={user.avatarUrl}
+                      alt={user.name || 'User Avatar'}
+                      className="header-user-avatar-img"
+                      onError={(e) => {
+                        (e.target as HTMLElement).style.display = 'none'
+                      }}
+                    />
+                  ) : (
+                    <span className="u-avatar-icon">👨‍💻</span>
+                  )}
                   <span className={`u-role-pill ${user.role}`}>
                     {user.role === 'admin' ? 'ADMIN' : user.role === 'pro_member' ? 'PRO' : 'CANDIDATE'}
                   </span>
@@ -327,7 +338,7 @@ export default function Header() {
                         <div className="ud-lvl-bar" style={{ width: `${levelInfo.progressPercent}%` }} />
                       </div>
                       <Link
-                        to="/profile"
+                        to="/dashboard?view=profile"
                         className="ud-ach-link"
                         onClick={() => setIsUserMenuOpen(false)}
                       >
@@ -357,7 +368,7 @@ export default function Header() {
                     ) : (
                       <>
                         <Link
-                          to="/profile"
+                          to="/dashboard?view=profile"
                           className="ud-profile-link"
                           onClick={() => setIsUserMenuOpen(false)}
                         >

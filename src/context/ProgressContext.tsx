@@ -239,6 +239,13 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
             title: `Solved Question #${id}`,
             details: `Completed review and verification of Question #${id}`,
           })
+          const quizAcc = quizSessions.length > 0
+            ? Math.round((quizSessions.reduce((sum, q) => sum + (q.total > 0 ? q.score / q.total : 0), 0) / quizSessions.length) * 100)
+            : 0
+          const mScore = mockInterviews.length > 0
+            ? Number((mockInterviews.reduce((sum, m) => sum + m.averageScore, 0) / mockInterviews.length).toFixed(1))
+            : 0
+
           progressSyncService.syncProgress({
             userId: uid,
             userEmail: authUserEmail,
@@ -249,8 +256,8 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
             totalQuestions: 75,
             completionPct: Math.round((next.size / 75) * 100),
             streak: streak || 1,
-            quizAccuracy: 86,
-            mockScore: 4.5,
+            quizAccuracy: quizAcc,
+            mockScore: mScore,
             lastActive: new Date().toISOString(),
             categoryBreakdown: {
               'React Core': { solved: Math.min(next.size, 25), total: 25, pct: Math.round((Math.min(next.size, 25) / 25) * 100) },
@@ -262,7 +269,7 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
       return next
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [recordActivity, streak, authUserId, authUserName, authUserEmail])
+  }, [recordActivity, streak, authUserId, authUserName, authUserEmail, quizSessions, mockInterviews])
 
   const markSolved = useCallback((id: number) => {
     recordActivity()
@@ -281,6 +288,13 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
           title: `Solved Question #${id}`,
           details: `Successfully completed Question #${id}`,
         })
+        const quizAcc = quizSessions.length > 0
+          ? Math.round((quizSessions.reduce((sum, q) => sum + (q.total > 0 ? q.score / q.total : 0), 0) / quizSessions.length) * 100)
+          : 0
+        const mScore = mockInterviews.length > 0
+          ? Number((mockInterviews.reduce((sum, m) => sum + m.averageScore, 0) / mockInterviews.length).toFixed(1))
+          : 0
+
         progressSyncService.syncProgress({
           userId: uid,
           userEmail: authUserEmail,
@@ -291,8 +305,8 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
           totalQuestions: 75,
           completionPct: Math.round((next.size / 75) * 100),
           streak: streak || 1,
-          quizAccuracy: 86,
-          mockScore: 4.5,
+          quizAccuracy: quizAcc,
+          mockScore: mScore,
           lastActive: new Date().toISOString(),
           categoryBreakdown: {
             'React Core': { solved: Math.min(next.size, 25), total: 25, pct: Math.round((Math.min(next.size, 25) / 25) * 100) },
@@ -303,7 +317,7 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
       return next
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [recordActivity, streak, authUserId, authUserName, authUserEmail])
+  }, [recordActivity, streak, authUserId, authUserName, authUserEmail, quizSessions, mockInterviews])
 
   const unmarkSolved = useCallback((id: number) => {
     setSolvedIds(prev => {

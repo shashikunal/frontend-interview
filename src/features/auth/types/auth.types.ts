@@ -25,11 +25,17 @@ export interface AuthUserProfile {
   name: string
   role: UserRole
   avatarUrl?: string
-  targetCompany?: string
-  experienceLevel?: string
+  avatarPublicId?: string
   entitlements: FeatureEntitlements
   permissions?: string[]
   status?: 'ACTIVE' | 'SUSPENDED'
+  batch?: string
+  batchCode?: string
+  targetTrack?: string
+  githubUrl?: string
+  linkedinUrl?: string
+  phone?: string
+  bio?: string
   createdAt: string
   updatedAt?: string
 }
@@ -93,6 +99,9 @@ export interface StoredUserAccount {
   role: UserRole
   entitlements: FeatureEntitlements
   status: 'ACTIVE' | 'SUSPENDED'
+  batch?: string
+  batchCode?: string
+  targetTrack?: string
   solvedCount: number
   streak: number
   lastLogin: string

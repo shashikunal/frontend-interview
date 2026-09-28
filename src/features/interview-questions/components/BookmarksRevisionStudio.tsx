@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 import { interviewQuestionsDataService } from '../services/interviewQuestionsDataService'
 import { interviewQuestionsProgressService } from '../services/interviewQuestionsProgressService'
 import type { MasterQuestion, MasterSubjectId } from '../types/interviewQuestions.types'
+import { SkeletonLoader } from '../../../components/common/SkeletonLoader'
 
 export default function BookmarksRevisionStudio() {
   const [activeTab, setActiveTab] = useState<'bookmarks' | 'needs_review'>('bookmarks')
@@ -149,9 +150,8 @@ export default function BookmarksRevisionStudio() {
 
       {/* List */}
       {loading ? (
-        <div style={{ textAlign: 'center', padding: '4rem 0' }}>
-          <div className="app-route-spinner" style={{ margin: '0 auto 1.5rem', width: 40, height: 40, border: '3px solid rgba(56,189,248,0.2)', borderTopColor: '#38bdf8', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
-          <p style={{ color: 'var(--mqb-text-secondary)' }}>Loading your saved questions...</p>
+        <div style={{ padding: '16px 0' }}>
+          <SkeletonLoader variant="studio" />
         </div>
       ) : displayQuestions.length === 0 ? (
         <div style={{ textAlign: 'center', padding: '4rem 1rem', background: 'var(--mqb-bg-glass)', borderRadius: '16px', border: '1px solid var(--mqb-border)' }}>

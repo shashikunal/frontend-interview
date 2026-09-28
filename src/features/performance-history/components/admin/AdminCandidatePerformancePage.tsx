@@ -18,6 +18,7 @@ import {
   type CandidateAiEvaluationReport,
 } from '../../services/candidateAiEvaluationService';
 import { candidateEmailNotificationService } from '../../services/candidateEmailNotificationService';
+import { SkeletonLoader } from '../../../../components/common/SkeletonLoader';
 import type {
   CodingAttempt,
   UserPerformanceSummary,
@@ -441,8 +442,6 @@ export default function AdminCandidatePerformancePage({ isEmbedded = false }: Ad
             name: p.name,
             email: p.email,
             role: p.role,
-            targetCompany: p.targetCompany,
-            experienceLevel: p.experienceLevel,
           });
         } else {
           setCompareProfile({
@@ -485,8 +484,6 @@ export default function AdminCandidatePerformancePage({ isEmbedded = false }: Ad
               name: profile.name,
               email: profile.email,
               role: profile.role,
-              targetCompany: profile.targetCompany,
-              experienceLevel: profile.experienceLevel,
               joinedDate: profile.createdAt,
             });
           } else {
@@ -1284,11 +1281,8 @@ export default function AdminCandidatePerformancePage({ isEmbedded = false }: Ad
 
   if (loading) {
     return (
-      <div className={`admin-perf-page ${resolvedTheme === 'dark' ? 'dark-theme' : 'light-theme'}`}>
-        <div className="admin-perf-loading">
-          <div className="admin-perf-spinner" />
-          <p>Loading candidate dossier and synchronized historical records...</p>
-        </div>
+      <div className={`admin-perf-page ${resolvedTheme === 'dark' ? 'dark-theme' : 'light-theme'}`} style={{ padding: '32px' }}>
+        <SkeletonLoader variant="admin" rows={6} />
       </div>
     );
   }
@@ -3716,9 +3710,8 @@ export default function AdminCandidatePerformancePage({ isEmbedded = false }: Ad
                 </div>
 
                 {loadingCompare ? (
-                  <div className="admin-compare-loading">
-                    <div className="admin-perf-spinner" />
-                    <p>Fetching competitor metrics and rubric breakdown...</p>
+                  <div className="admin-compare-loading" style={{ padding: '24px' }}>
+                    <SkeletonLoader variant="admin" rows={3} />
                   </div>
                 ) : compareProfile && compareSummary ? (
                   <div className="compare-body">

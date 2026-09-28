@@ -82,7 +82,6 @@ export const MeetingRoom: React.FC = () => {
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
   const [copiedInvite, setCopiedInvite] = useState<boolean>(false);
   const [showReadyCard, setShowReadyCard] = useState<boolean>(true);
-  const [remoteScreenFrame, setRemoteScreenFrame] = useState<string | null>(null);
 
   // Active Speaker
   const [dominantSpeakerId, setDominantSpeakerId] = useState<string | null>(null);
@@ -133,129 +132,16 @@ export const MeetingRoom: React.FC = () => {
     screenStreamRef.current = localMedia.screenStream;
   }, [localMedia.stream, localMedia.screenStream]);
 
-  // Cross-tab & network screen frame mirroring listener for multi-participant and multi-browser testing
+
+
+  // Screen share WebRTC track attachment
   useEffect(() => {
-    if (!meetingId) return;
-    let bc: BroadcastChannel | null = null;
-    try {
-      bc = new BroadcastChannel(`meet_screen_${meetingId}`);
-      bc.onmessage = (e) => {
-        if (e.data?.type === 'screen_frame' && e.data.dataUrl) {
-          if (e.data.presenterId !== user?.id) {
-            setRemoteScreenFrame(e.data.dataUrl);
-          }
-        } else if (e.data?.type === 'screen_stop') {
-          setRemoteScreenFrame(null);
-        }
-      };
-    } catch (_) {}
-
-    // Resilient server signaling relay polling for remote screen frames
-    const relayInterval = setInterval(async () => {
-      const token = activeSessionTokenRef.current;
-      if (!token) return;
-      try {
-        const res = await fetch(`/api/v1/meetings/signaling?meetingId=${encodeURIComponent(meetingId)}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        if (res.ok) {
-          const data = await res.json();
-          if (data.screenShare?.dataUrl && data.screenShare.presenterId !== user?.id) {
-            setRemoteScreenFrame(data.screenShare.dataUrl);
-          } else if (!data.screenShare && !localMedia.screenShareEnabled) {
-            setRemoteScreenFrame(null);
-          }
-        }
-      } catch (_) {}
-    }, 1200);
-
-    return () => {
-      clearInterval(relayInterval);
-      if (bc) {
-        try { bc.close(); } catch (_) {}
-      }
-    };
-  }, [meetingId, user?.id, localMedia.screenShareEnabled]);
-
-  // Screen frame broadcast sender (via BroadcastChannel & serverless signaling relay)
-  useEffect(() => {
-    if (!localMedia.screenShareEnabled || !localMedia.screenStream || !meetingId) {
-      setRemoteScreenFrame(null);
-      return;
+    if (localMedia.screenShareEnabled && localMedia.screenStream) {
+      webrtcPeerService.setLocalScreenStream(localMedia.screenStream);
+    } else {
+      webrtcPeerService.setLocalScreenStream(null);
     }
-
-    let intervalId: any = null;
-    let bc: BroadcastChannel | null = null;
-    let frameCount = 0;
-    const video = document.createElement('video');
-    video.srcObject = localMedia.screenStream;
-    video.muted = true;
-    video.play().catch(() => {});
-
-    try {
-      bc = new BroadcastChannel(`meet_screen_${meetingId}`);
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-
-      const startBroadcasting = () => {
-        canvas.width = Math.min(1280, video.videoWidth || 1280);
-        canvas.height = Math.min(720, video.videoHeight || 720);
-
-        intervalId = setInterval(() => {
-          if (video.videoWidth > 0 && ctx) {
-            frameCount++;
-            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-            const dataUrl = canvas.toDataURL('image/jpeg', 0.65);
-            if (bc) {
-              bc.postMessage({ type: 'screen_frame', dataUrl, presenterId: user?.id || 'local' });
-            }
-            // Send frame to signaling relay every ~600ms for cross-browser / remote peers
-            if (frameCount % 4 === 0) {
-              const token = activeSessionTokenRef.current;
-              if (token) {
-                fetch('/api/v1/meetings/signaling', {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-                  body: JSON.stringify({
-                    action: 'SCREEN_FRAME',
-                    meetingId,
-                    userId: user?.id,
-                    userName: user?.name,
-                    screenFrame: dataUrl,
-                  }),
-                }).catch(() => {});
-              }
-            }
-          }
-        }, 150);
-      };
-
-      if (video.videoWidth > 0) {
-        startBroadcasting();
-      } else {
-        video.onloadedmetadata = startBroadcasting;
-      }
-    } catch (_) {}
-
-    return () => {
-      if (intervalId) clearInterval(intervalId);
-      if (bc) {
-        try {
-          bc.postMessage({ type: 'screen_stop' });
-          bc.close();
-        } catch (_) {}
-      }
-      const token = activeSessionTokenRef.current;
-      if (token) {
-        fetch('/api/v1/meetings/signaling', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-          body: JSON.stringify({ action: 'SCREEN_FRAME', meetingId, screenFrame: null }),
-        }).catch(() => {});
-      }
-      video.srcObject = null;
-    };
-  }, [localMedia.screenShareEnabled, localMedia.screenStream, meetingId, user?.id, user?.name]);
+  }, [localMedia.screenShareEnabled, localMedia.screenStream]);
 
   // Stable lobby preview video stream attachment (prevents black screen and flickering on audioLevel re-renders)
   useEffect(() => {
@@ -1642,9 +1528,9 @@ export const MeetingRoom: React.FC = () => {
 
         {/* Google Meet Style "Your meeting's ready" Info Card */}
         {(() => {
-          const remotePresenter = participants.find(p => p.screenShareEnabled);
           const isLocalScreenShare = localMedia.screenShareEnabled && !!localMedia.screenStream;
-          const isScreenSharingActive = isLocalScreenShare || !!remotePresenter || !!remoteScreenFrame;
+          const remotePresenter = participants.find(p => p.screenShareEnabled);
+          const isScreenSharingActive = isLocalScreenShare || !!remotePresenter;
           return participants.length === 0 && showReadyCard && !isWhiteboardOpen && !isCodeEditorOpen && !isScreenSharingActive;
         })() && (
           <div className="rtc-instant-ready-card">
@@ -1822,7 +1708,7 @@ export const MeetingRoom: React.FC = () => {
               onClose={() => setIsCodeEditorOpen(false)}
             />
           </div>
-        ) : (localMedia.screenShareEnabled && !!localMedia.screenStream) || participants.some(p => p.screenShareEnabled) || !!remoteScreenFrame ? (
+        ) : (localMedia.screenShareEnabled && !!localMedia.screenStream) || participants.some(p => p.screenShareEnabled) ? (
           (() => {
             const remotePresenter = participants.find(p => p.screenShareEnabled);
             const isLocalScreenShare = localMedia.screenShareEnabled && !!localMedia.screenStream;
@@ -1903,12 +1789,6 @@ export const MeetingRoom: React.FC = () => {
                         autoPlay
                         playsInline
                         muted={isLocalScreenShare}
-                        className="rtc-presentation-video"
-                      />
-                    ) : remoteScreenFrame ? (
-                      <img
-                        src={remoteScreenFrame}
-                        alt="Screen presentation"
                         className="rtc-presentation-video"
                       />
                     ) : (

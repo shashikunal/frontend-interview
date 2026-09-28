@@ -8,8 +8,8 @@ interface FaangReadinessDossierModalProps {
   candidateId: string;
   candidateName?: string;
   candidateEmail?: string;
-  summary: UserPerformanceSummary | null;
-  attempts: CodingAttempt[];
+  summary?: UserPerformanceSummary | null;
+  attempts?: CodingAttempt[];
   onClose: () => void;
 }
 
@@ -30,8 +30,8 @@ export default function FaangReadinessDossierModal({
   candidateId,
   candidateName = 'Candidate',
   candidateEmail,
-  summary,
-  attempts,
+  summary = null,
+  attempts = [],
   onClose,
 }: FaangReadinessDossierModalProps) {
   const navigate = useNavigate();
@@ -276,7 +276,7 @@ export default function FaangReadinessDossierModal({
     let targetBand = 'L3 / Junior Frontend Engineer';
 
     if (totalIndex >= 85) {
-      tierLabel = '🌟 FAANG Ready (Tier 1)';
+      tierLabel = '🌟 Assessment Ready (Tier 1)';
       tierColor = '#22c55e';
       hiringVerdict = 'Strong Hire';
       targetBand = 'L5 / Senior Frontend Specialist';
@@ -374,7 +374,7 @@ export default function FaangReadinessDossierModal({
         reason = `Candidate has ${activeStudio.stat.solved} solved with ${activeStudio.stat.avgScore}% avg score. Great momentum for high-difficulty challenges.`;
       }
     } else {
-      reason = 'Simulate full behavioral and technical FAANG interview loops with real-time AI speech and coding analysis.';
+      reason = 'Simulate full behavioral and technical interview loops with real-time speech and coding evaluation.';
     }
 
     return {
@@ -394,10 +394,10 @@ export default function FaangReadinessDossierModal({
       day: 'numeric',
     });
 
-    return `# 🏆 FAANG Technical Readiness Dossier
+    return `# 🏆 Technical Assessment Readiness Dossier
 **Candidate**: ${candidateName} (${candidateId})  
 **Evaluation Date**: ${dateStr}  
-**FAANG Readiness Index**: **${readinessIndex.totalIndex} / 100** — *${readinessIndex.tierLabel}*  
+**Technical Readiness Score**: **${readinessIndex.totalIndex} / 100** — *${readinessIndex.tierLabel}*  
 **Hiring Verdict**: **${readinessIndex.hiringVerdict}** | **Target Level**: **${readinessIndex.targetBand}**  
 
 ---
@@ -443,7 +443,7 @@ export default function FaangReadinessDossierModal({
 ## 🎯 Technical Recommendation
 ${readinessIndex.totalIndex >= 70
   ? `Candidate demonstrates high proficiency in core frontend engineering mechanics, algorithm resolution, and structured component architecture. Recommended for on-site senior technical loops at top-tier engineering organizations.`
-  : `Candidate demonstrates solid foundational capabilities. Continued deliberate practice in LeetCode algorithms and high-velocity Machine Coding component implementations will accelerate readiness for Tier-1 FAANG hiring loops.`}
+  : `Candidate demonstrates solid foundational capabilities. Continued deliberate practice in LeetCode algorithms and high-velocity Machine Coding component implementations will accelerate readiness for technical hiring loops.`}
 
 *Generated automatically by Frontend MasterDocs University & Candidate Assessment Engine.*
 `;
@@ -484,7 +484,7 @@ ${readinessIndex.totalIndex >= 70
         {/* Modal Topbar */}
         <div className="faang-dossier-topbar no-print">
           <div className="faang-dossier-topbar-left">
-            <span className="faang-dossier-logo-badge">🏆 FAANG DOSSIER</span>
+            <span className="faang-dossier-logo-badge">🏆 READINESS DOSSIER</span>
             <span className="faang-dossier-title-sub">Technical Evaluation &amp; Export</span>
           </div>
 
@@ -565,7 +565,7 @@ ${readinessIndex.totalIndex >= 70
                 </div>
 
                 <div className="dossier-readiness-scorebox" style={{ borderColor: readinessIndex.tierColor }}>
-                  <span className="scorebox-label">FAANG Readiness</span>
+                  <span className="scorebox-label">Technical Readiness</span>
                   <div className="scorebox-value" style={{ color: readinessIndex.tierColor }}>
                     {readinessIndex.totalIndex}
                     <span className="scorebox-pct">%</span>
@@ -723,7 +723,7 @@ ${readinessIndex.totalIndex >= 70
                   <h4>Staff Evaluator Summary &amp; Recommendation</h4>
                   <p>
                     {readinessIndex.totalIndex >= 70
-                      ? `Candidate demonstrates high proficiency in core frontend engineering mechanics, algorithm resolution, and structured component architecture. Highly recommended for technical interview loops at FAANG / Tier-1 engineering organizations.`
+                      ? `Candidate demonstrates high proficiency in core frontend engineering mechanics, algorithm resolution, and structured component architecture. Highly recommended for technical interview loops at top engineering organizations.`
                       : `Candidate demonstrates solid foundational capabilities across early assessment tasks. Continued practice with DSA algorithms and higher-tempo Machine Coding component tasks will significantly elevate readiness for top-tier senior frontend loops.`}
                   </p>
                 </div>

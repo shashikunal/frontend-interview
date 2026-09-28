@@ -23,26 +23,25 @@ import ResumeOptimizer from './components/resume/ResumeOptimizer'
 import PeerRoom from './components/peer/PeerRoom'
 import Compensation from './components/compensation/Compensation'
 import CaseStudies from './components/casestudies/CaseStudies'
-import AstExplorer from './components/astexplorer/AstExplorer'
-import SecuritySandbox from './components/security/SecuritySandbox'
-import StateMachine from './components/statemachine/StateMachine'
-import CapacityEstimator from './components/capacity/CapacityEstimator'
-import MemoryProfiler from './components/memory/MemoryProfiler'
-import ModuleFederation from './components/mfe/ModuleFederation'
-import Whiteboard from './components/whiteboard/Whiteboard'
-import ProtocolPlayground from './components/protocols/ProtocolPlayground'
-import CssPipeline from './components/csspipeline/CssPipeline'
-import WasmLab from './components/wasmlab/WasmLab'
-import WebRtcLab from './components/webrtclab/WebRtcLab'
-import LocalFirstStudio from './components/localfirst/LocalFirstStudio'
-import DesignSystemStudio from './components/designsystem/DesignSystemStudio'
-import I18nLab from './components/i18nlab/I18nLab'
-import SduiLab from './components/sduilab/SduiLab'
-import WebComponentsStudio from './components/webcomponents/WebComponentsStudio'
-import SearchEngineStudio from './components/searchengine/SearchEngineStudio'
-import UserProfile from './components/profile/UserProfile'
-import UserManagementStudio from './components/usermanagement/UserManagementStudio'
-import AdminDashboard from './components/dashboard/AdminDashboard'
+const AstExplorer = lazy(() => import('./components/astexplorer/AstExplorer'))
+const SecuritySandbox = lazy(() => import('./components/security/SecuritySandbox'))
+const StateMachine = lazy(() => import('./components/statemachine/StateMachine'))
+const CapacityEstimator = lazy(() => import('./components/capacity/CapacityEstimator'))
+const MemoryProfiler = lazy(() => import('./components/memory/MemoryProfiler'))
+const ModuleFederation = lazy(() => import('./components/mfe/ModuleFederation'))
+const Whiteboard = lazy(() => import('./components/whiteboard/Whiteboard'))
+const ProtocolPlayground = lazy(() => import('./components/protocols/ProtocolPlayground'))
+const CssPipeline = lazy(() => import('./components/csspipeline/CssPipeline'))
+const WasmLab = lazy(() => import('./components/wasmlab/WasmLab'))
+const WebRtcLab = lazy(() => import('./components/webrtclab/WebRtcLab'))
+const LocalFirstStudio = lazy(() => import('./components/localfirst/LocalFirstStudio'))
+const DesignSystemStudio = lazy(() => import('./components/designsystem/DesignSystemStudio'))
+const I18nLab = lazy(() => import('./components/i18nlab/I18nLab'))
+const SduiLab = lazy(() => import('./components/sduilab/SduiLab'))
+const WebComponentsStudio = lazy(() => import('./components/webcomponents/WebComponentsStudio'))
+const SearchEngineStudio = lazy(() => import('./components/searchengine/SearchEngineStudio'))
+const UserManagementStudio = lazy(() => import('./components/usermanagement/UserManagementStudio'))
+const AdminDashboard = lazy(() => import('./components/dashboard/AdminDashboard'))
 const MachineCodingStudio = lazy(() => import('./components/machinecoding/MachineCodingStudio'))
 const DSAStudio = lazy(() => import('./components/dsa/DSAStudio'))
 const CoreProgrammingStudio = lazy(() => import('./components/coreprogramming/CoreProgrammingStudio'))
@@ -67,6 +66,7 @@ import ScrollToTop from './components/common/ScrollToTop'
 import AchievementUnlockToast from './components/badges/AchievementUnlockToast'
 import { useBadgeEvaluator } from './hooks/useBadgeEvaluator'
 import { DocsCommandPalette } from './features/interview-docs/components/DocsCommandPalette'
+import { SkeletonLoader } from './components/common/SkeletonLoader'
 import './App.css'
 
 export default function App() {
@@ -92,7 +92,7 @@ export default function App() {
       <AchievementUnlockToast />
       <DocsCommandPalette />
       <main className={`main-content ${isAdminDashboard ? 'dashboard-main-content' : ''} ${isStudioWorkspace ? 'studio-main-content' : ''} ${isDocsPlatform ? 'docs-main-content' : ''} ${isMeetingRoom ? 'meeting-main-content' : ''}`}>
-        <Suspense fallback={<div className="app-route-loader"><div className="app-route-spinner" /><p>Loading masterclass studio...</p></div>}>
+        <Suspense fallback={<SkeletonLoader variant="page" />}>
           <div key={location.pathname} className="app-page-transition">
             <Routes>
           <Route path="/" element={<Home />} />
@@ -106,11 +106,7 @@ export default function App() {
           <Route path="/docs/*" element={<DocsPlatform />} />
           <Route
             path="/profile"
-            element={
-              <ProtectedRoute>
-                <UserProfile />
-              </ProtectedRoute>
-            }
+            element={<Navigate to="/dashboard?view=profile" replace />}
           />
           <Route
             path="/user-management"

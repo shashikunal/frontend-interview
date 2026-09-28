@@ -5,6 +5,7 @@ import { codingHistoryService } from '../../services/codingHistoryService';
 import { hiringEvaluationService } from '../../services/hiringEvaluationService';
 import { candidateHiringActionService } from '../../services/candidateHiringActionService';
 import type { CandidateUserListItem, HiringStatus } from '../../types/history.types';
+import { SkeletonLoader } from '../../../../components/common/SkeletonLoader';
 import './AdminCandidateManagementTab.css';
 
 /**
@@ -80,6 +81,7 @@ export default function AdminCandidateManagementTab() {
   const [hiringFilter, setHiringFilter] = useState<string>('ALL');
   const [performanceFilter, setPerformanceFilter] = useState<string>('ALL');
   const [roleFilter, setRoleFilter] = useState<string>('ALL');
+  const [batchFilter, setBatchFilter] = useState<string>('ALL');
 
   // Multi-Selection State
   const [selectedCandidateIds, setSelectedCandidateIds] = useState<Set<string>>(new Set());
@@ -142,6 +144,8 @@ export default function AdminCandidateManagementTab() {
           name: u.name || 'Candidate',
           email: u.email || `${u.id.slice(0, 8)}@candidate.com`,
           role: u.role || 'candidate',
+          batch: u.batch || '2026-Alpha',
+          batchCode: u.batchCode || 'FE-2026-A',
           joinedDate: u.createdAt || new Date().toISOString(),
           lastActive: u.lastLogin || (summary?.lastActiveDate ? new Date(summary.lastActiveDate).toLocaleDateString() : (summary?.totalAttempts && summary.totalAttempts > 0 ? 'Active recently' : 'Never active')),
           totalQuestions: summary?.uniqueAttempted || 0,
@@ -192,9 +196,13 @@ export default function AdminCandidateManagementTab() {
       // Role Filter
       const roleMatch = roleFilter === 'ALL' || cand.role === roleFilter;
 
-      return searchMatch && hiringMatch && perfMatch && roleMatch;
+      // Batch Filter
+      const batchMatch =
+        batchFilter === 'ALL' || cand.batch === batchFilter || cand.batchCode === batchFilter;
+
+      return searchMatch && hiringMatch && perfMatch && roleMatch && batchMatch;
     });
-  }, [candidates, searchTerm, hiringFilter, performanceFilter, roleFilter]);
+  }, [candidates, searchTerm, hiringFilter, performanceFilter, roleFilter, batchFilter]);
 
   // Selected candidates list
   const selectedCandidatesList = useMemo(() => {
@@ -453,14 +461,25 @@ export default function AdminCandidateManagementTab() {
             <option value="pro_member">Pro Member</option>
             <option value="admin">Administrator</option>
           </select>
+
+          <select
+            className="admin-cand-select"
+            value={batchFilter}
+            onChange={e => setBatchFilter(e.target.value)}
+          >
+            <option value="ALL">All Batches</option>
+            <option value="2026-Alpha">Batch 2026-Alpha (FE-2026-A)</option>
+            <option value="FE-2026-A">FE-2026-A</option>
+            <option value="2026-Beta">Batch 2026-Beta</option>
+            <option value="2025-Cohort">Cohort 2025</option>
+          </select>
         </div>
       </div>
 
       {/* Candidates Roster Table */}
       {loading ? (
-        <div className="admin-cand-loading-box">
-          <div className="perf-spinner" />
-          <p>Compiling candidate portfolios and evaluations across platform tracks...</p>
+        <div style={{ padding: '16px 0' }}>
+          <SkeletonLoader variant="table" count={5} />
         </div>
       ) : filteredCandidates.length === 0 ? (
         <div className="perf-empty-state">
@@ -537,7 +556,12 @@ export default function AdminCandidateManagementTab() {
                       </div>
                     </td>
                     <td>
-                      <span className="role-tag">{cand.role}</span>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', alignItems: 'flex-start' }}>
+                        <span className="role-tag">{cand.role}</span>
+                        <span style={{ fontSize: '0.72rem', background: 'rgba(56,189,248,0.12)', color: '#38bdf8', border: '1px solid rgba(56,189,248,0.25)', padding: '1px 6px', borderRadius: '4px', fontWeight: 600 }}>
+                          🏷️ {cand.batchCode || cand.batch || '2026-Alpha'}
+                        </span>
+                      </div>
                     </td>
                     <td className="cell-number" style={{ textAlign: 'center' }}>
                       <span className="text-green">{cand.solvedCount}</span>

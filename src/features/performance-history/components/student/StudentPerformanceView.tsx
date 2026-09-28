@@ -4,6 +4,7 @@ import { codingHistoryService } from '../../services/codingHistoryService';
 import type { CodingAttempt, UserPerformanceSummary } from '../../types/history.types';
 import QuestionHistoryDetailModal from './QuestionHistoryDetailModal';
 import FaangReadinessDossierModal from './FaangReadinessDossierModal';
+import { SkeletonLoader } from '../../../../components/common/SkeletonLoader';
 import './StudentPerformanceView.css';
 
 interface StudentPerformanceViewProps {
@@ -479,9 +480,8 @@ export default function StudentPerformanceView({ userId: propUserId }: StudentPe
 
   if (loading) {
     return (
-      <div className="perf-view-loading">
-        <div className="perf-spinner" />
-        <p>Loading candidate coding history &amp; performance metrics...</p>
+      <div className="perf-container" style={{ padding: '24px' }}>
+        <SkeletonLoader variant="dashboard" />
       </div>
     );
   }
@@ -506,10 +506,10 @@ export default function StudentPerformanceView({ userId: propUserId }: StudentPe
             className="perf-dossier-btn"
             id="open-faang-dossier-btn"
             onClick={() => setShowDossierModal(true)}
-            title="Generate executive FAANG technical readiness dossier and export as PDF or Markdown"
+            title="Generate executive technical readiness dossier and export as PDF or Markdown"
           >
             <span className="perf-dossier-icon">🏆</span>
-            <span className="perf-dossier-text">FAANG Readiness Dossier</span>
+            <span className="perf-dossier-text">Technical Readiness Dossier</span>
             <span className="perf-dossier-badge">1-Click Export</span>
           </button>
         </div>

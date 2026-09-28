@@ -7,6 +7,7 @@ import { auditService } from '../services/audit.service'
 import { rbacService } from '../services/rbac.service'
 import { progressSyncService } from '../services/progressSync.service'
 import { trackingService } from '../../../lib/trackingService'
+import { geoTelemetryService } from '../../../services/geoTelemetryService'
 import type {
   AuthContextValue,
   AuthUserProfile,
@@ -34,7 +35,7 @@ function buildFallbackProfile(user: User | null): AuthUserProfile | null {
 
   const metadata = user.user_metadata || {}
   const role: UserRole = (metadata.role as UserRole) || 'candidate'
-  const name: string = metadata.full_name || metadata.name || user.email?.split('@')[0] || 'Candidate'
+  const name: string = metadata.full_name || metadata.name || user.email?.split('@')[0] || 'User'
   const entitlements = metadata.feature_entitlements || DEFAULT_ENTITLEMENTS[role]
 
   return {
@@ -43,8 +44,7 @@ function buildFallbackProfile(user: User | null): AuthUserProfile | null {
     name,
     role,
     avatarUrl: metadata.avatar_url,
-    targetCompany: metadata.target_company || 'Google',
-    experienceLevel: metadata.experience_level || 'L5 (Senior 5-9y)',
+    avatarPublicId: metadata.avatar_public_id,
     entitlements,
     permissions: [],
     createdAt: user.created_at,
@@ -81,24 +81,42 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     try {
       const dbProfile = await profileService.getProfile(user.id)
+      let savedActive: Partial<AuthUserProfile> | null = null
+      try {
+        const rawSaved = typeof localStorage !== 'undefined' ? localStorage.getItem('interviewprep_active_profile') : null
+        if (rawSaved) savedActive = JSON.parse(rawSaved)
+      } catch {}
+
       if (dbProfile) {
         // If admin has manually switched role, keep that override
         const effectiveRole = roleOverrideRef.current || dbProfile.role
         // Merge: always grant what DEFAULT_ENTITLEMENTS says for this role
-        // (fixes stale DB profiles that have old false defaults)
         const mergedEntitlements: FeatureEntitlements = {
           ...DEFAULT_ENTITLEMENTS[effectiveRole],
           ...dbProfile.entitlements,
-          // Ensure any DB false doesn't downgrade what DEFAULT says true
           ...Object.fromEntries(
             Object.entries(DEFAULT_ENTITLEMENTS[effectiveRole]).filter(([, v]) => v)
           ),
         }
-        setUserProfile({ ...dbProfile, role: effectiveRole, entitlements: mergedEntitlements })
+        const finalProfile: AuthUserProfile = {
+          ...dbProfile,
+          role: effectiveRole,
+          entitlements: mergedEntitlements,
+          avatarUrl: dbProfile.avatarUrl || savedActive?.avatarUrl,
+          avatarPublicId: dbProfile.avatarPublicId || savedActive?.avatarPublicId,
+          batch: dbProfile.batch || savedActive?.batch || '2026-Alpha',
+          batchCode: dbProfile.batchCode || savedActive?.batchCode || 'FE-2026-A',
+        }
+        try {
+          if (typeof localStorage !== 'undefined') {
+            localStorage.setItem('interviewprep_active_profile', JSON.stringify(finalProfile))
+          }
+        } catch {}
+        setUserProfile(finalProfile)
       } else {
         // No profile row exists yet — create one directly with the user's real Supabase UUID
         const metadata = user.user_metadata || {}
-        const name: string = metadata.full_name || metadata.name || user.email?.split('@')[0] || 'Candidate'
+        const name: string = metadata.full_name || metadata.name || user.email?.split('@')[0] || 'User'
         const role: UserRole = roleOverrideRef.current || (metadata.role as UserRole) || 'candidate'
 
         const profilePayload: AuthUserProfile = {
@@ -106,32 +124,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           email: user.email || '',
           name,
           role,
-          avatarUrl: metadata.avatar_url,
-          targetCompany: metadata.target_company || 'Google',
-          experienceLevel: metadata.experience_level || 'L5 (Senior 5-9y)',
+          avatarUrl: savedActive?.avatarUrl || metadata.avatar_url,
+          avatarPublicId: savedActive?.avatarPublicId || metadata.avatar_public_id,
           entitlements: DEFAULT_ENTITLEMENTS[role],
           permissions: role === 'admin' ? ['admin:all', 'admin:users_manage'] : [],
           status: 'ACTIVE',
+          batch: savedActive?.batch || '2026-Alpha',
+          batchCode: savedActive?.batchCode || 'FE-2026-A',
           createdAt: user.created_at || new Date().toISOString(),
         }
 
-        // profiles.id is a UUID FK to auth.users(id) and RLS requires auth.uid() = id.
-        // Pseudo-ids (admin_super_user, usr_*, guest_*) are local-only: writing them
-        // would be rejected with 403, so keep them in memory/localStorage only.
         const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(user.id)
-        if (!isUuid) {
-          if (import.meta.env?.DEV) {
-            console.warn('[CORE] profile upsert skipped (local-only id)', { id: user.id })
-          }
-        } else {
+        if (isUuid) {
           try {
             const { error: upsertError } = await supabase.from('profiles').upsert({
               id: user.id,
               email: user.email || '',
               full_name: name,
               role,
-              target_company: profilePayload.targetCompany,
-              experience_level: profilePayload.experienceLevel,
               feature_entitlements: profilePayload.entitlements,
               is_active: true,
               updated_at: new Date().toISOString(),
@@ -144,10 +154,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           }
         }
 
+        try {
+          if (typeof localStorage !== 'undefined') {
+            localStorage.setItem('interviewprep_active_profile', JSON.stringify(profilePayload))
+          }
+        } catch {}
         setUserProfile(profilePayload)
       }
     } catch {
-      setUserProfile(buildFallbackProfile(user))
+      const fallback = buildFallbackProfile(user)
+      try {
+        if (fallback && typeof localStorage !== 'undefined') {
+          localStorage.setItem('interviewprep_active_profile', JSON.stringify(fallback))
+        }
+      } catch {}
+      setUserProfile(fallback)
     }
   }, [])
 
@@ -243,6 +264,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         trackingService.trackActivity('login', 'user', newSession.user.id, {
           email: newSession.user.email,
         })
+        geoTelemetryService.recordLoginSession({
+          id: newSession.user.id,
+          email: newSession.user.email || 'user@interviewprep.com',
+          name: newSession.user.user_metadata?.full_name || newSession.user.email?.split('@')[0],
+          role: userProfile?.role || 'candidate',
+        }).catch(() => {})
       } else if (event === 'SIGNED_OUT') {
         auditService.logEvent({
           action: 'AUTH_SIGN_OUT',
@@ -287,8 +314,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           return { success: false, message: result.error || 'Invalid administrator credentials. Access denied.' }
         }
 
-        const adminEmail = result.user?.email || (trimmedUser.toLowerCase().includes('shashi') ? 'shashi@admin.com' : 'admin@interviewprep.com')
-        const adminName = result.user?.name || (trimmedUser.toLowerCase().includes('shashi') ? 'shashi' : 'Platform Administrator')
+        const adminEmail = result.user?.email || (trimmedUser.includes('@') ? trimmedUser : 'admin@interviewprep.com')
+        const adminName = result.user?.name || (trimmedUser.includes('@') ? trimmedUser.split('@')[0] : 'Platform Administrator')
 
         // Optional Supabase session synchronization for Postgres RLS policies
         if (result.session?.access_token) {
@@ -306,7 +333,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         roleOverrideRef.current = 'admin'
         const adminProfile: AuthUserProfile = {
-          id: result.user?.id || (trimmedUser.toLowerCase().includes('shashi') ? 'f16e43bf-2ff8-480c-ae49-e2285940bf46' : 'admin_super_user'),
+          id: result.user?.id || 'admin_super_user',
           email: adminEmail,
           name: adminName,
           role: 'admin',
@@ -332,6 +359,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           details: { adminEmail, username: trimmedUser },
         })
 
+        geoTelemetryService.recordLoginSession({
+          id: adminProfile.id,
+          email: adminProfile.email,
+          name: adminProfile.name,
+          role: 'admin',
+        }).catch(() => {})
+
         return { success: true, message: 'Administrator login successful.' }
       } catch (err: any) {
         setIsLoading(false)
@@ -354,8 +388,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signIn = useCallback(async (params: SignInCredentials): Promise<AuthActionResult> => {
     setIsLoading(true)
     const cleanEmail = params.email.toLowerCase().trim()
-    const isAdminCredential =
-      cleanEmail === 'shashi' || cleanEmail === 'shashi@admin.com' || cleanEmail === 'admin' || cleanEmail === 'admin@interviewprep.com'
+    const isAdminCredential = cleanEmail === 'admin' || cleanEmail === 'admin@interviewprep.com' || cleanEmail.includes('admin')
 
     if (isAdminCredential) {
       const adminRes = await loginAsAdmin(params.email, params.password)
@@ -477,15 +510,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (!userProfile) return { success: false, message: 'Not signed in.' }
 
       const dbUpdates: Record<string, unknown> = {}
-      if (updates.name) dbUpdates.full_name = updates.name
-      if (updates.targetCompany) dbUpdates.target_company = updates.targetCompany
-      if (updates.experienceLevel) dbUpdates.experience_level = updates.experienceLevel
-      if (updates.avatarUrl) dbUpdates.avatar_url = updates.avatarUrl
-      if (updates.entitlements) dbUpdates.feature_entitlements = updates.entitlements
+      if (updates.name !== undefined) dbUpdates.full_name = updates.name
+      if (updates.avatarUrl !== undefined) dbUpdates.avatar_url = updates.avatarUrl
+      if (updates.avatarPublicId !== undefined) dbUpdates.avatar_public_id = updates.avatarPublicId
+      if (updates.entitlements !== undefined) dbUpdates.feature_entitlements = updates.entitlements
+      if (updates.batch !== undefined) dbUpdates.batch = updates.batch
+      if (updates.batchCode !== undefined) dbUpdates.batch_code = updates.batchCode
+      if (updates.targetTrack !== undefined) dbUpdates.target_track = updates.targetTrack
+      if (updates.githubUrl !== undefined) dbUpdates.github_url = updates.githubUrl
+      if (updates.linkedinUrl !== undefined) dbUpdates.linkedin_url = updates.linkedinUrl
+      if (updates.phone !== undefined) dbUpdates.phone = updates.phone
+      if (updates.bio !== undefined) dbUpdates.bio = updates.bio
 
-      const res = await profileService.updateProfile(userProfile.id, dbUpdates)
+      const res = await profileService.updateProfile(userProfile.id, dbUpdates as any)
       if (res.success) {
-        setUserProfile(prev => (prev ? { ...prev, ...updates } : null))
+        setUserProfile(prev => {
+          if (!prev) return null
+          const nextProfile = { ...prev, ...updates }
+          try {
+            if (typeof localStorage !== 'undefined') {
+              localStorage.setItem('interviewprep_active_profile', JSON.stringify(nextProfile))
+            }
+          } catch {}
+          return nextProfile
+        })
       }
       return res
     },

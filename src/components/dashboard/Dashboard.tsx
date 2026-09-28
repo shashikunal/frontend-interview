@@ -1,19 +1,12 @@
-import { useMemo, useState, useEffect } from 'react'
-import { Link, useSearchParams, useParams, useNavigate } from 'react-router-dom'
+import { useMemo, useState, useEffect, lazy, Suspense } from 'react'
+import { Link, useSearchParams, useNavigate } from 'react-router-dom'
 import { pushClientService } from '../../features/notifications/services/pushClientService'
 import { useProgress } from '../../context/ProgressContext'
-import { useBookmarks } from '../../context/BookmarkContext'
 import { useAuth } from '../../context/AuthContext'
 import { useQuestions } from '../../data/useQuestions'
-import { getCategories } from '../../data/questionService'
-import { progressSyncService, type UserTrackProgress } from '../../features/auth/services/progressSync.service'
-import { trackingService } from '../../lib/trackingService'
-import { supabase } from '../../lib/supabase/client'
-import { leaderboardService, resolveQuestionTitle, type CandidateMCSubmission } from '../../lib/leaderboardService'
+import { leaderboardService, type CandidateMCSubmission } from '../../lib/leaderboardService'
 import { gradingService, type EvaluatorReview } from '../../lib/gradingService'
-import { CandidateSkillRadar } from './CandidateSkillRadar'
 import AdminDashboard from './AdminDashboard'
-import Leaderboard from '../leaderboard/Leaderboard'
 import { dsaSubmissionService } from '../dsa/lib/dsaSubmissionService'
 import { dsaProgressService } from '../dsa/lib/dsaProgressService'
 import type { DSASubmission } from '../dsa/data/dsaTypes'
@@ -28,44 +21,26 @@ import { frontendJsProgressService } from '../frontendjs/lib/frontendJsProgressS
 import { frontendJsSubmissionService } from '../frontendjs/lib/frontendJsSubmissionService'
 import type { FrontendJsSubmission } from '../frontendjs/data/frontendJsTypes'
 import { FRONTEND_JS_QUESTIONS } from '../frontendjs/data/frontendJsQuestions'
-import { mockSessionService } from '../../features/ai-video-mock/services/mockSessionService'
-import { adminAnalyticsService } from '../../lib/adminAnalyticsService'
-import StudentPerformanceView from '../../features/performance-history/components/student/StudentPerformanceView'
-import { CandidateDocsSyllabusTracker } from './CandidateDocsSyllabusTracker'
 import { docsProgressService } from '../../features/interview-docs/services/docsProgressService'
-import CandidateMasterBankCard from '../../features/interview-questions/components/CandidateMasterBankCard'
-import StudentMeetingDashboard from '../../features/meetings/components/StudentMeetingDashboard'
+import { useDashboardView } from './hooks/useDashboardView'
+import { DashboardWorkspaceNav } from './DashboardWorkspaceNav'
+import { DashboardOverview } from './views/DashboardOverview'
+import { DashboardActivity } from './views/DashboardActivity'
+import { DashboardProgress } from './views/DashboardProgress'
+import { DashboardAnalytics } from './views/DashboardAnalytics'
+import { DashboardUpcoming } from './views/DashboardUpcoming'
+import { DashboardProfile } from './views/DashboardProfile'
 import './Dashboard.css'
 
-function catClass(name: string): string {
-  return `cat-${name.toLowerCase().replace(/[^a-z]+/g, '-')}`
-}
-
-function formatDate(dateStr: string): string {
-  const d = new Date(dateStr)
-  return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
-}
-
-function formatDurationSec(seconds: number): string {
-  if (!seconds || seconds <= 0) return '0m'
-  if (seconds < 60) return `${seconds}s`
-  const mins = Math.floor(seconds / 60)
-  const hours = Math.floor(mins / 60)
-  if (hours > 0) {
-    return `${hours}h ${mins % 60}m`
-  }
-  return `${mins}m`
-}
+const FaangReadinessDossierModal = lazy(() => import('../../features/performance-history/components/student/FaangReadinessDossierModal'))
 
 function CandidateDashboard() {
-  const { user } = useAuth()
   const navigate = useNavigate()
+  const { user } = useAuth()
   const { questions, loading, error } = useQuestions()
-  const { solvedIds, totalSolved, streak, studyDates, quizSessions, mockInterviews, resetProgress } = useProgress()
-  const { bookmarkedCount } = useBookmarks()
+  const { totalSolved, streak, resetProgress } = useProgress()
   const [showResetConfirm, setShowResetConfirm] = useState(false)
-  const [assignedTrack, setAssignedTrack] = useState<UserTrackProgress | null>(null)
-  const [trackAlert, setTrackAlert] = useState<string | null>(null)
+  const [, setLoadingMC] = useState(false)
 
   // Real-time Live Meeting Push Alerts from Admin
   const [liveMeetingAlert, setLiveMeetingAlert] = useState<{
@@ -115,7 +90,6 @@ function CandidateDashboard() {
   // Machine Coding Submissions State
   const [mcSubmissions, setMcSubmissions] = useState<CandidateMCSubmission[]>([])
   const [reviewsMap, setReviewsMap] = useState<Record<string, EvaluatorReview>>({})
-  const [loadingMC, setLoadingMC] = useState<boolean>(true)
   const [viewingMCSubmission, setViewingMCSubmission] = useState<CandidateMCSubmission | null>(null)
   const [viewingSubmission, setViewingSubmission] = useState<{
     id: string
@@ -135,29 +109,18 @@ function CandidateDashboard() {
     isMachineCoding?: boolean
   } | null>(null)
   const [mcCopied, setMcCopied] = useState<boolean>(false)
-  const [mcSearch, setMcSearch] = useState<string>('')
 
   // DSA Submissions State
   const [dsaSubmissions, setDsaSubmissions] = useState<DSASubmission[]>([])
   const [dsaSolvedCount, setDsaSolvedCount] = useState<number>(0)
-  const [activeSubmissionsTab, setActiveSubmissionsTab] = useState<'mc' | 'dsa' | 'cp' | 'fjs'>('mc')
-  const [dsaSearch, setDsaSearch] = useState<string>('')
 
   // Core Programming Submissions State
   const [cpSubmissions, setCpSubmissions] = useState<CoreProgrammingSubmission[]>([])
   const [cpSolvedCount, setCpSolvedCount] = useState<number>(0)
-  const [cpSearch, setCpSearch] = useState<string>('')
 
   // Frontend JS Submissions State
   const [fjsSubmissions, setFjsSubmissions] = useState<FrontendJsSubmission[]>([])
   const [fjsSolvedCount, setFjsSolvedCount] = useState<number>(0)
-  const [fjsSearch, setFjsSearch] = useState<string>('')
-
-  // AI Video Mock Sessions State
-  const [aiMockSessions, setAiMockSessions] = useState(() => mockSessionService.getAllLocalSessions())
-  useEffect(() => {
-    setAiMockSessions(mockSessionService.getAllLocalSessions())
-  }, [])
 
   // Prevent background page scrolling while dashboard modals are open & handle Escape key
   useEffect(() => {
@@ -179,188 +142,9 @@ function CandidateDashboard() {
     }
   }, [viewingMCSubmission, viewingSubmission, showResetConfirm])
 
-  // Sync tab & track from URL query params (?tab=submissions&track=dsa)
-  const [searchParams] = useSearchParams()
-  const { tab: urlTab } = useParams<{ tab?: string }>()
-
-  const [activeMainSection, setActiveMainSection] = useState<'overview' | 'syllabus' | 'performance' | 'meetings' | 'rankings' | 'submissions'>(() => {
-    const rawTab = searchParams.get('tab') || urlTab
-    if (rawTab && (rawTab.toLowerCase() === 'rankings' || rawTab.toLowerCase() === 'leaderboard')) {
-      return 'rankings'
-    }
-    if (rawTab && (rawTab.toLowerCase() === 'submissions' || rawTab.toLowerCase() === 'audit')) {
-      return 'submissions'
-    }
-    if (rawTab && (rawTab.toLowerCase() === 'performance' || rawTab.toLowerCase() === 'history' || rawTab.toLowerCase() === 'coding-history')) {
-      return 'performance'
-    }
-    if (rawTab && (rawTab.toLowerCase() === 'syllabus' || rawTab.toLowerCase() === 'docs' || rawTab.toLowerCase() === 'documentation')) {
-      return 'syllabus'
-    }
-    if (rawTab && (rawTab.toLowerCase() === 'meeting_ops' || rawTab.toLowerCase() === 'meetings' || rawTab.toLowerCase() === 'meeting-ops')) {
-      return 'meetings'
-    }
-    return 'overview'
-  })
-
-  useEffect(() => {
-    const rawTab = searchParams.get('tab') || urlTab
-    const rawTrack = searchParams.get('track')
-    if (rawTab && (rawTab.toLowerCase() === 'rankings' || rawTab.toLowerCase() === 'leaderboard')) {
-      setActiveMainSection('rankings')
-    } else if (rawTab && (rawTab.toLowerCase() === 'submissions' || rawTab.toLowerCase() === 'audit')) {
-      setActiveMainSection('submissions')
-    } else if (rawTab && (rawTab.toLowerCase() === 'performance' || rawTab.toLowerCase() === 'history' || rawTab.toLowerCase() === 'coding-history')) {
-      setActiveMainSection('performance')
-    } else if (rawTab && (rawTab.toLowerCase() === 'syllabus' || rawTab.toLowerCase() === 'docs' || rawTab.toLowerCase() === 'documentation')) {
-      setActiveMainSection('syllabus')
-    } else if (rawTab && (rawTab.toLowerCase() === 'meeting_ops' || rawTab.toLowerCase() === 'meetings' || rawTab.toLowerCase() === 'meeting-ops')) {
-      setActiveMainSection('meetings')
-    } else if (rawTab && rawTab.toLowerCase() === 'overview') {
-      setActiveMainSection('overview')
-    }
-    if (rawTrack) {
-      const t = rawTrack.toLowerCase()
-      if (t === 'dsa' || t === 'leetcode') setActiveSubmissionsTab('dsa')
-      else if (t === 'cp' || t === 'core' || t === 'core-programming') setActiveSubmissionsTab('cp')
-      else if (t === 'fjs' || t === 'frontend-js') setActiveSubmissionsTab('fjs')
-      else if (t === 'mc' || t === 'machine-coding') setActiveSubmissionsTab('mc')
-    }
-    if (rawTab && (rawTab.toLowerCase() === 'submissions' || rawTab.toLowerCase() === 'audit')) {
-      setTimeout(() => {
-        const el = document.getElementById('candidate-submissions-section')
-        if (el) {
-          el.scrollIntoView({ behavior: 'smooth' })
-        }
-      }, 150)
-    }
-  }, [searchParams, urlTab])
-
-  const [telemetry, setTelemetry] = useState<{
-    startedCount: number
-    completedCount: number
-    totalAttempts: number
-    acceptedSubmissions: number
-    accuracyRate: number
-    avgScore: number
-    totalTimeSpent: number
-  }>({
-    startedCount: 0,
-    completedCount: 0,
-    totalAttempts: 0,
-    acceptedSubmissions: 0,
-    accuracyRate: 0,
-    avgScore: 0,
-    totalTimeSpent: 0,
-  })
-
-  useEffect(() => {
-    async function loadTelemetry() {
-      const progMap = await trackingService.getAllUserQuestionProgress()
-      let started = 0
-      let completed = 0
-      let attempts = 0
-      let timeSec = 0
-
-      progMap.forEach(p => {
-        if (p.status === 'completed') {
-          completed++
-        } else if (p.status === 'in_progress' || (p.attemptCount || 0) > 0) {
-          started++
-        }
-        attempts += p.attemptCount || 0
-        timeSec += p.timeSpentSeconds || p.timeSpent || 0
-      })
-
-      // Ensure solvedIds count from context is unified
-      completed = Math.max(completed, totalSolved)
-
-      let accepted = 0
-      let totalSubs = 0
-      let totalScore = 0
-
-      const userId = user?.id
-      const userSubmissions: Array<{ status: string; score: number }> = []
-      let serverStats: Awaited<ReturnType<typeof adminAnalyticsService.getUserCodingStats>> | null = null
-
-      if (userId) {
-        try {
-          // 1. Query canonical Supabase submissions for this authenticated user only
-          const { data: dbSubs } = await supabase
-            .from('submissions')
-            .select('status, score, question_id')
-            .eq('user_id', userId)
-
-          if (Array.isArray(dbSubs)) {
-            dbSubs.forEach(s => userSubmissions.push({ status: s.status, score: Number(s.score || 0) }))
-          }
-
-          // 2. Query unified server-side cross-track coding stats from Supabase
-          serverStats = await adminAnalyticsService.getUserCodingStats(userId)
-        } catch {
-          // ignore
-        }
-      }
-
-      // 3. Merge verified client-side local submissions strictly belonging to this authenticated user
-      try {
-        if (typeof localStorage !== 'undefined') {
-          const matchUser = (s: any) => !userId || s.userId === userId || s.candidateId === userId
-          const rawMC = localStorage.getItem('mc_candidate_submissions_real_v2')
-          if (rawMC) {
-            const list = JSON.parse(rawMC)
-            if (Array.isArray(list)) {
-              list.filter(matchUser).forEach((s: any) => userSubmissions.push({ status: s.status, score: Number(s.score || 0) }))
-            }
-          }
-          const rawCP = localStorage.getItem('cp_candidate_submissions_v1')
-          if (rawCP) {
-            const list = JSON.parse(rawCP)
-            if (Array.isArray(list)) {
-              list.filter(matchUser).forEach((s: any) => userSubmissions.push({ status: s.status, score: Number(s.score || 0) }))
-            }
-          }
-          const rawFJS = localStorage.getItem('fjp_submissions_v1')
-          if (rawFJS) {
-            const list = JSON.parse(rawFJS)
-            if (Array.isArray(list)) {
-              list.filter(matchUser).forEach((s: any) => userSubmissions.push({ status: s.status, score: Number(s.score || 0) }))
-            }
-          }
-          const rawDSA = localStorage.getItem('dsa_submissions_v1')
-          if (rawDSA) {
-            const list = JSON.parse(rawDSA)
-            if (Array.isArray(list)) {
-              list.filter(matchUser).forEach((s: any) => userSubmissions.push({ status: s.status, score: Number(s.score || 0) }))
-            }
-          }
-        }
-      } catch (_) {}
-
-      totalSubs = userSubmissions.length
-      userSubmissions.forEach(s => {
-        const isAcc = s.status === 'accepted' || s.status === 'Accepted' || s.score >= 70
-        if (isAcc) accepted++
-        totalScore += s.score
-      })
-
-      setTelemetry({
-        startedCount: serverStats ? Math.max(0, serverStats.totalAttempts - serverStats.completedCount) : started,
-        completedCount: serverStats ? serverStats.completedCount : completed,
-        totalAttempts: serverStats ? serverStats.totalAttempts : Math.max(attempts, totalSubs),
-        acceptedSubmissions: serverStats ? serverStats.acceptedSubmissions : accepted,
-        accuracyRate: serverStats && serverStats.totalSubmissions > 0
-          ? serverStats.accuracyRate
-          : (totalSubs > 0 ? Math.round((accepted / totalSubs) * 100) : 0),
-        avgScore: serverStats && serverStats.totalSubmissions > 0
-          ? serverStats.avgScore
-          : (totalSubs > 0 ? Math.round(totalScore / totalSubs) : 0),
-        totalTimeSpent: serverStats ? serverStats.totalTimeSpentSeconds : timeSec,
-      })
-    }
-
-    void loadTelemetry()
-  }, [user, totalSolved])
+  // URL Search Parameters Source of Truth for Dashboard Workspace View (?view=overview | activity | progress | analytics | upcoming)
+  const { currentView, setView } = useDashboardView()
+  const [showDossierModal, setShowDossierModal] = useState(false)
 
   // Fetch real Machine Coding submissions from Supabase & local storage
   useEffect(() => {
@@ -416,186 +200,17 @@ function CandidateDashboard() {
 
   // Machine Coding Curriculum Progress (Isolated from DSA)
   const [mcSolvedIds, setMcSolvedIds] = useState<Set<string>>(() => mcProgressService.getSolvedIds())
-  const [mcAttemptedIds, setMcAttemptedIds] = useState<Set<string>>(() => mcProgressService.getAttemptedIds())
-  const [mcBookmarkedIds, setMcBookmarkedIds] = useState<Set<string>>(() => mcProgressService.getBookmarkedIds())
 
   useEffect(() => {
     mcProgressService.setUserId(user?.id)
     const syncMC = () => {
       setMcSolvedIds(mcProgressService.getSolvedIds())
-      setMcAttemptedIds(mcProgressService.getAttemptedIds())
-      setMcBookmarkedIds(mcProgressService.getBookmarkedIds())
     }
     syncMC()
     return mcProgressService.subscribe(syncMC)
   }, [user?.id])
 
-  const nextMCQuestion = useMemo(() => {
-    const found = MACHINE_CODING_CATALOG.find(q => !mcSolvedIds.has(q.id))
-    return found || MACHINE_CODING_CATALOG[0]
-  }, [mcSolvedIds])
 
-  const mcStats = useMemo(() => {
-    const total = mcSubmissions.length
-    if (total === 0) return { total: 0, avgMarks: 0, perfectCount: 0, passedCount: 0, totalTime: 0 }
-    let sumMarks = 0
-    let perfect = 0
-    let passed = 0
-    let time = 0
-    mcSubmissions.forEach(s => {
-      const effScore = reviewsMap[s.id]?.score ?? s.score
-      sumMarks += effScore
-      time += s.executionTime
-      if (effScore >= 100) perfect++
-      if (effScore >= 70 || s.status === 'accepted') passed++
-    })
-    return {
-      total,
-      avgMarks: Math.round(sumMarks / total),
-      perfectCount: perfect,
-      passedCount: passed,
-      totalTime: time,
-    }
-  }, [mcSubmissions, reviewsMap])
-
-  const filteredMCSubmissions = useMemo(() => {
-    if (!mcSearch.trim()) return mcSubmissions
-    const term = mcSearch.toLowerCase()
-    return mcSubmissions.filter(
-      s =>
-        s.questionId.toLowerCase().includes(term) ||
-        s.questionTitle.toLowerCase().includes(term) ||
-        s.category.toLowerCase().includes(term)
-    )
-  }, [mcSubmissions, mcSearch])
-
-  const filteredDSASubmissions = useMemo(() => {
-    if (!dsaSearch.trim()) return dsaSubmissions
-    const term = dsaSearch.toLowerCase()
-    return dsaSubmissions.filter(s => {
-      const q = DSA_QUESTIONS.find(item => item.id === s.questionId)
-      return (
-        s.questionId.toLowerCase().includes(term) ||
-        (q && q.title.toLowerCase().includes(term)) ||
-        s.language.toLowerCase().includes(term)
-      )
-    })
-  }, [dsaSubmissions, dsaSearch])
-
-  const filteredCPSubmissions = useMemo(() => {
-    if (!cpSearch.trim()) return cpSubmissions
-    const term = cpSearch.toLowerCase()
-    return cpSubmissions.filter(s => {
-      const q = CORE_PROGRAMMING_QUESTIONS.find(item => item.id === s.questionId)
-      return (
-        s.questionId.toLowerCase().includes(term) ||
-        (q && q.title.toLowerCase().includes(term)) ||
-        s.status.toLowerCase().includes(term)
-      )
-    })
-  }, [cpSubmissions, cpSearch])
-
-  const filteredFJSSubmissions = useMemo(() => {
-    if (!fjsSearch.trim()) return fjsSubmissions
-    const term = fjsSearch.toLowerCase()
-    return fjsSubmissions.filter(s => {
-      return (
-        s.questionId.toLowerCase().includes(term) ||
-        s.status.toLowerCase().includes(term)
-      )
-    })
-  }, [fjsSubmissions, fjsSearch])
-
-  useEffect(() => {
-    if (!user) return
-    progressSyncService.getAllUsersProgress().then(all => {
-      if (all[user.id]) {
-        setAssignedTrack(all[user.id])
-      }
-    })
-
-    const userId = user.id
-    const unsubscribe = progressSyncService.subscribeToProgress(updated => {
-      if (updated.userId === userId) {
-        setAssignedTrack(updated)
-        setTrackAlert(`🎯 Your learning track was updated by Platform Administrator to ${updated.trackName}!`)
-        setTimeout(() => setTrackAlert(null), 6000)
-      }
-    })
-
-    return () => unsubscribe()
-    // Scalar dep: whole-`user` identity changes per render and resubscribes.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user?.id])
-
-  const categories = useMemo(() => getCategories(questions), [questions])
-
-
-  const categoryStats = useMemo(() => {
-    return categories.map(cat => {
-      const catQuestions = questions.filter(q => q.category === cat)
-      const catSolved = catQuestions.filter(q => solvedIds.has(q.id)).length
-      const pct = catQuestions.length > 0 ? Math.round((catSolved / catQuestions.length) * 100) : 0
-      return {
-        name: cat,
-        total: catQuestions.length,
-        solved: catSolved,
-        pct,
-      }
-    }).sort((a, b) => b.pct - a.pct)
-  }, [categories, questions, solvedIds])
-
-  // Generate 30-day activity map
-  const last30Days = useMemo(() => {
-    const days: Array<{ dateStr: string; label: string; active: boolean }> = []
-    const now = new Date()
-    for (let i = 29; i >= 0; i--) {
-      const d = new Date(now)
-      d.setDate(d.getDate() - i)
-      const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
-      days.push({
-        dateStr,
-        label: formatDate(dateStr),
-        active: studyDates.has(dateStr),
-      })
-    }
-    return days
-  }, [studyDates])
-
-  // Drill mastery metrics
-  const drillMetrics = useMemo(() => {
-    if (quizSessions.length === 0) return { totalPracticed: 0, accuracy: 0 }
-    let totalQuestions = 0
-    let totalCorrect = 0
-    quizSessions.forEach(s => {
-      totalQuestions += s.total
-      totalCorrect += s.score
-    })
-    const accuracy = totalQuestions > 0 ? Math.round((totalCorrect / totalQuestions) * 100) : 0
-    return { totalPracticed: totalQuestions, accuracy }
-  }, [quizSessions])
-
-  // Smart Recommendations (unsolved questions from lower completion categories)
-  const recommendations = useMemo(() => {
-    const unsolved = questions.filter(q => !solvedIds.has(q.id))
-    if (unsolved.length === 0) return []
-
-    // Prioritize lowest completed categories
-    const lowestCategoryNames = categoryStats
-      .slice()
-      .sort((a, b) => a.pct - b.pct)
-      .map(c => c.name)
-
-    const result: typeof questions = []
-    for (const catName of lowestCategoryNames) {
-      const match = unsolved.find(q => q.category === catName && !result.some(r => r.id === q.id))
-      if (match) {
-        result.push(match)
-        if (result.length >= 4) break
-      }
-    }
-    return result.length ? result : unsolved.slice(0, 4)
-  }, [questions, solvedIds, categoryStats])
 
   const totalQuestionsCount = questions.length || 1
   const overallPercentage = Math.round((totalSolved / totalQuestionsCount) * 100)
@@ -623,47 +238,13 @@ function CandidateDashboard() {
   return (
     <div className="dashboard-page page-enter">
       {/* Admin Testing / Preview Mode Indicator */}
-      {user?.role === 'admin' && (
-        <div style={{
-          background: 'linear-gradient(135deg, rgba(67, 24, 255, 0.12) 0%, rgba(2, 200, 150, 0.15) 100%)',
-          border: '1.5px solid rgba(67, 24, 255, 0.35)',
-          borderRadius: '14px',
-          padding: '12px 20px',
-          marginBottom: '20px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          color: 'var(--text-primary)',
-          boxShadow: '0 4px 16px rgba(67, 24, 255, 0.08)'
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <span style={{ fontSize: '1.2rem' }}>👁️</span>
-            <div>
-              <div style={{ fontWeight: 800, fontSize: '0.92rem' }}>Admin Preview Mode Active</div>
-              <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>You are currently testing the portal as a <strong>Candidate (Student)</strong>.</div>
-            </div>
-          </div>
-          <button
-            type="button"
-            className="btn btn-secondary"
-            style={{ padding: '8px 16px', fontSize: '0.84rem', fontWeight: 700, borderRadius: '10px' }}
-            onClick={() => navigate('/dashboard')}
-          >
-            🛡️ Return to Admin Command Center
-          </button>
-        </div>
-      )}
-
-      {/* Horizon Candidate Welcome Banner */}
+      {/* Candidate Welcome Hero Banner */}
       <div className="candidate-hero-banner card-box">
         <div className="candidate-hero-content">
           <div className="candidate-hero-tags">
             <span className="candidate-track-tag">
-              <span className="live-pulse-dot" /> {user?.targetCompany ? `Target: ${user.targetCompany}` : 'Frontend Master Track'}
+              <span className="live-pulse-dot" /> Frontend Master Track
             </span>
-            {user?.experienceLevel && (
-              <span className="candidate-exp-tag">{user.experienceLevel}</span>
-            )}
             <span className="candidate-streak-pill">
               🔥 {streak} Day Streak
             </span>
@@ -672,7 +253,7 @@ function CandidateDashboard() {
             {user?.name ? `Welcome back, ${user.name}` : 'Welcome back, Candidate'} <span className="wave-hand">👋</span>
           </h1>
           <p className="candidate-hero-subtitle">
-            Track your interview readiness, solve technical challenges, and accelerate towards FAANG-grade mastery.
+            Track your interview readiness, solve technical challenges, and accelerate towards senior engineering mastery.
           </p>
         </div>
 
@@ -710,10 +291,12 @@ function CandidateDashboard() {
             </p>
             <div className="clm-meta">
               {liveMeetingAlert.timestamp && (
-                <span>⏰ Sent: {new Date(liveMeetingAlert.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                <span className="clm-meta-pill">⏰ Sent: {new Date(liveMeetingAlert.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
               )}
-              <span>⚡ Host: {liveMeetingAlert.trainerName || 'Platform Trainer'}</span>
-              <span>🔗 {liveMeetingAlert.meetingUrl || `/meet/${liveMeetingAlert.meetingId}`}</span>
+              <span className="clm-meta-pill">⚡ Host: {liveMeetingAlert.trainerName || 'Platform Trainer'}</span>
+              <span className="clm-meta-pill clm-meta-url" title={liveMeetingAlert.meetingUrl || `/meet/${liveMeetingAlert.meetingId}`}>
+                🔗 {liveMeetingAlert.meetingUrl || `/meet/${liveMeetingAlert.meetingId}`}
+              </span>
             </div>
           </div>
           <div className="clm-right">
@@ -743,1280 +326,79 @@ function CandidateDashboard() {
         </div>
       )}
 
-      {/* Student Section Switcher */}
-      <div className="candidate-section-switcher-bar">
-        <button
-          type="button"
-          className={`cand-switcher-btn ${activeMainSection === 'overview' ? 'active' : ''}`}
-          onClick={() => setActiveMainSection('overview')}
-        >
-          📊 Curriculum &amp; Drills
-        </button>
-        <button
-          type="button"
-          className={`cand-switcher-btn ${activeMainSection === 'rankings' ? 'active' : ''}`}
-          onClick={() => setActiveMainSection('rankings')}
-        >
-          🏆 Global Rankings &amp; Leaderboard
-        </button>
-        <button
-          type="button"
-          className={`cand-switcher-btn ${activeMainSection === 'submissions' ? 'active' : ''}`}
-          onClick={() => setActiveMainSection('submissions')}
-        >
-          ⚡ Submissions Ledger &amp; Full Audit
-        </button>
-        <button
-          type="button"
-          className={`cand-switcher-btn ${activeMainSection === 'syllabus' ? 'active' : ''}`}
-          onClick={() => setActiveMainSection('syllabus')}
-        >
-          📚 21-Track Docs &amp; Syllabus
-        </button>
-        <button
-          type="button"
-          className={`cand-switcher-btn ${activeMainSection === 'performance' ? 'active' : ''}`}
-          onClick={() => setActiveMainSection('performance')}
-        >
-          📈 My Performance &amp; Complete Coding History
-        </button>
-        <button
-          type="button"
-          className={`cand-switcher-btn ${activeMainSection === 'meetings' ? 'active' : ''}`}
-          onClick={() => setActiveMainSection('meetings')}
-        >
-          📅 My Meetings &amp; Sessions
-          {liveMeetingAlert && <span className="cand-meeting-live-badge">1 LIVE</span>}
-        </button>
-      </div>
+      {/* Integrated Workspace View Selector Navigation */}
+      <DashboardWorkspaceNav activeView={currentView} onSelectView={setView} />
 
-      {activeMainSection === 'rankings' ? (
-        <div style={{ marginTop: '1.5rem' }}>
-          <Leaderboard compact={false} />
-        </div>
-      ) : activeMainSection === 'performance' ? (
-        <StudentPerformanceView />
-      ) : activeMainSection === 'syllabus' ? (
-        <div id="candidate-syllabus-tracker">
-          <CandidateDocsSyllabusTracker />
-        </div>
-      ) : activeMainSection === 'meetings' ? (
-        <StudentMeetingDashboard />
-      ) : (
-        <>
-      {trackAlert && (
-        <div className="candidate-track-live-alert">
-          <span>🔔</span> {trackAlert}
-        </div>
-      )}
-
-      {assignedTrack && (
-        <div className="candidate-track-banner-card card-box">
-          <div className="ctb-left">
-            <span className="ctb-icon">{assignedTrack.trackIcon || '⚛️'}</span>
-            <div>
-              <span className="ctb-tag">OFFICIAL ASSIGNED CURRICULUM</span>
-              <h3>{assignedTrack.trackName}</h3>
-              {assignedTrack.focusModules && assignedTrack.focusModules.length > 0 && (
-                <div className="ctb-modules-list">
-                  <strong>Allocated Focus Modules:</strong>
-                  {assignedTrack.focusModules.map(m => (
-                    <span key={m} className="ctb-mod-tag">{m}</span>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-          <div className="ctb-right">
-            <div className="ctb-progress-box">
-              <span className="ctb-pct">{Math.round((totalSolved / (assignedTrack.totalQuestions || 75)) * 100)}%</span>
-              <span className="ctb-label">{totalSolved}/{assignedTrack.totalQuestions || 75} Solved</span>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Master Question Bank (12,000 Questions) */}
-      <div style={{ marginBottom: '1.75rem' }}>
-        <CandidateMasterBankCard />
-      </div>
-
-      {/* Hero Stats Row */}
-      <div className="dashboard-stats-grid">
-        <div className="dash-stat-card streak-card">
-          <div className="dash-stat-top">
-            <div className="dash-stat-icon streak-icon" aria-hidden="true">🔥</div>
-            <span className="dash-stat-badge streak-badge">Active</span>
-          </div>
-          <div className="dash-stat-info">
-            <span className="dash-stat-num">{streak} Day{streak !== 1 ? 's' : ''}</span>
-            <span className="dash-stat-label">Daily Study Streak</span>
-          </div>
-          <div className="dash-stat-hint">
-            {streak > 0 ? 'Keep it going! Study daily to build momentum.' : 'Start your study streak today!'}
-          </div>
-        </div>
-
-        <div className="dash-stat-card progress-card">
-          <div className="dash-stat-top">
-            <div className="dash-stat-icon progress-ring-icon" aria-hidden="true">
-              <svg viewBox="0 0 36 36" className="circular-chart">
-                <path
-                  className="circle-bg"
-                  d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                />
-                <path
-                  className="circle-fill"
-                  strokeDasharray={`${overallPercentage}, 100`}
-                  d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                />
-              </svg>
-              <span className="ring-text">{overallPercentage}%</span>
-            </div>
-            <span className="dash-stat-badge progress-badge">{overallPercentage}% Complete</span>
-          </div>
-          <div className="dash-stat-info">
-            <span className="dash-stat-num">{totalSolved.toLocaleString()} / {questions.length.toLocaleString()}</span>
-            <span className="dash-stat-label">Questions Solved</span>
-          </div>
-          <div className="dash-stat-hint">
-            {(questions.length - totalSolved).toLocaleString()} remaining to master
-          </div>
-        </div>
-
-        <div className="dash-stat-card mock-stat-card">
-          <div className="dash-stat-top">
-            <div className="dash-stat-icon mock-icon" aria-hidden="true">⏱️</div>
-            <span className="dash-stat-badge mock-badge">Timed Mode</span>
-          </div>
-          <div className="dash-stat-info">
-            <span className="dash-stat-num">{mockInterviews.length}</span>
-            <span className="dash-stat-label">Mock Interviews</span>
-          </div>
-          <div className="dash-stat-hint">
-            {mockInterviews.length > 0
-              ? `Latest: ${mockInterviews[0].verdict} (${mockInterviews[0].averageScore}/5)`
-              : 'Test your readiness under timed pressure'}
-          </div>
-          <Link to="/mock-interview" className="dash-stat-link">
-            {mockInterviews.length > 0 ? 'Take another mock →' : 'Start first mock →'}
-          </Link>
-        </div>
-
-        <div className="dash-stat-card drill-card">
-          <div className="dash-stat-top">
-            <div className="dash-stat-icon drill-icon" aria-hidden="true">🎯</div>
-            <span className="dash-stat-badge drill-badge">Quiz Drill</span>
-          </div>
-          <div className="dash-stat-info">
-            <span className="dash-stat-num">{drillMetrics.accuracy}%</span>
-            <span className="dash-stat-label">Drill Accuracy</span>
-          </div>
-          <div className="dash-stat-hint">
-            {drillMetrics.totalPracticed} questions practiced in drill mode
-          </div>
-        </div>
-
-        <div className="dash-stat-card saved-card">
-          <div className="dash-stat-top">
-            <div className="dash-stat-icon saved-icon" aria-hidden="true">⭐</div>
-            <span className="dash-stat-badge saved-badge">Revision</span>
-          </div>
-          <div className="dash-stat-info">
-            <span className="dash-stat-num">{bookmarkedCount}</span>
-            <span className="dash-stat-label">Saved for Revision</span>
-          </div>
-          <div className="dash-stat-hint">
-            Bookmarked questions for quick revision
-          </div>
-          <Link to="/questions?saved=true" className="dash-stat-link">
-            View saved list →
-          </Link>
-        </div>
-
-        {/* DSA 1,000 Questions Solved Card */}
-        <div className="dash-stat-card" style={{ borderLeft: '4px solid #10b981' }}>
-          <div className="dash-stat-top">
-            <div className="dash-stat-icon" style={{ background: 'rgba(16, 185, 129, 0.15)', color: '#10b981' }}>🧠</div>
-            <span className="dash-stat-badge" style={{ background: 'rgba(16, 185, 129, 0.15)', color: '#10b981' }}>DSA Masterclass</span>
-          </div>
-          <div className="dash-stat-info">
-            <span className="dash-stat-num">{dsaSolvedCount} / 1,000</span>
-            <span className="dash-stat-label">Algorithmic Problems Solved</span>
-          </div>
-          <div className="dash-stat-hint">
-            {1000 - dsaSolvedCount} LeetCode challenges remaining
-          </div>
-          <Link to="/dsa" className="dash-stat-link" style={{ color: '#10b981' }}>
-            Open DSA Studio →
-          </Link>
-        </div>
-
-        {/* Core Programming 500 Questions Solved Card */}
-        <div className="dash-stat-card" style={{ borderLeft: '4px solid #6366f1' }}>
-          <div className="dash-stat-top">
-            <div className="dash-stat-icon" style={{ background: 'rgba(99, 102, 241, 0.15)', color: '#6366f1' }}>💻</div>
-            <span className="dash-stat-badge" style={{ background: 'rgba(99, 102, 241, 0.15)', color: '#6366f1' }}>Core Programming</span>
-          </div>
-          <div className="dash-stat-info">
-            <span className="dash-stat-num">{cpSolvedCount} / 500</span>
-            <span className="dash-stat-label">Core JS Problems Solved</span>
-          </div>
-          <div className="dash-stat-hint">
-            {500 - cpSolvedCount} JavaScript challenges remaining
-          </div>
-          <Link to="/core-programming" className="dash-stat-link" style={{ color: '#6366f1' }}>
-            Open Core Studio →
-          </Link>
-        </div>
-
-        {/* Frontend JS 1,000 Questions Solved Card */}
-        <div className="dash-stat-card" style={{ borderLeft: '4px solid #0ea5e9' }}>
-          <div className="dash-stat-top">
-            <div className="dash-stat-icon" style={{ background: 'rgba(14, 165, 233, 0.15)', color: '#0ea5e9' }}>🌐</div>
-            <span className="dash-stat-badge" style={{ background: 'rgba(14, 165, 233, 0.15)', color: '#0ea5e9' }}>Frontend JavaScript</span>
-          </div>
-          <div className="dash-stat-info">
-            <span className="dash-stat-num">{fjsSolvedCount} / 1,000</span>
-            <span className="dash-stat-label">Frontend JS Problems Solved</span>
-          </div>
-          <div className="dash-stat-hint">
-            {1000 - fjsSolvedCount} DOM &amp; Web API challenges remaining
-          </div>
-          <Link to="/frontend-js" className="dash-stat-link" style={{ color: '#0ea5e9' }}>
-            Open Frontend JS Studio →
-          </Link>
-        </div>
-
-        {/* AI Video Mock Interview Studio 2.0 Card */}
-        <div className="dash-stat-card" style={{ borderLeft: '4px solid #818cf8' }}>
-          <div className="dash-stat-top">
-            <div className="dash-stat-icon" style={{ background: 'rgba(99, 102, 241, 0.15)', color: '#818cf8' }}>🎙️</div>
-            <span className="dash-stat-badge" style={{ background: 'rgba(99, 102, 241, 0.15)', color: '#818cf8' }}>AI Video Mock 2.0</span>
-          </div>
-          <div className="dash-stat-info">
-            <span className="dash-stat-num">
-              {aiMockSessions.filter(s => s.state === 'COMPLETED').length > 0
-                ? `${aiMockSessions.filter(s => s.state === 'COMPLETED').length} Taken`
-                : '5,120+'}
-            </span>
-            <span className="dash-stat-label">AI Video Mock Interviews</span>
-          </div>
-          <div className="dash-stat-hint">
-            {aiMockSessions.find(s => s.state === 'IN_PROGRESS')
-              ? '⚠️ You have an active interview session in progress!'
-              : '16 tracks · Webcam & speech grading · Seniority matrix'}
-          </div>
-          <Link
-            to={
-              aiMockSessions.find(s => s.state === 'IN_PROGRESS')
-                ? `/ai-video-mock/session/${aiMockSessions.find(s => s.state === 'IN_PROGRESS')!.id}`
-                : '/ai-video-mock'
-            }
-            className="dash-stat-link"
-            style={{ color: '#818cf8' }}
-          >
-            {aiMockSessions.find(s => s.state === 'IN_PROGRESS') ? 'Resume Active Mock →' : 'Open Video Mock Studio →'}
-          </Link>
-        </div>
-
-        {/* Documentation & Syllabus Mastery Card */}
-        <div className="dash-stat-card" style={{ borderLeft: '4px solid #a855f7' }}>
-          <div className="dash-stat-top">
-            <div className="dash-stat-icon" style={{ background: 'rgba(168, 85, 247, 0.15)', color: '#a855f7' }}>📚</div>
-            <span className="dash-stat-badge" style={{ background: 'rgba(168, 85, 247, 0.15)', color: '#a855f7' }}>Full Syllabus</span>
-          </div>
-          <div className="dash-stat-info">
-            <span className="dash-stat-num">{docsSyllabusStats.totalCompletedTopics} / {docsSyllabusStats.totalSyllabusTopics}</span>
-            <span className="dash-stat-label">Syllabus Topics Mastered</span>
-          </div>
-          <div className="dash-stat-hint">
-            {docsSyllabusStats.completionPercentage}% of curriculum ({docsSyllabusStats.activeTracksCount}/21 tracks active)
-          </div>
-          <button
-            type="button"
-            onClick={() => {
-              setActiveMainSection('syllabus')
-              window.scrollTo({ top: 0, behavior: 'smooth' })
-            }}
-            className="dash-stat-link"
-            style={{ color: '#a855f7', background: 'none', border: 'none', padding: 0, font: 'inherit', cursor: 'pointer', textAlign: 'left' }}
-          >
-            Inspect 21-Track Syllabus Tracker →
-          </button>
-        </div>
-      </div>
-
-      {/* Question Progress & Telemetry Overview */}
-      <section className="candidate-telemetry-section card-box">
-        <div className="telemetry-section-head">
-          <div className="telemetry-title-wrap">
-            <div className="telemetry-title-icon">📊</div>
-            <div>
-              <h2 className="telemetry-title">
-                Question Progress &amp; Completion Telemetry
-              </h2>
-              <p className="telemetry-subtitle">
-                Persistent performance metrics across coding attempts, sandbox runs, and verified test suites.
-              </p>
-            </div>
-          </div>
-          <Link to="/questions" className="telemetry-browse-btn">
-            Browse Questions <span>→</span>
-          </Link>
-        </div>
-
-        <div className="candidate-telemetry-grid">
-          <div className="telemetry-tile tile-bank">
-            <div className="telemetry-tile-header">
-              <span className="telemetry-tile-label">Question Bank</span>
-              <span className="telemetry-tile-icon">📚</span>
-            </div>
-            <div className="telemetry-tile-value">{totalCatalogCount.toLocaleString()}</div>
-            <span className="telemetry-tile-sub">Curated Problems</span>
-          </div>
-
-          <div className="telemetry-tile tile-started">
-            <div className="telemetry-tile-header">
-              <span className="telemetry-tile-label">Started</span>
-              <span className="telemetry-tile-icon">⏳</span>
-            </div>
-            <div className="telemetry-tile-value">{telemetry.startedCount}</div>
-            <span className="telemetry-tile-sub">In Progress</span>
-          </div>
-
-          <div className="telemetry-tile tile-completed">
-            <div className="telemetry-tile-header">
-              <span className="telemetry-tile-label">Completed</span>
-              <span className="telemetry-tile-icon">✅</span>
-            </div>
-            <div className="telemetry-tile-value">{telemetry.completedCount}</div>
-            <span className="telemetry-tile-sub">Accepted &amp; Solved</span>
-          </div>
-
-          <div className="telemetry-tile tile-remaining">
-            <div className="telemetry-tile-header">
-              <span className="telemetry-tile-label">Remaining</span>
-              <span className="telemetry-tile-icon">🎯</span>
-            </div>
-            <div className="telemetry-tile-value">{Math.max(0, totalCatalogCount - telemetry.completedCount).toLocaleString()}</div>
-            <span className="telemetry-tile-sub">To Complete</span>
-          </div>
-
-          <div className="telemetry-tile tile-attempts">
-            <div className="telemetry-tile-header">
-              <span className="telemetry-tile-label">Total Attempts</span>
-              <span className="telemetry-tile-icon">🔁</span>
-            </div>
-            <div className="telemetry-tile-value">{telemetry.totalAttempts}</div>
-            <span className="telemetry-tile-sub">Across All Sessions</span>
-          </div>
-
-          <div className="telemetry-tile tile-accepted">
-            <div className="telemetry-tile-header">
-              <span className="telemetry-tile-label">Accepted</span>
-              <span className="telemetry-tile-icon">🏆</span>
-            </div>
-            <div className="telemetry-tile-value">{telemetry.acceptedSubmissions}</div>
-            <span className="telemetry-tile-sub">Evaluated Passes</span>
-          </div>
-
-          <div className="telemetry-tile tile-accuracy">
-            <div className="telemetry-tile-header">
-              <span className="telemetry-tile-label">Accuracy Rate</span>
-              <span className="telemetry-tile-icon">🎯</span>
-            </div>
-            <div className="telemetry-tile-value">{telemetry.accuracyRate}%</div>
-            <span className="telemetry-tile-sub">Submission Success</span>
-          </div>
-
-          <div className="telemetry-tile tile-score">
-            <div className="telemetry-tile-header">
-              <span className="telemetry-tile-label">Average Score</span>
-              <span className="telemetry-tile-icon">📈</span>
-            </div>
-            <div className="telemetry-tile-value">{telemetry.avgScore}%</div>
-            <span className="telemetry-tile-sub">On Test Suites</span>
-          </div>
-
-          <div className="telemetry-tile tile-time">
-            <div className="telemetry-tile-header">
-              <span className="telemetry-tile-label">Coding Time</span>
-              <span className="telemetry-tile-icon">⚡</span>
-            </div>
-            <div className="telemetry-tile-value">{formatDurationSec(telemetry.totalTimeSpent)}</div>
-            <span className="telemetry-tile-sub">In Coding Sandbox</span>
-          </div>
-        </div>
-      </section>
-
-      {/* Docs & Full Syllabus Completion Tracker */}
-      <CandidateDocsSyllabusTracker />
-
-      {/* Machine Coding Submissions & Marks Evaluation Ledger */}
-      <section id="candidate-submissions-section" className="candidate-mc-section card-box">
-        <div className="telemetry-section-head">
-          <div className="telemetry-title-wrap">
-            <div className="telemetry-title-icon" style={{ background: 'rgba(67, 24, 255, 0.12)', color: '#4318FF' }}>⚡</div>
-            <div>
-              <h2 className="telemetry-title" style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                <span>Submissions &amp; Evaluation Ledger</span>
-                <span className="live-status-pill" style={{ fontSize: '11px', padding: '2px 8px', background: 'rgba(16, 185, 129, 0.1)', color: '#10b981', borderRadius: '12px', display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
-                  <span className="live-pulse-dot" /> Live Synced
-                </span>
-              </h2>
-              <p className="telemetry-subtitle">
-                Real-time evaluation ledger of interactive React challenges, live unit test assertions, and official marks tracked with your Candidate ID.
-              </p>
-            </div>
-          </div>
-          <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
-            <Link to="/machine-coding" className="btn btn-primary candidate-btn-primary" style={{ padding: '8px 16px', fontSize: '13px' }}>
-              <span>⚡</span> Studio Workspace
-            </Link>
-            <Link to="/leaderboard?category=machine-coding" className="btn btn-secondary candidate-btn-secondary" style={{ padding: '8px 14px', fontSize: '13px' }}>
-              <span>🏆</span> Rankings
-            </Link>
-          </div>
-        </div>
-
-        {/* MC Curriculum Progress Summary (Isolated 500-question tracking) */}
-        <div className="mc-stats-summary-grid" style={{ marginBottom: '14px' }}>
-          <div className="mc-summary-tile">
-            <span className="mc-summary-icon">⚡</span>
-            <div>
-              <span className="mc-summary-num">500</span>
-              <span className="mc-summary-label">Total Curriculum</span>
-            </div>
-          </div>
-          <div className="mc-summary-tile">
-            <span className="mc-summary-icon">✅</span>
-            <div>
-              <span className="mc-summary-num" style={{ color: '#10b981' }}>{mcSolvedIds.size}</span>
-              <span className="mc-summary-label">Solved Challenges</span>
-            </div>
-          </div>
-          <div className="mc-summary-tile">
-            <span className="mc-summary-icon">⏳</span>
-            <div>
-              <span className="mc-summary-num" style={{ color: '#eab308' }}>{mcAttemptedIds.size}</span>
-              <span className="mc-summary-label">Attempted</span>
-            </div>
-          </div>
-          <div className="mc-summary-tile">
-            <span className="mc-summary-icon">🎯</span>
-            <div>
-              <span className="mc-summary-num" style={{ color: '#38bdf8' }}>{Math.max(0, 500 - mcSolvedIds.size)}</span>
-              <span className="mc-summary-label">Remaining</span>
-            </div>
-          </div>
-          <div className="mc-summary-tile">
-            <span className="mc-summary-icon">★</span>
-            <div>
-              <span className="mc-summary-num" style={{ color: '#fbbf24' }}>{mcBookmarkedIds.size}</span>
-              <span className="mc-summary-label">Bookmarked</span>
-            </div>
-          </div>
-          <div className="mc-summary-tile">
-            <span className="mc-summary-icon">📈</span>
-            <div>
-              <span className="mc-summary-num" style={{ color: '#8b5cf6' }}>{Math.round((mcSolvedIds.size / 500) * 100)}%</span>
-              <span className="mc-summary-label">Progress Rate</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Continue Practice Hero Card */}
-        {nextMCQuestion && (
-          <div style={{
-            background: 'linear-gradient(135deg, rgba(67, 24, 255, 0.08), rgba(56, 189, 248, 0.06))',
-            border: '1px solid rgba(67, 24, 255, 0.2)',
-            borderRadius: '12px',
-            padding: '16px 20px',
-            marginBottom: '20px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            flexWrap: 'wrap',
-            gap: '12px'
-          }}>
-            <div>
-              <div style={{ fontSize: '11.5px', fontWeight: 700, color: '#4318FF', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px' }}>
-                🚀 Continue Practice • Up Next
-              </div>
-              <div style={{ fontSize: '15px', fontWeight: 700, color: 'var(--text-primary)' }}>
-                {nextMCQuestion.id}: {nextMCQuestion.title}
-              </div>
-              <div style={{ fontSize: '12.5px', color: 'var(--text-secondary)', marginTop: '2px' }}>
-                {nextMCQuestion.category} • {nextMCQuestion.difficulty} • ⏱️ {nextMCQuestion.timeEstimate}
-              </div>
-            </div>
-            <Link
-              to={`/machine-coding?id=${nextMCQuestion.id}`}
-              className="btn btn-primary candidate-btn-primary"
-              style={{ padding: '8px 18px', fontSize: '13px' }}
-            >
-              Resume Challenge →
-            </Link>
-          </div>
-        )}
-
-        {/* MC Submissions Ledger Stats Row */}
-        <div className="mc-stats-summary-grid">
-          <div className="mc-summary-tile">
-            <span className="mc-summary-icon">📝</span>
-            <div>
-              <span className="mc-summary-num">{mcSubmissions.length}</span>
-              <span className="mc-summary-label">Challenges Submitted</span>
-            </div>
-          </div>
-          <div className="mc-summary-tile">
-            <span className="mc-summary-icon">🎯</span>
-            <div>
-              <span className="mc-summary-num" style={{ color: mcStats.avgMarks >= 85 ? '#10b981' : '#4318FF' }}>
-                {mcStats.avgMarks}%
-              </span>
-              <span className="mc-summary-label">Average Marks</span>
-            </div>
-          </div>
-          <div className="mc-summary-tile">
-            <span className="mc-summary-icon">💎</span>
-            <div>
-              <span className="mc-summary-num" style={{ color: '#8b5cf6' }}>
-                {mcStats.perfectCount}
-              </span>
-              <span className="mc-summary-label">100% Full Marks</span>
-            </div>
-          </div>
-          <div className="mc-summary-tile">
-            <span className="mc-summary-icon">✅</span>
-            <div>
-              <span className="mc-summary-num" style={{ color: '#10b981' }}>
-                {mcStats.passedCount}
-              </span>
-              <span className="mc-summary-label">Evaluated Passes</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Candidate Skill Radar & Competency Scorecard */}
-        <CandidateSkillRadar
-          candidateName={user?.name || user?.email?.split('@')[0] || 'Candidate'}
-          candidateId={user?.id}
-          submissions={mcSubmissions.map(s => ({
-            id: s.id,
-            question_id: s.questionId,
-            title: s.questionTitle,
-            score: reviewsMap[s.id]?.score ?? s.score,
-            status: s.status,
-            created_at: s.createdAt,
-          }))}
-          reviews={reviewsMap}
+      {/* Active Workspace Content (Only active view is rendered) */}
+      {currentView === 'overview' && (
+        <DashboardOverview
+          totalSolved={totalSolved}
+          totalCatalogCount={totalCatalogCount}
+          overallPercentage={overallPercentage}
+          streak={streak}
+          docsSyllabusStats={docsSyllabusStats}
+          mcSolvedCount={mcSolvedIds.size}
+          mcTotalCatalog={MACHINE_CODING_CATALOG.length}
+          dsaSolvedCount={dsaSolvedCount}
+          dsaTotalCatalog={DSA_QUESTIONS.length}
+          cpSolvedCount={cpSolvedCount}
+          cpTotalCatalog={CORE_PROGRAMMING_QUESTIONS.length}
+          fjsSolvedCount={fjsSolvedCount}
+          fjsTotalCatalog={FRONTEND_JS_QUESTIONS.length}
+          onOpenDossier={() => setShowDossierModal(true)}
+          onSelectView={setView}
         />
-
-        {/* Submissions Category Toggle Tabs */}
-        <div style={{ display: 'flex', gap: '8px', margin: '24px 0 16px', borderBottom: '1px solid var(--border)', paddingBottom: '12px', flexWrap: 'wrap' }}>
-          <button
-            type="button"
-            className={`btn btn-sm ${activeSubmissionsTab === 'mc' ? 'btn-primary' : 'btn-secondary'}`}
-            onClick={() => setActiveSubmissionsTab('mc')}
-            style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
-          >
-            <span>⚡</span>
-            <span>Machine Coding ({mcSubmissions.length})</span>
-          </button>
-          <button
-            type="button"
-            className={`btn btn-sm ${activeSubmissionsTab === 'dsa' ? 'btn-primary' : 'btn-secondary'}`}
-            onClick={() => setActiveSubmissionsTab('dsa')}
-            style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
-          >
-            <span>🧠</span>
-            <span>DSA Challenges ({dsaSubmissions.length})</span>
-          </button>
-          <button
-            type="button"
-            className={`btn btn-sm ${activeSubmissionsTab === 'cp' ? 'btn-primary' : 'btn-secondary'}`}
-            onClick={() => setActiveSubmissionsTab('cp')}
-            style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
-          >
-            <span>💻</span>
-            <span>Core Programming ({cpSubmissions.length})</span>
-          </button>
-          <button
-            type="button"
-            className={`btn btn-sm ${activeSubmissionsTab === 'fjs' ? 'btn-primary' : 'btn-secondary'}`}
-            onClick={() => setActiveSubmissionsTab('fjs')}
-            style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
-          >
-            <span>🌐</span>
-            <span>Frontend JS ({fjsSubmissions.length})</span>
-          </button>
-        </div>
-
-        {/* ============ Machine Coding Panel ============ */}
-        {activeSubmissionsTab === 'mc' && (
-          loadingMC ? (
-            <div style={{ padding: '40px', textAlign: 'center' }}>
-              <div className="app-route-spinner" />
-              <p style={{ marginTop: '12px', color: 'var(--text-secondary)' }}>Loading your machine coding submissions from Supabase...</p>
-            </div>
-          ) : mcSubmissions.length === 0 ? (
-            <div className="mc-empty-box">
-              <span style={{ fontSize: '2.4rem' }}>⚡</span>
-              <h3 style={{ marginTop: '10px', marginBottom: '6px' }}>No Machine Coding Submissions Yet</h3>
-              <p style={{ color: 'var(--text-secondary)', maxWidth: '540px', margin: '0 auto 18px', fontSize: '0.92rem' }}>
-                Step into the Machine Coding Studio to solve real-world React UI components, execute automated unit test assertions, and build your tracked portfolio.
-              </p>
-
-              <div className="mc-starter-grid">
-                <Link to="/machine-coding?id=Q001" className="mc-starter-card">
-                  <div>
-                    <span className="candidate-track-tag">#Q001 • Easy</span>
-                    <h4 style={{ margin: '8px 0 4px', fontSize: '1rem' }}>Counter with Step &amp; Limits</h4>
-                    <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--text-secondary)' }}>State &amp; component logic with boundary constraints.</p>
-                  </div>
-                  <span style={{ color: '#4318FF', fontWeight: 600, fontSize: '0.82rem', marginTop: '12px' }}>Start Coding →</span>
-                </Link>
-                <Link to="/machine-coding?id=Q002" className="mc-starter-card">
-                  <div>
-                    <span className="candidate-track-tag">#Q002 • Easy</span>
-                    <h4 style={{ margin: '8px 0 4px', fontSize: '1rem' }}>Accordion / Collapse</h4>
-                    <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Collapsible content sections with smooth toggling.</p>
-                  </div>
-                  <span style={{ color: '#4318FF', fontWeight: 600, fontSize: '0.82rem', marginTop: '12px' }}>Start Coding →</span>
-                </Link>
-                <Link to="/machine-coding?id=Q003" className="mc-starter-card">
-                  <div>
-                    <span className="candidate-track-tag">#Q003 • Medium</span>
-                    <h4 style={{ margin: '8px 0 4px', fontSize: '1rem' }}>Todo List with Filter &amp; Persistence</h4>
-                    <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Full CRUD operations with localStorage synchronization.</p>
-                  </div>
-                  <span style={{ color: '#4318FF', fontWeight: 600, fontSize: '0.82rem', marginTop: '12px' }}>Start Coding →</span>
-                </Link>
-              </div>
-
-              <div style={{ marginTop: '24px' }}>
-                <Link to="/machine-coding" className="btn btn-primary candidate-btn-primary" style={{ padding: '10px 24px' }}>
-                  <span>⚡</span> Launch Machine Coding Studio
-                </Link>
-              </div>
-            </div>
-          ) : (
-            <>
-              {/* Search & Filter Bar */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', margin: '18px 0 14px', gap: '12px', flexWrap: 'wrap' }}>
-                <input
-                  type="text"
-                  className="search-field"
-                  placeholder="Filter your submissions by ID, title, or category..."
-                  value={mcSearch}
-                  onChange={e => setMcSearch(e.target.value)}
-                  style={{ maxWidth: '340px', width: '100%' }}
-                />
-                <span style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>
-                  Showing {filteredMCSubmissions.length} of {mcSubmissions.length} submissions
-                </span>
-              </div>
-
-              {/* Submissions Table */}
-              <div className="table-responsive">
-                <table className="admin-data-table">
-                  <thead>
-                    <tr>
-                      <th>Timestamp</th>
-                      <th>Problem Challenge</th>
-                      <th>Category</th>
-                      <th>Tech</th>
-                      <th>Status</th>
-                      <th>Marks / Score</th>
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredMCSubmissions.length === 0 ? (
-                      <tr>
-                        <td colSpan={7} style={{ textAlign: 'center', padding: '28px', color: 'var(--text-muted)' }}>
-                          No submissions matching "{mcSearch}"
-                        </td>
-                      </tr>
-                    ) : (
-                      filteredMCSubmissions.map(sub => {
-                        const review = reviewsMap[sub.id]
-                        const effectiveScore = review?.score ?? sub.score
-                        return (
-                          <tr key={sub.id}>
-                            <td>
-                              <span className="sub-time">
-                                {new Date(sub.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                              </span>
-                              <span className="sub-date">
-                                {new Date(sub.createdAt).toLocaleDateString([], { month: 'short', day: 'numeric' })}
-                              </span>
-                            </td>
-                            <td>
-                              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
-                                  <span className="aq-qid-tag" style={{ fontWeight: 700 }}>#{sub.questionId}</span>
-                                  <span className={`badge badge-${(sub.difficulty || 'medium').toLowerCase()}`} style={{ fontSize: '10px', padding: '2px 6px' }}>
-                                    {sub.difficulty}
-                                  </span>
-                                  {review && (
-                                    <span className="submission-pill" style={{ background: 'rgba(139, 92, 246, 0.15)', color: '#8b5cf6', fontSize: '10px', padding: '1px 6px', fontWeight: 700 }}>
-                                      ⭐ Evaluator Graded
-                                    </span>
-                                  )}
-                                </div>
-                                <strong style={{ fontSize: '13px', color: 'var(--text-primary)' }}>
-                                  {sub.questionTitle}
-                                </strong>
-                              </div>
-                            </td>
-                            <td>
-                              <span className="badge badge-category" style={{ fontSize: '11px' }}>
-                                {sub.category}
-                              </span>
-                            </td>
-                            <td>
-                              <span className="lang-tag">{sub.language}</span>
-                            </td>
-                            <td>
-                              <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
-                                <span className={`submission-pill ${effectiveScore >= 70 ? 'accepted' : 'wrong'}`}>
-                                  {effectiveScore >= 70 ? '✓ Evaluated & Passed' : '⚠️ Needs Revision'}
-                                </span>
-                                {review && (
-                                  <span style={{ fontSize: '10px', fontWeight: 700, color: review.decision === 'approved' ? '#10b981' : review.decision === 'needs_work' ? '#f59e0b' : '#ef4444' }}>
-                                    {review.decision === 'approved' ? '🟢 Hire Recommendation' : review.decision === 'needs_work' ? '🟡 Re-evaluate' : '🔴 Below Bar'}
-                                  </span>
-                                )}
-                              </div>
-                            </td>
-                            <td>
-                              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                  <strong style={{ fontSize: '14px', color: effectiveScore >= 100 ? '#10b981' : effectiveScore >= 70 ? '#3b82f6' : '#ef4444' }}>
-                                    {effectiveScore}%
-                                  </strong>
-                                  <span style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>
-                                    ({effectiveScore}/100)
-                                  </span>
-                                </div>
-                                {review ? (
-                                  <span style={{ fontSize: '10px', color: '#8b5cf6', fontWeight: 600 }}>
-                                    ⭐ Verified by {review.evaluatorName}
-                                  </span>
-                                ) : (
-                                  <span style={{ fontSize: '10px', color: effectiveScore >= 100 ? '#10b981' : 'var(--text-secondary)', fontWeight: 600 }}>
-                                    {sub.testsPassed}/{sub.testsTotal} test assertions passed
-                                  </span>
-                                )}
-                              </div>
-                            </td>
-                            <td>
-                              <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
-                                <Link
-                                  to={`/machine-coding?id=${sub.questionId}`}
-                                  className="btn btn-sm btn-primary candidate-btn-primary"
-                                  style={{ padding: '4px 10px', fontSize: '12px' }}
-                                  title="Re-open in Machine Coding Studio"
-                                >
-                                  ⚡ Studio
-                                </Link>
-                                <button
-                                  type="button"
-                                  className="btn btn-sm btn-secondary"
-                                  onClick={() => setViewingMCSubmission(sub)}
-                                  style={{ padding: '4px 8px', fontSize: '12px' }}
-                                  title="View Submitted Code & Review"
-                                >
-                                  👁️ Code
-                                </button>
-                              </div>
-                            </td>
-                          </tr>
-                        )
-                      })
-                    )}
-                  </tbody>
-                </table>
-              </div>
-            </>
-          )
-        )}
-
-        {/* ============ DSA Panel ============ */}
-        {activeSubmissionsTab === 'dsa' && (
-          dsaSubmissions.length === 0 ? (
-            <div className="mc-empty-box">
-              <span style={{ fontSize: '2.4rem' }}>🧠</span>
-              <h3 style={{ marginTop: '10px', marginBottom: '6px' }}>No DSA Submissions Yet</h3>
-              <p style={{ color: 'var(--text-secondary)', maxWidth: '540px', margin: '0 auto 18px', fontSize: '0.92rem' }}>
-                Start solving from our 1,000 algorithmic questions covering Two Pointers, Dynamic Programming, Trees, and Graphs.
-              </p>
-              <Link to="/dsa" className="btn btn-primary candidate-btn-primary" style={{ display: 'inline-flex', padding: '10px 24px' }}>
-                <span>🚀</span> Launch DSA Studio
-              </Link>
-            </div>
-          ) : (
-            <>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', margin: '18px 0 14px', gap: '12px', flexWrap: 'wrap' }}>
-                <input
-                  type="text"
-                  className="search-field"
-                  placeholder="Filter your DSA submissions..."
-                  value={dsaSearch}
-                  onChange={e => setDsaSearch(e.target.value)}
-                  style={{ maxWidth: '340px', width: '100%' }}
-                />
-                <span style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>
-                  Showing {filteredDSASubmissions.length} of {dsaSubmissions.length} submissions · {dsaSolvedCount} solved
-                </span>
-              </div>
-
-              <div className="table-responsive">
-                <table className="admin-data-table">
-                  <thead>
-                    <tr>
-                      <th>Timestamp</th>
-                      <th>Problem</th>
-                      <th>Difficulty</th>
-                      <th>Language</th>
-                      <th>Status</th>
-                      <th>Test Cases</th>
-                      <th>Runtime</th>
-                      <th>Action</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredDSASubmissions.map(sub => {
-                      const qMeta = DSA_QUESTIONS.find(q => q.id === sub.questionId)
-                      const isAcc = sub.status === 'Accepted'
-                      return (
-                        <tr key={sub.id}>
-                          <td>
-                            <span className="sub-time">
-                              {new Date(sub.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                            </span>
-                            <span className="sub-date">
-                              {new Date(sub.timestamp).toLocaleDateString([], { month: 'short', day: 'numeric' })}
-                            </span>
-                          </td>
-                          <td>
-                            <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>
-                              {qMeta ? qMeta.title : resolveQuestionTitle(sub.questionId)}
-                            </div>
-                            <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
-                              #{sub.questionId} {qMeta ? `• ${qMeta.topic}` : ''}
-                            </span>
-                          </td>
-                          <td>
-                            <span className={`diff-badge diff-${(qMeta?.difficulty || 'Medium').toLowerCase()}`}>
-                              {qMeta?.difficulty || 'Medium'}
-                            </span>
-                          </td>
-                          <td>
-                            <span className="tech-badge">{sub.language}</span>
-                          </td>
-                          <td>
-                            <span className={`status-pill ${isAcc ? 'status-pill-passed' : 'status-pill-failed'}`}>
-                              {isAcc ? '✓ Accepted' : '✗ ' + sub.status}
-                            </span>
-                          </td>
-                          <td style={{ fontWeight: 600 }}>
-                            {sub.testsPassed} / {sub.testsTotal}
-                          </td>
-                          <td style={{ color: 'var(--text-muted)' }}>
-                            {sub.runtimeMs} ms
-                          </td>
-                          <td>
-                            <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
-                              <Link
-                                to={`/dsa?id=${sub.questionId}`}
-                                className="btn btn-sm btn-primary"
-                                style={{ padding: '4px 10px', fontSize: '12px' }}
-                              >
-                                Open Studio →
-                              </Link>
-                              <button
-                                type="button"
-                                className="btn btn-sm btn-secondary"
-                                onClick={() => setViewingSubmission({
-                                  id: sub.id,
-                                  questionId: sub.questionId,
-                                  title: qMeta ? qMeta.title : resolveQuestionTitle(sub.questionId),
-                                  category: 'DSA Masterclass',
-                                  tech: sub.language,
-                                  status: sub.status,
-                                  score: isAcc ? 100 : Math.round(((sub.testsPassed || 0) / Math.max(1, sub.testsTotal || 1)) * 80),
-                                  code: sub.code || '// No source code recorded',
-                                  language: sub.language,
-                                  testsPassed: sub.testsPassed,
-                                  testsTotal: sub.testsTotal,
-                                  runtimeMs: sub.runtimeMs,
-                                  timestamp: sub.timestamp,
-                                  studioUrl: `/dsa?id=${sub.questionId}`,
-                                  isMachineCoding: false,
-                                })}
-                                style={{ padding: '4px 8px', fontSize: '12px' }}
-                                title="View Submitted Code"
-                              >
-                                👁️ Code
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      )
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            </>
-          )
-        )}
-
-        {/* ============ Core Programming Panel ============ */}
-        {activeSubmissionsTab === 'cp' && (
-          cpSubmissions.length === 0 ? (
-            <div className="mc-empty-box">
-              <span style={{ fontSize: '2.4rem' }}>💻</span>
-              <h3 style={{ marginTop: '10px', marginBottom: '6px' }}>No Core Programming Submissions Yet</h3>
-              <p style={{ color: 'var(--text-secondary)', maxWidth: '540px', margin: '0 auto 18px', fontSize: '0.92rem' }}>
-                Start working through our 500 Core JavaScript Programming challenges to build your skills and grow your submission history.
-              </p>
-              <Link to="/core-programming" className="btn btn-primary candidate-btn-primary" style={{ display: 'inline-flex', padding: '10px 24px' }}>
-                <span>🚀</span> Launch Core Programming Studio
-              </Link>
-            </div>
-          ) : (
-            <>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', margin: '18px 0 14px', gap: '12px', flexWrap: 'wrap' }}>
-                <input
-                  type="text"
-                  className="search-field"
-                  placeholder="Filter Core Programming submissions..."
-                  value={cpSearch}
-                  onChange={e => setCpSearch(e.target.value)}
-                  style={{ maxWidth: '340px', width: '100%' }}
-                />
-                <span style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>
-                  Showing {filteredCPSubmissions.length} of {cpSubmissions.length} submissions · {cpSolvedCount} solved
-                </span>
-              </div>
-              <div className="table-responsive">
-                <table className="admin-data-table">
-                  <thead>
-                    <tr>
-                      <th>Timestamp</th>
-                      <th>Problem</th>
-                      <th>Difficulty</th>
-                      <th>Status</th>
-                      <th>Test Cases</th>
-                      <th>Score</th>
-                      <th>Runtime</th>
-                      <th>Action</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredCPSubmissions.map(sub => {
-                      const q = CORE_PROGRAMMING_QUESTIONS.find(item => item.id === sub.questionId)
-                      const isAcc = sub.status === 'Accepted'
-                      return (
-                        <tr key={sub.id}>
-                          <td>
-                            <span className="sub-time">
-                              {new Date(sub.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                            </span>
-                            <span className="sub-date">
-                              {new Date(sub.timestamp).toLocaleDateString([], { month: 'short', day: 'numeric' })}
-                            </span>
-                          </td>
-                          <td>
-                            <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>
-                              {sub.questionId} {q ? q.title : resolveQuestionTitle(sub.questionId)}
-                            </div>
-                            <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{q?.category || 'JavaScript'}</span>
-                          </td>
-                          <td>
-                            <span className={`badge badge-${(q?.difficulty || 'easy').toLowerCase()}`}>
-                              {q?.difficulty || 'Easy'}
-                            </span>
-                          </td>
-                          <td>
-                            <span className={`status-pill ${isAcc ? 'status-pill-passed' : 'status-pill-failed'}`}>
-                              {isAcc ? '✓ Accepted' : '✗ ' + sub.status}
-                            </span>
-                          </td>
-                          <td style={{ fontWeight: 600 }}>
-                            {sub.testsPassed} / {sub.testsTotal}
-                          </td>
-                          <td style={{ fontWeight: 600, color: sub.score >= 100 ? '#10b981' : sub.score >= 70 ? '#3b82f6' : '#ef4444' }}>
-                            {sub.score}%
-                          </td>
-                          <td style={{ color: 'var(--text-muted)' }}>
-                            {sub.runtimeMs} ms
-                          </td>
-                          <td>
-                            <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
-                              <Link
-                                to={`/core-programming/${sub.questionId.toLowerCase()}`}
-                                className="btn btn-sm btn-primary"
-                                style={{ padding: '4px 10px', fontSize: '12px' }}
-                              >
-                                Open Studio →
-                              </Link>
-                              <button
-                                type="button"
-                                className="btn btn-sm btn-secondary"
-                                onClick={() => setViewingSubmission({
-                                  id: sub.id,
-                                  questionId: sub.questionId,
-                                  title: q ? q.title : resolveQuestionTitle(sub.questionId),
-                                  category: 'Core Programming',
-                                  tech: 'JavaScript',
-                                  status: sub.status,
-                                  score: sub.score,
-                                  code: sub.code || '// No source code recorded',
-                                  language: 'javascript',
-                                  testsPassed: sub.testsPassed,
-                                  testsTotal: sub.testsTotal,
-                                  runtimeMs: sub.runtimeMs,
-                                  timestamp: sub.timestamp,
-                                  studioUrl: `/core-programming/${sub.questionId.toLowerCase()}`,
-                                  isMachineCoding: false,
-                                })}
-                                style={{ padding: '4px 8px', fontSize: '12px' }}
-                                title="View Submitted Code"
-                              >
-                                👁️ Code
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      )
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            </>
-          )
-        )}
-
-        {/* ============ Frontend JS Panel ============ */}
-        {activeSubmissionsTab === 'fjs' && (
-          fjsSubmissions.length === 0 ? (
-            <div className="mc-empty-box">
-              <span style={{ fontSize: '2.4rem' }}>🌐</span>
-              <h3 style={{ marginTop: '10px', marginBottom: '6px' }}>No Frontend JS Submissions Yet</h3>
-              <p style={{ color: 'var(--text-secondary)', maxWidth: '540px', margin: '0 auto 18px', fontSize: '0.92rem' }}>
-                Tackle our Frontend JavaScript interview question bank — covering DOM, async patterns, closures, and real-world browser scenarios.
-              </p>
-              <Link to="/frontend-js" className="btn btn-primary candidate-btn-primary" style={{ display: 'inline-flex', padding: '10px 24px' }}>
-                <span>🚀</span> Launch Frontend JS Studio
-              </Link>
-            </div>
-          ) : (
-            <>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', margin: '18px 0 14px', gap: '12px', flexWrap: 'wrap' }}>
-                <input
-                  type="text"
-                  className="search-field"
-                  placeholder="Filter Frontend JS submissions..."
-                  value={fjsSearch}
-                  onChange={e => setFjsSearch(e.target.value)}
-                  style={{ maxWidth: '340px', width: '100%' }}
-                />
-                <span style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>
-                  Showing {filteredFJSSubmissions.length} of {fjsSubmissions.length} submissions · {fjsSolvedCount} solved
-                </span>
-              </div>
-              <div className="table-responsive">
-                <table className="admin-data-table">
-                  <thead>
-                    <tr>
-                      <th>Timestamp</th>
-                      <th>Problem</th>
-                      <th>Status</th>
-                      <th>Test Cases</th>
-                      <th>Score</th>
-                      <th>Runtime</th>
-                      <th>Action</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredFJSSubmissions.map(sub => {
-                      const qMeta = FRONTEND_JS_QUESTIONS.find(item => item.id.toLowerCase() === sub.questionId.toLowerCase())
-                      const isAcc = sub.status === 'Accepted'
-                      return (
-                        <tr key={sub.id}>
-                          <td>
-                            <span className="sub-time">
-                              {new Date(sub.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                            </span>
-                            <span className="sub-date">
-                              {new Date(sub.timestamp).toLocaleDateString([], { month: 'short', day: 'numeric' })}
-                            </span>
-                          </td>
-                          <td>
-                            <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>
-                              {sub.questionId} {qMeta ? `• ${qMeta.title}` : ''}
-                            </div>
-                            <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{qMeta?.category || 'Frontend JavaScript'}</span>
-                          </td>
-                          <td>
-                            <span className={`status-pill ${isAcc ? 'status-pill-passed' : 'status-pill-failed'}`}>
-                              {isAcc ? '✓ Accepted' : '✗ ' + sub.status}
-                            </span>
-                          </td>
-                          <td style={{ fontWeight: 600 }}>
-                            {sub.testsPassed} / {sub.testsTotal}
-                          </td>
-                          <td style={{ fontWeight: 600, color: sub.score >= 100 ? '#10b981' : sub.score >= 70 ? '#3b82f6' : '#ef4444' }}>
-                            {sub.score}%
-                          </td>
-                          <td style={{ color: 'var(--text-muted)' }}>
-                            {sub.runtimeMs} ms
-                          </td>
-                          <td>
-                            <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
-                              <Link
-                                to={`/frontend-js/${sub.questionId.toLowerCase()}`}
-                                className="btn btn-sm btn-primary"
-                                style={{ padding: '4px 10px', fontSize: '12px' }}
-                              >
-                                Open Studio →
-                              </Link>
-                              <button
-                                type="button"
-                                className="btn btn-sm btn-secondary"
-                                onClick={() => setViewingSubmission({
-                                  id: sub.id,
-                                  questionId: sub.questionId,
-                                  title: qMeta ? qMeta.title : resolveQuestionTitle(sub.questionId),
-                                  category: 'Frontend JavaScript',
-                                  tech: 'JavaScript',
-                                  status: sub.status,
-                                  score: sub.score,
-                                  code: sub.code || '// No source code recorded',
-                                  language: 'javascript',
-                                  testsPassed: sub.testsPassed,
-                                  testsTotal: sub.testsTotal,
-                                  runtimeMs: sub.runtimeMs,
-                                  timestamp: sub.timestamp,
-                                  studioUrl: `/frontend-js/${sub.questionId.toLowerCase()}`,
-                                  isMachineCoding: false,
-                                })}
-                                style={{ padding: '4px 8px', fontSize: '12px' }}
-                                title="View Submitted Code"
-                              >
-                                👁️ Code
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      )
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            </>
-          )
-        )}
-      </section>
-
-      {/* 30-Day Activity Heatmap */}
-      <section className="activity-heatmap-section card-box">
-        <div className="section-head-row">
-          <div>
-            <h2 className="dash-section-title">Last 30 Days Study Activity</h2>
-            <p className="dash-section-sub">Consistency is key to mastering technical interviews.</p>
-          </div>
-          <span className="activity-count-badge">
-            <span className="pulse-dot-green" /> {studyDates.size} active day{studyDates.size !== 1 ? 's' : ''} recorded
-          </span>
-        </div>
-        <div className="heatmap-container">
-          <div className="heatmap-grid" role="region" aria-label="30-day activity map">
-            {last30Days.map(d => (
-              <div
-                key={d.dateStr}
-                className={`heatmap-cell ${d.active ? 'active' : ''}`}
-                title={`${d.label}: ${d.active ? 'Active Study Session ✓' : 'No Activity'}`}
-              >
-                <span className="heatmap-cell-label">{d.label.split(' ')[1]}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-        <div className="heatmap-legend">
-          <div className="legend-item">
-            <span className="legend-box inactive" /> <span>No activity</span>
-          </div>
-          <div className="legend-item">
-            <span className="legend-box active" /> <span>Active study session</span>
-          </div>
-        </div>
-      </section>
-
-      {/* Category Mastery Progress */}
-      <section className="category-mastery-section">
-        <div className="section-head-row">
-          <div>
-            <h2 className="dash-section-title">Category Mastery</h2>
-            <p className="dash-section-sub">Track syllabus completion and focus on weaker topics.</p>
-          </div>
-          <Link to="/questions" className="section-link-cta">
-            View All Categories →
-          </Link>
-        </div>
-        <div className="category-mastery-grid">
-          {categoryStats.map(cat => (
-            <div key={cat.name} className={`mastery-card ${catClass(cat.name)}`}>
-              <div className="mastery-card-head">
-                <span className="mastery-cat-name">{cat.name}</span>
-                <span className="mastery-cat-pct">{cat.pct}%</span>
-              </div>
-              <div className="mastery-bar-track" role="progressbar" aria-valuenow={cat.pct} aria-valuemin={0} aria-valuemax={100}>
-                <div className="mastery-bar-fill" style={{ width: `${cat.pct}%` }} />
-              </div>
-              <div className="mastery-card-footer">
-                <span className="mastery-count-text">
-                  {cat.solved} of {cat.total} solved
-                </span>
-                <Link to={`/questions?category=${encodeURIComponent(cat.name)}`} className="mastery-link">
-                  Practice <span>→</span>
-                </Link>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Smart Recommendations */}
-      {recommendations.length > 0 && (
-        <section className="recommendations-section">
-          <div className="section-head-row">
-            <div>
-              <h2 className="dash-section-title">Recommended Next for You</h2>
-              <p className="dash-section-sub">Hand-picked questions from categories where you have the most room to grow:</p>
-            </div>
-          </div>
-          <div className="recommendations-grid">
-            {recommendations.map(q => (
-              <Link key={q.id} to={`/questions/${q.id}`} className={`recommendation-card ${catClass(q.category)}`}>
-                <div className="rec-badge-row">
-                  <span className={`badge badge-category ${catClass(q.category)}`}>{q.category}</span>
-                  <span className={`badge badge-${q.difficulty.toLowerCase()}`}>{q.difficulty}</span>
-                </div>
-                <h4 className="rec-title">{q.question}</h4>
-                <div className="rec-footer">
-                  <span className="rec-action-cta">Solve Question <span>→</span></span>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </section>
       )}
+
+      {currentView === 'activity' && (
+        <DashboardActivity
+          mcSubmissions={mcSubmissions}
+          dsaSubmissions={dsaSubmissions}
+          cpSubmissions={cpSubmissions}
+          fjsSubmissions={fjsSubmissions}
+          onViewSubmission={setViewingSubmission}
+        />
+      )}
+
+      {currentView === 'progress' && (
+        <DashboardProgress
+          totalSolved={totalSolved}
+          totalCatalogCount={totalCatalogCount}
+          overallPercentage={overallPercentage}
+          streak={streak}
+          docsSyllabusStats={docsSyllabusStats}
+          mcSolvedCount={mcSolvedIds.size}
+          mcTotalCatalog={MACHINE_CODING_CATALOG.length}
+          dsaSolvedCount={dsaSolvedCount}
+          dsaTotalCatalog={DSA_QUESTIONS.length}
+          cpSolvedCount={cpSolvedCount}
+          cpTotalCatalog={CORE_PROGRAMMING_QUESTIONS.length}
+          fjsSolvedCount={fjsSolvedCount}
+          fjsTotalCatalog={FRONTEND_JS_QUESTIONS.length}
+        />
+      )}
+
+      {currentView === 'analytics' && <DashboardAnalytics />}
+
+      {currentView === 'upcoming' && <DashboardUpcoming />}
+
+      {currentView === 'profile' && <DashboardProfile />}
+
+      {/* Technical Readiness Dossier Modal */}
+      {showDossierModal && (
+        <Suspense fallback={null}>
+          <FaangReadinessDossierModal
+            candidateId={user?.id || 'usr_candidate_demo'}
+            candidateName={user?.name || 'Candidate Evaluator'}
+            onClose={() => setShowDossierModal(false)}
+          />
+        </Suspense>
+      )}
+
+
+
+
+
 
       {/* Reset Confirmation Modal */}
       {showResetConfirm && (
@@ -2249,8 +631,6 @@ function CandidateDashboard() {
             </div>
           </div>
         </div>
-      )}
-        </>
       )}
     </div>
   )

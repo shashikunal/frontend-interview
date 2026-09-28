@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import { auditService, type AccessNotificationItem } from '../../features/auth/services/audit.service'
+import { geoTelemetryService, type LoginSessionTelemetry } from '../../services/geoTelemetryService'
 import './AdminNotificationBell.css'
 
 export default function AdminNotificationBell() {

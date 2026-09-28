@@ -443,10 +443,18 @@ export class WebRTCPeerService {
   }
 
   /**
-   * Destroy and clean up all WebRTC peer connections
+   * Destroy and clean up all WebRTC peer connections and socket listeners
    */
   public destroy(): void {
     this.isDestroyed = true;
+    if (this.socket) {
+      this.socket.off('meeting:webrtc:offer');
+      this.socket.off('meeting:webrtc:answer');
+      this.socket.off('meeting:webrtc:ice-candidate');
+      this.socket.off('meeting:webrtc:renegotiate');
+      this.socket.off('meeting:participant:left');
+      this.socket.off('meeting:participant:removed');
+    }
     this.peers.forEach((peer) => {
       peer.cameraStream.getTracks().forEach((t) => t.stop());
       peer.screenStream.getTracks().forEach((t) => t.stop());
@@ -457,6 +465,7 @@ export class WebRTCPeerService {
     this.peers.clear();
     this.localStream = null;
     this.localScreenStream = null;
+    this.socket = null;
   }
 }
 

@@ -468,7 +468,7 @@ export function DocsInteractivePlayground({
                 handleTriggerAiReview();
               }
             }}
-            title="Ask Ollama for a senior FAANG technical code review with score & gotchas"
+            title="Ask Ollama for a senior technical code review with score &amp; gotchas"
           >
             <span>🔍</span>
             <span>AI Senior Code Review</span>

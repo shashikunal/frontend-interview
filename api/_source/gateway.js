@@ -22,6 +22,7 @@ import candidateAiEvalHandler from '../_handlers/candidate-ai-evaluation.js';
 import sendEmailHandler from '../_handlers/send-email.js';
 import aiFeedbackHandler from '../_handlers/ai-feedback.js';
 import notificationsHandler from '../_handlers/notifications.js';
+import cloudinaryHandler from '../_handlers/cloudinary.js';
 
 async function parseBody(req) {
   if (req.body && typeof req.body === 'object') return req.body;
@@ -148,6 +149,9 @@ export default async function handler(req, res) {
     }
     if (pathname === '/api/send-email') {
       return sendEmailHandler(req, res);
+    }
+    if (pathname === '/api/cloudinary' || pathname.startsWith('/api/cloudinary/') || pathname === '/api/v1/cloudinary' || pathname.startsWith('/api/v1/cloudinary/')) {
+      return cloudinaryHandler(req, res);
     }
 
     // Default Fallback

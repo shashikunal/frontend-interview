@@ -34,7 +34,7 @@ export class DSASubmissionService {
   ): Promise<void> {
     const userId = user?.id
     const userName = user?.name || 'Candidate'
-    const userEmail = user?.email || (userId ? `candidate-${userId.slice(0, 6)}@faang.io` : 'guest@faang.io')
+    const userEmail = user?.email || (userId ? `candidate-${userId.slice(0, 6)}@interviewprep.local` : 'guest@interviewprep.local')
 
     // 1. Always record in localStorage first
     dsaProgressService.addSubmission(submission)

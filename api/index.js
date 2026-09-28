@@ -1386,8 +1386,8 @@ var init_meetingOpsService = __esm({
           start_at: todayAt2PM.toISOString(),
           end_at: todayAt3PM.toISOString(),
           timezone: "Asia/Kolkata",
-          trainer_id: "usr_trainer_shashi",
-          trainer_name: "Shashi Kunal (Staff Evaluator)",
+          trainer_id: "usr_trainer_staff",
+          trainer_name: "Staff Evaluator",
           created_by: "admin_master",
           batch_id: "Batch 2026-Alpha",
           status: "SCHEDULED",
@@ -1401,9 +1401,9 @@ var init_meetingOpsService = __esm({
         const p1 = {
           id: crypto6.randomUUID(),
           meeting_id: m1.id,
-          student_id: "usr_shashikunal_sb",
-          student_name: "Shashi Kunal",
-          student_email: "shashikunal@gmail.com",
+          student_id: "usr_candidate_demo",
+          student_name: "Demo Candidate",
+          student_email: "candidate@interviewprep.com",
           status: "SCHEDULED",
           invitation_status: "pending",
           attendance_status: "pending",
@@ -1516,6 +1516,8 @@ var init_meetingOpsService = __esm({
           trainer_name: dto.trainer_name || caller.name || "Platform Trainer",
           created_by: caller.id,
           batch_id: dto.batch_id || void 0,
+          batch_code: dto.batch_code || void 0,
+          batch_name: dto.batch_name || void 0,
           status: "SCHEDULED",
           capacity: dto.capacity || 50,
           recurrence_rule: dto.recurrence || null,
@@ -1730,7 +1732,7 @@ var init_meetingOpsService = __esm({
           const assignedMeetingIds = new Set(
             Array.from(this.participants.values()).filter((p) => p.student_id === options.student_id || options.student_email && p.student_email && p.student_email.toLowerCase() === options.student_email.toLowerCase()).map((p) => p.meeting_id)
           );
-          list = list.filter((m) => assignedMeetingIds.has(m.id) || m.status === "STARTED" || !m.batch_id || m.meeting_type === "Interview" || m.meeting_type === "Technical Discussion");
+          list = list.filter((m) => assignedMeetingIds.has(m.id) || m.status === "STARTED");
         }
         if (options.status && options.status !== "ALL") {
           list = list.filter((m) => m.status.toUpperCase() === options.status.toUpperCase());
@@ -1748,7 +1750,10 @@ var init_meetingOpsService = __esm({
           }
         }
         if (options.batch_id && options.batch_id !== "ALL") {
-          list = list.filter((m) => m.batch_id === options.batch_id);
+          const bQuery = options.batch_id.toLowerCase();
+          list = list.filter(
+            (m) => m.batch_id && m.batch_id.toLowerCase() === bQuery || m.batch_code && m.batch_code.toLowerCase() === bQuery || m.batch_name && m.batch_name.toLowerCase() === bQuery
+          );
         }
         if (options.trainer_id && options.trainer_id !== "ALL") {
           list = list.filter((m) => m.trainer_id === options.trainer_id);
@@ -1869,6 +1874,9 @@ var init_meetingOpsService = __esm({
           if (updates.timezone) target.timezone = updates.timezone;
           if (updates.trainer_id) target.trainer_id = updates.trainer_id;
           if (updates.trainer_name) target.trainer_name = updates.trainer_name;
+          if (updates.batch_id !== void 0) target.batch_id = updates.batch_id;
+          if (updates.batch_code !== void 0) target.batch_code = updates.batch_code;
+          if (updates.batch_name !== void 0) target.batch_name = updates.batch_name;
           if (updates.status) target.status = updates.status;
           target.updated_at = now;
           try {
@@ -3841,7 +3849,14 @@ init_meetingOpsService();
 
 // server/auth/tokenService.ts
 import crypto7 from "crypto";
-var JWT_SECRET = process.env.JWT_SIGNING_SECRET || process.env.SUPABASE_SERVICE_ROLE_KEY || "interviewprep_production_realtime_collaboration_jwt_secret_2026_super_secure";
+function getJwtSecret() {
+  const secret = process.env.JWT_SIGNING_SECRET || process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (secret) return secret;
+  if (process.env.NODE_ENV === "production") {
+    throw new Error("JWT_SIGNING_SECRET environment variable is required in production.");
+  }
+  return "interviewprep_production_realtime_collaboration_jwt_secret_2026_super_secure";
+}
 var JWT_ISSUER = "interviewprep-control-plane";
 var JWT_AUDIENCE = "interviewprep-meet-realtime";
 function base64UrlEncode(data) {
@@ -3860,8 +3875,8 @@ var TokenService = class {
   revokedTokens = /* @__PURE__ */ new Map();
   // jti -> expiry epoch seconds
   refreshTokens = /* @__PURE__ */ new Map();
-  constructor(secret = JWT_SECRET) {
-    this.secret = secret;
+  constructor(secret) {
+    this.secret = secret || getJwtSecret();
     if (typeof setInterval !== "undefined") {
       const timer = setInterval(() => this.cleanupRevocationList(), 5 * 60 * 1e3);
       if (typeof timer?.unref === "function") {
@@ -3973,7 +3988,8 @@ var TokenService = class {
    */
   revokeToken(jti, expiresAt) {
     if (!jti) return;
-    this.revokedTokens.set(jti, expiresAt);
+    const exp = expiresAt ?? Math.floor(Date.now() / 1e3) + 3600;
+    this.revokedTokens.set(jti, exp);
   }
   /**
    * Revokes all active sessions for a user (e.g., password reset, suspension, logout-all)
@@ -4188,7 +4204,7 @@ async function handler(req, res) {
   };
   if (user.role !== "admin") {
     return res.status(403).json(
-      createErrorResponse("Forbidden", "Only platform administrator (shashi) has rights.", "FORBIDDEN", correlation.correlationId)
+      createErrorResponse("Forbidden", "Only platform administrator has rights.", "FORBIDDEN", correlation.correlationId)
     );
   }
   const urlObj = new URL(req.url || "/", "http://localhost");
@@ -4225,7 +4241,7 @@ async function handler(req, res) {
     const page = parseInt(urlObj.searchParams.get("page") || "1", 10);
     const limit = parseInt(urlObj.searchParams.get("limit") || "10", 10);
     const status = urlObj.searchParams.get("status") || void 0;
-    const batchId = urlObj.searchParams.get("batchId") || urlObj.searchParams.get("batch_id") || void 0;
+    const batchId = urlObj.searchParams.get("batchId") || urlObj.searchParams.get("batch_id") || urlObj.searchParams.get("batch_code") || urlObj.searchParams.get("batchCode") || void 0;
     const trainerId = urlObj.searchParams.get("trainerId") || urlObj.searchParams.get("trainer_id") || void 0;
     const timeframe = urlObj.searchParams.get("timeframe") || void 0;
     const search = urlObj.searchParams.get("search") || void 0;
@@ -5600,14 +5616,19 @@ function getStoredAuthHeader() {
 var PROFILES_LOCAL_KEY = "supabase_profiles_real";
 var KNOWN_SUPABASE_AUTH_USERS = [
   {
-    id: "usr_shashikunal_sb",
-    email: "shashikunal@gmail.com",
-    name: "Shashi Kunal",
+    id: "usr_candidate_demo",
+    email: "candidate@interviewprep.com",
+    name: "Demo Candidate",
     role: "candidate",
-    targetCompany: "Google",
-    experienceLevel: "L5 (Senior 5-9y)",
     entitlements: DEFAULT_ENTITLEMENTS.candidate,
     status: "ACTIVE",
+    batch: "2026-Alpha",
+    batchCode: "FE-2026-A",
+    targetTrack: "Frontend Architecture & Staff Level Engineering",
+    phone: "+1 (555) 019-2831",
+    githubUrl: "https://github.com/democandidate",
+    linkedinUrl: "https://linkedin.com/in/democandidate",
+    bio: "Staff Frontend Architect with deep expertise in React 18, Web Vitals, micro-frontends, and design systems.",
     createdAt: (/* @__PURE__ */ new Date()).toISOString()
   }
 ];
@@ -5651,13 +5672,19 @@ var profileService = {
         return {
           id: data.id,
           email: data.email,
-          name: data.full_name || data.email?.split("@")[0] || "Candidate",
+          name: data.full_name || data.email?.split("@")[0] || "User",
           role,
           avatarUrl: data.avatar_url,
-          targetCompany: data.target_company || "Google",
-          experienceLevel: data.experience_level || "L5 (Senior 5-9y)",
+          avatarPublicId: data.avatar_public_id,
           entitlements,
           status: data.status || "ACTIVE",
+          batch: data.batch || "2026-Alpha",
+          batchCode: data.batch_code || "FE-2026-A",
+          targetTrack: data.target_track || "Frontend Architecture",
+          githubUrl: data.github_url,
+          linkedinUrl: data.linkedin_url,
+          phone: data.phone,
+          bio: data.bio,
           createdAt: data.created_at,
           updatedAt: data.updated_at
         };
@@ -5679,12 +5706,18 @@ var profileService = {
       if (p.id === userId) {
         return {
           ...p,
-          name: updates.full_name || p.name,
-          targetCompany: updates.target_company || p.targetCompany,
-          experienceLevel: updates.experience_level || p.experienceLevel,
-          avatarUrl: updates.avatar_url || p.avatarUrl,
-          entitlements: updates.feature_entitlements || p.entitlements,
+          name: updates.full_name !== void 0 ? updates.full_name : p.name,
+          avatarUrl: updates.avatar_url !== void 0 ? updates.avatar_url : p.avatarUrl,
+          avatarPublicId: updates.avatar_public_id !== void 0 ? updates.avatar_public_id : p.avatarPublicId,
+          entitlements: updates.feature_entitlements !== void 0 ? updates.feature_entitlements : p.entitlements,
           status: updates.status || p.status || "ACTIVE",
+          batch: updates.batch !== void 0 ? updates.batch : p.batch || "2026-Alpha",
+          batchCode: updates.batch_code !== void 0 ? updates.batch_code : p.batchCode || "FE-2026-A",
+          targetTrack: updates.target_track !== void 0 ? updates.target_track : p.targetTrack || "Frontend Architecture",
+          githubUrl: updates.github_url !== void 0 ? updates.github_url : p.githubUrl,
+          linkedinUrl: updates.linkedin_url !== void 0 ? updates.linkedin_url : p.linkedinUrl,
+          phone: updates.phone !== void 0 ? updates.phone : p.phone,
+          bio: updates.bio !== void 0 ? updates.bio : p.bio,
           updatedAt: (/* @__PURE__ */ new Date()).toISOString()
         };
       }
@@ -5739,8 +5772,6 @@ var profileService = {
       email: cleanEmail,
       name: params.name,
       role,
-      targetCompany: params.targetCompany || "Google",
-      experienceLevel: params.experienceLevel || "L5 Senior",
       entitlements,
       status: "ACTIVE",
       createdAt: (/* @__PURE__ */ new Date()).toISOString()
@@ -5754,8 +5785,6 @@ var profileService = {
       const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(createdId);
       if (isUuid) {
         await supabase.from("profiles").update({
-          target_company: params.targetCompany || "Google",
-          experience_level: params.experienceLevel || "L5 Senior",
           feature_entitlements: entitlements
         }).eq("id", createdId);
       }
@@ -5812,8 +5841,7 @@ var profileService = {
             name: d.full_name || d.email?.split("@")[0] || "User",
             role,
             avatarUrl: d.avatar_url,
-            targetCompany: d.target_company,
-            experienceLevel: d.experience_level,
+            avatarPublicId: d.avatar_public_id,
             entitlements: d.feature_entitlements || DEFAULT_ENTITLEMENTS[role],
             status: d.status || "ACTIVE",
             createdAt: d.created_at,
@@ -5841,8 +5869,7 @@ var profileService = {
               name: d.full_name || d.email?.split("@")[0] || "User",
               role: d.role || "candidate",
               avatarUrl: d.avatar_url,
-              targetCompany: d.target_company,
-              experienceLevel: d.experience_level,
+              avatarPublicId: d.avatar_public_id,
               entitlements: d.feature_entitlements || DEFAULT_ENTITLEMENTS[d.role || "candidate"],
               status: d.status || "ACTIVE",
               createdAt: d.created_at,
@@ -7850,7 +7877,13 @@ init_meetingService();
 
 // server/meetings/mediaTokenService.ts
 import crypto15 from "node:crypto";
-var MEDIA_SECRET = process.env.MEDIA_JWT_SECRET || "phase4-webrtc-sfu-super-secret-key-32b";
+function getMediaSecret() {
+  if (process.env.MEDIA_JWT_SECRET) return process.env.MEDIA_JWT_SECRET;
+  if (process.env.NODE_ENV === "production") {
+    throw new Error("MEDIA_JWT_SECRET environment variable is required in production.");
+  }
+  return "phase4-webrtc-sfu-super-secret-key-32b";
+}
 var DEFAULT_EXPIRATION_SECONDS = 1800;
 var DEFAULT_ICE_SERVERS = [
   { urls: "stun:stun.l.google.com:19302" },
@@ -7859,8 +7892,8 @@ var DEFAULT_ICE_SERVERS = [
 ];
 var MediaTokenService = class {
   secret;
-  constructor(secret = MEDIA_SECRET) {
-    this.secret = secret;
+  constructor(secret) {
+    this.secret = secret || getMediaSecret();
   }
   /**
    * Derive granular media publishing permissions based on meeting role and meeting settings
@@ -8600,18 +8633,8 @@ async function handler15(req, res) {
       };
     }
   }
-  if (!user) {
-    if (req.method === "GET") {
-      user = {
-        id: "candidate_guest",
-        email: "guest@interviewprep.com",
-        name: "Candidate",
-        role: "candidate",
-        permissions: ["meetings:participate"]
-      };
-    } else {
-      return res.status(401).json(createErrorResponse("Unauthorized", "Authentication required", "MISSING_TOKEN"));
-    }
+  if (!user && req.method !== "GET") {
+    return res.status(401).json(createErrorResponse("Unauthorized", "Authentication required", "MISSING_TOKEN"));
   }
   if (pathname.endsWith("/ics") || urlObj.searchParams.get("action") === "ics") {
     const meetingId = urlObj.searchParams.get("meetingId") || urlObj.searchParams.get("id");
@@ -8658,20 +8681,20 @@ async function handler15(req, res) {
     const search = urlObj.searchParams.get("search") || void 0;
     const page = parseInt(urlObj.searchParams.get("page") || "1", 10);
     const limit = parseInt(urlObj.searchParams.get("limit") || "20", 10);
-    const isPrivileged = user.role === "admin" || user.role === "interviewer";
-    const studentFilter = !isPrivileged && user.id !== "candidate_guest" ? user.id : void 0;
+    const isPrivileged = user ? user.role === "admin" || user.role === "interviewer" : false;
+    const studentFilter = isPrivileged || !user ? void 0 : user.id;
     const result = meetingOpsService.listMeetings({
       status,
       timeframe,
       student_id: studentFilter,
-      student_email: user.email,
+      student_email: user?.email,
       search,
       page,
       limit
     });
     const enrichedMeetings = result.meetings.map((m) => {
       const details = meetingOpsService.getMeetingDetails(m.id);
-      const myParticipantRecord = details?.participants.find((p) => p.student_id === user.id);
+      const myParticipantRecord = user ? details?.participants.find((p) => p.student_id === user.id) : void 0;
       return {
         ...m,
         myRsvpStatus: myParticipantRecord?.invitation_status || "pending",
@@ -8695,7 +8718,7 @@ async function handler15(req, res) {
   if (req.method === "POST" && (pathname.endsWith("/instant") || req.body?.action === "instant" || urlObj.searchParams.get("action") === "instant")) {
     if (user.role !== "admin") {
       return res.status(403).json(
-        createErrorResponse("Forbidden", "Only platform administrator (shashi) has rights to create meetings.", "FORBIDDEN")
+        createErrorResponse("Forbidden", "Only platform administrator has rights to create meetings.", "FORBIDDEN")
       );
     }
     const result = await meetingOpsService.createInstantMeeting(user, req.body || {});
@@ -8711,7 +8734,7 @@ async function handler15(req, res) {
   if (req.method === "POST") {
     if (user.role !== "admin") {
       return res.status(403).json(
-        createErrorResponse("Forbidden", "Only platform administrator (shashi) has rights to create meetings.", "FORBIDDEN")
+        createErrorResponse("Forbidden", "Only platform administrator has rights to create meetings.", "FORBIDDEN")
       );
     }
     const result = await meetingOpsService.createMeeting(user, req.body || {});
@@ -10737,11 +10760,9 @@ async function handler25(req, res) {
   }
   const supabaseUrl2 = process.env.VITE_SUPABASE_URL || "https://lzjkxfxaiuemjsiflwlv.supabase.co";
   const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.VITE_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx6amt4ZnhhaXVlbWpzaWZsd2x2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg0MDI2ODgsImV4cCI6MjEwMzk3ODY4OH0.PnHnvW9-V8SMLilGdhf3Em9wGIGCYxL0rCRUFpvhdn8";
-  const configuredUsername = process.env.ADMIN_USERNAME || process.env.VITE_ADMIN_USERNAME || "shashi";
+  const configuredUsername = process.env.ADMIN_USERNAME || process.env.VITE_ADMIN_USERNAME || "admin";
   const configuredPassword = process.env.ADMIN_PASSWORD || process.env.VITE_ADMIN_PASSWORD || "Admin@9999";
   const allowedUsernames = /* @__PURE__ */ new Set([
-    "shashi",
-    "shashi@admin.com",
     "admin",
     "admin@interviewprep.com",
     configuredUsername.toLowerCase().trim()
@@ -10800,11 +10821,10 @@ async function handler25(req, res) {
   } catch (e) {
     console.warn("[Admin Auth] Supabase session generation notice:", e);
   }
-  const isShashi = cleanUsername === "shashi" || cleanUsername === "shashi@admin.com";
   const adminUser = {
-    id: isShashi ? "f16e43bf-2ff8-480c-ae49-e2285940bf46" : session?.user?.id || "admin_super_user",
-    email: isShashi ? "shashi@admin.com" : session?.user?.email || "admin@interviewprep.com",
-    name: isShashi ? "shashi" : "Platform Administrator",
+    id: session?.user?.id || "admin_super_user",
+    email: session?.user?.email || (cleanUsername.includes("@") ? cleanUsername : "admin@interviewprep.com"),
+    name: session?.user?.user_metadata?.full_name || cleanUsername || "Platform Administrator",
     role: "admin",
     permissions: ["admin:all", "admin:users_manage", "admin:billing", "admin:audit"],
     status: "ACTIVE"
@@ -11742,7 +11762,7 @@ async function handler30(req, res) {
   }
   if (req.method === "POST" && (pathname.endsWith("/send") || req.body?.action === "send" || req.body?.action === "send-meeting-link")) {
     if (user?.role !== "admin") {
-      return res.status(403).json(createErrorResponse("Forbidden", "Only platform administrator (shashi) has rights to push meeting notifications.", "FORBIDDEN"));
+      return res.status(403).json(createErrorResponse("Forbidden", "Only platform administrator has rights to push meeting notifications.", "FORBIDDEN"));
     }
     const rawMeeting = req.body?.meeting || {};
     const meetingId = req.body?.meetingId || rawMeeting.id || req.body?.id;
@@ -11899,6 +11919,139 @@ async function handler30(req, res) {
   return res.status(404).json(createErrorResponse("NotFound", "Notification endpoint not found."));
 }
 
+// api/_handlers/cloudinary.js
+import crypto19 from "crypto";
+async function cloudinaryHandler(req, res) {
+  if (!res.status) {
+    res.status = (code) => {
+      res.statusCode = code;
+      return res;
+    };
+  }
+  if (!res.json) {
+    res.json = (data) => {
+      res.setHeader("Content-Type", "application/json");
+      res.end(JSON.stringify(data));
+      return res;
+    };
+  }
+  const cloudName = process.env.CLOUDINARY_CLOUD_NAME || process.env.VITE_CLOUDINARY_CLOUD_NAME || "";
+  const apiKey = process.env.CLOUDINARY_API_KEY || process.env.VITE_CLOUDINARY_API_KEY || "";
+  const apiSecret = process.env.CLOUDINARY_API_SECRET || "";
+  const action = req.query?.action || req.body?.action || "sign";
+  if (req.method === "GET" && action === "config") {
+    return res.status(200).json({
+      configured: Boolean(cloudName && apiKey && apiSecret),
+      cloudName: cloudName || null,
+      apiKey: apiKey ? "***configured***" : null
+    });
+  }
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Method Not Allowed", allowedMethods: ["POST", "GET"] });
+  }
+  if (!cloudName || !apiKey || !apiSecret) {
+    return res.status(503).json({
+      success: false,
+      error: "Cloudinary credentials not configured on server.",
+      message: "Please configure CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, and CLOUDINARY_API_SECRET in server environment.",
+      configured: false
+    });
+  }
+  try {
+    const timestamp = Math.floor(Date.now() / 1e3);
+    const folder = req.body?.folder || "user_avatars";
+    if (action === "sign") {
+      const stringToSign = `folder=${folder}&timestamp=${timestamp}${apiSecret}`;
+      const signature = crypto19.createHash("sha1").update(stringToSign).digest("hex");
+      return res.status(200).json({
+        success: true,
+        signature,
+        timestamp,
+        apiKey,
+        cloudName,
+        folder,
+        uploadUrl: `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`
+      });
+    }
+    if (action === "upload") {
+      const { file, fileType, fileSize } = req.body || {};
+      if (!file) {
+        return res.status(400).json({ success: false, error: "Missing image file payload." });
+      }
+      const MAX_SIZE = 5 * 1024 * 1024;
+      if (fileSize && fileSize > MAX_SIZE) {
+        return res.status(400).json({ success: false, error: "File size exceeds maximum limit of 5MB." });
+      }
+      if (fileType) {
+        const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp", "image/gif"];
+        if (!allowedTypes.includes(fileType.toLowerCase())) {
+          return res.status(400).json({ success: false, error: "Invalid file type. Supported formats: JPEG, PNG, WebP." });
+        }
+      }
+      const stringToSign = `folder=${folder}&timestamp=${timestamp}${apiSecret}`;
+      const signature = crypto19.createHash("sha1").update(stringToSign).digest("hex");
+      const formData = new URLSearchParams();
+      formData.append("file", file);
+      formData.append("api_key", apiKey);
+      formData.append("timestamp", String(timestamp));
+      formData.append("signature", signature);
+      formData.append("folder", folder);
+      const cloudinaryRes = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: formData.toString()
+      });
+      const result = await cloudinaryRes.json();
+      if (!cloudinaryRes.ok || result.error) {
+        return res.status(400).json({
+          success: false,
+          error: result.error?.message || "Cloudinary upload failed."
+        });
+      }
+      const publicId = result.public_id;
+      const transformedUrl = `https://res.cloudinary.com/${cloudName}/image/upload/c_fill,g_face,w_250,h_250,q_auto,f_auto/${publicId}`;
+      return res.status(200).json({
+        success: true,
+        avatar_url: transformedUrl,
+        raw_url: result.secure_url,
+        avatar_public_id: publicId,
+        format: result.format,
+        width: result.width,
+        height: result.height,
+        bytes: result.bytes
+      });
+    }
+    if (action === "delete") {
+      const { public_id } = req.body || {};
+      if (!public_id) {
+        return res.status(400).json({ success: false, error: "Missing public_id parameter for deletion." });
+      }
+      const stringToSign = `public_id=${public_id}&timestamp=${timestamp}${apiSecret}`;
+      const signature = crypto19.createHash("sha1").update(stringToSign).digest("hex");
+      const formData = new URLSearchParams();
+      formData.append("public_id", public_id);
+      formData.append("api_key", apiKey);
+      formData.append("timestamp", String(timestamp));
+      formData.append("signature", signature);
+      const cloudinaryRes = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/destroy`, {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: formData.toString()
+      });
+      const result = await cloudinaryRes.json();
+      return res.status(200).json({
+        success: true,
+        result: result.result || "ok",
+        deleted_public_id: public_id
+      });
+    }
+    return res.status(400).json({ success: false, error: `Invalid action: ${action}` });
+  } catch (err) {
+    console.error("[Cloudinary Handler Error]", err);
+    return res.status(500).json({ success: false, error: err?.message || "Internal Cloudinary server error." });
+  }
+}
+
 // api/_source/gateway.js
 async function parseBody(req) {
   if (req.body && typeof req.body === "object") return req.body;
@@ -12013,6 +12166,9 @@ async function handler31(req, res) {
     }
     if (pathname === "/api/send-email") {
       return handler28(req, res);
+    }
+    if (pathname === "/api/cloudinary" || pathname.startsWith("/api/cloudinary/") || pathname === "/api/v1/cloudinary" || pathname.startsWith("/api/v1/cloudinary/")) {
+      return cloudinaryHandler(req, res);
     }
     return res.status(404).json({ error: "Endpoint Not Found", pathname, method: req.method });
   } catch (err) {

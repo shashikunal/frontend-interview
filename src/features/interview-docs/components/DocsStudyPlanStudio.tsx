@@ -93,7 +93,7 @@ export function DocsStudyPlanStudio() {
         </div>
         <h2>Company-Tailored Technical Preparation Pathways</h2>
         <p>
-          Diagnose knowledge gaps, select your target employer archetype (FAANG, Unicorn, Scaleup, Staff Architect), and follow a structured daily milestone schedule with automated spaced repetition intervals.
+          Diagnose knowledge gaps, select your target employer archetype (Tier-1 Enterprise, Unicorn, Scaleup, Staff Architect), and follow a structured daily milestone schedule with automated spaced repetition intervals.
         </p>
       </div>
 

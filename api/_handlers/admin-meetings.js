@@ -49,7 +49,7 @@ export default async function handler(req, res) {
   // Strict RBAC: Admin only
   if (user.role !== 'admin') {
     return res.status(403).json(
-      createErrorResponse('Forbidden', 'Only platform administrator (shashi) has rights.', 'FORBIDDEN', correlation.correlationId)
+      createErrorResponse('Forbidden', 'Only platform administrator has rights.', 'FORBIDDEN', correlation.correlationId)
     );
   }
 
@@ -95,7 +95,7 @@ export default async function handler(req, res) {
     const page = parseInt(urlObj.searchParams.get('page') || '1', 10);
     const limit = parseInt(urlObj.searchParams.get('limit') || '10', 10);
     const status = urlObj.searchParams.get('status') || undefined;
-    const batchId = urlObj.searchParams.get('batchId') || urlObj.searchParams.get('batch_id') || undefined;
+    const batchId = urlObj.searchParams.get('batchId') || urlObj.searchParams.get('batch_id') || urlObj.searchParams.get('batch_code') || urlObj.searchParams.get('batchCode') || undefined;
     const trainerId = urlObj.searchParams.get('trainerId') || urlObj.searchParams.get('trainer_id') || undefined;
     const timeframe = (urlObj.searchParams.get('timeframe') || undefined);
     const search = urlObj.searchParams.get('search') || undefined;

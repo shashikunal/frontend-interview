@@ -520,6 +520,15 @@
   line-height: 1;
 }
 
+.header-user-avatar-img {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1.5px solid var(--accent-bright);
+  box-shadow: 0 0 6px rgba(99, 102, 241, 0.4);
+}
+
 .u-role-pill {
   font-size: 0.68rem;
   font-weight: 800;

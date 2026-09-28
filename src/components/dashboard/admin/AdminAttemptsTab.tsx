@@ -24,7 +24,7 @@ export default function AdminAttemptsTab({
   const [currentPage, setCurrentPage] = useState(1)
   const [pageSize, setPageSize] = useState(25)
 
-  const effectiveList = attempts || initialAttempts || []
+  const effectiveList = useMemo(() => attempts || initialAttempts || [], [attempts, initialAttempts])
 
   const isItemCPAttempt = (a: AdminAttemptItem) =>
     a.category === 'CORE_PROGRAMMING' ||

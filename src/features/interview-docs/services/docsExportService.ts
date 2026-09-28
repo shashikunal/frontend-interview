@@ -77,7 +77,7 @@ export class DocsExportService {
 
     // Top Interview Questions & Flashcards
     if (doc.questions && doc.questions.length > 0) {
-      lines.push('## 7. FAANG Interview Questions & Strong Senior Answers');
+      lines.push('## 7. Technical Interview Questions & Solutions');
       doc.questions.forEach((q, qIdx) => {
         lines.push(`### Q${qIdx + 1}: ${q.question}`);
         lines.push(`**Difficulty**: \`${q.difficulty.toUpperCase()}\` | **Type**: \`${q.type}\``);

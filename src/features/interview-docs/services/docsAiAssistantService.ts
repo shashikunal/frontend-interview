@@ -127,7 +127,7 @@ Provide an improved, modern, and production-grade ${params.language} snippet in 
     // 1. If Ollama is available, query the local LLM
     if (status.available) {
       try {
-        const prompt = `You are an exacting FAANG Staff Frontend Interviewer conducting an in-depth Code Review.
+        const prompt = `You are a Staff Frontend Technical Evaluator conducting an in-depth Code Review.
 Candidate Code Submission:
 Subject: ${params.subjectTitle}
 Topic: ${params.topicTitle}
@@ -144,7 +144,7 @@ Evaluate strictly based on:
 
 Format your response in GitHub Markdown:
 ### 📊 Senior Readiness Score: [Score between 70 and 98]/100
-**Verdict:** [1-sentence FAANG interview hiring recommendation]
+**Verdict:** [1-sentence technical interview hiring recommendation]
 
 ### ✅ What Was Done Well
 - Specific strengths observed in this implementation.

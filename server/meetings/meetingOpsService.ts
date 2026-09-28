@@ -103,8 +103,8 @@ export class MeetingOpsService {
       start_at: todayAt2PM.toISOString(),
       end_at: todayAt3PM.toISOString(),
       timezone: 'Asia/Kolkata',
-      trainer_id: 'usr_trainer_shashi',
-      trainer_name: 'Shashi Kunal (Staff Evaluator)',
+      trainer_id: 'usr_trainer_staff',
+      trainer_name: 'Staff Evaluator',
       created_by: 'admin_master',
       batch_id: 'Batch 2026-Alpha',
       status: 'SCHEDULED',
@@ -121,9 +121,9 @@ export class MeetingOpsService {
     const p1: MeetingParticipantRecord = {
       id: crypto.randomUUID(),
       meeting_id: m1.id,
-      student_id: 'usr_shashikunal_sb',
-      student_name: 'Shashi Kunal',
-      student_email: 'shashikunal@gmail.com',
+      student_id: 'usr_candidate_demo',
+      student_name: 'Demo Candidate',
+      student_email: 'candidate@interviewprep.com',
       status: 'SCHEDULED',
       invitation_status: 'pending',
       attendance_status: 'pending',
@@ -264,6 +264,8 @@ export class MeetingOpsService {
       trainer_name: dto.trainer_name || caller.name || 'Platform Trainer',
       created_by: caller.id,
       batch_id: dto.batch_id || undefined,
+      batch_code: dto.batch_code || undefined,
+      batch_name: dto.batch_name || undefined,
       status: 'SCHEDULED',
       capacity: dto.capacity || 50,
       recurrence_rule: dto.recurrence || null,
@@ -551,7 +553,7 @@ export class MeetingOpsService {
           .filter(p => p.student_id === options.student_id || (options.student_email && p.student_email && p.student_email.toLowerCase() === options.student_email.toLowerCase()))
           .map(p => p.meeting_id)
       );
-      list = list.filter(m => assignedMeetingIds.has(m.id) || m.status === 'STARTED' || !m.batch_id || m.meeting_type === 'Interview' || m.meeting_type === 'Technical Discussion');
+      list = list.filter(m => assignedMeetingIds.has(m.id) || m.status === 'STARTED');
     }
 
     if (options.status && options.status !== 'ALL') {
@@ -572,7 +574,13 @@ export class MeetingOpsService {
     }
 
     if (options.batch_id && options.batch_id !== 'ALL') {
-      list = list.filter(m => m.batch_id === options.batch_id);
+      const bQuery = options.batch_id.toLowerCase();
+      list = list.filter(
+        m =>
+          (m.batch_id && m.batch_id.toLowerCase() === bQuery) ||
+          (m.batch_code && m.batch_code.toLowerCase() === bQuery) ||
+          (m.batch_name && m.batch_name.toLowerCase() === bQuery)
+      );
     }
 
     if (options.trainer_id && options.trainer_id !== 'ALL') {
@@ -736,6 +744,9 @@ export class MeetingOpsService {
       if (updates.timezone) target.timezone = updates.timezone;
       if (updates.trainer_id) target.trainer_id = updates.trainer_id;
       if (updates.trainer_name) target.trainer_name = updates.trainer_name;
+      if (updates.batch_id !== undefined) target.batch_id = updates.batch_id;
+      if (updates.batch_code !== undefined) target.batch_code = updates.batch_code;
+      if (updates.batch_name !== undefined) target.batch_name = updates.batch_name;
       if (updates.status) target.status = updates.status;
 
       target.updated_at = now;

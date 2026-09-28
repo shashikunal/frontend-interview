@@ -166,6 +166,8 @@ export interface CandidateUserListItem {
   name: string;
   email: string;
   role: string;
+  batch?: string;
+  batchCode?: string;
   joinedDate: string;
   lastActive: string;
   totalQuestions: number;

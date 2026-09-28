@@ -216,7 +216,7 @@ export function bindMonacoToYDoc(
         ytext.insert(0, model.getValue());
         try {
           console.log(`[YJS-STUDENT] Binding initialized for file ${fileId} (${ytext.length} chars)`);
-          return new MonacoBinding(ytext, model, new Set([editorInstance]));
+          return new MonacoBinding(ytext, model, new Set([editorInstance as any]));
         } catch (err) {
           console.warn('[Yjs Monaco] Failed to bind Monaco editor to Y.Text:', err);
           return null;
@@ -235,7 +235,7 @@ export function bindMonacoToYDoc(
     const binding = new MonacoBinding(
       ytext,
       model,
-      new Set([editorInstance])
+      new Set([editorInstance as any])
     );
     if (isReadOnly) {
       console.log(`[YJS-ADMIN] Monaco binding active for file ${fileId} (${ytext.length} chars)`);

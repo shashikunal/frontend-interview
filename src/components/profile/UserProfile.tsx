@@ -1,375 +1,763 @@
-import { useState, useEffect, useMemo } from 'react'
-import { Link } from 'react-router-dom'
-import { useAuth } from '../../context/AuthContext'
-import { useProgress } from '../../context/ProgressContext'
-import { useBookmarks } from '../../context/BookmarkContext'
-import { useQuestions } from '../../data/useQuestions'
-import { dbActivityService, type ActivityLogItem } from '../../lib/supabase'
-import BadgeShowcase from '../badges/BadgeShowcase'
+import React, { useState, useRef, useEffect } from 'react'
+import { useAuth } from '../../features/auth/hooks/useAuth'
+import { useTheme } from '../../context/ThemeContext'
+import {
+  useUpdateProfileMutation,
+  useUploadAvatarMutation,
+  useRemoveAvatarMutation,
+} from '../../hooks/useProfileQuery'
+import { geoTelemetryService, getDeviceAndBrowserInfo, type LoginSessionTelemetry } from '../../services/geoTelemetryService'
 import './UserProfile.css'
 
-const TARGET_COMPANIES = ['Google', 'Meta', 'Amazon', 'Apple', 'Netflix', 'Microsoft', 'Stripe', 'Airbnb', 'Uber', 'ByteDance']
-const EXPERIENCE_LEVELS = [
-  'L3 (Associate 0-2y)',
-  'L4 (Mid-Level 2-5y)',
-  'L5 (Senior 5-9y)',
-  'L6 (Staff 10-14y)',
-  'L7 (Principal 15-20y)',
-]
+interface UserProfileProps {
+  embedded?: boolean
+}
 
-export default function UserProfile() {
-  const { user, isAuthenticated, openAuthModal } = useAuth()
-  const { solvedIds, streak, studyDates, mockInterviews } = useProgress()
-  const { questions } = useQuestions()
-  const { bookmarkedCount } = useBookmarks()
+export default function UserProfile({ embedded = false }: UserProfileProps) {
+  const { user, isAuthenticated, signOut, openAuthModal, updatePassword, resetPassword } = useAuth()
+  const { theme, setTheme } = useTheme()
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const isAdmin = user?.role === 'admin'
 
-  const [targetCompany, setTargetCompany] = useState<string>(user?.targetCompany || 'Google')
-  const [experienceLevel, setExperienceLevel] = useState<string>(user?.experienceLevel || 'L5 (Senior 5-9y)')
-  const [isSyncing, setIsSyncing] = useState<boolean>(false)
-  const [lastSyncTime, setLastSyncTime] = useState<string>('Just now')
-  const [activities, setActivities] = useState<ActivityLogItem[]>([])
-  const [activityFilter, setActivityFilter] = useState<'ALL' | 'QUESTION' | 'MOCK' | 'QUIZ'>('ALL')
+  // Profile Form State
+  const [fullName, setFullName] = useState<string>(user?.name || '')
+  const [batch, setBatch] = useState<string>(user?.batch || '2026-Alpha')
+  const [batchCode, setBatchCode] = useState<string>(user?.batchCode || 'FE-2026-A')
+  const [targetTrack, setTargetTrack] = useState<string>(user?.targetTrack || 'Frontend Architecture')
+  const [phone, setPhone] = useState<string>(user?.phone || '')
+  const [githubUrl, setGithubUrl] = useState<string>(user?.githubUrl || '')
+  const [linkedinUrl, setLinkedinUrl] = useState<string>(user?.linkedinUrl || '')
+  const [bio, setBio] = useState<string>(user?.bio || '')
+  const [recentLogin, setRecentLogin] = useState<LoginSessionTelemetry | null>(null)
 
-  const totalSolved = solvedIds.size
-  const totalQuestionsBank = questions.length || 1
-  const progressPercent = Math.min(100, Math.round((totalSolved / totalQuestionsBank) * 100))
-
-  const easyQuestions = useMemo(() => questions.filter(q => q.difficulty === 'Easy'), [questions])
-  const mediumQuestions = useMemo(() => questions.filter(q => q.difficulty === 'Medium'), [questions])
-  const hardQuestions = useMemo(() => questions.filter(q => q.difficulty === 'Hard'), [questions])
-
-  const easySolved = useMemo(() => easyQuestions.filter(q => solvedIds.has(q.id)).length, [easyQuestions, solvedIds])
-  const mediumSolved = useMemo(() => mediumQuestions.filter(q => solvedIds.has(q.id)).length, [mediumQuestions, solvedIds])
-  const hardSolved = useMemo(() => hardQuestions.filter(q => solvedIds.has(q.id)).length, [hardQuestions, solvedIds])
-
-  // Load activities
   useEffect(() => {
-    dbActivityService.getRecentActivities(user?.id).then(res => {
-      setActivities(res)
-    })
-  }, [user?.id, totalSolved])
+    if (user?.id) {
+      const logs = geoTelemetryService.getUserLoginHistory(user.id)
+      if (logs.length > 0) {
+        setRecentLogin(logs[0])
+      } else {
+        geoTelemetryService.fetchCurrentGeoLocation().then(geo => {
+          const { device, browser, os } = getDeviceAndBrowserInfo()
+          setRecentLogin({
+            id: 'log_current',
+            userId: user.id,
+            userEmail: user.email,
+            userName: user.name || 'User',
+            role: user.role,
+            ipAddress: geo.ipAddress,
+            latitude: geo.latitude,
+            longitude: geo.longitude,
+            city: geo.city,
+            region: geo.region,
+            country: geo.country,
+            nearestLocation: geo.nearestLocation,
+            device,
+            browser,
+            os,
+            timestamp: new Date().toISOString(),
+          })
+        }).catch(() => {})
+      }
+    }
+  }, [user?.id, user?.email, user?.name, user?.role])
 
-  // Handle Manual DB Sync
-  const handleManualSync = async () => {
-    setIsSyncing(true)
-    await new Promise(res => setTimeout(res, 600))
-    setIsSyncing(false)
-    setLastSyncTime(new Date().toLocaleTimeString())
+  const [profileSuccessMsg, setProfileSuccessMsg] = useState<string>('')
+  const [profileErrorMsg, setProfileErrorMsg] = useState<string>('')
+
+  React.useEffect(() => {
+    if (user) {
+      setFullName(user.name || '')
+      setBatch(user.batch || '2026-Alpha')
+      setBatchCode(user.batchCode || 'FE-2026-A')
+      setTargetTrack(user.targetTrack || 'Frontend Architecture')
+      setPhone(user.phone || '')
+      setGithubUrl(user.githubUrl || '')
+      setLinkedinUrl(user.linkedinUrl || '')
+      setBio(user.bio || '')
+    }
+  }, [user])
+
+  // Password Form State
+  const [isChangingPassword, setIsChangingPassword] = useState<boolean>(false)
+  const [newPassword, setNewPassword] = useState<string>('')
+  const [confirmPassword, setConfirmPassword] = useState<string>('')
+  const [passwordSuccessMsg, setPasswordSuccessMsg] = useState<string>('')
+  const [passwordErrorMsg, setPasswordErrorMsg] = useState<string>('')
+  const [isSubmittingPassword, setIsSubmittingPassword] = useState<boolean>(false)
+
+  // Password Reset Email State
+  const [resetEmailSent, setResetEmailSent] = useState<boolean>(false)
+  const [resetEmailLoading, setResetEmailLoading] = useState<boolean>(false)
+
+  // TanStack Query Mutations
+  const updateProfileMutation = useUpdateProfileMutation()
+  const uploadAvatarMutation = useUploadAvatarMutation()
+  const removeAvatarMutation = useRemoveAvatarMutation()
+
+  // Derive Initials Fallback (e.g., "Shashi Kunal" -> "SK")
+  const getInitials = (name?: string, email?: string): string => {
+    if (name && name.trim().length > 0) {
+      const parts = name.trim().split(/\s+/)
+      if (parts.length >= 2) {
+        return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
+      }
+      return name.slice(0, 2).toUpperCase()
+    }
+    if (email && email.trim().length > 0) {
+      return email.slice(0, 2).toUpperCase()
+    }
+    return 'US'
   }
 
-  // Filtered activities
-  const filteredActivities = activities.filter(act => {
-    if (activityFilter === 'ALL') return true
-    if (activityFilter === 'QUESTION') return act.type === 'QUESTION_SOLVED'
-    if (activityFilter === 'MOCK') return act.type === 'MOCK_COMPLETED'
-    if (activityFilter === 'QUIZ') return act.type === 'QUIZ_SCORED'
-    return true
-  })
+  const initials = getInitials(user?.name, user?.email)
 
-  // Real Heatmap calculation for the last 28 days based on real activity and studyDates
-  const heatmapDays = useMemo(() => {
-    const days: Array<{ date: string; day: number; count: number }> = []
-    const now = new Date()
-    for (let i = 27; i >= 0; i--) {
-      const d = new Date()
-      d.setDate(now.getDate() - i)
-      const dateKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+  // Update Profile & Batch Information Handler
+  const handleUpdateProfile = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setProfileSuccessMsg('')
+    setProfileErrorMsg('')
 
-      const actCount = activities.filter(a => a.timestamp && a.timestamp.startsWith(dateKey)).length
-      const hasStudy = studyDates.has(dateKey)
-      const count = actCount > 0 ? actCount : (hasStudy ? 1 : 0)
-
-      days.push({
-        date: dateKey,
-        day: d.getDate(),
-        count,
-      })
+    const cleanName = fullName.trim()
+    if (!cleanName) {
+      setProfileErrorMsg('Full Name cannot be blank.')
+      return
     }
-    return days
-  }, [activities, studyDates])
 
-  return (
-    <div className="profile-page page-enter">
-      {/* Header Banner */}
-      <div className="profile-header-banner">
-        <div className="ph-left">
-          <div className="ph-badge-row">
-            <span className="profile-badge">👤 Profile &amp; Progress Hub</span>
-          </div>
-          <h1>Candidate Progress &amp; Activity Tracker</h1>
-          <p className="subtitle">
-            Track question completions across 22,222 FAANG challenges, interview rubric scores, active study streaks, and real-time database activity logs.
-          </p>
+    try {
+      await updateProfileMutation.mutateAsync({
+        name: cleanName,
+        batch: batch.trim() || '2026-Alpha',
+        batchCode: batchCode.trim() || 'FE-2026-A',
+        targetTrack: targetTrack.trim() || 'Frontend Architecture',
+        phone: phone.trim(),
+        githubUrl: githubUrl.trim(),
+        linkedinUrl: linkedinUrl.trim(),
+        bio: bio.trim(),
+      })
+      setProfileSuccessMsg('Profile & Batch information updated successfully!')
+      setTimeout(() => setProfileSuccessMsg(''), 4000)
+    } catch (err: any) {
+      setProfileErrorMsg(err?.message || 'Failed to update profile.')
+    }
+  }
+
+  // Handle Avatar File Upload
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    setProfileSuccessMsg('')
+    setProfileErrorMsg('')
+
+    try {
+      await uploadAvatarMutation.mutateAsync(file)
+      setProfileSuccessMsg('Profile avatar image updated successfully!')
+      setTimeout(() => setProfileSuccessMsg(''), 4000)
+    } catch (err: any) {
+      setProfileErrorMsg(err?.message || 'Failed to upload avatar image.')
+    } finally {
+      if (fileInputRef.current) {
+        fileInputRef.current.value = ''
+      }
+    }
+  }
+
+  // Handle Remove Avatar
+  const handleRemoveAvatar = async () => {
+    setProfileSuccessMsg('')
+    setProfileErrorMsg('')
+
+    try {
+      await removeAvatarMutation.mutateAsync()
+      setProfileSuccessMsg('Profile avatar removed. Reverted to initials avatar.')
+      setTimeout(() => setProfileSuccessMsg(''), 4000)
+    } catch (err: any) {
+      setProfileErrorMsg(err?.message || 'Failed to remove avatar.')
+    }
+  }
+
+  // Update Password Handler
+  const handleUpdatePassword = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setPasswordSuccessMsg('')
+    setPasswordErrorMsg('')
+
+    if (!newPassword) {
+      setPasswordErrorMsg('Please enter a new password.')
+      return
+    }
+
+    if (newPassword.length < 6) {
+      setPasswordErrorMsg('Password must be at least 6 characters long.')
+      return
+    }
+
+    if (newPassword !== confirmPassword) {
+      setPasswordErrorMsg('New password and confirmation password do not match.')
+      return
+    }
+
+    setIsSubmittingPassword(true)
+    try {
+      const res = await updatePassword(newPassword)
+      if (res.success) {
+        setPasswordSuccessMsg('Password successfully updated!')
+        setNewPassword('')
+        setConfirmPassword('')
+        setIsChangingPassword(false)
+        setTimeout(() => setPasswordSuccessMsg(''), 5000)
+      } else {
+        setPasswordErrorMsg(res.message || 'Failed to update password.')
+      }
+    } catch (err: any) {
+      setPasswordErrorMsg(err?.message || 'An error occurred while updating password.')
+    } finally {
+      setIsSubmittingPassword(false)
+    }
+  }
+
+  // Handle Forgot/Reset Password Email
+  const handleSendResetEmail = async () => {
+    if (!user?.email) return
+    setResetEmailLoading(true)
+    setPasswordErrorMsg('')
+    try {
+      const res = await resetPassword(user.email)
+      if (res.success) {
+        setResetEmailSent(true)
+      } else {
+        setPasswordErrorMsg(res.message || 'Could not send reset password email.')
+      }
+    } catch (err: any) {
+      setPasswordErrorMsg(err?.message || 'Failed to trigger password reset.')
+    } finally {
+      setResetEmailLoading(false)
+    }
+  }
+
+  // Guest State Banner
+  if (!isAuthenticated) {
+    return (
+      <div className="account-workspace page-enter">
+        <div className="account-header">
+          <h1>ACCOUNT &amp; SECURITY</h1>
+          <p className="subtitle">Sign in to your account to manage your profile, security, and avatar settings.</p>
         </div>
 
-        <div className="ph-right">
-          <button
-            type="button"
-            className="btn btn-secondary sync-btn"
-            disabled={isSyncing}
-            onClick={handleManualSync}
-          >
-            <span className={isSyncing ? 'spin-icon' : ''}>🔄</span>
-            {isSyncing ? 'Syncing DB...' : 'Sync Now'}
+        <div className="account-card guest-mode-card">
+          <div className="guest-icon">🔐</div>
+          <h2>Authentication Required</h2>
+          <p>You are currently viewing in Guest Mode. Please sign in or register to access account security settings.</p>
+          <button type="button" className="btn btn-primary" onClick={() => openAuthModal('user')}>
+            Sign In / Register →
           </button>
-          <span className="sync-time-hint">Last sync: {lastSyncTime}</span>
         </div>
       </div>
+    )
+  }
 
-      {/* Guest Warning if not logged in */}
-      {!isAuthenticated && (
-        <div className="guest-login-banner card-box">
-          <div className="glb-info">
-            <h3>🔐 Sign in with Email OTP to Sync Progress to Supabase Cloud</h3>
-            <p>You are currently studying in Guest Mode. Sign in with a 6-digit email OTP to save your 22,222 questions progress across all devices.</p>
+  return (
+    <div className={`account-workspace page-enter ${embedded ? 'embedded-workspace' : ''}`}>
+      {/* Page Title (Suppressed when embedded in Dashboard tab) */}
+      {!embedded && (
+        <div className="account-header">
+          <div className="ph-badge-row">
+            <span className="account-badge">🔒 ACCOUNT &amp; SECURITY</span>
           </div>
-          <button type="button" className="btn btn-primary" onClick={() => openAuthModal()}>
-            Sign In with OTP →
-          </button>
+          <h1>Account &amp; Security Workspace</h1>
+          <p className="subtitle">
+            Manage your account profile identity, credentials, Cloudinary profile avatar, and security authentication settings.
+          </p>
         </div>
       )}
 
-      {/* Profile Overview Card */}
-      <div className="profile-main-grid">
-        {/* Left Column: User Identity & Stats */}
-        <div className="profile-id-card card-box">
-          <div className="user-id-header">
-            <div className="id-avatar-circle">👨‍💻</div>
-            <div className="id-meta">
-              <h2>{user?.name || 'Staff Candidate'}</h2>
-              <span className="id-email">{user?.email || 'guest@interviewprep.com'}</span>
-              <span className={`id-role-tag ${user?.role || 'candidate'}`}>
-                {user?.role ? user.role.toUpperCase() : 'CANDIDATE (FREE)'}
+      {/* Profile Banners */}
+      {profileSuccessMsg && <div className="account-alert alert-success">{profileSuccessMsg}</div>}
+      {profileErrorMsg && <div className="account-alert alert-danger">{profileErrorMsg}</div>}
+
+      <div className="account-grid">
+        {/* Left Column: Avatar & Quick Info */}
+        <div className="account-card avatar-card">
+          <div className="avatar-section">
+            <div className="avatar-frame">
+              {user?.avatarUrl ? (
+                <img
+                  src={user.avatarUrl}
+                  alt={user?.name || 'Profile Avatar'}
+                  className="avatar-img"
+                  onError={(e) => {
+                    // Hide broken image link gracefully
+                    (e.target as HTMLElement).style.display = 'none'
+                  }}
+                />
+              ) : (
+                <div className="avatar-initials" title={`Initials for ${user?.name || user?.email}`}>
+                  {initials}
+                </div>
+              )}
+            </div>
+
+            <div className="avatar-actions">
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleFileChange}
+                accept="image/jpeg,image/png,image/webp"
+                className="hidden-file-input"
+                id="avatar-file-upload"
+              />
+              <label
+                htmlFor="avatar-file-upload"
+                className={`btn btn-secondary ${uploadAvatarMutation.isPending ? 'disabled' : ''}`}
+              >
+                {uploadAvatarMutation.isPending ? 'Uploading to Cloudinary...' : '📷 Change Photo'}
+              </label>
+
+              {user?.avatarUrl && (
+                <button
+                  type="button"
+                  className="btn btn-danger-outline"
+                  onClick={handleRemoveAvatar}
+                  disabled={removeAvatarMutation.isPending}
+                >
+                  {removeAvatarMutation.isPending ? 'Removing...' : '🗑️ Remove'}
+                </button>
+              )}
+            </div>
+            <span className="avatar-hint">Supported formats: JPEG, PNG, WebP (Max 5MB)</span>
+          </div>
+
+          <div className="quick-meta-box">
+            <div className="meta-row">
+              <span className="meta-lbl">Account Status</span>
+              <span className="meta-val badge-active">Active</span>
+            </div>
+            <div className="meta-row">
+              <span className="meta-lbl">User Role</span>
+              <span className={`meta-val role-tag ${user?.role}`}>{user?.role?.toUpperCase()}</span>
+            </div>
+            <div className="meta-row">
+              <span className="meta-lbl">Assigned Batch</span>
+              <span className="meta-val batch-pill">{batch || '2026-Alpha'}</span>
+            </div>
+            <div className="meta-row">
+              <span className="meta-lbl">Batch Code</span>
+              <span className="meta-val batch-code-pill">{batchCode || 'FE-2026-A'}</span>
+            </div>
+            <div className="meta-row">
+              <span className="meta-lbl">Member Since</span>
+              <span className="meta-val">
+                {user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'Active User'}
               </span>
             </div>
           </div>
 
-          <div className="user-pref-form">
-            <div className="pref-group">
-              <label>Target Dream Company:</label>
-              <select
-                className="pref-select"
-                value={targetCompany}
-                onChange={e => setTargetCompany(e.target.value)}
-              >
-                {TARGET_COMPANIES.map(comp => (
-                  <option key={comp} value={comp}>{comp}</option>
-                ))}
-              </select>
+          {/* Recent Login & Geolocation Security Telemetry Card */}
+          <div className="recent-login-telemetry-card">
+            <div className="rlt-header">
+              <span className="rlt-title-badge">
+                📍 Most Recent Login
+              </span>
+              <span className="rlt-session-tag">
+                🟢 ACTIVE SESSION
+              </span>
             </div>
 
-            <div className="pref-group">
-              <label>Target Engineering Level:</label>
-              <select
-                className="pref-select"
-                value={experienceLevel}
-                onChange={e => setExperienceLevel(e.target.value)}
-              >
-                {EXPERIENCE_LEVELS.map(lvl => (
-                  <option key={lvl} value={lvl}>{lvl}</option>
-                ))}
-              </select>
-            </div>
-          </div>
-        </div>
-
-        {/* Right Column: Platform Progress Overview Cards */}
-        <div className="stats-summary-grid">
-          <div className="card-box stat-summary-card">
-            <span className="stat-card-icon">📚</span>
-            <div className="stat-card-content">
-              <span className="stat-card-num">{totalSolved}</span>
-              <span className="stat-card-label">Questions Solved</span>
-            </div>
-            <span className="stat-card-sub">out of 22,222 questions</span>
-          </div>
-
-          <div className="card-box stat-summary-card">
-            <span className="stat-card-icon">🔥</span>
-            <div className="stat-card-content">
-              <span className="stat-card-num">{streak}</span>
-              <span className="stat-card-label">Day Study Streak</span>
-            </div>
-            <span className="stat-card-sub">Consistent practice</span>
-          </div>
-
-          <div className="card-box stat-summary-card">
-            <span className="stat-card-icon">⭐</span>
-            <div className="stat-card-content">
-              <span className="stat-card-num">{bookmarkedCount}</span>
-              <span className="stat-card-label">Saved for Revision</span>
-            </div>
-            <span className="stat-card-sub">High-priority review</span>
-          </div>
-
-          <div className="card-box stat-summary-card">
-            <span className="stat-card-icon">🎥</span>
-            <div className="stat-card-content">
-              <span className="stat-card-num">{mockInterviews.length}</span>
-              <span className="stat-card-label">Mock Interviews</span>
-            </div>
-            <span className="stat-card-sub">
-              {mockInterviews.length > 0 ? `${mockInterviews[0].verdict}` : 'Ready to start'}
-            </span>
-          </div>
-        </div>
-      </div>
-
-      {/* Candidate Badges & Achievement Showcase */}
-      <section className="profile-badges-section">
-        <div className="section-title-row">
-          <div>
-            <h2>🏅 Achievements &amp; Candidate Milestones</h2>
-            <p className="subtitle">Unlock badges, accumulate XP, and level up your frontend candidate status.</p>
-          </div>
-        </div>
-        <BadgeShowcase />
-      </section>
-
-      {/* Question Completion Matrix & Category Mastery */}
-      <div className="completion-matrix-grid">
-        <div className="card-box cm-box">
-          <div className="cm-header">
-            <h3>Question Bank Completion Progress</h3>
-            <span className="cm-badge">{progressPercent}% Milestone Progress</span>
-          </div>
-
-          <div className="overall-bar-wrap">
-            <div className="overall-bar-fill" style={{ width: `${Math.max(5, progressPercent)}%` }} />
-          </div>
-
-          <div className="diff-breakdown-row">
-            <div className="diff-item">
-              <div className="diff-header">
-                <span className="diff-name easy">🟢 Easy (Foundations)</span>
-                <strong>{easySolved} / {easyQuestions.length}</strong>
-              </div>
-              <div className="diff-bar"><div className="diff-fill easy" style={{ width: `${easyQuestions.length > 0 ? Math.min(100, Math.round((easySolved / easyQuestions.length) * 100)) : 0}%` }} /></div>
-            </div>
-
-            <div className="diff-item">
-              <div className="diff-header">
-                <span className="diff-name medium">🟡 Medium (Core FAANG)</span>
-                <strong>{mediumSolved} / {mediumQuestions.length}</strong>
-              </div>
-              <div className="diff-bar"><div className="diff-fill medium" style={{ width: `${mediumQuestions.length > 0 ? Math.min(100, Math.round((mediumSolved / mediumQuestions.length) * 100)) : 0}%` }} /></div>
-            </div>
-
-            <div className="diff-item">
-              <div className="diff-header">
-                <span className="diff-name hard">🔴 Hard (Staff &amp; Principal)</span>
-                <strong>{hardSolved} / {hardQuestions.length}</strong>
-              </div>
-              <div className="diff-bar"><div className="diff-fill hard" style={{ width: `${hardQuestions.length > 0 ? Math.min(100, Math.round((hardSolved / hardQuestions.length) * 100)) : 0}%` }} /></div>
-            </div>
-          </div>
-        </div>
-
-        {/* 30-Day Activity Heatmap */}
-        <div className="card-box cm-box">
-          <div className="cm-header">
-            <h3>30-Day Activity Heatmap</h3>
-            <span className="streak-pill">🔥 {streak} Days Active</span>
-          </div>
-          <p className="desc">Daily problem solving and mock interview contributions.</p>
-
-          <div className="heatmap-grid">
-            {heatmapDays.map((d, idx) => (
-              <div
-                key={idx}
-                className={`heatmap-cell count-${Math.min(3, d.count)}`}
-                title={`Day ${d.day}: ${d.count} activities completed`}
-              />
-            ))}
-          </div>
-
-          <div className="heatmap-legend">
-            <span>Less</span>
-            <span className="cell-demo c0" />
-            <span className="cell-demo c1" />
-            <span className="cell-demo c2" />
-            <span className="cell-demo c3" />
-            <span>More</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Real-Time Database Activity Logs Timeline */}
-      <div className="card-box activity-timeline-card">
-        <div className="timeline-header-row">
-          <div>
-            <h3>Database Activity Timeline (Supabase Synced)</h3>
-            <p className="desc">Chronological audit log of completed challenges, mock interviews, and quizzes.</p>
-          </div>
-
-          <div className="act-filter-tabs">
-            <button
-              type="button"
-              className={`act-tab ${activityFilter === 'ALL' ? 'active' : ''}`}
-              onClick={() => setActivityFilter('ALL')}
-            >
-              All Logs
-            </button>
-            <button
-              type="button"
-              className={`act-tab ${activityFilter === 'QUESTION' ? 'active' : ''}`}
-              onClick={() => setActivityFilter('QUESTION')}
-            >
-              Questions
-            </button>
-            <button
-              type="button"
-              className={`act-tab ${activityFilter === 'MOCK' ? 'active' : ''}`}
-              onClick={() => setActivityFilter('MOCK')}
-            >
-              Mocks
-            </button>
-            <button
-              type="button"
-              className={`act-tab ${activityFilter === 'QUIZ' ? 'active' : ''}`}
-              onClick={() => setActivityFilter('QUIZ')}
-            >
-              Quizzes
-            </button>
-          </div>
-        </div>
-
-        <div className="activities-list">
-          {filteredActivities.length === 0 ? (
-            <div className="no-act-msg">No activities recorded yet in this category.</div>
-          ) : (
-            filteredActivities.map(act => (
-              <div key={act.id} className="act-item">
-                <div className="act-icon-box">
-                  {act.type === 'QUESTION_SOLVED' && '✅'}
-                  {act.type === 'MOCK_COMPLETED' && '🎥'}
-                  {act.type === 'QUIZ_SCORED' && '📝'}
-                  {act.type === 'STUDIO_EXPLORED' && '⚡'}
-                  {act.type === 'FLASHCARD_MASTERED' && '🧠'}
+            {recentLogin ? (
+              <div className="rlt-body">
+                <div className="rlt-row">
+                  <span className="rlt-lbl">IP Address</span>
+                  <span className="rlt-ip-code">{recentLogin.ipAddress}</span>
                 </div>
-                <div className="act-details">
-                  <div className="act-top">
-                    <h4>{act.title}</h4>
-                    <span className="act-time">
-                      {new Date(act.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                    </span>
-                  </div>
-                  {act.details && <p className="act-desc">{act.details}</p>}
+                <div className="rlt-row">
+                  <span className="rlt-lbl">Nearest City Area</span>
+                  <span className="rlt-location-highlight">{recentLogin.nearestLocation}</span>
+                </div>
+                <div className="rlt-row">
+                  <span className="rlt-lbl">Coordinates</span>
+                  <span className="rlt-coords-badge">
+                    {recentLogin.latitude?.toFixed(4)}° N, {recentLogin.longitude?.toFixed(4)}° E
+                  </span>
+                </div>
+                <div className="rlt-row">
+                  <span className="rlt-lbl">Device &amp; OS</span>
+                  <span className="rlt-device-info">{recentLogin.device} ({recentLogin.os}, {recentLogin.browser})</span>
+                </div>
+                <div className="rlt-row">
+                  <span className="rlt-lbl">Login Time</span>
+                  <span className="rlt-time-info">
+                    {new Date(recentLogin.timestamp).toLocaleString()}
+                  </span>
                 </div>
               </div>
-            ))
-          )}
+            ) : (
+              <span className="rlt-time-info">Detecting live IP &amp; city geolocation telemetry...</span>
+            )}
+          </div>
         </div>
-      </div>
 
-      {/* Navigation Footer */}
-      <div className="profile-footer-links">
-        <Link to="/questions" className="btn btn-secondary">
-          📚 Continue Solving Questions (22,222 Total)
-        </Link>
-        <Link to="/system-design" className="btn btn-primary">
-          📐 System Design Studio →
-        </Link>
+        {/* Right Column: Personal Information & Security Forms */}
+        <div className="account-main-column">
+          {/* Section 1: Personal & Batch Information */}
+          <div className="account-card">
+            <div className="card-header-row">
+              <h3>Personal &amp; Batch Profile</h3>
+              <span className="section-sub">Update account identity, batch details &amp; academic metadata</span>
+            </div>
+
+            <form onSubmit={handleUpdateProfile} className="account-form">
+              <div className="form-group-row">
+                <div className="form-group flex-1">
+                  <label htmlFor="user-full-name">Full Name</label>
+                  <input
+                    id="user-full-name"
+                    type="text"
+                    className="form-control"
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                    placeholder="Enter your full name"
+                    required
+                  />
+                </div>
+
+                <div className="form-group flex-1">
+                  <label htmlFor="user-phone">Phone Number</label>
+                  <input
+                    id="user-phone"
+                    type="tel"
+                    className="form-control"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    placeholder="+1 (555) 000-0000"
+                  />
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="user-email">Email Address (Account Identity)</label>
+                <div className="email-input-wrap">
+                  <input
+                    id="user-email"
+                    type="email"
+                    className="form-control read-only"
+                    value={user?.email || ''}
+                    disabled
+                    readOnly
+                  />
+                  <span className="verification-status-badge">
+                    ✅ Verified Identity
+                  </span>
+                </div>
+                <span className="form-hint">Email is linked to your Supabase Auth session and cannot be edited directly.</span>
+              </div>
+
+              {/* Batch & Cohort Allocation Section */}
+              <div className="form-group-row">
+                <div className="form-group flex-1">
+                  <label htmlFor="user-batch">
+                    Assigned Batch Name / Cohort {!isAdmin && <span className="read-only-tag">🔒 Readonly</span>}
+                  </label>
+                  <input
+                    id="user-batch"
+                    type="text"
+                    className={`form-control ${!user || user.role !== 'admin' ? 'read-only' : ''}`}
+                    value={batch}
+                    onChange={(e) => setBatch(e.target.value)}
+                    placeholder="e.g. 2026-Alpha, Batch 2026"
+                    readOnly={!user || user.role !== 'admin'}
+                  />
+                  <span className="form-hint">
+                    {user?.role === 'admin'
+                      ? 'Editable as Administrator. Unique cohort name assigned to candidate.'
+                      : '🔒 Assigned by Administrator. Batch allocation can only be modified by platform admins.'}
+                  </span>
+                </div>
+
+                <div className="form-group flex-1">
+                  <label htmlFor="user-batch-code">
+                    Batch Code ID {!isAdmin && <span className="read-only-tag">🔒 Readonly</span>}
+                  </label>
+                  <input
+                    id="user-batch-code"
+                    type="text"
+                    className={`form-control ${!user || user.role !== 'admin' ? 'read-only' : ''}`}
+                    value={batchCode}
+                    onChange={(e) => setBatchCode(e.target.value)}
+                    placeholder="e.g. FE-2026-A, ARCH-2026"
+                    readOnly={!user || user.role !== 'admin'}
+                  />
+                  <span className="form-hint">
+                    {user?.role === 'admin'
+                      ? 'Editable as Administrator. System code identifier used for automated meeting & REST API routing.'
+                      : '🔒 Assigned by Administrator. Batch Code is used for automated meeting assignment.'}
+                  </span>
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="user-target-track">Target Career &amp; Specialization Track</label>
+                <input
+                  id="user-target-track"
+                  type="text"
+                  className="form-control"
+                  value={targetTrack}
+                  onChange={(e) => setTargetTrack(e.target.value)}
+                  placeholder="e.g. Frontend Architecture, Machine Coding, DSA & System Design"
+                />
+              </div>
+
+              <div className="form-group-row">
+                <div className="form-group flex-1">
+                  <label htmlFor="user-github">GitHub Profile URL</label>
+                  <input
+                    id="user-github"
+                    type="url"
+                    className="form-control"
+                    value={githubUrl}
+                    onChange={(e) => setGithubUrl(e.target.value)}
+                    placeholder="https://github.com/username"
+                  />
+                </div>
+
+                <div className="form-group flex-1">
+                  <label htmlFor="user-linkedin">LinkedIn Profile URL</label>
+                  <input
+                    id="user-linkedin"
+                    type="url"
+                    className="form-control"
+                    value={linkedinUrl}
+                    onChange={(e) => setLinkedinUrl(e.target.value)}
+                    placeholder="https://linkedin.com/in/username"
+                  />
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="user-bio">Bio &amp; Candidate Dossier Summary</label>
+                <textarea
+                  id="user-bio"
+                  className="form-control"
+                  rows={3}
+                  value={bio}
+                  onChange={(e) => setBio(e.target.value)}
+                  placeholder="Brief summary of candidate experience, core tech stack, and interview goals..."
+                />
+              </div>
+
+              <div className="form-actions">
+                <button
+                  type="submit"
+                  className="btn btn-primary"
+                  disabled={updateProfileMutation.isPending}
+                >
+                  {updateProfileMutation.isPending ? 'Saving Profile & Batch...' : 'Save Profile & Batch Metadata'}
+                </button>
+              </div>
+            </form>
+          </div>
+
+          {/* Section 2: Theme & Appearance Preferences */}
+          <div className="account-card">
+            <div className="card-header-row">
+              <h3>Theme &amp; Appearance</h3>
+              <span className="section-sub">Customize workspace interface theme</span>
+            </div>
+
+            <div className="theme-selector-grid">
+              <button
+                type="button"
+                className={`theme-option-btn ${theme === 'dark' ? 'active' : ''}`}
+                onClick={() => setTheme('dark')}
+              >
+                <span className="theme-icon">🌙</span>
+                <span className="theme-name">Dark Mode</span>
+                <span className="theme-desc">High contrast dark palette</span>
+              </button>
+
+              <button
+                type="button"
+                className={`theme-option-btn ${theme === 'light' ? 'active' : ''}`}
+                onClick={() => setTheme('light')}
+              >
+                <span className="theme-icon">☀️</span>
+                <span className="theme-name">Light Mode</span>
+                <span className="theme-desc">Clean bright workspace</span>
+              </button>
+
+              <button
+                type="button"
+                className={`theme-option-btn ${theme === 'system' ? 'active' : ''}`}
+                onClick={() => setTheme('system')}
+              >
+                <span className="theme-icon">💻</span>
+                <span className="theme-name">System Auto</span>
+                <span className="theme-desc">Matches OS preference</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Section 3: Subscription & Feature Entitlements */}
+          <div className="account-card">
+            <div className="card-header-row">
+              <h3>Subscription &amp; Feature Access</h3>
+              <span className="section-sub">Active tier entitlements</span>
+            </div>
+
+            <div className="entitlements-overview">
+              <div className="tier-header-badge">
+                <span className="tier-icon">💎</span>
+                <div>
+                  <div className="tier-title">{user?.role?.toUpperCase()} TIER</div>
+                  <div className="tier-sub font-mono">Role ID: {user?.role}</div>
+                </div>
+              </div>
+
+              <div className="entitlements-grid">
+                <div className={`entitlement-chip ${user?.entitlements?.canAccessDSAStudio ? 'granted' : 'locked'}`}>
+                  <span className="chip-icon">{user?.entitlements?.canAccessDSAStudio ? '✅' : '🔒'}</span>
+                  <span>DSA Question Catalog &amp; Runner</span>
+                </div>
+                <div className={`entitlement-chip ${user?.entitlements?.canAccessMachineCoding ? 'granted' : 'locked'}`}>
+                  <span className="chip-icon">{user?.entitlements?.canAccessMachineCoding ? '✅' : '🔒'}</span>
+                  <span>Machine Coding Studio</span>
+                </div>
+                <div className={`entitlement-chip ${user?.entitlements?.canAccessAIVideoMock ? 'granted' : 'locked'}`}>
+                  <span className="chip-icon">{user?.entitlements?.canAccessAIVideoMock ? '✅' : '🔒'}</span>
+                  <span>AI Video Mock Interview Suite</span>
+                </div>
+                <div className={`entitlement-chip ${user?.entitlements?.canAccessSystemDesign ? 'granted' : 'locked'}`}>
+                  <span className="chip-icon">{user?.entitlements?.canAccessSystemDesign ? '✅' : '🔒'}</span>
+                  <span>System Design &amp; MasterDocs</span>
+                </div>
+                <div className={`entitlement-chip ${user?.entitlements?.canAccessLiveMeetings ? 'granted' : 'locked'}`}>
+                  <span className="chip-icon">{user?.entitlements?.canAccessLiveMeetings ? '✅' : '🔒'}</span>
+                  <span>Realtime Meeting &amp; WebRTC Room</span>
+                </div>
+                <div className={`entitlement-chip ${user?.entitlements?.canAccessAdminPanel ? 'granted' : 'locked'}`}>
+                  <span className="chip-icon">{user?.entitlements?.canAccessAdminPanel ? '✅' : '🔒'}</span>
+                  <span>Platform Operations Control Plane</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Section 4: Security & Password */}
+          <div className="account-card">
+            <div className="card-header-row">
+              <h3>Security &amp; Password</h3>
+              <span className="section-sub">Manage account credentials</span>
+            </div>
+
+            {passwordSuccessMsg && <div className="account-alert alert-success">{passwordSuccessMsg}</div>}
+            {passwordErrorMsg && <div className="account-alert alert-danger">{passwordErrorMsg}</div>}
+
+            <div className="security-status-box">
+              <div className="sec-info">
+                <span className="sec-label">Password</span>
+                <span className="sec-mask">••••••••••••</span>
+              </div>
+              {!isChangingPassword ? (
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={() => setIsChangingPassword(true)}
+                >
+                  Change Password
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  className="btn btn-ghost"
+                  onClick={() => {
+                    setIsChangingPassword(false)
+                    setPasswordErrorMsg('')
+                  }}
+                >
+                  Cancel
+                </button>
+              )}
+            </div>
+
+            {/* Change Password Form */}
+            {isChangingPassword && (
+              <form onSubmit={handleUpdatePassword} className="account-form pwd-form">
+                <div className="form-group">
+                  <label htmlFor="new-password">New Password</label>
+                  <input
+                    id="new-password"
+                    type="password"
+                    className="form-control"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    placeholder="Enter new password (min. 6 characters)"
+                    minLength={6}
+                    required
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="confirm-password">Confirm New Password</label>
+                  <input
+                    id="confirm-password"
+                    type="password"
+                    className="form-control"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder="Re-enter new password to confirm"
+                    minLength={6}
+                    required
+                  />
+                </div>
+
+                <div className="form-actions">
+                  <button
+                    type="submit"
+                    className="btn btn-primary"
+                    disabled={isSubmittingPassword}
+                  >
+                    {isSubmittingPassword ? 'Updating Password...' : 'Update Password'}
+                  </button>
+                </div>
+              </form>
+            )}
+
+            {/* Email Reset Option */}
+            <div className="reset-email-option">
+              <span className="reset-hint">Need to reset your password via email?</span>
+              {resetEmailSent ? (
+                <span className="reset-sent-badge">✉️ Reset link sent to {user?.email}</span>
+              ) : (
+                <button
+                  type="button"
+                  className="btn btn-ghost-sm"
+                  onClick={handleSendResetEmail}
+                  disabled={resetEmailLoading}
+                >
+                  {resetEmailLoading ? 'Sending Email...' : 'Send Password Reset Email'}
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Section 5: Account Termination / Logout */}
+          <div className="account-card danger-zone-card">
+            <div className="card-header-row">
+              <h3>Account Session</h3>
+              <span className="section-sub">Sign out of active session</span>
+            </div>
+
+            <div className="signout-box">
+              <p>Sign out of your active session on this device. Your state will be safely saved in Supabase Cloud.</p>
+              <button
+                type="button"
+                className="btn btn-danger"
+                onClick={() => signOut()}
+              >
+                Sign Out of Account
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   )

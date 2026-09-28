@@ -172,7 +172,7 @@ export function DocsExportModal({
                   <span className="dem-badge-pill">{ankiCardCount} Ready Flashcards</span>
                 </div>
                 <p>
-                  Exported as standard tab-separated values (TSV) compatible with Anki Desktop, AnkiMobile (iOS), and AnkiDroid. Contains core concepts, internal mechanics, syntax references, and FAANG interview questions.
+                  Exported as standard tab-separated values (TSV) compatible with Anki Desktop, AnkiMobile (iOS), and AnkiDroid. Contains core concepts, internal mechanics, syntax references, and high-frequency interview questions.
                 </p>
 
                 <div className="dem-action-buttons-row">

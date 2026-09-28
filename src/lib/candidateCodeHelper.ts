@@ -482,7 +482,7 @@ function generateWorkingReactComponent(title: string, questionId: string, candid
 /**
  * Solution for ${title} (${questionId})
  * Candidate: ${candidateName}
- * Platform: FAANG Frontend Technical Assessment
+ * Platform: Frontend Technical Assessment
  */
 export default function App() {
   const [items, setItems] = useState<string[]>([

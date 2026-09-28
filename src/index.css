@@ -75,6 +75,14 @@
   --radius-md: 12px;
   --radius-lg: 16px;
 
+  --z-base: 0;
+  --z-sticky: 100;
+  --z-dropdown: 1000;
+  --z-modal: 2000;
+  --z-popover: 2500;
+  --z-toast: 3000;
+  --z-tooltip: 4000;
+
   --font-mono: 'JetBrains Mono', 'Fira Code', Consolas, Monaco, monospace;
 }
 

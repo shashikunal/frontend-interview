@@ -70,12 +70,11 @@ export const authService = {
     const cleanEmail = email.toLowerCase().trim()
 
     try {
-      // Check if credentials are for administrator (shashi or platform admin)
+      // Check if credentials are for administrator
       const isAdminUser =
-        cleanEmail === 'shashi' ||
-        cleanEmail === 'shashi@admin.com' ||
         cleanEmail === 'admin' ||
-        cleanEmail === 'admin@interviewprep.com'
+        cleanEmail === 'admin@interviewprep.com' ||
+        cleanEmail.includes('admin')
 
       if (isAdminUser) {
         try {
