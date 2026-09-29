@@ -48,6 +48,7 @@ export interface InterviewerPersona {
   role: string;
   company: string;
   avatar: string;
+  imageUrl?: string;
   style: InterviewerStyle;
   bio: string;
   voicePitch: number;

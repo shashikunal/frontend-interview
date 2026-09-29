@@ -1,10 +1,8 @@
-import { useState, useRef, useEffect, useMemo } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useProgress } from '../../context/ProgressContext'
-import { useBookmarks } from '../../context/BookmarkContext'
 import { useAuth } from '../../context/AuthContext'
-import { badgeService } from '../../lib/badgeService'
 import ThemeToggle from './ThemeToggle'
 import AdminNotificationBell from './AdminNotificationBell'
 import './Header.css'
@@ -33,22 +31,8 @@ export default function Header() {
     }
   }, [])
 
-  const { streak, solvedIds, mockInterviews } = useProgress()
-  const { bookmarkedCount } = useBookmarks()
+  const { streak } = useProgress()
   const { user, isAuthenticated, hasFeature, openAuthModal, signOut } = useAuth()
-
-  const levelInfo = useMemo(() => {
-    const solvedCount = solvedIds.size
-    const strongHireCount = mockInterviews.filter(m => m.verdict === 'Strong Hire').length
-    const mockCount = mockInterviews.length
-    const machineCodingCount = Math.max(
-      mockInterviews.reduce((acc, m) => acc + ((m.testCasesPassed && m.testCasesPassed > 0) ? 1 : 0), 0),
-      solvedCount > 0 ? 1 : 0
-    )
-    const stats = { solvedCount, streakDays: streak, mockCount, strongHireCount, bookmarkedCount, machineCodingCount }
-    const badges = badgeService.evaluateBadges(stats)
-    return badgeService.calculateLevelInfo(badges)
-  }, [solvedIds.size, streak, mockInterviews, bookmarkedCount])
 
   const hasQuestionsFull = hasFeature('questions_full')
   const hasCodingSandbox = hasFeature('coding_sandbox')
@@ -159,16 +143,6 @@ export default function Header() {
           ) : (
             /* Candidate / Standard Navigation */
             <div className="desktop-nav-items">
-              <form className="header-search" onSubmit={onSearch} role="search">
-                <input
-                  type="search"
-                  className="header-search-input"
-                  placeholder="Search 22,222 questions…"
-                  value={term}
-                  onChange={e => setTerm(e.target.value)}
-                  aria-label="Search all questions"
-                />
-              </form>
 
               {/* 1a. Master Question Bank (12K Questions) */}
               <Link to="/interview-questions" className={`nav-link ${isActive('/interview-questions') ? 'active' : ''}`}>
@@ -247,18 +221,29 @@ export default function Header() {
 
         {/* Header Right Actions: Command Palette, Theme Toggle, Auth, Mobile Menu Toggle */}
         <div className="header-right-actions">
-          {/* Global Command Palette Trigger Button */}
-          <button
-            type="button"
-            className="header-cmd-palette-btn"
-            onClick={() => window.dispatchEvent(new CustomEvent('open-command-palette'))}
-            title="Search 21 tracks, topics, and interview questions (Ctrl+K)"
-            aria-label="Open Global Command Palette (Ctrl+K)"
-          >
-            <span className="hcp-icon">🔍</span>
-            <span className="hcp-label">Search...</span>
-            <kbd className="hcp-kbd">⌘K</kbd>
-          </button>
+          {/* Single Unified Global Search Bar */}
+          <div className="header-unified-search">
+            <form onSubmit={onSearch} role="search" className="hus-form">
+              <span className="hus-icon" aria-hidden="true">🔍</span>
+              <input
+                type="search"
+                className="hus-input"
+                placeholder="Search 22,000+ questions & topics..."
+                value={term}
+                onChange={e => setTerm(e.target.value)}
+                aria-label="Search all questions and topics"
+              />
+              <button
+                type="button"
+                className="hus-kbd-btn"
+                onClick={() => window.dispatchEvent(new CustomEvent('open-command-palette'))}
+                title="Open Command Palette (Ctrl+K)"
+                aria-label="Open Command Palette (Ctrl+K)"
+              >
+                <kbd className="hus-kbd">⌘K</kbd>
+              </button>
+            </form>
+          </div>
 
           {/* 5. Theme Toggle & Offline Status */}
           <div className="header-toggle-wrap">
@@ -278,16 +263,7 @@ export default function Header() {
 
           {/* 6. User Auth Button / Profile Menu */}
           <div className="header-auth-wrap">
-            {isAuthenticated && (
-              <Link
-                to="/dashboard?view=profile"
-                className="header-level-pill"
-                title={`Candidate Level ${levelInfo.level}: ${levelInfo.title} (${levelInfo.currentXp} XP)`}
-              >
-                <span className="hlp-badge">L{levelInfo.level}</span>
-                <span className="hlp-xp">{levelInfo.currentXp} XP</span>
-              </Link>
-            )}
+
 
             {isAuthenticated && user?.role === 'admin' && (
               <AdminNotificationBell />
@@ -326,27 +302,7 @@ export default function Header() {
                       <span className={`ud-badge ${user.role}`}>{user.role.toUpperCase()}</span>
                     </div>
 
-                    <div className="ud-level-card">
-                      <div className="ud-lvl-row">
-                        <span className="ud-lvl-tag">L{levelInfo.level}</span>
-                        <div className="ud-lvl-info">
-                          <span className="ud-lvl-name">{levelInfo.title}</span>
-                          <span className="ud-lvl-pts">{levelInfo.currentXp} / {levelInfo.xpForNextLevel} XP</span>
-                        </div>
-                      </div>
-                      <div className="ud-lvl-track">
-                        <div className="ud-lvl-bar" style={{ width: `${levelInfo.progressPercent}%` }} />
-                      </div>
-                      <Link
-                        to="/dashboard?view=profile"
-                        className="ud-ach-link"
-                        onClick={() => setIsUserMenuOpen(false)}
-                      >
-                        🏅 {levelInfo.totalBadgesUnlocked} / {levelInfo.totalBadgesCount} Badges Unlocked →
-                      </Link>
-                    </div>
 
-                    <div className="ud-divider" />
 
                     {user.role === 'admin' ? (
                       <>
@@ -1232,18 +1188,7 @@ export default function Header() {
                   <span className={`ud-badge ${user.role}`}>{user.role.toUpperCase()}</span>
                 </div>
 
-                <div className="mobile-user-level-card">
-                  <div className="ud-lvl-row">
-                    <span className="ud-lvl-tag">L{levelInfo.level}</span>
-                    <div className="ud-lvl-info">
-                      <span className="ud-lvl-name">{levelInfo.title}</span>
-                      <span className="ud-lvl-pts">{levelInfo.currentXp} / {levelInfo.xpForNextLevel} XP</span>
-                    </div>
-                  </div>
-                  <div className="ud-lvl-track">
-                    <div className="ud-lvl-bar" style={{ width: `${levelInfo.progressPercent}%` }} />
-                  </div>
-                </div>
+
 
                 <div className="mobile-user-actions">
                   {user.role === 'admin' ? (

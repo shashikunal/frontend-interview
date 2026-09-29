@@ -38,26 +38,7 @@ export class MeetingService {
   }
 
   private seedDemoMeetings(): void {
-    const defaultHostId = 'f16e43bf-2ff8-480c-ae49-e2285940bf46';
-    const now = new Date();
-
-    const sample1: MeetingRecord = {
-      id: 'meet_meta_arch_live',
-      title: 'Meta Staff Frontend Architecture Loop',
-      description: 'Distributed UI State & Concurrent Fiber Execution Evaluation',
-      hostId: defaultHostId,
-      hostEmail: 'shashi@admin.com',
-      hostName: 'Platform Administrator',
-      meetingType: 'INTERVIEW',
-      status: 'SCHEDULED',
-      scheduledStartTime: new Date(now.getTime() + 3600 * 1000).toISOString(),
-      scheduledEndTime: new Date(now.getTime() + 7200 * 1000).toISOString(),
-      settings: DEFAULT_MEETING_SETTINGS,
-      createdAt: now.toISOString(),
-      updatedAt: now.toISOString(),
-    };
-
-    this.meetings.set(sample1.id, sample1);
+    // Meetings start clean from scratch (no hardcoded demo meetings)
   }
 
   /**

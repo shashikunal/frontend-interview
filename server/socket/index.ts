@@ -22,6 +22,16 @@ import { isOriginAllowed } from '../security/securityHeaders.ts';
 
 let ioInstance: SocketIOServer<ClientToServerEvents, ServerToClientEvents, Record<string, never>, SocketData> | null = null;
 
+export function getIOServer() {
+  return ioInstance;
+}
+
+export function broadcastPushNotification(payload: any) {
+  if (ioInstance) {
+    ioInstance.emit('notification:meeting-link', payload);
+  }
+}
+
 export function initSocketServer(server: HTTPServer | Http2SecureServer): SocketIOServer<ClientToServerEvents, ServerToClientEvents, Record<string, never>, SocketData> {
   if (ioInstance) {
     return ioInstance;

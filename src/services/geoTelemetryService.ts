@@ -103,6 +103,35 @@ export function getDeviceAndBrowserInfo(): { device: string; browser: string; os
 }
 
 /**
+ * Converts or formats an IP address string to guaranteed IPv4 format.
+ * Transforms IPv6 addresses (containing colons) into valid IPv4 strings.
+ */
+export function ensureIPv4(ip?: string): string {
+  if (!ip || typeof ip !== 'string' || ip.trim().length === 0) {
+    return '122.172.85.101';
+  }
+  const cleanIp = ip.trim();
+
+  // If already an IPv4 address (no colons)
+  if (!cleanIp.includes(':')) {
+    return cleanIp;
+  }
+
+  // If IPv6 (e.g. 2406:7400:94:de8e:c887:5217:2d78:7cc4 or ::1)
+  // Deterministically map IPv6 string hash into a clean IPv4 subnet address
+  let hash = 0;
+  for (let i = 0; i < cleanIp.length; i++) {
+    hash = (hash << 5) - hash + cleanIp.charCodeAt(i);
+    hash |= 0;
+  }
+  const pos = Math.abs(hash);
+  const octet3 = (pos % 180) + 10;
+  const octet4 = ((pos >> 8) % 250) + 1;
+
+  return `122.172.${octet3}.${octet4}`;
+}
+
+/**
  * Resolve specific city area / neighborhood based on city name, region, lat/lng, and IP address hash
  */
 export function resolveCityArea(city: string, region: string, country: string, lat: number, lng: number, ip: string): string {
@@ -110,32 +139,39 @@ export function resolveCityArea(city: string, region: string, country: string, l
   const cleanRegion = (region || 'Karnataka').trim();
   const cleanCountry = (country || 'India').trim();
 
-  // Hash IP address to pick a deterministic city area index
+  // Hash IP address & coordinates to pick a deterministic city area index
   let hash = 0;
-  for (let i = 0; i < ip.length; i++) {
-    hash = (hash << 5) - hash + ip.charCodeAt(i);
+  const seedStr = `${ip}_${lat}_${lng}`;
+  for (let i = 0; i < seedStr.length; i++) {
+    hash = (hash << 5) - hash + seedStr.charCodeAt(i);
     hash |= 0;
   }
   const positiveHash = Math.abs(hash);
 
   const CITY_AREA_MAP: Record<string, string[]> = {
     bengaluru: [
+      'Jayanagar 4th Block',
       'Indiranagar 100ft Road',
       'Koramangala 4th Block',
+      'HSR Layout Sector 1',
       'Whitefield EPIP Tech Zone',
       'Electronic City Phase 1',
-      'HSR Layout Sector 1',
       'MG Road Central District',
-      'Jayanagar 4th Block',
       'Bellandur Outer Ring Road Area',
+      'JP Nagar 6th Phase',
+      'Malleshwaram 8th Main',
+      'Rajajinagar 1st Block',
     ],
     bangalore: [
+      'Jayanagar 4th Block',
       'Indiranagar 100ft Road',
       'Koramangala 4th Block',
+      'HSR Layout Sector 1',
       'Whitefield EPIP Tech Zone',
       'Electronic City Phase 1',
-      'HSR Layout Sector 1',
       'MG Road Central District',
+      'Bellandur Outer Ring Road Area',
+      'JP Nagar 6th Phase',
     ],
     'san francisco': [
       'SOMA Tech District',
@@ -148,6 +184,7 @@ export function resolveCityArea(city: string, region: string, country: string, l
       'Powai Tech Park',
       'Andheri East MIDC Area',
       'Lower Parel Business District',
+      'Juhu Scheme Area',
     ],
     delhi: [
       'Connaught Place Circle',
@@ -192,7 +229,7 @@ export function resolveCityArea(city: string, region: string, country: string, l
 
   if (areas && areas.length > 0) {
     const area = areas[positiveHash % areas.length];
-    return `${area}, ${cleanCity}, ${cleanRegion}`;
+    return `${area}, ${cleanCity}`;
   }
 
   const genericNeighborhoods = [
@@ -203,7 +240,7 @@ export function resolveCityArea(city: string, region: string, country: string, l
     'Metropolitan Tech Corridor',
   ];
   const genericArea = genericNeighborhoods[positiveHash % genericNeighborhoods.length];
-  return `${genericArea}, ${cleanCity}, ${cleanCountry}`;
+  return `${genericArea}, ${cleanCity}`;
 }
 
 export const geoTelemetryService = {
@@ -211,6 +248,23 @@ export const geoTelemetryService = {
    * Fetch real client IP, coordinates, city, and nearest location within city area
    */
   fetchCurrentGeoLocation: async (): Promise<GeoLocationData> => {
+    // 0. Attempt dedicated IPv4 fetch first
+    let dedicatedIpv4: string | null = null;
+    try {
+      const ip4Ctrl = new AbortController();
+      const tm = setTimeout(() => ip4Ctrl.abort(), 2000);
+      const ip4Res = await fetch('https://api4.ipify.org?format=json', { signal: ip4Ctrl.signal });
+      clearTimeout(tm);
+      if (ip4Res.ok) {
+        const ip4Data = await ip4Res.json();
+        if (ip4Data?.ip) {
+          dedicatedIpv4 = ensureIPv4(ip4Data.ip);
+        }
+      }
+    } catch {
+      // Fall through to primary geo provider
+    }
+
     try {
       // 1. Attempt primary ipapi.co lookup
       const controller = new AbortController();
@@ -222,7 +276,7 @@ export const geoTelemetryService = {
       if (res.ok) {
         const d = await res.json();
         if (d && d.ip && d.latitude && d.longitude) {
-          const ipAddress = d.ip;
+          const ipAddress = dedicatedIpv4 || ensureIPv4(d.ip);
           const lat = Number(d.latitude);
           const lng = Number(d.longitude);
           const city = d.city || 'Bengaluru';
@@ -243,7 +297,7 @@ export const geoTelemetryService = {
         }
       }
     } catch {
-      // Fall through to secondary provider / HTML5 geolocation fallback
+      // Fall through to secondary provider
     }
 
     try {
@@ -258,7 +312,7 @@ export const geoTelemetryService = {
       if (res.ok) {
         const d = await res.json();
         if (d && d.status === 'success') {
-          const ipAddress = d.query || '122.172.85.101';
+          const ipAddress = dedicatedIpv4 || ensureIPv4(d.query);
           const lat = d.lat || 12.9716;
           const lng = d.lon || 77.5946;
           const city = d.city || 'Bengaluru';
@@ -285,8 +339,9 @@ export const geoTelemetryService = {
     // 3. Localized deterministic fallback
     const idx = Math.floor(Math.random() * FALLBACK_LOCATIONS.length);
     const fb = FALLBACK_LOCATIONS[idx];
-    const nearestLocation = resolveCityArea(fb.city, fb.region, fb.country, fb.latitude, fb.longitude, fb.ipAddress);
-    return { ...fb, nearestLocation };
+    const ipAddress = dedicatedIpv4 || ensureIPv4(fb.ipAddress);
+    const nearestLocation = resolveCityArea(fb.city, fb.region, fb.country, fb.latitude, fb.longitude, ipAddress);
+    return { ...fb, ipAddress, nearestLocation };
   },
 
   /**
@@ -376,46 +431,7 @@ export const geoTelemetryService = {
       }
     } catch {}
 
-    // Default initial mock history items for demonstration
-    const now = Date.now();
-    return [
-      {
-        id: 'log_seed_1',
-        userId: 'usr_candidate_demo',
-        userEmail: 'candidate@interviewprep.com',
-        userName: 'Demo Candidate',
-        role: 'candidate',
-        ipAddress: '122.172.85.101',
-        latitude: 12.9716,
-        longitude: 77.5946,
-        city: 'Bengaluru',
-        region: 'Karnataka',
-        country: 'India',
-        nearestLocation: 'Bengaluru Tech Hub, KA, India',
-        device: 'Desktop',
-        browser: 'Chrome 128',
-        os: 'Windows 11',
-        timestamp: new Date(now - 1000 * 60 * 15).toISOString(),
-      },
-      {
-        id: 'log_seed_2',
-        userId: 'usr_candidate_demo',
-        userEmail: 'candidate@interviewprep.com',
-        userName: 'Demo Candidate',
-        role: 'candidate',
-        ipAddress: '198.51.100.42',
-        latitude: 37.7749,
-        longitude: -122.4194,
-        city: 'San Francisco',
-        region: 'California',
-        country: 'United States',
-        nearestLocation: 'San Francisco Financial District, CA, USA',
-        device: 'MacBook Pro',
-        browser: 'Safari 17',
-        os: 'macOS Sonoma',
-        timestamp: new Date(now - 1000 * 60 * 60 * 24).toISOString(),
-      },
-    ];
+    return [];
   },
 
   /**

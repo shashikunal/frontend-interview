@@ -377,7 +377,7 @@ export const MeetingRoom: React.FC = () => {
                   if (p.id === peerUserId) {
                     return streamType === 'screen'
                       ? { ...p, screenStream: stream, screenShareEnabled: true }
-                      : { ...p, stream };
+                      : { ...p, stream, videoEnabled: true, audioEnabled: true };
                   }
                   return p;
                 })
@@ -613,6 +613,15 @@ export const MeetingRoom: React.FC = () => {
   };
 
   const handleSendReaction = async (emoji: string) => {
+    // 1. Trigger floating reaction animation bubble
+    const reactionId = `react_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
+    const x = Math.floor(15 + Math.random() * 70);
+    setActiveReactions(prev => [...prev, { id: reactionId, emoji, userName: user?.name || 'You', x }]);
+    setTimeout(() => {
+      setActiveReactions(prev => prev.filter(r => r.id !== reactionId));
+    }, 2500);
+
+    // 2. Broadcast reaction via meeting collaboration service
     if (!meetingId) return;
     const res = await meetingCollaborationService.sendReaction(meetingId, emoji);
     if (!res.success && res.error) {
@@ -2067,6 +2076,15 @@ export const MeetingRoom: React.FC = () => {
           </div>
         )}
       </main>
+
+      {/* Floating Animated Meeting Reactions Overlay */}
+      <div className="floating-reactions-overlay">
+        {activeReactions.map(r => (
+          <span key={r.id} className="floating-reaction-bubble" style={{ left: `${r.x}%` }}>
+            {r.emoji}
+          </span>
+        ))}
+      </div>
 
       {/* Floating Bottom Media Controls Dock */}
       <MediaControlsDock

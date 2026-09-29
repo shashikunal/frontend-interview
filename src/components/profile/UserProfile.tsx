@@ -6,7 +6,7 @@ import {
   useUploadAvatarMutation,
   useRemoveAvatarMutation,
 } from '../../hooks/useProfileQuery'
-import { geoTelemetryService, getDeviceAndBrowserInfo, type LoginSessionTelemetry } from '../../services/geoTelemetryService'
+import { geoTelemetryService, getDeviceAndBrowserInfo, ensureIPv4, resolveCityArea, type LoginSessionTelemetry } from '../../services/geoTelemetryService'
 import './UserProfile.css'
 
 interface UserProfileProps {
@@ -34,7 +34,14 @@ export default function UserProfile({ embedded = false }: UserProfileProps) {
     if (user?.id) {
       const logs = geoTelemetryService.getUserLoginHistory(user.id)
       if (logs.length > 0) {
-        setRecentLogin(logs[0])
+        const raw = logs[0]
+        const ipv4 = ensureIPv4(raw.ipAddress)
+        const nearestLocation = resolveCityArea(raw.city, raw.region, raw.country, raw.latitude, raw.longitude, ipv4)
+        setRecentLogin({
+          ...raw,
+          ipAddress: ipv4,
+          nearestLocation,
+        })
       } else {
         geoTelemetryService.fetchCurrentGeoLocation().then(geo => {
           const { device, browser, os } = getDeviceAndBrowserInfo()

@@ -621,7 +621,7 @@ export default function AdminCandidateManagementTab() {
                           navigate(`/admin/candidates/${cand.id}/performance`);
                         }}
                       >
-                        Dossier →
+                        Report →
                       </button>
                     </td>
                   </tr>

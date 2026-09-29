@@ -394,7 +394,7 @@ export default function FaangReadinessDossierModal({
       day: 'numeric',
     });
 
-    return `# 🏆 Technical Assessment Readiness Dossier
+    return `# 🏆 Technical Assessment Readiness Report
 **Candidate**: ${candidateName} (${candidateId})  
 **Evaluation Date**: ${dateStr}  
 **Technical Readiness Score**: **${readinessIndex.totalIndex} / 100** — *${readinessIndex.tierLabel}*  
@@ -466,7 +466,7 @@ ${readinessIndex.totalIndex >= 70
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `FAANG_Readiness_Dossier_${candidateName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.md`;
+    link.download = `FAANG_Readiness_Report_${candidateName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.md`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -484,7 +484,7 @@ ${readinessIndex.totalIndex >= 70
         {/* Modal Topbar */}
         <div className="faang-dossier-topbar no-print">
           <div className="faang-dossier-topbar-left">
-            <span className="faang-dossier-logo-badge">🏆 READINESS DOSSIER</span>
+            <span className="faang-dossier-logo-badge">🏆 READINESS REPORT</span>
             <span className="faang-dossier-title-sub">Technical Evaluation &amp; Export</span>
           </div>
 
@@ -494,7 +494,7 @@ ${readinessIndex.totalIndex >= 70
               className={`faang-tab-pill ${activeTab === 'visual' ? 'active' : ''}`}
               onClick={() => setActiveTab('visual')}
             >
-              📊 Executive Dossier
+              📊 Performance Report
             </button>
             <button
               type="button"
@@ -526,7 +526,7 @@ ${readinessIndex.totalIndex >= 70
               type="button"
               className="faang-action-btn download-btn"
               onClick={handleDownloadMarkdown}
-              title="Download dossier as .md file"
+              title="Download report as .md file"
             >
               💾 Download .md
             </button>
@@ -534,7 +534,7 @@ ${readinessIndex.totalIndex >= 70
               type="button"
               className="faang-close-btn"
               onClick={onClose}
-              aria-label="Close Dossier Modal"
+              aria-label="Close Report Modal"
             >
               ✕
             </button>

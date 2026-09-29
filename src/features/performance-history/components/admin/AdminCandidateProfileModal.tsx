@@ -750,10 +750,10 @@ export default function AdminCandidateProfileModal({
         {/* Modal Footer */}
         <div className="admin-cand-modal-footer">
           <span className="candidate-secure-footer-text">
-            🔒 Candidate Dossier &amp; Evaluations protected by Row-Level Security. Passwords encrypted.
+            🔒 Candidate Report &amp; Evaluations protected by Row-Level Security. Passwords encrypted.
           </span>
           <button className="perf-btn-done" onClick={onClose} type="button">
-            Close Dossier
+            Close Report
           </button>
         </div>
       </div>

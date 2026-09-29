@@ -506,10 +506,10 @@ export default function StudentPerformanceView({ userId: propUserId }: StudentPe
             className="perf-dossier-btn"
             id="open-faang-dossier-btn"
             onClick={() => setShowDossierModal(true)}
-            title="Generate executive technical readiness dossier and export as PDF or Markdown"
+            title="Generate candidate technical readiness report and export as PDF or Markdown"
           >
             <span className="perf-dossier-icon">🏆</span>
-            <span className="perf-dossier-text">Technical Readiness Dossier</span>
+            <span className="perf-dossier-text">Technical Readiness Report</span>
             <span className="perf-dossier-badge">1-Click Export</span>
           </button>
         </div>

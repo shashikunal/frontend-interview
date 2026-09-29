@@ -132,6 +132,17 @@ export default async function handler(req, res) {
     }
   }
 
+  // 3. DELETE / Clear All Meetings
+  if (req.method === 'DELETE' || req.body?.action === 'clear_all' || req.body?.action === 'delete_all') {
+    const resClear = meetingOpsService.clearAllMeetings();
+    return res.status(200).json({
+      success: true,
+      clearedCount: resClear.clearedCount,
+      message: 'All scheduled meetings removed from roster.',
+      correlationId: correlation.correlationId,
+    });
+  }
+
   // 3. POST: Actions (Create, Update, Cancel, Assign, Attendance, Send Notification)
   if (req.method === 'POST') {
     const action = req.body?.action || (req.body?.targetStatus ? 'transition' : 'create');
@@ -188,6 +199,19 @@ export default async function handler(req, res) {
         return res.status(400).json(createErrorResponse('BadRequest', result.error || 'Cancellation failed.', 'CANCEL_FAILED', correlation.correlationId));
       }
       return res.status(200).json({ success: true, correlationId: correlation.correlationId });
+    }
+
+    // Permanently Delete Single Meeting
+    if (action === 'delete' || action === 'delete_single') {
+      const { meetingId } = req.body;
+      if (!meetingId) {
+        return res.status(400).json(createErrorResponse('BadRequest', 'meetingId is required.', 'INVALID_PARAMETERS', correlation.correlationId));
+      }
+      const result = await meetingOpsService.deleteSingleMeeting(user, meetingId);
+      if (!result.success) {
+        return res.status(400).json(createErrorResponse('BadRequest', result.error || 'Deletion failed.', 'DELETE_FAILED', correlation.correlationId));
+      }
+      return res.status(200).json({ success: true, message: 'Meeting permanently deleted.', correlationId: correlation.correlationId });
     }
 
     // Assign Students

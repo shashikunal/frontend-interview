@@ -67,7 +67,8 @@ import AchievementUnlockToast from './components/badges/AchievementUnlockToast'
 import { useBadgeEvaluator } from './hooks/useBadgeEvaluator'
 import { DocsCommandPalette } from './features/interview-docs/components/DocsCommandPalette'
 import { SkeletonLoader } from './components/common/SkeletonLoader'
-import './App.css'
+import { SectionErrorBoundary } from './components/common/ErrorBoundary'
+import { GlobalNotificationListener } from './components/common/GlobalNotificationListener'
 
 export default function App() {
   const location = useLocation()
@@ -91,10 +92,12 @@ export default function App() {
       <AuthModal />
       <AchievementUnlockToast />
       <DocsCommandPalette />
+      <GlobalNotificationListener />
       <main className={`main-content ${isAdminDashboard ? 'dashboard-main-content' : ''} ${isStudioWorkspace ? 'studio-main-content' : ''} ${isDocsPlatform ? 'docs-main-content' : ''} ${isMeetingRoom ? 'meeting-main-content' : ''}`}>
-        <Suspense fallback={<SkeletonLoader variant="page" />}>
-          <div key={location.pathname} className="app-page-transition">
-            <Routes>
+        <SectionErrorBoundary name="Page Route">
+          <Suspense fallback={<SkeletonLoader variant="page" />}>
+            <div key={location.pathname} className="app-page-transition">
+              <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/meet" element={<InstantMeetingLandingPage />} />
           <Route path="/meetings" element={<InstantMeetingLandingPage />} />
@@ -822,6 +825,7 @@ export default function App() {
         </Routes>
         </div>
         </Suspense>
+        </SectionErrorBoundary>
       </main>
       {!hideFooter && <Footer />}
     </div>
