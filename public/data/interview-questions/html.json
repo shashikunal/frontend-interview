@@ -3,7 +3,7 @@
     "subject": "html",
     "questionNumber": 1,
     "category": "HTML Fundamentals",
-    "difficulty": "easy",
+    "difficulty": "EASY",
     "question": "What is HTML?",
     "shortAnswer": "HTML (HyperText Markup Language) is the standard markup language used to structure content on web pages.",
     "detailedAnswer": "**HTML** defines the structure and meaning of web content using elements such as headings, paragraphs, links, images, forms, tables, and semantic sections. **HTML** itself is not a programming language because it does not contain programming logic such as loops or conditional statements.",
@@ -118,13 +118,14 @@
     "question_hash": "qh_55fa0c9a",
     "status": "published",
     "correctOption": "B",
-    "explanation": "HTML (HyperText Markup Language) is the standard markup language used to define the structure of web content."
+    "explanation": "HTML (HyperText Markup Language) is the standard markup language used to define the structure of web content.",
+    "experienceLevel": "FRESHER"
   },
   {
     "subject": "html",
     "questionNumber": 2,
     "category": "HTML Fundamentals",
-    "difficulty": "easy",
+    "difficulty": "EASY",
     "question": "What is <!DOCTYPE html>?",
     "shortAnswer": "<!DOCTYPE html> tells the browser that the document should be interpreted using the modern HTML standard and enables standards mode.",
     "detailedAnswer": "It is a document type declaration that appears on line 1 of every **HTML** document.\n\nIt informs the web browser which **HTML** version specification to parse the file with.\n\nWithout it, browsers fall back to **Quirks Mode**, where layout behaves like vintage Netscape and Internet Explorer, breaking modern **CSS** rules.",
@@ -233,13 +234,14 @@
     "question_hash": "qh_25dc48ac",
     "status": "published",
     "correctOption": "B",
-    "explanation": "<!DOCTYPE html> tells the browser engine to interpret the document in modern standards mode."
+    "explanation": "<!DOCTYPE html> tells the browser engine to interpret the document in modern standards mode.",
+    "experienceLevel": "FRESHER"
   },
   {
     "subject": "html",
     "questionNumber": 3,
     "category": "HTML Fundamentals",
-    "difficulty": "easy",
+    "difficulty": "EASY",
     "question": "What is the difference between an HTML element and an HTML tag?",
     "shortAnswer": "A tag is the markup syntax such as <p> or </p>, whereas an element generally consists of the opening tag, content, and closing tag.",
     "detailedAnswer": "Tags are the structural markers used to delimit elements in **HTML** source code.\n\nAn element is the complete unit composed of the <u><u>opening tag</u></u>, its attributes, enclosed content or child nodes, and the <u><u>closing tag</u></u>.",
@@ -333,13 +335,14 @@
       "B": "Incorrect. This describes What is Semantic HTML and why should we use it?, not What is the difference between an HTML element and an HTML tag?.",
       "D": "Incorrect. This describes What is the difference between id and class attributes in HTML?, not What is the difference between an HTML element and an HTML tag?."
     },
-    "mcqQuestion": "What is the difference between an HTML element and an HTML tag?"
+    "mcqQuestion": "What is the difference between an HTML element and an HTML tag?",
+    "experienceLevel": "FRESHER"
   },
   {
     "subject": "html",
     "questionNumber": 4,
     "category": "HTML Fundamentals",
-    "difficulty": "easy",
+    "difficulty": "EASY",
     "question": "What are HTML attributes?",
     "shortAnswer": "Attributes provide additional information, properties, or configuration for an HTML element, typically specified as name-value pairs in the opening tag.",
     "detailedAnswer": "Attributes define element behavior, identity, styling hooks, and relationships.\n\nCommon core attributes include id (<u><u>unique identifier</u></u>), class (styling and selection classification), src (source URL for media), and href (hyperlink destination).",
@@ -439,13 +442,14 @@
     "status": "published",
     "correctOption": "D",
     "explanation": "Correct. Attributes provide additional information, properties, or configuration for an HTML element, typically specified as name-value pairs in the opening tag.",
-    "mcqQuestion": "What are HTML attributes?"
+    "mcqQuestion": "What are HTML attributes?",
+    "experienceLevel": "FRESHER"
   },
   {
     "subject": "html",
     "questionNumber": 5,
     "category": "HTML Fundamentals",
-    "difficulty": "easy",
+    "difficulty": "EASY",
     "question": "What is the difference between block-level and inline elements?",
     "shortAnswer": "Block-level elements always start on a new line and occupy the full available width, while inline elements flow within surrounding text and only occupy the width of their content.",
     "detailedAnswer": "Traditionally in **HTML**:\n- **Block-level** elements (<div>, <p>, <h1>-<h6>, <section>, <ul>) stack vertically and respect both width and height properties.\n- **Inline** elements (<span>, <a>, <strong>, <em>, <img>) sit horizontally alongside other text/elements and do not respect top/bottom margins or manual width/height settings unless changed via **CSS** display: inline-block or flex.",
@@ -539,13 +543,14 @@
       "C": "Incorrect. This describes What are void (self-closing) elements in HTML?, not What is the difference between block-level and inline elements?.",
       "D": "Incorrect. This describes What is the purpose of the <head> element vs the <body> element?, not What is the difference between block-level and inline elements?."
     },
-    "mcqQuestion": "What is the difference between block-level and inline elements?"
+    "mcqQuestion": "What is the difference between block-level and inline elements?",
+    "experienceLevel": "FRESHER"
   },
   {
     "subject": "html",
     "questionNumber": 6,
     "category": "Semantic HTML",
-    "difficulty": "easy",
+    "difficulty": "EASY",
     "question": "What is Semantic HTML and why should we use it?",
     "shortAnswer": "Semantic HTML means using HTML elements that clearly convey the meaning and purpose of their content to both the browser and developers, rather than generic <div> tags.",
     "detailedAnswer": "Elements like <header>, <nav>, <main>, <article>, <section>, and <footer> convey distinct roles in the document hierarchy.\n\nBenefits include:\n1. **Accessibility**: Screen readers use semantic <u><u>landmark</u></u>s to help visually impaired users navigate easily.\n2. **SEO**: Search engine crawlers (Googlebot) understand the importance of your main content and headlines.\n3.\n\nMaintainability: Code is readable, clean, and self-documenting for team members.",
@@ -665,13 +670,14 @@
     "status": "published",
     "correctOption": "B",
     "explanation": "Correct. Semantic HTML means using HTML elements that clearly convey the meaning and purpose of their content to both the browser and developers, rather than generic <div> tags.",
-    "mcqQuestion": "What is Semantic HTML and why should we use it?"
+    "mcqQuestion": "What is Semantic HTML and why should we use it?",
+    "experienceLevel": "FRESHER"
   },
   {
     "subject": "html",
     "questionNumber": 7,
     "category": "Semantic HTML",
-    "difficulty": "easy",
+    "difficulty": "EASY",
     "question": "What is the difference between <main>, <article>, and <section>?",
     "shortAnswer": "<main> represents the dominant, unique content of the page; <article> is an independent, self-contained piece of content; <section> is a thematic grouping of related content.",
     "detailedAnswer": "- <main>: Must be unique to the document and contain the primary topic of the page (never duplicate across pages like headers/footers).\n- <article>: Represents a self-contained composition that makes sense on its own if syndicated or shared (e.g., blog post, news story, comment card).\n- <section>: A generic thematic group of content, typically introduced by an appropriate heading (<h2>-<h6>).",
@@ -790,13 +796,14 @@
       "B": "Incorrect. This describes What is the purpose of the alt attribute in <img> tags?, not What is the difference between <main>, <article>, and <section>?.",
       "D": "Incorrect. This describes How does the anchor tag <a> work and what are its key attributes?, not What is the difference between <main>, <article>, and <section>?."
     },
-    "mcqQuestion": "What is the difference between <main>, <article>, and <section>?"
+    "mcqQuestion": "What is the difference between <main>, <article>, and <section>?",
+    "experienceLevel": "FRESHER"
   },
   {
     "subject": "html",
     "questionNumber": 8,
     "category": "HTML Fundamentals",
-    "difficulty": "easy",
+    "difficulty": "EASY",
     "question": "What are void (self-closing) elements in HTML?",
     "shortAnswer": "Void elements are HTML elements that cannot have any child nodes or text content, and therefore do not require a closing tag.",
     "detailedAnswer": "Void elements represent stand-alone items or metadata.\n\nCommon **void elements** in **HTML** include <img>, <br>, <hr>, <input>, <link>, and <meta>.\n\nIn modern **HTML5**, the trailing slash (e.g., <img />) is completely optional; <img src='...'> is standard and valid.",
@@ -895,13 +902,14 @@
     "status": "published",
     "correctOption": "D",
     "explanation": "Correct. Void elements are HTML elements that cannot have any child nodes or text content, and therefore do not require a closing tag.",
-    "mcqQuestion": "What are void (self-closing) elements in HTML?"
+    "mcqQuestion": "What are void (self-closing) elements in HTML?",
+    "experienceLevel": "FRESHER"
   },
   {
     "subject": "html",
     "questionNumber": 9,
     "category": "HTML Fundamentals",
-    "difficulty": "easy",
+    "difficulty": "EASY",
     "question": "What is the difference between id and class attributes in HTML?",
     "shortAnswer": "An id must be globally unique across the entire HTML page and applies to only one element, whereas a class can be shared across multiple elements.",
     "detailedAnswer": "- id: Unique identifier per document.\n\nUsed for direct **JavaScript** selection (getElementById), internal anchor jump links (#section-id), and linking <label for='input-id'>.\n- class: Reusable classification hook.\n\nUsed to apply shared **CSS** styling to many elements and group elements together.",
@@ -996,13 +1004,14 @@
       "C": "Incorrect. This describes What is the purpose of the <meta name='viewport'> tag?, not What is the difference between id and class attributes in HTML?.",
       "D": "Incorrect. This describes What is the difference between <b> / <i> and <strong> / <em> in HTML?, not What is the difference between id and class attributes in HTML?."
     },
-    "mcqQuestion": "What is the difference between id and class attributes in HTML?"
+    "mcqQuestion": "What is the difference between id and class attributes in HTML?",
+    "experienceLevel": "FRESHER"
   },
   {
     "subject": "html",
     "questionNumber": 10,
     "category": "Accessibility & Media",
-    "difficulty": "easy",
+    "difficulty": "EASY",
     "question": "What is the purpose of the alt attribute in <img> tags?",
     "shortAnswer": "The alt (alternative text) attribute provides a textual description of an image for screen readers and displays fallback text if the image fails to load.",
     "detailedAnswer": "The alt attribute serves 3 key functions:\n1. **Accessibility**: Screen readers speak the text for blind and visually impaired users.\n2.\n\nFallback: Displays in the browser when network errors, broken links, or slow connections prevent the image from rendering.\n3. **SEO**: Search engine bots read the alt text to index and categorize images in Google Image Search.",
@@ -1083,13 +1092,14 @@
     "status": "published",
     "correctOption": "B",
     "explanation": "Correct. The alt (alternative text) attribute provides a textual description of an image for screen readers and displays fallback text if the image fails to load.",
-    "mcqQuestion": "What is the purpose of the alt attribute in <img> tags?"
+    "mcqQuestion": "What is the purpose of the alt attribute in <img> tags?",
+    "experienceLevel": "FRESHER"
   },
   {
     "subject": "html",
     "questionNumber": 11,
     "category": "HTML Fundamentals",
-    "difficulty": "easy",
+    "difficulty": "EASY",
     "question": "What is the purpose of the <head> element vs the <body> element?",
     "shortAnswer": "The <head> contains metadata, document title, linked stylesheets, and scripts not visible on the page, while the <body> contains all visible content rendered to the user.",
     "detailedAnswer": "- <head>: Holds document configurations, such as character encoding (<meta charset='UTF-8'>), responsive <u><u>viewport</u></u> settings, **SEO** descriptions, favicon links, and **CSS** imports (<link rel='stylesheet'>).\n- <body>: Holds all renderable UI elements that users interact with, including text, buttons, images, forms, and layouts.",
@@ -1209,13 +1219,14 @@
       "B": "Incorrect. This describes Why should you always include rel='noopener noreferrer' when opening links in a new tab (target='blank')?, not What is the purpose of the <head> element vs the <body> element?.",
       "D": "Incorrect. This describes What is the purpose of the <label> tag and the 'for' attribute in HTML forms?, not What is the purpose of the <head> element vs the <body> element?."
     },
-    "mcqQuestion": "What is the purpose of the <head> element vs the <body> element?"
+    "mcqQuestion": "What is the purpose of the <head> element vs the <body> element?",
+    "experienceLevel": "FRESHER"
   },
   {
     "subject": "html",
     "questionNumber": 12,
     "category": "HTML Fundamentals",
-    "difficulty": "easy",
+    "difficulty": "EASY",
     "question": "What is the purpose of the <meta name='viewport'> tag?",
     "shortAnswer": "The viewport meta tag configures how a web page scales and displays on mobile devices, ensuring responsive design works properly.",
     "detailedAnswer": "Without this tag, mobile browsers assume desktop web pages and render them at a default virtual width (typically 980px), shrinking the text and forcing users to pinch-and-zoom.\n\nThe standard tag sets the <u><u>viewport</u></u> width to match the device's physical screen and initializes 1:1 scale.",
@@ -1300,13 +1311,14 @@
     "status": "published",
     "correctOption": "D",
     "explanation": "Correct. The viewport meta tag configures how a web page scales and displays on mobile devices, ensuring responsive design works properly.",
-    "mcqQuestion": "What is the purpose of the <meta name='viewport'> tag?"
+    "mcqQuestion": "What is the purpose of the <meta name='viewport'> tag?",
+    "experienceLevel": "FRESHER"
   },
   {
     "subject": "html",
     "questionNumber": 13,
     "category": "Links & Navigation",
-    "difficulty": "easy",
+    "difficulty": "EASY",
     "question": "How does the anchor tag <a> work and what are its key attributes?",
     "shortAnswer": "The anchor tag <a> creates hyperlinks to other web pages, email addresses, phone numbers, files, or specific sections on the same page using the href attribute.",
     "detailedAnswer": "The primary attribute is href (hypertext reference).\n\nKey attributes include:\n- href: Destination URL, relative path, internal fragment (#id), or protocol (mailto:, tel:).\n- target: Specifies where to open the link (_self for same tab, _blank for new tab).\n- rel: Relationship specifier (noopener, noreferrer, nofollow).\n- download: Prompts the browser to download the linked resource rather than navigating to it.",
@@ -1406,13 +1418,14 @@
       "C": "Incorrect. This describes What is the difference between GET and POST form submission methods?, not How does the anchor tag <a> work and what are its key attributes?.",
       "D": "Incorrect. This describes What is the difference between disabled and readonly attributes in form inputs?, not How does the anchor tag <a> work and what are its key attributes?."
     },
-    "mcqQuestion": "How does the anchor tag <a> work and what are its key attributes?"
+    "mcqQuestion": "How does the anchor tag <a> work and what are its key attributes?",
+    "experienceLevel": "FRESHER"
   },
   {
     "subject": "html",
     "questionNumber": 14,
     "category": "Security & Navigation",
-    "difficulty": "intermediate",
+    "difficulty": "INTERMEDIATE",
     "question": "Why should you always include rel='noopener noreferrer' when opening links in a new tab (target='_blank')?",
     "shortAnswer": "It prevents security vulnerabilities (Tabnabbing) and performance bottlenecks by ensuring the new page runs in a separate process and cannot hijack window.opener.",
     "detailedAnswer": "When you open an external page with target='_blank' without noopener:\n1.\n\nReverse Tabnabbing Vulnerability: The newly opened page gains access to window.opener.\n\nIt can execute window.opener.location = 'https://fake-phishing-site.com', tricking the user into re-entering their login credentials.\n2.\n\nThreading: The new page may run on the same execution thread as your site, causing your app to lag if the external page executes heavy **JavaScript**.\n\nModern browsers now apply noopener by default for target='_blank', but explicitly adding it remains a frontend security standard.",
@@ -1497,13 +1510,14 @@
     "status": "published",
     "correctOption": "B",
     "explanation": "Correct. It prevents security vulnerabilities (Tabnabbing) and performance bottlenecks by ensuring the new page runs in a separate process and cannot hijack window.opener.",
-    "mcqQuestion": "Why should you always include rel='noopener noreferrer' when opening links in a new tab (target='_blank')?"
+    "mcqQuestion": "Why should you always include rel='noopener noreferrer' when opening links in a new tab (target='_blank')?",
+    "experienceLevel": "FRESHER"
   },
   {
     "subject": "html",
     "questionNumber": 15,
     "category": "HTML Fundamentals",
-    "difficulty": "easy",
+    "difficulty": "EASY",
     "question": "What is the difference between <b> / <i> and <strong> / <em> in HTML?",
     "shortAnswer": "<b> and <i> only apply visual styling (bold/italic) with no semantic meaning, while <strong> and <em> convey strong importance and verbal stress for screen readers.",
     "detailedAnswer": "- <b>: Stylistic offset without extra importance (visual bold).\n- <strong>: Indicates strong importance, seriousness, or urgency.\n\nScreen readers announce this with vocal inflection.\n- <i>: Stylistic italicization (e.g. taxonomic names, foreign phrases).\n- <em>: Semantic stress emphasis that changes the verbal meaning of a sentence.",
@@ -1598,13 +1612,14 @@
       "B": "Incorrect. This describes What is the difference between the placeholder and value attributes of an input?, not What is the difference between <b> / <i> and <strong> / <em> in HTML?.",
       "D": "Incorrect. This describes What are the built-in HTML5 form validation attributes?, not What is the difference between <b> / <i> and <strong> / <em> in HTML?."
     },
-    "mcqQuestion": "What is the difference between <b> / <i> and <strong> / <em> in HTML?"
+    "mcqQuestion": "What is the difference between <b> / <i> and <strong> / <em> in HTML?",
+    "experienceLevel": "FRESHER"
   },
   {
     "subject": "html",
     "questionNumber": 16,
     "category": "Forms & Inputs",
-    "difficulty": "easy",
+    "difficulty": "EASY",
     "question": "What is the difference between GET and POST form submission methods?",
     "shortAnswer": "GET appends form data to the URL as query parameters, making it visible and bookmarkable; POST sends data in the HTTP request body, keeping it confidential and allowing large payloads.",
     "detailedAnswer": "- GET:\n  - Appends key-value pairs to the URL (e.g., /search?q=javascript).\n  - Best for safe, idempotent read-only actions like searches and filters.\n  - Limited by URL length restrictions (~2048 characters) and cached by browsers.\n- POST:\n  - Sends data in the HTTP request body.\n  - Used for modifying server state, submitting passwords, personal information, or file uploads.\n  - Not cached by default and has no strict size limitations.",
@@ -1719,13 +1734,14 @@
     "status": "published",
     "correctOption": "D",
     "explanation": "Correct. GET appends form data to the URL as query parameters, making it visible and bookmarkable; POST sends data in the HTTP request body, keeping it confidential and allowing large payloads.",
-    "mcqQuestion": "What is the difference between GET and POST form submission methods?"
+    "mcqQuestion": "What is the difference between GET and POST form submission methods?",
+    "experienceLevel": "FRESHER"
   },
   {
     "subject": "html",
     "questionNumber": 17,
     "category": "Forms & Inputs",
-    "difficulty": "easy",
+    "difficulty": "EASY",
     "question": "What is the purpose of the <label> tag and the 'for' attribute in HTML forms?",
     "shortAnswer": "The <label> tag provides a text caption for a form control, and its 'for' attribute links it to the input's id to improve accessibility and expand click targets.",
     "detailedAnswer": "Benefits of properly paired labels:\n1. **Accessibility**: When a screen reader focuses on the input, it speaks the linked label text.\n2.\n\nUsability: Clicking anywhere on the label text automatically focuses the text input or toggles a small checkbox/radio button, which is critical on mobile screens.",
@@ -1815,13 +1831,14 @@
       "C": "Incorrect. This describes What is the difference between <button> and <input type='button'> in HTML?, not What is the purpose of the <label> tag and the 'for' attribute in HTML forms?.",
       "D": "Incorrect. This describes What is the difference between colspan and rowspan attributes in table cells?, not What is the purpose of the <label> tag and the 'for' attribute in HTML forms?."
     },
-    "mcqQuestion": "What is the purpose of the <label> tag and the 'for' attribute in HTML forms?"
+    "mcqQuestion": "What is the purpose of the <label> tag and the 'for' attribute in HTML forms?",
+    "experienceLevel": "FRESHER"
   },
   {
     "subject": "html",
     "questionNumber": 18,
     "category": "Forms & Inputs",
-    "difficulty": "easy",
+    "difficulty": "EASY",
     "question": "What is the difference between the placeholder and value attributes of an input?",
     "shortAnswer": "placeholder is temporary hint text that disappears when the user types; value is the actual data content stored and submitted with the form.",
     "detailedAnswer": "- placeholder: Displays brief guidance (e.g. 'john@example.com') in faded text when the field is empty.\n\nIt is not submitted with the form.\n- value: Contains the actual input value submitted to the backend.\n\nIt can be pre-filled with default data and modified by the user.",
@@ -1901,13 +1918,14 @@
     "status": "published",
     "correctOption": "B",
     "explanation": "Correct. placeholder is temporary hint text that disappears when the user types; value is the actual data content stored and submitted with the form.",
-    "mcqQuestion": "What is the difference between the placeholder and value attributes of an input?"
+    "mcqQuestion": "What is the difference between the placeholder and value attributes of an input?",
+    "experienceLevel": "FRESHER"
   },
   {
     "subject": "html",
     "questionNumber": 19,
     "category": "Forms & Inputs",
-    "difficulty": "easy",
+    "difficulty": "EASY",
     "question": "What is the difference between disabled and readonly attributes in form inputs?",
     "shortAnswer": "readonly inputs cannot be edited but can be focused and ARE submitted with the form; disabled inputs are completely inactive, unfocusable, and are NOT submitted with the form.",
     "detailedAnswer": "Key differences:\n- disabled: Elements appear visually grayed out by default, cannot receive user focus or tab navigation, and their values are omitted from the form submission payload.\n- readonly: Elements display normally, users can click, select, copy text, and tab into them, and their values are included when submitting the form.",
@@ -1987,13 +2005,14 @@
       "B": "Incorrect. This describes How do you construct an accessible table in HTML?, not What is the difference between disabled and readonly attributes in form inputs?.",
       "D": "Incorrect. This describes What is the difference between localStorage, sessionStorage, and Cookies?, not What is the difference between disabled and readonly attributes in form inputs?."
     },
-    "mcqQuestion": "What is the difference between disabled and readonly attributes in form inputs?"
+    "mcqQuestion": "What is the difference between disabled and readonly attributes in form inputs?",
+    "experienceLevel": "FRESHER"
   },
   {
     "subject": "html",
     "questionNumber": 20,
     "category": "Forms & Inputs",
-    "difficulty": "easy",
+    "difficulty": "EASY",
     "question": "What is the difference between <button> and <input type='button'> in HTML?",
     "shortAnswer": "<button> is a container element that can hold HTML content (icons, images, formatted text), while <input type='button'> only accepts plain text via its value attribute.",
     "detailedAnswer": "- <button>: Has opening and <u><u>closing tag</u></u>s.\n\nCan contain rich **HTML**, SVG icons, badges, and pseudo-elements.\n\nInside a <form>, its default type is type='submit' unless explicitly set to type='button'.\n- <input type='button'>: A void element with no inner **HTML**.\n\nIts label is strictly defined by the value='...' attribute.",
@@ -2088,13 +2107,14 @@
     "status": "published",
     "correctOption": "D",
     "explanation": "Correct. <button> is a container element that can hold HTML content (icons, images, formatted text), while <input type='button'> only accepts plain text via its value attribute.",
-    "mcqQuestion": "What is the difference between <button> and <input type='button'> in HTML?"
+    "mcqQuestion": "What is the difference between <button> and <input type='button'> in HTML?",
+    "experienceLevel": "FRESHER"
   },
   {
     "subject": "html",
     "questionNumber": 21,
     "category": "Forms & Inputs",
-    "difficulty": "easy",
+    "difficulty": "EASY",
     "question": "What are the built-in HTML5 form validation attributes?",
     "shortAnswer": "HTML5 provides native validation attributes such as required, pattern, min, max, minlength, maxlength, and specialized input types like email and url.",
     "detailedAnswer": "**HTML5** validation runs in the browser before **JavaScript** or network requests execute:\n- required: Ensures field is not empty.\n- pattern: Validates input against a regular expression (regex).\n- min / max: Enforces numerical or date limits.\n- minlength / maxlength: Controls character count limits.\n- type='email' / 'url' / 'number': Automatically validates formats.",
@@ -2199,13 +2219,14 @@
       "C": "Incorrect. This describes What is the difference between <script>, <script async>, and <script defer>?, not What are the built-in HTML5 form validation attributes?.",
       "D": "Incorrect. This describes What is the HTML5 <dialog> element and how does it work?, not What are the built-in HTML5 form validation attributes?."
     },
-    "mcqQuestion": "What are the built-in HTML5 form validation attributes?"
+    "mcqQuestion": "What are the built-in HTML5 form validation attributes?",
+    "experienceLevel": "FRESHER"
   },
   {
     "subject": "html",
     "questionNumber": 22,
     "category": "Tables",
-    "difficulty": "easy",
+    "difficulty": "EASY",
     "question": "How do you construct an accessible table in HTML?",
     "shortAnswer": "Use semantic table elements: <table>, <caption>, <thead>, <tbody>, <tfoot>, <tr>, <th>, and <td>, along with the scope attribute on header cells.",
     "detailedAnswer": "Proper table architecture:\n- <caption>: Summarizes the table's purpose for <u><u>screen readers</u></u>.\n- <thead>: Wraps column headers defined with <th>.\n- <tbody>: Wraps the core data rows (<tr>) and cells (<td>).\n- <tfoot>: Summarizes calculations (e.g. totals) at the bottom.\n- scope='col' / 'row': Explicitly links header cells to corresponding columns/rows for assistive tech.",
@@ -2324,13 +2345,14 @@
     "status": "published",
     "correctOption": "B",
     "explanation": "Correct. Use semantic table elements: <table>, <caption>, <thead>, <tbody>, <tfoot>, <tr>, <th>, and <td>, along with the scope attribute on header cells.",
-    "mcqQuestion": "How do you construct an accessible table in HTML?"
+    "mcqQuestion": "How do you construct an accessible table in HTML?",
+    "experienceLevel": "FRESHER"
   },
   {
     "subject": "html",
     "questionNumber": 23,
     "category": "Tables",
-    "difficulty": "easy",
+    "difficulty": "EASY",
     "question": "What is the difference between colspan and rowspan attributes in table cells?",
     "shortAnswer": "colspan merges a cell across multiple columns horizontally, while rowspan merges a cell across multiple rows vertically.",
     "detailedAnswer": "- colspan='N': Causes a <th> or <td> to stretch across N adjacent columns to the right.\n- rowspan='N': Causes a <th> or <td> to span downward across N adjacent rows below.",
@@ -2449,13 +2471,14 @@
       "B": "Incorrect. This describes What is the purpose of the <picture> element in HTML5?, not What is the difference between colspan and rowspan attributes in table cells?.",
       "D": "Incorrect. This describes What are Custom Data Attributes (data-) in HTML5?, not What is the difference between colspan and rowspan attributes in table cells?."
     },
-    "mcqQuestion": "What is the difference between colspan and rowspan attributes in table cells?"
+    "mcqQuestion": "What is the difference between colspan and rowspan attributes in table cells?",
+    "experienceLevel": "FRESHER"
   },
   {
     "subject": "html",
     "questionNumber": 24,
     "category": "HTML & Browser Performance",
-    "difficulty": "intermediate",
+    "difficulty": "INTERMEDIATE",
     "question": "What is the difference between <script>, <script async>, and <script defer>?",
     "shortAnswer": "Regular scripts block HTML parsing while downloading and executing; async downloads in parallel and executes immediately upon arrival (blocking parsing); defer downloads in parallel and executes after HTML parsing completes in order.",
     "detailedAnswer": "Browser parsing behavior:\n1.\n\nRegular <script>: **HTML** parsing pauses -> script downloads -> script executes -> **HTML** parsing resumes.\n\nBlocks **DOM** construction.\n2. <script **async**>: Script downloads in background without pausing **HTML** parsing.\n\nThe moment download finishes, parsing pauses while the script executes.\n\nExecution order is unpredictable.\n3. <script **defer**>: Script downloads in background without pausing **HTML** parsing.\n\nIt waits and executes only after **HTML** parsing is completely finished, preserving script execution order.",
@@ -2546,13 +2569,14 @@
     "status": "published",
     "correctOption": "D",
     "explanation": "Correct. Regular scripts block HTML parsing while downloading and executing; async downloads in parallel and executes immediately upon arrival (blocking parsing); defer downloads in parallel and executes after HTML parsing completes in order.",
-    "mcqQuestion": "What is the difference between <script>, <script async>, and <script defer>?"
+    "mcqQuestion": "What is the difference between <script>, <script async>, and <script defer>?",
+    "experienceLevel": "FRESHER"
   },
   {
     "subject": "html",
     "questionNumber": 25,
     "category": "Web Storage & APIs",
-    "difficulty": "intermediate",
+    "difficulty": "INTERMEDIATE",
     "question": "What is the difference between localStorage, sessionStorage, and Cookies?",
     "shortAnswer": "localStorage persists permanently until cleared (~5MB); sessionStorage persists only for the current browser tab session (~5MB); cookies are small data stores (~4KB) sent automatically to the server with every HTTP request.",
     "detailedAnswer": "- **localStorage**: Stored per origin with no expiration date.\n\nSurvives browser restarts.\n\nCapacity ~5-10MB.\n- **sessionStorage**: Isolated per browser tab.\n\nCleared automatically when the tab or browser window is closed.\n\nCapacity ~5MB.\n- **Cookies**: Created with an expiration time.\n\nSmall capacity (~4KB).\n\nCrucially, cookies are automatically attached to HTTP request headers (Cookie: ...), making them ideal for authentication session tokens.",
@@ -2642,13 +2666,14 @@
       "C": "Incorrect. This describes What is the <template> tag and how does it differ from a hidden <div>?, not What is the difference between localStorage, sessionStorage, and Cookies?.",
       "D": "Incorrect. This describes What is the difference between SVG and Canvas in HTML5?, not What is the difference between localStorage, sessionStorage, and Cookies?."
     },
-    "mcqQuestion": "What is the difference between localStorage, sessionStorage, and Cookies?"
+    "mcqQuestion": "What is the difference between localStorage, sessionStorage, and Cookies?",
+    "experienceLevel": "FRESHER"
   },
   {
     "subject": "html",
     "questionNumber": 26,
     "category": "Accessibility & Media",
-    "difficulty": "intermediate",
+    "difficulty": "INTERMEDIATE",
     "question": "What is the purpose of the <picture> element in HTML5?",
     "shortAnswer": "The <picture> element provides responsive image art direction and format fallback by serving different image files based on screen width, device pixel ratio, or supported image formats.",
     "detailedAnswer": "The <picture> element contains zero or more <source> elements and one fallback <img> element.\n\nThe browser evaluates each source from top to bottom and loads the first match.\n\nUse cases:\n1.\n\nNext-gen format serving: Serve modern WebP or AVIF images with fallback to standard JPEG.\n2.\n\nArt direction: Serve a square-cropped image for mobile screens and a wide panoramic landscape for desktop screens.",
@@ -2748,13 +2773,14 @@
     "status": "published",
     "correctOption": "B",
     "explanation": "Correct. The <picture> element provides responsive image art direction and format fallback by serving different image files based on screen width, device pixel ratio, or supported image formats.",
-    "mcqQuestion": "What is the purpose of the <picture> element in HTML5?"
+    "mcqQuestion": "What is the purpose of the <picture> element in HTML5?",
+    "experienceLevel": "FRESHER"
   },
   {
     "subject": "html",
     "questionNumber": 27,
     "category": "Modern HTML5 APIs",
-    "difficulty": "intermediate",
+    "difficulty": "INTERMEDIATE",
     "question": "What is the HTML5 <dialog> element and how does it work?",
     "shortAnswer": "The <dialog> element is a native HTML5 modal and popup component featuring built-in backdrop styling, keyboard Escape dismissal, and focus trapping.",
     "detailedAnswer": "Before <dialog>, developers wrote complex **JavaScript** libraries to build modal dialogs, handle backdrop overlays, and trap keyboard focus.\n\nWith **HTML5**:\n- dialog.showModal(): Opens an accessible modal with a native backdrop (styled via ::backdrop) and traps focus inside the modal.\n- dialog.show(): Opens a non-modal popup.\n- dialog.close(): Closes the dialog programmatically.",
@@ -2874,13 +2900,14 @@
       "B": "Incorrect. This describes What is the purpose of the <details> and <summary> elements?, not What is the HTML5 <dialog> element and how does it work?.",
       "D": "Incorrect. This describes What is the tabindex attribute and what do values 0, -1, and positive numbers do?, not What is the HTML5 <dialog> element and how does it work?."
     },
-    "mcqQuestion": "What is the HTML5 <dialog> element and how does it work?"
+    "mcqQuestion": "What is the HTML5 <dialog> element and how does it work?",
+    "experienceLevel": "FRESHER"
   },
   {
     "subject": "html",
     "questionNumber": 28,
     "category": "Modern HTML5 APIs",
-    "difficulty": "intermediate",
+    "difficulty": "INTERMEDIATE",
     "question": "What is the <template> tag and how does it differ from a hidden <div>?",
     "shortAnswer": "The <template> tag holds client-side HTML markup that is parsed by the browser but NOT rendered or executed until cloned and inserted into the DOM via JavaScript.",
     "detailedAnswer": "Key differences from a hidden <div style='display: none'>:\n1.\n\nInert Content: Scripts inside a <template> do not execute, images/videos do not download, and audio does not play while it sits inside <template>.\n2.\n\nPerformance: Browser does not paint or calculate styles for template contents.\n3. **DOM** Insertion: **JavaScript** clones the template's content property (template.content.cloneNode(true)) and appends it to live elements.",
@@ -3000,13 +3027,14 @@
     "status": "published",
     "correctOption": "D",
     "explanation": "Correct. The <template> tag holds client-side HTML markup that is parsed by the browser but NOT rendered or executed until cloned and inserted into the DOM via JavaScript.",
-    "mcqQuestion": "What is the <template> tag and how does it differ from a hidden <div>?"
+    "mcqQuestion": "What is the <template> tag and how does it differ from a hidden <div>?",
+    "experienceLevel": "FRESHER"
   },
   {
     "subject": "html",
     "questionNumber": 29,
     "category": "HTML Fundamentals",
-    "difficulty": "easy",
+    "difficulty": "EASY",
     "question": "What are Custom Data Attributes (data-*) in HTML5?",
     "shortAnswer": "Data attributes (data-*) allow developers to store extra custom data directly on HTML elements without affecting rendering, accessible via JavaScript dataset.",
     "detailedAnswer": "Syntax starts with data- followed by a lowercase identifier.\n\nIn **JavaScript**, they are accessed through the element's dataset property in camelCase (e.g., data-user-id becomes element.dataset.userId).\n\nIn **CSS**, they can be targeted using attribute selectors [data-status='active'].",
@@ -3126,13 +3154,14 @@
       "C": "Incorrect. This describes What is the <datalist> element and how does it differ from <select>?, not What are Custom Data Attributes (data-) in HTML5?.",
       "D": "Incorrect. This describes What is the loading='lazy' attribute on <img> and <iframe> elements?, not What are Custom Data Attributes (data-) in HTML5?."
     },
-    "mcqQuestion": "What are Custom Data Attributes (data-*) in HTML5?"
+    "mcqQuestion": "What are Custom Data Attributes (data-*) in HTML5?",
+    "experienceLevel": "FRESHER"
   },
   {
     "subject": "html",
     "questionNumber": 30,
     "category": "Modern HTML5 APIs",
-    "difficulty": "easy",
+    "difficulty": "EASY",
     "question": "What is the purpose of the <details> and <summary> elements?",
     "shortAnswer": "They create native interactive disclosure accordions that toggle content visibility without requiring any JavaScript.",
     "detailedAnswer": "- <details>: The wrapper element that controls visibility.\n\nAdding the open attribute causes it to be expanded by default.\n- <summary>: The clickable heading or label displayed when collapsed.\n\nClicking it automatically reveals or hides the contents inside <details> with built-in keyboard Space/Enter toggle support.",
@@ -3242,13 +3271,14 @@
     "status": "published",
     "correctOption": "B",
     "explanation": "Correct. They create native interactive disclosure accordions that toggle content visibility without requiring any JavaScript.",
-    "mcqQuestion": "What is the purpose of the <details> and <summary> elements?"
+    "mcqQuestion": "What is the purpose of the <details> and <summary> elements?",
+    "experienceLevel": "FRESHER"
   },
   {
     "subject": "html",
     "questionNumber": 31,
     "category": "Graphics & Media",
-    "difficulty": "intermediate",
+    "difficulty": "INTERMEDIATE",
     "question": "What is the difference between SVG and Canvas in HTML5?",
     "shortAnswer": "SVG is vector-based (XML in DOM, resolution independent, scalable, styled with CSS); Canvas is pixel-based (raster bitmap, drawn via JavaScript procedural commands, high performance for games).",
     "detailedAnswer": "- SVG (Scalable Vector Graphics):\n  - XML-based vector format existing directly in the **DOM** tree.\n  - Supports **CSS** styling, hover effects, and **JavaScript** **DOM** click events per shape.\n  - Scales infinitely with zero pixelation at any resolution.\n- Canvas (<canvas>):\n  - Pixel-based raster grid manipulated procedurally with 2D or WebGL context in **JavaScript**.\n  - Shapes are not **DOM** elements (no individual event listeners).\n  - Exceptionally fast for rendering thousands of fast-moving particles, charts, and 2D/3D games.",
@@ -3368,13 +3398,14 @@
       "B": "Incorrect. This describes What is the purpose of <fieldset> and <legend> in HTML forms?, not What is the difference between SVG and Canvas in HTML5?.",
       "D": "Incorrect. This describes What is the difference between <ol>, <ul>, and <dl> list elements?, not What is the difference between SVG and Canvas in HTML5?."
     },
-    "mcqQuestion": "What is the difference between SVG and Canvas in HTML5?"
+    "mcqQuestion": "What is the difference between SVG and Canvas in HTML5?",
+    "experienceLevel": "FRESHER"
   },
   {
     "subject": "html",
     "questionNumber": 32,
     "category": "Forms & Inputs",
-    "difficulty": "easy",
+    "difficulty": "EASY",
     "question": "What is the <datalist> element and how does it differ from <select>?",
     "shortAnswer": "<datalist> provides autocomplete recommendations for a standard text <input> while still allowing custom text entry; <select> restricts the user strictly to a pre-defined list of choices.",
     "detailedAnswer": "- <datalist>: Linked to an <input> via the list attribute.\n\nAs the user types, suggestions filter automatically.\n\nUsers can pick a suggestion OR type anything custom.\n- <select>: A traditional dropdown menu where the user can only choose from the designated <option> elements and cannot type custom values.",
@@ -3485,13 +3516,14 @@
     "status": "published",
     "correctOption": "D",
     "explanation": "Correct. <datalist> provides autocomplete recommendations for a standard text <input> while still allowing custom text entry; <select> restricts the user strictly to a pre-defined list of choices.",
-    "mcqQuestion": "What is the <datalist> element and how does it differ from <select>?"
+    "mcqQuestion": "What is the <datalist> element and how does it differ from <select>?",
+    "experienceLevel": "FRESHER"
   },
   {
     "subject": "html",
     "questionNumber": 33,
     "category": "Accessibility & Keyboard Navigation",
-    "difficulty": "intermediate",
+    "difficulty": "INTERMEDIATE",
     "question": "What is the tabindex attribute and what do values 0, -1, and positive numbers do?",
     "shortAnswer": "tabindex controls whether an element can receive keyboard Tab focus and its order in sequential navigation: 0 adds to natural order, -1 allows programmatic focus only, and positive numbers force custom order (avoid).",
     "detailedAnswer": "Values breakdown:\n- tabindex='0': Inserts an otherwise unfocusable element (like a custom <div> card) into the natural document keyboard Tab order.\n- tabindex='-1': Removes an element from sequential Tab navigation, but allows programmatic focus via **JavaScript** (element.focus()).\n\nEssential for modal dialogs and notification banners.\n- tabindex='1' (positive): Enforces an artificial tab order, which disrupts natural navigation and is considered an anti-pattern.",
@@ -3591,13 +3623,14 @@
       "C": "Incorrect. This describes What is an <iframe> and what is the security purpose of the sandbox attribute?, not What is the tabindex attribute and what do values 0, -1, and positive numbers do?.",
       "D": "Incorrect. This describes What are Open Graph (OG) meta tags in HTML?, not What is the tabindex attribute and what do values 0, -1, and positive numbers do?."
     },
-    "mcqQuestion": "What is the tabindex attribute and what do values 0, -1, and positive numbers do?"
+    "mcqQuestion": "What is the tabindex attribute and what do values 0, -1, and positive numbers do?",
+    "experienceLevel": "FRESHER"
   },
   {
     "subject": "html",
     "questionNumber": 34,
     "category": "Forms & Inputs",
-    "difficulty": "easy",
+    "difficulty": "EASY",
     "question": "What is the purpose of <fieldset> and <legend> in HTML forms?",
     "shortAnswer": "<fieldset> groups logically related form controls together, and <legend> provides an accessible caption for that group, particularly for radio button groups.",
     "detailedAnswer": "In complex forms, related inputs (e.g., shipping address fields, or payment method radio options) should be grouped together.\n\nWhen a blind user tabs into any input inside a <fieldset>, <u><u>screen readers</u></u> announce the <legend> text first, providing essential context for the input.",
@@ -3702,13 +3735,14 @@
     "status": "published",
     "correctOption": "B",
     "explanation": "Correct. <fieldset> groups logically related form controls together, and <legend> provides an accessible caption for that group, particularly for radio button groups.",
-    "mcqQuestion": "What is the purpose of <fieldset> and <legend> in HTML forms?"
+    "mcqQuestion": "What is the purpose of <fieldset> and <legend> in HTML forms?",
+    "experienceLevel": "FRESHER"
   },
   {
     "subject": "html",
     "questionNumber": 35,
     "category": "Performance & Media",
-    "difficulty": "easy",
+    "difficulty": "EASY",
     "question": "What is the loading='lazy' attribute on <img> and <iframe> elements?",
     "shortAnswer": "loading='lazy' instructs the browser to defer downloading images and iframes until they are close to the user's viewport, dramatically speeding up initial page load.",
     "detailedAnswer": "Before native lazy loading, developers had to import heavy **JavaScript** libraries utilizing IntersectionObserver.\n\nWith **HTML5**:\n- loading='lazy': Defers loading until the element reaches a calculated distance from the <u><u>viewport</u></u>.\n- loading='eager' (default): Loads the resource immediately regardless of page position.",
@@ -3789,13 +3823,14 @@
       "B": "Incorrect. This represents a common misconception rather than the specified behavior.",
       "D": "Incorrect. This describes What is the purpose of <figure> and <figcaption>?, not What is the loading='lazy' attribute on <img> and <iframe> elements?."
     },
-    "mcqQuestion": "What is the loading='lazy' attribute on <img> and <iframe> elements?"
+    "mcqQuestion": "What is the loading='lazy' attribute on <img> and <iframe> elements?",
+    "experienceLevel": "FRESHER"
   },
   {
     "subject": "html",
     "questionNumber": 36,
     "category": "Security & Embedding",
-    "difficulty": "intermediate",
+    "difficulty": "INTERMEDIATE",
     "question": "What is an <iframe> and what is the security purpose of the sandbox attribute?",
     "shortAnswer": "An <iframe> embeds another HTML document inside the current page; the sandbox attribute applies strict security restrictions (disabling scripts, forms, and popups) to protect the host site.",
     "detailedAnswer": "Embedding third-party content carries security risks (clickjacking, malicious scripts, unwanted redirects).\n\nAdding the sandbox attribute without values activates maximum security:\n- Blocks **JavaScript** execution.\n- Prevents form submissions.\n- Disables popups and new tabs.\n- Treats the content as an untrusted foreign origin.\n\nPermissions can be selectively re-enabled using values like sandbox='allow-scripts allow-same-origin'.",
@@ -3900,13 +3935,14 @@
     "status": "published",
     "correctOption": "D",
     "explanation": "Correct. An <iframe> embeds another HTML document inside the current page; the sandbox attribute applies strict security restrictions (disabling scripts, forms, and popups) to protect the host site.",
-    "mcqQuestion": "What is an <iframe> and what is the security purpose of the sandbox attribute?"
+    "mcqQuestion": "What is an <iframe> and what is the security purpose of the sandbox attribute?",
+    "experienceLevel": "FRESHER"
   },
   {
     "subject": "html",
     "questionNumber": 37,
     "category": "HTML Fundamentals",
-    "difficulty": "easy",
+    "difficulty": "EASY",
     "question": "What is the difference between <ol>, <ul>, and <dl> list elements?",
     "shortAnswer": "<ul> is an unordered bulleted list where order does not matter; <ol> is an ordered numbered list where sequence is important; <dl> is a description/definition list of terms and values.",
     "detailedAnswer": "- <ul> (Unordered List): Renders bullet points.\n\nUsed for navigation bars, item lists, and feature summaries.\n- <ol> (Ordered List): Renders numerical (1, 2, 3) or alphabetical indices.\n\nUsed for step-by-step recipes, algorithms, and rankings.\n- <dl> (Description List): Contains <dt> (description term) and <dd> (description details).\n\nPerfect for glossaries, metadata pairs, and key-value specs.",
@@ -4025,13 +4061,14 @@
       "C": "Incorrect. This describes What is the autocomplete attribute on form inputs and why is it important?, not What is the difference between <ol>, <ul>, and <dl> list elements?.",
       "D": "Incorrect. This describes What is the difference between an HTML element and an HTML tag?, not What is the difference between <ol>, <ul>, and <dl> list elements?."
     },
-    "mcqQuestion": "What is the difference between <ol>, <ul>, and <dl> list elements?"
+    "mcqQuestion": "What is the difference between <ol>, <ul>, and <dl> list elements?",
+    "experienceLevel": "FRESHER"
   },
   {
     "subject": "html",
     "questionNumber": 38,
     "category": "Semantic HTML",
-    "difficulty": "easy",
+    "difficulty": "EASY",
     "question": "What is the purpose of <figure> and <figcaption>?",
     "shortAnswer": "<figure> wraps self-contained visual content (images, diagrams, code listings), and <figcaption> provides an accessible visual caption linked directly to that content.",
     "detailedAnswer": "Before **HTML5**, developers wrapped images in divs and placed paragraph text beneath them, with no programmatic relationship between the two. <figure> and <figcaption> formally bind the graphic to its explanatory text.\n\nAssistive technologies read the caption whenever the figure is focused.",
@@ -4121,13 +4158,14 @@
     "status": "published",
     "correctOption": "B",
     "explanation": "Correct. <figure> wraps self-contained visual content (images, diagrams, code listings), and <figcaption> provides an accessible visual caption linked directly to that content.",
-    "mcqQuestion": "What is the purpose of <figure> and <figcaption>?"
+    "mcqQuestion": "What is the purpose of <figure> and <figcaption>?",
+    "experienceLevel": "FRESHER"
   },
   {
     "subject": "html",
     "questionNumber": 39,
     "category": "SEO & Social Sharing",
-    "difficulty": "easy",
+    "difficulty": "EASY",
     "question": "What are Open Graph (OG) meta tags in HTML?",
     "shortAnswer": "Open Graph meta tags control how URLs appear when shared on social media and messaging platforms (LinkedIn, Facebook, Slack, WhatsApp, Twitter).",
     "detailedAnswer": "Introduced by Facebook, the Open Graph protocol uses <meta property='og:...'> tags in the <head> to specify the preview title, description, image thumbnail, and URL.\n\nWithout them, social platforms guess what to display, often showing broken layouts or unrelated icons.",
@@ -4237,13 +4275,14 @@
       "B": "Incorrect. This describes What is <!DOCTYPE html>?, not What are Open Graph (OG) meta tags in HTML?.",
       "D": "Incorrect. This describes What is the difference between block-level and inline elements?, not What are Open Graph (OG) meta tags in HTML?."
     },
-    "mcqQuestion": "What are Open Graph (OG) meta tags in HTML?"
+    "mcqQuestion": "What are Open Graph (OG) meta tags in HTML?",
+    "experienceLevel": "FRESHER"
   },
   {
     "subject": "html",
     "questionNumber": 40,
     "category": "Forms & Accessibility",
-    "difficulty": "easy",
+    "difficulty": "EASY",
     "question": "What is the autocomplete attribute on form inputs and why is it important?",
     "shortAnswer": "autocomplete assists users by allowing browsers and password managers to automatically fill in names, emails, addresses, credit cards, and secure passwords.",
     "detailedAnswer": "Benefits of autocomplete:\n1.\n\nMobile Conversion: Eliminates typing friction for users on mobile touch keyboards.\n2. **Accessibility**: WCAG 2.1 Success Criterion 1.3.5 requires identifying input purpose to help users with cognitive disabilities.\n3.\n\nSecurity: Password managers detect autocomplete='current-password' and autocomplete='new-password' to generate strong passwords.",
@@ -4353,6 +4392,7 @@
     "status": "published",
     "correctOption": "D",
     "explanation": "Correct. autocomplete assists users by allowing browsers and password managers to automatically fill in names, emails, addresses, credit cards, and secure passwords.",
-    "mcqQuestion": "What is the autocomplete attribute on form inputs and why is it important?"
+    "mcqQuestion": "What is the autocomplete attribute on form inputs and why is it important?",
+    "experienceLevel": "FRESHER"
   }
 ]
