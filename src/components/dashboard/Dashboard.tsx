@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from 'react'
+import { useMemo, useState, useEffect, lazy, Suspense } from 'react'
 import { Link, useSearchParams, useParams, useNavigate } from 'react-router-dom'
 import { pushClientService } from '../../features/notifications/services/pushClientService'
 import { useProgress } from '../../context/ProgressContext'
@@ -12,8 +12,8 @@ import { supabase } from '../../lib/supabase/client'
 import { leaderboardService, resolveQuestionTitle, type CandidateMCSubmission } from '../../lib/leaderboardService'
 import { gradingService, type EvaluatorReview } from '../../lib/gradingService'
 import { CandidateSkillRadar } from './CandidateSkillRadar'
-import AdminDashboard from './AdminDashboard'
-import Leaderboard from '../leaderboard/Leaderboard'
+const AdminDashboard = lazy(() => import('./AdminDashboard'))
+const Leaderboard = lazy(() => import('../leaderboard/Leaderboard'))
 import { dsaSubmissionService } from '../dsa/lib/dsaSubmissionService'
 import { dsaProgressService } from '../dsa/lib/dsaProgressService'
 import type { DSASubmission } from '../dsa/data/dsaTypes'
@@ -30,11 +30,11 @@ import type { FrontendJsSubmission } from '../frontendjs/data/frontendJsTypes'
 import { FRONTEND_JS_QUESTIONS } from '../frontendjs/data/frontendJsQuestions'
 import { mockSessionService } from '../../features/ai-video-mock/services/mockSessionService'
 import { adminAnalyticsService } from '../../lib/adminAnalyticsService'
-import StudentPerformanceView from '../../features/performance-history/components/student/StudentPerformanceView'
+const StudentPerformanceView = lazy(() => import('../../features/performance-history/components/student/StudentPerformanceView'))
 import { CandidateDocsSyllabusTracker } from './CandidateDocsSyllabusTracker'
 import { docsProgressService } from '../../features/interview-docs/services/docsProgressService'
 import CandidateMasterBankCard from '../../features/interview-questions/components/CandidateMasterBankCard'
-import StudentMeetingDashboard from '../../features/meetings/components/StudentMeetingDashboard'
+const StudentMeetingDashboard = lazy(() => import('../../features/meetings/components/StudentMeetingDashboard'))
 import './Dashboard.css'
 
 function catClass(name: string): string {
@@ -792,16 +792,22 @@ function CandidateDashboard() {
 
       {activeMainSection === 'rankings' ? (
         <div style={{ marginTop: '1.5rem' }}>
-          <Leaderboard compact={false} />
+          <Suspense fallback={<div className="app-route-loader"><div className="app-route-spinner" /><p>Loading rankings...</p></div>}>
+            <Leaderboard compact={false} />
+          </Suspense>
         </div>
       ) : activeMainSection === 'performance' ? (
-        <StudentPerformanceView />
+        <Suspense fallback={<div className="app-route-loader"><div className="app-route-spinner" /><p>Loading performance...</p></div>}>
+          <StudentPerformanceView />
+        </Suspense>
       ) : activeMainSection === 'syllabus' ? (
         <div id="candidate-syllabus-tracker">
           <CandidateDocsSyllabusTracker />
         </div>
       ) : activeMainSection === 'meetings' ? (
-        <StudentMeetingDashboard />
+        <Suspense fallback={<div className="app-route-loader"><div className="app-route-spinner" /><p>Loading meetings...</p></div>}>
+          <StudentMeetingDashboard />
+        </Suspense>
       ) : (
         <>
       {trackAlert && (
@@ -2262,7 +2268,11 @@ export default function Dashboard() {
   const forcedView = (searchParams.get('view') || searchParams.get('role') || '').toLowerCase()
 
   if (user?.role === 'admin' && forcedView !== 'candidate' && forcedView !== 'student') {
-    return <AdminDashboard />
+    return (
+      <Suspense fallback={<div className="app-route-loader"><div className="app-route-spinner" /><p>Loading admin console...</p></div>}>
+        <AdminDashboard />
+      </Suspense>
+    )
   }
   return <CandidateDashboard />
 }

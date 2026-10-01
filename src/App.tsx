@@ -9,7 +9,6 @@ import QuestionDetailPage from './components/questions/QuestionDetailPage'
 import CodingList from './components/coding/CodingList'
 import Workspace from './components/workspace/Workspace'
 import Videos from './components/videos/Videos'
-import Dashboard from './components/dashboard/Dashboard'
 import MockInterview from './components/mock/MockInterview'
 import VideoMockInterview from './components/mock/VideoMockInterview'
 import MachineCodingMock from './components/mock/MachineCodingMock'
@@ -42,7 +41,8 @@ import WebComponentsStudio from './components/webcomponents/WebComponentsStudio'
 import SearchEngineStudio from './components/searchengine/SearchEngineStudio'
 import UserProfile from './components/profile/UserProfile'
 import UserManagementStudio from './components/usermanagement/UserManagementStudio'
-import AdminDashboard from './components/dashboard/AdminDashboard'
+const Dashboard = lazy(() => import('./components/dashboard/Dashboard'))
+const AdminDashboard = lazy(() => import('./components/dashboard/AdminDashboard'))
 const MachineCodingStudio = lazy(() => import('./components/machinecoding/MachineCodingStudio'))
 const DSAStudio = lazy(() => import('./components/dsa/DSAStudio'))
 const CoreProgrammingStudio = lazy(() => import('./components/coreprogramming/CoreProgrammingStudio'))

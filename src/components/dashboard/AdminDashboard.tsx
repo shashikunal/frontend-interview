@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react'
+import React, { useState, useEffect, useMemo, useCallback, lazy, Suspense } from 'react'
 import { Link, useNavigate, useParams, useLocation, useSearchParams } from 'react-router-dom'
 import { useAuth, type UserRole, type FeatureEntitlements } from '../../context/AuthContext'
 import { useTheme } from '../../context/ThemeContext'
@@ -31,7 +31,7 @@ import AdminSubmissionCodeModal from './admin/AdminSubmissionCodeModal'
 import AdminAttemptCodeModal from './admin/AdminAttemptCodeModal'
 import EnvironmentDiagnosticsModal from '../common/EnvironmentDiagnosticsModal'
 import RoleGuard from '../auth/RoleGuard'
-import Leaderboard from '../leaderboard/Leaderboard'
+const Leaderboard = lazy(() => import('../leaderboard/Leaderboard'))
 import { MACHINE_CODING_CATALOG } from '../machinecoding/data/machineCodingCatalog'
 import { DSA_QUESTIONS } from '../dsa/data/dsaQuestions'
 import { CORE_PROGRAMMING_QUESTIONS } from '../coreprogramming/data/coreProgrammingQuestions'
@@ -1295,7 +1295,9 @@ export default function AdminDashboard() {
       {/* ================================================================ */}
       {activeTab === 'rankings' && (
         <div className="admin-tab-content">
-          <Leaderboard compact={false} />
+          <Suspense fallback={<div className="app-route-loader"><div className="app-route-spinner" /><p>Loading rankings...</p></div>}>
+            <Leaderboard compact={false} />
+          </Suspense>
         </div>
       )}
 

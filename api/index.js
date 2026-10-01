@@ -1489,17 +1489,21 @@ var init_meetingOpsService = __esm({
         if (!dto.title || !dto.title.trim()) {
           return { success: false, error: "Meeting title is required." };
         }
-        if (!dto.meeting_url || !dto.meeting_url.trim()) {
-          return { success: false, error: "Meeting URL is required." };
-        }
-        const startDate = new Date(dto.start_at);
-        const endDate = new Date(dto.end_at);
+        const normalizedDto = {
+          ...dto,
+          meeting_url: dto.meeting_url?.trim() || `https://meet.local/${crypto6.randomUUID().slice(0, 8)}`,
+          start_at: dto.start_at || new Date(Date.now() + 3600 * 1e3).toISOString(),
+          end_at: dto.end_at || new Date(Date.now() + 7200 * 1e3).toISOString()
+        };
+        const startDate = new Date(normalizedDto.start_at);
+        const endDate = new Date(normalizedDto.end_at);
         if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
           return { success: false, error: "Invalid start or end date format." };
         }
         if (endDate <= startDate) {
           return { success: false, error: "End time must be after start time." };
         }
+        dto = normalizedDto;
         const meetingId = `meet_${crypto6.randomUUID().replace(/-/g, "").slice(0, 16)}`;
         const now = (/* @__PURE__ */ new Date()).toISOString();
         const meeting = {
@@ -1730,7 +1734,8 @@ var init_meetingOpsService = __esm({
           const assignedMeetingIds = new Set(
             Array.from(this.participants.values()).filter((p) => p.student_id === options.student_id || options.student_email && p.student_email && p.student_email.toLowerCase() === options.student_email.toLowerCase()).map((p) => p.meeting_id)
           );
-          list = list.filter((m) => assignedMeetingIds.has(m.id) || m.status === "STARTED" || !m.batch_id || m.meeting_type === "Interview" || m.meeting_type === "Technical Discussion");
+          const LIVE_STATUSES = /* @__PURE__ */ new Set(["STARTED", "ACTIVE", "IN_PROGRESS"]);
+          list = list.filter((m) => assignedMeetingIds.has(m.id) || LIVE_STATUSES.has(m.status));
         }
         if (options.status && options.status !== "ALL") {
           list = list.filter((m) => m.status.toUpperCase() === options.status.toUpperCase());

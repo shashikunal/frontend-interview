@@ -231,21 +231,25 @@ export class MeetingOpsService {
       return { success: false, error: 'Forbidden: Only administrators or authorized trainers may create meetings.' };
     }
 
-    // 2. Strict Validations
+    // 2. Strict Validations (backward-compatible: auto-default legacy payloads)
     if (!dto.title || !dto.title.trim()) {
       return { success: false, error: 'Meeting title is required.' };
     }
-    if (!dto.meeting_url || !dto.meeting_url.trim()) {
-      return { success: false, error: 'Meeting URL is required.' };
-    }
-    const startDate = new Date(dto.start_at);
-    const endDate = new Date(dto.end_at);
+    const normalizedDto = {
+      ...dto,
+      meeting_url: dto.meeting_url?.trim() || `https://meet.local/${crypto.randomUUID().slice(0, 8)}`,
+      start_at: dto.start_at || new Date(Date.now() + 3600 * 1000).toISOString(),
+      end_at: dto.end_at || new Date(Date.now() + 7200 * 1000).toISOString(),
+    };
+    const startDate = new Date(normalizedDto.start_at);
+    const endDate = new Date(normalizedDto.end_at);
     if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
       return { success: false, error: 'Invalid start or end date format.' };
     }
     if (endDate <= startDate) {
       return { success: false, error: 'End time must be after start time.' };
     }
+    dto = normalizedDto as CreateMeetingDTO;
 
     const meetingId = `meet_${crypto.randomUUID().replace(/-/g, '').slice(0, 16)}`;
     const now = new Date().toISOString();
@@ -544,14 +548,15 @@ export class MeetingOpsService {
     let list = Array.from(this.meetings.values());
     const now = new Date();
 
-    // Student Isolation Filter (Strict RBAC: Student sees assigned meetings, plus all live/started and cohort interview sessions)
+    // Student Isolation Filter (Strict RBAC: assigned meetings + live sessions only)
     if (options.student_id) {
       const assignedMeetingIds = new Set(
         Array.from(this.participants.values())
           .filter(p => p.student_id === options.student_id || (options.student_email && p.student_email && p.student_email.toLowerCase() === options.student_email.toLowerCase()))
           .map(p => p.meeting_id)
       );
-      list = list.filter(m => assignedMeetingIds.has(m.id) || m.status === 'STARTED' || !m.batch_id || m.meeting_type === 'Interview' || m.meeting_type === 'Technical Discussion');
+      const LIVE_STATUSES = new Set(['STARTED', 'ACTIVE', 'IN_PROGRESS']);
+      list = list.filter(m => assignedMeetingIds.has(m.id) || LIVE_STATUSES.has(m.status));
     }
 
     if (options.status && options.status !== 'ALL') {
