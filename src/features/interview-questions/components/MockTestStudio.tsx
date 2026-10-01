@@ -192,7 +192,7 @@ export default function MockTestStudio() {
               Universal Timed Mock Interview Test
             </h1>
             <p style={{ color: 'var(--mqb-text-secondary)', maxWidth: 540, margin: '0 auto' }}>
-              Simulate an authentic FAANG/Tier-1 frontend interview evaluation under realistic countdown timers across all 33 tracks.
+              Simulate an authentic frontend interview evaluation under realistic countdown timers across all 33 tracks.
             </p>
           </div>
 

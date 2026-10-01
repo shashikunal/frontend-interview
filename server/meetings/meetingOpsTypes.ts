@@ -65,6 +65,8 @@ export interface MeetingRecord {
   trainer_name?: string;
   created_by: string;
   batch_id?: string;
+  batch_code?: string;
+  batch_name?: string;
   status: MeetingStatus;
   capacity: number;
   recurrence_rule?: RecurrenceRule | null;
@@ -158,6 +160,8 @@ export interface CreateMeetingDTO {
   trainer_id: string;
   trainer_name?: string;
   batch_id?: string;
+  batch_code?: string;
+  batch_name?: string;
   capacity?: number;
   student_ids?: string[];
   recurrence?: RecurrenceRule | null;
@@ -181,6 +185,8 @@ export interface UpdateMeetingDTO {
   trainer_id?: string;
   trainer_name?: string;
   batch_id?: string;
+  batch_code?: string;
+  batch_name?: string;
   capacity?: number;
   status?: MeetingStatus;
   edit_scope?: 'THIS_OCCURRENCE' | 'THIS_AND_FUTURE' | 'ALL_OCCURRENCES';

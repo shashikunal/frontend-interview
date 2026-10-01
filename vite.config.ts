@@ -460,6 +460,7 @@ function localAdminAuthPlugin(): Plugin {
 
       // Web Push Notifications & Meeting Link Dispatch
       registerDevEndpoint('/api/v1/notifications', './api/_handlers/notifications.js')
+      registerDevEndpoint('/api/cloudinary', './api/_handlers/cloudinary.js')
 
       // Local Dev Phase 11 Compliance Audit Trail Middleware
       registerDevEndpoint('/api/v1/audit', './api/v1/audit/index.js')

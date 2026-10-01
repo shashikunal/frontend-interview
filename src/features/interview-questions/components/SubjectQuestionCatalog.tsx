@@ -7,6 +7,7 @@ import type {
   MasterQuestion,
   SubjectMeta,
 } from '../types/interviewQuestions.types'
+import { SkeletonLoader } from '../../../components/common/SkeletonLoader'
 
 const PAGE_SIZE = 25
 
@@ -218,10 +219,8 @@ export default function SubjectQuestionCatalog() {
 
   if (loading) {
     return (
-      <div className="mqb-loading-state" id="mqb-catalog-loading" style={{ textAlign: 'center', padding: '5rem 0' }}>
-        <div className="app-route-spinner" style={{ margin: '0 auto 1.5rem', width: 44, height: 44, border: '3px solid rgba(56,189,248,0.2)', borderTopColor: '#38bdf8', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
-        <h3 style={{ color: 'var(--mqb-text-primary)' }}>Loading {subjectId.toUpperCase()} Master Questions...</h3>
-        <p style={{ color: 'var(--mqb-text-secondary)' }}>Retrieving 1,000 deep interview questions and line-by-line analyses</p>
+      <div style={{ padding: '24px' }}>
+        <SkeletonLoader variant="studio" />
       </div>
     )
   }
@@ -458,7 +457,7 @@ export default function SubjectQuestionCatalog() {
               setCurrentPage(1)
             }}
           >
-            <option value="ALL">All Companies (FAANG+)</option>
+            <option value="ALL">All Companies</option>
             <option value="Google">Google</option>
             <option value="Meta">Meta</option>
             <option value="Amazon">Amazon</option>
@@ -469,7 +468,7 @@ export default function SubjectQuestionCatalog() {
             <option value="Airbnb">Airbnb</option>
           </select>
 
-          {/* High Frequency FAANG Toggle Button */}
+          {/* High Frequency Toggle Button */}
           <button
             type="button"
             className="mqb-action-pill-btn"
@@ -485,7 +484,7 @@ export default function SubjectQuestionCatalog() {
               fontWeight: 700,
             }}
           >
-            {highFreqOnly ? '🔥 High Frequency Only (Active)' : '🔥 Top Asked (FAANG)'}
+            {highFreqOnly ? '🔥 High Frequency Only (Active)' : '🔥 Top Asked'}
           </button>
 
           {/* Status */}

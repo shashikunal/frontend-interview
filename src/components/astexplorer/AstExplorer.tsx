@@ -447,7 +447,7 @@ export default function AstExplorer() {
       {/* Footer Navigation */}
       <div className="ast-footer">
         <Link to="/case-studies" className="btn btn-secondary">
-          📐 FAANG Architecture Case Studies
+          📐 System Architecture Case Studies
         </Link>
         <Link to="/profiler" className="btn btn-primary">
           ⚡ Web Vitals Profiler Lab →

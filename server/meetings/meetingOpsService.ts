@@ -85,94 +85,16 @@ export class MeetingOpsService {
   }
 
   private seedInitialProductionMeetings(): void {
-    const now = new Date();
-    const todayAt2PM = new Date(now);
-    todayAt2PM.setHours(14, 0, 0, 0);
-
-    const todayAt3PM = new Date(now);
-    todayAt3PM.setHours(15, 0, 0, 0);
-
-    // Initial default meeting
-    const m1: MeetingRecord = {
-      id: 'meet_meta_arch_live',
-      title: 'Meta Staff Frontend Architecture Loop',
-      description: 'Distributed UI State, Concurrent React 19 Fiber execution, and System Scalability Evaluation',
-      meeting_type: 'Interview',
-      meeting_provider: 'Google Meet',
-      meeting_url: 'https://meet.google.com/xyz-meta-arch',
-      start_at: todayAt2PM.toISOString(),
-      end_at: todayAt3PM.toISOString(),
-      timezone: 'Asia/Kolkata',
-      trainer_id: 'usr_trainer_shashi',
-      trainer_name: 'Shashi Kunal (Staff Evaluator)',
-      created_by: 'admin_master',
-      batch_id: 'Batch 2026-Alpha',
-      status: 'SCHEDULED',
-      capacity: 50,
-      recurrence_rule: null,
-      parent_meeting_id: null,
-      created_at: now.toISOString(),
-      updated_at: now.toISOString(),
-    };
-
-    this.meetings.set(m1.id, m1);
-
-    // Sample student participant
-    const p1: MeetingParticipantRecord = {
-      id: crypto.randomUUID(),
-      meeting_id: m1.id,
-      student_id: 'usr_shashikunal_sb',
-      student_name: 'Shashi Kunal',
-      student_email: 'shashikunal@gmail.com',
-      status: 'SCHEDULED',
-      invitation_status: 'pending',
-      attendance_status: 'pending',
-      calendar_status: 'synced',
-      notification_status: 'scheduled',
-      created_at: now.toISOString(),
-      updated_at: now.toISOString(),
-    };
-
-    this.participants.set(p1.id, p1);
-
-    this.recordAuditLog({
-      meetingId: m1.id,
-      actorId: 'admin_master',
-      action: 'MEETING_CREATED',
-      new_value: m1 as any,
-    });
-
-    // Seed Google Meet-style instant meeting room (specifically ensuring meet_9207d42bde624ec2 persists across server restarts)
-    const instantMeetingId = 'meet_9207d42bde624ec2';
-    if (!this.meetings.has(instantMeetingId)) {
-      const oneHourLater = new Date(now.getTime() + 60 * 60 * 1000);
-      const mInstant: MeetingRecord = {
-        id: instantMeetingId,
-        title: 'Instant Technical Meeting',
-        description: 'Instant ad-hoc collaboration and technical interview session.',
-        meeting_type: 'Technical Discussion',
-        meeting_provider: 'Platform Meet (Built-in)',
-        meeting_url: `/meet/${instantMeetingId}`,
-        start_at: now.toISOString(),
-        end_at: oneHourLater.toISOString(),
-        timezone: 'Asia/Kolkata',
-        trainer_id: 'usr_trainer_shashi',
-        trainer_name: 'Meeting Host',
-        created_by: 'usr_trainer_shashi',
-        status: 'IN_PROGRESS',
-        capacity: 50,
-        recurrence_rule: null,
-        parent_meeting_id: null,
-        created_at: now.toISOString(),
-        updated_at: now.toISOString(),
-      };
-      this.meetings.set(instantMeetingId, mInstant);
-    }
-
-    // Load persisted state from disk
+    // Load persisted state from disk (starts clean from scratch)
     this.loadPersistedMeetings();
-    // Save combined state to disk so it survives any server stops/restarts
+  }
+
+  public clearAllMeetings(): { success: boolean; clearedCount: number } {
+    const clearedCount = this.meetings.size;
+    this.meetings.clear();
+    this.participants.clear();
     this.savePersistedMeetings();
+    return { success: true, clearedCount };
   }
 
   /**
@@ -231,25 +153,21 @@ export class MeetingOpsService {
       return { success: false, error: 'Forbidden: Only administrators or authorized trainers may create meetings.' };
     }
 
-    // 2. Strict Validations (backward-compatible: auto-default legacy payloads)
+    // 2. Strict Validations
     if (!dto.title || !dto.title.trim()) {
       return { success: false, error: 'Meeting title is required.' };
     }
-    const normalizedDto = {
-      ...dto,
-      meeting_url: dto.meeting_url?.trim() || `https://meet.local/${crypto.randomUUID().slice(0, 8)}`,
-      start_at: dto.start_at || new Date(Date.now() + 3600 * 1000).toISOString(),
-      end_at: dto.end_at || new Date(Date.now() + 7200 * 1000).toISOString(),
-    };
-    const startDate = new Date(normalizedDto.start_at);
-    const endDate = new Date(normalizedDto.end_at);
+    if (!dto.meeting_url || !dto.meeting_url.trim()) {
+      return { success: false, error: 'Meeting URL is required.' };
+    }
+    const startDate = new Date(dto.start_at);
+    const endDate = new Date(dto.end_at);
     if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
       return { success: false, error: 'Invalid start or end date format.' };
     }
     if (endDate <= startDate) {
       return { success: false, error: 'End time must be after start time.' };
     }
-    dto = normalizedDto as CreateMeetingDTO;
 
     const meetingId = `meet_${crypto.randomUUID().replace(/-/g, '').slice(0, 16)}`;
     const now = new Date().toISOString();
@@ -268,6 +186,8 @@ export class MeetingOpsService {
       trainer_name: dto.trainer_name || caller.name || 'Platform Trainer',
       created_by: caller.id,
       batch_id: dto.batch_id || undefined,
+      batch_code: dto.batch_code || undefined,
+      batch_name: dto.batch_name || undefined,
       status: 'SCHEDULED',
       capacity: dto.capacity || 50,
       recurrence_rule: dto.recurrence || null,
@@ -548,15 +468,14 @@ export class MeetingOpsService {
     let list = Array.from(this.meetings.values());
     const now = new Date();
 
-    // Student Isolation Filter (Strict RBAC: assigned meetings + live sessions only)
+    // Student Isolation Filter (Strict RBAC: Student sees assigned meetings, plus all live/started and cohort interview sessions)
     if (options.student_id) {
       const assignedMeetingIds = new Set(
         Array.from(this.participants.values())
           .filter(p => p.student_id === options.student_id || (options.student_email && p.student_email && p.student_email.toLowerCase() === options.student_email.toLowerCase()))
           .map(p => p.meeting_id)
       );
-      const LIVE_STATUSES = new Set(['STARTED', 'ACTIVE', 'IN_PROGRESS']);
-      list = list.filter(m => assignedMeetingIds.has(m.id) || LIVE_STATUSES.has(m.status));
+      list = list.filter(m => assignedMeetingIds.has(m.id) || m.status === 'STARTED');
     }
 
     if (options.status && options.status !== 'ALL') {
@@ -577,7 +496,13 @@ export class MeetingOpsService {
     }
 
     if (options.batch_id && options.batch_id !== 'ALL') {
-      list = list.filter(m => m.batch_id === options.batch_id);
+      const bQuery = options.batch_id.toLowerCase();
+      list = list.filter(
+        m =>
+          (m.batch_id && m.batch_id.toLowerCase() === bQuery) ||
+          (m.batch_code && m.batch_code.toLowerCase() === bQuery) ||
+          (m.batch_name && m.batch_name.toLowerCase() === bQuery)
+      );
     }
 
     if (options.trainer_id && options.trainer_id !== 'ALL') {
@@ -741,6 +666,9 @@ export class MeetingOpsService {
       if (updates.timezone) target.timezone = updates.timezone;
       if (updates.trainer_id) target.trainer_id = updates.trainer_id;
       if (updates.trainer_name) target.trainer_name = updates.trainer_name;
+      if (updates.batch_id !== undefined) target.batch_id = updates.batch_id;
+      if (updates.batch_code !== undefined) target.batch_code = updates.batch_code;
+      if (updates.batch_name !== undefined) target.batch_name = updates.batch_name;
       if (updates.status) target.status = updates.status;
 
       target.updated_at = now;
@@ -859,6 +787,41 @@ export class MeetingOpsService {
         notificationWorker.dispatchImmediateNotification(t, sId, 'MEETING_CANCELLED', reason);
       }
     }
+
+    return { success: true };
+  }
+
+  /**
+   * Permanently delete a single meeting and its participant records
+   */
+  public async deleteSingleMeeting(
+    caller: { id: string; role: string },
+    meetingId: string
+  ): Promise<{ success: boolean; error?: string }> {
+    if (caller.role !== 'admin') {
+      return { success: false, error: 'Forbidden: Only platform administrators can permanently delete meetings.' };
+    }
+
+    const meeting = this.meetings.get(meetingId);
+    if (!meeting) return { success: false, error: 'Meeting not found.' };
+
+    this.meetings.delete(meetingId);
+
+    for (const [pId, p] of this.participants.entries()) {
+      if (p.meeting_id === meetingId) {
+        this.participants.delete(pId);
+      }
+    }
+
+    meetingScheduler.cancelMeetingReminders(meetingId);
+    this.savePersistedMeetings();
+
+    this.recordAuditLog({
+      meetingId: meeting.id,
+      actorId: caller.id,
+      action: 'MEETING_DELETED_PERMANENTLY',
+      old_value: meeting as any,
+    });
 
     return { success: true };
   }

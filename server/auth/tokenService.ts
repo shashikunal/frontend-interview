@@ -11,11 +11,14 @@ import type {
   TokenVerificationResult,
 } from './tokenTypes.ts';
 
-// Default master secret from environment or cryptographically stable fallback
-const JWT_SECRET =
-  process.env.JWT_SIGNING_SECRET ||
-  process.env.SUPABASE_SERVICE_ROLE_KEY ||
-  'interviewprep_production_realtime_collaboration_jwt_secret_2026_super_secure';
+function getJwtSecret(): string {
+  const secret = process.env.JWT_SIGNING_SECRET || process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (secret) return secret;
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error('JWT_SIGNING_SECRET environment variable is required in production.');
+  }
+  return 'interviewprep_production_realtime_collaboration_jwt_secret_2026_super_secure';
+}
 
 const JWT_ISSUER = 'interviewprep-control-plane';
 const JWT_AUDIENCE = 'interviewprep-meet-realtime';
@@ -43,8 +46,8 @@ export class TokenService {
   private revokedTokens: Map<string, number> = new Map(); // jti -> expiry epoch seconds
   private refreshTokens: Map<string, { userId: string; expiresAt: number }> = new Map();
 
-  constructor(secret = JWT_SECRET) {
-    this.secret = secret;
+  constructor(secret?: string) {
+    this.secret = secret || getJwtSecret();
     if (typeof setInterval !== 'undefined') {
       const timer: any = setInterval(() => this.cleanupRevocationList(), 5 * 60 * 1000);
       if (typeof timer?.unref === 'function') {
@@ -202,9 +205,10 @@ export class TokenService {
   /**
    * Explicitly revokes a token by its unique jti
    */
-  public revokeToken(jti: string, expiresAt: number): void {
+  public revokeToken(jti: string, expiresAt?: number): void {
     if (!jti) return;
-    this.revokedTokens.set(jti, expiresAt);
+    const exp = expiresAt ?? Math.floor(Date.now() / 1000) + 3600;
+    this.revokedTokens.set(jti, exp);
   }
 
   /**

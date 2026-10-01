@@ -2,26 +2,27 @@ import { lazy, Suspense } from 'react'
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import Header from './components/layout/Header'
 import Footer from './components/layout/Footer'
-const Home = lazy(() => import('./components/home/Home'))
-const QuestionList = lazy(() => import('./components/questions/QuestionList'))
-const QuestionDetail = lazy(() => import('./components/questions/QuestionDetail'))
-const QuestionDetailPage = lazy(() => import('./components/questions/QuestionDetailPage'))
-const CodingList = lazy(() => import('./components/coding/CodingList'))
-const Workspace = lazy(() => import('./components/workspace/Workspace'))
-const Videos = lazy(() => import('./components/videos/Videos'))
-const MockInterview = lazy(() => import('./components/mock/MockInterview'))
-const VideoMockInterview = lazy(() => import('./components/mock/VideoMockInterview'))
-const MachineCodingMock = lazy(() => import('./components/mock/MachineCodingMock'))
-const SystemDesignCanvas = lazy(() => import('./components/system-design/SystemDesignCanvas'))
-const Visualizer = lazy(() => import('./components/visualizer/Visualizer'))
-const Pathways = lazy(() => import('./components/pathways/Pathways'))
-const ExperienceTracks = lazy(() => import('./components/experience/ExperienceTracks'))
-const Profiler = lazy(() => import('./components/profiler/Profiler'))
-const Behavioral = lazy(() => import('./components/behavioral/Behavioral'))
-const ResumeOptimizer = lazy(() => import('./components/resume/ResumeOptimizer'))
-const PeerRoom = lazy(() => import('./components/peer/PeerRoom'))
-const Compensation = lazy(() => import('./components/compensation/Compensation'))
-const CaseStudies = lazy(() => import('./components/casestudies/CaseStudies'))
+import Home from './components/home/Home'
+import QuestionList from './components/questions/QuestionList'
+import QuestionDetail from './components/questions/QuestionDetail'
+import QuestionDetailPage from './components/questions/QuestionDetailPage'
+import CodingList from './components/coding/CodingList'
+import Workspace from './components/workspace/Workspace'
+import Videos from './components/videos/Videos'
+import Dashboard from './components/dashboard/Dashboard'
+import MockInterview from './components/mock/MockInterview'
+import VideoMockInterview from './components/mock/VideoMockInterview'
+import MachineCodingMock from './components/mock/MachineCodingMock'
+import SystemDesignCanvas from './components/system-design/SystemDesignCanvas'
+import Visualizer from './components/visualizer/Visualizer'
+import Pathways from './components/pathways/Pathways'
+import ExperienceTracks from './components/experience/ExperienceTracks'
+import Profiler from './components/profiler/Profiler'
+import Behavioral from './components/behavioral/Behavioral'
+import ResumeOptimizer from './components/resume/ResumeOptimizer'
+import PeerRoom from './components/peer/PeerRoom'
+import Compensation from './components/compensation/Compensation'
+import CaseStudies from './components/casestudies/CaseStudies'
 const AstExplorer = lazy(() => import('./components/astexplorer/AstExplorer'))
 const SecuritySandbox = lazy(() => import('./components/security/SecuritySandbox'))
 const StateMachine = lazy(() => import('./components/statemachine/StateMachine'))
@@ -39,9 +40,7 @@ const I18nLab = lazy(() => import('./components/i18nlab/I18nLab'))
 const SduiLab = lazy(() => import('./components/sduilab/SduiLab'))
 const WebComponentsStudio = lazy(() => import('./components/webcomponents/WebComponentsStudio'))
 const SearchEngineStudio = lazy(() => import('./components/searchengine/SearchEngineStudio'))
-const UserProfile = lazy(() => import('./components/profile/UserProfile'))
 const UserManagementStudio = lazy(() => import('./components/usermanagement/UserManagementStudio'))
-const Dashboard = lazy(() => import('./components/dashboard/Dashboard'))
 const AdminDashboard = lazy(() => import('./components/dashboard/AdminDashboard'))
 const MachineCodingStudio = lazy(() => import('./components/machinecoding/MachineCodingStudio'))
 const DSAStudio = lazy(() => import('./components/dsa/DSAStudio'))
@@ -64,10 +63,12 @@ import FeatureGuard from './components/auth/FeatureGuard'
 import { ProtectedRoute } from './features/auth'
 import AuthModal from './components/auth/AuthModal'
 import ScrollToTop from './components/common/ScrollToTop'
-const AchievementUnlockToast = lazy(() => import('./components/badges/AchievementUnlockToast'))
+import AchievementUnlockToast from './components/badges/AchievementUnlockToast'
 import { useBadgeEvaluator } from './hooks/useBadgeEvaluator'
-const DocsCommandPalette = lazy(() => import('./features/interview-docs/components/DocsCommandPalette').then(m => ({ default: m.DocsCommandPalette })))
-import './App.css'
+import { DocsCommandPalette } from './features/interview-docs/components/DocsCommandPalette'
+import { SkeletonLoader } from './components/common/SkeletonLoader'
+import { SectionErrorBoundary } from './components/common/ErrorBoundary'
+import { GlobalNotificationListener } from './components/common/GlobalNotificationListener'
 
 export default function App() {
   const location = useLocation()
@@ -89,16 +90,14 @@ export default function App() {
       <ScrollToTop />
       {!hideHeader && <Header />}
       <AuthModal />
-      <Suspense fallback={null}>
-        <AchievementUnlockToast />
-      </Suspense>
-      <Suspense fallback={null}>
-        <DocsCommandPalette />
-      </Suspense>
+      <AchievementUnlockToast />
+      <DocsCommandPalette />
+      <GlobalNotificationListener />
       <main className={`main-content ${isAdminDashboard ? 'dashboard-main-content' : ''} ${isStudioWorkspace ? 'studio-main-content' : ''} ${isDocsPlatform ? 'docs-main-content' : ''} ${isMeetingRoom ? 'meeting-main-content' : ''}`}>
-        <Suspense fallback={<div className="app-route-loader"><div className="app-route-spinner" /><p>Loading masterclass studio...</p></div>}>
-          <div key={location.pathname} className="app-page-transition">
-            <Routes>
+        <SectionErrorBoundary name="Page Route">
+          <Suspense fallback={<SkeletonLoader variant="page" />}>
+            <div key={location.pathname} className="app-page-transition">
+              <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/meet" element={<InstantMeetingLandingPage />} />
           <Route path="/meetings" element={<InstantMeetingLandingPage />} />
@@ -110,11 +109,7 @@ export default function App() {
           <Route path="/docs/*" element={<DocsPlatform />} />
           <Route
             path="/profile"
-            element={
-              <ProtectedRoute>
-                <UserProfile />
-              </ProtectedRoute>
-            }
+            element={<Navigate to="/dashboard?view=profile" replace />}
           />
           <Route
             path="/user-management"
@@ -830,6 +825,7 @@ export default function App() {
         </Routes>
         </div>
         </Suspense>
+        </SectionErrorBoundary>
       </main>
       {!hideFooter && <Footer />}
     </div>

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { interviewQuestionsDataService } from '../services/interviewQuestionsDataService'
 import { interviewQuestionsProgressService } from '../services/interviewQuestionsProgressService'
 import type { MasterBankCatalog, SubjectMeta, SubjectProgressStat } from '../types/interviewQuestions.types'
+import { SkeletonLoader } from '../../../components/common/SkeletonLoader'
 
 export default function SubjectLandingPage() {
   const [catalog, setCatalog] = useState<MasterBankCatalog | null>(null)
@@ -77,10 +78,8 @@ export default function SubjectLandingPage() {
 
   if (loading) {
     return (
-      <div className="mqb-loading-state" id="mqb-loading-spinner" style={{ textAlign: 'center', padding: '5rem 0' }}>
-        <div className="app-route-spinner" style={{ margin: '0 auto 1.5rem', width: 44, height: 44, border: '3px solid rgba(56,189,248,0.2)', borderTopColor: '#38bdf8', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
-        <h3 style={{ color: 'var(--mqb-text-primary)' }}>Loading 33 Frontend Interview Tracks...</h3>
-        <p style={{ color: 'var(--mqb-text-secondary)' }}>Indexing complete frontend question bank with speech synthesis and interactive MCQs</p>
+      <div style={{ padding: '24px' }}>
+        <SkeletonLoader variant="studio" />
       </div>
     )
   }
@@ -201,14 +200,14 @@ export default function SubjectLandingPage() {
         </div>
       </section>
 
-      {/* Top-Asked FAANG Interview Hub & Quick Recommended Prep */}
+      {/* High-Frequency Interview Hub & Quick Recommended Prep */}
       <section style={{ background: 'var(--mqb-bg-glass)', border: '1px solid rgba(245,158,11,0.3)', borderRadius: '16px', padding: '1.5rem', marginBottom: '2rem', boxShadow: '0 8px 30px rgba(0,0,0,0.1)' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem', marginBottom: '1rem' }}>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
               <span style={{ fontSize: '1.4rem' }}>🔥</span>
               <h2 style={{ fontSize: '1.35rem', fontWeight: 800, margin: 0, color: 'var(--mqb-text-primary)' }}>
-                FAANG High-Frequency Interview Hub
+                High-Frequency Interview Hub
               </h2>
               <span className="mqb-highfreq-badge">Top-Asked Real Questions</span>
             </div>

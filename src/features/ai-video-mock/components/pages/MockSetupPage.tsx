@@ -12,6 +12,7 @@ export const PERSONAS: InterviewerPersona[] = [
     role: 'Staff Frontend Architect',
     company: 'Meta',
     avatar: '👩‍💻',
+    imageUrl: '/personas/sarah_chen.jpg',
     style: 'Senior Interviewer',
     bio: 'Focuses on concurrent React, Fiber reconciliation, state machines & distributed UI systems.',
     voicePitch: 1.0,
@@ -23,6 +24,7 @@ export const PERSONAS: InterviewerPersona[] = [
     role: 'Principal UI Engineer',
     company: 'Google',
     avatar: '👨‍💼',
+    imageUrl: '/personas/david_miller.jpg',
     style: 'Strict',
     bio: 'Deep technical examination of JavaScript runtime, event loop, memory leaks & high-load concurrency.',
     voicePitch: 0.9,
@@ -34,6 +36,7 @@ export const PERSONAS: InterviewerPersona[] = [
     role: 'Engineering Director',
     company: 'Netflix',
     avatar: '👩‍🔬',
+    imageUrl: '/personas/elena_rostova.jpg',
     style: 'System Design Interviewer',
     bio: 'Evaluates large-scale frontend architecture, trade-offs, micro-frontends, and resilience under failure.',
     voicePitch: 1.05,
@@ -45,6 +48,7 @@ export const PERSONAS: InterviewerPersona[] = [
     role: 'Bar Raiser & Senior Manager',
     company: 'Amazon',
     avatar: '👨‍🏫',
+    imageUrl: '/personas/marcus_vance.jpg',
     style: 'HR / Behavioral',
     bio: 'Focuses on STAR methodology, conflict resolution, executive communication, and customer obsession.',
     voicePitch: 0.95,
@@ -218,7 +222,7 @@ export default function MockSetupPage() {
                 style={{ width: '100%', padding: '10px', borderRadius: 8, background: 'var(--bg)', color: 'var(--text-primary)', border: '1px solid var(--border)' }}
               >
                 <option value="Quick">Quick Check (5 Questions)</option>
-                <option value="Standard">Standard FAANG Loop (5–10 Questions)</option>
+                <option value="Standard">Standard Interview Loop (5–10 Questions)</option>
                 <option value="Full">Full Comprehensive Round (15 Questions)</option>
                 <option value="Deep">Deep Architecture Dive (20 Questions)</option>
                 <option value="Technical">Technical Theory Only</option>

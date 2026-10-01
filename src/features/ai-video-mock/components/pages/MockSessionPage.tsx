@@ -12,6 +12,7 @@ import { transcriptionService } from '../../services/transcriptionService';
 import { videoStorageService } from '../../services/providers/videoStorageService';
 import { interviewEngine } from '../../services/interviewEngine';
 import { PERSONAS } from './MockSetupPage';
+import { AudioWaveVisualizer } from '../AudioWaveVisualizer';
 import MockQuestionResultModal from './MockQuestionResultModal';
 import Editor from '@monaco-editor/react';
 
@@ -516,8 +517,12 @@ export default function MockSessionPage() {
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
           {/* Persona Chip */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'var(--surface-hover)', padding: '4px 12px', borderRadius: 20, border: '1px solid var(--border)' }}>
-            <span>{currentPersona.avatar}</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'var(--surface-hover)', padding: '4px 14px 4px 6px', borderRadius: 20, border: '1px solid var(--border)' }}>
+            {currentPersona.imageUrl ? (
+              <img src={currentPersona.imageUrl} alt={currentPersona.name} style={{ width: 26, height: 26, borderRadius: '50%', objectFit: 'cover' }} />
+            ) : (
+              <span>{currentPersona.avatar}</span>
+            )}
             <span style={{ fontSize: '0.8rem', fontWeight: 600 }}>{currentPersona.name}</span>
             <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>({currentPersona.company})</span>
           </div>
@@ -561,8 +566,29 @@ export default function MockSessionPage() {
 
       {/* Main Split Layout */}
       <div className="ai-vm-session-content">
-        {/* Left: Question Prompt, Voice Status & Video Feed */}
+        {/* Left: Question Prompt, AI Interviewer Portrait Feed & Candidate Video */}
         <div className="ai-vm-session-left">
+          {/* AI Interviewer Live Feed Card */}
+          <div style={{ display: 'flex', gap: 16, alignItems: 'center', padding: 14, borderRadius: 16, background: 'rgba(17, 24, 39, 0.75)', border: `1px solid ${isAiSpeaking ? '#818cf8' : 'var(--border)'}`, marginBottom: 12, transition: 'all 0.2s ease' }}>
+            <div style={{ position: 'relative', width: 64, height: 64, borderRadius: '50%', overflow: 'hidden', border: `2px solid ${isAiSpeaking ? '#818cf8' : 'rgba(255,255,255,0.15)'}`, flexShrink: 0 }}>
+              {currentPersona.imageUrl ? (
+                <img src={currentPersona.imageUrl} alt={currentPersona.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              ) : (
+                <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2rem' }}>{currentPersona.avatar}</div>
+              )}
+            </div>
+            <div style={{ flex: 1 }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 2 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <span style={{ fontSize: '0.95rem', fontWeight: 700, color: '#FFFFFF' }}>{currentPersona.name}</span>
+                  <span style={{ fontSize: '0.75rem', padding: '2px 8px', borderRadius: 12, background: 'rgba(99, 102, 241, 0.2)', color: '#818cf8', fontWeight: 600 }}>{currentPersona.company}</span>
+                </div>
+                <AudioWaveVisualizer isActive={isAiSpeaking} label={isAiSpeaking ? 'AI Speaking' : 'Listening'} color={isAiSpeaking ? '#818cf8' : '#10b981'} />
+              </div>
+              <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>{currentPersona.role} · {currentPersona.style}</div>
+            </div>
+          </div>
+
           <div className="ai-vm-question-card">
             <div className="ai-vm-q-meta">
               <span className="ai-vm-q-tag">{currentAnswer.question.technology}</span>
@@ -579,7 +605,7 @@ export default function MockSessionPage() {
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <span style={{ fontSize: '1.1rem' }}>{isAiSpeaking ? '🔊' : '🎙️'}</span>
                 <span style={{ fontSize: '0.82rem', fontWeight: 700, color: isAiSpeaking ? '#818cf8' : '#10b981' }}>
-                  {isAiSpeaking ? `${currentPersona.name} is speaking... (Listen)` : 'Your Turn (Answer Aloud)'}
+                  {isAiSpeaking ? `${currentPersona.name} is speaking...` : 'Your Turn (Answer Aloud)'}
                 </span>
               </div>
 
@@ -630,13 +656,14 @@ export default function MockSessionPage() {
             </div>
           </div>
 
-          {/* Video Preview with Live Recording Indicator */}
+          {/* Video Preview with Live Recording & Speech Wave Indicator */}
           <div className="ai-vm-video-feed-wrap">
             <video ref={videoRef} autoPlay playsInline muted className="ai-vm-video-element" />
             {isRecording && (
-              <div className="ai-vm-rec-badge">
+              <div className="ai-vm-rec-badge" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                 <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#ef4444' }} />
                 <span>REC · LIVE VIDEO &amp; MIC</span>
+                <AudioWaveVisualizer isActive={true} label="" color="#EF4444" barsCount={6} />
               </div>
             )}
           </div>

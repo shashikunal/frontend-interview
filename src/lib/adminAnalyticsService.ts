@@ -1740,31 +1740,6 @@ export const adminAnalyticsService = {
         })
       }
 
-      // Fallback to local mock session cache if available
-      try {
-        if (typeof localStorage !== 'undefined') {
-          const rawMocks = localStorage.getItem('ai_video_mock_sessions_v1')
-          if (rawMocks) {
-            const list = JSON.parse(rawMocks)
-            if (Array.isArray(list)) {
-              list.forEach((m: any) => {
-                if (!mockSessionList.some(ex => ex.id === String(m.id))) {
-                  mockSessionList.push({
-                    id: String(m.id),
-                    role: m.role || 'Frontend Specialist',
-                    interviewType: m.interviewType || 'AI Video Evaluation',
-                    status: m.status || 'completed',
-                    overallScore: Number(m.overallScore || 85),
-                    durationMinutes: m.durationMinutes || 20,
-                    createdAt: m.createdAt || new Date().toISOString(),
-                  })
-                }
-              })
-            }
-          }
-        }
-      } catch {}
-
       // Calculate global aggregates
       const totalAttempts = rawAttempts.length
       const totalSubmissions = rawSubmissions.length

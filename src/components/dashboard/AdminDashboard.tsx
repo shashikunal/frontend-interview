@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback, lazy, Suspense } from 'react'
+import React, { useState, useEffect, useMemo, useCallback } from 'react'
 import { Link, useNavigate, useParams, useLocation, useSearchParams } from 'react-router-dom'
 import { useAuth, type UserRole, type FeatureEntitlements } from '../../context/AuthContext'
 import { useTheme } from '../../context/ThemeContext'
@@ -31,8 +31,12 @@ import AdminSubmissionCodeModal from './admin/AdminSubmissionCodeModal'
 import AdminAttemptCodeModal from './admin/AdminAttemptCodeModal'
 import EnvironmentDiagnosticsModal from '../common/EnvironmentDiagnosticsModal'
 import RoleGuard from '../auth/RoleGuard'
+import { lazy, Suspense } from 'react'
 const Leaderboard = lazy(() => import('../leaderboard/Leaderboard'))
-import { getMCCatalog, getDSACatalog, getCPCatalog, getFJSCatalog, ensureCatalogs } from '../../lib/catalogRegistry'
+import { MACHINE_CODING_CATALOG } from '../machinecoding/data/machineCodingCatalog'
+import { DSA_QUESTIONS } from '../dsa/data/dsaQuestions'
+import { CORE_PROGRAMMING_QUESTIONS } from '../coreprogramming/data/coreProgrammingQuestions'
+import { FRONTEND_JS_QUESTIONS } from '../frontendjs/data/frontendJsQuestions'
 import {
   adminAnalyticsService,
   type OverviewStats,
@@ -287,10 +291,6 @@ export default function AdminDashboard() {
   }
 
   useEffect(() => {
-    // Catalog chunks are admin-contained; preload once so analytics tabs resolve titles.
-    // loadData() re-renders via setProfiles/setOverviewStats after slower network
-    // fetches, by which time the local chunks have resolved.
-    ensureCatalogs(['mc', 'dsa', 'cp', 'fjs', 'master', 'mcFull']).catch(() => {})
     loadData()
   }, [loadData])
 
@@ -425,8 +425,6 @@ export default function AdminDashboard() {
       name: newUserName || newUserEmail.split('@')[0],
       email: newUserEmail,
       role: newUserRole,
-      targetCompany: newUserCompany,
-      experienceLevel: newUserLevel,
       entitlements: newUserEntitlements,
     })
     setIsSubmittingUser(false)
@@ -557,8 +555,8 @@ export default function AdminDashboard() {
     const readiness = computeCandidateReadiness(prog)
     const notes = reportNotes[targetUser.id] || 'Candidate demonstrated solid problem-solving fundamentals and clear architectural communication.'
     const md = [
-      `# FAANG Engineering Candidate Evaluation Dossier: ${targetUser.name}`,
-      `**Target Role:** ${targetUser.targetCompany} • ${targetUser.experienceLevel}`,
+      `# Engineering Evaluation Dossier: ${targetUser.name}`,
+      `**Role:** ${targetUser.role.toUpperCase()}`,
       `**Email:** ${targetUser.email}`,
       `**Evaluation Date:** ${new Date().toLocaleDateString([], { year: 'numeric', month: 'long', day: 'numeric' })}`,
       `\n## Executive Hiring Recommendation: ${readiness.label}`,
@@ -627,9 +625,7 @@ export default function AdminDashboard() {
         `"${prog.trackName}"`,
         `${prog.completionPct}%`,
         prog.solvedCount,
-        prog.streak,
-        `"${u.targetCompany || ''}"`,
-        `"${u.experienceLevel || ''}"`,
+        `"${u.role.toUpperCase()}"`,
       ]
     })
 
@@ -650,8 +646,7 @@ export default function AdminDashboard() {
     return profiles.filter(p => {
       const matchQuery =
         p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        p.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (p.targetCompany || '').toLowerCase().includes(searchTerm.toLowerCase())
+        p.email.toLowerCase().includes(searchTerm.toLowerCase())
       const matchRole = roleFilter === 'ALL' || p.role === roleFilter
       const prog = progressMap[p.id]
       const matchTrack = trackFilter === 'ALL' || (prog && prog.trackName.toLowerCase().includes(trackFilter.toLowerCase()))
@@ -718,10 +713,10 @@ export default function AdminDashboard() {
     })
 
     const baseTracks = [
-      { id: 't1', name: 'JavaScript & DOM Performance', icon: '⚡', totalModules: getFJSCatalog().length || 1000, difficulty: 'Core' as const, description: 'Core JS, Event Loop, DOM APIs and V8 runtime optimization' },
-      { id: 't2', name: 'Machine Coding & React Systems', icon: '⚛️', totalModules: getMCCatalog().length || 500, difficulty: 'Advanced' as const, description: 'Interactive React components, production UI & full application state' },
-      { id: 't3', name: 'Core JavaScript Programming', icon: '💻', totalModules: getCPCatalog().length || 500, difficulty: 'Core' as const, description: 'Language fundamentals, polyfills, closures, recursion & async mechanics' },
-      { id: 't4', name: 'Algorithms & Data Structures', icon: '📐', totalModules: getDSACatalog().length || 1000, difficulty: 'Advanced' as const, description: 'LeetCode style algorithmic challenges tailored for frontend engineers' },
+      { id: 't1', name: 'JavaScript & DOM Performance', icon: '⚡', totalModules: FRONTEND_JS_QUESTIONS.length || 1000, difficulty: 'Core' as const, description: 'Core JS, Event Loop, DOM APIs and V8 runtime optimization' },
+      { id: 't2', name: 'Machine Coding & React Systems', icon: '⚛️', totalModules: MACHINE_CODING_CATALOG.length || 500, difficulty: 'Advanced' as const, description: 'Interactive React components, production UI & full application state' },
+      { id: 't3', name: 'Core JavaScript Programming', icon: '💻', totalModules: CORE_PROGRAMMING_QUESTIONS.length || 500, difficulty: 'Core' as const, description: 'Language fundamentals, polyfills, closures, recursion & async mechanics' },
+      { id: 't4', name: 'Algorithms & Data Structures', icon: '📐', totalModules: DSA_QUESTIONS.length || 1000, difficulty: 'Advanced' as const, description: 'LeetCode style algorithmic challenges tailored for frontend engineers' },
       { id: 't5', name: 'Frontend System Design Studio', icon: '🏗️', totalModules: 48, difficulty: 'Staff' as const, description: 'Realtime collaborative architectures, edge routing, offline sync' },
       { id: 't6', name: 'AI Video Mock Interview Simulator', icon: '🎥', totalModules: 50, difficulty: 'Staff' as const, description: 'Comprehensive AI-assisted real-time video mock interview sessions' },
     ]
@@ -909,7 +904,7 @@ export default function AdminDashboard() {
           >
             <span className="h-nav-icon">❓</span>
             <span>Question Bank</span>
-            <span className="h-nav-badge">{getMCCatalog().length}</span>
+            <span className="h-nav-badge">{MACHINE_CODING_CATALOG.length}</span>
           </button>
 
           <span className="h-nav-section-title">Intelligence &amp; Stream</span>
@@ -1296,7 +1291,7 @@ export default function AdminDashboard() {
       {/* ================================================================ */}
       {activeTab === 'rankings' && (
         <div className="admin-tab-content">
-          <Suspense fallback={<div className="app-route-loader"><div className="app-route-spinner" /><p>Loading rankings...</p></div>}>
+          <Suspense fallback={<div className="loading-state p-6 text-center">Loading Leaderboard...</div>}>
             <Leaderboard compact={false} />
           </Suspense>
         </div>
@@ -1507,8 +1502,7 @@ export default function AdminDashboard() {
                               </div>
                             </button>
                             <div className="target-micro-row" style={{ marginTop: '2px', paddingLeft: '8px' }}>
-                              <span className="target-pill">{u.targetCompany || 'Google'}</span>
-                              <span className="level-pill">{u.experienceLevel || 'L5 Senior'}</span>
+                              <span className="target-pill">{u.role.toUpperCase()}</span>
                             </div>
                           </div>
                         </td>
@@ -1808,7 +1802,7 @@ export default function AdminDashboard() {
                   <span className="h-phs-lbl">Active Tracks</span>
                 </div>
                 <div className="h-phs-item">
-                  <span className="h-phs-num">{getMCCatalog().length}</span>
+                  <span className="h-phs-num">{MACHINE_CODING_CATALOG.length}</span>
                   <span className="h-phs-lbl">Questions Bank</span>
                 </div>
                 <div className="h-phs-item">
@@ -1979,8 +1973,8 @@ export default function AdminDashboard() {
           <div className="admin-modal-card deep-dive-modal" onClick={e => e.stopPropagation()}>
             <div className="amc-header">
               <div>
-                <h3>📊 Candidate Deep-Dive Analytics: {inspectUser.name}</h3>
-                <span className="amc-sub-email">{inspectUser.email} • {inspectUser.targetCompany} ({inspectUser.experienceLevel})</span>
+                <h3>📊 User Deep-Dive Analytics: {inspectUser.name}</h3>
+                <span className="amc-sub-email">{inspectUser.email} • {inspectUser.role.toUpperCase()}</span>
               </div>
               <button
                 type="button"
@@ -2194,8 +2188,7 @@ export default function AdminDashboard() {
                       </div>
                       <h3>Candidate Evaluation Dossier: {reportUser.name}</h3>
                       <div className="dmh-meta-row">
-                        <span className="dmh-meta-pill">🎯 {reportUser.targetCompany || 'Google'}</span>
-                        <span className="dmh-meta-pill">💼 {reportUser.experienceLevel || 'L5 Senior'}</span>
+                        <span className="dmh-meta-pill">👤 {reportUser.role.toUpperCase()}</span>
                         <span className="dmh-meta-pill email">✉️ {reportUser.email}</span>
                       </div>
                     </div>
@@ -2266,7 +2259,7 @@ export default function AdminDashboard() {
                       <div className="dossier-pillar-card">
                         <span className="dpc-icon">🎥</span>
                         <span className="dpc-label">Mock Interview Score</span>
-                        <div className="dpc-val">⭐ {prog?.mockScore || 4.2} / 5.0</div>
+                        <div className="dpc-val">⭐ {prog?.mockScore ? prog.mockScore : 0} / 5.0</div>
                         <span className="dpc-sub">AI Behavioral &amp; System Simulator</span>
                       </div>
 

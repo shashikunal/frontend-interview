@@ -11,6 +11,7 @@
     "build:api": "esbuild api/_source/gateway.js --bundle --platform=node --format=esm --packages=external --outfile=api/index.js",
     "build": "npm run build:api && tsc -b && vite build",
     "lint": "oxlint",
+    "test:unit": "vitest run",
     "scrape": "node scripts/scrape-greatfrontend.mjs",
     "scrape:jsasgn": "node scripts/scrape-js-assignments.mjs",
     "scrape:premium": "node scripts/scrape.mjs",
@@ -20,7 +21,10 @@
     "@babel/standalone": "^8.0.4",
     "@emailjs/browser": "^4.4.1",
     "@monaco-editor/react": "^4.7.0",
+    "@reduxjs/toolkit": "^2.12.0",
     "@supabase/supabase-js": "^2.113.0",
+    "@tanstack/react-query": "^5.104.0",
+    "@tanstack/react-table": "^9.2.4",
     "@tanstack/react-virtual": "^3.14.12",
     "@types/ioredis": "^4.28.10",
     "@types/kafkajs": "^1.8.2",
@@ -30,6 +34,7 @@
     "monaco-editor": "^0.56.0",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
+    "react-redux": "^9.3.0",
     "react-router-dom": "^7.18.1",
     "recharts": "^3.10.1",
     "socket.io": "^4.8.3",
@@ -50,6 +55,7 @@
     "oxlint": "^1.71.0",
     "playwright": "^1.55.0",
     "typescript": "~6.0.2",
-    "vite": "^8.1.1"
+    "vite": "^8.1.1",
+    "vitest": "^5.0.1"
   }
 }

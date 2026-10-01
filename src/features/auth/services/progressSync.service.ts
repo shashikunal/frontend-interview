@@ -162,15 +162,13 @@ export const progressSyncService = {
       }
 
       // Merge and deduplicate profiles
-      const profileMap = new Map<string, { id: string; email: string; name: string; targetCompany?: string; experienceLevel?: string; updatedAt?: string; createdAt?: string }>()
+      const profileMap = new Map<string, { id: string; email: string; name: string; updatedAt?: string; createdAt?: string }>()
       ;(sbProfiles || []).forEach(p => {
         if (p.id) {
           profileMap.set(p.id, {
             id: p.id,
             email: p.email || '',
-            name: p.full_name || p.email?.split('@')[0] || 'Candidate',
-            targetCompany: p.target_company,
-            experienceLevel: p.experience_level,
+            name: p.full_name || p.email?.split('@')[0] || 'User',
             updatedAt: p.updated_at,
             createdAt: p.created_at,
           })
@@ -181,9 +179,7 @@ export const progressSyncService = {
           profileMap.set(p.id, {
             id: p.id,
             email: p.email || '',
-            name: p.name || p.email?.split('@')[0] || 'Candidate',
-            targetCompany: p.targetCompany,
-            experienceLevel: p.experienceLevel,
+            name: p.name || p.email?.split('@')[0] || 'User',
             updatedAt: p.updatedAt,
             createdAt: p.createdAt,
           })

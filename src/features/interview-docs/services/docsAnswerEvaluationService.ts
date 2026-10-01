@@ -79,7 +79,7 @@ export const docsAnswerEvaluationService = {
     try {
       const ollamaStatus = await ollamaProvider.isAvailable();
       if (ollamaStatus.available && cleanTranscript.split(/\s+/).length >= 4) {
-        const prompt = `You are a Principal Frontend Interviewer at a FAANG company (Google/Meta/Stripe).
+        const prompt = `You are a Principal Frontend Technical Evaluator.
 Evaluate the candidate's interview response for the target seniority level "${experienceLevel.toUpperCase()}".
 
 Technical Interview Question:

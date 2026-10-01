@@ -178,7 +178,7 @@ function DSAStudioWorkspace({ questionId }: WorkspaceProps) {
     // Guests pass no id: service persists NULL candidate_id (FK-safe) instead of fake ids
     const candidateId = userId
     const candidateName = userName || 'Candidate'
-    const candidateEmail = userEmail || 'candidate@faang.io'
+    const candidateEmail = userEmail || 'guest@interviewprep.local'
     const inflightKey = `${candidateId || 'guest'}:${question.id}:${language}`
     const pending = dsaSessionInflight.get(inflightKey)
     const task = pending || interviewSessionService.getOrCreateSession({

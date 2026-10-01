@@ -556,6 +556,36 @@ export const AdminMeetingManagementTab: React.FC = () => {
     }
   };
 
+  // Permanently Delete Single Meeting
+  const handleDeleteSingleMeeting = async (meeting: MeetingRecord) => {
+    if (!window.confirm(`Permanently delete "${meeting.title}"? This cannot be undone.`)) {
+      return;
+    }
+    try {
+      const token = await getAdminToken();
+      const res = await fetch('/api/v1/admin/meetings', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          action: 'delete_single',
+          meetingId: meeting.id,
+        }),
+      });
+      const json = await res.json();
+      if (res.ok && json.success) {
+        showToast(`Permanently deleted "${meeting.title}".`);
+        loadMeetings(pagination.page);
+      } else {
+        alert(json.message || 'Failed to delete meeting.');
+      }
+    } catch (err: any) {
+      alert(`Delete Error: ${err.message}`);
+    }
+  };
+
   // Open Assign Students Modal
   const handleOpenAssignModal = (meeting: MeetingRecord) => {
     setSelectedMeeting(meeting);
@@ -656,6 +686,32 @@ export const AdminMeetingManagementTab: React.FC = () => {
     }
   };
 
+  // Clear All Meetings
+  const handleClearAllMeetings = async () => {
+    if (!window.confirm('Are you sure you want to remove all meetings? This will start completely clean from scratch.')) {
+      return;
+    }
+    try {
+      const token = await getAdminToken();
+      const res = await fetch('/api/v1/admin/meetings', {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+      const json = await res.json();
+      if (res.ok && json.success) {
+        showToast('All meetings cleared successfully.');
+        loadMeetings(1);
+      } else {
+        alert(json.message || 'Failed to clear meetings.');
+      }
+    } catch (err: any) {
+      alert(`Error clearing meetings: ${err.message}`);
+    }
+  };
+
   return (
     <div className="acc-container">
       {/* Top Header */}
@@ -693,6 +749,16 @@ export const AdminMeetingManagementTab: React.FC = () => {
             title="Diagnose Kafka &amp; Push Notification Delivery"
           >
             🔔 Test Notifications
+          </button>
+
+          <button
+            type="button"
+            className="btn btn-sm"
+            style={{ background: 'rgba(239, 68, 68, 0.15)', border: '1px solid rgba(239, 68, 68, 0.3)', color: '#EF4444', fontWeight: 600 }}
+            onClick={handleClearAllMeetings}
+            title="Remove all scheduled meetings and start clean"
+          >
+            🗑️ Clear All Meetings
           </button>
 
           <button
@@ -998,6 +1064,16 @@ export const AdminMeetingManagementTab: React.FC = () => {
                               Cancel
                             </button>
                           )}
+
+                          <button
+                            type="button"
+                            className="amm-btn-sm danger"
+                            style={{ background: 'rgba(239, 68, 68, 0.2)', color: '#ef4444', borderColor: 'rgba(239, 68, 68, 0.4)', fontWeight: 600 }}
+                            onClick={() => handleDeleteSingleMeeting(m)}
+                            title="Delete Completely (Permanent)"
+                          >
+                            🗑️ Delete
+                          </button>
                         </div>
                       </td>
                     </tr>

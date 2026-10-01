@@ -8,6 +8,7 @@ import { createErrorResponse } from '../../server/auth/rbacMiddleware.ts';
 import { meetingOpsService } from '../../server/meetings/meetingOpsService.ts';
 
 import { meetingService } from '../../server/meetings/meetingService.ts';
+import { broadcastPushNotification } from '../../server/socket/index.ts';
 
 // In-memory persistent alert ledger for real-time candidate meeting push notifications
 if (!globalThis.__ACTIVE_MEETING_ALERTS__) {
@@ -143,7 +144,7 @@ export default async function handler(req, res) {
   // 4. Send Meeting Link to Students (Push Notification Dispatch - STRICT: Only Admin has rights)
   if (req.method === 'POST' && (pathname.endsWith('/send') || req.body?.action === 'send' || req.body?.action === 'send-meeting-link')) {
     if (user?.role !== 'admin') {
-      return res.status(403).json(createErrorResponse('Forbidden', 'Only platform administrator (shashi) has rights to push meeting notifications.', 'FORBIDDEN'));
+      return res.status(403).json(createErrorResponse('Forbidden', 'Only platform administrator has rights to push meeting notifications.', 'FORBIDDEN'));
     }
 
     const rawMeeting = req.body?.meeting || {};
@@ -242,6 +243,20 @@ export default async function handler(req, res) {
     };
     activeMeetingAlerts.unshift(alertEntry);
     if (activeMeetingAlerts.length > 50) activeMeetingAlerts.pop();
+
+    // Broadcast real-time Socket push notification event across all active connections
+    try {
+      broadcastPushNotification({
+        type: 'MEETING_PUSH_DISPATCHED',
+        meetingId: meeting.id,
+        meetingTitle: meeting.title,
+        meetingUrl: meeting.meeting_url || `/meet/${meeting.id}`,
+        title: `🟢 Live Meeting Started: Join Now!`,
+        body: customMessage || `Your interviewer has started "${meeting.title}". Click to join!`,
+        customMessage: customMessage,
+        timestamp: new Date().toISOString(),
+      });
+    } catch (_) {}
 
     // Ensure meeting status is set to STARTED in meetingOpsService
     try {
