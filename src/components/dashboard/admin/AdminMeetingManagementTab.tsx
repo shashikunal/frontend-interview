@@ -217,9 +217,10 @@ export const AdminMeetingManagementTab: React.FC = () => {
   // Push Meeting Link to Students
   const handlePushLinkToStudents = async (meeting: MeetingRecord) => {
     try {
+      showToast(`⏳ Dispatching push notification for "${meeting.title}"...`);
       const res = await pushClientService.sendMeetingPushNotification({
         meetingId: meeting.id,
-        customMessage: `Interview session: "${meeting.title}". Link: ${meeting.meeting_url}`,
+        customMessage: `Live interview session: "${meeting.title}". Link: ${meeting.meeting_url || `/meet/${meeting.id}`}`,
       });
       if (res.success) {
         showToast(`📲 Push notification sent to students for "${meeting.title}"!`);
@@ -228,6 +229,27 @@ export const AdminMeetingManagementTab: React.FC = () => {
       }
     } catch (err: any) {
       alert(`Error sending push notification: ${err.message}`);
+    }
+  };
+
+  // Test Push Notification Dispatch
+  const handleTestPushNotification = async () => {
+    try {
+      showToast('⏳ Testing push notification dispatch...');
+      if (user?.id) {
+        await pushClientService.subscribeUser(user.id).catch(() => null);
+      }
+      const res = await pushClientService.sendMeetingPushNotification({
+        meetingId: `test_${Date.now().toString(36)}`,
+        customMessage: '🔔 Test Notification: Push and in-app alert delivery confirmed working!',
+      });
+      if (res.success) {
+        showToast('🔔 Test push notification delivered successfully!');
+      } else {
+        alert(res.message || 'Failed to dispatch test notification.');
+      }
+    } catch (err: any) {
+      alert(`Test notification error: ${err.message}`);
     }
   };
 
@@ -759,6 +781,16 @@ export const AdminMeetingManagementTab: React.FC = () => {
             onClick={handleOpenCreateModal}
           >
             <span>➕</span> Create Meeting
+          </button>
+
+          <button
+            type="button"
+            className="acc-refresh-btn"
+            style={{ background: 'rgba(117, 81, 255, 0.15)', color: '#a78bfa', borderColor: 'rgba(117, 81, 255, 0.35)', fontWeight: 600 }}
+            onClick={handleTestPushNotification}
+            title="Dispatch a real-time push test notification to verify delivery"
+          >
+            <span>🔔</span> Test Push
           </button>
 
           <button

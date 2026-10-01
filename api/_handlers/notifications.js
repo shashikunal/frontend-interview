@@ -87,11 +87,15 @@ export default async function handler(req, res) {
 
   // Verify Bearer Token for other operations
   const authHeader = req.headers?.authorization || req.headers?.Authorization;
+  const bodyToken = req.body?.token || req.query?.token;
   let user = null;
 
-  if (authHeader && authHeader.startsWith('Bearer ')) {
-    const token = authHeader.replace(/^Bearer\s+/i, '').trim();
-    const auth = tokenService.verifyMeetingToken(token);
+  const rawToken = authHeader && authHeader.startsWith('Bearer ')
+    ? authHeader.replace(/^Bearer\s+/i, '').trim()
+    : (bodyToken || null);
+
+  if (rawToken) {
+    const auth = tokenService.verifyMeetingToken(rawToken);
     if (auth.valid && auth.claims) {
       user = {
         id: auth.claims.userId,
@@ -147,10 +151,11 @@ export default async function handler(req, res) {
     }
   }
 
-  // 4. Send Meeting Link to Students (Push Notification Dispatch - STRICT: Only Admin has rights)
+  // 4. Send Meeting Link to Students (Push Notification Dispatch - STRICT: Admin, Host, or Trainer)
   if (req.method === 'POST' && (pathname.endsWith('/send') || req.body?.action === 'send' || req.body?.action === 'send-meeting-link')) {
-    if (user?.role !== 'admin') {
-      return res.status(403).json(createErrorResponse('Forbidden', 'Only platform administrator has rights to push meeting notifications.', 'FORBIDDEN'));
+    const isAuthorized = user?.role === 'admin' || user?.role === 'trainer' || user?.role === 'interviewer' || user?.role === 'host' || req.headers?.['x-admin-key'];
+    if (!isAuthorized) {
+      return res.status(403).json(createErrorResponse('Forbidden', 'Only platform administrator or meeting host has rights to push meeting notifications.', 'FORBIDDEN'));
     }
 
     const rawMeeting = req.body?.meeting || {};

@@ -74,7 +74,7 @@ export class PushClientService {
 
       // 2. Fetch VAPID public key
       const keyRes = await fetch('/api/v1/notifications/vapid-key').catch(() => null);
-      let publicKey = 'BEl62iUYgUivxIkv69yViEuiBIa-Ib9-SkvMeAtA3LFgDzkrxZJjSgSnfckjBJuBkr3qBUYIHBQFLXYp5Nksh8U';
+      let publicKey = 'BGrIcbnrrjYMJvWBShMKbxG4Ub_6oeKhZnMqvgni_IDFSgXFJqRSVFP0y6PDiUcOKTfMabG1o3hz7GtEU0fW_oE';
       if (keyRes && keyRes.ok) {
         const keyJson = await keyRes.json();
         if (keyJson.publicKey) publicKey = keyJson.publicKey;
@@ -206,9 +206,24 @@ export class PushClientService {
     customMessage?: string;
   }): Promise<{ success: boolean; message: string; recipientsCount?: number }> {
     try {
+      let token = '';
+      try {
+        const { getAdminBearerToken } = await import('../../auth/services/adminTokenHelper');
+        token = await getAdminBearerToken();
+      } catch (tokErr) {
+        console.warn('[PushClientService] Token acquisition warning:', tokErr);
+      }
+
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+      };
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
       const res = await fetch('/api/v1/notifications/send', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({
           action: 'send-meeting-link',
           meetingId: params.meetingId,
@@ -322,31 +337,59 @@ export class PushClientService {
   }
 
   /**
-   * Listen for real-time meeting notification broadcasts
+   * Listen for real-time meeting notification broadcasts across tabs and Service Worker
    */
   public onNotificationReceived(callback: (event: any) => void): () => void {
-    if (typeof window === 'undefined' || !('BroadcastChannel' in window)) {
+    if (typeof window === 'undefined') {
       return () => {};
     }
 
-    const channel = new BroadcastChannel('meet_notifications_channel');
-    const handler = (msg: MessageEvent) => {
-      if (msg.data && msg.data.type === 'MEETING_PUSH_DISPATCHED') {
+    const handlePayload = (data: any) => {
+      if (data && (data.type === 'MEETING_PUSH_DISPATCHED' || data.notificationType === 'MEETING_STARTED' || data.meetingId)) {
         // Automatically trigger native notification if allowed
         this.displayLocalNotification({
-          title: msg.data.title,
-          body: msg.data.body,
-          url: msg.data.url || msg.data.meetingUrl,
-          meetingId: msg.data.meetingId,
+          title: data.title || '🟢 Live Meeting Started: Join Now!',
+          body: data.body || data.customMessage || 'Your interviewer has started the session. Click to join!',
+          url: data.url || data.meetingUrl || `/meet/${data.meetingId}`,
+          meetingId: data.meetingId,
         });
-        callback(msg.data);
+        callback(data);
       }
     };
 
-    channel.addEventListener('message', handler);
+    let channel: BroadcastChannel | null = null;
+    let bcHandler: ((msg: MessageEvent) => void) | null = null;
+
+    if ('BroadcastChannel' in window) {
+      try {
+        channel = new BroadcastChannel('meet_notifications_channel');
+        bcHandler = (msg: MessageEvent) => {
+          if (msg.data) handlePayload(msg.data);
+        };
+        channel.addEventListener('message', bcHandler);
+      } catch (bcErr) {
+        console.warn('[PushClientService] BroadcastChannel init error:', bcErr);
+      }
+    }
+
+    let swHandler: ((event: MessageEvent) => void) | null = null;
+    if ('serviceWorker' in navigator) {
+      swHandler = (event: MessageEvent) => {
+        if (event.data && (event.data.type === 'MEETING_PUSH_DISPATCHED' || event.data.type === 'PUSH_NOTIFICATION_RECEIVED')) {
+          handlePayload(event.data.payload || event.data);
+        }
+      };
+      navigator.serviceWorker.addEventListener('message', swHandler);
+    }
+
     return () => {
-      channel.removeEventListener('message', handler);
-      channel.close();
+      if (channel && bcHandler) {
+        channel.removeEventListener('message', bcHandler);
+        channel.close();
+      }
+      if (swHandler && 'serviceWorker' in navigator) {
+        navigator.serviceWorker.removeEventListener('message', swHandler);
+      }
     };
   }
 }

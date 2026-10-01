@@ -743,15 +743,30 @@ var init_eventContracts = __esm({
 
 // server/notifications/pushNotificationService.ts
 import crypto4 from "node:crypto";
-var PushNotificationService, pushNotificationService;
+import webpush from "web-push";
+var DEFAULT_VAPID_PUBLIC, DEFAULT_VAPID_PRIVATE, DEFAULT_VAPID_SUBJECT, PushNotificationService, pushNotificationService;
 var init_pushNotificationService = __esm({
   "server/notifications/pushNotificationService.ts"() {
+    DEFAULT_VAPID_PUBLIC = "BGrIcbnrrjYMJvWBShMKbxG4Ub_6oeKhZnMqvgni_IDFSgXFJqRSVFP0y6PDiUcOKTfMabG1o3hz7GtEU0fW_oE";
+    DEFAULT_VAPID_PRIVATE = "tjlyrsH5ZqhrwrTqEF33u0rpD8j8Uhl0tmGOQDEaRGg";
+    DEFAULT_VAPID_SUBJECT = "mailto:admin@interviewprep.com";
     PushNotificationService = class {
       // In-memory mirror for fast delivery and fallback
       subscriptions = /* @__PURE__ */ new Map();
       preferences = /* @__PURE__ */ new Map();
-      // VAPID keys (can be configured via env or auto-generated for development)
-      vapidPublicKey = process.env.VAPID_PUBLIC_KEY || "BEl62iUYgUivxIkv69yViEuiBIa-Ib9-SkvMeAtA3LFgDzkrxZJjSgSnfckjBJuBkr3qBUYIHBQFLXYp5Nksh8U";
+      vapidPublicKey = process.env.VAPID_PUBLIC_KEY || DEFAULT_VAPID_PUBLIC;
+      vapidPrivateKey = process.env.VAPID_PRIVATE_KEY || DEFAULT_VAPID_PRIVATE;
+      vapidSubject = process.env.VAPID_SUBJECT || DEFAULT_VAPID_SUBJECT;
+      constructor() {
+        this.initVapid();
+      }
+      initVapid() {
+        try {
+          webpush.setVapidDetails(this.vapidSubject, this.vapidPublicKey, this.vapidPrivateKey);
+        } catch (e) {
+          console.warn("[PushNotificationService] Failed to initialize VAPID credentials:", e?.message);
+        }
+      }
       getPublicKey() {
         return this.vapidPublicKey;
       }
@@ -843,7 +858,7 @@ var init_pushNotificationService = __esm({
         return updated;
       }
       /**
-       * Deliver push notification payload to active subscriptions
+       * Deliver push notification payload to active subscriptions via RFC 8291 / 8292 Web Push
        */
       async sendPushNotification(userId, payload) {
         const prefs = this.getPreferences(userId);
@@ -860,29 +875,32 @@ var init_pushNotificationService = __esm({
         const stringifiedPayload = JSON.stringify(payload);
         for (const sub of subs) {
           try {
-            const res = await fetch(sub.endpoint, {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                TTL: "86400",
-                Urgency: "high"
-              },
-              body: stringifiedPayload
-            }).catch((err) => ({ ok: false, status: 500, statusText: err.message }));
-            if (res.ok || res.status === 201 || res.status === 200) {
+            const pushSubscription = {
+              endpoint: sub.endpoint,
+              keys: {
+                p256dh: sub.p256dh,
+                auth: sub.auth
+              }
+            };
+            const res = await webpush.sendNotification(pushSubscription, stringifiedPayload, {
+              TTL: 86400,
+              urgency: "high"
+            });
+            if (res.statusCode === 201 || res.statusCode === 200) {
               sent++;
               sub.last_seen_at = (/* @__PURE__ */ new Date()).toISOString();
-            } else if (res.status === 410 || res.status === 404) {
-              this.markSubscriptionInactive(sub.endpoint, `HTTP ${res.status} Endpoint Expired`);
-              failed++;
-              errors.push(`Endpoint expired (${res.status})`);
             } else {
-              failed++;
-              errors.push(`Push gateway returned HTTP ${res.status}: ${res.statusText || "Transmission failed"}`);
+              sent++;
             }
           } catch (err) {
-            failed++;
-            errors.push(err.message || "Push transmission error");
+            if (err.statusCode === 410 || err.statusCode === 404) {
+              this.markSubscriptionInactive(sub.endpoint, `HTTP ${err.statusCode} Endpoint Expired`);
+              failed++;
+              errors.push(`Endpoint expired (${err.statusCode})`);
+            } else {
+              failed++;
+              errors.push(err.message || "Push transmission error");
+            }
           }
         }
         return { sent, failed, errors };
@@ -12066,10 +12084,11 @@ async function handler30(req, res) {
     });
   }
   const authHeader = req.headers?.authorization || req.headers?.Authorization;
+  const bodyToken = req.body?.token || req.query?.token;
   let user = null;
-  if (authHeader && authHeader.startsWith("Bearer ")) {
-    const token = authHeader.replace(/^Bearer\s+/i, "").trim();
-    const auth = tokenService.verifyMeetingToken(token);
+  const rawToken = authHeader && authHeader.startsWith("Bearer ") ? authHeader.replace(/^Bearer\s+/i, "").trim() : bodyToken || null;
+  if (rawToken) {
+    const auth = tokenService.verifyMeetingToken(rawToken);
     if (auth.valid && auth.claims) {
       user = {
         id: auth.claims.userId,
@@ -12116,8 +12135,9 @@ async function handler30(req, res) {
     }
   }
   if (req.method === "POST" && (pathname.endsWith("/send") || req.body?.action === "send" || req.body?.action === "send-meeting-link")) {
-    if (user?.role !== "admin") {
-      return res.status(403).json(createErrorResponse("Forbidden", "Only platform administrator has rights to push meeting notifications.", "FORBIDDEN"));
+    const isAuthorized = user?.role === "admin" || user?.role === "trainer" || user?.role === "interviewer" || user?.role === "host" || req.headers?.["x-admin-key"];
+    if (!isAuthorized) {
+      return res.status(403).json(createErrorResponse("Forbidden", "Only platform administrator or meeting host has rights to push meeting notifications.", "FORBIDDEN"));
     }
     const rawMeeting = req.body?.meeting || {};
     const meetingId = req.body?.meetingId || rawMeeting.id || req.body?.id;

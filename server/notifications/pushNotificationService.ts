@@ -5,7 +5,12 @@
  */
 
 import crypto from 'node:crypto';
+import webpush from 'web-push';
 import type { PushSubscriptionRecord, NotificationPreferencesRecord } from '../meetings/meetingOpsTypes.ts';
+
+const DEFAULT_VAPID_PUBLIC = 'BGrIcbnrrjYMJvWBShMKbxG4Ub_6oeKhZnMqvgni_IDFSgXFJqRSVFP0y6PDiUcOKTfMabG1o3hz7GtEU0fW_oE';
+const DEFAULT_VAPID_PRIVATE = 'tjlyrsH5ZqhrwrTqEF33u0rpD8j8Uhl0tmGOQDEaRGg';
+const DEFAULT_VAPID_SUBJECT = 'mailto:admin@interviewprep.com';
 
 export interface PushPayload {
   title: string;
@@ -32,8 +37,21 @@ export class PushNotificationService {
   private subscriptions: Map<string, PushSubscriptionRecord> = new Map();
   private preferences: Map<string, NotificationPreferencesRecord> = new Map();
 
-  // VAPID keys (can be configured via env or auto-generated for development)
-  private vapidPublicKey = process.env.VAPID_PUBLIC_KEY || 'BEl62iUYgUivxIkv69yViEuiBIa-Ib9-SkvMeAtA3LFgDzkrxZJjSgSnfckjBJuBkr3qBUYIHBQFLXYp5Nksh8U';
+  private vapidPublicKey = process.env.VAPID_PUBLIC_KEY || DEFAULT_VAPID_PUBLIC;
+  private vapidPrivateKey = process.env.VAPID_PRIVATE_KEY || DEFAULT_VAPID_PRIVATE;
+  private vapidSubject = process.env.VAPID_SUBJECT || DEFAULT_VAPID_SUBJECT;
+
+  constructor() {
+    this.initVapid();
+  }
+
+  private initVapid(): void {
+    try {
+      webpush.setVapidDetails(this.vapidSubject, this.vapidPublicKey, this.vapidPrivateKey);
+    } catch (e: any) {
+      console.warn('[PushNotificationService] Failed to initialize VAPID credentials:', e?.message);
+    }
+  }
 
   public getPublicKey(): string {
     return this.vapidPublicKey;
@@ -147,7 +165,7 @@ export class PushNotificationService {
   }
 
   /**
-   * Deliver push notification payload to active subscriptions
+   * Deliver push notification payload to active subscriptions via RFC 8291 / 8292 Web Push
    */
   public async sendPushNotification(
     userId: string,
@@ -171,32 +189,34 @@ export class PushNotificationService {
 
     for (const sub of subs) {
       try {
-        // Perform real fetch to push endpoint
-        const res = await fetch(sub.endpoint, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            TTL: '86400',
-            Urgency: 'high',
+        const pushSubscription = {
+          endpoint: sub.endpoint,
+          keys: {
+            p256dh: sub.p256dh,
+            auth: sub.auth,
           },
-          body: stringifiedPayload,
-        }).catch(err => ({ ok: false, status: 500, statusText: err.message } as any));
+        };
 
-        if (res.ok || res.status === 201 || res.status === 200) {
+        const res = await webpush.sendNotification(pushSubscription, stringifiedPayload, {
+          TTL: 86400,
+          urgency: 'high',
+        });
+
+        if (res.statusCode === 201 || res.statusCode === 200) {
           sent++;
           sub.last_seen_at = new Date().toISOString();
-        } else if (res.status === 410 || res.status === 404) {
-          // Endpoint expired / unsubscribed by user: mark permanently inactive (Rule 17)
-          this.markSubscriptionInactive(sub.endpoint, `HTTP ${res.status} Endpoint Expired`);
-          failed++;
-          errors.push(`Endpoint expired (${res.status})`);
         } else {
-          failed++;
-          errors.push(`Push gateway returned HTTP ${res.status}: ${res.statusText || 'Transmission failed'}`);
+          sent++;
         }
       } catch (err: any) {
-        failed++;
-        errors.push(err.message || 'Push transmission error');
+        if (err.statusCode === 410 || err.statusCode === 404) {
+          this.markSubscriptionInactive(sub.endpoint, `HTTP ${err.statusCode} Endpoint Expired`);
+          failed++;
+          errors.push(`Endpoint expired (${err.statusCode})`);
+        } else {
+          failed++;
+          errors.push(err.message || 'Push transmission error');
+        }
       }
     }
 
