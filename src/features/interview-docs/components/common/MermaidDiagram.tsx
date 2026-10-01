@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
-import mermaid from 'mermaid';
+
+// NOTE: mermaid (~4.6MB) is dynamically imported on mount so the vendor-mermaid
+// chunk only loads when a diagram actually renders — not with the docs bundle.
 
 interface MermaidDiagramProps {
   chart: string;
@@ -19,44 +21,46 @@ export function MermaidDiagram({ chart, id, caption }: MermaidDiagramProps) {
   useEffect(() => {
     let isMounted = true;
 
-    try {
-      mermaid.initialize({
-        startOnLoad: false,
-        theme: 'dark',
-        securityLevel: 'loose',
-        fontFamily: 'Inter, system-ui, sans-serif',
-        themeVariables: {
-          darkMode: true,
-          background: '#0b1437',
-          primaryColor: '#6366f1',
-          primaryTextColor: '#ffffff',
-          primaryBorderColor: '#818cf8',
-          lineColor: '#94a3b8',
-          secondaryColor: '#1e293b',
-          tertiaryColor: '#0f172a',
-        },
-      });
+    (async () => {
+      try {
+        const { default: mermaid } = await import('mermaid');
+        if (!isMounted) return;
+        mermaid.initialize({
+          startOnLoad: false,
+          theme: 'dark',
+          securityLevel: 'loose',
+          fontFamily: 'Inter, system-ui, sans-serif',
+          themeVariables: {
+            darkMode: true,
+            background: '#0b1437',
+            primaryColor: '#6366f1',
+            primaryTextColor: '#ffffff',
+            primaryBorderColor: '#818cf8',
+            lineColor: '#94a3b8',
+            secondaryColor: '#1e293b',
+            tertiaryColor: '#0f172a',
+          },
+        });
 
-      const cleanChart = chart.trim();
-      mermaid
-        .render(uniqueId.current, cleanChart)
-        .then(({ svg }) => {
+        const cleanChart = chart.trim();
+        try {
+          const { svg } = await mermaid.render(uniqueId.current, cleanChart);
           if (isMounted) {
             setSvgContent(svg);
             setError(null);
           }
-        })
-        .catch(err => {
+        } catch (err) {
           if (isMounted) {
             console.warn('[Mermaid render fallback]:', err);
             setError('Diagram preview rendered via code structure.');
           }
-        });
-    } catch (e: any) {
-      if (isMounted) {
-        setError(e?.message || 'Failed to initialize diagram');
+        }
+      } catch (e: unknown) {
+        if (isMounted) {
+          setError(e instanceof Error ? e.message : 'Failed to initialize diagram');
+        }
       }
-    }
+    })();
 
     return () => {
       isMounted = false;
