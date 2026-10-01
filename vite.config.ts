@@ -833,6 +833,9 @@ export default defineConfig({
           if (id.includes('src/features/interview-docs/data/tracks') || id.includes('subjectsCatalog') || id.includes('docsRegistry')) {
             return 'vendor-docs'
           }
+          if (id.includes('src/components/machinecoding/data/masterCatalog')) {
+            return 'mc-master'
+          }
           if (id.includes('src/components/machinecoding/data') || id.includes('src/components/dsa/data') || id.includes('src/components/frontendjs/data') || id.includes('src/components/coreprogramming/data')) {
             if (id.includes('src/components/dsa/data/batches/')) {
               const match = id.match(/batch\d+/i)
@@ -841,6 +844,10 @@ export default defineConfig({
             if (id.includes('src/components/frontendjs/data/batches/')) {
               const match = id.match(/batch\d+/i)
               return match ? `fjs-${match[0].toLowerCase()}` : 'fjs-batches'
+            }
+            if (id.includes('src/components/coreprogramming/data/batches/')) {
+              const match = id.match(/batch\d+/i)
+              return match ? `cp-${match[0].toLowerCase()}` : 'cp-batches'
             }
             return 'vendor-catalogs'
           }

@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react'
 import type { AdminAttemptItem } from '../../../lib/adminAnalyticsService'
-import { MACHINE_CODING_CATALOG } from '../../machinecoding/data/machineCodingCatalog'
+import { getMCCatalog } from '../../../lib/catalogRegistry'
 
 interface AdminAttemptsTabProps {
   attempts?: AdminAttemptItem[]
@@ -32,7 +32,7 @@ export default function AdminAttemptsTab({
     a.questionId.toUpperCase().startsWith('JS-P') ||
     a.questionId.toUpperCase().startsWith('JSP') ||
     a.questionId.toUpperCase().startsWith('CP') ||
-    MACHINE_CODING_CATALOG.find(q => q.id.toLowerCase() === a.questionId.toLowerCase())?.category === 'JavaScript'
+    getMCCatalog().find(q => q.id.toLowerCase() === a.questionId.toLowerCase())?.category === 'JavaScript'
 
   const filtered = useMemo(() => {
     return effectiveList.filter(a => {

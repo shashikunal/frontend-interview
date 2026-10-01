@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '../../../../context/AuthContext';
 import { codingHistoryService } from '../../services/codingHistoryService';
+import { ensureCatalogs } from '../../../../lib/catalogRegistry';
 import type { CodingAttempt, UserPerformanceSummary } from '../../types/history.types';
 import QuestionHistoryDetailModal from './QuestionHistoryDetailModal';
 import FaangReadinessDossierModal from './FaangReadinessDossierModal';
@@ -98,6 +99,7 @@ export default function StudentPerformanceView({ userId: propUserId }: StudentPe
     async function loadData() {
       setLoading(true);
       try {
+        await ensureCatalogs(['mc', 'dsa', 'cp', 'fjs']).catch(() => {});
         const [sum, history] = await Promise.all([
           codingHistoryService.getUserPerformanceSummary(effectiveUserId),
           codingHistoryService.getUserCodingHistory(effectiveUserId),

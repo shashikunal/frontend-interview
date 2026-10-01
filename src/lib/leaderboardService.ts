@@ -1,9 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
 import { supabase, supabaseUrl, supabaseAnonKey } from './supabase/client'
-import { MACHINE_CODING_CATALOG } from '../components/machinecoding/data/machineCodingCatalog'
-import { DSA_QUESTIONS } from '../components/dsa/data/dsaQuestions'
-import { CORE_PROGRAMMING_QUESTIONS } from '../components/coreprogramming/data/coreProgrammingQuestions'
-import { FRONTEND_JS_QUESTIONS } from '../components/frontendjs/data/frontendJsQuestions'
+import { getMCCatalog, getDSACatalog, getCPCatalog, getFJSCatalog } from './catalogRegistry'
 import { getStoredAuthHeader } from '../features/auth/services/adminTokenHelper'
 
 export type TierName = 'diamond' | 'platinum' | 'gold' | 'silver' | 'bronze'
@@ -138,7 +135,7 @@ export function resolveQuestionTitle(questionId: string): string {
   const clean = questionId.trim().toLowerCase()
 
   // 1. Machine Coding Catalog (500 Questions)
-  const mc = MACHINE_CODING_CATALOG.find(q => {
+  const mc = getMCCatalog().find(q => {
     const qLower = q.id.toLowerCase()
     if (qLower === clean) return true
     const numClean = clean.replace(/\D/g, '')
@@ -148,7 +145,7 @@ export function resolveQuestionTitle(questionId: string): string {
   if (mc) return mc.title
 
   // 2. DSA Masterclass (1,000 Questions)
-  const dsa = DSA_QUESTIONS.find(q => {
+  const dsa = getDSACatalog().find(q => {
     const qLower = q.id.toLowerCase()
     return qLower === clean || clean === q.id.replace(/^DSA0*/, '').toLowerCase()
   })
@@ -160,7 +157,7 @@ export function resolveQuestionTitle(questionId: string): string {
   }
 
   // 3. Core Programming (500 Questions)
-  const cp = CORE_PROGRAMMING_QUESTIONS.find(q => q.id.toLowerCase() === clean)
+  const cp = getCPCatalog().find(q => q.id.toLowerCase() === clean)
   if (cp) return cp.title
 
   if (questionId.toUpperCase().startsWith('JS-P') || questionId.toUpperCase().startsWith('JSP')) {
@@ -168,7 +165,7 @@ export function resolveQuestionTitle(questionId: string): string {
   }
 
   // 4. Frontend JavaScript (1,000 Questions)
-  const fjs = FRONTEND_JS_QUESTIONS.find(q => q.id.toLowerCase() === clean)
+  const fjs = getFJSCatalog().find(q => q.id.toLowerCase() === clean)
   if (fjs) return fjs.title
 
   if (questionId.toUpperCase().startsWith('FJP-') || questionId.toUpperCase().startsWith('FJP')) {
@@ -857,7 +854,7 @@ export const leaderboardService = {
         const u = qid.toUpperCase().trim()
         if (u.startsWith('Q') || u.startsWith('MC')) return false
         if (u.startsWith('JS-P') || u.startsWith('JSP') || u.startsWith('CP')) return true
-        return CORE_PROGRAMMING_QUESTIONS.some(q => q.id.toLowerCase() === qid.toLowerCase())
+        return getCPCatalog().some(q => q.id.toLowerCase() === qid.toLowerCase())
       }
       const isFJSId = (qid: string) => {
         if (!qid) return false
@@ -869,13 +866,13 @@ export const leaderboardService = {
         if (!qid) return false
         if (isCPId(qid)) return false
         const u = qid.toUpperCase().trim()
-        return u.startsWith('DSA') || (!u.startsWith('Q') && !u.startsWith('MC') && !u.startsWith('FJP') && /^\d+$/.test(qid)) || DSA_QUESTIONS.some(q => q.id === qid)
+        return u.startsWith('DSA') || (!u.startsWith('Q') && !u.startsWith('MC') && !u.startsWith('FJP') && /^\d+$/.test(qid)) || getDSACatalog().some(q => q.id === qid)
       }
       const isMCId = (qid: string) => {
         if (!qid) return false
         if (isCPId(qid)) return false
         const u = qid.toUpperCase().trim()
-        return u.startsWith('Q') || u.startsWith('MC') || MACHINE_CODING_CATALOG.some(q => q.id.toLowerCase() === qid.toLowerCase()) || qid.toLowerCase().includes('counter') || qid.toLowerCase().includes('toggle')
+        return u.startsWith('Q') || u.startsWith('MC') || getMCCatalog().some(q => q.id.toLowerCase() === qid.toLowerCase()) || qid.toLowerCase().includes('counter') || qid.toLowerCase().includes('toggle')
       }
 
       const filteredSubs = filteredByTime.filter(s => {
@@ -1207,7 +1204,7 @@ export const leaderboardService = {
         const qid = String(s.question_id || '')
         if (!isMC(qid, s.language)) continue
 
-        const mcMeta = MACHINE_CODING_CATALOG.find(q => q.id.toLowerCase() === qid.toLowerCase())
+        const mcMeta = getMCCatalog().find(q => q.id.toLowerCase() === qid.toLowerCase())
         const score = Number(s.score ?? 0)
         const testsTotal = 4
         const testsPassed = score >= 100 ? testsTotal : Math.max(0, Math.round((score / 100) * testsTotal))
@@ -1243,7 +1240,7 @@ export const leaderboardService = {
         )
         if (exists) continue
 
-        const mcMeta = MACHINE_CODING_CATALOG.find(q => q.id.toLowerCase() === loc.questionId.toLowerCase())
+        const mcMeta = getMCCatalog().find(q => q.id.toLowerCase() === loc.questionId.toLowerCase())
         combined.push({
           id: loc.id,
           userId: loc.userId,
@@ -1307,7 +1304,7 @@ export const leaderboardService = {
         if (!isMC(qid, s.language)) continue
 
         const prof = profileMap.get(s.user_id)
-        const mcMeta = MACHINE_CODING_CATALOG.find(q => q.id.toLowerCase() === qid.toLowerCase())
+        const mcMeta = getMCCatalog().find(q => q.id.toLowerCase() === qid.toLowerCase())
         const score = Number(s.score ?? 0)
         const testsTotal = 4
         const testsPassed = score >= 100 ? testsTotal : Math.max(0, Math.round((score / 100) * testsTotal))

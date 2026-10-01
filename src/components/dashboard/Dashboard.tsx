@@ -10,6 +10,7 @@ import { progressSyncService, type UserTrackProgress } from '../../features/auth
 import { trackingService } from '../../lib/trackingService'
 import { supabase } from '../../lib/supabase/client'
 import { leaderboardService, resolveQuestionTitle, type CandidateMCSubmission } from '../../lib/leaderboardService'
+import { ensureCatalogs, getMCCatalog, getDSACatalog, getCPCatalog, getFJSCatalog } from '../../lib/catalogRegistry'
 import { gradingService, type EvaluatorReview } from '../../lib/gradingService'
 import { CandidateSkillRadar } from './CandidateSkillRadar'
 const AdminDashboard = lazy(() => import('./AdminDashboard'))
@@ -172,7 +173,7 @@ function CandidateDashboard() {
     setAiMockSessions(readLocalMockSessions())
   }, [])
 
-  // Heavy studio catalogs load on demand so Dashboard stays light.
+  // Heavy studio catalogs load on demand via the shared registry so Dashboard stays light.
   // Title maps start empty; UI falls back to resolveQuestionTitle() until loaded.
   const [dsaMetaMap, setDsaMetaMap] = useState<Record<string, CatalogMeta>>({})
   const [cpMetaMap, setCpMetaMap] = useState<Record<string, CatalogMeta>>({})
@@ -181,37 +182,29 @@ function CandidateDashboard() {
   const [catalogCounts, setCatalogCounts] = useState({ mc: 0, dsa: 0, cp: 0, fjs: 0 })
   useEffect(() => {
     let cancelled = false
-    ;(async () => {
-      try {
-        const [dsaMod, cpMod, fjsMod, mcMod] = await Promise.all([
-          import('../dsa/data/dsaQuestions'),
-          import('../coreprogramming/data/coreProgrammingQuestions'),
-          import('../frontendjs/data/frontendJsQuestions'),
-          import('../machinecoding/data/machineCodingCatalog'),
-        ])
-        if (cancelled) return
-        const toMap = (list: Array<{ id: string; title: string; topic?: string; difficulty?: string; category?: string }>) => {
-          const m: Record<string, CatalogMeta> = {}
-          for (const q of list) m[q.id] = { title: q.title, topic: q.topic, difficulty: q.difficulty, category: q.category }
-          return m
-        }
-        setDsaMetaMap(toMap(dsaMod.DSA_QUESTIONS as never))
-        setCpMetaMap(toMap(cpMod.CORE_PROGRAMMING_QUESTIONS as never))
-        const fjsMap: Record<string, CatalogMeta> = {}
-        for (const q of (fjsMod.FRONTEND_JS_QUESTIONS as Array<{ id: string; title: string; category?: string; difficulty?: string }>)) {
-          fjsMap[q.id] = { title: q.title, category: q.category, difficulty: q.difficulty }
-          fjsMap[q.id.toLowerCase()] = fjsMap[q.id]
-        }
-        setFjsMetaMap(fjsMap)
-        setMcCatalog(mcMod.MACHINE_CODING_CATALOG as never)
-        setCatalogCounts({
-          mc: (mcMod.MACHINE_CODING_CATALOG as unknown[]).length,
-          dsa: (dsaMod.DSA_QUESTIONS as unknown[]).length,
-          cp: (cpMod.CORE_PROGRAMMING_QUESTIONS as unknown[]).length,
-          fjs: (fjsMod.FRONTEND_JS_QUESTIONS as unknown[]).length,
-        })
-      } catch { /* catalogs optional; fallbacks cover UI */ }
-    })()
+    ensureCatalogs(['mc', 'dsa', 'cp', 'fjs']).then(() => {
+      if (cancelled) return
+      const toMap = (list: Array<{ id: string; title: string; topic?: string; difficulty?: string; category?: string }>) => {
+        const m: Record<string, CatalogMeta> = {}
+        for (const q of list) m[q.id] = { title: q.title, topic: q.topic, difficulty: q.difficulty, category: q.category }
+        return m
+      }
+      setDsaMetaMap(toMap(getDSACatalog()))
+      setCpMetaMap(toMap(getCPCatalog()))
+      const fjsMap: Record<string, CatalogMeta> = {}
+      for (const q of getFJSCatalog()) {
+        fjsMap[q.id] = { title: q.title, category: q.category, difficulty: q.difficulty }
+        fjsMap[q.id.toLowerCase()] = fjsMap[q.id]
+      }
+      setFjsMetaMap(fjsMap)
+      setMcCatalog(getMCCatalog() as never)
+      setCatalogCounts({
+        mc: getMCCatalog().length,
+        dsa: getDSACatalog().length,
+        cp: getCPCatalog().length,
+        fjs: getFJSCatalog().length,
+      })
+    }).catch(() => { /* catalogs optional; fallbacks cover UI */ })
     return () => { cancelled = true }
   }, [])
 

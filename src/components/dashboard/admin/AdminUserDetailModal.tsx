@@ -7,6 +7,7 @@ import {
   type QuestionAttempt,
 } from '../../../lib/adminAnalyticsService'
 import { resolveCandidateQuestionDetails } from '../../../lib/candidateCodeHelper'
+import { ensureCatalogs } from '../../../lib/catalogRegistry'
 import AdminSubmissionCodeModal from './AdminSubmissionCodeModal'
 import AdminAttemptCodeModal from './AdminAttemptCodeModal'
 
@@ -40,6 +41,8 @@ export default function AdminUserDetailModal({
   useEffect(() => {
     if (!userId) return
     let isCancelled = false
+    // Full question/code datasets load on demand for the code-viewer actions below.
+    ensureCatalogs(['master', 'mcFull', 'mc', 'dsa', 'cp', 'fjs']).catch(() => {})
     setLoading(true)
     adminAnalyticsService.getUserDetailAnalytics(userId)
       .then(res => {

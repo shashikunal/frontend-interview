@@ -1,8 +1,5 @@
 import { supabase, getAuthenticatedHistoryClient } from '../../../lib/supabase/client';
-import { MACHINE_CODING_CATALOG } from '../../../components/machinecoding/data/machineCodingCatalog';
-import { DSA_QUESTIONS } from '../../../components/dsa/data/dsaQuestions';
-import { CORE_PROGRAMMING_QUESTIONS } from '../../../components/coreprogramming/data/coreProgrammingQuestions';
-import { FRONTEND_JS_QUESTIONS } from '../../../components/frontendjs/data/frontendJsQuestions';
+import { getMCCatalog, getDSACatalog, getCPCatalog, getFJSCatalog } from '../../../lib/catalogRegistry';
 import { getStoredAuthHeader } from '../../auth/services/adminTokenHelper';
 import type { CodingAttempt, UserPerformanceSummary, CategoryPerformance, MockSessionSummary, TrackCategory, UserQuickMetricSummary, DailyActivityItem, DailyQuestionDetail, WeeklyActivityItem } from '../types/history.types';
 
@@ -46,7 +43,7 @@ export function resolveQuestionMetadata(questionId: string): QuestionMetadata {
 
   // 1. Core Programming (500 Questions: JS-P001 to JS-P500)
   if (clean.startsWith('js-p') || clean.startsWith('jsp') || clean.startsWith('cp') || clean.startsWith('js_p')) {
-    const cpMatch = CORE_PROGRAMMING_QUESTIONS.find(q => {
+    const cpMatch = getCPCatalog().find(q => {
       const qLower = q.id.toLowerCase();
       if (qLower === clean) return true;
       if (clean.startsWith('jsp') && qLower === clean.replace(/^jsp/, 'js-p')) return true;
@@ -77,7 +74,7 @@ export function resolveQuestionMetadata(questionId: string): QuestionMetadata {
 
   // 2. LeetCode / DSA (1,000 Questions: DSA001 to DSA1000 or numeric)
   if (clean.startsWith('dsa') || /^\d+$/.test(clean)) {
-    const dsaMatch = DSA_QUESTIONS.find(q => {
+    const dsaMatch = getDSACatalog().find(q => {
       const qLower = q.id.toLowerCase();
       if (qLower === clean) return true;
       if (clean.startsWith('dsa') && qLower === clean) return true;
@@ -108,7 +105,7 @@ export function resolveQuestionMetadata(questionId: string): QuestionMetadata {
 
   // 3. Machine Coding Catalog (500 Questions: Q001 to Q500 or MC-...)
   if (clean.startsWith('q') || clean.startsWith('mc')) {
-    const mcMatch = MACHINE_CODING_CATALOG.find(q => {
+    const mcMatch = getMCCatalog().find(q => {
       const qLower = q.id.toLowerCase();
       if (qLower === clean) return true;
       if (clean.startsWith('q') && ('q' + q.id.replace(/^q/i, '')).toLowerCase() === clean) return true;
@@ -138,7 +135,7 @@ export function resolveQuestionMetadata(questionId: string): QuestionMetadata {
   }
 
   // 4. Frontend JavaScript (1,000 Questions)
-  const fjsMatch = FRONTEND_JS_QUESTIONS.find(q => q.id.toLowerCase() === clean);
+  const fjsMatch = getFJSCatalog().find(q => q.id.toLowerCase() === clean);
   if (fjsMatch) {
     return {
       title: fjsMatch.title,
@@ -488,10 +485,10 @@ class CodingHistoryService {
 
     // Dynamic catalog questions count calculated from real imported question catalogs
     const TOTAL_CATALOG_QUESTIONS =
-      MACHINE_CODING_CATALOG.length +
-      DSA_QUESTIONS.length +
-      CORE_PROGRAMMING_QUESTIONS.length +
-      FRONTEND_JS_QUESTIONS.length;
+      getMCCatalog().length +
+      getDSACatalog().length +
+      getCPCatalog().length +
+      getFJSCatalog().length;
 
     // Fetch real AI Mock sessions and scorecards for candidate
     let aiMockSummary: MockSessionSummary = {

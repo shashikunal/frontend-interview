@@ -1,8 +1,4 @@
-import { MACHINE_CODING_QUESTIONS } from '../components/machinecoding/machineCodingQuestions'
-import { MASTER_500_QUESTIONS } from '../components/machinecoding/data/masterCatalog'
-import { CORE_PROGRAMMING_QUESTIONS } from '../components/coreprogramming/data/coreProgrammingQuestions'
-import { DSA_QUESTIONS } from '../components/dsa/data/dsaQuestions'
-import { FRONTEND_JS_QUESTIONS } from '../components/frontendjs/data/frontendJsQuestions'
+import { getMCFullCatalog, getMasterCatalog, getCPCatalog, getDSACatalog, getFJSCatalog } from './catalogRegistry'
 
 export interface ResolvedCandidateDetails {
   questionId: string
@@ -47,8 +43,8 @@ export function resolveCandidateQuestionDetails(
   const normId = normalizeId(questionId)
   const rawIdStr = String(questionId).trim()
 
-  // 1. Search MACHINE_CODING_QUESTIONS (Q001 - Q100)
-  const mcq = MACHINE_CODING_QUESTIONS.find(
+  // 1. Search getMCFullCatalog() (Q001 - Q100)
+  const mcq = getMCFullCatalog().find(
     q => q.id.toUpperCase() === normId.toUpperCase() || q.id.toUpperCase() === rawIdStr.toUpperCase()
   )
 
@@ -84,8 +80,8 @@ export function resolveCandidateQuestionDetails(
     }
   }
 
-  // 2. Search MASTER_500_QUESTIONS (Q001 - Q500)
-  const masterQ = MASTER_500_QUESTIONS.find(
+  // 2. Search getMasterCatalog() (Q001 - Q500)
+  const masterQ = getMasterCatalog().find(
     q => q.id.toUpperCase() === normId.toUpperCase() || q.id.toUpperCase() === rawIdStr.toUpperCase()
   )
 
@@ -109,8 +105,8 @@ export function resolveCandidateQuestionDetails(
     }
   }
 
-  // 3. Search CORE_PROGRAMMING_QUESTIONS (JS-P001 - JS-P500)
-  const cpQ = CORE_PROGRAMMING_QUESTIONS.find(
+  // 3. Search getCPCatalog() (JS-P001 - JS-P500)
+  const cpQ = getCPCatalog().find(
     q => q.id.toUpperCase() === rawIdStr.toUpperCase() || q.id.toUpperCase() === normId.toUpperCase()
   )
   if (cpQ) {
@@ -134,8 +130,8 @@ export function resolveCandidateQuestionDetails(
     }
   }
 
-  // 4. Search DSA_QUESTIONS (DSA-001 - DSA-1000)
-  const dsaQ = DSA_QUESTIONS.find(
+  // 4. Search getDSACatalog() (DSA-001 - DSA-1000)
+  const dsaQ = getDSACatalog().find(
     q => q.id.toUpperCase() === rawIdStr.toUpperCase() || q.id.toUpperCase() === normId.toUpperCase()
   )
   if (dsaQ) {
@@ -157,8 +153,8 @@ export function resolveCandidateQuestionDetails(
     }
   }
 
-  // 5. Search FRONTEND_JS_QUESTIONS (FJP-001 - FJP-1000)
-  const fjsQ = FRONTEND_JS_QUESTIONS.find(
+  // 5. Search getFJSCatalog() (FJP-001 - FJP-1000)
+  const fjsQ = getFJSCatalog().find(
     q => q.id.toUpperCase() === rawIdStr.toUpperCase() || q.id.toUpperCase() === normId.toUpperCase()
   )
   if (fjsQ) {

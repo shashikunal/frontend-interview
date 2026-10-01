@@ -8,6 +8,7 @@ import {
   type LeaderboardCategory,
   type TierName,
 } from '../../lib/leaderboardService'
+import { ensureCatalogs } from '../../lib/catalogRegistry'
 import LeaderboardCandidateModal from './LeaderboardCandidateModal'
 import './Leaderboard.css'
 
@@ -351,6 +352,8 @@ export default function Leaderboard({ compact = false }: LeaderboardProps) {
   const load = useCallback(async () => {
     setLoading(true)
     try {
+      // Catalogs are cached chunks; titles resolve fully once loaded.
+      await ensureCatalogs(['mc', 'dsa', 'cp', 'fjs']).catch(() => {})
       const data = await leaderboardService.getGlobalLeaderboard(timeframe, category, compact ? 20 : 100)
       setEntries(data)
 

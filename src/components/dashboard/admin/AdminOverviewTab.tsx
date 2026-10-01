@@ -1,8 +1,5 @@
 import type { AdminOverviewStats, TimeframeFilter, OverviewDataSource } from '../../../lib/adminAnalyticsService'
-import { MACHINE_CODING_CATALOG } from '../../machinecoding/data/machineCodingCatalog'
-import { DSA_QUESTIONS } from '../../dsa/data/dsaQuestions'
-import { CORE_PROGRAMMING_QUESTIONS } from '../../coreprogramming/data/coreProgrammingQuestions'
-import { FRONTEND_JS_QUESTIONS } from '../../frontendjs/data/frontendJsQuestions'
+import { getMCCatalog, getDSACatalog, getCPCatalog, getFJSCatalog } from '../../../lib/catalogRegistry'
 
 interface AdminOverviewTabProps {
   stats: AdminOverviewStats | null
@@ -22,10 +19,10 @@ export default function AdminOverviewTab({
   onDataSourceChange,
   onNavigateTab,
 }: AdminOverviewTabProps) {
-  const mcTotalQuestions = MACHINE_CODING_CATALOG.length
-  const dsaTotalQuestions = DSA_QUESTIONS.length
-  const cpTotalQuestions = CORE_PROGRAMMING_QUESTIONS.length
-  const fjsTotalQuestions = FRONTEND_JS_QUESTIONS.length
+  const mcTotalQuestions = getMCCatalog().length
+  const dsaTotalQuestions = getDSACatalog().length
+  const cpTotalQuestions = getCPCatalog().length
+  const fjsTotalQuestions = getFJSCatalog().length
   const totalPlatformChallenges = mcTotalQuestions + dsaTotalQuestions + cpTotalQuestions + fjsTotalQuestions
 
   const s = stats || {

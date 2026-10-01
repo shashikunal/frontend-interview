@@ -13,7 +13,7 @@ import type {
   TimeframeFilter,
 } from '../../../lib/adminAnalyticsService'
 import { TRACK_DEFINITIONS, type UserTrackProgress } from '../../../features/auth/services/progressSync.service'
-import { MACHINE_CODING_CATALOG } from '../../machinecoding/data/machineCodingCatalog'
+import { getMCCatalog } from '../../../lib/catalogRegistry'
 import './AdminAnalyticsTab.css'
 
 // ── Custom dark tooltip for all Recharts charts ───────────────────
@@ -134,7 +134,7 @@ export default function AdminAnalyticsTab({
   const s = stats || overviewStats || {
     totalUsers: 1,
     activeUsers: 1,
-    totalQuestions: MACHINE_CODING_CATALOG.length,
+    totalQuestions: getMCCatalog().length,
     totalAttempts: 0,
     totalSubmissions: 0,
     completedQuestions: 0,
@@ -145,7 +145,7 @@ export default function AdminAnalyticsTab({
     successRate: 0,
     avgAttemptsPerQuestion: 1.2,
     avgTimeSpentMinutes: 15,
-    mcTotalQuestions: MACHINE_CODING_CATALOG.length,
+    mcTotalQuestions: getMCCatalog().length,
     mcSubmissionsCount: 0,
     mcAcceptedCount: 0,
     mcAttemptsCount: 0,

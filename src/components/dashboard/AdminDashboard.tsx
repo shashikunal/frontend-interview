@@ -32,10 +32,7 @@ import AdminAttemptCodeModal from './admin/AdminAttemptCodeModal'
 import EnvironmentDiagnosticsModal from '../common/EnvironmentDiagnosticsModal'
 import RoleGuard from '../auth/RoleGuard'
 const Leaderboard = lazy(() => import('../leaderboard/Leaderboard'))
-import { MACHINE_CODING_CATALOG } from '../machinecoding/data/machineCodingCatalog'
-import { DSA_QUESTIONS } from '../dsa/data/dsaQuestions'
-import { CORE_PROGRAMMING_QUESTIONS } from '../coreprogramming/data/coreProgrammingQuestions'
-import { FRONTEND_JS_QUESTIONS } from '../frontendjs/data/frontendJsQuestions'
+import { getMCCatalog, getDSACatalog, getCPCatalog, getFJSCatalog, ensureCatalogs } from '../../lib/catalogRegistry'
 import {
   adminAnalyticsService,
   type OverviewStats,
@@ -290,6 +287,10 @@ export default function AdminDashboard() {
   }
 
   useEffect(() => {
+    // Catalog chunks are admin-contained; preload once so analytics tabs resolve titles.
+    // loadData() re-renders via setProfiles/setOverviewStats after slower network
+    // fetches, by which time the local chunks have resolved.
+    ensureCatalogs(['mc', 'dsa', 'cp', 'fjs', 'master', 'mcFull']).catch(() => {})
     loadData()
   }, [loadData])
 
@@ -717,10 +718,10 @@ export default function AdminDashboard() {
     })
 
     const baseTracks = [
-      { id: 't1', name: 'JavaScript & DOM Performance', icon: '⚡', totalModules: FRONTEND_JS_QUESTIONS.length || 1000, difficulty: 'Core' as const, description: 'Core JS, Event Loop, DOM APIs and V8 runtime optimization' },
-      { id: 't2', name: 'Machine Coding & React Systems', icon: '⚛️', totalModules: MACHINE_CODING_CATALOG.length || 500, difficulty: 'Advanced' as const, description: 'Interactive React components, production UI & full application state' },
-      { id: 't3', name: 'Core JavaScript Programming', icon: '💻', totalModules: CORE_PROGRAMMING_QUESTIONS.length || 500, difficulty: 'Core' as const, description: 'Language fundamentals, polyfills, closures, recursion & async mechanics' },
-      { id: 't4', name: 'Algorithms & Data Structures', icon: '📐', totalModules: DSA_QUESTIONS.length || 1000, difficulty: 'Advanced' as const, description: 'LeetCode style algorithmic challenges tailored for frontend engineers' },
+      { id: 't1', name: 'JavaScript & DOM Performance', icon: '⚡', totalModules: getFJSCatalog().length || 1000, difficulty: 'Core' as const, description: 'Core JS, Event Loop, DOM APIs and V8 runtime optimization' },
+      { id: 't2', name: 'Machine Coding & React Systems', icon: '⚛️', totalModules: getMCCatalog().length || 500, difficulty: 'Advanced' as const, description: 'Interactive React components, production UI & full application state' },
+      { id: 't3', name: 'Core JavaScript Programming', icon: '💻', totalModules: getCPCatalog().length || 500, difficulty: 'Core' as const, description: 'Language fundamentals, polyfills, closures, recursion & async mechanics' },
+      { id: 't4', name: 'Algorithms & Data Structures', icon: '📐', totalModules: getDSACatalog().length || 1000, difficulty: 'Advanced' as const, description: 'LeetCode style algorithmic challenges tailored for frontend engineers' },
       { id: 't5', name: 'Frontend System Design Studio', icon: '🏗️', totalModules: 48, difficulty: 'Staff' as const, description: 'Realtime collaborative architectures, edge routing, offline sync' },
       { id: 't6', name: 'AI Video Mock Interview Simulator', icon: '🎥', totalModules: 50, difficulty: 'Staff' as const, description: 'Comprehensive AI-assisted real-time video mock interview sessions' },
     ]
@@ -908,7 +909,7 @@ export default function AdminDashboard() {
           >
             <span className="h-nav-icon">❓</span>
             <span>Question Bank</span>
-            <span className="h-nav-badge">{MACHINE_CODING_CATALOG.length}</span>
+            <span className="h-nav-badge">{getMCCatalog().length}</span>
           </button>
 
           <span className="h-nav-section-title">Intelligence &amp; Stream</span>
@@ -1807,7 +1808,7 @@ export default function AdminDashboard() {
                   <span className="h-phs-lbl">Active Tracks</span>
                 </div>
                 <div className="h-phs-item">
-                  <span className="h-phs-num">{MACHINE_CODING_CATALOG.length}</span>
+                  <span className="h-phs-num">{getMCCatalog().length}</span>
                   <span className="h-phs-lbl">Questions Bank</span>
                 </div>
                 <div className="h-phs-item">
