@@ -43,6 +43,7 @@ import SearchEngineStudio from './components/searchengine/SearchEngineStudio'
 import UserProfile from './components/profile/UserProfile'
 import UserManagementStudio from './components/usermanagement/UserManagementStudio'
 import AdminDashboard from './components/dashboard/AdminDashboard'
+import { PlacementApp } from './features/placement'
 const MachineCodingStudio = lazy(() => import('./components/machinecoding/MachineCodingStudio'))
 const DSAStudio = lazy(() => import('./components/dsa/DSAStudio'))
 const CoreProgrammingStudio = lazy(() => import('./components/coreprogramming/CoreProgrammingStudio'))
@@ -305,6 +306,22 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/placement"
+            element={
+              <ProtectedRoute>
+                <PlacementApp />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/placement/:view"
+            element={
+              <ProtectedRoute>
+                <PlacementApp />
               </ProtectedRoute>
             }
           />
