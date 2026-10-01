@@ -93,7 +93,16 @@ export class MeetingOpsService {
     const clearedCount = this.meetings.size;
     this.meetings.clear();
     this.participants.clear();
+    this.auditLogs = [];
     this.savePersistedMeetings();
+
+    Promise.resolve().then(async () => {
+      try {
+        await supabase.from('meeting_participants').delete().neq('id', 'placeholder');
+        await supabase.from('meetings').delete().neq('id', 'placeholder');
+      } catch (_) {}
+    });
+
     return { success: true, clearedCount };
   }
 

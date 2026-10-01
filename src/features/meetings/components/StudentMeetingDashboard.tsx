@@ -85,21 +85,8 @@ export const StudentMeetingDashboard: React.FC = () => {
       refetch();
     });
 
-    const unsubscribePoll = pushClientService.startPolling((alert) => {
-      if (alert) {
-        setLiveAlert({
-          title: alert.meetingTitle ? `🟢 Live Meeting: ${alert.meetingTitle}` : '🟢 Live Meeting Started!',
-          body: alert.customMessage || 'Your interview room is now live. Click to join immediately.',
-          url: alert.meetingUrl || `/meet/${alert.meetingId}`,
-          meetingId: alert.meetingId,
-        });
-        refetch();
-      }
-    });
-
     return () => {
       unsubscribeBroadcast();
-      unsubscribePoll();
     };
   }, [refetch]);
 

@@ -1377,7 +1377,15 @@ var init_meetingOpsService = __esm({
         const clearedCount = this.meetings.size;
         this.meetings.clear();
         this.participants.clear();
+        this.auditLogs = [];
         this.savePersistedMeetings();
+        Promise.resolve().then(async () => {
+          try {
+            await supabase.from("meeting_participants").delete().neq("id", "placeholder");
+            await supabase.from("meetings").delete().neq("id", "placeholder");
+          } catch (_) {
+          }
+        });
         return { success: true, clearedCount };
       }
       /**
@@ -4277,15 +4285,19 @@ async function handler(req, res) {
   }
   if (req.method === "DELETE") {
     const meetingId = urlObj.searchParams.get("meetingId") || urlObj.searchParams.get("id") || req.body?.meetingId;
-    if (meetingId) {
+    const action = urlObj.searchParams.get("action") || req.body?.action;
+    if (meetingId && !["clear_all", "delete_all", "all"].includes(meetingId)) {
       const result = await meetingOpsService.deleteSingleMeeting(user, meetingId);
       return res.status(200).json({
         ...result,
         correlationId: correlation.correlationId
       });
     }
-    if (req.body?.action === "clear_all" || req.body?.action === "delete_all" || urlObj.searchParams.get("action") === "clear_all") {
+    if (action === "clear_all" || action === "delete_all" || action === "all" || !meetingId) {
       const resClear = meetingOpsService.clearAllMeetings();
+      if (globalThis.__ACTIVE_MEETING_ALERTS__) {
+        globalThis.__ACTIVE_MEETING_ALERTS__.length = 0;
+      }
       return res.status(200).json({
         success: true,
         clearedCount: resClear.clearedCount,
@@ -4299,6 +4311,18 @@ async function handler(req, res) {
   }
   if (req.method === "POST") {
     const action = req.body?.action || (req.body?.targetStatus ? "transition" : "create");
+    if (action === "clear_all" || action === "delete_all" || action === "clear") {
+      const resClear = meetingOpsService.clearAllMeetings();
+      if (globalThis.__ACTIVE_MEETING_ALERTS__) {
+        globalThis.__ACTIVE_MEETING_ALERTS__.length = 0;
+      }
+      return res.status(200).json({
+        success: true,
+        clearedCount: resClear.clearedCount,
+        message: "All scheduled meetings removed from roster.",
+        correlationId: correlation.correlationId
+      });
+    }
     if (action === "instant" || action === "create_instant") {
       const result = await meetingOpsService.createInstantMeeting(user, req.body);
       if (!result.success) {
@@ -8839,11 +8863,23 @@ async function handler15(req, res) {
       );
     }
     const meetingId = urlObj.searchParams.get("meetingId") || urlObj.searchParams.get("id") || req.body?.meetingId;
-    if (!meetingId) {
-      return res.status(400).json(createErrorResponse("BadRequest", "meetingId is required for deletion."));
+    const action = urlObj.searchParams.get("action") || req.body?.action;
+    if (meetingId && !["clear_all", "delete_all", "all"].includes(meetingId)) {
+      const result = await meetingOpsService.deleteSingleMeeting(user, meetingId);
+      return res.status(200).json(result);
     }
-    const result = await meetingOpsService.deleteSingleMeeting(user, meetingId);
-    return res.status(200).json(result);
+    if (action === "clear_all" || action === "delete_all" || !meetingId || ["clear_all", "delete_all", "all"].includes(meetingId)) {
+      const resClear = meetingOpsService.clearAllMeetings();
+      if (globalThis.__ACTIVE_MEETING_ALERTS__) {
+        globalThis.__ACTIVE_MEETING_ALERTS__.length = 0;
+      }
+      return res.status(200).json({
+        success: true,
+        clearedCount: resClear.clearedCount,
+        message: "All scheduled meetings removed from roster."
+      });
+    }
+    return res.status(400).json(createErrorResponse("BadRequest", "meetingId or action=clear_all is required for deletion."));
   }
   return res.status(405).json(createErrorResponse("MethodNotAllowed", "Method Not Allowed"));
 }
@@ -12027,9 +12063,13 @@ async function handler30(req, res) {
       publicKey: pushNotificationService.getPublicKey()
     });
   }
+  if (req.method === "DELETE" || urlObj.searchParams.get("action") === "clear" || req.body?.action === "clear") {
+    activeMeetingAlerts.length = 0;
+    return res.status(200).json({ success: true, message: "All notification alerts cleared." });
+  }
   if (req.method === "GET" && (pathname === "" || pathname === "/" || pathname === "/api/v1/notifications" || pathname.endsWith("/notifications") || pathname.endsWith("/active") || pathname.endsWith("/inbox") || pathname.endsWith("/alerts"))) {
     const allMeetings = meetingOpsService.listMeetings({ limit: 10 }).meetings || [];
-    const liveMeetingFromOps = allMeetings.find((m) => m.status === "STARTED" || m.status === "SCHEDULED");
+    const liveMeetingFromOps = allMeetings.find((m) => m.status === "STARTED");
     const cutoff = Date.now() - 12 * 60 * 60 * 1e3;
     const freshAlerts = activeMeetingAlerts.filter((a) => new Date(a.timestamp).getTime() > cutoff);
     let activeLive = freshAlerts.find((a) => Date.now() - new Date(a.timestamp).getTime() < 4 * 60 * 60 * 1e3) || null;

@@ -135,7 +135,9 @@ export default async function handler(req, res) {
   // 3. DELETE: Idempotent Single Meeting Delete or Clear All
   if (req.method === 'DELETE') {
     const meetingId = urlObj.searchParams.get('meetingId') || urlObj.searchParams.get('id') || req.body?.meetingId;
-    if (meetingId) {
+    const action = urlObj.searchParams.get('action') || req.body?.action;
+
+    if (meetingId && !['clear_all', 'delete_all', 'all'].includes(meetingId)) {
       const result = await meetingOpsService.deleteSingleMeeting(user, meetingId);
       return res.status(200).json({
         ...result,
@@ -143,8 +145,11 @@ export default async function handler(req, res) {
       });
     }
 
-    if (req.body?.action === 'clear_all' || req.body?.action === 'delete_all' || urlObj.searchParams.get('action') === 'clear_all') {
+    if (action === 'clear_all' || action === 'delete_all' || action === 'all' || !meetingId) {
       const resClear = meetingOpsService.clearAllMeetings();
+      if (globalThis.__ACTIVE_MEETING_ALERTS__) {
+        globalThis.__ACTIVE_MEETING_ALERTS__.length = 0;
+      }
       return res.status(200).json({
         success: true,
         clearedCount: resClear.clearedCount,
@@ -158,9 +163,23 @@ export default async function handler(req, res) {
     );
   }
 
-  // 3. POST: Actions (Create, Update, Cancel, Assign, Attendance, Send Notification)
+  // 3. POST: Actions (Create, Update, Cancel, Assign, Attendance, Send Notification, Clear All)
   if (req.method === 'POST') {
     const action = req.body?.action || (req.body?.targetStatus ? 'transition' : 'create');
+
+    // Clear All Meetings
+    if (action === 'clear_all' || action === 'delete_all' || action === 'clear') {
+      const resClear = meetingOpsService.clearAllMeetings();
+      if (globalThis.__ACTIVE_MEETING_ALERTS__) {
+        globalThis.__ACTIVE_MEETING_ALERTS__.length = 0;
+      }
+      return res.status(200).json({
+        success: true,
+        clearedCount: resClear.clearedCount,
+        message: 'All scheduled meetings removed from roster.',
+        correlationId: correlation.correlationId,
+      });
+    }
 
     // Create Instant Meeting (Google Meet Style)
     if (action === 'instant' || action === 'create_instant') {

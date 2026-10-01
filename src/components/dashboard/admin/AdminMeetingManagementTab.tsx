@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
+import { queryKeys } from '../../../lib/query/queryKeys';
 import { useAuth } from '../../../context/AuthContext';
 import { getAdminBearerToken } from '../../../features/auth/services/adminTokenHelper';
 import { profileService } from '../../../features/auth/services/profile.service';
@@ -49,6 +51,7 @@ const BATCH_OPTIONS = [
 
 export const AdminMeetingManagementTab: React.FC = () => {
   const { user } = useAuth();
+  const queryClient = useQueryClient();
 
   // Authoritative Server State via React Query (Requirement 21: Single Source of Truth)
   // CLIENT/UI State:
@@ -656,17 +659,27 @@ export const AdminMeetingManagementTab: React.FC = () => {
     }
     try {
       const token = await getAdminToken();
-      const res = await fetch('/api/v1/admin/meetings', {
+      const res = await fetch('/api/v1/admin/meetings?action=clear_all', {
         method: 'DELETE',
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
+        body: JSON.stringify({ action: 'clear_all' }),
       });
       const json = await res.json();
       if (res.ok && json.success) {
         showToast('All meetings cleared successfully.');
-        loadMeetings(1);
+        pushClientService.clearActiveMeetingAlert();
+        try {
+          localStorage.removeItem('last_active_meeting_alert');
+          sessionStorage.clear();
+        } catch (_) {}
+        // Also clear any persistent notification alerts on server
+        fetch('/api/v1/notifications?action=clear', { method: 'DELETE' }).catch(() => {});
+        queryClient.removeQueries({ queryKey: queryKeys.meetings.all });
+        await queryClient.invalidateQueries({ queryKey: queryKeys.meetings.all });
+        await loadMeetings(1);
       } else {
         alert(json.message || 'Failed to clear meetings.');
       }

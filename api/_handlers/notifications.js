@@ -36,7 +36,13 @@ export default async function handler(req, res) {
     });
   }
 
-  // 1b. Get Active Meeting Alerts for Candidate Dashboard
+  // 1b. Clear Active Notifications
+  if (req.method === 'DELETE' || urlObj.searchParams.get('action') === 'clear' || req.body?.action === 'clear') {
+    activeMeetingAlerts.length = 0;
+    return res.status(200).json({ success: true, message: 'All notification alerts cleared.' });
+  }
+
+  // 1c. Get Active Meeting Alerts for Candidate Dashboard
   if (req.method === 'GET' && (
     pathname === '' ||
     pathname === '/' ||
@@ -47,7 +53,7 @@ export default async function handler(req, res) {
     pathname.endsWith('/alerts')
   )) {
     const allMeetings = meetingOpsService.listMeetings({ limit: 10 }).meetings || [];
-    const liveMeetingFromOps = allMeetings.find(m => m.status === 'STARTED' || m.status === 'SCHEDULED');
+    const liveMeetingFromOps = allMeetings.find(m => m.status === 'STARTED');
 
     // Filter alerts from the last 12 hours
     const cutoff = Date.now() - 12 * 60 * 60 * 1000;

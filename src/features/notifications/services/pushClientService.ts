@@ -289,16 +289,10 @@ export class PushClientService {
         return data.activeLiveMeeting;
       }
 
-      // Check cached fallback
+      // If backend reports no active meeting, clear stale local cache
       if (typeof window !== 'undefined') {
         try {
-          const cached = localStorage.getItem('last_active_meeting_alert');
-          if (cached) {
-            const parsed = JSON.parse(cached);
-            if (Date.now() - new Date(parsed.timestamp).getTime() < 2 * 3600 * 1000) {
-              return parsed;
-            }
-          }
+          localStorage.removeItem('last_active_meeting_alert');
         } catch (_) {}
       }
       return null;
@@ -308,40 +302,23 @@ export class PushClientService {
   }
 
   /**
-   * Start lightweight background polling for active meeting notifications (every 4s)
-   * This bridges cross-device and cross-browser live meeting alert distribution.
+   * Clear any persisted active meeting notification
    */
-  public startPolling(callback: (alert: any) => void, intervalMs: number = 4000): () => void {
-    let active = true;
-    let lastNotifiedId = '';
-
-    const check = async () => {
-      if (!active) return;
+  public clearActiveMeetingAlert(): void {
+    if (typeof window !== 'undefined') {
       try {
-        const alert = await this.getActiveMeetingNotification();
-        if (alert && alert.meetingId) {
-          const alertKey = `${alert.meetingId}_${alert.timestamp}`;
-          if (alertKey !== lastNotifiedId) {
-            lastNotifiedId = alertKey;
-            this.displayLocalNotification({
-              title: alert.meetingTitle ? `🟢 Live Meeting: ${alert.meetingTitle}` : '🟢 Live Meeting Started!',
-              body: alert.customMessage || 'Your interview meeting is now live. Click to join!',
-              url: alert.meetingUrl || `/meet/${alert.meetingId}`,
-              meetingId: alert.meetingId,
-            });
-            callback(alert);
-          }
-        }
+        localStorage.removeItem('last_active_meeting_alert');
       } catch (_) {}
-    };
+    }
+  }
 
-    check();
-    const timer = setInterval(check, intervalMs);
-
-    return () => {
-      active = false;
-      clearInterval(timer);
-    };
+  /**
+   * Continuous background polling is disabled per user instruction.
+   * Real-time updates operate strictly via Web Push, BroadcastChannel, and Socket.IO events.
+   */
+  public startPolling(_callback: (alert: any) => void, _intervalMs: number = 4000): () => void {
+    // No-op: polling completely disabled
+    return () => {};
   }
 
   /**

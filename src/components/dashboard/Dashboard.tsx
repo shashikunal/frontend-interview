@@ -69,13 +69,8 @@ function CandidateDashboard() {
       })
     })
 
-    const unsubPoll = pushClientService.startPolling((alert) => {
-      if (alert) setLiveMeetingAlert(alert)
-    })
-
     return () => {
       unsubBroadcast()
-      unsubPoll()
     }
   }, [])
 

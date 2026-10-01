@@ -76,20 +76,8 @@ export const GlobalNotificationListener: React.FC = () => {
       });
     } catch (_) {}
 
-    // 4. REST Polling fallback (every 3.5 seconds)
-    const unsubPoll = pushClientService.startPolling((alert) => {
-      if (alert) {
-        const key = `dismissed_${alert.meetingId}_${alert.timestamp}`;
-        if (!sessionStorage.getItem(key)) {
-          setActiveAlert(alert);
-          setIsDismissed(false);
-        }
-      }
-    }, 3500);
-
     return () => {
       unsubBroadcast();
-      unsubPoll();
       if (socket) socket.disconnect();
     };
   }, []);
