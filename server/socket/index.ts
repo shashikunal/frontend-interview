@@ -29,6 +29,16 @@ export function getIOServer() {
 export function broadcastPushNotification(payload: any) {
   if (ioInstance) {
     ioInstance.emit('notification:meeting-link', payload);
+    if (payload?.type) {
+      ioInstance.emit(payload.type as any, payload);
+    }
+  }
+}
+
+export function broadcastMeetingEvent(event: string, payload: any) {
+  if (ioInstance) {
+    ioInstance.emit(event as any, payload);
+    ioInstance.emit('meeting:event' as any, { event, payload, timestamp: new Date().toISOString() });
   }
 }
 

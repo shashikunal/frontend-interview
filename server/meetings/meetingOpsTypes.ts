@@ -75,6 +75,10 @@ export interface MeetingRecord {
   updated_at: string;
   cancelled_at?: string | null;
   cancellation_reason?: string | null;
+  deleted_at?: string | null;
+  deleted_by?: string | null;
+  version?: number;
+  idempotency_key?: string | null;
 }
 
 export interface MeetingParticipantRecord {

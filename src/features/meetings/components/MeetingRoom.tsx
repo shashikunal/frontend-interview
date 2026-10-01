@@ -21,6 +21,7 @@ import { MeetingCodeEditor } from './MeetingCodeEditor';
 import { meetingCollaborationService } from '../services/meetingCollaborationService';
 import { webrtcPeerService } from '../services/webrtcPeerService';
 import { pushClientService } from '../../notifications/services/pushClientService';
+import { MeetingOpsDiagnosticsPanel } from './MeetingOpsDiagnosticsPanel';
 import type { ChatMessageRecord, ChatMessageType } from '../../../../server/meetings/chatTypes';
 import type { WhiteboardElement, WhiteboardElementType } from '../../../../server/meetings/whiteboardTypes';
 import type {
@@ -81,6 +82,7 @@ export const MeetingRoom: React.FC = () => {
   const [isCodeEditorOpen, setIsCodeEditorOpen] = useState<boolean>(false);
   const [whiteboardElements, setWhiteboardElements] = useState<WhiteboardElement[]>([]);
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
+  const [isDiagnosticsOpen, setIsDiagnosticsOpen] = useState<boolean>(false);
   const [copiedInvite, setCopiedInvite] = useState<boolean>(false);
   const [showReadyCard, setShowReadyCard] = useState<boolean>(true);
 
@@ -2208,11 +2210,41 @@ export const MeetingRoom: React.FC = () => {
                     <span>Screen Share Permission:</span>
                     <strong>{permissions.canPublishScreen ? 'Allowed' : 'Disabled'}</strong>
                   </div>
+                  <button
+                    type="button"
+                    className="rtc-telemetry-diag-btn"
+                    onClick={() => {
+                      setIsSettingsOpen(false);
+                      setIsDiagnosticsOpen(true);
+                    }}
+                    style={{
+                      marginTop: '12px',
+                      width: '100%',
+                      padding: '8px 12px',
+                      background: 'rgba(59, 130, 246, 0.2)',
+                      border: '1px solid rgba(59, 130, 246, 0.4)',
+                      color: '#60a5fa',
+                      borderRadius: '8px',
+                      cursor: 'pointer',
+                      fontWeight: 600,
+                      fontSize: '12px',
+                    }}
+                  >
+                    🛠️ Open Real-Time Observability Diagnostics Panel
+                  </button>
                 </div>
               </div>
             </div>
           </div>
         )}
+
+        {/* Meeting Ops Observability Diagnostics Panel (Requirement 42) */}
+        <MeetingOpsDiagnosticsPanel
+          meetingId={meetingId || ''}
+          userId={user?.id || 'guest'}
+          isOpen={isDiagnosticsOpen}
+          onClose={() => setIsDiagnosticsOpen(false)}
+        />
       </main>
 
       {/* Floating Animated Meeting Reactions Overlay */}

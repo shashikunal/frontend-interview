@@ -216,5 +216,22 @@ export default async function handler(req, res) {
     });
   }
 
+  // 6. DELETE: Idempotent Single Meeting Delete (Strictly Admin only)
+  if (req.method === 'DELETE') {
+    if (!user || user.role !== 'admin') {
+      return res.status(403).json(
+        createErrorResponse('Forbidden', 'Only platform administrator has rights to delete meetings.', 'FORBIDDEN')
+      );
+    }
+
+    const meetingId = urlObj.searchParams.get('meetingId') || urlObj.searchParams.get('id') || req.body?.meetingId;
+    if (!meetingId) {
+      return res.status(400).json(createErrorResponse('BadRequest', 'meetingId is required for deletion.'));
+    }
+
+    const result = await meetingOpsService.deleteSingleMeeting(user, meetingId);
+    return res.status(200).json(result);
+  }
+
   return res.status(405).json(createErrorResponse('MethodNotAllowed', 'Method Not Allowed'));
 }

@@ -132,15 +132,30 @@ export default async function handler(req, res) {
     }
   }
 
-  // 3. DELETE / Clear All Meetings
-  if (req.method === 'DELETE' || req.body?.action === 'clear_all' || req.body?.action === 'delete_all') {
-    const resClear = meetingOpsService.clearAllMeetings();
-    return res.status(200).json({
-      success: true,
-      clearedCount: resClear.clearedCount,
-      message: 'All scheduled meetings removed from roster.',
-      correlationId: correlation.correlationId,
-    });
+  // 3. DELETE: Idempotent Single Meeting Delete or Clear All
+  if (req.method === 'DELETE') {
+    const meetingId = urlObj.searchParams.get('meetingId') || urlObj.searchParams.get('id') || req.body?.meetingId;
+    if (meetingId) {
+      const result = await meetingOpsService.deleteSingleMeeting(user, meetingId);
+      return res.status(200).json({
+        ...result,
+        correlationId: correlation.correlationId,
+      });
+    }
+
+    if (req.body?.action === 'clear_all' || req.body?.action === 'delete_all' || urlObj.searchParams.get('action') === 'clear_all') {
+      const resClear = meetingOpsService.clearAllMeetings();
+      return res.status(200).json({
+        success: true,
+        clearedCount: resClear.clearedCount,
+        message: 'All scheduled meetings removed from roster.',
+        correlationId: correlation.correlationId,
+      });
+    }
+
+    return res.status(400).json(
+      createErrorResponse('BadRequest', 'meetingId query parameter or action=clear_all is required.', 'MISSING_PARAMETERS', correlation.correlationId)
+    );
   }
 
   // 3. POST: Actions (Create, Update, Cancel, Assign, Attendance, Send Notification)

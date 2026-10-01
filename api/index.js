@@ -1433,6 +1433,15 @@ var init_meetingOpsService = __esm({
         if (endDate <= startDate) {
           return { success: false, error: "End time must be after start time." };
         }
+        const idempotencyKey = dto.idempotencyKey || dto.idempotency_key;
+        if (idempotencyKey) {
+          const existing = Array.from(this.meetings.values()).find(
+            (m) => m.idempotency_key === idempotencyKey && !m.deleted_at
+          );
+          if (existing) {
+            return { success: true, meeting: existing, occurrences: [] };
+          }
+        }
         const meetingId = `meet_${crypto6.randomUUID().replace(/-/g, "").slice(0, 16)}`;
         const now = (/* @__PURE__ */ new Date()).toISOString();
         const meeting = {
@@ -1456,7 +1465,9 @@ var init_meetingOpsService = __esm({
           recurrence_rule: dto.recurrence || null,
           parent_meeting_id: null,
           created_at: now,
-          updated_at: now
+          updated_at: now,
+          version: 1,
+          idempotency_key: idempotencyKey || null
         };
         this.meetings.set(meeting.id, meeting);
         try {
@@ -1537,6 +1548,15 @@ var init_meetingOpsService = __esm({
        * generates deep-link, and returns room credentials.
        */
       async createInstantMeeting(caller, options) {
+        const idempotencyKey = options?.idempotencyKey || options?.idempotency_key;
+        if (idempotencyKey) {
+          const existing = Array.from(this.meetings.values()).find(
+            (m) => m.idempotency_key === idempotencyKey && !m.deleted_at
+          );
+          if (existing) {
+            return { success: true, meeting: existing, meetingUrl: existing.meeting_url };
+          }
+        }
         const meetingId = `meet_${crypto6.randomUUID().replace(/-/g, "").slice(0, 16)}`;
         const now = /* @__PURE__ */ new Date();
         const oneHourLater = new Date(now.getTime() + 60 * 60 * 1e3);
@@ -1561,7 +1581,9 @@ var init_meetingOpsService = __esm({
           recurrence_rule: null,
           parent_meeting_id: null,
           created_at: nowIso,
-          updated_at: nowIso
+          updated_at: nowIso,
+          version: 1,
+          idempotency_key: idempotencyKey || null
         };
         this.meetings.set(meeting.id, meeting);
         try {
@@ -1659,7 +1681,7 @@ var init_meetingOpsService = __esm({
        * List meetings with filtering and pagination
        */
       listMeetings(options) {
-        let list = Array.from(this.meetings.values());
+        let list = Array.from(this.meetings.values()).filter((m) => !m.deleted_at);
         const now = /* @__PURE__ */ new Date();
         if (options.student_id) {
           const assignedMeetingIds = new Set(
@@ -1712,21 +1734,22 @@ var init_meetingOpsService = __esm({
         };
       }
       /**
-       * Get single meeting record by ID (memory + disk check)
+       * Get single meeting record by ID (memory + disk check, excludes deleted)
        */
       getMeetingById(meetingId) {
         if (!meetingId) return null;
         let m = this.meetings.get(meetingId);
-        if (m) return m;
+        if (m && !m.deleted_at) return m;
         this.loadPersistedMeetings();
-        return this.meetings.get(meetingId) || null;
+        m = this.meetings.get(meetingId);
+        return m && !m.deleted_at ? m : null;
       }
       /**
        * Auto-provision ad-hoc / instant meeting (Google Meet Style)
        */
       registerAdHocMeeting(params) {
         const existing = this.meetings.get(params.id);
-        if (existing) return existing;
+        if (existing && !existing.deleted_at) return existing;
         const now = /* @__PURE__ */ new Date();
         const oneHourLater = new Date(now.getTime() + 60 * 60 * 1e3);
         const startIso = params.start_at || now.toISOString();
@@ -1762,11 +1785,11 @@ var init_meetingOpsService = __esm({
         return meeting;
       }
       /**
-       * Get single meeting details with roster, audit trail, and stats
+       * Get single meeting details with roster, audit trail, and stats (excludes deleted)
        */
       getMeetingDetails(meetingId) {
         const meeting = this.meetings.get(meetingId);
-        if (!meeting) return null;
+        if (!meeting || meeting.deleted_at) return null;
         const participants = Array.from(this.participants.values()).filter((p) => p.meeting_id === meetingId);
         const notifications = notificationWorker.listNotifications(meetingId);
         const logs = this.auditLogs.filter((l) => l.meeting_id === meetingId);
@@ -1896,29 +1919,67 @@ var init_meetingOpsService = __esm({
         return { success: true };
       }
       /**
-       * Permanently delete a single meeting and its participant records
+       * Permanently delete a single meeting and its participant records (Strictly Idempotent)
        */
-      async deleteSingleMeeting(caller, meetingId) {
-        if (caller.role !== "admin") {
-          return { success: false, error: "Forbidden: Only platform administrators can permanently delete meetings." };
+      async deleteSingleMeeting(callerOrMeetingId, meetingIdOrActor, reason) {
+        let callerId = "admin";
+        let targetMeetingId = "";
+        if (typeof callerOrMeetingId === "object" && callerOrMeetingId !== null) {
+          if (callerOrMeetingId.role && callerOrMeetingId.role !== "admin") {
+            return { success: false, error: "Forbidden: Only platform administrators can permanently delete meetings.", message: "Forbidden", meetingId: meetingIdOrActor || "", version: Date.now() };
+          }
+          callerId = callerOrMeetingId.id || "admin";
+          targetMeetingId = meetingIdOrActor || "";
+        } else {
+          targetMeetingId = callerOrMeetingId;
+          callerId = meetingIdOrActor || "admin";
         }
-        const meeting = this.meetings.get(meetingId);
-        if (!meeting) return { success: false, error: "Meeting not found." };
-        this.meetings.delete(meetingId);
+        const meeting = this.meetings.get(targetMeetingId);
+        const now = (/* @__PURE__ */ new Date()).toISOString();
+        const version = Date.now();
+        if (!meeting || meeting.deleted_at) {
+          return {
+            success: true,
+            message: "Meeting already deleted or does not exist.",
+            meetingId: targetMeetingId,
+            version
+          };
+        }
+        meeting.deleted_at = now;
+        meeting.deleted_by = callerId;
+        meeting.status = "CANCELLED";
+        meeting.version = version;
+        meeting.updated_at = now;
         for (const [pId, p] of this.participants.entries()) {
-          if (p.meeting_id === meetingId) {
+          if (p.meeting_id === targetMeetingId) {
             this.participants.delete(pId);
           }
         }
-        meetingScheduler.cancelMeetingReminders(meetingId);
+        meetingScheduler.cancelMeetingReminders(targetMeetingId);
         this.savePersistedMeetings();
+        try {
+          await supabase.from("meetings").update({
+            deleted_at: now,
+            deleted_by: callerId,
+            status: "CANCELLED",
+            version,
+            updated_at: now
+          }).eq("id", targetMeetingId);
+        } catch (_) {
+        }
         this.recordAuditLog({
           meetingId: meeting.id,
-          actorId: caller.id,
+          actorId: callerId,
           action: "MEETING_DELETED_PERMANENTLY",
-          old_value: meeting
+          old_value: meeting,
+          metadata: { reason: reason || "Deleted by admin" }
         });
-        return { success: true };
+        return {
+          success: true,
+          message: "Meeting permanently deleted.",
+          meetingId: targetMeetingId,
+          version
+        };
       }
       /**
        * Student RSVP update
@@ -4214,14 +4275,27 @@ async function handler(req, res) {
       );
     }
   }
-  if (req.method === "DELETE" || req.body?.action === "clear_all" || req.body?.action === "delete_all") {
-    const resClear = meetingOpsService.clearAllMeetings();
-    return res.status(200).json({
-      success: true,
-      clearedCount: resClear.clearedCount,
-      message: "All scheduled meetings removed from roster.",
-      correlationId: correlation.correlationId
-    });
+  if (req.method === "DELETE") {
+    const meetingId = urlObj.searchParams.get("meetingId") || urlObj.searchParams.get("id") || req.body?.meetingId;
+    if (meetingId) {
+      const result = await meetingOpsService.deleteSingleMeeting(user, meetingId);
+      return res.status(200).json({
+        ...result,
+        correlationId: correlation.correlationId
+      });
+    }
+    if (req.body?.action === "clear_all" || req.body?.action === "delete_all" || urlObj.searchParams.get("action") === "clear_all") {
+      const resClear = meetingOpsService.clearAllMeetings();
+      return res.status(200).json({
+        success: true,
+        clearedCount: resClear.clearedCount,
+        message: "All scheduled meetings removed from roster.",
+        correlationId: correlation.correlationId
+      });
+    }
+    return res.status(400).json(
+      createErrorResponse("BadRequest", "meetingId query parameter or action=clear_all is required.", "MISSING_PARAMETERS", correlation.correlationId)
+    );
   }
   if (req.method === "POST") {
     const action = req.body?.action || (req.body?.targetStatus ? "transition" : "create");
@@ -8758,6 +8832,19 @@ async function handler15(req, res) {
       occurrences: result.occurrences
     });
   }
+  if (req.method === "DELETE") {
+    if (!user || user.role !== "admin") {
+      return res.status(403).json(
+        createErrorResponse("Forbidden", "Only platform administrator has rights to delete meetings.", "FORBIDDEN")
+      );
+    }
+    const meetingId = urlObj.searchParams.get("meetingId") || urlObj.searchParams.get("id") || req.body?.meetingId;
+    if (!meetingId) {
+      return res.status(400).json(createErrorResponse("BadRequest", "meetingId is required for deletion."));
+    }
+    const result = await meetingOpsService.deleteSingleMeeting(user, meetingId);
+    return res.status(200).json(result);
+  }
   return res.status(405).json(createErrorResponse("MethodNotAllowed", "Method Not Allowed"));
 }
 
@@ -11914,6 +12001,9 @@ var ioInstance = null;
 function broadcastPushNotification(payload) {
   if (ioInstance) {
     ioInstance.emit("notification:meeting-link", payload);
+    if (payload?.type) {
+      ioInstance.emit(payload.type, payload);
+    }
   }
 }
 
