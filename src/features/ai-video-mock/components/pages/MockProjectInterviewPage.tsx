@@ -15,8 +15,9 @@ export default function MockProjectInterviewPage() {
   );
   const [isLaunching, setIsLaunching] = useState(false);
 
-  const handleLaunchProjectInterview = (e: React.FormEvent) => {
+  const handleLaunchProjectInterview = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isLaunching) return;
     setIsLaunching(true);
 
     const primaryTech: TechnologyTrack = 'frontend-architecture';
@@ -29,7 +30,8 @@ ARCHITECTURE: ${architectureOverview}
 PRODUCTION INCIDENTS & FAILURES: ${productionIncidents}
     `.trim();
 
-    const session = mockSessionService.createSession('anonymous_candidate', {
+    try {
+    const session = await mockSessionService.createSessionAsync('anonymous_candidate', {
       totalExperienceYears: 6,
       experienceTier: '6-8',
       techSpecificExperience: { 'frontend-architecture': 6, react: 5, typescript: 4 },
@@ -50,6 +52,11 @@ PRODUCTION INCIDENTS & FAILURES: ${productionIncidents}
     });
 
     navigate(`/ai-video-mock/session/${session.id}`);
+    } catch (err) {
+      console.error('[MockProject] Failed to launch interview:', err);
+      alert('Failed to load the question bank. Please check your connection and try again.');
+      setIsLaunching(false);
+    }
   };
 
   return (

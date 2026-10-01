@@ -55,8 +55,13 @@ export default function MockPracticePage() {
     }
   }, []);
 
-  const handleStartFocusedSession = (w: RecurringWeakness) => {
-    const session = mockSessionService.createSession('anonymous_candidate', {
+  const [launchingTech, setLaunchingTech] = useState<string | null>(null);
+
+  const handleStartFocusedSession = async (w: RecurringWeakness) => {
+    if (launchingTech) return;
+    setLaunchingTech(`${w.technology}_${w.topic}`);
+    try {
+    const session = await mockSessionService.createSessionAsync('anonymous_candidate', {
       totalExperienceYears: 5,
       experienceTier: '4-6',
       techSpecificExperience: { [w.technology]: 4 },
@@ -77,6 +82,11 @@ export default function MockPracticePage() {
     });
 
     navigate(`/ai-video-mock/session/${session.id}`);
+    } catch (err) {
+      console.error('[MockPractice] Failed to start session:', err);
+      alert('Failed to load the question bank. Please check your connection and try again.');
+      setLaunchingTech(null);
+    }
   };
 
   return (
@@ -117,9 +127,10 @@ export default function MockPracticePage() {
               type="button"
               className="ai-vm-btn-primary"
               onClick={() => handleStartFocusedSession(w)}
+              disabled={launchingTech !== null}
               style={{ width: '100%' }}
             >
-              Start 5-Question Focused Mock →
+              {launchingTech === `${w.technology}_${w.topic}` ? 'Loading question bank...' : 'Start 5-Question Focused Mock →'}
             </button>
           </div>
         ))}

@@ -4,7 +4,7 @@ import type { InterviewAnswer, EvaluationReport } from '../../types/mock.types';
 import { mockSessionService } from '../../services/mockSessionService';
 import { answerEvaluationService } from '../../services/answerEvaluationService';
 import { communicationService } from '../../services/communicationService';
-import { getMockQuestionById } from '../../data/questionBankRegistry';
+import { getMockQuestionById, ensureAllTracksLoaded } from '../../data/questionBankRegistry';
 
 export default function MockAnswerImprovementPage() {
   const [searchParams] = useSearchParams();
@@ -40,7 +40,8 @@ export default function MockAnswerImprovementPage() {
 
     // Fallback if no session: load question directly for standalone practice
     if (questionId) {
-      const q = getMockQuestionById(questionId);
+      ensureAllTracksLoaded().then(() => {
+        const q = getMockQuestionById(questionId);
       if (q) {
         setOriginalAnswer({
           id: `ans_demo_${q.id}`,
@@ -97,6 +98,7 @@ export default function MockAnswerImprovementPage() {
           setRevisedCode(q.starterCode || q.programmingSpec?.starterCode || '// Write solution here\n');
         }
       }
+      });
     }
   }, [sessionId, questionId]);
 

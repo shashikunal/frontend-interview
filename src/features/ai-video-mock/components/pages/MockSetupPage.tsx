@@ -75,8 +75,12 @@ export default function MockSetupPage() {
     typescript: 3,
   });
 
-  const handleStartInterview = (e: React.FormEvent) => {
+  const [isStarting, setIsStarting] = useState(false);
+
+  const handleStartInterview = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isStarting) return;
+    setIsStarting(true);
 
     const selectedPersona = PERSONAS.find(p => p.id === selectedPersonaId) || PERSONAS[0];
 
@@ -100,8 +104,14 @@ export default function MockSetupPage() {
       pressureMode,
     };
 
-    const session = mockSessionService.createSession(user?.id || 'anonymous_candidate', config);
-    navigate(`/ai-video-mock/session/${session.id}`);
+    try {
+      const session = await mockSessionService.createSessionAsync(user?.id || 'anonymous_candidate', config);
+      navigate(`/ai-video-mock/session/${session.id}`);
+    } catch (err) {
+      console.error('[MockSetup] Failed to start interview:', err);
+      alert('Failed to load the question bank. Please check your connection and try again.');
+      setIsStarting(false);
+    }
   };
 
   return (
@@ -286,9 +296,10 @@ export default function MockSetupPage() {
         <button
           type="submit"
           className="ai-vm-btn-primary"
+          disabled={isStarting}
           style={{ padding: '14px', fontSize: '1.05rem', marginTop: 8 }}
         >
-          Generate Blueprint &amp; Enter Interview Room →
+          {isStarting ? 'Loading question bank...' : 'Generate Blueprint & Enter Interview Room →'}
         </button>
       </form>
     </div>

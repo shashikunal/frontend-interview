@@ -1,48 +1,105 @@
 import type { MockQuestion, TechnologyTrack, QuestionDifficulty, QuestionType, ExperienceTier } from '../types/questionBank.types';
 import { ALL_TECHNOLOGY_TRACKS, MockQuestionSchema } from '../types/questionBank.types';
 
-import { javascript_questions } from './questionBank/javascript';
-import { typescript_questions } from './questionBank/typescript';
-import { html_questions } from './questionBank/html';
-import { css_questions } from './questionBank/css';
-import { react_questions } from './questionBank/react';
-import { nextjs_questions } from './questionBank/nextjs';
-import { angular_questions } from './questionBank/angular';
-import { vue_questions } from './questionBank/vue';
-import { redux_state_questions } from './questionBank/redux-state';
-import { web_performance_questions } from './questionBank/web-performance';
-import { browser_web_apis_questions } from './questionBank/browser-web-apis';
-import { frontend_security_questions } from './questionBank/frontend-security';
-import { accessibility_questions } from './questionBank/accessibility';
-import { testing_questions } from './questionBank/testing';
-import { frontend_architecture_questions } from './questionBank/frontend-architecture';
-import { communication_questions } from './questionBank/communication';
-
-export const TRACK_QUESTIONS_MAP: Record<TechnologyTrack, MockQuestion[]> = {
-  javascript: javascript_questions,
-  typescript: typescript_questions,
-  html: html_questions,
-  css: css_questions,
-  react: react_questions,
-  nextjs: nextjs_questions,
-  angular: angular_questions,
-  vue: vue_questions,
-  'redux-state': redux_state_questions,
-  'web-performance': web_performance_questions,
-  'browser-web-apis': browser_web_apis_questions,
-  'frontend-security': frontend_security_questions,
-  accessibility: accessibility_questions,
-  testing: testing_questions,
-  'frontend-architecture': frontend_architecture_questions,
-  communication: communication_questions,
+// Per-track dynamic loaders so the 16-track (~11MB) bank splits into
+// on-demand chunks instead of one blocking ai-mock-bank bundle.
+// Each questionBank/<track> module must export `<track>_questions`
+// (e.g. javascript.ts exports javascript_questions).
+const trackLoaders: Record<TechnologyTrack, () => Promise<MockQuestion[]>> = {
+  javascript: () => import('./questionBank/javascript').then(m => m.javascript_questions),
+  typescript: () => import('./questionBank/typescript').then(m => m.typescript_questions),
+  html: () => import('./questionBank/html').then(m => m.html_questions),
+  css: () => import('./questionBank/css').then(m => m.css_questions),
+  react: () => import('./questionBank/react').then(m => m.react_questions),
+  nextjs: () => import('./questionBank/nextjs').then(m => m.nextjs_questions),
+  angular: () => import('./questionBank/angular').then(m => m.angular_questions),
+  vue: () => import('./questionBank/vue').then(m => m.vue_questions),
+  'redux-state': () => import('./questionBank/redux-state').then(m => m.redux_state_questions),
+  'web-performance': () => import('./questionBank/web-performance').then(m => m.web_performance_questions),
+  'browser-web-apis': () => import('./questionBank/browser-web-apis').then(m => m.browser_web_apis_questions),
+  'frontend-security': () => import('./questionBank/frontend-security').then(m => m.frontend_security_questions),
+  accessibility: () => import('./questionBank/accessibility').then(m => m.accessibility_questions),
+  testing: () => import('./questionBank/testing').then(m => m.testing_questions),
+  'frontend-architecture': () => import('./questionBank/frontend-architecture').then(m => m.frontend_architecture_questions),
+  communication: () => import('./questionBank/communication').then(m => m.communication_questions),
 };
 
-// Unified flat list and O(1) Map
-export const ALL_MOCK_QUESTIONS: MockQuestion[] = Object.values(TRACK_QUESTIONS_MAP).flat();
+// Sync cache populated on demand. Kept as the same exported reference so
+// existing sync readers (blueprint/engine) see updates after preload.
+export const TRACK_QUESTIONS_MAP: Record<TechnologyTrack, MockQuestion[]> = {
+  javascript: [],
+  typescript: [],
+  html: [],
+  css: [],
+  react: [],
+  nextjs: [],
+  angular: [],
+  vue: [],
+  'redux-state': [],
+  'web-performance': [],
+  'browser-web-apis': [],
+  'frontend-security': [],
+  accessibility: [],
+  testing: [],
+  'frontend-architecture': [],
+  communication: [],
+};
+
+const loadedTracks = new Set<TechnologyTrack>();
+const loadPromises = new Map<TechnologyTrack, Promise<MockQuestion[]>>();
 
 export const mockQuestionByIdMap = new Map<string, MockQuestion>();
-for (const q of ALL_MOCK_QUESTIONS) {
-  mockQuestionByIdMap.set(q.id, q);
+
+function indexQuestions(list: MockQuestion[]): void {
+  for (const q of list) {
+    mockQuestionByIdMap.set(q.id, q);
+    mockQuestionByIdMap.set(q.id.toLowerCase(), q);
+    mockQuestionByIdMap.set(q.id.toUpperCase(), q);
+  }
+}
+
+export function isTrackLoaded(track: TechnologyTrack): boolean {
+  return loadedTracks.has(track);
+}
+
+/** Sync read of the cache (empty until ensureTrackLoaded resolves). */
+export function getTrackQuestions(track: TechnologyTrack): MockQuestion[] {
+  return TRACK_QUESTIONS_MAP[track] || TRACK_QUESTIONS_MAP.javascript || [];
+}
+
+// Unified flat list over loaded tracks only (async callers: await ensureAllTracksLoaded() first).
+export const ALL_MOCK_QUESTIONS: MockQuestion[] = [];
+
+function refreshAllList(): void {
+  ALL_MOCK_QUESTIONS.length = 0;
+  for (const track of Object.keys(trackLoaders) as TechnologyTrack[]) {
+    ALL_MOCK_QUESTIONS.push(...TRACK_QUESTIONS_MAP[track]);
+  }
+}
+
+export function ensureTrackLoaded(track: TechnologyTrack): Promise<MockQuestion[]> {
+  if (loadedTracks.has(track)) return Promise.resolve(TRACK_QUESTIONS_MAP[track]);
+  const pending = loadPromises.get(track);
+  if (pending) return pending;
+  const loader = trackLoaders[track] || trackLoaders.javascript;
+  const p = loader().then(list => {
+    TRACK_QUESTIONS_MAP[track] = list;
+    indexQuestions(list);
+    loadedTracks.add(track);
+    loadPromises.delete(track);
+    refreshAllList();
+    return list;
+  });
+  loadPromises.set(track, p);
+  return p;
+}
+
+export async function ensureTracksLoaded(tracks: TechnologyTrack[]): Promise<void> {
+  await Promise.all(tracks.map(t => ensureTrackLoaded(t)));
+}
+
+export async function ensureAllTracksLoaded(): Promise<void> {
+  await Promise.all((Object.keys(trackLoaders) as TechnologyTrack[]).map(t => ensureTrackLoaded(t)));
 }
 
 export function getMockQuestionById(id: string): MockQuestion | undefined {

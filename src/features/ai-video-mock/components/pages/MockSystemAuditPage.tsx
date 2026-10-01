@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { runQuestionBankAudit, type TrackAuditReport } from '../../data/questionBankRegistry';
+import { runQuestionBankAudit, ensureAllTracksLoaded, type TrackAuditReport } from '../../data/questionBankRegistry';
 import { ollamaProvider } from '../../services/providers/ollamaProvider';
 import { whisperProvider } from '../../services/providers/whisperProvider';
 import type { TranscriptionHealth } from '../../types/provider.types';
@@ -20,9 +20,12 @@ export default function MockSystemAuditPage() {
   const [activeTab, setActiveTab] = useState<'overview' | 'question-bank'>('overview');
 
   useEffect(() => {
-    // 1. Run question bank audit
-    const res = runQuestionBankAudit();
-    setBankAudit(res);
+    // 1. Load all track chunks, then run question bank audit
+    ensureAllTracksLoaded().then(() => {
+      setBankAudit(runQuestionBankAudit());
+    }).catch(() => {
+      setBankAudit(runQuestionBankAudit());
+    });
 
     // 2. Test Ollama connectivity & live generation
     ollamaProvider.isAvailable().then(async (r) => {

@@ -1,6 +1,6 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { ALL_TECHNOLOGY_TRACKS, type TechnologyTrack, type QuestionDifficulty, type MockQuestion } from '../../types/questionBank.types';
-import { filterMockQuestions } from '../../data/questionBankRegistry';
+import { filterMockQuestions, ensureTrackLoaded, ensureAllTracksLoaded } from '../../data/questionBankRegistry';
 
 export default function MockQuestionBankPage() {
   const [selectedTrack, setSelectedTrack] = useState<TechnologyTrack | undefined>(undefined);
@@ -8,7 +8,25 @@ export default function MockQuestionBankPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [inspectQuestion, setInspectQuestion] = useState<MockQuestion | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [isBankLoading, setIsBankLoading] = useState(true);
+  const [loadedVersion, setLoadedVersion] = useState(0);
   const pageSize = 20;
+
+  // Load the selected track chunk on demand (all tracks when no filter).
+  useEffect(() => {
+    let cancelled = false;
+    setIsBankLoading(true);
+    const task = selectedTrack ? ensureTrackLoaded(selectedTrack) : ensureAllTracksLoaded();
+    task.then(() => {
+      if (!cancelled) {
+        setLoadedVersion(v => v + 1);
+        setIsBankLoading(false);
+      }
+    }).catch(() => {
+      if (!cancelled) setIsBankLoading(false);
+    });
+    return () => { cancelled = true; };
+  }, [selectedTrack]);
 
   const questions = useMemo(() => {
     return filterMockQuestions({
@@ -16,7 +34,8 @@ export default function MockQuestionBankPage() {
       difficulty: selectedDifficulty,
       searchQuery,
     });
-  }, [selectedTrack, selectedDifficulty, searchQuery]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedTrack, selectedDifficulty, searchQuery, loadedVersion]);
 
   const paginated = useMemo(() => {
     const start = (currentPage - 1) * pageSize;
@@ -81,7 +100,7 @@ export default function MockQuestionBankPage() {
         </div>
 
         <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-          Found {questions.length} approved questions matching filter.
+          {isBankLoading ? 'Loading question bank...' : `Found ${questions.length} approved questions matching filter.`}
         </div>
       </div>
 

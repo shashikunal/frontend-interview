@@ -826,8 +826,9 @@ export default defineConfig({
           if (id.includes('node_modules/yjs') || id.includes('node_modules/socket.io') || id.includes('node_modules/y-')) {
             return 'vendor-realtime'
           }
-          if (id.includes('src/features/ai-video-mock/data/questionBank')) {
-            return 'ai-mock-bank'
+          if (id.includes('src/features/ai-video-mock/data/questionBank/')) {
+            const match = id.match(/questionBank\/([a-z-]+)\.ts/i)
+            return match ? `ai-mock-${match[1].toLowerCase()}` : 'ai-mock-bank'
           }
           if (id.includes('src/features/interview-docs/data/tracks') || id.includes('subjectsCatalog') || id.includes('docsRegistry')) {
             return 'vendor-docs'

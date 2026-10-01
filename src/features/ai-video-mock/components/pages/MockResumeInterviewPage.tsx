@@ -79,13 +79,17 @@ Output JSON ONLY:
     setIsSynthesizing(false);
   };
 
-  const handleLaunchResumeInterview = () => {
-    if (!extractedProfile) return;
+  const [isLaunching, setIsLaunching] = useState(false);
+
+  const handleLaunchResumeInterview = async () => {
+    if (!extractedProfile || isLaunching) return;
+    setIsLaunching(true);
 
     const primaryTech = extractedProfile.detectedTechs[0] || 'javascript';
     const secondaryTechs = extractedProfile.detectedTechs.slice(1);
 
-    const session = mockSessionService.createSession('anonymous_candidate', {
+    try {
+    const session = await mockSessionService.createSessionAsync('anonymous_candidate', {
       totalExperienceYears: extractedProfile.claimedYears,
       experienceTier: extractedProfile.claimedYears >= 6 ? '6-8' : '4-6',
       techSpecificExperience: { [primaryTech]: extractedProfile.claimedYears },
@@ -106,6 +110,11 @@ Output JSON ONLY:
     });
 
     navigate(`/ai-video-mock/session/${session.id}`);
+    } catch (err) {
+      console.error('[MockResume] Failed to launch interview:', err);
+      alert('Failed to load the question bank. Please check your connection and try again.');
+      setIsLaunching(false);
+    }
   };
 
   return (
@@ -205,9 +214,10 @@ Output JSON ONLY:
               type="button"
               className="ai-vm-btn-primary"
               onClick={handleLaunchResumeInterview}
+              disabled={isLaunching}
               style={{ padding: '12px 28px', fontSize: '0.95rem' }}
             >
-              Launch Resume Mock Interview →
+              {isLaunching ? 'Loading question bank...' : 'Launch Resume Mock Interview →'}
             </button>
           </div>
         </div>
