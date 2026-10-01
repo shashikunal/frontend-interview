@@ -1076,91 +1076,84 @@ export default function AdminDashboard() {
               />
             </div>
 
-            <button
-              type="button"
-              className="h-topbar-btn primary"
-              onClick={() => setIsCreateModalOpen(true)}
-              title="Invite or provision new candidate"
-            >
-              ➕ Invite User
-            </button>
+            <div className="h-topbar-actions">
+              <button
+                type="button"
+                className="h-topbar-btn primary"
+                onClick={() => setIsCreateModalOpen(true)}
+                title="Invite or provision new candidate"
+              >
+                <span className="h-btn-icon">➕</span>
+                <span className="h-btn-text">Invite User</span>
+              </button>
 
-            <button
-              type="button"
-              className="h-topbar-btn secondary"
-              onClick={loadData}
-              disabled={isLoading}
-              title="Synchronize live state with Supabase"
-            >
-              {isLoading ? '⏳ Syncing' : '🔄 Live Sync'}
-            </button>
+              <button
+                type="button"
+                className="h-topbar-btn secondary"
+                onClick={loadData}
+                disabled={isLoading}
+                title="Synchronize live state with Supabase"
+              >
+                <span className="h-btn-icon">{isLoading ? '⏳' : '🔄'}</span>
+                <span className="h-btn-text">{isLoading ? 'Syncing' : 'Live Sync'}</span>
+              </button>
 
-            <button
-              type="button"
-              className="h-topbar-btn secondary"
-              onClick={() => setIsDiagnosticsOpen(true)}
-              title="Inspect live database & environment integrity"
-            >
-              🛠️ Diagnostics
-            </button>
+              <button
+                type="button"
+                className="h-topbar-btn secondary"
+                onClick={() => setIsDiagnosticsOpen(true)}
+                title="Inspect live database & environment integrity"
+              >
+                <span className="h-btn-icon">🛠️</span>
+                <span className="h-btn-text">Diagnostics</span>
+              </button>
 
-            <button
-              type="button"
-              className="h-topbar-btn secondary"
-              style={{ background: 'rgba(67, 24, 255, 0.08)', borderColor: 'rgba(67, 24, 255, 0.3)', color: '#4318FF', fontWeight: 700 }}
-              onClick={() => navigate('/dashboard?view=candidate')}
-              title="Test & preview portal in Candidate / Student view"
-            >
-              🎓 View as Candidate
-            </button>
+              <button
+                type="button"
+                className="h-topbar-btn secondary h-topbar-btn-candidate"
+                onClick={() => navigate('/dashboard?view=candidate')}
+                title="Test & preview portal in Candidate / Student view"
+              >
+                <span className="h-btn-icon">🎓</span>
+                <span className="h-btn-text">View as Candidate</span>
+              </button>
+            </div>
 
-            <button
-              type="button"
-              className="h-topbar-icon-btn"
-              onClick={() => setActiveTab('requests')}
-              title="Access notifications"
-            >
-              🔔
-              {pendingRequestsCount > 0 && (
-                <span style={{
-                  position: 'absolute',
-                  top: '-4px',
-                  right: '-4px',
-                  background: '#ffb547',
-                  color: '#0b1437',
-                  borderRadius: '50%',
-                  width: '18px',
-                  height: '18px',
-                  fontSize: '0.65rem',
-                  fontWeight: 800,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center'
-                }}>
-                  {pendingRequestsCount}
-                </span>
-              )}
-            </button>
+            <div className="h-topbar-tools">
+              <button
+                type="button"
+                className="h-topbar-icon-btn"
+                onClick={() => setActiveTab('requests')}
+                title="Access notifications"
+              >
+                🔔
+                {pendingRequestsCount > 0 && (
+                  <span className="h-notification-badge">
+                    {pendingRequestsCount}
+                  </span>
+                )}
+              </button>
 
-            <button
-              type="button"
-              className="h-topbar-icon-btn"
-              onClick={toggleTheme}
-              title={adminTheme === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode'}
-              aria-label="Toggle Theme"
-            >
-              {adminTheme === 'light' ? '🌙' : '☀️'}
-            </button>
+              <button
+                type="button"
+                className="h-topbar-icon-btn"
+                onClick={toggleTheme}
+                title={adminTheme === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode'}
+                aria-label="Toggle Theme"
+              >
+                {adminTheme === 'light' ? '🌙' : '☀️'}
+              </button>
 
-            <div
-              className="h-topbar-avatar-chip"
-              onClick={() => setActiveTab('profile')}
-              title="View Profile & Settings"
-            >
-              <div className="h-avatar-sm">
-                {user?.name?.slice(0, 1).toUpperCase() || 'A'}
+              <div
+                className="h-topbar-avatar-chip"
+                onClick={() => setActiveTab('profile')}
+                title="View Profile & Settings"
+              >
+                <div className="h-avatar-sm">
+                  {user?.name?.slice(0, 1).toUpperCase() || 'A'}
+                </div>
+                <span className="h-avatar-chip-name">{user?.name?.split(' ')[0] || 'Admin'}</span>
               </div>
-              <span className="h-avatar-chip-name">{user?.name?.split(' ')[0] || 'Admin'}</span>
             </div>
           </div>
         </header>
