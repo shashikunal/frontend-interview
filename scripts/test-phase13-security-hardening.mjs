@@ -427,6 +427,7 @@ async function runTestSuite() {
   console.log('\n====================================================================');
   console.log(`🎉 ALL ${passed} / ${passed + failed} PHASE 13 SECURITY TESTS PASSED!`);
   console.log('====================================================================\n');
+  process.exit(0);
 }
 
 runTestSuite().catch((err) => {
