@@ -478,6 +478,7 @@ async function runPhase11TestSuite() {
   if (passed !== total) {
     process.exit(1);
   }
+  process.exit(0);
 }
 
 runPhase11TestSuite().catch((err) => {
