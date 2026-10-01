@@ -7,6 +7,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext';
+import ThemeToggle from '../../../components/layout/ThemeToggle';
 import { mediaRoomClientService } from '../services/mediaRoomClientService';
 import { invitationClientService } from '../services/invitationClientService';
 import { meetingClientService } from '../services/meetingClientService';
@@ -1240,20 +1241,44 @@ export const MeetingRoom: React.FC = () => {
   if (isRemovedFromMeeting) {
     return (
       <div className="rtc-fullscreen-wrap rtc-post-call-page">
-        <div className="rtc-post-call-card">
-          <div className="rtc-post-call-icon">🚫</div>
-          <h2>Removed from Meeting</h2>
-          <p className="rtc-post-call-subtitle">
-            {removalReason || 'A meeting host has removed you from this session.'}
-          </p>
-          <div className="rtc-post-call-actions">
+        <nav className="rtc-platform-navbar">
+          <div className="rtc-nav-brand" onClick={() => navigate('/dashboard')}>
+            <div className="rtc-nav-logo-badge">
+              <span>📹</span>
+            </div>
+            <div className="rtc-nav-brand-texts">
+              <span className="rtc-nav-brand-title">Frontend Interview</span>
+              <span className="rtc-nav-brand-sub">Platform Meet</span>
+            </div>
+          </div>
+          <div className="rtc-nav-right">
             <button
               type="button"
-              className="rtc-btn rtc-btn-primary"
-              onClick={() => navigate('/')}
+              className="rtc-nav-back-btn"
+              onClick={() => navigate('/dashboard')}
+              title="Return to Dashboard"
             >
-              Return Home
+              ← Dashboard
             </button>
+            <ThemeToggle />
+          </div>
+        </nav>
+        <div className="rtc-post-call-container">
+          <div className="rtc-post-call-card">
+            <div className="rtc-post-call-icon">🚫</div>
+            <h2>Removed from Meeting</h2>
+            <p className="rtc-post-call-subtitle">
+              {removalReason || 'A meeting host has removed you from this session.'}
+            </p>
+            <div className="rtc-post-call-actions">
+              <button
+                type="button"
+                className="rtc-btn rtc-btn-primary"
+                onClick={() => navigate('/dashboard')}
+              >
+                Return to Dashboard
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -1264,23 +1289,47 @@ export const MeetingRoom: React.FC = () => {
   if (isMeetingEndedByHost) {
     return (
       <div className="rtc-fullscreen-wrap rtc-post-call-page">
-        <div className="rtc-post-call-card">
-          <div className="rtc-post-call-icon">🏁</div>
-          <h2>Meeting Ended</h2>
-          <p className="rtc-post-call-subtitle">
-            The host has ended this meeting for all participants.
-          </p>
-          <p className="rtc-post-call-subtitle">
-            Total Duration: <strong>{formatTimer(elapsedSeconds)}</strong>
-          </p>
-          <div className="rtc-post-call-actions">
+        <nav className="rtc-platform-navbar">
+          <div className="rtc-nav-brand" onClick={() => navigate('/dashboard')}>
+            <div className="rtc-nav-logo-badge">
+              <span>📹</span>
+            </div>
+            <div className="rtc-nav-brand-texts">
+              <span className="rtc-nav-brand-title">Frontend Interview</span>
+              <span className="rtc-nav-brand-sub">Platform Meet</span>
+            </div>
+          </div>
+          <div className="rtc-nav-right">
             <button
               type="button"
-              className="rtc-btn rtc-btn-primary"
-              onClick={() => navigate('/')}
+              className="rtc-nav-back-btn"
+              onClick={() => navigate('/dashboard')}
+              title="Return to Dashboard"
             >
-              Return Home
+              ← Dashboard
             </button>
+            <ThemeToggle />
+          </div>
+        </nav>
+        <div className="rtc-post-call-container">
+          <div className="rtc-post-call-card">
+            <div className="rtc-post-call-icon">🏁</div>
+            <h2>Meeting Ended</h2>
+            <p className="rtc-post-call-subtitle">
+              The host has ended this meeting for all participants.
+            </p>
+            <p className="rtc-post-call-subtitle">
+              Total Duration: <strong>{formatTimer(elapsedSeconds)}</strong>
+            </p>
+            <div className="rtc-post-call-actions">
+              <button
+                type="button"
+                className="rtc-btn rtc-btn-primary"
+                onClick={() => navigate('/dashboard')}
+              >
+                Return to Dashboard
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -1291,30 +1340,54 @@ export const MeetingRoom: React.FC = () => {
   if (hasLeft) {
     return (
       <div className="rtc-fullscreen-wrap rtc-post-call-page">
-        <div className="rtc-post-call-card">
-          <div className="rtc-post-call-icon">👋</div>
-          <h2>You left the meeting</h2>
-          <p className="rtc-post-call-subtitle">
-            Meeting Duration: <strong>{formatTimer(elapsedSeconds)}</strong>
-          </p>
-          <div className="rtc-post-call-actions">
+        <nav className="rtc-platform-navbar">
+          <div className="rtc-nav-brand" onClick={() => navigate('/dashboard')}>
+            <div className="rtc-nav-logo-badge">
+              <span>📹</span>
+            </div>
+            <div className="rtc-nav-brand-texts">
+              <span className="rtc-nav-brand-title">Frontend Interview</span>
+              <span className="rtc-nav-brand-sub">Platform Meet</span>
+            </div>
+          </div>
+          <div className="rtc-nav-right">
             <button
               type="button"
-              className="rtc-btn rtc-btn-primary"
-              onClick={() => {
-                setHasLeft(false);
-                setInLobby(true);
-              }}
+              className="rtc-nav-back-btn"
+              onClick={() => navigate('/dashboard')}
+              title="Return to Dashboard"
             >
-              Rejoin Lobby
+              ← Dashboard
             </button>
-            <button
-              type="button"
-              className="rtc-btn rtc-btn-secondary"
-              onClick={() => navigate('/')}
-            >
-              Back to Home
-            </button>
+            <ThemeToggle />
+          </div>
+        </nav>
+        <div className="rtc-post-call-container">
+          <div className="rtc-post-call-card">
+            <div className="rtc-post-call-icon">👋</div>
+            <h2>You left the meeting</h2>
+            <p className="rtc-post-call-subtitle">
+              Meeting Duration: <strong>{formatTimer(elapsedSeconds)}</strong>
+            </p>
+            <div className="rtc-post-call-actions">
+              <button
+                type="button"
+                className="rtc-btn rtc-btn-primary"
+                onClick={() => {
+                  setHasLeft(false);
+                  setInLobby(true);
+                }}
+              >
+                Rejoin Lobby
+              </button>
+              <button
+                type="button"
+                className="rtc-btn rtc-btn-secondary"
+                onClick={() => navigate('/dashboard')}
+              >
+                Return to Dashboard
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -1325,116 +1398,165 @@ export const MeetingRoom: React.FC = () => {
   if (inLobby) {
     return (
       <div className="rtc-fullscreen-wrap rtc-lobby-page">
-        <div className="rtc-lobby-card">
-          <div className="rtc-lobby-header">
-            <span className="rtc-badge-chip">🔒 Secure Real-Time Meeting</span>
-            <h1 className="rtc-lobby-title">{meetingTitle}</h1>
-            <p className="rtc-lobby-desc">Check your audio and video before entering the room.</p>
-          </div>
-
-          {errorMsg && <div className="rtc-error-alert">⚠️ {errorMsg}</div>}
-
-          {/* Lobby Preview Frame */}
-          <div className="rtc-lobby-preview-box">
-            {localMedia.videoEnabled && localMedia.stream ? (
-              <video
-                ref={lobbyVideoRef}
-                autoPlay
-                playsInline
-                muted
-                className="rtc-video-element rtc-local-mirror"
-              />
-            ) : (
-              <div className="rtc-avatar-fallback">
-                <div className="rtc-initials-badge">
-                  {(user?.name || 'Guest')
-                    .split(' ')
-                    .map(n => n[0])
-                    .slice(0, 2)
-                    .join('')
-                    .toUpperCase()}
-                </div>
-                <div className="rtc-avatar-name">{user?.name || 'Guest User'}</div>
-                <span className="rtc-cam-off-hint">Camera is off</span>
-              </div>
-            )}
-
-            {/* Audio Indicator Bubble */}
-            <div className="rtc-lobby-mic-bubble">
-              <span
-                className={`rtc-lobby-mic-dot ${localMedia.audioLevel > 10 ? 'speaking' : ''}`}
-              />
-              <span>{localMedia.audioEnabled ? `Mic: ${localMedia.audioLevel}%` : 'Mic Muted'}</span>
+        {/* Top Platform Navigation Bar */}
+        <nav className="rtc-platform-navbar">
+          <div className="rtc-nav-brand" onClick={() => navigate('/dashboard')}>
+            <div className="rtc-nav-logo-badge">
+              <span>📹</span>
             </div>
-
-            {/* Quick Preview Toggles */}
-            <div className="rtc-lobby-preview-controls">
-              <button
-                type="button"
-                className={`rtc-lobby-toggle-btn ${localMedia.audioEnabled ? 'active' : 'muted'}`}
-                onClick={handleToggleAudio}
-                title={localMedia.audioEnabled ? 'Mute Mic' : 'Unmute Mic'}
-              >
-                {localMedia.audioEnabled ? '🎙️ Mic On' : '🔇 Mic Off'}
-              </button>
-              <button
-                type="button"
-                className={`rtc-lobby-toggle-btn ${localMedia.videoEnabled ? 'active' : 'muted'}`}
-                onClick={handleToggleVideo}
-                title={localMedia.videoEnabled ? 'Turn Off Cam' : 'Turn On Cam'}
-              >
-                {localMedia.videoEnabled ? '📹 Cam On' : '🚫 Cam Off'}
-              </button>
+            <div className="rtc-nav-brand-texts">
+              <span className="rtc-nav-brand-title">Frontend Interview</span>
+              <span className="rtc-nav-brand-sub">Platform Meet</span>
             </div>
           </div>
 
-          {/* Device Selectors */}
-          <div className="rtc-lobby-device-selects">
-            <div className="rtc-device-select-group">
-              <label>Microphone</label>
-              <select
-                value={localMedia.audioInputDeviceId}
-                onChange={e => handleSelectDevice('audioinput', e.target.value)}
-                className="rtc-select"
-              >
-                {devices
-                  .filter(d => d.kind === 'audioinput')
-                  .map(d => (
-                    <option key={d.deviceId} value={d.deviceId}>
-                      {d.label}
-                    </option>
-                  ))}
-              </select>
-            </div>
-
-            <div className="rtc-device-select-group">
-              <label>Camera</label>
-              <select
-                value={localMedia.videoInputDeviceId}
-                onChange={e => handleSelectDevice('videoinput', e.target.value)}
-                className="rtc-select"
-              >
-                {devices
-                  .filter(d => d.kind === 'videoinput')
-                  .map(d => (
-                    <option key={d.deviceId} value={d.deviceId}>
-                      {d.label}
-                    </option>
-                  ))}
-              </select>
-            </div>
+          <div className="rtc-nav-breadcrumbs">
+            <button type="button" className="rtc-nav-crumb" onClick={() => navigate('/dashboard')}>
+              Dashboard
+            </button>
+            <span className="rtc-nav-separator">/</span>
+            <button type="button" className="rtc-nav-crumb" onClick={() => navigate('/meet')}>
+              Meetings
+            </button>
+            <span className="rtc-nav-separator">/</span>
+            <span className="rtc-nav-crumb rtc-nav-current">{meetingId}</span>
+            <span className="rtc-badge-chip rtc-nav-badge">Lobby</span>
           </div>
 
-          {/* Join CTA */}
-          <div className="rtc-lobby-cta-row">
+          <div className="rtc-nav-right">
             <button
               type="button"
-              className="rtc-btn rtc-btn-primary rtc-btn-large"
-              onClick={handleJoinMeeting}
-              disabled={connectionState === 'CONNECTING'}
+              className="rtc-nav-back-btn"
+              onClick={() => navigate('/dashboard')}
+              title="Return to Dashboard"
             >
-              {connectionState === 'CONNECTING' ? 'Connecting to Media SFU...' : 'Join Meeting Now'}
+              ← Dashboard
             </button>
+            <ThemeToggle />
+            {user && (
+              <div className="rtc-nav-user-chip" title={user.email || user.name || 'User'}>
+                <div className="rtc-nav-user-avatar">
+                  {user.name ? user.name.charAt(0).toUpperCase() : 'U'}
+                </div>
+                <span className="rtc-nav-user-name">{user.name || 'User'}</span>
+              </div>
+            )}
+          </div>
+        </nav>
+
+        {/* Centered Lobby Content Area */}
+        <div className="rtc-lobby-content-container">
+          <div className="rtc-lobby-card">
+            <div className="rtc-lobby-header">
+              <span className="rtc-badge-chip">🔒 Secure Real-Time Media Room</span>
+              <h1 className="rtc-lobby-title">{meetingTitle}</h1>
+              <p className="rtc-lobby-desc">Check your camera, microphone, and devices before entering.</p>
+            </div>
+
+            {errorMsg && <div className="rtc-error-alert">⚠️ {errorMsg}</div>}
+
+            {/* Lobby Preview Frame */}
+            <div className="rtc-lobby-preview-box">
+              {localMedia.videoEnabled && localMedia.stream ? (
+                <video
+                  ref={lobbyVideoRef}
+                  autoPlay
+                  playsInline
+                  muted
+                  className="rtc-video-element rtc-local-mirror"
+                />
+              ) : (
+                <div className="rtc-avatar-fallback">
+                  <div className="rtc-initials-badge">
+                    {(user?.name || 'Guest')
+                      .split(' ')
+                      .map(n => n[0])
+                      .slice(0, 2)
+                      .join('')
+                      .toUpperCase()}
+                  </div>
+                  <div className="rtc-avatar-name">{user?.name || 'Guest User'}</div>
+                  <span className="rtc-cam-off-hint">Camera is off</span>
+                </div>
+              )}
+
+              {/* Audio Indicator Bubble */}
+              <div className="rtc-lobby-mic-bubble">
+                <span
+                  className={`rtc-lobby-mic-dot ${localMedia.audioLevel > 10 ? 'speaking' : ''}`}
+                />
+                <span>{localMedia.audioEnabled ? `Mic: ${localMedia.audioLevel}%` : 'Mic Muted'}</span>
+              </div>
+
+              {/* Quick Preview Toggles */}
+              <div className="rtc-lobby-preview-controls">
+                <button
+                  type="button"
+                  className={`rtc-lobby-toggle-btn ${localMedia.audioEnabled ? 'active' : 'muted'}`}
+                  onClick={handleToggleAudio}
+                  title={localMedia.audioEnabled ? 'Mute Mic' : 'Unmute Mic'}
+                >
+                  {localMedia.audioEnabled ? '🎙️ Mic On' : '🔇 Mic Off'}
+                </button>
+                <button
+                  type="button"
+                  className={`rtc-lobby-toggle-btn ${localMedia.videoEnabled ? 'active' : 'muted'}`}
+                  onClick={handleToggleVideo}
+                  title={localMedia.videoEnabled ? 'Turn Off Cam' : 'Turn On Cam'}
+                >
+                  {localMedia.videoEnabled ? '📹 Cam On' : '🚫 Cam Off'}
+                </button>
+              </div>
+            </div>
+
+            {/* Device Selectors */}
+            <div className="rtc-lobby-device-selects">
+              <div className="rtc-device-select-group">
+                <label>Microphone</label>
+                <select
+                  value={localMedia.audioInputDeviceId}
+                  onChange={e => handleSelectDevice('audioinput', e.target.value)}
+                  className="rtc-select"
+                >
+                  {devices
+                    .filter(d => d.kind === 'audioinput')
+                    .map(d => (
+                      <option key={d.deviceId} value={d.deviceId}>
+                        {d.label}
+                      </option>
+                    ))}
+                </select>
+              </div>
+
+              <div className="rtc-device-select-group">
+                <label>Camera</label>
+                <select
+                  value={localMedia.videoInputDeviceId}
+                  onChange={e => handleSelectDevice('videoinput', e.target.value)}
+                  className="rtc-select"
+                >
+                  {devices
+                    .filter(d => d.kind === 'videoinput')
+                    .map(d => (
+                      <option key={d.deviceId} value={d.deviceId}>
+                        {d.label}
+                      </option>
+                    ))}
+                </select>
+              </div>
+            </div>
+
+            {/* Join CTA */}
+            <div className="rtc-lobby-cta-row">
+              <button
+                type="button"
+                className="rtc-btn rtc-btn-primary rtc-btn-large"
+                onClick={handleJoinMeeting}
+                disabled={connectionState === 'CONNECTING'}
+              >
+                {connectionState === 'CONNECTING' ? 'Connecting to Media SFU...' : 'Join Meeting Now'}
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -1488,6 +1610,14 @@ export const MeetingRoom: React.FC = () => {
       {/* Top Header Bar */}
       <header className="rtc-meeting-header">
         <div className="rtc-header-left">
+          <button
+            type="button"
+            className="rtc-header-nav-btn"
+            onClick={() => navigate('/dashboard')}
+            title="Return to Dashboard"
+          >
+            ← Dashboard
+          </button>
           <div className="rtc-brand-chip">
             <span className="rtc-live-indicator-dot" />
             <span className="rtc-brand-text">MEET LIVE</span>
@@ -1509,6 +1639,14 @@ export const MeetingRoom: React.FC = () => {
             <span className="rtc-quality-dot" />
             <span>{connectionQuality}</span>
           </div>
+          <ThemeToggle />
+          {user && (
+            <div className="rtc-header-user-chip" title={user.email || user.name || 'User'}>
+              <div className="rtc-header-user-avatar">
+                {user.name ? user.name.charAt(0).toUpperCase() : 'U'}
+              </div>
+            </div>
+          )}
         </div>
       </header>
 
