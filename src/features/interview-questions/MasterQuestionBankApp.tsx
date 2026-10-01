@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react'
 import { Routes, Route, Link, useLocation } from 'react-router-dom'
 import SubjectLandingPage from './components/SubjectLandingPage'
 import SubjectQuestionCatalog from './components/SubjectQuestionCatalog'
@@ -5,10 +6,27 @@ import QuestionDetailStudio from './components/QuestionDetailStudio'
 import PracticeDrillStudio from './components/PracticeDrillStudio'
 import MockTestStudio from './components/MockTestStudio'
 import BookmarksRevisionStudio from './components/BookmarksRevisionStudio'
+import { interviewQuestionsDataService } from './services/interviewQuestionsDataService'
 import './MasterQuestionBank.css'
 
 export default function MasterQuestionBankApp() {
   const location = useLocation()
+  const [totalQuestions, setTotalQuestions] = useState<number | null>(null)
+
+  useEffect(() => {
+    let mounted = true
+    interviewQuestionsDataService
+      .getCatalog()
+      .then(catalog => {
+        if (mounted) setTotalQuestions(catalog.totalQuestions)
+      })
+      .catch(() => {
+        if (mounted) setTotalQuestions(null)
+      })
+    return () => {
+      mounted = false
+    }
+  }, [])
 
   const isActive = (path: string) => {
     if (path === '/interview-questions') {
@@ -30,7 +48,9 @@ export default function MasterQuestionBankApp() {
             <Link to="/interview-questions" className="mqb-subnav-brand">
               <span>🎯</span>
               <span className="mqb-subnav-brand-text">Master Question Bank</span>
-              <span className="mqb-subnav-brand-badge">1,500 Real Qs</span>
+              <span className="mqb-subnav-brand-badge">
+                {totalQuestions !== null ? `${totalQuestions.toLocaleString()} Real Qs` : 'Real Qs'}
+              </span>
             </Link>
 
             <nav className="mqb-subnav-links">

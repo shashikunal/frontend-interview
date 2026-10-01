@@ -193,10 +193,10 @@ export default function MasterBankAdminTab() {
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
           <div>
             <h2 style={{ margin: '0 0 0.5rem', fontSize: '1.5rem', fontWeight: 800, color: '#fff' }}>
-              🎯 Master Interview Question Bank Operations (33 Tracks)
+              🎯 Master Interview Question Bank Operations ({catalog?.subjects.length ?? '—'} Tracks)
             </h2>
             <p style={{ margin: 0, color: '#94a3b8', fontSize: '0.92rem' }}>
-              Full CRUD management, zero-duplicate audit pipeline, status transitions, and bulk exports across all 33 subjects.
+              Full CRUD management, zero-duplicate audit pipeline, status transitions, and bulk exports across all {catalog?.subjects.length ?? '—'} subjects.
             </p>
           </div>
 
@@ -236,13 +236,17 @@ export default function MasterBankAdminTab() {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem', marginTop: '1.25rem' }}>
           <div style={{ background: 'rgba(0,0,0,0.25)', padding: '1rem', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.05)' }}>
             <div style={{ fontSize: '0.75rem', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 600 }}>Total Catalog Size</div>
-            <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#38bdf8' }}>16,600 Qs</div>
+            <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#38bdf8' }}>
+              {catalog ? `${catalog.totalQuestions.toLocaleString()} Qs` : '—'}
+            </div>
             <div style={{ fontSize: '0.75rem', color: '#34d399', marginTop: '0.2rem' }}>✓ 100% Quality Audited</div>
           </div>
 
           <div style={{ background: 'rgba(0,0,0,0.25)', padding: '1rem', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.05)' }}>
             <div style={{ fontSize: '0.75rem', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 600 }}>Total Tracks</div>
-            <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#fff' }}>33 Subjects</div>
+            <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#fff' }}>
+              {catalog ? `${catalog.subjects.length} Subjects` : '—'}
+            </div>
             <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: '0.2rem' }}>Dedicated modules</div>
           </div>
 

@@ -211,7 +211,7 @@ export default function MockTestStudio() {
                   setSelectedTopic('ALL')
                 }}
               >
-                <option value="all">🌟 Comprehensive Mixed Assessment (All 33 Subjects)</option>
+                <option value="all">🌟 Comprehensive Mixed Assessment (All {catalog?.subjects.length ?? '—'} Subjects)</option>
                 {catalog?.subjects.map(s => (
                   <option key={s.id} value={s.id}>
                     {s.icon} {s.name} ({s.badge})

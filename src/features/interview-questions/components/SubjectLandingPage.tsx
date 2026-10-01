@@ -63,7 +63,7 @@ export default function SubjectLandingPage() {
   }, [catalog, progressState])
 
   const CATEGORY_SUBJECTS = useMemo(() => ({
-    FOUNDATIONS: ['html', 'css', 'javascript', 'es6', 'dom', 'bom', 'web-apis', 'jquery'],
+    FOUNDATIONS: ['html', 'css', 'javascript', 'es6', 'es7', 'es8', 'dom', 'bom', 'web-apis', 'jquery'],
     FRAMEWORKS: ['typescript', 'react', 'redux', 'react-router', 'tanstack-query', 'nextjs'],
     PLATFORM: ['http', 'rest-apis', 'websockets', 'browser-internals', 'performance', 'accessibility', 'seo', 'security', 'testing', 'git', 'build-tools', 'micro-frontends'],
     SYSTEM_DESIGN: ['design-patterns', 'frontend-architecture', 'machine-coding', 'system-design', 'coding-problems', 'scenarios', 'company-questions']
@@ -109,14 +109,14 @@ export default function SubjectLandingPage() {
           <div className="mqb-hero-text">
             <h1>Frontend Interview Master Question Bank</h1>
             <p>
-              The industry's most authentic, non-duplicated question system. {overallStats.totalQuestions.toLocaleString()} comprehensive technical questions across 33 frontend subjects with clean Text-to-Speech narration, line-by-line code breakdowns, execution flow diagrams, and real-time candidate metrics.
+              The industry's most authentic, non-duplicated question system. {overallStats.totalQuestions.toLocaleString()} comprehensive technical questions across {catalog.subjects.length} frontend subjects with clean Text-to-Speech narration, line-by-line code breakdowns, execution flow diagrams, and real-time candidate metrics.
             </p>
             <div className="mqb-hero-badges-row">
               <span className="mqb-hero-tag fresher-tag">
                 🌱 Fresher to Staff Engineer Path
               </span>
               <span className="mqb-hero-tag">🔥 {overallStats.totalQuestions.toLocaleString()} Unique Questions</span>
-              <span className="mqb-hero-tag">🎯 33 Dedicated Tracks</span>
+              <span className="mqb-hero-tag">🎯 {catalog.subjects.length} Dedicated Tracks</span>
               <span className="mqb-hero-tag">🎙️ Spoken Speech Answers</span>
               <span className="mqb-hero-tag">⚡ Interactive MCQs</span>
               <span className="mqb-hero-tag">🔍 Line-by-Line Code Breakdown</span>
@@ -271,12 +271,12 @@ export default function SubjectLandingPage() {
         </div>
       </section>
 
-      {/* 33 Subjects Dashboard Cards Grid with Category Filter */}
+      {/* Subject Dashboard Cards Grid with Category Filter */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '1.5rem' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem' }}>
           <div>
             <h2 style={{ fontSize: '1.5rem', fontWeight: 800, margin: '0 0 0.25rem', color: 'var(--mqb-text-primary)' }}>
-              Master Question Banks (33 Dedicated Subjects)
+              Master Question Banks ({catalog.subjects.length} Dedicated Subjects)
             </h2>
             <p style={{ color: 'var(--mqb-text-secondary)', margin: 0, fontSize: '0.95rem' }}>
               100% authentic, curated real-world technical interview questions with live candidate metrics, spoken TTS scripts, and interactive MCQs.
@@ -295,7 +295,7 @@ export default function SubjectLandingPage() {
             onClick={() => setSelectedCategory('ALL')}
             style={{ fontSize: '0.85rem', padding: '0.45rem 0.85rem' }}
           >
-            All Tracks (33)
+            All Tracks ({catalog.subjects.length})
           </button>
           <button
             type="button"
@@ -303,7 +303,7 @@ export default function SubjectLandingPage() {
             onClick={() => setSelectedCategory('FOUNDATIONS')}
             style={{ fontSize: '0.85rem', padding: '0.45rem 0.85rem' }}
           >
-            🌐 Core Foundations (8)
+            🌐 Core Foundations ({CATEGORY_SUBJECTS.FOUNDATIONS.length})
           </button>
           <button
             type="button"
@@ -311,7 +311,7 @@ export default function SubjectLandingPage() {
             onClick={() => setSelectedCategory('FRAMEWORKS')}
             style={{ fontSize: '0.85rem', padding: '0.45rem 0.85rem' }}
           >
-            ⚛️ Frameworks & State (6)
+            ⚛️ Frameworks & State ({CATEGORY_SUBJECTS.FRAMEWORKS.length})
           </button>
           <button
             type="button"
@@ -319,7 +319,7 @@ export default function SubjectLandingPage() {
             onClick={() => setSelectedCategory('PLATFORM')}
             style={{ fontSize: '0.85rem', padding: '0.45rem 0.85rem' }}
           >
-            🛡️ Platform, Networking & Security (12)
+            🛡️ Platform, Networking & Security ({CATEGORY_SUBJECTS.PLATFORM.length})
           </button>
           <button
             type="button"
@@ -327,7 +327,7 @@ export default function SubjectLandingPage() {
             onClick={() => setSelectedCategory('SYSTEM_DESIGN')}
             style={{ fontSize: '0.85rem', padding: '0.45rem 0.85rem' }}
           >
-            📐 Architecture, System Design & Practice (7)
+            📐 Architecture, System Design & Practice ({CATEGORY_SUBJECTS.SYSTEM_DESIGN.length})
           </button>
         </div>
       </div>
