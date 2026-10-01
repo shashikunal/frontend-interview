@@ -1450,7 +1450,7 @@ var init_meetingOpsService = __esm({
             return { success: true, meeting: existing, occurrences: [] };
           }
         }
-        const meetingId = `meet_${crypto6.randomUUID().replace(/-/g, "").slice(0, 16)}`;
+        const meetingId = dto.id || dto.meetingId || `meet_${crypto6.randomUUID().replace(/-/g, "").slice(0, 16)}`;
         const now = (/* @__PURE__ */ new Date()).toISOString();
         const meeting = {
           id: meetingId,
@@ -1565,7 +1565,7 @@ var init_meetingOpsService = __esm({
             return { success: true, meeting: existing, meetingUrl: existing.meeting_url };
           }
         }
-        const meetingId = `meet_${crypto6.randomUUID().replace(/-/g, "").slice(0, 16)}`;
+        const meetingId = options?.id || options?.meetingId || `meet_${crypto6.randomUUID().replace(/-/g, "").slice(0, 16)}`;
         const now = /* @__PURE__ */ new Date();
         const oneHourLater = new Date(now.getTime() + 60 * 60 * 1e3);
         const nowIso = now.toISOString();
@@ -2912,7 +2912,7 @@ var init_meetingService = __esm({
             code: "INVALID_TITLE"
           };
         }
-        const meetingId = `meet_${crypto9.randomUUID().replace(/-/g, "").slice(0, 16)}`;
+        const meetingId = request.id || request.meetingId || `meet_${crypto9.randomUUID().replace(/-/g, "").slice(0, 16)}`;
         const now = (/* @__PURE__ */ new Date()).toISOString();
         const scheduledStart = request.scheduledStartTime || now;
         const mergedSettings = {
@@ -2982,36 +2982,6 @@ var init_meetingService = __esm({
             return bridged;
           }
         } catch (_) {
-        }
-        if ((meetingId.startsWith("meet_") || meetingId.length >= 8) && !meetingId.includes("does_not_exist") && !meetingId.includes("non_existent") && !meetingId.includes("404") && !meetingId.includes("invalid")) {
-          const now = /* @__PURE__ */ new Date();
-          const autoMeeting = {
-            id: meetingId,
-            title: "Instant Technical Meeting",
-            description: "Instant ad-hoc collaboration room.",
-            hostId: "adhoc_host",
-            hostEmail: "host@interviewprep.com",
-            hostName: "Meeting Host",
-            meetingType: "INTERVIEW",
-            status: "ACTIVE",
-            scheduledStartTime: now.toISOString(),
-            scheduledEndTime: new Date(now.getTime() + 3600 * 1e3).toISOString(),
-            settings: DEFAULT_MEETING_SETTINGS,
-            createdAt: now.toISOString(),
-            updatedAt: now.toISOString()
-          };
-          this.meetings.set(meetingId, autoMeeting);
-          try {
-            meetingOpsService.registerAdHocMeeting({
-              id: meetingId,
-              title: autoMeeting.title,
-              description: autoMeeting.description,
-              start_at: autoMeeting.scheduledStartTime,
-              end_at: autoMeeting.scheduledEndTime
-            });
-          } catch (_) {
-          }
-          return autoMeeting;
         }
         return null;
       }

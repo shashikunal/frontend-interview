@@ -65,7 +65,7 @@ export class MeetingService {
       };
     }
 
-    const meetingId = `meet_${crypto.randomUUID().replace(/-/g, '').slice(0, 16)}`;
+    const meetingId = (request as any).id || (request as any).meetingId || `meet_${crypto.randomUUID().replace(/-/g, '').slice(0, 16)}`;
     const now = new Date().toISOString();
     const scheduledStart = request.scheduledStartTime || now;
 
@@ -147,46 +147,8 @@ export class MeetingService {
       }
     } catch (_) {}
 
-    // 2. Google Meet Style: Auto-provision ad-hoc instant meeting room on the fly
-    // (Only for valid instant meeting IDs, excluding deliberate 404 test IDs)
-    if (
-      (meetingId.startsWith('meet_') || meetingId.length >= 8) &&
-      !meetingId.includes('does_not_exist') &&
-      !meetingId.includes('non_existent') &&
-      !meetingId.includes('404') &&
-      !meetingId.includes('invalid')
-    ) {
-      const now = new Date();
-      const autoMeeting: MeetingRecord = {
-        id: meetingId,
-        title: 'Instant Technical Meeting',
-        description: 'Instant ad-hoc collaboration room.',
-        hostId: 'adhoc_host',
-        hostEmail: 'host@interviewprep.com',
-        hostName: 'Meeting Host',
-        meetingType: 'INTERVIEW',
-        status: 'ACTIVE',
-        scheduledStartTime: now.toISOString(),
-        scheduledEndTime: new Date(now.getTime() + 3600 * 1000).toISOString(),
-        settings: DEFAULT_MEETING_SETTINGS,
-        createdAt: now.toISOString(),
-        updatedAt: now.toISOString(),
-      };
-      this.meetings.set(meetingId, autoMeeting);
-
-      try {
-        meetingOpsService.registerAdHocMeeting({
-          id: meetingId,
-          title: autoMeeting.title,
-          description: autoMeeting.description,
-          start_at: autoMeeting.scheduledStartTime,
-          end_at: autoMeeting.scheduledEndTime,
-        });
-      } catch (_) {}
-
-      return autoMeeting;
-    }
-
+    // Do NOT auto-provision meetings on the fly.
+    // Meeting must be explicitly created by the user before joining.
     return null;
   }
 

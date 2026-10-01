@@ -405,6 +405,142 @@
   margin-top: 8px;
 }
 
+/* ─── LOBBY MEETING DETAILS PANEL ────────────────────────────────────────── */
+.rtc-lobby-details-panel {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.08));
+  border-radius: 16px;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.rtc-lobby-section-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary, #ffffff);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  letter-spacing: 0.3px;
+}
+
+.rtc-lobby-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.rtc-lobby-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.rtc-lobby-input-group.full-width {
+  grid-column: span 2;
+}
+
+.rtc-lobby-input-group label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-secondary, #a1a1b5);
+}
+
+.rtc-lobby-input,
+.rtc-lobby-select {
+  background: var(--surface-hover, rgba(255, 255, 255, 0.05));
+  color: var(--text-primary, #ededf4);
+  border: 1px solid var(--border-strong, rgba(255, 255, 255, 0.14));
+  border-radius: 10px;
+  padding: 9px 12px;
+  font-size: 13px;
+  outline: none;
+  font-family: inherit;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.rtc-lobby-input:focus,
+.rtc-lobby-select:focus {
+  border-color: var(--accent, #6366f1);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+}
+
+.rtc-lobby-select option {
+  background: var(--surface, #13131d);
+  color: var(--text-primary, #ededf4);
+}
+
+.rtc-lobby-id-pill {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px dashed rgba(99, 102, 241, 0.35);
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-family: monospace;
+  font-size: 13px;
+  color: var(--accent-bright, #818cf8);
+}
+
+.rtc-badge-new {
+  font-size: 10px;
+  font-weight: 700;
+  background: rgba(16, 185, 129, 0.2);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  padding: 2px 8px;
+  border-radius: 12px;
+}
+
+.rtc-lobby-existing-details {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 12px;
+  padding: 12px 16px;
+}
+
+.rtc-lobby-info-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  padding-bottom: 6px;
+}
+
+.rtc-lobby-info-row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.rtc-info-label {
+  color: var(--text-secondary, #a1a1b5);
+  font-weight: 500;
+}
+
+.rtc-info-val {
+  color: var(--text-primary, #ededf4);
+  font-weight: 600;
+  text-align: right;
+}
+
+.rtc-badge-chip-sm {
+  background: rgba(99, 102, 241, 0.15);
+  color: var(--accent-bright, #818cf8);
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
 /* ─── BUTTONS ────────────────────────────────────────────────────────────── */
 .rtc-btn {
   padding: 10px 20px;

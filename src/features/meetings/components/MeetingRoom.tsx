@@ -21,6 +21,7 @@ import { MeetingCodeEditor } from './MeetingCodeEditor';
 import { meetingCollaborationService } from '../services/meetingCollaborationService';
 import { webrtcPeerService } from '../services/webrtcPeerService';
 import { pushClientService } from '../../notifications/services/pushClientService';
+import { getAdminBearerToken } from '../../auth/services/adminTokenHelper';
 import { MeetingOpsDiagnosticsPanel } from './MeetingOpsDiagnosticsPanel';
 import type { ChatMessageRecord, ChatMessageType } from '../../../../server/meetings/chatTypes';
 import type { WhiteboardElement, WhiteboardElementType } from '../../../../server/meetings/whiteboardTypes';
@@ -56,6 +57,14 @@ export const MeetingRoom: React.FC = () => {
   const [connectionState, setConnectionState] = useState<RoomConnectionState>('DISCONNECTED');
   const [connectionQuality, setConnectionQuality] = useState<ConnectionQuality>('EXCELLENT');
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  // Pre-Join Meeting Setup & Verification (Requirement: First give create meeting details then join)
+  const [meetingExists, setMeetingExists] = useState<boolean | null>(null);
+  const [setupTitle, setSetupTitle] = useState<string>('Platform Architecture & Technical Interview');
+  const [setupHostName, setSetupHostName] = useState<string>(user?.name || 'Platform Administrator');
+  const [setupType, setSetupType] = useState<string>('Interview');
+  const [setupDesc, setSetupDesc] = useState<string>('Live interactive coding session, system design assessment, and evaluation.');
+  const [isCreatingMeeting, setIsCreatingMeeting] = useState<boolean>(false);
 
   // Phase 16: Collaboration State
   const [isHandRaised, setIsHandRaised] = useState<boolean>(false);
@@ -218,18 +227,33 @@ export const MeetingRoom: React.FC = () => {
           cleanupAudioRef.current = stopAudio;
         }
 
-        // Fetch meeting info if available
-        if (meetingId && user) {
+        // Fetch meeting info & verify existence
+        if (meetingId) {
           try {
-            const meetingData = await meetingClientService.getMeetingById(
-              { id: user.id, email: user.email, name: user.name, role: user.role },
-              meetingId
-            );
-            if (isMounted && meetingData) {
-              setMeetingTitle(meetingData.title);
+            const token = user ? await getAdminBearerToken(user) : '';
+            const res = await fetch(`/api/v1/meetings?id=${encodeURIComponent(meetingId)}`, {
+              headers: token ? { Authorization: `Bearer ${token}` } : {},
+            });
+            if (res.ok) {
+              const data = await res.json();
+              const found = data.meetings?.find((m: any) => m.id === meetingId);
+              if (isMounted) {
+                if (found) {
+                  setMeetingExists(true);
+                  setMeetingTitle(found.title);
+                  setSetupTitle(found.title);
+                  setSetupHostName(found.trainer_name || found.hostName || user?.name || 'Platform Administrator');
+                  setSetupType(found.meeting_type || 'Interview');
+                  setSetupDesc(found.description || '');
+                } else {
+                  setMeetingExists(false);
+                }
+              }
+            } else {
+              if (isMounted) setMeetingExists(false);
             }
           } catch {
-            // Meeting might not exist yet or local mock
+            if (isMounted) setMeetingExists(false);
           }
         }
       } catch (err: any) {
@@ -318,6 +342,72 @@ export const MeetingRoom: React.FC = () => {
       setDominantSpeakerId(speaker ? speaker.id : null);
     }, 150); // max 6 dominant-speaker evaluations/sec
   }, [localMedia.audioLevel, localMedia.audioEnabled, participants, inLobby, hasLeft, user?.name]);
+
+  // 3b. Create Meeting Details & Join Action (Requirement: First give create meeting details then join)
+  const handleCreateAndJoinMeeting = async () => {
+    if (!meetingId) return;
+    setIsCreatingMeeting(true);
+    setErrorMsg(null);
+
+    try {
+      const token = await getAdminBearerToken(user);
+      const meetingPayload = {
+        id: meetingId,
+        title: setupTitle.trim() || 'Platform Architecture & Technical Interview',
+        description: setupDesc.trim(),
+        meeting_type: setupType,
+        meeting_provider: 'Platform Meet (Built-in)',
+        meeting_url: `/meet/${meetingId}`,
+        start_at: new Date().toISOString(),
+        end_at: new Date(Date.now() + 60 * 60 * 1000).toISOString(),
+        trainer_name: setupHostName.trim() || user?.name || 'Platform Administrator',
+        capacity: 50,
+      };
+
+      // 1. Try Admin Meeting creation
+      let created = false;
+      try {
+        const adminRes = await fetch('/api/v1/admin/meetings', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+          body: JSON.stringify({ action: 'create', ...meetingPayload }),
+        });
+        const adminData = await adminRes.json();
+        if (adminRes.ok && adminData.success) {
+          created = true;
+        }
+      } catch (_) {}
+
+      // 2. Fallback to general meeting create endpoint
+      if (!created) {
+        const genRes = await fetch('/api/v1/meetings', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+          body: JSON.stringify(meetingPayload),
+        });
+        const genData = await genRes.json();
+        if (!genRes.ok || !genData.success) {
+          throw new Error(genData.message || 'Failed to initialize meeting details.');
+        }
+      }
+
+      setMeetingExists(true);
+      setMeetingTitle(setupTitle.trim());
+      setIsCreatingMeeting(false);
+
+      // 3. Seamlessly enter the meeting room
+      await handleJoinMeeting();
+    } catch (err: any) {
+      setErrorMsg(err.message || 'Failed to initialize meeting details before joining.');
+      setIsCreatingMeeting(false);
+    }
+  };
 
   // 4. Join Meeting Action
   const handleJoinMeeting = async () => {
@@ -1548,16 +1638,126 @@ export const MeetingRoom: React.FC = () => {
               </div>
             </div>
 
-            {/* Join CTA */}
+            {/* Meeting Details & Configuration Section (Requirement: First give create meeting details then join) */}
+            <div className="rtc-lobby-details-panel">
+              <div className="rtc-lobby-section-title">
+                <span>📋</span> Meeting Details &amp; Configuration
+              </div>
+
+              {meetingExists === false ? (
+                <div className="rtc-lobby-form-grid">
+                  <div className="rtc-lobby-input-group">
+                    <label>Meeting ID</label>
+                    <div className="rtc-lobby-id-pill">
+                      <code>{meetingId}</code>
+                      <span className="rtc-badge-new">New Session</span>
+                    </div>
+                  </div>
+
+                  <div className="rtc-lobby-input-group">
+                    <label>Meeting Title</label>
+                    <input
+                      type="text"
+                      className="rtc-lobby-input"
+                      value={setupTitle}
+                      onChange={e => setSetupTitle(e.target.value)}
+                      placeholder="e.g. Platform Architecture &amp; System Design"
+                    />
+                  </div>
+
+                  <div className="rtc-lobby-input-group">
+                    <label>Host / Evaluator Name</label>
+                    <input
+                      type="text"
+                      className="rtc-lobby-input"
+                      value={setupHostName}
+                      onChange={e => setSetupHostName(e.target.value)}
+                      placeholder="Your name or evaluator handle"
+                    />
+                  </div>
+
+                  <div className="rtc-lobby-input-group">
+                    <label>Meeting Type</label>
+                    <select
+                      className="rtc-lobby-select"
+                      value={setupType}
+                      onChange={e => setSetupType(e.target.value)}
+                    >
+                      <option value="Interview">Technical Interview</option>
+                      <option value="Mock Interview">Mock Interview</option>
+                      <option value="Technical Discussion">Technical Discussion</option>
+                      <option value="Architecture Review">Architecture Review</option>
+                      <option value="Training">Training Session</option>
+                      <option value="ELP Session">ELP Session</option>
+                    </select>
+                  </div>
+
+                  <div className="rtc-lobby-input-group full-width">
+                    <label>Description &amp; Agenda</label>
+                    <input
+                      type="text"
+                      className="rtc-lobby-input"
+                      value={setupDesc}
+                      onChange={e => setSetupDesc(e.target.value)}
+                      placeholder="Topics, evaluation criteria, or session agenda"
+                    />
+                  </div>
+                </div>
+              ) : (
+                <div className="rtc-lobby-existing-details">
+                  <div className="rtc-lobby-info-row">
+                    <span className="rtc-info-label">Room ID:</span>
+                    <span className="rtc-info-val"><code>{meetingId}</code></span>
+                  </div>
+                  <div className="rtc-lobby-info-row">
+                    <span className="rtc-info-label">Title:</span>
+                    <span className="rtc-info-val font-semibold">{meetingTitle}</span>
+                  </div>
+                  <div className="rtc-lobby-info-row">
+                    <span className="rtc-info-label">Host:</span>
+                    <span className="rtc-info-val">{setupHostName}</span>
+                  </div>
+                  <div className="rtc-lobby-info-row">
+                    <span className="rtc-info-label">Type:</span>
+                    <span className="rtc-badge-chip-sm">{setupType}</span>
+                  </div>
+                  {setupDesc && (
+                    <div className="rtc-lobby-info-row">
+                      <span className="rtc-info-label">Agenda:</span>
+                      <span className="rtc-info-val text-muted">{setupDesc}</span>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Join / Create CTA */}
             <div className="rtc-lobby-cta-row">
-              <button
-                type="button"
-                className="rtc-btn rtc-btn-primary rtc-btn-large"
-                onClick={handleJoinMeeting}
-                disabled={connectionState === 'CONNECTING'}
-              >
-                {connectionState === 'CONNECTING' ? 'Connecting to Media SFU...' : 'Join Meeting Now'}
-              </button>
+              {meetingExists === false ? (
+                <button
+                  type="button"
+                  className="rtc-btn rtc-btn-primary rtc-btn-large"
+                  onClick={handleCreateAndJoinMeeting}
+                  disabled={isCreatingMeeting || connectionState === 'CONNECTING'}
+                  style={{
+                    background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                    boxShadow: '0 4px 18px rgba(16, 185, 129, 0.4)',
+                  }}
+                >
+                  {isCreatingMeeting
+                    ? 'Creating Meeting Details & Joining...'
+                    : '✨ Create Meeting & Join Room'}
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  className="rtc-btn rtc-btn-primary rtc-btn-large"
+                  onClick={handleJoinMeeting}
+                  disabled={connectionState === 'CONNECTING'}
+                >
+                  {connectionState === 'CONNECTING' ? 'Connecting to Media SFU...' : '🚀 Join Meeting Now'}
+                </button>
+              )}
             </div>
           </div>
         </div>

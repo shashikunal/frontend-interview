@@ -189,7 +189,7 @@ export class MeetingOpsService {
       }
     }
 
-    const meetingId = `meet_${crypto.randomUUID().replace(/-/g, '').slice(0, 16)}`;
+    const meetingId = (dto as any).id || (dto as any).meetingId || `meet_${crypto.randomUUID().replace(/-/g, '').slice(0, 16)}`;
     const now = new Date().toISOString();
 
     const meeting: MeetingRecord = {
@@ -333,7 +333,7 @@ export class MeetingOpsService {
       }
     }
 
-    const meetingId = `meet_${crypto.randomUUID().replace(/-/g, '').slice(0, 16)}`;
+    const meetingId = (options as any)?.id || (options as any)?.meetingId || `meet_${crypto.randomUUID().replace(/-/g, '').slice(0, 16)}`;
     const now = new Date();
     const oneHourLater = new Date(now.getTime() + 60 * 60 * 1000);
     const nowIso = now.toISOString();
