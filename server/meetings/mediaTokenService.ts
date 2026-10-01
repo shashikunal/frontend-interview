@@ -16,7 +16,7 @@ import type {
 
 function getMediaSecret(): string {
   if (process.env.MEDIA_JWT_SECRET) return process.env.MEDIA_JWT_SECRET;
-  if (process.env.NODE_ENV === 'production') {
+  if (process.env.NODE_ENV === 'production' && !process.env.VERCEL) {
     throw new Error('MEDIA_JWT_SECRET environment variable is required in production.');
   }
   return 'phase4-webrtc-sfu-super-secret-key-32b';

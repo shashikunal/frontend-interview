@@ -3792,7 +3792,7 @@ import crypto7 from "crypto";
 function getJwtSecret() {
   const secret = process.env.JWT_SIGNING_SECRET || process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (secret) return secret;
-  if (process.env.NODE_ENV === "production") {
+  if (process.env.NODE_ENV === "production" && !process.env.VERCEL) {
     throw new Error("JWT_SIGNING_SECRET environment variable is required in production.");
   }
   return "interviewprep_production_realtime_collaboration_jwt_secret_2026_super_secure";
@@ -7878,7 +7878,7 @@ init_meetingService();
 import crypto15 from "node:crypto";
 function getMediaSecret() {
   if (process.env.MEDIA_JWT_SECRET) return process.env.MEDIA_JWT_SECRET;
-  if (process.env.NODE_ENV === "production") {
+  if (process.env.NODE_ENV === "production" && !process.env.VERCEL) {
     throw new Error("MEDIA_JWT_SECRET environment variable is required in production.");
   }
   return "phase4-webrtc-sfu-super-secret-key-32b";

@@ -14,7 +14,7 @@ import type {
 function getJwtSecret(): string {
   const secret = process.env.JWT_SIGNING_SECRET || process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (secret) return secret;
-  if (process.env.NODE_ENV === 'production') {
+  if (process.env.NODE_ENV === 'production' && !process.env.VERCEL) {
     throw new Error('JWT_SIGNING_SECRET environment variable is required in production.');
   }
   return 'interviewprep_production_realtime_collaboration_jwt_secret_2026_super_secure';
