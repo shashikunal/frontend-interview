@@ -814,8 +814,34 @@ export default defineConfig({
           if (id.includes('node_modules/@supabase')) {
             return 'vendor-supabase'
           }
-          if (id.includes('node_modules/recharts')) {
+          if (id.includes('node_modules/recharts') || id.includes('node_modules/@tanstack')) {
             return 'vendor-charts'
+          }
+          if (id.includes('node_modules/mermaid')) {
+            return 'vendor-mermaid'
+          }
+          if (id.includes('node_modules/@babel/standalone')) {
+            return 'vendor-babel'
+          }
+          if (id.includes('node_modules/yjs') || id.includes('node_modules/socket.io') || id.includes('node_modules/y-')) {
+            return 'vendor-realtime'
+          }
+          if (id.includes('src/features/ai-video-mock/data/questionBank')) {
+            return 'ai-mock-bank'
+          }
+          if (id.includes('src/features/interview-docs/data/tracks') || id.includes('subjectsCatalog') || id.includes('docsRegistry')) {
+            return 'vendor-docs'
+          }
+          if (id.includes('src/components/machinecoding/data') || id.includes('src/components/dsa/data') || id.includes('src/components/frontendjs/data') || id.includes('src/components/coreprogramming/data')) {
+            if (id.includes('src/components/dsa/data/batches/')) {
+              const match = id.match(/batch\d+/i)
+              return match ? `dsa-${match[0].toLowerCase()}` : 'dsa-batches'
+            }
+            if (id.includes('src/components/frontendjs/data/batches/')) {
+              const match = id.match(/batch\d+/i)
+              return match ? `fjs-${match[0].toLowerCase()}` : 'fjs-batches'
+            }
+            return 'vendor-catalogs'
           }
           if (id.includes('src/components/dsa/data/batches/')) {
             const match = id.match(/batch\d+/i)

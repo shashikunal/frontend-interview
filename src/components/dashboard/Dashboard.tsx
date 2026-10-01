@@ -17,24 +17,37 @@ const Leaderboard = lazy(() => import('../leaderboard/Leaderboard'))
 import { dsaSubmissionService } from '../dsa/lib/dsaSubmissionService'
 import { dsaProgressService } from '../dsa/lib/dsaProgressService'
 import type { DSASubmission } from '../dsa/data/dsaTypes'
-import { DSA_QUESTIONS } from '../dsa/data/dsaQuestions'
 import { mcProgressService } from '../machinecoding/lib/mcProgressService'
-import { MACHINE_CODING_CATALOG } from '../machinecoding/data/machineCodingCatalog'
 import { coreProgrammingProgressService } from '../coreprogramming/lib/coreProgrammingProgressService'
 import { coreProgrammingSubmissionService } from '../coreprogramming/lib/coreProgrammingSubmissionService'
 import type { CoreProgrammingSubmission } from '../coreprogramming/data/coreProgrammingTypes'
-import { CORE_PROGRAMMING_QUESTIONS } from '../coreprogramming/data/coreProgrammingQuestions'
 import { frontendJsProgressService } from '../frontendjs/lib/frontendJsProgressService'
 import { frontendJsSubmissionService } from '../frontendjs/lib/frontendJsSubmissionService'
 import type { FrontendJsSubmission } from '../frontendjs/data/frontendJsTypes'
-import { FRONTEND_JS_QUESTIONS } from '../frontendjs/data/frontendJsQuestions'
-import { mockSessionService } from '../../features/ai-video-mock/services/mockSessionService'
+import type { MockInterviewSession } from '../../features/ai-video-mock/types/mock.types'
 import { adminAnalyticsService } from '../../lib/adminAnalyticsService'
 const StudentPerformanceView = lazy(() => import('../../features/performance-history/components/student/StudentPerformanceView'))
-import { CandidateDocsSyllabusTracker } from './CandidateDocsSyllabusTracker'
+const CandidateDocsSyllabusTracker = lazy(() => import('./CandidateDocsSyllabusTracker').then(m => ({ default: m.CandidateDocsSyllabusTracker })))
 import { docsProgressService } from '../../features/interview-docs/services/docsProgressService'
-import CandidateMasterBankCard from '../../features/interview-questions/components/CandidateMasterBankCard'
+const CandidateMasterBankCard = lazy(() => import('../../features/interview-questions/components/CandidateMasterBankCard'))
 const StudentMeetingDashboard = lazy(() => import('../../features/meetings/components/StudentMeetingDashboard'))
+
+type CatalogMeta = { title: string; topic?: string; difficulty?: string; category?: string }
+function readLocalMockSessions(): MockInterviewSession[] {
+  try {
+    const out: MockInterviewSession[] = []
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i)
+      if (key && key.startsWith('ai_video_mock_session_')) {
+        const raw = localStorage.getItem(key)
+        if (raw) {
+          try { out.push(JSON.parse(raw)) } catch { /* ignore corrupt entry */ }
+        }
+      }
+    }
+    return out.sort((a, b) => new Date(b.startedAt).getTime() - new Date(a.startedAt).getTime())
+  } catch { return [] }
+}
 import './Dashboard.css'
 
 function catClass(name: string): string {
@@ -153,10 +166,53 @@ function CandidateDashboard() {
   const [fjsSolvedCount, setFjsSolvedCount] = useState<number>(0)
   const [fjsSearch, setFjsSearch] = useState<string>('')
 
-  // AI Video Mock Sessions State
-  const [aiMockSessions, setAiMockSessions] = useState(() => mockSessionService.getAllLocalSessions())
+  // AI Video Mock Sessions State (localStorage-only; avoids pulling 13MB question bank via mockSessionService)
+  const [aiMockSessions, setAiMockSessions] = useState<MockInterviewSession[]>(() => readLocalMockSessions())
   useEffect(() => {
-    setAiMockSessions(mockSessionService.getAllLocalSessions())
+    setAiMockSessions(readLocalMockSessions())
+  }, [])
+
+  // Heavy studio catalogs load on demand so Dashboard stays light.
+  // Title maps start empty; UI falls back to resolveQuestionTitle() until loaded.
+  const [dsaMetaMap, setDsaMetaMap] = useState<Record<string, CatalogMeta>>({})
+  const [cpMetaMap, setCpMetaMap] = useState<Record<string, CatalogMeta>>({})
+  const [fjsMetaMap, setFjsMetaMap] = useState<Record<string, CatalogMeta>>({})
+  const [mcCatalog, setMcCatalog] = useState<Array<{ id: string; title?: string; category?: string; difficulty?: string; timeEstimate?: string }>>([])
+  const [catalogCounts, setCatalogCounts] = useState({ mc: 0, dsa: 0, cp: 0, fjs: 0 })
+  useEffect(() => {
+    let cancelled = false
+    ;(async () => {
+      try {
+        const [dsaMod, cpMod, fjsMod, mcMod] = await Promise.all([
+          import('../dsa/data/dsaQuestions'),
+          import('../coreprogramming/data/coreProgrammingQuestions'),
+          import('../frontendjs/data/frontendJsQuestions'),
+          import('../machinecoding/data/machineCodingCatalog'),
+        ])
+        if (cancelled) return
+        const toMap = (list: Array<{ id: string; title: string; topic?: string; difficulty?: string; category?: string }>) => {
+          const m: Record<string, CatalogMeta> = {}
+          for (const q of list) m[q.id] = { title: q.title, topic: q.topic, difficulty: q.difficulty, category: q.category }
+          return m
+        }
+        setDsaMetaMap(toMap(dsaMod.DSA_QUESTIONS as never))
+        setCpMetaMap(toMap(cpMod.CORE_PROGRAMMING_QUESTIONS as never))
+        const fjsMap: Record<string, CatalogMeta> = {}
+        for (const q of (fjsMod.FRONTEND_JS_QUESTIONS as Array<{ id: string; title: string; category?: string; difficulty?: string }>)) {
+          fjsMap[q.id] = { title: q.title, category: q.category, difficulty: q.difficulty }
+          fjsMap[q.id.toLowerCase()] = fjsMap[q.id]
+        }
+        setFjsMetaMap(fjsMap)
+        setMcCatalog(mcMod.MACHINE_CODING_CATALOG as never)
+        setCatalogCounts({
+          mc: (mcMod.MACHINE_CODING_CATALOG as unknown[]).length,
+          dsa: (dsaMod.DSA_QUESTIONS as unknown[]).length,
+          cp: (cpMod.CORE_PROGRAMMING_QUESTIONS as unknown[]).length,
+          fjs: (fjsMod.FRONTEND_JS_QUESTIONS as unknown[]).length,
+        })
+      } catch { /* catalogs optional; fallbacks cover UI */ }
+    })()
+    return () => { cancelled = true }
   }, [])
 
   // Prevent background page scrolling while dashboard modals are open & handle Escape key
@@ -431,9 +487,10 @@ function CandidateDashboard() {
   }, [user?.id])
 
   const nextMCQuestion = useMemo(() => {
-    const found = MACHINE_CODING_CATALOG.find(q => !mcSolvedIds.has(q.id))
-    return found || MACHINE_CODING_CATALOG[0]
-  }, [mcSolvedIds])
+    if (mcCatalog.length === 0) return undefined
+    const found = mcCatalog.find(q => !mcSolvedIds.has(q.id))
+    return found || mcCatalog[0]
+  }, [mcSolvedIds, mcCatalog])
 
   const mcStats = useMemo(() => {
     const total = mcSubmissions.length
@@ -473,27 +530,27 @@ function CandidateDashboard() {
     if (!dsaSearch.trim()) return dsaSubmissions
     const term = dsaSearch.toLowerCase()
     return dsaSubmissions.filter(s => {
-      const q = DSA_QUESTIONS.find(item => item.id === s.questionId)
+      const q = dsaMetaMap[s.questionId]
       return (
         s.questionId.toLowerCase().includes(term) ||
         (q && q.title.toLowerCase().includes(term)) ||
         s.language.toLowerCase().includes(term)
       )
     })
-  }, [dsaSubmissions, dsaSearch])
+  }, [dsaSubmissions, dsaSearch, dsaMetaMap])
 
   const filteredCPSubmissions = useMemo(() => {
     if (!cpSearch.trim()) return cpSubmissions
     const term = cpSearch.toLowerCase()
     return cpSubmissions.filter(s => {
-      const q = CORE_PROGRAMMING_QUESTIONS.find(item => item.id === s.questionId)
+      const q = cpMetaMap[s.questionId]
       return (
         s.questionId.toLowerCase().includes(term) ||
         (q && q.title.toLowerCase().includes(term)) ||
         s.status.toLowerCase().includes(term)
       )
     })
-  }, [cpSubmissions, cpSearch])
+  }, [cpSubmissions, cpSearch, cpMetaMap])
 
   const filteredFJSSubmissions = useMemo(() => {
     if (!fjsSearch.trim()) return fjsSubmissions
@@ -600,8 +657,9 @@ function CandidateDashboard() {
   const totalQuestionsCount = questions.length || 1
   const overallPercentage = Math.round((totalSolved / totalQuestionsCount) * 100)
   const totalCatalogCount = useMemo(() => {
-    return MACHINE_CODING_CATALOG.length + DSA_QUESTIONS.length + CORE_PROGRAMMING_QUESTIONS.length + FRONTEND_JS_QUESTIONS.length;
-  }, []);
+    const total = catalogCounts.mc + catalogCounts.dsa + catalogCounts.cp + catalogCounts.fjs;
+    return total || 1;
+  }, [catalogCounts]);
 
   if (loading) {
     return (
@@ -802,7 +860,9 @@ function CandidateDashboard() {
         </Suspense>
       ) : activeMainSection === 'syllabus' ? (
         <div id="candidate-syllabus-tracker">
-          <CandidateDocsSyllabusTracker />
+          <Suspense fallback={<div className="app-route-loader"><div className="app-route-spinner" /><p>Loading syllabus...</p></div>}>
+            <CandidateDocsSyllabusTracker />
+          </Suspense>
         </div>
       ) : activeMainSection === 'meetings' ? (
         <Suspense fallback={<div className="app-route-loader"><div className="app-route-spinner" /><p>Loading meetings...</p></div>}>
@@ -844,7 +904,9 @@ function CandidateDashboard() {
 
       {/* Master Question Bank (12,000 Questions) */}
       <div style={{ marginBottom: '1.75rem' }}>
-        <CandidateMasterBankCard />
+        <Suspense fallback={<div className="app-route-loader"><div className="app-route-spinner" /><p>Loading question bank...</p></div>}>
+          <CandidateMasterBankCard />
+        </Suspense>
       </div>
 
       {/* Hero Stats Row */}
@@ -1157,7 +1219,9 @@ function CandidateDashboard() {
       </section>
 
       {/* Docs & Full Syllabus Completion Tracker */}
-      <CandidateDocsSyllabusTracker />
+      <Suspense fallback={<div className="app-route-loader"><div className="app-route-spinner" /><p>Loading syllabus...</p></div>}>
+        <CandidateDocsSyllabusTracker />
+      </Suspense>
 
       {/* Machine Coding Submissions & Marks Evaluation Ledger */}
       <section id="candidate-submissions-section" className="candidate-mc-section card-box">
@@ -1596,7 +1660,7 @@ function CandidateDashboard() {
                   </thead>
                   <tbody>
                     {filteredDSASubmissions.map(sub => {
-                      const qMeta = DSA_QUESTIONS.find(q => q.id === sub.questionId)
+                      const qMeta = dsaMetaMap[sub.questionId]
                       const isAcc = sub.status === 'Accepted'
                       return (
                         <tr key={sub.id}>
@@ -1725,7 +1789,7 @@ function CandidateDashboard() {
                   </thead>
                   <tbody>
                     {filteredCPSubmissions.map(sub => {
-                      const q = CORE_PROGRAMMING_QUESTIONS.find(item => item.id === sub.questionId)
+                      const q = cpMetaMap[sub.questionId]
                       const isAcc = sub.status === 'Accepted'
                       return (
                         <tr key={sub.id}>
@@ -1851,7 +1915,7 @@ function CandidateDashboard() {
                   </thead>
                   <tbody>
                     {filteredFJSSubmissions.map(sub => {
-                      const qMeta = FRONTEND_JS_QUESTIONS.find(item => item.id.toLowerCase() === sub.questionId.toLowerCase())
+                      const qMeta = fjsMetaMap[sub.questionId] || fjsMetaMap[sub.questionId.toLowerCase()]
                       const isAcc = sub.status === 'Accepted'
                       return (
                         <tr key={sub.id}>
