@@ -29,11 +29,12 @@ export default function QuestionList() {
   const qParam = searchParams.get('q') || ''
   const savedParam = searchParams.get('saved') === 'true'
   const statusParam = searchParams.get('status') || ''
+  const difficultyParam = searchParams.get('difficulty') || ''
 
   const [searchTerm, setSearchTerm] = useState(qParam)
   const [selectedCategory, setSelectedCategory] = useState(categoryFilter)
   const [selectedSource, setSelectedSource] = useState(sourceFilter)
-  const [selectedDifficulty, setSelectedDifficulty] = useState('')
+  const [selectedDifficulty, setSelectedDifficulty] = useState(difficultyParam)
   const [selectedStatus, setSelectedStatus] = useState(statusParam)
   const [selectedTemplate, setSelectedTemplate] = useState(searchParams.get('template') || '')
   const [savedOnly, setSavedOnly] = useState(savedParam)
@@ -110,7 +111,7 @@ export default function QuestionList() {
   useEffect(() => {
     setVisibleCount(PAGE_SIZE)
     window.scrollTo({ top: 0 })
-  }, [searchTerm, savedOnly, selectedStatus, selectedCategory, selectedSource, selectedDifficulty])
+  }, [searchTerm, savedOnly, selectedStatus, selectedCategory, selectedSource, selectedDifficulty, selectedTemplate])
 
   useEffect(() => {
     if (categoryFilter) {
@@ -123,6 +124,14 @@ export default function QuestionList() {
       setSelectedSource(sourceFilter)
     }
   }, [sourceFilter])
+
+  useEffect(() => {
+    setSelectedStatus(statusParam)
+  }, [statusParam])
+
+  useEffect(() => {
+    setSelectedDifficulty(difficultyParam)
+  }, [difficultyParam])
 
   useEffect(() => {
     setSearchTerm(qParam)
@@ -141,6 +150,13 @@ export default function QuestionList() {
     } else {
       newParams.delete('saved')
     }
+    setSearchParams(newParams)
+  }
+
+  const updateSearchParam = (key: string, value: string) => {
+    const newParams = new URLSearchParams(searchParams)
+    if (value) newParams.set(key, value)
+    else newParams.delete(key)
     setSearchParams(newParams)
   }
 
@@ -277,7 +293,10 @@ export default function QuestionList() {
         </select>
         <select
           value={selectedDifficulty}
-          onChange={e => setSelectedDifficulty(e.target.value)}
+          onChange={e => {
+            setSelectedDifficulty(e.target.value)
+            updateSearchParam('difficulty', e.target.value)
+          }}
           className="category-select"
           aria-label="Filter by difficulty"
         >
@@ -306,7 +325,10 @@ export default function QuestionList() {
         </select>
         <select
           value={selectedStatus}
-          onChange={e => setSelectedStatus(e.target.value)}
+          onChange={e => {
+            setSelectedStatus(e.target.value)
+            updateSearchParam('status', e.target.value)
+          }}
           className="category-select"
           aria-label="Filter by question progress status"
         >
@@ -322,7 +344,11 @@ export default function QuestionList() {
           <button
             key={d}
             className={`diff-chip diff-chip-${d.toLowerCase()} ${selectedDifficulty === d ? 'active' : ''}`}
-            onClick={() => setSelectedDifficulty(prev => (prev === d ? '' : d))}
+            onClick={() => {
+              const next = selectedDifficulty === d ? '' : d
+              setSelectedDifficulty(next)
+              updateSearchParam('difficulty', next)
+            }}
           >
             <span className={`badge badge-${d.toLowerCase()}`}>{d}</span>
             <span className="diff-count">{breakdown[d.toLowerCase() as keyof typeof breakdown].toLocaleString()}</span>

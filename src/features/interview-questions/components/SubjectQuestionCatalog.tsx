@@ -26,7 +26,6 @@ export default function SubjectQuestionCatalog() {
   const [error, setError] = useState<string | null>(null)
 
   // Filters
-  // Filters
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedTopic, setSelectedTopic] = useState('ALL')
   const [selectedDiff, setSelectedDiff] = useState<string>(initialDiff)
@@ -43,6 +42,11 @@ export default function SubjectQuestionCatalog() {
       setSelectedDiff(d)
     }
 
+    const level = searchParams.get('level')?.toUpperCase()
+    if (level && ['FRESHER', '1_3_YEARS', '3_5_YEARS', '5_8_YEARS', '8_PLUS_YEARS', 'ALL'].includes(level)) {
+      setSelectedExp(level)
+    }
+
     const companyParam = searchParams.get('company')
     if (companyParam) {
       setSelectedCompany(companyParam)
@@ -52,6 +56,8 @@ export default function SubjectQuestionCatalog() {
     if (highFreqParam === 'true') {
       setHighFreqOnly(true)
     }
+
+    setCurrentPage(1)
   }, [searchParams])
 
   // Progress state subscription
@@ -104,6 +110,19 @@ export default function SubjectQuestionCatalog() {
       if (top) set.add(top)
     })
     return Array.from(set).sort()
+  }, [questions])
+
+  // Companies available for this subject (derived from data, sorted by coverage)
+  const availableCompanies = useMemo(() => {
+    const counts = new Map<string, number>()
+    questions.forEach(q => {
+      for (const company of q.companyTags || []) {
+        counts.set(company, (counts.get(company) || 0) + 1)
+      }
+    })
+    return Array.from(counts.entries())
+      .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+      .map(([name]) => name)
   }, [questions])
 
   // Real-time filtered question set
@@ -180,12 +199,13 @@ export default function SubjectQuestionCatalog() {
     progressState,
   ])
 
-  // Pagination slice
+  // Pagination slice (clamped so filter changes can never leave the page out of range)
   const totalPages = Math.max(1, Math.ceil(filteredQuestions.length / PAGE_SIZE))
+  const safePage = Math.min(currentPage, totalPages)
   const paginatedQuestions = useMemo(() => {
-    const start = (currentPage - 1) * PAGE_SIZE
+    const start = (safePage - 1) * PAGE_SIZE
     return filteredQuestions.slice(start, start + PAGE_SIZE)
-  }, [filteredQuestions, currentPage])
+  }, [filteredQuestions, safePage])
 
   // Current Subject Progress Stats
   const subjectStats = useMemo(() => {
@@ -458,14 +478,12 @@ export default function SubjectQuestionCatalog() {
             }}
           >
             <option value="ALL">All Companies</option>
-            <option value="Google">Google</option>
-            <option value="Meta">Meta</option>
-            <option value="Amazon">Amazon</option>
-            <option value="Microsoft">Microsoft</option>
-            <option value="Netflix">Netflix</option>
-            <option value="Apple">Apple</option>
-            <option value="Uber">Uber</option>
-            <option value="Airbnb">Airbnb</option>
+            {availableCompanies.map(company => (
+              <option key={company} value={company}>{company}</option>
+            ))}
+            {selectedCompany !== 'ALL' && !availableCompanies.includes(selectedCompany) && (
+              <option value={selectedCompany}>{selectedCompany}</option>
+            )}
           </select>
 
           {/* High Frequency Toggle Button */}
@@ -551,6 +569,7 @@ export default function SubjectQuestionCatalog() {
               setSelectedStatus('ALL')
               setSelectedCompany('ALL')
               setHighFreqOnly(false)
+              setCurrentPage(1)
             }}
           >
             Clear All Filters
@@ -644,19 +663,19 @@ export default function SubjectQuestionCatalog() {
           <button
             type="button"
             className="mqb-action-pill-btn"
-            disabled={currentPage === 1}
-            onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+            disabled={safePage === 1}
+            onClick={() => setCurrentPage(p => Math.max(1, Math.min(p, totalPages) - 1))}
           >
             ← Previous
           </button>
           <span style={{ fontSize: '0.9rem', color: 'var(--mqb-text-secondary)', padding: '0 0.5rem' }}>
-            Page <strong>{currentPage}</strong> of <strong>{totalPages}</strong>
+            Page <strong>{safePage}</strong> of <strong>{totalPages}</strong>
           </span>
           <button
             type="button"
             className="mqb-action-pill-btn"
-            disabled={currentPage === totalPages}
-            onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+            disabled={safePage === totalPages}
+            onClick={() => setCurrentPage(p => Math.min(totalPages, Math.min(p, totalPages) + 1))}
           >
             Next →
           </button>
