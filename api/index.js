@@ -6933,25 +6933,32 @@ if (process.env.ADDITIONAL_TRUSTED_ORIGINS) {
     if (trimmed) TRUSTED_ORIGINS.add(trimmed);
   });
 }
-function isOriginAllowed(origin) {
+function isOriginAllowed(origin, reqHost) {
   if (!origin) return true;
   if (TRUSTED_ORIGINS.has(origin)) return true;
-  if (process.env.NODE_ENV !== "production") {
-    try {
-      const url = new URL(origin);
+  try {
+    const url = new URL(origin);
+    if (process.env.NODE_ENV !== "production") {
       if (url.hostname === "localhost" || url.hostname === "127.0.0.1") {
         return true;
       }
-    } catch (_) {
-      return false;
     }
+    if (url.hostname === "vercel.app" || url.hostname.endsWith(".vercel.app")) {
+      return true;
+    }
+    if (reqHost && (url.host === reqHost || url.hostname === reqHost)) {
+      return true;
+    }
+  } catch (_) {
+    return false;
   }
   return false;
 }
 function applySecurityHeaders(req, res) {
   const origin = req.headers?.origin || req.headers?.Origin;
+  const reqHost = req.headers?.host || req.headers?.Host;
   if (origin) {
-    if (isOriginAllowed(origin)) {
+    if (isOriginAllowed(origin, reqHost)) {
       res.setHeader("Access-Control-Allow-Origin", origin);
       res.setHeader("Access-Control-Allow-Credentials", "true");
       res.setHeader("Vary", "Origin");
@@ -6969,6 +6976,11 @@ function applySecurityHeaders(req, res) {
     "Access-Control-Allow-Headers",
     "Content-Type, Authorization, X-Correlation-Id, X-Request-Id, X-User-Id, X-Session-Id"
   );
+  if (req.method === "OPTIONS") {
+    res.statusCode = 204;
+    res.end();
+    return false;
+  }
   res.setHeader("X-Content-Type-Options", "nosniff");
   res.setHeader("X-Frame-Options", "DENY");
   res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
