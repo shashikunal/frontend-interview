@@ -463,6 +463,52 @@
       "updated_at": "2026-10-01T10:47:47.658Z",
       "version": 1,
       "idempotency_key": "test_key_1790851667658"
+    },
+    {
+      "id": "meet_64e6f783c80045de",
+      "title": "Idempotency Verification Meeting",
+      "description": "",
+      "meeting_type": "Interview",
+      "meeting_provider": "Platform Meet (Built-in)",
+      "meeting_url": "/meet/meet_idempotent_test",
+      "start_at": "2026-10-01T11:26:07.821Z",
+      "end_at": "2026-10-01T12:26:07.821Z",
+      "timezone": "Asia/Kolkata",
+      "trainer_id": "host_001",
+      "trainer_name": "Admin Tester",
+      "created_by": "admin_test",
+      "status": "CANCELLED",
+      "capacity": 50,
+      "recurrence_rule": null,
+      "parent_meeting_id": null,
+      "created_at": "2026-10-01T11:26:07.822Z",
+      "updated_at": "2026-10-01T11:26:08.266Z",
+      "version": 1790853968266,
+      "idempotency_key": null,
+      "deleted_at": "2026-10-01T11:26:08.266Z",
+      "deleted_by": "admin_test"
+    },
+    {
+      "id": "meet_a0f0c7c94f754d24",
+      "title": "Idempotent Duplicate Guard",
+      "description": "",
+      "meeting_type": "Interview",
+      "meeting_provider": "Platform Meet (Built-in)",
+      "meeting_url": "/meet/meet_idem_guard_1",
+      "start_at": "2026-10-01T11:26:08.823Z",
+      "end_at": "2026-10-01T12:26:08.823Z",
+      "timezone": "Asia/Kolkata",
+      "trainer_id": "host_001",
+      "trainer_name": "Admin Tester",
+      "created_by": "admin_test",
+      "status": "SCHEDULED",
+      "capacity": 50,
+      "recurrence_rule": null,
+      "parent_meeting_id": null,
+      "created_at": "2026-10-01T11:26:08.823Z",
+      "updated_at": "2026-10-01T11:26:08.823Z",
+      "version": 1,
+      "idempotency_key": "test_key_1790853968823"
     }
   ],
   "participants": [
@@ -1107,5 +1153,5 @@
       "updated_at": "2026-09-24T16:40:13.467Z"
     }
   ],
-  "updatedAt": "2026-10-01T10:47:47.829Z"
+  "updatedAt": "2026-10-01T11:26:09.251Z"
 }
