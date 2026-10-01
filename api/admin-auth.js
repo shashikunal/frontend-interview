@@ -80,9 +80,31 @@ export default async function handler(req, res) {
     });
   }
 
-  // 2. Timing-Safe Credential Verification
-  const isUsernameValid = allowedUsernames.has(cleanUsername);
-  const isPasswordValid = secureCompare(password, configuredPassword);
+  // 2. Timing-Safe Credential Verification & Supabase Fallback
+  const isUsernameValid = allowedUsernames.has(cleanUsername) || cleanUsername.endsWith('@interviewprep.com');
+  let isPasswordValid = secureCompare(password, configuredPassword);
+  let session = null;
+
+  const sb = createClient(supabaseUrl, supabaseKey, {
+    auth: { persistSession: false, autoRefreshToken: false },
+  });
+
+  // If password comparison with configuredPassword fails, attempt direct Supabase authentication
+  if (isUsernameValid && !isPasswordValid) {
+    try {
+      const emailToTry = cleanUsername.includes('@') ? cleanUsername : 'admin@interviewprep.com';
+      const { data: authData, error: authError } = await sb.auth.signInWithPassword({
+        email: emailToTry,
+        password: password,
+      });
+      if (!authError && authData?.session) {
+        session = authData.session;
+        isPasswordValid = true;
+      }
+    } catch {
+      // Fall through to authentication failure
+    }
+  }
 
   if (!isUsernameValid || !isPasswordValid) {
     auditService.log({
@@ -97,21 +119,19 @@ export default async function handler(req, res) {
     return res.status(401).json({ error: 'Invalid administrator credentials. Access denied.' });
   }
 
-  // 3. Establish Supabase Admin Session
-  let session = null;
-  try {
-    const sb = createClient(supabaseUrl, supabaseKey, {
-      auth: { persistSession: false, autoRefreshToken: false },
-    });
-    const { data: authData } = await sb.auth.signInWithPassword({
-      email: 'admin@interviewprep.com',
-      password: configuredPassword,
-    });
-    if (authData?.session) {
-      session = authData.session;
+  // 3. Establish Supabase Admin Session (if not already established by direct auth)
+  if (!session) {
+    try {
+      const { data: authData } = await sb.auth.signInWithPassword({
+        email: 'admin@interviewprep.com',
+        password: configuredPassword,
+      });
+      if (authData?.session) {
+        session = authData.session;
+      }
+    } catch (e) {
+      console.warn('[Admin Auth] Supabase session generation notice:', e);
     }
-  } catch (e) {
-    console.warn('[Admin Auth] Supabase session generation notice:', e);
   }
 
   const isShashi = cleanUsername === 'shashi' || cleanUsername === 'shashi@admin.com';

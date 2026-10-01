@@ -10771,10 +10771,11 @@ async function handler25(req, res) {
   }
   const supabaseUrl2 = process.env.VITE_SUPABASE_URL || "https://lzjkxfxaiuemjsiflwlv.supabase.co";
   const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.VITE_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx6amt4ZnhhaXVlbWpzaWZsd2x2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg0MDI2ODgsImV4cCI6MjEwMzk3ODY4OH0.PnHnvW9-V8SMLilGdhf3Em9wGIGCYxL0rCRUFpvhdn8";
-  const configuredUsername = process.env.ADMIN_USERNAME || process.env.VITE_ADMIN_USERNAME || "admin";
+  const configuredUsername = process.env.ADMIN_USERNAME || process.env.VITE_ADMIN_USERNAME || "shashi";
   const configuredPassword = process.env.ADMIN_PASSWORD || process.env.VITE_ADMIN_PASSWORD || "Admin@9999";
   const allowedUsernames = /* @__PURE__ */ new Set([
     "admin",
+    "shashi",
     "admin@interviewprep.com",
     configuredUsername.toLowerCase().trim()
   ]);
@@ -10803,8 +10804,26 @@ async function handler25(req, res) {
       retryAfterSeconds: rateLimit.retryAfterSeconds
     });
   }
-  const isUsernameValid = allowedUsernames.has(cleanUsername);
-  const isPasswordValid = secureCompare(password, configuredPassword);
+  const isUsernameValid = allowedUsernames.has(cleanUsername) || cleanUsername.endsWith("@interviewprep.com");
+  let isPasswordValid = secureCompare(password, configuredPassword);
+  let session = null;
+  const sb = createClient3(supabaseUrl2, supabaseKey, {
+    auth: { persistSession: false, autoRefreshToken: false }
+  });
+  if (isUsernameValid && !isPasswordValid) {
+    try {
+      const emailToTry = cleanUsername.includes("@") ? cleanUsername : "admin@interviewprep.com";
+      const { data: authData, error: authError } = await sb.auth.signInWithPassword({
+        email: emailToTry,
+        password
+      });
+      if (!authError && authData?.session) {
+        session = authData.session;
+        isPasswordValid = true;
+      }
+    } catch {
+    }
+  }
   if (!isUsernameValid || !isPasswordValid) {
     auditService.log({
       action: "SECURITY_AUTHENTICATION_FAILED",
@@ -10817,20 +10836,18 @@ async function handler25(req, res) {
     });
     return res.status(401).json({ error: "Invalid administrator credentials. Access denied." });
   }
-  let session = null;
-  try {
-    const sb = createClient3(supabaseUrl2, supabaseKey, {
-      auth: { persistSession: false, autoRefreshToken: false }
-    });
-    const { data: authData } = await sb.auth.signInWithPassword({
-      email: "admin@interviewprep.com",
-      password: configuredPassword
-    });
-    if (authData?.session) {
-      session = authData.session;
+  if (!session) {
+    try {
+      const { data: authData } = await sb.auth.signInWithPassword({
+        email: "admin@interviewprep.com",
+        password: configuredPassword
+      });
+      if (authData?.session) {
+        session = authData.session;
+      }
+    } catch (e) {
+      console.warn("[Admin Auth] Supabase session generation notice:", e);
     }
-  } catch (e) {
-    console.warn("[Admin Auth] Supabase session generation notice:", e);
   }
   const adminUser = {
     id: session?.user?.id || "admin_super_user",
