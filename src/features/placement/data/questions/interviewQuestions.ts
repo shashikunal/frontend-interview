@@ -19,7 +19,7 @@ export const INTERVIEW_QUESTIONS: PlacementQuestionRecord[] = [
     prompt: 'Tell me about yourself. (60-second version)',
     correctAnswer:
       'Structure: present, past, future. "I am a recent graduate focused on frontend development. During my studies I built three web projects using React and TypeScript, including one with authentication and deployed to production. Before that I interned where I worked on a dashboard used by the operations team. I am now looking for a junior frontend role where I can contribute to a real product and grow with a strong engineering team."',
-    explanation:
+    options: [],    explanation:
       'Keep it under 60 seconds. Lead with who you are now, add one proof point, and end with what you want next. Do not recite your resume chronologically.',
     expectedTimeSeconds: 60,
     points: 1,
@@ -36,7 +36,7 @@ export const INTERVIEW_QUESTIONS: PlacementQuestionRecord[] = [
     prompt: 'Why do you want to work in frontend development?',
     correctAnswer:
       'Connect personal experience to the work. "I enjoy frontend because the feedback loop is immediate — I can see the effect of my code on a real user. I care about accessibility and performance because I have seen how a slow or unusable interface affects people. Frontend also sits between design and engineering, which suits how I think."',
-    explanation:
+    options: [],    explanation:
       'Give a specific reason, not "because it is interesting". Mention something concrete you have built or observed that proves the interest.',
     expectedTimeSeconds: 90,
     points: 1,
@@ -53,7 +53,7 @@ export const INTERVIEW_QUESTIONS: PlacementQuestionRecord[] = [
     prompt: 'Why should we hire you?',
     correctAnswer:
       'Map your strengths to their need. "You need someone who can own small features end to end. In my project I designed the API integration, handled loading and error states, and shipped it myself. I also write clear documentation, which reduces review time. I am looking for a place to contribute early and learn fast, and this role matches that."',
-    explanation:
+    options: [],    explanation:
       'Avoid generic adjectives. Use one or two specific proofs and end by showing you understand what the role needs.',
     expectedTimeSeconds: 120,
     points: 1,
@@ -70,7 +70,7 @@ export const INTERVIEW_QUESTIONS: PlacementQuestionRecord[] = [
     prompt: 'Why do you want to work at this company?',
     correctAnswer:
       'Do real research. "I read your engineering blog post on how you reduced your bundle size by 40 percent, which told me you care about performance in practice. I also spoke with someone on the team about the mentorship structure. I want to work somewhere that ships carefully and helps juniors grow, and that matches what I found."',
-    explanation:
+    options: [],    explanation:
       'Never say "because you are a great company". Cite one specific, verifiable thing you read, used or heard.',
     expectedTimeSeconds: 90,
     points: 1,
@@ -89,7 +89,7 @@ export const INTERVIEW_QUESTIONS: PlacementQuestionRecord[] = [
     prompt: 'Explain your project in 2 minutes.',
     correctAnswer:
       'Use this structure: (1) Problem — who had it and why it mattered. (2) What I built — the core features. (3) How — the stack and one technical decision. (4) Result — what it does now, live. (5) What I learned or would improve.',
-    explanation:
+    options: [],    explanation:
       'Practice this until it is exactly 2 minutes. The most common mistake is jumping straight into the tech stack without stating the problem.',
     expectedTimeSeconds: 120,
     points: 1,
@@ -106,7 +106,7 @@ export const INTERVIEW_QUESTIONS: PlacementQuestionRecord[] = [
     prompt: 'Why did you choose React (and TypeScript) for this project?',
     correctAnswer:
       'Tie the choice to requirements. "The UI had several independent stateful widgets — filters, a modal, a paginated list. React\'s component model let me isolate that state. TypeScript was chosen because the API returned nested data and I wanted compile-time checks instead of runtime surprises. If the project had been a static page, I would not have used either."',
-    explanation:
+    options: [],    explanation:
       'A strong answer includes when you would NOT use the technology. That shows judgement rather than loyalty to a framework.',
     expectedTimeSeconds: 90,
     points: 1,
@@ -123,7 +123,7 @@ export const INTERVIEW_QUESTIONS: PlacementQuestionRecord[] = [
     prompt: 'How does authentication work in your project?',
     correctAnswer:
       'Walk through the flow. "The user signs in with email and password. The server verifies credentials and returns a short-lived access token and a refresh token. The access token is stored in memory and sent in the Authorization header. When it expires, the refresh token gets a new access token without forcing a logout. Routes check auth state before rendering, and unauthorised API calls return 401 which the client handles by redirecting to login."',
-    explanation:
+    options: [],    explanation:
       'Be ready for the follow-up: "Where do you store the token and why?" Know the trade-offs between localStorage, cookies with httpOnly, and in-memory storage.',
     expectedTimeSeconds: 120,
     points: 1,
@@ -140,7 +140,7 @@ export const INTERVIEW_QUESTIONS: PlacementQuestionRecord[] = [
     prompt: 'How do you handle API failure in your project?',
     correctAnswer:
       'Cover the three states. "Every fetch has three states: loading, error and success. I keep them in state so the UI shows a spinner while loading, a retry-able error message on failure, and the data on success. Network errors are distinguished from 4xx and 5xx — a 401 triggers re-authentication, a 500 shows a generic message with a retry button. I also abort in-flight requests on unmount to avoid state updates on an unmounted component."',
-    explanation:
+    options: [],    explanation:
       'Interviewers are checking that you do not leave the user staring at a blank screen. Mention at least loading, error and retry.',
     expectedTimeSeconds: 120,
     points: 1,
@@ -157,7 +157,7 @@ export const INTERVIEW_QUESTIONS: PlacementQuestionRecord[] = [
     prompt: 'What was the hardest bug you solved in this project, and how did you solve it?',
     correctAnswer:
       'Use STAR: Situation, Task, Action, Result. "The list flickered on every filter change (Situation). I had to find why the data was being refetched twice (Task). I traced it with React DevTools Profiler and found a useEffect with a missing dependency causing a second fetch, plus a key prop on the list that changed on every render (Action). I fixed the dependency array and used a stable key, which removed the flicker and halved the requests (Result)."',
-    explanation:
+    options: [],    explanation:
       'The debugging method matters more than the bug. Show your process: reproduce, isolate, hypothesise, verify, fix, prevent.',
     expectedTimeSeconds: 120,
     points: 1,
@@ -174,7 +174,7 @@ export const INTERVIEW_QUESTIONS: PlacementQuestionRecord[] = [
     prompt: 'How did you deploy this project?',
     correctAnswer:
       'Describe the pipeline. "I push to GitHub, which triggers a CI build that runs lint and tests. The build output is deployed to a CDN-backed host. Environment variables are configured in the host dashboard, not committed to the repository. The database is managed separately with migrations in version control. I also added a health-check endpoint so I know if the service is up."',
-    explanation:
+    options: [],    explanation:
       'If you used a simpler setup, say so honestly and explain what you would add at scale. Do not claim infrastructure you cannot explain.',
     expectedTimeSeconds: 90,
     points: 1,
@@ -191,7 +191,7 @@ export const INTERVIEW_QUESTIONS: PlacementQuestionRecord[] = [
     prompt: 'What happens if 1000 users use your application at the same time?',
     correctAnswer:
       'Think in layers. "On the client I would add pagination and caching to avoid fetching everything at once. On the server, the API would need connection pooling and database indexes on the queried columns. Static assets are already on a CDN. The bottleneck I would watch first is the database — unindexed queries degrade fastest under load. I have not load-tested this yet, but that is the first thing I would measure."',
-    explanation:
+    options: [],    explanation:
       'Honesty about what you have not tested is better than inventing numbers. Show you know where the failure points usually are.',
     expectedTimeSeconds: 120,
     points: 1,
@@ -208,7 +208,7 @@ export const INTERVIEW_QUESTIONS: PlacementQuestionRecord[] = [
     prompt: 'What would you improve if you had two more weeks?',
     correctAnswer:
       'Prioritise by user impact. "Three things, in order. First, accessibility — the modal does not trap focus yet. Second, performance — the list renders all items and should be virtualised. Third, testing — I have unit tests for the data layer but no end-to-end tests for the main flow. I would do them in that order because accessibility and performance affect real users today."',
-    explanation:
+    options: [],    explanation:
       'This question tests self-awareness. Naming real gaps in your own project is a strength, not a weakness.',
     expectedTimeSeconds: 90,
     points: 1,
@@ -227,7 +227,7 @@ export const INTERVIEW_QUESTIONS: PlacementQuestionRecord[] = [
     prompt: 'Explain JavaScript in simple words to a non-technical person. (60 seconds)',
     correctAnswer:
       '"JavaScript is the language that makes web pages interactive. When you click a button, see a form validate, or watch a page load new content without refreshing, that is JavaScript running in your browser. It works alongside HTML, which is the content, and CSS, which is the styling."',
-    explanation:
+    options: [],    explanation:
       'If you cannot explain it simply, you do not understand it well enough. Avoid jargon entirely in this answer.',
     expectedTimeSeconds: 60,
     points: 1,
@@ -244,7 +244,7 @@ export const INTERVIEW_QUESTIONS: PlacementQuestionRecord[] = [
     prompt: 'Explain React in simple words. (60 seconds)',
     correctAnswer:
       '"React lets you build a page out of small reusable pieces called components. Each component knows how to draw itself given some data. When the data changes, React works out the smallest part of the page that needs to update and changes only that. You describe what the UI should look like for a given state, and React keeps the screen in sync with that description."',
-    explanation:
+    options: [],    explanation:
       'Focus on the mental model (components + state-driven UI), not on hooks or virtual DOM internals unless asked.',
     expectedTimeSeconds: 60,
     points: 1,
@@ -261,7 +261,7 @@ export const INTERVIEW_QUESTIONS: PlacementQuestionRecord[] = [
     prompt: 'Explain the JavaScript event loop in 2 minutes.',
     correctAnswer:
       '"JavaScript runs on a single thread with a call stack. When the stack is empty, the engine takes the next task. Promise callbacks go into a microtask queue, which is drained completely before the next macrotask such as a timer or click event runs. That is why a resolved Promise logs before a setTimeout with zero delay, even though the timer was scheduled first."',
-    explanation:
+    options: [],    explanation:
       'Use one concrete example while you explain. Interviewers are checking that you know microtasks run before macrotasks.',
     expectedTimeSeconds: 120,
     points: 1,
@@ -278,7 +278,7 @@ export const INTERVIEW_QUESTIONS: PlacementQuestionRecord[] = [
     prompt: 'How does useEffect work and when does it run?',
     correctAnswer:
       '"useEffect runs after the component renders. It runs after the first render, and again after any render where a value in its dependency array changed. The function you return runs before the next effect and on unmount, which is where you clean up subscriptions and pending requests. If the dependency array is empty, it runs once after mount. Missing a dependency can cause stale values, so the linter rule matters."',
-    explanation:
+    options: [],    explanation:
       'Be ready for the follow-up about stale closures and why the functional form of setState is needed inside effects.',
     expectedTimeSeconds: 120,
     points: 1,
@@ -295,7 +295,7 @@ export const INTERVIEW_QUESTIONS: PlacementQuestionRecord[] = [
     prompt: 'Explain your coding solution for the problem you just solved.',
     correctAnswer:
       'Use this order: (1) restate the problem in one sentence, (2) state the approach and why you chose it, (3) walk through an example on the board, (4) give time and space complexity, (5) name one alternative and why you did not use it.',
-    explanation:
+    options: [],    explanation:
       'Interviewers score communication during coding rounds as heavily as the code. Narrate before you type.',
     expectedTimeSeconds: 120,
     points: 1,
@@ -312,7 +312,7 @@ export const INTERVIEW_QUESTIONS: PlacementQuestionRecord[] = [
     prompt: 'Explain CSS specificity in 60 seconds.',
     correctAnswer:
       '"When two rules target the same element, the browser picks the more specific one. Specificity is counted as inline style, then IDs, then classes and attributes, then element selectors. If two rules are equally specific, the one that appears later wins. That is why a plain element selector rarely overrides a class, and why !important should almost never be used — it breaks the cascade for everyone."',
-    explanation:
+    options: [],    explanation:
       'A clean, ordered explanation beats a long one. Mention the cascade order at the end.',
     expectedTimeSeconds: 60,
     points: 1,
@@ -331,7 +331,7 @@ export const INTERVIEW_QUESTIONS: PlacementQuestionRecord[] = [
     prompt: 'What was your biggest project challenge and how did you handle it?',
     correctAnswer:
       'Use STAR and pick a challenge with a measurable outcome. Show how you broke the problem down, what you tried, what failed and what finally worked. End with what you would do differently.',
-    explanation:
+    options: [],    explanation:
       'The failure and recovery part is what interviewers listen for. A story with no obstacles sounds invented.',
     expectedTimeSeconds: 120,
     points: 1,
@@ -348,7 +348,7 @@ export const INTERVIEW_QUESTIONS: PlacementQuestionRecord[] = [
     prompt: 'Describe a bug you solved that taught you something.',
     correctAnswer:
       'Describe the symptom, the misleading hypothesis you first followed, the evidence that corrected it, and the prevention step you added afterwards (a test, a type, a lint rule).',
-    explanation:
+    options: [],    explanation:
       'The prevention step is the part most candidates forget and interviewers value most.',
     expectedTimeSeconds: 90,
     points: 1,
@@ -365,7 +365,7 @@ export const INTERVIEW_QUESTIONS: PlacementQuestionRecord[] = [
     prompt: 'Tell me about a time you received critical feedback.',
     correctAnswer:
       'Choose real feedback that changed your behaviour. State the feedback without defensiveness, what you changed concretely, and the result. "My reviewer said my PRs were too large to review well. I started splitting work into small commits with clear messages, and review time dropped noticeably."',
-    explanation:
+    options: [],    explanation:
       'Never say you have never received criticism. Never blame the reviewer.',
     expectedTimeSeconds: 90,
     points: 1,
@@ -382,7 +382,7 @@ export const INTERVIEW_QUESTIONS: PlacementQuestionRecord[] = [
     prompt: 'How do you learn a new technology quickly?',
     correctAnswer:
       'Describe a repeatable method. "I build the smallest working version first, read docs for the concepts I actually hit, and write a short summary in my own words. When I learned React, I rebuilt a small existing page in it and hit routing and state issues on day two, which is where the real learning happened."',
-    explanation:
+    options: [],    explanation:
       'A method beats "I watch videos". Show that you learn by doing and by writing things down.',
     expectedTimeSeconds: 90,
     points: 1,
@@ -399,7 +399,7 @@ export const INTERVIEW_QUESTIONS: PlacementQuestionRecord[] = [
     prompt: 'How do you handle working under a tight deadline?',
     correctAnswer:
       'Show prioritisation, not heroics. "I list what must ship versus what is nice to have, agree the cut with whoever owns the deadline, and communicate risk early. On my project I cut a nice-to-have filter feature to hit a demo date, and shipped it the following week instead of delaying everything."',
-    explanation:
+    options: [],    explanation:
       'Working all night is not a good answer. Scope negotiation and early communication are.',
     expectedTimeSeconds: 90,
     points: 1,
@@ -416,7 +416,7 @@ export const INTERVIEW_QUESTIONS: PlacementQuestionRecord[] = [
     prompt: 'Do you have any questions for us? Prepare three.',
     correctAnswer:
       'Ask about the work, not perks. Examples: "What does the first month look like for someone joining this team?", "How does the team handle code review for junior engineers?", "What is the biggest technical challenge the team is working on right now?"',
-    explanation:
+    options: [],    explanation:
       'Always have questions prepared. "No, I think you covered everything" signals low interest.',
     expectedTimeSeconds: 60,
     points: 1,
@@ -435,7 +435,7 @@ export const INTERVIEW_QUESTIONS: PlacementQuestionRecord[] = [
     prompt: 'What is the difference between an interface and an abstract class in Java? When would you use each?',
     correctAnswer:
       'An abstract class can hold state, constructors and shared code; an interface defines a contract (Java 8+ can have default methods). Use an abstract class when related classes share implementation. Use an interface when unrelated classes need the same capability, such as Comparable.',
-    explanation: 'Give one concrete example of each use case. Interviewers listen for the "why", not just the definition.',
+    options: [],    explanation: 'Give one concrete example of each use case. Interviewers listen for the "why", not just the definition.',
     expectedTimeSeconds: 90,
     points: 1,
     verificationStatus: 'verified',
@@ -450,7 +450,7 @@ export const INTERVIEW_QUESTIONS: PlacementQuestionRecord[] = [
     difficulty: 'medium',
     prompt: 'What is the difference between a list and a tuple in Python, and when would you use each?',
     correctAnswer: 'A list is mutable and ordered; a tuple is immutable and ordered. Use a tuple for fixed collections that should not change, which also makes them hashable and usable as dictionary keys. Use a list when the collection changes.',
-    explanation: 'Mention hashability — it is the practical difference beyond mutability.',
+    options: [],    explanation: 'Mention hashability — it is the practical difference beyond mutability.',
     expectedTimeSeconds: 75,
     points: 1,
     verificationStatus: 'verified',
@@ -466,7 +466,7 @@ export const INTERVIEW_QUESTIONS: PlacementQuestionRecord[] = [
     prompt: 'How would you find the second highest salary in an employees table?',
     correctAnswer:
       '"I would use SELECT DISTINCT salary FROM employees ORDER BY salary DESC LIMIT 1 OFFSET 1. The DISTINCT handles ties at the top. On a database without LIMIT/OFFSET I would use a subquery: SELECT MAX(salary) FROM employees WHERE salary < (SELECT MAX(salary) FROM employees)."',
-    explanation: 'Always mention how duplicates affect the answer. That is the real point of the question.',
+    options: [],    explanation: 'Always mention how duplicates affect the answer. That is the real point of the question.',
     expectedTimeSeconds: 90,
     points: 1,
     verificationStatus: 'verified',
@@ -482,7 +482,7 @@ export const INTERVIEW_QUESTIONS: PlacementQuestionRecord[] = [
     prompt: 'Explain the four pillars of OOP with one real example each.',
     correctAnswer:
       'Encapsulation: a User object keeps its password hash private and exposes verify(). Inheritance: a SavingsAccount extends Account. Polymorphism: different Shape implementations share area(). Abstraction: a PaymentGateway interface hides whether Stripe or Razorpay is used.',
-    explanation: 'One short concrete example per pillar is stronger than long definitions.',
+    options: [],    explanation: 'One short concrete example per pillar is stronger than long definitions.',
     expectedTimeSeconds: 120,
     points: 1,
     verificationStatus: 'verified',
@@ -498,7 +498,7 @@ export const INTERVIEW_QUESTIONS: PlacementQuestionRecord[] = [
     prompt: 'What is database indexing and when does it hurt?',
     correctAnswer:
       'An index is a separate structure that lets the database find rows without scanning the whole table, usually a B-tree. It speeds reads on the indexed columns but adds cost to every insert, update and delete, and uses storage. Over-indexing a write-heavy table can slow it down more than the reads it helps.',
-    explanation: 'Mention the write cost explicitly — it is what the follow-up question checks.',
+    options: [],    explanation: 'Mention the write cost explicitly — it is what the follow-up question checks.',
     expectedTimeSeconds: 90,
     points: 1,
     verificationStatus: 'verified',
@@ -514,7 +514,7 @@ export const INTERVIEW_QUESTIONS: PlacementQuestionRecord[] = [
     prompt: 'What is the difference between a process and a thread?',
     correctAnswer:
       'A process has its own memory space and is isolated. Threads run inside a process and share its memory, so communication between threads is cheap but requires synchronisation to avoid race conditions. A crash in one thread can take down the process.',
-    explanation: 'Include the shared-memory consequence, not just the definition.',
+    options: [],    explanation: 'Include the shared-memory consequence, not just the definition.',
     expectedTimeSeconds: 75,
     points: 1,
     verificationStatus: 'verified',
@@ -530,7 +530,7 @@ export const INTERVIEW_QUESTIONS: PlacementQuestionRecord[] = [
     prompt: 'What happens when you type a URL into the browser and press Enter?',
     correctAnswer:
       'Walk the path: DNS resolves the domain to an IP, a TCP connection is opened (and TLS is negotiated for https), an HTTP request is sent, the server responds with HTML, the browser parses HTML and CSS, builds the DOM and CSSOM, runs JavaScript, and paints. Mention caching where relevant.',
-    explanation: 'This is a classic breadth question. Go in order and stop when asked — do not ramble.',
+    options: [],    explanation: 'This is a classic breadth question. Go in order and stop when asked — do not ramble.',
     expectedTimeSeconds: 120,
     points: 1,
     verificationStatus: 'verified',
@@ -546,7 +546,7 @@ export const INTERVIEW_QUESTIONS: PlacementQuestionRecord[] = [
     prompt: 'What is the difference between git merge and git rebase, and when is rebase dangerous?',
     correctAnswer:
       'Merge joins histories with a merge commit and preserves what happened. Rebase replays your commits on top of another branch, producing a linear history but rewriting commit hashes. Rebase is dangerous on commits that other people already have, because rewriting shared history causes conflicts for everyone.',
-    explanation: 'The safety rule is the important part of the answer.',
+    options: [],    explanation: 'The safety rule is the important part of the answer.',
     expectedTimeSeconds: 90,
     points: 1,
     verificationStatus: 'verified',

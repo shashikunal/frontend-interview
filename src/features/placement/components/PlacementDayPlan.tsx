@@ -19,16 +19,28 @@ export default function PlacementDayPlan() {
   const current = PLACEMENT_DAY_DEFINITIONS.find((d) => d.dayNumber === selectedDay)
   const topics = current ? placementService.getTopicsForDay(current.dayNumber) : []
   const daysCompleted = progress?.daysCompleted ?? []
+  const totalDays = PLACEMENT_DAY_DEFINITIONS.length
+  const completionPercentage = Math.round((daysCompleted.length / totalDays) * 100)
 
   return (
     <div>
       <div className="placement-card" style={{ marginBottom: 18 }}>
-        <h2>30-Day Curriculum</h2>
+        <h2>40-Day Curriculum</h2>
         <p>
           Each day has a phase, a focus and a set of topics that deep-link into the existing
           practice studios. Nothing here duplicates those studios — the placement module is the
           journey and the readiness layer on top.
         </p>
+        <div style={{ marginTop: 12 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
+            <span style={{ fontSize: '0.9rem', fontWeight: 600 }}>Overall Progress</span>
+            <span className="placement-badge info">{daysCompleted.length}/{totalDays} days</span>
+          </div>
+          <div className="placement-progress-track">
+            <div className="placement-progress-fill" style={{ width: `${completionPercentage}%` }} />
+          </div>
+          <p className="placement-inline-note">{completionPercentage}% complete</p>
+        </div>
         <div className="placement-form" style={{ marginTop: 12 }}>
           <div className="placement-form-row">
             <label>
@@ -62,6 +74,24 @@ export default function PlacementDayPlan() {
       <div className="placement-grid cols-2">
         <section className="placement-card">
           <h2>Days</h2>
+          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 12 }}>
+            {PLACEMENT_PHASES.map((phase) => {
+              const phaseDays = PLACEMENT_DAY_DEFINITIONS.filter((d) => d.phase === phase)
+              const phaseCompleted = phaseDays.filter((d) => daysCompleted.includes(d.dayNumber)).length
+              const isSelected = phaseFilter === phase
+              return (
+                <button
+                  key={phase}
+                  type="button"
+                  className={`btn btn-sm ${isSelected ? 'btn-primary' : ''}`}
+                  onClick={() => setPhaseFilter(isSelected ? 'all' : phase)}
+                  style={{ fontSize: '0.75rem' }}
+                >
+                  {phase} ({phaseCompleted}/{phaseDays.length})
+                </button>
+              )
+            })}
+          </div>
           <ul className="placement-list">
             {days.map((day) => {
               const done = daysCompleted.includes(day.dayNumber)
@@ -73,6 +103,7 @@ export default function PlacementDayPlan() {
                   style={{
                     cursor: 'pointer',
                     borderColor: isCurrent ? 'var(--accent)' : undefined,
+                    backgroundColor: selectedDay === day.dayNumber ? 'var(--bg-soft)' : undefined,
                   }}
                   onClick={() => setSelectedDay(day.dayNumber)}
                 >

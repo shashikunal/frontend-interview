@@ -11,6 +11,10 @@ const PlacementPractice = lazy(() => import('./components/PlacementPractice'))
 const PlacementAssessments = lazy(() => import('./components/PlacementAssessments'))
 const PlacementReadiness = lazy(() => import('./components/PlacementReadiness'))
 const PlacementMockInterviews = lazy(() => import('./components/PlacementMockInterviews'))
+const MockInterviewFlow = lazy(() => import('./components/MockInterviewFlow'))
+const PlacementAnalytics = lazy(() => import('./components/PlacementAnalytics'))
+const PlacementNotifications = lazy(() => import('./components/PlacementNotifications'))
+const ProjectInterviewFlow = lazy(() => import('./components/ProjectInterviewFlow'))
 const PlacementProject = lazy(() => import('./components/PlacementProject'))
 const PlacementApplications = lazy(() => import('./components/PlacementApplications'))
 const PlacementInterviewPrep = lazy(() => import('./components/PlacementInterviewPrep'))
@@ -24,15 +28,19 @@ interface NavItem {
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { view: 'overview', label: 'Overview' },
-  { view: 'day-plan', label: 'Day Plan' },
+  { view: 'overview', label: 'Home' },
   { view: 'practice', label: 'Practice' },
-  { view: 'assessments', label: 'Assessments' },
-  { view: 'readiness', label: 'Readiness' },
-  { view: 'mock-interviews', label: 'Mock Interviews' },
-  { view: 'project', label: 'Project' },
-  { view: 'applications', label: 'Applications' },
   { view: 'interview-prep', label: 'Interview Prep' },
+  { view: 'assessments', label: 'Assessments' },
+  { view: 'mock-interviews', label: 'Mock Interviews' },
+  { view: 'readiness', label: 'Readiness' },
+  { view: 'applications', label: 'Applications' },
+  { view: 'day-plan', label: 'Day Plan' },
+  { view: 'project', label: 'Project' },
+  { view: 'analytics', label: 'Analytics' },
+  { view: 'notifications', label: 'Notifications' },
+  { view: 'mock-flow', label: 'Mock Flow' },
+  { view: 'project-interview', label: 'Project Defense' },
   { view: 'mentor', label: 'Mentor', minRole: 'interviewer' },
   { view: 'admin', label: 'Admin', minRole: 'admin' },
 ]
@@ -40,7 +48,7 @@ const NAV_ITEMS: NavItem[] = [
 function PlacementLoading() {
   return (
     <div className="placement-empty" role="status" aria-live="polite">
-      Loading placement module…
+      Loading…
     </div>
   )
 }
@@ -71,8 +79,7 @@ export default function PlacementApp() {
     return (
       <div className="placement-shell">
         <div className="placement-empty">
-          Sign in to open the 30-Day Placement Program. Your progress, readiness score and
-          application tracker are stored against your account.
+          Sign in to access your placement prep. Your progress and readiness are saved to your account.
         </div>
       </div>
     )
@@ -82,10 +89,9 @@ export default function PlacementApp() {
     <div className="placement-shell" data-testid="placement-shell">
       <header className="placement-header">
         <div>
-          <h1>30-Day Fresher Placement Program</h1>
+          <h1>Placement Prep</h1>
           <p className="placement-sub">
-            Interview ready → Job ready → Actively applying → Interviewing → Learning from
-            rejections → Getting selected
+            30-day program to get you job-ready
           </p>
         </div>
         <div className="placement-day-chip">
@@ -115,6 +121,10 @@ export default function PlacementApp() {
         {selected?.view === 'assessments' && <PlacementAssessments />}
         {selected?.view === 'readiness' && <PlacementReadiness />}
         {selected?.view === 'mock-interviews' && <PlacementMockInterviews />}
+        {selected?.view === 'mock-flow' && <MockInterviewFlow />}
+        {selected?.view === 'analytics' && <PlacementAnalytics />}
+        {selected?.view === 'notifications' && <PlacementNotifications />}
+        {selected?.view === 'project-interview' && <ProjectInterviewFlow />}
         {selected?.view === 'project' && <PlacementProject />}
         {selected?.view === 'applications' && <PlacementApplications />}
         {selected?.view === 'interview-prep' && <PlacementInterviewPrep />}

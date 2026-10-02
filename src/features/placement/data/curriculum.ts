@@ -17,10 +17,10 @@ import type {
 export const PLACEMENT_PROGRAM: PlacementProgram = {
   id: 'placement-30-day',
   slug: '30-day-fresher-placement',
-  name: '30-Day Fresher Placement Program',
+  name: '40-Day Fresher Placement Program',
   description:
-    'A focused 30-day system that takes a fresher from interview-ready to actively applying, interviewing, learning from rejections and getting selected. Targets Bengaluru startups, product and service companies for Frontend, Frontend + Java, Frontend + Python, Junior Software Engineer and Junior Full Stack roles.',
-  durationDays: 30,
+    'A focused 40-day system that takes a fresher from interview-ready to actively applying, interviewing, learning from rejections and getting selected. Days 1-30 cover technical depth. Days 31-40 focus on startup interview preparation, product thinking, and application strategy. Targets Bengaluru startups, product and service companies for Frontend, Frontend + Java, Frontend + Python, Junior Software Engineer and Junior Full Stack roles.',
+  durationDays: 40,
   targetRoles: [
     'Frontend Developer',
     'Frontend + Java Developer',
@@ -651,6 +651,186 @@ export const PLACEMENT_DAY_DEFINITIONS: PlacementDayDefinition[] = [
       { name: 'Project defense & communication', category: 'project', subcategory: 'final', description: 'Defend the project and complete the communication round.', resourceRoute: '/placement?view=project', expectedMinutes: 45 },
     ],
   },
+  {
+    dayNumber: 31,
+    phase: 'Startup Interview Prep',
+    title: 'Startup culture & mindset',
+    focus: 'Understand and articulate startup values.',
+    description: 'Startups operate differently from big companies. Learn to communicate your fit for a fast-paced, ownership-driven environment.',
+    goals: [
+      'Answer 10 startup culture questions out loud',
+      'Explain why you want to work at a startup with specific evidence',
+      'Demonstrate understanding of startup trade-offs',
+    ],
+    isMilestone: false,
+    topics: [
+      { name: 'Startup culture questions', category: 'communication', subcategory: 'startup-culture', description: 'Why startups, handling ambiguity, wearing many hats, prioritization.', resourceRoute: '/placement?view=interview-prep', expectedMinutes: 60 },
+      { name: 'Startup mindset assessment', category: 'communication', subcategory: 'startup-culture', description: 'Self-assessment on risk tolerance, learning speed, and ownership.', resourceRoute: '/placement?view=interview-prep', expectedMinutes: 30 },
+      { name: 'Research target companies', category: 'communication', subcategory: 'bangalore', description: 'Research 10 target startups — their product, team, funding, and recent news.', resourceRoute: '/placement?view=applications', expectedMinutes: 45 },
+    ],
+  },
+  {
+    dayNumber: 32,
+    phase: 'Startup Interview Prep',
+    title: 'Fresher-specific interview skills',
+    focus: 'Handle the "no experience" objection confidently.',
+    description: 'Freshers face unique interview challenges. Learn to pivot from lack of experience to evidence of potential.',
+    goals: [
+      'Answer "why hire you without experience" with confidence',
+      'Present academic projects as professional evidence',
+      'Demonstrate learning ability with concrete examples',
+    ],
+    isMilestone: false,
+    topics: [
+      { name: 'Fresher objection handling', category: 'communication', subcategory: 'fresher', description: 'No experience, weakness questions, gap in resume, career change.', resourceRoute: '/placement?view=interview-prep', expectedMinutes: 60 },
+      { name: 'Academic project presentation', category: 'communication', subcategory: 'fresher', description: 'Present 3 college/internship projects in 2 minutes each with impact metrics.', resourceRoute: '/placement?view=interview-prep', expectedMinutes: 45 },
+      { name: 'Learning speed evidence', category: 'communication', subcategory: 'fresher', description: 'Prepare examples of learning new technologies quickly.', resourceRoute: '/placement?view=interview-prep', expectedMinutes: 30 },
+    ],
+  },
+  {
+    dayNumber: 33,
+    phase: 'Startup Interview Prep',
+    title: 'Technical communication',
+    focus: 'Explain technical concepts to non-technical audiences.',
+    description: 'Startups have PMs, designers, and founders in technical discussions. Being able to explain simply is a superpower.',
+    goals: [
+      'Explain 10 technical concepts to a non-technical person',
+      'Practice whiteboard explanation of your code',
+      'Learn to narrate your problem-solving process',
+    ],
+    isMilestone: false,
+    topics: [
+      { name: 'Technical explanation practice', category: 'communication', subcategory: 'technical-explanation', description: 'Explain closures, APIs, React, event loop, databases simply.', resourceRoute: '/placement?view=interview-prep', expectedMinutes: 60 },
+      { name: 'Code narration practice', category: 'communication', subcategory: 'technical-explanation', description: 'Explain a coding solution step by step as if on a whiteboard.', resourceRoute: '/placement?view=interview-prep', expectedMinutes: 45 },
+      { name: 'System design basics', category: 'communication', subcategory: 'technical-explanation', description: 'Explain how a URL flows through a full-stack application.', resourceRoute: '/placement?view=interview-prep', expectedMinutes: 45 },
+    ],
+  },
+  {
+    dayNumber: 34,
+    phase: 'Startup Interview Prep',
+    title: 'Scenario-based problem solving',
+    focus: 'Handle hypothetical startup scenarios.',
+    description: 'Startup interviews often include scenario questions to test your thinking process and cultural fit.',
+    goals: [
+      'Answer 15 scenario questions with structured thinking',
+      'Demonstrate product sense in hypothetical situations',
+      'Show prioritization and communication skills',
+    ],
+    isMilestone: false,
+    topics: [
+      { name: 'Scenario question practice', category: 'communication', subcategory: 'scenario', description: 'Bug found before deadline, disagreeing with senior, stakeholder changes, production issues.', resourceRoute: '/placement?view=interview-prep', expectedMinutes: 60 },
+      { name: 'Product scenario practice', category: 'communication', subcategory: 'scenario', description: 'How would you improve X, what would you build, how to measure success.', resourceRoute: '/placement?view=interview-prep', expectedMinutes: 45 },
+      { name: 'Estimation practice', category: 'communication', subcategory: 'scenario', description: 'Estimate time for tasks, scope for features, and communicate uncertainty.', resourceRoute: '/placement?view=interview-prep', expectedMinutes: 30 },
+    ],
+  },
+  {
+    dayNumber: 35,
+    phase: 'Startup Interview Prep',
+    title: 'Product thinking',
+    focus: 'Think like a product engineer, not just a coder.',
+    description: 'Startups value engineers who understand users and business. Develop product intuition.',
+    goals: [
+      'Analyze 5 products and identify improvements',
+      'Explain features vs benefits for common products',
+      'Practice prioritization frameworks',
+    ],
+    isMilestone: false,
+    topics: [
+      { name: 'Product analysis practice', category: 'communication', subcategory: 'product-thinking', description: 'Analyze products you use — UX, features, business model.', resourceRoute: '/placement?view=interview-prep', expectedMinutes: 60 },
+      { name: 'Feature vs benefit practice', category: 'communication', subcategory: 'product-thinking', description: 'Convert feature descriptions to user benefits for 10 products.', resourceRoute: '/placement?view=interview-prep', expectedMinutes: 30 },
+      { name: 'Prioritization frameworks', category: 'communication', subcategory: 'product-thinking', description: 'RICE, impact-effort, and other prioritization methods.', resourceRoute: '/placement?view=interview-prep', expectedMinutes: 45 },
+    ],
+  },
+  {
+    dayNumber: 36,
+    phase: 'Startup Interview Prep',
+    title: 'Behavioral interview mastery',
+    focus: 'Master the STAR method for behavioral questions.',
+    description: 'Behavioral interviews are universal. Structure your stories for maximum impact.',
+    goals: [
+      'Prepare 10 STAR stories for common behavioral questions',
+      'Practice delivering stories in 2 minutes',
+      'Learn to adapt stories to different questions',
+    ],
+    isMilestone: false,
+    topics: [
+      { name: 'STAR story preparation', category: 'communication', subcategory: 'behavioral', description: 'Challenge, conflict, failure, leadership, teamwork stories.', resourceRoute: '/placement?view=interview-prep', expectedMinutes: 60 },
+      { name: 'Story delivery practice', category: 'communication', subcategory: 'behavioral', description: 'Practice delivering stories out loud with timing.', resourceRoute: '/placement?view=interview-prep', expectedMinutes: 45 },
+      { name: 'Question adaptation practice', category: 'communication', subcategory: 'behavioral', description: 'Adapt the same story to answer different behavioral questions.', resourceRoute: '/placement?view=interview-prep', expectedMinutes: 30 },
+    ],
+  },
+  {
+    dayNumber: 37,
+    phase: 'Startup Interview Prep',
+    title: 'Bangalore startup ecosystem',
+    focus: 'Understand and leverage the local ecosystem.',
+    description: 'Bangalore has a unique startup culture. Understanding it gives you an edge in interviews.',
+    goals: [
+      'Research the top 20 startups in Bangalore',
+      'Understand the funding landscape and company stages',
+      'Network with local developers and founders',
+    ],
+    isMilestone: false,
+    topics: [
+      { name: 'Ecosystem research', category: 'communication', subcategory: 'bangalore', description: 'Research startups by stage, sector, and funding. Identify your targets.', resourceRoute: '/placement?view=applications', expectedMinutes: 60 },
+      { name: 'Networking preparation', category: 'communication', subcategory: 'bangalore', description: 'Prepare your intro, elevator pitch, and networking questions.', resourceRoute: '/placement?view=interview-prep', expectedMinutes: 30 },
+      { name: 'Meetup and event plan', category: 'communication', subcategory: 'bangalore', description: 'Identify relevant meetups, hackathons, and events to attend.', resourceRoute: '/placement?view=applications', expectedMinutes: 30 },
+    ],
+  },
+  {
+    dayNumber: 38,
+    phase: 'Startup Interview Prep',
+    title: 'Salary negotiation & offer evaluation',
+    focus: 'Navigate compensation discussions confidently.',
+    description: 'Startup compensation includes equity, variable pay, and benefits. Learn to evaluate and negotiate.',
+    goals: [
+      'Research market rates for your role and experience',
+      'Understand equity, ESOPs, and vesting schedules',
+      'Practice salary negotiation conversations',
+    ],
+    isMilestone: false,
+    topics: [
+      { name: 'Compensation research', category: 'communication', subcategory: 'bangalore', description: 'Research salaries on AmbitionBox, Glassdoor, LinkedIn for target roles.', resourceRoute: '/placement?view=applications', expectedMinutes: 45 },
+      { name: 'Equity and ESOP education', category: 'communication', subcategory: 'bangalore', description: 'Understand equity, vesting, dilution, and how to evaluate startup offers.', resourceRoute: '/placement?view=interview-prep', expectedMinutes: 45 },
+      { name: 'Negotiation practice', category: 'communication', subcategory: 'bangalore', description: 'Practice salary negotiation scenarios with confidence and data.', resourceRoute: '/placement?view=interview-prep', expectedMinutes: 30 },
+    ],
+  },
+  {
+    dayNumber: 39,
+    phase: 'Startup Interview Prep',
+    title: 'Mock interview — full startup simulation',
+    focus: 'Complete a full startup interview simulation.',
+    description: 'Combine all skills in a realistic startup interview experience.',
+    goals: [
+      'Complete a full mock interview with technical and behavioral rounds',
+      'Receive feedback on communication and technical answers',
+      'Identify remaining weak areas for targeted practice',
+    ],
+    isMilestone: true,
+    topics: [
+      { name: 'Technical mock round', category: 'communication', subcategory: 'mock', description: 'DSA, frontend, and system design questions in interview format.', resourceRoute: '/placement?view=mock-interviews', expectedMinutes: 60 },
+      { name: 'Behavioral mock round', category: 'communication', subcategory: 'mock', description: 'Behavioral questions with STAR evaluation and feedback.', resourceRoute: '/placement?view=mock-interviews', expectedMinutes: 45 },
+      { name: 'Feedback and improvement plan', category: 'communication', subcategory: 'mock', description: 'Review mock results and create targeted improvement plan.', resourceRoute: '/placement?view=readiness', expectedMinutes: 30 },
+    ],
+  },
+  {
+    dayNumber: 40,
+    phase: 'Startup Interview Prep',
+    title: 'Final preparation & application strategy',
+    focus: 'Launch your job search with confidence.',
+    description: 'Finalize your materials, apply strategically, and prepare for ongoing interviews.',
+    goals: [
+      'Finalize resume, GitHub, and portfolio',
+      'Apply to 20 target companies with tailored applications',
+      'Prepare for ongoing interview practice',
+    ],
+    isMilestone: true,
+    topics: [
+      { name: 'Application materials finalization', category: 'project', subcategory: 'profile', description: 'Polish resume, GitHub profile, LinkedIn, and portfolio.', resourceRoute: '/resume-optimizer', expectedMinutes: 60 },
+      { name: 'Application strategy', category: 'project', subcategory: 'profile', description: 'Apply to 20 companies with tailored resumes and cover letters.', resourceRoute: '/placement?view=applications', expectedMinutes: 90 },
+      { name: 'Interview pipeline management', category: 'project', subcategory: 'profile', description: 'Track applications, follow-ups, and interview schedules.', resourceRoute: '/placement?view=applications', expectedMinutes: 30 },
+    ],
+  },
 ]
 
 export const PLACEMENT_DAYS: PlacementDay[] = PLACEMENT_DAY_DEFINITIONS.map((d) => ({
@@ -691,6 +871,7 @@ export const PLACEMENT_PHASES = [
   'Full Mock',
   'Weakness Correction',
   'Final Assessment',
+  'Startup Interview Prep',
 ] as const
 
 /** Daily workload target. Admin-configurable; used to build "Today's priority". */

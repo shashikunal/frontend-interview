@@ -9,8 +9,19 @@ import { REASONING_QUESTIONS } from './reasoning'
 import { VERBAL_QUESTIONS } from './verbal'
 import { TECHNICAL_MCQ_QUESTIONS } from './technicalMcq'
 import { INTERVIEW_QUESTIONS } from './interviewQuestions'
+import { BANGALORE_STARTUP_QUESTIONS } from './bangaloreStartupQuestions'
+import { ADDITIONAL_MCQS } from './additionalMcqs'
+import { MORE_MCQS } from './moreMcqs'
+import { EXTRA_MCQS } from './extraMcqs'
+import { APTITUDE_REASONING_MCQS } from './aptitudeReasoningMcqs'
+import { SQL_CS_MCQS } from './sqlCsMcqs'
+import { JS_REACT_MCQS } from './jsReactMcqs'
+import { DSA_PROJECT_MCQS } from './dsaProjectMcqs'
+import { STARTUP_INTERVIEW_MCQS } from './startupInterviewMcqs'
+import { ADVANCED_TECH_MCQS } from './advancedTechMcqs'
+import { AI_GENAI_INTERVIEW_QUESTIONS } from './aiGenAiInterviewQuestions'
 
-export { APTITUDE_QUESTIONS, REASONING_QUESTIONS, VERBAL_QUESTIONS, TECHNICAL_MCQ_QUESTIONS, INTERVIEW_QUESTIONS }
+export { APTITUDE_QUESTIONS, REASONING_QUESTIONS, VERBAL_QUESTIONS, TECHNICAL_MCQ_QUESTIONS, INTERVIEW_QUESTIONS, BANGALORE_STARTUP_QUESTIONS, ADDITIONAL_MCQS, MORE_MCQS, EXTRA_MCQS, APTITUDE_REASONING_MCQS, SQL_CS_MCQS, JS_REACT_MCQS, DSA_PROJECT_MCQS, STARTUP_INTERVIEW_MCQS, ADVANCED_TECH_MCQS, AI_GENAI_INTERVIEW_QUESTIONS }
 
 /**
  * Combined placement question bank.
@@ -25,6 +36,17 @@ export const PLACEMENT_QUESTIONS: PlacementQuestionRecord[] = [
   ...VERBAL_QUESTIONS,
   ...TECHNICAL_MCQ_QUESTIONS,
   ...INTERVIEW_QUESTIONS,
+  ...BANGALORE_STARTUP_QUESTIONS,
+  ...ADDITIONAL_MCQS,
+  ...MORE_MCQS,
+  ...EXTRA_MCQS,
+  ...APTITUDE_REASONING_MCQS,
+  ...SQL_CS_MCQS,
+  ...JS_REACT_MCQS,
+  ...DSA_PROJECT_MCQS,
+  ...STARTUP_INTERVIEW_MCQS,
+  ...ADVANCED_TECH_MCQS,
+  ...AI_GENAI_INTERVIEW_QUESTIONS,
 ]
 
 export function getVerifiedQuestions(

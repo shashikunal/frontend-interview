@@ -289,6 +289,8 @@ export default function PlacementAssessments() {
   }
 
   if (active && current) {
+    const progress = ((index + 1) / paper.length) * 100
+    const answeredCount = Object.keys(answers).length
     return (
       <div className="placement-question">
         <div className="placement-actions" style={{ marginTop: 0, marginBottom: 12 }}>
@@ -299,6 +301,15 @@ export default function PlacementAssessments() {
           <span className={`placement-badge ${secondsLeft < 120 ? 'bad' : 'warn'}`}>
             Time left: {minutes}:{String(seconds).padStart(2, '0')}
           </span>
+        </div>
+
+        <div style={{ marginBottom: 12 }}>
+          <div className="placement-progress-track">
+            <div className="placement-progress-fill" style={{ width: `${progress}%` }} />
+          </div>
+          <p className="placement-inline-note">
+            {answeredCount} of {paper.length} answered ({Math.round((answeredCount / paper.length) * 100)}%)
+          </p>
         </div>
 
         <p className="prompt">{current.prompt}</p>

@@ -50,11 +50,15 @@ export default function PlacementReadiness() {
     setSaving(false)
   }
 
+  const scoreColor = readiness.overallScore >= 75 ? '#16a34a' : readiness.overallScore >= 50 ? '#ca8a04' : '#dc2626'
+  const metCount = readiness.categoryScores.filter((c) => c.meetsThreshold).length
+  const totalCount = readiness.categoryScores.length
+
   return (
     <div>
       <div className="placement-grid cols-3" style={{ marginBottom: 18 }}>
         <div className="placement-card placement-stat">
-          <span className="value">{readiness.overallScore}%</span>
+          <span className="value" style={{ color: scoreColor }}>{readiness.overallScore}%</span>
           <span className="label">Overall Readiness</span>
         </div>
         <div className="placement-card placement-stat">
@@ -62,9 +66,19 @@ export default function PlacementReadiness() {
           <span className="label">Job Ready Gate</span>
         </div>
         <div className="placement-card placement-stat">
-          <span className="value">{readiness.blockingReasons.length}</span>
-          <span className="label">Blocking reasons</span>
+          <span className="value">{metCount}/{totalCount}</span>
+          <span className="label">Categories Met</span>
         </div>
+      </div>
+
+      <div className="placement-card" style={{ marginBottom: 18 }}>
+        <h3>Readiness Progress</h3>
+        <div className="placement-progress-track" style={{ marginTop: 12, height: 12 }}>
+          <div className="placement-progress-fill" style={{ width: `${readiness.overallScore}%` }} />
+        </div>
+        <p className="placement-inline-note">
+          {readiness.overallScore}% overall — {readiness.isJobReady ? 'All thresholds met' : `${readiness.blockingReasons.length} blocking reasons remaining`}
+        </p>
       </div>
 
       <div className="placement-grid cols-2">
@@ -74,39 +88,32 @@ export default function PlacementReadiness() {
             Scores come from your real attempts and submissions. Weights and thresholds are
             configured by your administrator — they are not hardcoded here.
           </p>
-          <div className="placement-table-wrap" style={{ marginTop: 12 }}>
-            <table className="placement-table">
-              <thead>
-                <tr>
-                  <th>Area</th>
-                  <th>Score</th>
-                  <th>Min</th>
-                  <th>Weight</th>
-                  <th>Evidence</th>
-                </tr>
-              </thead>
-              <tbody>
-                {readiness.categoryScores.map((entry) => (
-                  <tr key={entry.category}>
-                    <td>
-                      <strong>{LABELS[entry.category] ?? entry.category}</strong>
-                    </td>
-                    <td>
-                      <span
-                        className={`placement-badge ${entry.meetsThreshold ? 'good' : 'bad'}`}
-                      >
-                        {entry.score}%
-                      </span>
-                    </td>
-                    <td>{entry.threshold}%</td>
-                    <td>{entry.weight}%</td>
-                    <td style={{ color: 'var(--text-muted)', fontSize: '0.82rem' }}>
-                      {entry.evidence}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div style={{ marginTop: 12 }}>
+            {readiness.categoryScores.map((entry) => {
+              const progress = Math.min(100, (entry.score / entry.threshold) * 100)
+              return (
+                <div key={entry.category} style={{ marginBottom: 14 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
+                    <strong>{LABELS[entry.category] ?? entry.category}</strong>
+                    <span className={`placement-badge ${entry.meetsThreshold ? 'good' : 'bad'}`}>
+                      {entry.score}% / {entry.threshold}%
+                    </span>
+                  </div>
+                  <div className="placement-progress-track">
+                    <div
+                      className="placement-progress-fill"
+                      style={{
+                        width: `${progress}%`,
+                        background: entry.meetsThreshold ? '#16a34a' : '#dc2626',
+                      }}
+                    />
+                  </div>
+                  <p className="placement-inline-note" style={{ marginTop: 4 }}>
+                    Weight: {entry.weight}% · {entry.evidence}
+                  </p>
+                </div>
+              )
+            })}
           </div>
         </section>
 
@@ -187,6 +194,42 @@ export default function PlacementReadiness() {
           </div>
         </section>
       </div>
+
+      <section className="placement-card" style={{ marginTop: 18 }}>
+        <h3>Recommendations</h3>
+        <ul className="placement-list">
+          {readiness.categoryScores
+            .filter((c) => !c.meetsThreshold)
+            .sort((a, b) => a.score - b.score)
+            .slice(0, 5)
+            .map((entry) => (
+              <li key={entry.category}>
+                <div className="placement-item-body">
+                  <p className="placement-item-title">
+                    Improve {LABELS[entry.category] ?? entry.category}
+                  </p>
+                  <p className="placement-item-meta">
+                    Currently {entry.score}% — need {entry.threshold}% to pass. Focus on practice questions and assessments in this area.
+                  </p>
+                </div>
+                <span className="placement-badge bad">
+                  +{entry.threshold - entry.score}%
+                </span>
+              </li>
+            ))}
+          {readiness.isJobReady && (
+            <li>
+              <div className="placement-item-body">
+                <p className="placement-item-title">Ready to apply!</p>
+                <p className="placement-item-meta">
+                  All thresholds met. Start applying to companies and tracking your progress.
+                </p>
+              </div>
+              <span className="placement-badge good">Ready</span>
+            </li>
+          )}
+        </ul>
+      </section>
 
       <section className="placement-card" style={{ marginTop: 18 }}>
         <h3>How the score is calculated</h3>

@@ -145,6 +145,9 @@ export default function PlacementApplications() {
     count: applications.filter((a) => a.status === status).length,
   })).filter((s) => s.count > 0)
 
+  const activeApplications = applications.filter((a) => !['selected', 'rejected', 'withdrawn'].includes(a.status)).length
+  const successRate = applications.length > 0 ? Math.round((applications.filter((a) => a.status === 'selected').length / applications.length) * 100) : 0
+
   return (
     <div>
       <div className="placement-grid cols-4" style={{ marginBottom: 18 }}>
@@ -153,22 +156,34 @@ export default function PlacementApplications() {
           <span className="label">Applications tracked</span>
         </div>
         <div className="placement-card placement-stat">
-          <span className="value">
-            {applications.filter((a) => a.status === 'selected').length}
-          </span>
-          <span className="label">Selected</span>
+          <span className="value">{activeApplications}</span>
+          <span className="label">Active</span>
         </div>
         <div className="placement-card placement-stat">
           <span className="value">{feedback.length}</span>
           <span className="label">Interviews recorded</span>
         </div>
         <div className="placement-card placement-stat">
-          <span className="value">
-            {feedback.filter((f) => f.result === 'rejected').length}
-          </span>
-          <span className="label">Rejections</span>
+          <span className="value">{successRate}%</span>
+          <span className="label">Success rate</span>
         </div>
       </div>
+
+      {applications.length > 0 && (
+        <div className="placement-card" style={{ marginBottom: 18 }}>
+          <h3>Pipeline Overview</h3>
+          <div className="placement-grid cols-3" style={{ marginTop: 12 }}>
+            {statusCounts.slice(0, 6).map(({ status, count }) => (
+              <div key={status} className="placement-card" style={{ textAlign: 'center', padding: '12px' }}>
+                <div style={{ fontSize: '1.5rem', fontWeight: 700 }}>{count}</div>
+                <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                  {STATUS_LABELS[status]}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="placement-grid cols-2">
         <section className="placement-card">

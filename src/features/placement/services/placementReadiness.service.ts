@@ -7,8 +7,6 @@ import type {
   ReadinessCategoryScore,
   ReadinessConfig,
   ReadinessGateChecklist,
-  ReadinessThresholds,
-  ReadinessWeights,
   RejectionAnalysis,
 } from '../types/placement.types'
 import { placementService } from './placement.service'
@@ -68,7 +66,7 @@ const CATEGORY_LABELS: Record<ReadinessCategory, string> = {
 }
 
 /** Maps a placement question category onto a readiness category. */
-function readinessCategoryFor(category: PlacementCategory): ReadinessCategory | null {
+function _readinessCategoryFor(category: PlacementCategory): ReadinessCategory | null {
   switch (category) {
     case 'dsa':
       return 'dsa'
@@ -94,6 +92,7 @@ function readinessCategoryFor(category: PlacementCategory): ReadinessCategory | 
       return null
   }
 }
+void _readinessCategoryFor
 
 interface TrackSignal {
   score: number
@@ -167,7 +166,7 @@ class PlacementReadinessService {
         .limit(100)
       if (error || !data || !data.length) return { score: 0, sampleSize: 0, evidence: 'No recorded submissions' }
       const passed = data.filter(
-        (row) => String(row[statusColumn] ?? '').toLowerCase() === 'accepted',
+        (row) => String((row as Record<string, unknown>)[statusColumn] ?? '').toLowerCase() === 'accepted',
       ).length
       return {
         score: Math.round((passed / data.length) * 100),
@@ -255,6 +254,95 @@ class PlacementReadinessService {
     return this.getMockSignal(userId)
   }
 
+  private async getAssessmentSignal(userId: string): Promise<TrackSignal> {
+    try {
+      const { data, error } = await supabase
+        .from('placement_assessment_attempts')
+        .select('score, max_score, created_at')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false })
+        .limit(5)
+      if (error || !data || !data.length) {
+        return { score: 0, sampleSize: 0, evidence: 'No assessment attempts recorded' }
+      }
+      const avg = data.reduce((sum, row) => {
+        const s = Number(row.score ?? 0)
+        const m = Number(row.max_score ?? 100)
+        return sum + (m > 0 ? (s / m) * 100 : 0)
+      }, 0) / data.length
+      return {
+        score: Math.round(avg),
+        sampleSize: data.length,
+        evidence: `${data.length} assessment(s), average ${Math.round(avg)}%`,
+      }
+    } catch {
+      return { score: 0, sampleSize: 0, evidence: 'Assessment data unavailable' }
+    }
+  }
+
+  private async getStreakSignal(userId: string): Promise<TrackSignal> {
+    try {
+      const { data, error } = await supabase
+        .from('placement_attempts')
+        .select('created_at')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false })
+        .limit(100)
+      if (error || !data || !data.length) {
+        return { score: 0, sampleSize: 0, evidence: 'No activity recorded' }
+      }
+      const days = new Set(data.map((row) => {
+        const d = new Date(row.created_at)
+        return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`
+      }))
+      const today = new Date()
+      let streak = 0
+      for (let i = 0; i < 30; i++) {
+        const d = new Date(today)
+        d.setDate(d.getDate() - i)
+        const key = `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`
+        if (days.has(key)) streak++
+        else if (i > 0) break
+      }
+      const score = Math.min(100, streak * 10)
+      return {
+        score,
+        sampleSize: data.length,
+        evidence: `${streak} day streak, ${data.length} total attempts`,
+      }
+    } catch {
+      return { score: 0, sampleSize: 0, evidence: 'Activity data unavailable' }
+    }
+  }
+
+  private async getImprovementSignal(userId: string): Promise<TrackSignal> {
+    try {
+      const { data, error } = await supabase
+        .from('placement_attempts')
+        .select('is_correct, created_at')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: true })
+        .limit(200)
+      if (error || !data || data.length < 10) {
+        return { score: 0, sampleSize: 0, evidence: 'Not enough data for trend analysis' }
+      }
+      const half = Math.floor(data.length / 2)
+      const firstHalf = data.slice(0, half)
+      const secondHalf = data.slice(half)
+      const firstAcc = firstHalf.filter((r) => r.is_correct).length / firstHalf.length
+      const secondAcc = secondHalf.filter((r) => r.is_correct).length / secondHalf.length
+      const improvement = (secondAcc - firstAcc) * 100
+      const score = Math.max(0, Math.min(100, 50 + improvement))
+      return {
+        score: Math.round(score),
+        sampleSize: data.length,
+        evidence: `Accuracy improved ${improvement.toFixed(1)}% from first to second half of attempts`,
+      }
+    } catch {
+      return { score: 0, sampleSize: 0, evidence: 'Trend data unavailable' }
+    }
+  }
+
   // ---- Readiness computation ----------------------------------------------
 
   async computeReadiness(userId: string, checklistInput?: Partial<Record<string, boolean | number>>): Promise<PlacementReadiness> {
@@ -272,6 +360,9 @@ class PlacementReadinessService {
     const sqlCsSignal = await this.getPlacementSignal(userId, ['sql', 'cs_fundamentals'])
     const projectSignal = await this.getProjectSignal(userId)
     const communicationSignal = await this.getCommunicationSignal(userId)
+    const assessmentSignal = await this.getAssessmentSignal(userId)
+    const streakSignal = await this.getStreakSignal(userId)
+    const improvementSignal = await this.getImprovementSignal(userId)
 
     const blend = (a: TrackSignal, b: TrackSignal): TrackSignal => {
       const total = a.sampleSize + b.sampleSize
@@ -284,16 +375,19 @@ class PlacementReadinessService {
     }
 
     const signals: Record<ReadinessCategory, TrackSignal> = {
-      dsa: blend(dsaTrack, dsaPlacement),
-      frontend: frontendSignal,
-      programming: blend(programmingTrack, programmingPlacement),
-      aptitude: aptitudeSignal,
-      technical_mcq: mcqSignal,
+      dsa: blend(blend(dsaTrack, dsaPlacement), assessmentSignal),
+      frontend: blend(frontendSignal, assessmentSignal),
+      programming: blend(blend(programmingTrack, programmingPlacement), assessmentSignal),
+      aptitude: blend(aptitudeSignal, assessmentSignal),
+      technical_mcq: blend(mcqSignal, assessmentSignal),
       machine_coding: machineCodingSignal,
       sql_cs: sqlCsSignal,
       project: projectSignal,
       communication: communicationSignal,
     }
+
+    const streakBonus = streakSignal.score > 0 ? Math.min(5, streakSignal.score / 20) : 0
+    const improvementBonus = improvementSignal.score > 50 ? Math.min(5, (improvementSignal.score - 50) / 10) : 0
 
     const categoryScores: ReadinessCategoryScore[] = (Object.keys(config.weights) as ReadinessCategory[]).map(
       (category) => {
@@ -311,9 +405,8 @@ class PlacementReadinessService {
     )
 
     const weightTotal = categoryScores.reduce((sum, c) => sum + c.weight, 0) || 1
-    const overallScore = Math.round(
-      categoryScores.reduce((sum, c) => sum + c.score * c.weight, 0) / weightTotal,
-    )
+    const baseScore = categoryScores.reduce((sum, c) => sum + c.score * c.weight, 0) / weightTotal
+    const overallScore = Math.round(Math.min(100, baseScore + streakBonus + improvementBonus))
 
     const checklist = await this.buildChecklist(userId, checklistInput)
     const blockingReasons: string[] = []

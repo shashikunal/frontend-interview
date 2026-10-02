@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 import { useAuth } from '../../auth/hooks/useAuth'
 import { usePlacement } from '../hooks/usePlacement'
 import { usePlacementReadiness } from '../hooks/usePlacementReadiness'
-import { PLACEMENT_DAY_DEFINITIONS, PLACEMENT_PROGRAM } from '../data/curriculum'
+import { PLACEMENT_DAY_DEFINITIONS } from '../data/curriculum'
 
 export default function PlacementOverview() {
   const { user } = useAuth()
@@ -11,7 +11,7 @@ export default function PlacementOverview() {
   const { readiness, loading: readinessLoading } = usePlacementReadiness(userId)
 
   if (loading || readinessLoading) {
-    return <div className="placement-empty">Loading your placement status…</div>
+    return <div className="placement-empty">Loading…</div>
   }
 
   if (error) {
@@ -24,36 +24,47 @@ export default function PlacementOverview() {
   const inPlacementMode = progress?.enrollmentStatus === 'placement_mode'
   const completedPriority = priority.filter((p) => p.completed >= p.target).length
 
+  const isNewUser = daysCompleted === 0 && !readiness
+
   return (
     <div>
+      {isNewUser && (
+        <div className="placement-callout" style={{ marginBottom: 20, textAlign: 'center', padding: '20px' }}>
+          <h2 style={{ margin: '0 0 8px', fontSize: '1.3rem' }}>Welcome to Your Placement Journey!</h2>
+          <p style={{ margin: 0, fontSize: '1rem' }}>
+            Complete daily tasks, track your progress, and get job-ready. Start with Day 1 or take a baseline assessment.
+          </p>
+        </div>
+      )}
+
       <div className="placement-grid cols-4" style={{ marginBottom: 20 }}>
         <div className="placement-card placement-stat">
           <span className="value">
             {inPlacementMode ? 'Mode' : `Day ${currentDay}`}
           </span>
           <span className="label">
-            {inPlacementMode ? 'Placement Mode — keep applying' : `of ${program.durationDays}`}
+            {inPlacementMode ? 'Placement Mode' : `of ${program.durationDays}`}
           </span>
         </div>
         <div className="placement-card placement-stat">
           <span className="value">{readiness ? `${readiness.overallScore}%` : '—'}</span>
-          <span className="label">Overall Readiness</span>
+          <span className="label">Readiness</span>
         </div>
         <div className="placement-card placement-stat">
           <span className="value">{daysCompleted}</span>
-          <span className="label">Days Completed</span>
+          <span className="label">Days Done</span>
         </div>
         <div className="placement-card placement-stat">
           <span className="value">
             {readiness ? (readiness.isJobReady ? 'READY' : 'NOT READY') : '—'}
           </span>
-          <span className="label">Job Ready Gate</span>
+          <span className="label">Job Ready</span>
         </div>
       </div>
 
       <div className="placement-grid cols-2">
         <section className="placement-card">
-          <h2>Today&apos;s Priority</h2>
+          <h2>Today&apos;s Tasks</h2>
           <p className="placement-inline-note">
             {dayDef ? `${dayDef.phase} · ${dayDef.title}` : 'Placement mode — set your own targets.'}
           </p>
@@ -69,7 +80,6 @@ export default function PlacementOverview() {
                         <p className="placement-item-title">{item.label}</p>
                         <p className="placement-item-meta">
                           {item.completed}/{item.target} completed
-                          {item.route ? ` · opens ${item.route}` : ''}
                         </p>
                       </div>
                       <span className={`placement-badge ${done ? 'good' : 'warn'}`}>
@@ -92,14 +102,59 @@ export default function PlacementOverview() {
                     Mark Day {currentDay} complete
                   </button>
                 )}
-                <Link className="btn" to="/placement?view=day-plan">
-                  Open day plan
-                </Link>
               </div>
             </>
           ) : (
             <div className="placement-empty">No daily tasks generated yet.</div>
           )}
+        </section>
+
+        <section className="placement-card">
+          <h2>Weak Areas</h2>
+          {weakTopics.length ? (
+            <>
+              <ul className="placement-list" style={{ marginTop: 12 }}>
+                {weakTopics.slice(0, 5).map((topic) => (
+                  <li key={topic.subcategory}>
+                    <div className="placement-item-body">
+                      <p className="placement-item-title">{topic.subcategory}</p>
+                      <p className="placement-item-meta">
+                        {topic.correct}/{topic.attempts} correct ({topic.accuracy}%)
+                      </p>
+                    </div>
+                    <span className="placement-badge bad">{topic.accuracy}%</span>
+                  </li>
+                ))}
+              </ul>
+              <div className="placement-actions">
+                <Link className="btn btn-primary" to="/placement?view=practice">
+                  Practice weak topics
+                </Link>
+              </div>
+            </>
+          ) : (
+            <div className="placement-empty">
+              No weak areas yet. They appear after 3+ attempts below 60% accuracy.
+            </div>
+          )}
+        </section>
+
+        <section className="placement-card">
+          <h2>Quick Start</h2>
+          <div className="placement-grid cols-2" style={{ marginTop: 12 }}>
+            <Link to="/placement?view=practice" className="btn btn-primary" style={{ textAlign: 'center', textDecoration: 'none' }}>
+              Practice Now
+            </Link>
+            <Link to="/placement?view=interview-prep" className="btn" style={{ textAlign: 'center', textDecoration: 'none' }}>
+              Interview Prep
+            </Link>
+            <Link to="/placement?view=assessments" className="btn" style={{ textAlign: 'center', textDecoration: 'none' }}>
+              Take Assessment
+            </Link>
+            <Link to="/placement?view=mock-interviews" className="btn" style={{ textAlign: 'center', textDecoration: 'none' }}>
+              Mock Interview
+            </Link>
+          </div>
         </section>
 
         <section className="placement-card">
@@ -114,102 +169,34 @@ export default function PlacementOverview() {
                   />
                 </div>
                 <p className="placement-inline-note">
-                  {readiness.overallScore}% overall, computed from your real attempts and
-                  submissions. Weights are set by your administrator.
+                  {readiness.overallScore}% overall from your real attempts.
                 </p>
               </div>
               {readiness.blockingReasons.length ? (
                 <div className="placement-callout danger">
-                  <strong>Blocking the job-ready gate:</strong>
+                  <strong>Focus on:</strong>
                   <ul style={{ margin: '8px 0 0', paddingLeft: 18 }}>
-                    {readiness.blockingReasons.slice(0, 5).map((reason) => (
+                    {readiness.blockingReasons.slice(0, 3).map((reason) => (
                       <li key={reason}>{reason}</li>
                     ))}
                   </ul>
                 </div>
               ) : (
                 <div className="placement-callout success">
-                  All thresholds met. The job-ready gate is open — keep applying and tracking
-                  interviews.
+                  All thresholds met. Keep applying!
                 </div>
               )}
               <div className="placement-actions">
-                <Link className="btn btn-primary" to="/placement?view=readiness">
-                  Full readiness report
+                <Link className="btn" to="/placement?view=readiness">
+                  Full report
                 </Link>
               </div>
             </>
           ) : (
             <div className="placement-empty">
-              No data available yet. Complete a few practice questions to generate your readiness
-              score.
+              Complete a few practice questions to generate your readiness score.
             </div>
           )}
-        </section>
-
-        <section className="placement-card">
-          <h2>Weak Areas</h2>
-          {weakTopics.length ? (
-            <>
-              <p className="placement-inline-note">
-                Derived from your recorded attempts only. Day 29 builds its practice set from this
-                list.
-              </p>
-              <ul className="placement-list" style={{ marginTop: 12 }}>
-                {weakTopics.slice(0, 6).map((topic) => (
-                  <li key={topic.subcategory}>
-                    <div className="placement-item-body">
-                      <p className="placement-item-title">{topic.subcategory}</p>
-                      <p className="placement-item-meta">
-                        {topic.correct}/{topic.attempts} correct ({topic.accuracy}%) · {topic.category}
-                      </p>
-                    </div>
-                    <span className="placement-badge bad">{topic.accuracy}%</span>
-                  </li>
-                ))}
-              </ul>
-              <div className="placement-actions">
-                <Link className="btn" to="/placement?view=practice">
-                  Practice weak topics
-                </Link>
-              </div>
-            </>
-          ) : (
-            <div className="placement-empty">
-              No weak areas identified yet. Weak areas appear after at least 3 attempts in a topic
-              below 60% accuracy.
-            </div>
-          )}
-        </section>
-
-        <section className="placement-card">
-          <h2>Program</h2>
-          <p>{program.description}</p>
-          <p className="placement-inline-note">
-            Target roles: {program.targetRoles.join(', ')}
-          </p>
-          <div className="placement-actions">
-            <Link className="btn" to="/placement?view=assessments">
-              Assessments
-            </Link>
-            <Link className="btn" to="/placement?view=project">
-              Project defense
-            </Link>
-            <Link className="btn" to="/placement?view=applications">
-              Application tracker
-            </Link>
-            <Link className="btn" to="/placement?view=interview-prep">
-              Interview prep
-            </Link>
-          </div>
-          <p className="placement-inline-note" style={{ marginTop: 12 }}>
-            Practice continues in the existing studios:{' '}
-            <Link to="/dsa/questions">DSA</Link>,{' '}
-            <Link to="/machine-coding">Machine Coding</Link>,{' '}
-            <Link to="/core-programming">Core Programming</Link>,{' '}
-            <Link to="/interview-questions">Question Bank</Link>. {PLACEMENT_PROGRAM.durationDays}{' '}
-            days end in placement mode — the platform keeps supporting you after that.
-          </p>
         </section>
       </div>
     </div>

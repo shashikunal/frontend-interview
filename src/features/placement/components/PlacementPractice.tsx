@@ -36,6 +36,7 @@ export default function PlacementPractice() {
   const [graded, setGraded] = useState<{ correct: boolean; correctAnswer: string } | null>(null)
   const [selfNote, setSelfNote] = useState('')
   const [saving, setSaving] = useState(false)
+  const [sessionStats, setSessionStats] = useState({ correct: 0, total: 0 })
 
   const bankSize = useMemo(() => getVerifiedQuestions().length, [])
 
@@ -66,6 +67,7 @@ export default function PlacementPractice() {
     if (!question || !selected) return
     const correct = selected === question.correctAnswer
     setGraded({ correct, correctAnswer: question.correctAnswer })
+    setSessionStats((s) => ({ correct: s.correct + (correct ? 1 : 0), total: s.total + 1 }))
     setSaving(true)
     await recordAttempt({
       questionId: question.id,
@@ -189,6 +191,20 @@ export default function PlacementPractice() {
               {index + 1} / {queue.length}
             </span>
           </div>
+
+          {sessionStats.total > 0 && (
+            <div style={{ marginBottom: 12 }}>
+              <div className="placement-progress-track">
+                <div
+                  className="placement-progress-fill"
+                  style={{ width: `${(sessionStats.correct / sessionStats.total) * 100}%` }}
+                />
+              </div>
+              <p className="placement-inline-note">
+                Session: {sessionStats.correct}/{sessionStats.total} correct ({Math.round((sessionStats.correct / sessionStats.total) * 100)}%)
+              </p>
+            </div>
+          )}
 
           <p className="prompt">{question.prompt}</p>
           {question.codeSnippet ? <pre>{question.codeSnippet}</pre> : null}

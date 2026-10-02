@@ -5,6 +5,10 @@ export type PlacementView =
   | 'assessments'
   | 'readiness'
   | 'mock-interviews'
+  | 'mock-flow'
+  | 'analytics'
+  | 'notifications'
+  | 'project-interview'
   | 'project'
   | 'applications'
   | 'interview-prep'
@@ -18,6 +22,10 @@ export const PLACEMENT_VIEWS: PlacementView[] = [
   'assessments',
   'readiness',
   'mock-interviews',
+  'mock-flow',
+  'analytics',
+  'notifications',
+  'project-interview',
   'project',
   'applications',
   'interview-prep',

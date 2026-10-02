@@ -61,6 +61,8 @@ export default function PlacementMentor() {
     active: students.length,
     jobReady: students.filter((s) => s.statusLabel === 'Job Ready').length,
     almostReady: students.filter((s) => s.statusLabel === 'Almost Ready').length,
+    improving: students.filter((s) => s.statusLabel === 'Improving').length,
+    needsIntervention: students.filter((s) => s.statusLabel === 'Needs Intervention').length,
     atRisk: students.filter((s) => s.statusLabel === 'At Risk').length,
     averageReadiness: students.length
       ? Math.round(students.reduce((sum, s) => sum + s.readiness, 0) / students.length)
@@ -68,6 +70,7 @@ export default function PlacementMentor() {
     applications: students.reduce((sum, s) => sum + s.applications, 0),
     interviews: students.reduce((sum, s) => sum + s.interviews, 0),
     selections: students.reduce((sum, s) => sum + s.selections, 0),
+    openInterventions: students.reduce((sum, s) => sum + s.openInterventions, 0),
   }
 
   return (
@@ -86,6 +89,10 @@ export default function PlacementMentor() {
           <span className="label">Almost Ready</span>
         </div>
         <div className="placement-card placement-stat">
+          <span className="value">{totals.improving}</span>
+          <span className="label">Improving</span>
+        </div>
+        <div className="placement-card placement-stat">
           <span className="value">{totals.atRisk}</span>
           <span className="label">At Risk</span>
         </div>
@@ -94,18 +101,45 @@ export default function PlacementMentor() {
           <span className="label">Average readiness</span>
         </div>
         <div className="placement-card placement-stat">
-          <span className="value">{totals.applications}</span>
-          <span className="label">Applications</span>
-        </div>
-        <div className="placement-card placement-stat">
-          <span className="value">{totals.interviews}</span>
-          <span className="label">Interviews</span>
+          <span className="value">{totals.openInterventions}</span>
+          <span className="label">Open interventions</span>
         </div>
         <div className="placement-card placement-stat">
           <span className="value">{totals.selections}</span>
           <span className="label">Selections</span>
         </div>
       </div>
+
+      {students.length > 0 && (
+        <div className="placement-card" style={{ marginBottom: 18 }}>
+          <h3>Readiness Distribution</h3>
+          <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8, height: 100, marginTop: 12 }}>
+            {[
+              { label: '90-100%', count: students.filter((s) => s.readiness >= 90).length, color: '#16a34a' },
+              { label: '75-89%', count: students.filter((s) => s.readiness >= 75 && s.readiness < 90).length, color: '#65a30d' },
+              { label: '60-74%', count: students.filter((s) => s.readiness >= 60 && s.readiness < 75).length, color: '#ca8a04' },
+              { label: '40-59%', count: students.filter((s) => s.readiness >= 40 && s.readiness < 60).length, color: '#ea580c' },
+              { label: '0-39%', count: students.filter((s) => s.readiness < 40).length, color: '#dc2626' },
+            ].map((bucket) => (
+              <div key={bucket.label} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <div
+                  style={{
+                    width: '100%',
+                    height: `${students.length > 0 ? (bucket.count / students.length) * 100 : 0}%`,
+                    background: bucket.color,
+                    borderRadius: '4px 4px 0 0',
+                    minHeight: 4,
+                  }}
+                />
+                <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: 4 }}>
+                  {bucket.label}
+                </span>
+                <span style={{ fontSize: '0.75rem', fontWeight: 600 }}>{bucket.count}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       <section className="placement-card" style={{ marginBottom: 18 }}>
         <h2>Students</h2>

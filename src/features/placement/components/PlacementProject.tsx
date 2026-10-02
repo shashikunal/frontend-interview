@@ -141,6 +141,27 @@ export default function PlacementProject() {
         </div>
       </div>
 
+      {project && completeness < 100 && (
+        <div className="placement-callout" style={{ marginBottom: 18 }}>
+          <strong>Project Checklist — {completeness}% complete</strong>
+          <div className="placement-progress-track" style={{ marginTop: 8 }}>
+            <div className="placement-progress-fill" style={{ width: `${completeness}%` }} />
+          </div>
+          <ul style={{ margin: '12px 0 0', paddingLeft: 18 }}>
+            {!project.repoUrl && <li>Add GitHub repository URL</li>}
+            {!project.liveUrl && <li>Add live deployment URL</li>}
+            {!project.hasReadme && <li>Write a README</li>}
+            {!project.hasScreenshots && <li>Add screenshots</li>}
+            {!project.hasAuth && <li>Implement authentication</li>}
+            {!project.hasErrorHandling && <li>Add error handling</li>}
+            {!project.hasDeployment && <li>Deploy the project</li>}
+            {!project.architectureNotes && <li>Document architecture</li>}
+            {!project.apiNotes && <li>Document API layer</li>}
+            {!project.databaseNotes && <li>Document database choices</li>}
+          </ul>
+        </div>
+      )}
+
       <div className="placement-card" style={{ marginBottom: 18 }}>
         <h2>{editingId ? 'Edit project' : 'Register your project'}</h2>
         <p>

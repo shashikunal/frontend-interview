@@ -13,6 +13,7 @@ import type {
   VerificationStatus,
 } from '../types/placement.types'
 import { readLocal, writeLocal } from '../services/placementStorage'
+import { supabase } from '../../../lib/supabase/client'
 
 const CATEGORY_LABELS: Record<ReadinessCategory, string> = {
   dsa: 'DSA',
@@ -34,6 +35,22 @@ const VERIFICATION_STATES: VerificationStatus[] = [
   'archived',
 ]
 
+interface StudentPlacementSummary {
+  userId: string
+  email: string
+  name: string
+  currentDay: number
+  daysCompleted: number
+  totalAttempts: number
+  totalCorrect: number
+  accuracy: number
+  streakDays: number
+  applications: number
+  mockInterviews: number
+  projects: number
+  lastActivity: string | null
+}
+
 export default function PlacementAdmin() {
   const { user, hasPermission } = useAuth()
   const canManage = hasPermission('admin')
@@ -47,6 +64,11 @@ export default function PlacementAdmin() {
   const [message, setMessage] = useState<string | null>(null)
   const [questionFilter, setQuestionFilter] = useState<'all' | VerificationStatus>('all')
   const [statuses, setStatuses] = useState<Record<string, VerificationStatus>>({})
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
+  const [searchQuery, setSearchQuery] = useState('')
+  const [studentSearch, setStudentSearch] = useState('')
+  const [studentSummaries, setStudentSummaries] = useState<StudentPlacementSummary[]>([])
+  const [loadingStudents, setLoadingStudents] = useState(false)
 
   useEffect(() => {
     if (!canManage) return
@@ -56,6 +78,70 @@ export default function PlacementAdmin() {
       setGateChecklist(config.gateChecklist)
     })
     setStatuses(readLocal<Record<string, VerificationStatus>>('question_statuses', 'admin', {}))
+  }, [canManage])
+
+  useEffect(() => {
+    if (!canManage) return
+    setLoadingStudents(true)
+    void (async () => {
+      try {
+        const { data: progressData } = await supabase
+          .from('placement_progress')
+          .select('user_id, current_day, days_completed, streak_days, total_questions_attempted, total_questions_correct, last_activity_at')
+        const { data: applicationsData } = await supabase
+          .from('placement_job_applications')
+          .select('user_id')
+        const { data: mockData } = await supabase
+          .from('placement_mock_interviews')
+          .select('user_id')
+        const { data: projectData } = await supabase
+          .from('placement_projects')
+          .select('user_id')
+        const { data: profilesData } = await supabase
+          .from('profiles')
+          .select('id, email, full_name')
+
+        const appCount = new Map<string, number>()
+        for (const row of applicationsData ?? []) {
+          appCount.set(row.user_id, (appCount.get(row.user_id) ?? 0) + 1)
+        }
+        const mockCount = new Map<string, number>()
+        for (const row of mockData ?? []) {
+          mockCount.set(row.user_id, (mockCount.get(row.user_id) ?? 0) + 1)
+        }
+        const projectCount = new Map<string, number>()
+        for (const row of projectData ?? []) {
+          projectCount.set(row.user_id, (projectCount.get(row.user_id) ?? 0) + 1)
+        }
+
+        const summaries: StudentPlacementSummary[] = (progressData ?? []).map((row) => {
+          const profile = profilesData?.find((p) => p.id === row.user_id)
+          const total = Number(row.total_questions_attempted ?? 0)
+          const correct = Number(row.total_questions_correct ?? 0)
+          return {
+            userId: row.user_id,
+            email: profile?.email ?? row.user_id,
+            name: profile?.full_name ?? profile?.email ?? row.user_id,
+            currentDay: Number(row.current_day ?? 1),
+            daysCompleted: (row.days_completed as unknown[])?.length ?? 0,
+            totalAttempts: total,
+            totalCorrect: correct,
+            accuracy: total > 0 ? Math.round((correct / total) * 100) : 0,
+            streakDays: Number(row.streak_days ?? 0),
+            applications: appCount.get(row.user_id) ?? 0,
+            mockInterviews: mockCount.get(row.user_id) ?? 0,
+            projects: projectCount.get(row.user_id) ?? 0,
+            lastActivity: row.last_activity_at ?? null,
+          }
+        })
+
+        setStudentSummaries(summaries)
+      } catch {
+        setStudentSummaries([])
+      } finally {
+        setLoadingStudents(false)
+      }
+    })()
   }, [canManage])
 
   if (!canManage) {
@@ -83,9 +169,38 @@ export default function PlacementAdmin() {
   const effectiveStatus = (question: PlacementQuestionRecord): VerificationStatus =>
     statuses[question.id] ?? question.verificationStatus
 
-  const filteredQuestions = PLACEMENT_QUESTIONS.filter((q) =>
-    questionFilter === 'all' ? true : effectiveStatus(q) === questionFilter,
-  )
+  const filteredQuestions = PLACEMENT_QUESTIONS.filter((q) => {
+    if (questionFilter !== 'all' && effectiveStatus(q) !== questionFilter) return false
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase()
+      return (
+        q.id.toLowerCase().includes(query) ||
+        q.topic.toLowerCase().includes(query) ||
+        q.subcategory.toLowerCase().includes(query) ||
+        q.prompt.toLowerCase().includes(query)
+      )
+    }
+    return true
+  })
+
+  const toggleSelect = (id: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  }
+
+  const bulkSetStatus = (status: VerificationStatus) => {
+    const next = { ...statuses }
+    for (const id of selectedIds) {
+      next[id] = status
+    }
+    setStatuses(next)
+    writeLocal('question_statuses', 'admin', next)
+    setSelectedIds(new Set())
+  }
 
   const counts = VERIFICATION_STATES.map((status) => ({
     status,
@@ -203,10 +318,65 @@ export default function PlacementAdmin() {
           </span>
         </div>
 
+        <div className="placement-form" style={{ marginTop: 12 }}>
+          <div className="placement-form-row">
+            <label>
+              Search questions
+              <input
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search by ID, topic, or content..."
+              />
+            </label>
+            <label>
+              &nbsp;
+              <button
+                type="button"
+                className="btn"
+                onClick={() => setSelectedIds(new Set(filteredQuestions.map((q) => q.id)))}
+              >
+                Select all
+              </button>
+            </label>
+            <label>
+              &nbsp;
+              <button
+                type="button"
+                className="btn"
+                onClick={() => setSelectedIds(new Set())}
+                disabled={selectedIds.size === 0}
+              >
+                Clear selection
+              </button>
+            </label>
+          </div>
+        </div>
+
+        {selectedIds.size > 0 && (
+          <div className="placement-callout" style={{ marginTop: 12 }}>
+            <strong>{selectedIds.size} questions selected</strong>
+            <div className="placement-actions" style={{ marginTop: 8 }}>
+              <button type="button" className="btn btn-sm" onClick={() => bulkSetStatus('verified')}>
+                Mark verified
+              </button>
+              <button type="button" className="btn btn-sm" onClick={() => bulkSetStatus('needs_review')}>
+                Mark needs review
+              </button>
+              <button type="button" className="btn btn-sm" onClick={() => bulkSetStatus('incorrect')}>
+                Mark incorrect
+              </button>
+              <button type="button" className="btn btn-sm" onClick={() => bulkSetStatus('archived')}>
+                Archive
+              </button>
+            </div>
+          </div>
+        )}
+
         <div className="placement-table-wrap" style={{ marginTop: 12 }}>
           <table className="placement-table">
             <thead>
               <tr>
+                <th></th>
                 <th>ID</th>
                 <th>Category</th>
                 <th>Subcategory</th>
@@ -219,6 +389,13 @@ export default function PlacementAdmin() {
             <tbody>
               {filteredQuestions.slice(0, 150).map((question) => (
                 <tr key={question.id}>
+                  <td>
+                    <input
+                      type="checkbox"
+                      checked={selectedIds.has(question.id)}
+                      onChange={() => toggleSelect(question.id)}
+                    />
+                  </td>
                   <td style={{ fontFamily: 'monospace', fontSize: '0.78rem' }}>{question.id}</td>
                   <td>{question.category}</td>
                   <td>{question.subcategory}</td>
@@ -252,6 +429,77 @@ export default function PlacementAdmin() {
             Showing the first 150 of {filteredQuestions.length} matching questions. Narrow the
             filter to see more.
           </p>
+        )}
+      </section>
+
+      <section className="placement-card" style={{ marginTop: 18 }}>
+        <h2>Candidate Placement History</h2>
+        <p>Overview of all candidates&apos; placement progress, attempts, and activity.</p>
+        <div className="placement-form" style={{ marginTop: 12 }}>
+          <div className="placement-form-row">
+            <label>
+              Search candidates
+              <input
+                value={studentSearch}
+                onChange={(e) => setStudentSearch(e.target.value)}
+                placeholder="Search by name or email..."
+              />
+            </label>
+          </div>
+        </div>
+        {loadingStudents ? (
+          <div className="placement-empty">Loading candidates...</div>
+        ) : studentSummaries.length > 0 ? (
+          <div className="placement-table-wrap" style={{ marginTop: 12 }}>
+            <table className="placement-table">
+              <thead>
+                <tr>
+                  <th>Candidate</th>
+                  <th>Day</th>
+                  <th>Days Done</th>
+                  <th>Attempts</th>
+                  <th>Accuracy</th>
+                  <th>Streak</th>
+                  <th>Apps</th>
+                  <th>Mocks</th>
+                  <th>Projects</th>
+                  <th>Last Activity</th>
+                </tr>
+              </thead>
+              <tbody>
+                {studentSummaries
+                  .filter((s) => {
+                    if (!studentSearch) return true
+                    const q = studentSearch.toLowerCase()
+                    return s.name.toLowerCase().includes(q) || s.email.toLowerCase().includes(q)
+                  })
+                  .map((s) => (
+                    <tr key={s.userId}>
+                      <td>
+                        <strong>{s.name}</strong>
+                        <br />
+                        <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>{s.email}</span>
+                      </td>
+                      <td>{s.currentDay}</td>
+                      <td>{s.daysCompleted}</td>
+                      <td>{s.totalAttempts}</td>
+                      <td>
+                        <span className={`placement-badge ${s.accuracy >= 70 ? 'good' : s.accuracy >= 50 ? 'warn' : 'bad'}`}>
+                          {s.accuracy}%
+                        </span>
+                      </td>
+                      <td>{s.streakDays}</td>
+                      <td>{s.applications}</td>
+                      <td>{s.mockInterviews}</td>
+                      <td>{s.projects}</td>
+                      <td>{s.lastActivity ? new Date(s.lastActivity).toLocaleDateString() : '—'}</td>
+                    </tr>
+                  ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <div className="placement-empty">No candidate data available yet.</div>
         )}
       </section>
     </div>

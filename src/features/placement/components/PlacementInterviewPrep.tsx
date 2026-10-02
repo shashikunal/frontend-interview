@@ -3,12 +3,20 @@ import { Link } from 'react-router-dom'
 import { useAuth } from '../../auth/hooks/useAuth'
 import { usePlacement } from '../hooks/usePlacement'
 import { INTERVIEW_QUESTIONS } from '../data/questions/interviewQuestions'
+import { BANGALORE_STARTUP_QUESTIONS } from '../data/questions/bangaloreStartupQuestions'
+
+const ALL_QUESTIONS = [...INTERVIEW_QUESTIONS, ...BANGALORE_STARTUP_QUESTIONS]
 
 const DURATION_LABELS: Record<string, string> = {
   '60s': '60-second answer',
   '2min': '2-minute answer',
   technical: 'Technical explanation',
   project: 'Project explanation',
+  'startup-culture': 'Startup culture',
+  fresher: 'Fresher specific',
+  scenario: 'Scenario based',
+  'product-thinking': 'Product thinking',
+  bangalore: 'Bangalore specific',
 }
 
 export default function PlacementInterviewPrep() {
@@ -26,13 +34,14 @@ export default function PlacementInterviewPrep() {
     confidence: 3,
     conciseness: 3,
   })
+  const [practiceCount, setPracticeCount] = useState(0)
 
   const subcategories = useMemo(
-    () => [...new Set(INTERVIEW_QUESTIONS.map((q) => q.subcategory))],
+    () => [...new Set(ALL_QUESTIONS.map((q) => q.subcategory))].sort(),
     [],
   )
 
-  const filtered = INTERVIEW_QUESTIONS.filter((q) => {
+  const filtered = ALL_QUESTIONS.filter((q) => {
     if (subcat !== 'all' && q.subcategory !== subcat) return false
     if (duration === 'all') return true
     if (duration === '60s') return q.expectedTimeSeconds <= 60
@@ -40,7 +49,7 @@ export default function PlacementInterviewPrep() {
     return q.subcategory === duration
   })
 
-  const active = INTERVIEW_QUESTIONS.find((q) => q.id === activeId)
+  const active = ALL_QUESTIONS.find((q) => q.id === activeId)
 
   const saveSelfAssessment = async () => {
     if (!active) return
@@ -70,6 +79,7 @@ export default function PlacementInterviewPrep() {
     setAnswerText('')
     setRevealed(false)
     setActiveId(null)
+    setPracticeCount((c) => c + 1)
     setSelfRatings({
       clarity: 3,
       structure: 3,
@@ -88,6 +98,11 @@ export default function PlacementInterviewPrep() {
           and conciseness. Practise out loud before comparing with the reference answer — reading a
           model answer does not build the skill.
         </p>
+        {practiceCount > 0 && (
+          <p className="placement-inline-note" style={{ marginTop: 8 }}>
+            You have practised {practiceCount} {practiceCount === 1 ? 'question' : 'questions'} this session. Keep going!
+          </p>
+        )}
         <div className="placement-form" style={{ marginTop: 12 }}>
           <div className="placement-form-row">
             <label>
