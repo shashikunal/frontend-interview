@@ -1,5 +1,7 @@
 // src/features/interview-questions/utils/speechSanitizer.ts
 
+import { parseAnswerBlocks, speechUnitsFromBlocks } from './answerBlocks'
+
 /**
  * Strips raw Markdown, HTML tags, and code formatting symbols to produce
  * natural, clean English sentences for the Web SpeechSynthesis API.
@@ -59,41 +61,13 @@ export function getSpeechSentenceSegments(rawText: string | undefined | null): S
     return { fullSpeechText: '', segments: [], segmentOffsets: [] }
   }
 
-  const paras = rawText.split(/\n\s*\n/).map(p => p.trim()).filter(Boolean)
-  const segments: string[] = []
+  // Same block parser as FormattedAnswerText, so rendered highlights and
+  // spoken segments always stay 1-to-1 (code blocks are never spoken).
+  const units = speechUnitsFromBlocks(parseAnswerBlocks(rawText))
+  const segments = units.map(unit => sanitizeForSpeech(unit))
 
-  for (const para of paras) {
-    const lines = para.split('\n').map(l => l.trim()).filter(Boolean)
-    const isNumbered = lines.length > 0 && lines.every(l => /^(\d+[\.\)]|Step\s+\d+:?)\s+/i.test(l))
-    const isBullet = lines.length > 0 && lines.every(l => /^[-*•]\s+/.test(l))
-
-    if (isNumbered) {
-      for (const line of lines) {
-        const formatted = line.replace(/^(\d+)[\.\)]\s*/, 'Step $1: ')
-        const cleaned = sanitizeForSpeech(formatted)
-        if (cleaned) segments.push(cleaned)
-      }
-    } else if (isBullet) {
-      for (const line of lines) {
-        const cleaned = sanitizeForSpeech(line)
-        if (cleaned) segments.push(cleaned)
-      }
-    } else {
-      // Split by sentence boundaries followed by space and capital letter or digit
-      const rawSentences = para.split(/(?<=[.!?])\s+(?=[A-Z0-9"'])/).filter(Boolean)
-      if (rawSentences.length > 0) {
-        for (const s of rawSentences) {
-          const cleaned = sanitizeForSpeech(s)
-          if (cleaned) segments.push(cleaned)
-        }
-      } else {
-        const cleaned = sanitizeForSpeech(para)
-        if (cleaned) segments.push(cleaned)
-      }
-    }
-  }
-
-  // Join with space
+  // Join with space (empty units are kept so offsets stay aligned with the
+  // sentence indexes used by FormattedAnswerText)
   const fullSpeechText = segments.join(' ')
   const segmentOffsets: number[] = []
   let currentOffset = 0
@@ -101,6 +75,10 @@ export function getSpeechSentenceSegments(rawText: string | undefined | null): S
   for (const seg of segments) {
     segmentOffsets.push(currentOffset)
     currentOffset += seg.length + 1 // + 1 for space
+  }
+
+  if (!segments.some(seg => seg.length > 0)) {
+    return { fullSpeechText: '', segments: [], segmentOffsets: [] }
   }
 
   return { fullSpeechText, segments, segmentOffsets }

@@ -1,4 +1,5 @@
 import emailjs from '@emailjs/browser'
+import { bankTotals, fmtCount } from '../data/bankTotals'
 
 // Environment variables for EmailJS or Custom SMTP
 const EMAILJS_SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID || ''
@@ -175,7 +176,7 @@ export const emailService = {
             user_name: userName,
             role,
             subject,
-            message: `Your account is active! Explore all 22,222 questions, system design canvas, and compiler studios.`,
+            message: `Your account is active! Explore all ${fmtCount(bankTotals.mainBankQuestions)} questions, system design canvas, and compiler studios.`,
           },
           EMAILJS_PUBLIC_KEY
         )

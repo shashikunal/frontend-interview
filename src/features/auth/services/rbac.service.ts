@@ -1,4 +1,5 @@
 import { supabase } from '../../../lib/supabase/client'
+import { bankTotals, fmtCount } from '../../../data/bankTotals'
 import type {
   UserRole,
   RoleDefinition,
@@ -25,7 +26,7 @@ export const rbacService = {
       return [
         { id: 'guest', name: 'Guest', description: 'Unauthenticated visitor', hierarchyLevel: 0 },
         { id: 'candidate', name: 'Candidate', description: 'Standard candidate tier', hierarchyLevel: 1 },
-        { id: 'pro_member', name: 'Pro Member', description: 'Full access to 22,222 questions & system design', hierarchyLevel: 2 },
+        { id: 'pro_member', name: 'Pro Member', description: `Full access to ${fmtCount(bankTotals.mainBankQuestions)} questions & system design`, hierarchyLevel: 2 },
         { id: 'interviewer', name: 'Interviewer', description: 'Interviewer & rubric reviewer tier', hierarchyLevel: 3 },
         { id: 'admin', name: 'Admin', description: 'Platform Administrator with complete control', hierarchyLevel: 4 },
       ]
@@ -48,7 +49,7 @@ export const rbacService = {
     } catch {
       return [
         { id: 'questions:read_basic', name: 'Read Basic Questions', module: 'questions', description: 'Access preview questions' },
-        { id: 'questions:read_full', name: 'Read Full Question Bank', module: 'questions', description: 'Access full 22,222 questions' },
+        { id: 'questions:read_full', name: 'Read Full Question Bank', module: 'questions', description: `Access full ${fmtCount(bankTotals.mainBankQuestions)} questions` },
         { id: 'coding:execute', name: 'Execute Code Sandbox', module: 'coding', description: 'Run Monaco sandbox' },
         { id: 'system_design:access', name: 'System Design Studio', module: 'system_design', description: 'Access 4-tier canvas' },
         { id: 'mocks:video_ai', name: 'AI Video Mock Interview', module: 'mocks', description: 'Access live video mock' },

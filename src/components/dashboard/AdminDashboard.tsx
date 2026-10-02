@@ -8,6 +8,7 @@ import { rbacService } from '../../features/auth/services/rbac.service'
 import { auditService, type AccessNotificationItem } from '../../features/auth/services/audit.service'
 import { progressSyncService, type UserTrackProgress, TRACK_DEFINITIONS } from '../../features/auth/services/progressSync.service'
 import { dbActivityService, type ActivityLogItem } from '../../lib/supabase'
+import { bankTotals, fmtCount, fmtK } from '../../data/bankTotals'
 import type { AuthUserProfile } from '../../features/auth/types/auth.types'
 import AdminOverviewTab from './admin/AdminOverviewTab'
 import AdminQuestionsTab from './admin/AdminQuestionsTab'
@@ -854,8 +855,8 @@ export default function AdminDashboard() {
             onClick={() => { setActiveTab('master_bank'); setIsMobileSidebarOpen(false); }}
           >
             <span className="h-nav-icon">🎯</span>
-            <span>Master Bank (12K)</span>
-            <span className="h-nav-badge" style={{ background: '#0ea5e9', color: '#ffffff' }}>12K</span>
+            <span>Master Bank ({fmtK(bankTotals.masterBankQuestions)})</span>
+            <span className="h-nav-badge" style={{ background: '#0ea5e9', color: '#ffffff' }}>{fmtK(bankTotals.masterBankQuestions)}</span>
           </button>
 
           <button
@@ -1554,10 +1555,10 @@ export default function AdminDashboard() {
                               type="button"
                               className={`chip-toggle ${u.entitlements.questions_full ? 'granted' : 'locked'}`}
                               onClick={() => handleToggleEntitlement(u, 'questions_full')}
-                              title="Toggle 22,222 Questions Bank"
+                              title={`Toggle ${fmtCount(bankTotals.mainBankQuestions)} Questions Bank`}
                               disabled={isSuspended}
                             >
-                              {u.entitlements.questions_full ? '✅ 22K' : '🔒 22K'}
+                              {u.entitlements.questions_full ? `✅ ${fmtK(bankTotals.mainBankQuestions)}` : `🔒 ${fmtK(bankTotals.mainBankQuestions)}`}
                             </button>
 
                             <button
@@ -2127,7 +2128,7 @@ export default function AdminDashboard() {
                           className={`chip-toggle ${inspectUser.entitlements.questions_full ? 'granted' : 'locked'}`}
                           onClick={() => handleToggleEntitlement(inspectUser, 'questions_full')}
                         >
-                          {inspectUser.entitlements.questions_full ? '✅ Full 22,222 Bank' : '🔒 22K Bank Locked'}
+                          {inspectUser.entitlements.questions_full ? `✅ Full ${fmtCount(bankTotals.mainBankQuestions)} Bank` : `🔒 ${fmtK(bankTotals.mainBankQuestions)} Bank Locked`}
                         </button>
                         <button
                           type="button"
@@ -2368,7 +2369,7 @@ export default function AdminDashboard() {
                   <span className="h-phs-label">Submissions</span>
                 </div>
                 <div className="h-phs-item">
-                  <span className="h-phs-num">22K</span>
+                  <span className="h-phs-num">{fmtK(bankTotals.mainBankQuestions)}</span>
                   <span className="h-phs-label">Questions</span>
                 </div>
               </div>
@@ -2573,7 +2574,7 @@ export default function AdminDashboard() {
                         setNewUserEntitlements(prev => ({ ...prev, questions_full: e.target.checked }))
                       }
                     />
-                    22,222 Question Bank
+                    {fmtCount(bankTotals.mainBankQuestions)} Question Bank
                   </label>
 
                   <label className="checkbox-pill">

@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom'
 import { interviewQuestionsDataService } from '../services/interviewQuestionsDataService'
 import { interviewQuestionsProgressService } from '../services/interviewQuestionsProgressService'
 import { sanitizeForSpeech, getStoredSpeechRate } from '../utils/speechSanitizer'
+import { FormattedAnswerText } from './FormattedAnswerText'
 import type { MasterSubjectId, MasterQuestion, MasterBankCatalog } from '../types/interviewQuestions.types'
 
 export default function MockTestStudio() {
@@ -211,7 +212,7 @@ export default function MockTestStudio() {
                   setSelectedTopic('ALL')
                 }}
               >
-                <option value="all">🌟 Comprehensive Mixed Assessment (All 33 Subjects)</option>
+                <option value="all">🌟 Comprehensive Mixed Assessment (All {catalog?.subjects.length ?? '—'} Subjects)</option>
                 {catalog?.subjects.map(s => (
                   <option key={s.id} value={s.id}>
                     {s.icon} {s.name} ({s.badge})
@@ -453,10 +454,10 @@ export default function MockTestStudio() {
                     border: '1px solid var(--mqb-border)',
                   }}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', minWidth: 0, flex: 1 }}>
                     <span>{status === 'correct' ? '✅' : status === 'incorrect' ? '❌' : '⚪'}</span>
-                    <div>
-                      <div style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--mqb-text-primary)' }}>{q.question}</div>
+                    <div style={{ minWidth: 0 }}>
+                      <div className="mqb-test-result-title" title={q.question}>{q.question}</div>
                       <div style={{ fontSize: '0.75rem', color: 'var(--mqb-text-muted)' }}>{q.subject.toUpperCase()} • {q.topic}</div>
                     </div>
                   </div>
@@ -544,10 +545,7 @@ export default function MockTestStudio() {
       {/* Test Question Card */}
       <div className="mqb-flashcard">
         <div>
-          <div style={{ fontSize: '0.85rem', color: 'var(--mqb-text-muted)', marginBottom: '0.5rem' }}>
-            {currentQ.topic} • {currentQ.subtopic || currentQ.concept}
-          </div>
-          <h2 style={{ fontSize: '1.35rem', fontWeight: 700, lineHeight: 1.45, color: 'var(--mqb-text-primary)', margin: '0 0 1.5rem' }}>
+          <h2 className="mqb-test-qtitle" title={currentQ.question}>
             {currentQ.question}
           </h2>
 
@@ -627,7 +625,11 @@ export default function MockTestStudio() {
                     💡 Explanation:
                   </div>
                   <div style={{ color: 'var(--mqb-text-secondary)', fontSize: '0.88rem', lineHeight: 1.6 }}>
-                    {currentQ.mcqExplanation || currentQ.shortAnswer || 'This option strictly aligns with web platform standards.'}
+                    {currentQ.mcqExplanation || currentQ.shortAnswer ? (
+                      <FormattedAnswerText text={currentQ.mcqExplanation || currentQ.shortAnswer} />
+                    ) : (
+                      'This option strictly aligns with web platform standards.'
+                    )}
                   </div>
                 </div>
               )}
@@ -645,7 +647,7 @@ export default function MockTestStudio() {
                     Model Interview Answer:
                   </div>
                   <div style={{ color: 'var(--mqb-text-primary)', fontSize: '0.92rem', lineHeight: 1.6, marginBottom: '0.75rem' }}>
-                    {currentQ.shortAnswer}
+                    <FormattedAnswerText text={currentQ.shortAnswer} />
                   </div>
                   {currentQ.codeExample && (
                     <pre style={{ background: '#090d16', padding: '0.85rem', borderRadius: '8px', overflowX: 'auto', fontSize: '0.82rem', color: '#e2e8f0', margin: 0 }}>

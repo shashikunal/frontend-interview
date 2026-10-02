@@ -4,6 +4,7 @@ import { ollamaProvider } from '../../services/providers/ollamaProvider';
 import { whisperProvider } from '../../services/providers/whisperProvider';
 import type { TranscriptionHealth } from '../../types/provider.types';
 import { sandboxProvider } from '../../services/providers/sandboxProvider';
+import { bankTotals, fmtCount } from '../../../../data/bankTotals';
 
 export default function MockSystemAuditPage() {
   const [bankAudit, setBankAudit] = useState<{ overallPass: boolean; totalQuestionsAcrossAllTracks: number; trackReports: TrackAuditReport[] } | null>(null);
@@ -93,7 +94,7 @@ export default function MockSystemAuditPage() {
           className={`ai-vm-btn-secondary ${activeTab === 'question-bank' ? 'active' : ''}`}
           style={{ background: activeTab === 'question-bank' ? 'var(--surface-hover)' : 'transparent', border: activeTab === 'question-bank' ? '1px solid var(--border-strong)' : 'none' }}
         >
-          16-Track Question Bank Audit (5,120 Questions)
+          {fmtCount(bankTotals.mockBankTracks)}-Track Question Bank Audit ({fmtCount(bankTotals.mockBankQuestions)} Questions)
         </button>
       </div>
 
@@ -111,10 +112,10 @@ export default function MockSystemAuditPage() {
               </div>
               <h3 style={{ fontSize: '1.05rem', margin: '0 0 6px' }}>Question Bank Pool</h3>
               <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', margin: '0 0 12px' }}>
-                Total Verified: <strong>{bankAudit?.totalQuestionsAcrossAllTracks || 5120}</strong> across 16 tracks.
+                Total Verified: <strong>{bankAudit?.totalQuestionsAcrossAllTracks || bankTotals.mockBankQuestions}</strong> across {fmtCount(bankTotals.mockBankTracks)} tracks.
               </p>
               <div style={{ fontSize: '0.78rem', color: '#10b981' }}>
-                ✓ All 16 tracks exceed 300 approved questions with 0 duplicates.
+                ✓ {fmtCount(bankTotals.mockBankTracks)} tracks indexed with {fmtCount(bankTotals.mockBankQuestions)} approved questions and 0 duplicate IDs.
               </div>
             </div>
 

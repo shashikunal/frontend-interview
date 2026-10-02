@@ -4,6 +4,8 @@ import { interviewQuestionsDataService } from '../services/interviewQuestionsDat
 import { interviewQuestionsProgressService } from '../services/interviewQuestionsProgressService'
 import type { MasterSubjectId, MasterQuestion } from '../types/interviewQuestions.types'
 import { SkeletonLoader } from '../../../components/common/SkeletonLoader'
+import { FormattedAnswerText } from './FormattedAnswerText'
+import { toPlainSnippet } from '../utils/answerBlocks'
 
 export default function PracticeDrillStudio() {
   const { subject: urlSubject } = useParams<{ subject?: string }>()
@@ -278,9 +280,9 @@ export default function PracticeDrillStudio() {
                 <span style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: 'var(--mqb-accent-blue)', fontWeight: 700 }}>
                   Short Summary:
                 </span>
-                <p style={{ margin: '0.3rem 0 0', color: 'var(--mqb-text-primary)', lineHeight: 1.6 }}>
-                  {currentQ.shortAnswer}
-                </p>
+                <div style={{ margin: '0.3rem 0 0', color: 'var(--mqb-text-primary)', lineHeight: 1.6 }}>
+                  <FormattedAnswerText text={currentQ.shortAnswer} />
+                </div>
               </div>
 
               <div>
@@ -288,7 +290,7 @@ export default function PracticeDrillStudio() {
                   Spoken Interview Script:
                 </span>
                 <p style={{ margin: '0.3rem 0 0', color: 'var(--mqb-text-secondary)', fontStyle: 'italic', lineHeight: 1.6 }}>
-                  "{currentQ.interviewAnswer}"
+                  "{toPlainSnippet(currentQ.interviewAnswer, 420)}"
                 </p>
               </div>
 

@@ -46,25 +46,28 @@ jobs:
       - name: 2. Strict TypeScript Typecheck (tsc -b)
         run: npx tsc -b
 
-      - name: 3. Infrastructure & Architecture Verification Tests
+      - name: 3. Question Bank Validation
+        run: npm run validate:questions
+
+      - name: 4. Infrastructure & Architecture Verification Tests
         run: node scripts/test-phase18-infrastructure-readiness.mjs
 
-      - name: 4. Core Subsystem Regression Tests
+      - name: 5. Core Subsystem Regression Tests
         run: |
           node scripts/test-phase11-observability.mjs
           node scripts/test-phase14-reliability.mjs
           node scripts/test-phase17-recording-pipeline.mjs
 
-      - name: 5. Supply Chain Security & Dependency Audit
+      - name: 6. Supply Chain Security & Dependency Audit
         run: npm audit --omit=dev --audit-level=critical
 
-      - name: 6. Generate Software Bill of Materials (SBOM)
+      - name: 7. Generate Software Bill of Materials (SBOM)
         run: node scripts/generate-sbom.mjs
 
-      - name: 7. Production Bundle Compilation (vite build)
+      - name: 8. Production Bundle Compilation (vite build)
         run: npm run build
 
-      - name: 8. Archive Build & Compliance Artifacts
+      - name: 9. Archive Build & Compliance Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: production-artifacts

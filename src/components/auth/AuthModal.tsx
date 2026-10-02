@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { useAuth } from '../../context/AuthContext'
+import { bankTotals, fmtCount } from '../../data/bankTotals'
 import './AuthModal.css'
 
 export default function AuthModal() {
@@ -320,7 +321,7 @@ export default function AuthModal() {
               <ul className="perms-list">
                 <li>
                   {user.entitlements.questions_full ? '✅' : '🔒'}{' '}
-                  <strong>22,222 Questions Bank</strong> {user.entitlements.questions_full ? '(Full Access)' : '(Restricted)'}
+                  <strong>{fmtCount(bankTotals.mainBankQuestions)} Questions Bank</strong> {user.entitlements.questions_full ? '(Full Access)' : '(Restricted)'}
                 </li>
                 <li>
                   {user.entitlements.coding_sandbox ? '✅' : '🔒'}{' '}

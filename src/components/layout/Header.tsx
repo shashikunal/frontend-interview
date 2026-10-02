@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useProgress } from '../../context/ProgressContext'
 import { useAuth } from '../../context/AuthContext'
+import { bankTotals, fmtCount, fmtK } from '../../data/bankTotals'
 import ThemeToggle from './ThemeToggle'
 import AdminNotificationBell from './AdminNotificationBell'
 import './Header.css'
@@ -144,9 +145,9 @@ export default function Header() {
             /* Candidate / Standard Navigation */
             <div className="desktop-nav-items">
 
-              {/* 1a. Master Question Bank (12K Questions) */}
+              {/* 1a. Master Question Bank */}
               <Link to="/interview-questions" className={`nav-link ${isActive('/interview-questions') ? 'active' : ''}`}>
-                🎯 Master Bank <span style={{ fontSize: '0.68rem', padding: '0.12rem 0.35rem', borderRadius: '4px', background: 'linear-gradient(135deg, #0ea5e9, #6366f1)', color: '#fff', fontWeight: 700, marginLeft: '0.2rem' }}>12K</span>
+                🎯 Master Bank <span style={{ fontSize: '0.68rem', padding: '0.12rem 0.35rem', borderRadius: '4px', background: 'linear-gradient(135deg, #0ea5e9, #6366f1)', color: '#fff', fontWeight: 700, marginLeft: '0.2rem' }}>{fmtK(bankTotals.masterBankQuestions)}</span>
               </Link>
 
               {/* 1. Direct Questions Bank Link */}
@@ -892,7 +893,7 @@ export default function Header() {
                         AI Video Mock Studio 2.0
                         <span className="drop-lock-tag" style={{ background: 'rgba(99, 102, 241, 0.2)', color: '#a5b4fc' }}>NEW</span>
                       </span>
-                      <span className="drop-desc">16 tracks, 5,120+ questions, senior comparison &amp; sandbox</span>
+                      <span className="drop-desc">{fmtCount(bankTotals.mockBankTracks)} tracks, {fmtCount(bankTotals.mockBankQuestions)} questions, senior comparison &amp; sandbox</span>
                     </div>
                   </Link>
 
@@ -1008,9 +1009,9 @@ export default function Header() {
                   <span className="m-icon">🎯</span>
                   <div className="m-text">
                     <span className="m-label">Master Question Bank</span>
-                    <span className="m-sub">12,000 deep interview questions</span>
+                    <span className="m-sub">{fmtCount(bankTotals.masterBankQuestions)} deep interview questions</span>
                   </div>
-                  <span className="m-badge-pill" style={{ background: 'linear-gradient(135deg, #0ea5e9, #6366f1)', color: '#fff' }}>12K</span>
+                  <span className="m-badge-pill" style={{ background: 'linear-gradient(135deg, #0ea5e9, #6366f1)', color: '#fff' }}>{fmtK(bankTotals.masterBankQuestions)}</span>
                 </Link>
 
                 <Link to="/docs" className={`mobile-nav-item ${isActive('/docs') ? 'active' : ''}`} onClick={closeMobileMenu}>
@@ -1025,7 +1026,7 @@ export default function Header() {
                   <span className="m-icon">📚</span>
                   <div className="m-text">
                     <span className="m-label">Questions Bank</span>
-                    <span className="m-sub">22,222 questions</span>
+                    <span className="m-sub">{fmtCount(bankTotals.mainBankQuestions)} questions</span>
                   </div>
                   {!hasQuestionsFull && <span className="nav-lock-tag">🔒</span>}
                 </Link>

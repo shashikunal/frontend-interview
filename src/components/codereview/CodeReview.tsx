@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react'
 import { Link } from 'react-router-dom'
+import { bankTotals, fmtCount } from '../../data/bankTotals'
 import './CodeReview.css'
 
 export interface DiagnosticIssue {
@@ -426,7 +427,7 @@ export default function CodeReview() {
           ⚡ Web Vitals Profiler Lab
         </Link>
         <Link to="/questions" className="btn btn-primary">
-          📚 Browse 22,222 Questions →
+          📚 Browse {fmtCount(bankTotals.mainBankQuestions)} Questions →
         </Link>
       </div>
     </div>

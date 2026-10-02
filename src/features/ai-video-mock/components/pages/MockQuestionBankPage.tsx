@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { ALL_TECHNOLOGY_TRACKS, type TechnologyTrack, type QuestionDifficulty, type MockQuestion } from '../../types/questionBank.types';
 import { filterMockQuestions, ensureTrackLoaded, ensureAllTracksLoaded } from '../../data/questionBankRegistry';
+import { bankTotals, fmtCount } from '../../../../data/bankTotals';
 
 export default function MockQuestionBankPage() {
   const [selectedTrack, setSelectedTrack] = useState<TechnologyTrack | undefined>(undefined);
@@ -51,7 +52,7 @@ export default function MockQuestionBankPage() {
           Mock Question Bank Explorer
         </h1>
         <p style={{ color: 'var(--text-secondary)', margin: 0 }}>
-          Browse all 5,120+ approved interview questions across 16 technologies with full rubrics, expected concepts, and common pitfalls.
+          Browse all {fmtCount(bankTotals.mockBankQuestions)} approved interview questions across {fmtCount(bankTotals.mockBankTracks)} technologies with full rubrics, expected concepts, and common pitfalls.
         </p>
       </div>
 

@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { getAllMockQuestions, getQuestionBankAuditMetrics, ensureAllTracksLoaded } from '../../data/questionBankRegistry';
 import type { TechnologyTrack } from '../../types/questionBank.types';
+import { bankTotals, fmtCount } from '../../../../data/bankTotals';
 
 export default function MockAdminAuditPage() {
   const [selectedTrack, setSelectedTrack] = useState<TechnologyTrack | 'all'>('all');
@@ -160,7 +161,7 @@ export default function MockAdminAuditPage() {
               onChange={e => setSelectedTrack(e.target.value as any)}
               style={{ width: '100%' }}
             >
-              <option value="all">All Tracks (16 Tracks)</option>
+              <option value="all">All Tracks ({fmtCount(bankTotals.mockBankTracks)} Tracks)</option>
               <option value="javascript">JavaScript</option>
               <option value="typescript">TypeScript</option>
               <option value="html">HTML</option>
