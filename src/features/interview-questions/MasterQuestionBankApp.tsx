@@ -56,15 +56,9 @@ export default function MasterQuestionBankApp() {
             <nav className="mqb-subnav-links">
               <Link
                 to="/interview-questions"
-                className={`mqb-subnav-link ${isActive('/interview-questions') && !location.pathname.includes('/practice') && !location.pathname.includes('/test') && !location.pathname.includes('/bookmarks') ? 'active' : ''}`}
+                className={`mqb-subnav-link ${isActive('/interview-questions') && !location.pathname.includes('/test') && !location.pathname.includes('/bookmarks') ? 'active' : ''}`}
               >
                 All Subjects
-              </Link>
-              <Link
-                to="/interview-questions/practice"
-                className={`mqb-subnav-link ${isActive('/interview-questions/practice') ? 'active' : ''}`}
-              >
-                Flashcard Practice
               </Link>
               <Link
                 to="/interview-questions/test"

@@ -8,6 +8,7 @@ import type {
   SubjectMeta,
 } from '../types/interviewQuestions.types'
 import { SkeletonLoader } from '../../../components/common/SkeletonLoader'
+import { toPlainSnippet } from '../utils/answerBlocks'
 
 const PAGE_SIZE = 25
 
@@ -613,7 +614,7 @@ export default function SubjectQuestionCatalog() {
                     <h3 className="mqb-qcard-title">
                       {q.questionNumber ? `Q${q.questionNumber}. ` : ''}{q.question}
                     </h3>
-                    <p className="mqb-qcard-snippet">{q.shortAnswer}</p>
+                    <p className="mqb-qcard-snippet">{toPlainSnippet(q.shortAnswer)}</p>
                   </div>
                 </div>
 

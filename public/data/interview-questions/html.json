@@ -115,7 +115,7 @@
     "standard_id": "HTML-MCQ-000001",
     "questionType": "MCQ",
     "question_type": "mcq",
-    "question_hash": "qh_55fa0c9a",
+    "question_hash": "qh_6284dba5",
     "status": "published",
     "correctOption": "B",
     "explanation": "HTML (HyperText Markup Language) is the standard markup language used to define the structure of web content.",
@@ -231,7 +231,7 @@
     "standard_id": "HTML-MCQ-000002",
     "questionType": "MCQ",
     "question_type": "mcq",
-    "question_hash": "qh_25dc48ac",
+    "question_hash": "qh_49ee0f6d",
     "status": "published",
     "correctOption": "B",
     "explanation": "<!DOCTYPE html> tells the browser engine to interpret the document in modern standards mode.",
@@ -298,7 +298,7 @@
     "standard_id": "HTML-MCQ-000003",
     "questionType": "MCQ",
     "question_type": "mcq",
-    "question_hash": "qh_1bb2e908",
+    "question_hash": "qh_7ce53baf",
     "status": "published",
     "options": [
       {
@@ -405,7 +405,7 @@
     "standard_id": "HTML-MCQ-000004",
     "questionType": "MCQ",
     "question_type": "mcq",
-    "question_hash": "qh_25c3de25",
+    "question_hash": "qh_45b7dcb2",
     "options": [
       {
         "key": "A",
@@ -506,7 +506,7 @@
     "standard_id": "HTML-MCQ-000005",
     "questionType": "MCQ",
     "question_type": "mcq",
-    "question_hash": "qh_762b430b",
+    "question_hash": "qh_226ce1ac",
     "status": "published",
     "options": [
       {
@@ -633,7 +633,7 @@
     "standard_id": "HTML-MCQ-000006",
     "questionType": "MCQ",
     "question_type": "mcq",
-    "question_hash": "qh_19d74248",
+    "question_hash": "qh_3f796ec1",
     "options": [
       {
         "key": "A",
@@ -759,7 +759,7 @@
     "standard_id": "HTML-MCQ-000007",
     "questionType": "MCQ",
     "question_type": "mcq",
-    "question_hash": "qh_5c6ee82c",
+    "question_hash": "qh_5106ac7b",
     "status": "published",
     "options": [
       {
@@ -804,7 +804,7 @@
     "questionNumber": 8,
     "category": "HTML Fundamentals",
     "difficulty": "EASY",
-    "question": "What are void (self-closing) elements in HTML?",
+    "question": "What are void (self-closing) elements?",
     "shortAnswer": "Void elements are HTML elements that cannot have any child nodes or text content, and therefore do not require a closing tag.",
     "detailedAnswer": "Void elements represent stand-alone items or metadata.\n\nCommon **void elements** in **HTML** include <img>, <br>, <hr>, <input>, <link>, and <meta>.\n\nIn modern **HTML5**, the trailing slash (e.g., <img />) is completely optional; <img src='...'> is standard and valid.",
     "codeExample": "<!-- Common HTML5 void elements (no closing tag needed) -->\n<img src=\"avatar.jpg\" alt=\"User Profile\">\n<input type=\"text\" name=\"username\">\n<link rel=\"stylesheet\" href=\"styles.css\">\n<meta charset=\"UTF-8\">\n<br>\n<hr>",
@@ -865,7 +865,7 @@
     "standard_id": "HTML-MCQ-000008",
     "questionType": "MCQ",
     "question_type": "mcq",
-    "question_hash": "qh_66e08a97",
+    "question_hash": "qh_61ca92bc",
     "options": [
       {
         "key": "A",
@@ -910,7 +910,7 @@
     "questionNumber": 9,
     "category": "HTML Fundamentals",
     "difficulty": "EASY",
-    "question": "What is the difference between id and class attributes in HTML?",
+    "question": "What is the difference between id and class attributes?",
     "shortAnswer": "An id must be globally unique across the entire HTML page and applies to only one element, whereas a class can be shared across multiple elements.",
     "detailedAnswer": "- id: Unique identifier per document.\n\nUsed for direct **JavaScript** selection (getElementById), internal anchor jump links (#section-id), and linking <label for='input-id'>.\n- class: Reusable classification hook.\n\nUsed to apply shared **CSS** styling to many elements and group elements together.",
     "codeExample": "<!-- Unique ID for primary navigation and anchor targeting -->\n<nav id=\"primary-navigation\" class=\"navbar shadow-lg\">\n  <!-- Multiple elements sharing the same class -->\n  <a href=\"#home\" class=\"nav-item active\">Home</a>\n  <a href=\"#about\" class=\"nav-item\">About</a>\n  <a href=\"#contact\" class=\"nav-item\">Contact</a>\n</nav>",
@@ -967,7 +967,7 @@
     "standard_id": "HTML-MCQ-000009",
     "questionType": "MCQ",
     "question_type": "mcq",
-    "question_hash": "qh_7c25f1c2",
+    "question_hash": "qh_d6ca3d3",
     "status": "published",
     "options": [
       {
@@ -1055,7 +1055,7 @@
     "standard_id": "HTML-MCQ-000010",
     "questionType": "MCQ",
     "question_type": "mcq",
-    "question_hash": "qh_42a1380d",
+    "question_hash": "qh_7438bc49",
     "options": [
       {
         "key": "A",
@@ -1182,7 +1182,7 @@
     "standard_id": "HTML-MCQ-000011",
     "questionType": "MCQ",
     "question_type": "mcq",
-    "question_hash": "qh_7b0bce18",
+    "question_hash": "qh_4a5dbbf9",
     "status": "published",
     "options": [
       {
@@ -1274,7 +1274,7 @@
     "standard_id": "HTML-MCQ-000012",
     "questionType": "MCQ",
     "question_type": "mcq",
-    "question_hash": "qh_60a93d3d",
+    "question_hash": "qh_21f6fe3c",
     "options": [
       {
         "key": "A",
@@ -1381,7 +1381,7 @@
     "standard_id": "HTML-MCQ-000013",
     "questionType": "MCQ",
     "question_type": "mcq",
-    "question_hash": "qh_25ec6f89",
+    "question_hash": "qh_3df089c7",
     "status": "published",
     "options": [
       {
@@ -1473,7 +1473,7 @@
     "standard_id": "HTML-MCQ-000014",
     "questionType": "MCQ",
     "question_type": "mcq",
-    "question_hash": "qh_20ad2dcb",
+    "question_hash": "qh_6de0ba09",
     "options": [
       {
         "key": "A",
@@ -1518,7 +1518,7 @@
     "questionNumber": 15,
     "category": "HTML Fundamentals",
     "difficulty": "EASY",
-    "question": "What is the difference between <b> / <i> and <strong> / <em> in HTML?",
+    "question": "What is the difference between <b> / <i> and <strong> / <em>?",
     "shortAnswer": "<b> and <i> only apply visual styling (bold/italic) with no semantic meaning, while <strong> and <em> convey strong importance and verbal stress for screen readers.",
     "detailedAnswer": "- <b>: Stylistic offset without extra importance (visual bold).\n- <strong>: Indicates strong importance, seriousness, or urgency.\n\nScreen readers announce this with vocal inflection.\n- <i>: Stylistic italicization (e.g. taxonomic names, foreign phrases).\n- <em>: Semantic stress emphasis that changes the verbal meaning of a sentence.",
     "codeExample": "<p>\n  <!-- Purely visual styling -->\n  The chemical symbol for water is <b>H2O</b>.\n  \n  <!-- Semantic importance: Screen reader announces with urgency -->\n  <strong>Warning:</strong> Always disconnect power before servicing.\n  \n  <!-- Semantic stress emphasis -->\n  I did not say <em>you</em> stole the money.\n</p>",
@@ -1575,7 +1575,7 @@
     "standard_id": "HTML-MCQ-000015",
     "questionType": "MCQ",
     "question_type": "mcq",
-    "question_hash": "qh_28183588",
+    "question_hash": "qh_25bee2d9",
     "status": "published",
     "options": [
       {
@@ -1697,7 +1697,7 @@
     "standard_id": "HTML-MCQ-000016",
     "questionType": "MCQ",
     "question_type": "mcq",
-    "question_hash": "qh_58fa425d",
+    "question_hash": "qh_7987167",
     "options": [
       {
         "key": "A",
@@ -1794,7 +1794,7 @@
     "standard_id": "HTML-MCQ-000017",
     "questionType": "MCQ",
     "question_type": "mcq",
-    "question_hash": "qh_ee799e5",
+    "question_hash": "qh_772431d",
     "status": "published",
     "options": [
       {
@@ -1881,7 +1881,7 @@
     "standard_id": "HTML-MCQ-000018",
     "questionType": "MCQ",
     "question_type": "mcq",
-    "question_hash": "qh_1045df7b",
+    "question_hash": "qh_2133cf85",
     "options": [
       {
         "key": "A",
@@ -1968,7 +1968,7 @@
     "standard_id": "HTML-MCQ-000019",
     "questionType": "MCQ",
     "question_type": "mcq",
-    "question_hash": "qh_311879f2",
+    "question_hash": "qh_41f89f58",
     "status": "published",
     "options": [
       {
@@ -2013,7 +2013,7 @@
     "questionNumber": 20,
     "category": "Forms & Inputs",
     "difficulty": "EASY",
-    "question": "What is the difference between <button> and <input type='button'> in HTML?",
+    "question": "What is the difference between <button> and <input type='button'>?",
     "shortAnswer": "<button> is a container element that can hold HTML content (icons, images, formatted text), while <input type='button'> only accepts plain text via its value attribute.",
     "detailedAnswer": "- <button>: Has opening and <u><u>closing tag</u></u>s.\n\nCan contain rich **HTML**, SVG icons, badges, and pseudo-elements.\n\nInside a <form>, its default type is type='submit' unless explicitly set to type='button'.\n- <input type='button'>: A void element with no inner **HTML**.\n\nIts label is strictly defined by the value='...' attribute.",
     "codeExample": "<!-- Rich <button> with SVG icon and styled text -->\n<button type=\"button\" class=\"btn-primary\">\n  <svg width=\"16\" height=\"16\" fill=\"currentColor\">...</svg>\n  <span>Download PDF</span>\n</button>\n\n<!-- Basic input button (plain text only) -->\n<input type=\"button\" value=\"Download PDF\">",
@@ -2070,7 +2070,7 @@
     "standard_id": "HTML-MCQ-000020",
     "questionType": "MCQ",
     "question_type": "mcq",
-    "question_hash": "qh_3a882d6e",
+    "question_hash": "qh_5aacd122",
     "options": [
       {
         "key": "A",
@@ -2182,7 +2182,7 @@
     "standard_id": "HTML-MCQ-000021",
     "questionType": "MCQ",
     "question_type": "mcq",
-    "question_hash": "qh_2688ba84",
+    "question_hash": "qh_10f96c48",
     "status": "published",
     "options": [
       {
@@ -2227,7 +2227,7 @@
     "questionNumber": 22,
     "category": "Tables",
     "difficulty": "EASY",
-    "question": "How do you construct an accessible table in HTML?",
+    "question": "How do you construct an accessible table?",
     "shortAnswer": "Use semantic table elements: <table>, <caption>, <thead>, <tbody>, <tfoot>, <tr>, <th>, and <td>, along with the scope attribute on header cells.",
     "detailedAnswer": "Proper table architecture:\n- <caption>: Summarizes the table's purpose for <u><u>screen readers</u></u>.\n- <thead>: Wraps column headers defined with <th>.\n- <tbody>: Wraps the core data rows (<tr>) and cells (<td>).\n- <tfoot>: Summarizes calculations (e.g. totals) at the bottom.\n- scope='col' / 'row': Explicitly links header cells to corresponding columns/rows for assistive tech.",
     "codeExample": "<table>\n  <caption>Quarterly Sales Report 2026</caption>\n  <thead>\n    <tr>\n      <th scope=\"col\">Product</th>\n      <th scope=\"col\">Units Sold</th>\n      <th scope=\"col\">Revenue</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th scope=\"row\">Pro Laptop</th>\n      <td>1,200</td>\n      <td>$1,440,000</td>\n    </tr>\n  </tbody>\n  <tfoot>\n    <tr>\n      <th scope=\"row\">Total</th>\n      <td>1,200</td>\n      <td>$1,440,000</td>\n    </tr>\n  </tfoot>\n</table>",
@@ -2308,7 +2308,7 @@
     "standard_id": "HTML-MCQ-000022",
     "questionType": "MCQ",
     "question_type": "mcq",
-    "question_hash": "qh_36b5dc03",
+    "question_hash": "qh_681a354d",
     "options": [
       {
         "key": "A",
@@ -2434,7 +2434,7 @@
     "standard_id": "HTML-MCQ-000023",
     "questionType": "MCQ",
     "question_type": "mcq",
-    "question_hash": "qh_7733edf5",
+    "question_hash": "qh_724002a8",
     "status": "published",
     "options": [
       {
@@ -2532,7 +2532,7 @@
     "standard_id": "HTML-MCQ-000024",
     "questionType": "MCQ",
     "question_type": "mcq",
-    "question_hash": "qh_64d08bd5",
+    "question_hash": "qh_456e7304",
     "options": [
       {
         "key": "A",
@@ -2629,7 +2629,7 @@
     "standard_id": "HTML-MCQ-000025",
     "questionType": "MCQ",
     "question_type": "mcq",
-    "question_hash": "qh_4ae3ff9d",
+    "question_hash": "qh_430c3801",
     "status": "published",
     "options": [
       {
@@ -2674,7 +2674,7 @@
     "questionNumber": 26,
     "category": "Accessibility & Media",
     "difficulty": "INTERMEDIATE",
-    "question": "What is the purpose of the <picture> element in HTML5?",
+    "question": "What is the purpose of the <picture> element?",
     "shortAnswer": "The <picture> element provides responsive image art direction and format fallback by serving different image files based on screen width, device pixel ratio, or supported image formats.",
     "detailedAnswer": "The <picture> element contains zero or more <source> elements and one fallback <img> element.\n\nThe browser evaluates each source from top to bottom and loads the first match.\n\nUse cases:\n1.\n\nNext-gen format serving: Serve modern WebP or AVIF images with fallback to standard JPEG.\n2.\n\nArt direction: Serve a square-cropped image for mobile screens and a wide panoramic landscape for desktop screens.",
     "codeExample": "<picture>\n  <!-- Modern AVIF format for supporting browsers -->\n  <source srcset=\"hero.avif\" type=\"image/avif\">\n  \n  <!-- WebP format fallback -->\n  <source srcset=\"hero.webp\" type=\"image/webp\">\n  \n  <!-- Mobile-specific cropped portrait image -->\n  <source media=\"(max-width: 600px)\" srcset=\"hero-mobile.jpg\">\n  \n  <!-- Standard fallback <img> (mandatory for rendering and alt text) -->\n  <img src=\"hero-desktop.jpg\" alt=\"Mountain landscape at sunrise\" loading=\"lazy\">\n</picture>",
@@ -2736,7 +2736,7 @@
     "standard_id": "HTML-MCQ-000026",
     "questionType": "MCQ",
     "question_type": "mcq",
-    "question_hash": "qh_7c8dd402",
+    "question_hash": "qh_65c2de53",
     "options": [
       {
         "key": "A",
@@ -2781,7 +2781,7 @@
     "questionNumber": 27,
     "category": "Modern HTML5 APIs",
     "difficulty": "INTERMEDIATE",
-    "question": "What is the HTML5 <dialog> element and how does it work?",
+    "question": "What is the HTML5 <dialog> element?",
     "shortAnswer": "The <dialog> element is a native HTML5 modal and popup component featuring built-in backdrop styling, keyboard Escape dismissal, and focus trapping.",
     "detailedAnswer": "Before <dialog>, developers wrote complex **JavaScript** libraries to build modal dialogs, handle backdrop overlays, and trap keyboard focus.\n\nWith **HTML5**:\n- dialog.showModal(): Opens an accessible modal with a native backdrop (styled via ::backdrop) and traps focus inside the modal.\n- dialog.show(): Opens a non-modal popup.\n- dialog.close(): Closes the dialog programmatically.",
     "codeExample": "<!-- Native HTML5 Modal Dialog -->\n<dialog id=\"confirm-modal\">\n  <form method=\"dialog\">\n    <h2>Confirm Delete</h2>\n    <p>Are you sure you want to delete this file?</p>\n    <button value=\"cancel\">Cancel</button>\n    <button value=\"confirm\" class=\"btn-danger\">Delete</button>\n  </form>\n</dialog>\n\n<button onclick=\"document.getElementById('confirm-modal').showModal()\">\n  Delete File\n</button>",
@@ -2863,7 +2863,7 @@
     "standard_id": "HTML-MCQ-000027",
     "questionType": "MCQ",
     "question_type": "mcq",
-    "question_hash": "qh_2aba547f",
+    "question_hash": "qh_3e37dc63",
     "status": "published",
     "options": [
       {
@@ -2908,7 +2908,7 @@
     "questionNumber": 28,
     "category": "Modern HTML5 APIs",
     "difficulty": "INTERMEDIATE",
-    "question": "What is the <template> tag and how does it differ from a hidden <div>?",
+    "question": "What is the <template> tag?",
     "shortAnswer": "The <template> tag holds client-side HTML markup that is parsed by the browser but NOT rendered or executed until cloned and inserted into the DOM via JavaScript.",
     "detailedAnswer": "Key differences from a hidden <div style='display: none'>:\n1.\n\nInert Content: Scripts inside a <template> do not execute, images/videos do not download, and audio does not play while it sits inside <template>.\n2.\n\nPerformance: Browser does not paint or calculate styles for template contents.\n3. **DOM** Insertion: **JavaScript** clones the template's content property (template.content.cloneNode(true)) and appends it to live elements.",
     "codeExample": "<!-- Template definition (invisible and inert) -->\n<template id=\"user-card-template\">\n  <div class=\"user-card\">\n    <h3 class=\"user-name\"></h3>\n    <p class=\"user-email\"></p>\n  </div>\n</template>\n\n<div id=\"user-list\"></div>\n\n<script>\n  const template = document.getElementById('user-card-template');\n  const clone = template.content.cloneNode(true);\n  clone.querySelector('.user-name').textContent = 'Sarah Jenkins';\n  clone.querySelector('.user-email').textContent = 'sarah@example.com';\n  document.getElementById('user-list').appendChild(clone);\n</script>",
@@ -2990,7 +2990,7 @@
     "standard_id": "HTML-MCQ-000028",
     "questionType": "MCQ",
     "question_type": "mcq",
-    "question_hash": "qh_33c3db6a",
+    "question_hash": "qh_2e02f8c3",
     "options": [
       {
         "key": "A",
@@ -3035,7 +3035,7 @@
     "questionNumber": 29,
     "category": "HTML Fundamentals",
     "difficulty": "EASY",
-    "question": "What are Custom Data Attributes (data-*) in HTML5?",
+    "question": "What are Custom Data Attributes (data-*)?",
     "shortAnswer": "Data attributes (data-*) allow developers to store extra custom data directly on HTML elements without affecting rendering, accessible via JavaScript dataset.",
     "detailedAnswer": "Syntax starts with data- followed by a lowercase identifier.\n\nIn **JavaScript**, they are accessed through the element's dataset property in camelCase (e.g., data-user-id becomes element.dataset.userId).\n\nIn **CSS**, they can be targeted using attribute selectors [data-status='active'].",
     "codeExample": "<!-- HTML element with custom data attributes -->\n<button \n  class=\"btn-action\" \n  data-action=\"delete\" \n  data-user-id=\"4082\" \n  data-is-admin=\"true\"\n>\n  Remove User\n</button>\n\n<script>\n  const btn = document.querySelector('.btn-action');\n  console.log(btn.dataset.action); // \"delete\"\n  console.log(btn.dataset.userId); // \"4082\"\n</script>",
@@ -3117,7 +3117,7 @@
     "standard_id": "HTML-MCQ-000029",
     "questionType": "MCQ",
     "question_type": "mcq",
-    "question_hash": "qh_76ea3076",
+    "question_hash": "qh_1ff1bb8e",
     "status": "published",
     "options": [
       {
@@ -3234,7 +3234,7 @@
     "standard_id": "HTML-MCQ-000030",
     "questionType": "MCQ",
     "question_type": "mcq",
-    "question_hash": "qh_176c1751",
+    "question_hash": "qh_31614585",
     "options": [
       {
         "key": "A",
@@ -3279,7 +3279,7 @@
     "questionNumber": 31,
     "category": "Graphics & Media",
     "difficulty": "INTERMEDIATE",
-    "question": "What is the difference between SVG and Canvas in HTML5?",
+    "question": "What is the difference between SVG and Canvas?",
     "shortAnswer": "SVG is vector-based (XML in DOM, resolution independent, scalable, styled with CSS); Canvas is pixel-based (raster bitmap, drawn via JavaScript procedural commands, high performance for games).",
     "detailedAnswer": "- SVG (Scalable Vector Graphics):\n  - XML-based vector format existing directly in the **DOM** tree.\n  - Supports **CSS** styling, hover effects, and **JavaScript** **DOM** click events per shape.\n  - Scales infinitely with zero pixelation at any resolution.\n- Canvas (<canvas>):\n  - Pixel-based raster grid manipulated procedurally with 2D or WebGL context in **JavaScript**.\n  - Shapes are not **DOM** elements (no individual event listeners).\n  - Exceptionally fast for rendering thousands of fast-moving particles, charts, and 2D/3D games.",
     "codeExample": "<!-- SVG: XML nodes in the DOM with CSS/events -->\n<svg width=\"100\" height=\"100\">\n  <circle cx=\"50\" cy=\"50\" r=\"40\" stroke=\"green\" stroke-width=\"4\" fill=\"yellow\" />\n</svg>\n\n<!-- Canvas: Blank bitmap drawn via JavaScript -->\n<canvas id=\"myCanvas\" width=\"200\" height=\"100\"></canvas>\n<script>\n  const canvas = document.getElementById('myCanvas');\n  const ctx = canvas.getContext('2d');\n  ctx.fillStyle = '#FF0000';\n  ctx.fillRect(0, 0, 150, 75);\n</script>",
@@ -3361,7 +3361,7 @@
     "standard_id": "HTML-MCQ-000031",
     "questionType": "MCQ",
     "question_type": "mcq",
-    "question_hash": "qh_6289d03f",
+    "question_hash": "qh_237f589",
     "status": "published",
     "options": [
       {
@@ -3406,7 +3406,7 @@
     "questionNumber": 32,
     "category": "Forms & Inputs",
     "difficulty": "EASY",
-    "question": "What is the <datalist> element and how does it differ from <select>?",
+    "question": "What is the <datalist> element?",
     "shortAnswer": "<datalist> provides autocomplete recommendations for a standard text <input> while still allowing custom text entry; <select> restricts the user strictly to a pre-defined list of choices.",
     "detailedAnswer": "- <datalist>: Linked to an <input> via the list attribute.\n\nAs the user types, suggestions filter automatically.\n\nUsers can pick a suggestion OR type anything custom.\n- <select>: A traditional dropdown menu where the user can only choose from the designated <option> elements and cannot type custom values.",
     "codeExample": "<!-- Datalist: Autocomplete suggestions + custom typing allowed -->\n<label for=\"browser-choice\">Choose or type your browser:</label>\n<input list=\"browsers\" id=\"browser-choice\" name=\"browser\">\n\n<datalist id=\"browsers\">\n  <option value=\"Chrome\">\n  <option value=\"Firefox\">\n  <option value=\"Safari\">\n  <option value=\"Edge\">\n</datalist>",
@@ -3479,7 +3479,7 @@
     "standard_id": "HTML-MCQ-000032",
     "questionType": "MCQ",
     "question_type": "mcq",
-    "question_hash": "qh_3f4f8a3c",
+    "question_hash": "qh_921ded",
     "options": [
       {
         "key": "A",
@@ -3586,7 +3586,7 @@
     "standard_id": "HTML-MCQ-000033",
     "questionType": "MCQ",
     "question_type": "mcq",
-    "question_hash": "qh_30241371",
+    "question_hash": "qh_77306502",
     "status": "published",
     "options": [
       {
@@ -3698,7 +3698,7 @@
     "standard_id": "HTML-MCQ-000034",
     "questionType": "MCQ",
     "question_type": "mcq",
-    "question_hash": "qh_260103d9",
+    "question_hash": "qh_7a96db25",
     "options": [
       {
         "key": "A",
@@ -3786,7 +3786,7 @@
     "standard_id": "HTML-MCQ-000035",
     "questionType": "MCQ",
     "question_type": "mcq",
-    "question_hash": "qh_24c02474",
+    "question_hash": "qh_29733766",
     "status": "published",
     "options": [
       {
@@ -3898,7 +3898,7 @@
     "standard_id": "HTML-MCQ-000036",
     "questionType": "MCQ",
     "question_type": "mcq",
-    "question_hash": "qh_4048f835",
+    "question_hash": "qh_482fca88",
     "options": [
       {
         "key": "A",
@@ -4024,7 +4024,7 @@
     "standard_id": "HTML-MCQ-000037",
     "questionType": "MCQ",
     "question_type": "mcq",
-    "question_hash": "qh_3c83abff",
+    "question_hash": "qh_5c0fd8ea",
     "status": "published",
     "options": [
       {
@@ -4121,7 +4121,7 @@
     "standard_id": "HTML-MCQ-000038",
     "questionType": "MCQ",
     "question_type": "mcq",
-    "question_hash": "qh_3a7f0fae",
+    "question_hash": "qh_6ed59109",
     "options": [
       {
         "key": "A",
@@ -4166,7 +4166,7 @@
     "questionNumber": 39,
     "category": "SEO & Social Sharing",
     "difficulty": "EASY",
-    "question": "What are Open Graph (OG) meta tags in HTML?",
+    "question": "What are Open Graph (OG) meta tags?",
     "shortAnswer": "Open Graph meta tags control how URLs appear when shared on social media and messaging platforms (LinkedIn, Facebook, Slack, WhatsApp, Twitter).",
     "detailedAnswer": "Introduced by Facebook, the Open Graph protocol uses <meta property='og:...'> tags in the <head> to specify the preview title, description, image thumbnail, and URL.\n\nWithout them, social platforms guess what to display, often showing broken layouts or unrelated icons.",
     "codeExample": "<head>\n  <!-- Standard Open Graph Metadata -->\n  <meta property=\"og:title\" content=\"Frontend Interview Mastery Portal\">\n  <meta property=\"og:description\" content=\"1,500+ curated interview questions with live audio solutions for freshers.\">\n  <meta property=\"og:image\" content=\"https://example.com/assets/social-preview.png\">\n  <meta property=\"og:url\" content=\"https://example.com/interview-questions\">\n  <meta property=\"og:type\" content=\"website\">\n  \n  <!-- Twitter Card Specific Tags -->\n  <meta name=\"twitter:card\" content=\"summary_large_image\">\n</head>",
@@ -4238,7 +4238,7 @@
     "standard_id": "HTML-MCQ-000039",
     "questionType": "MCQ",
     "question_type": "mcq",
-    "question_hash": "qh_6aa5ff26",
+    "question_hash": "qh_6d2b2606",
     "status": "published",
     "options": [
       {
@@ -4355,7 +4355,7 @@
     "standard_id": "HTML-MCQ-000040",
     "questionType": "MCQ",
     "question_type": "mcq",
-    "question_hash": "qh_21ef9822",
+    "question_hash": "qh_f6f8b87",
     "options": [
       {
         "key": "A",

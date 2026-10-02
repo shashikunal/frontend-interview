@@ -22,6 +22,15 @@ function normalizeText(value) {
     .trim()
 }
 
+function contentSignature(q) {
+  const copy = { ...q }
+  delete copy.id
+  delete copy.standard_id
+  delete copy.questionNumber
+  delete copy.question_hash
+  return JSON.stringify(copy)
+}
+
 function readDataFiles() {
   const source = fs.readFileSync(QUESTION_SERVICE, 'utf8')
   const match = source.match(/export const DATA_FILES = \[([\s\S]*?)\] as const/)
@@ -87,6 +96,7 @@ function auditMasterBank() {
   const globalTextMap = new Map()
   let missingAnswer = 0
   let missingTags = 0
+  let sharedTitleVariants = 0
 
   for (const subjectId of files) {
     const questions = loadJson(path.join(MASTER_DIR, `${subjectId}.json`))
@@ -116,7 +126,7 @@ function auditMasterBank() {
       }
     }
 
-    const seenText = new Set()
+    const seenText = new Map()
     for (let i = 0; i < questions.length; i++) {
       const q = questions[i]
       const diff = (q.difficulty || 'UNSET').toUpperCase()
@@ -137,17 +147,23 @@ function auditMasterBank() {
 
       const normalized = normalizeText(q.question)
       if (seenText.has(normalized)) {
-        findings.push({ level: 'WARN', area: 'master', message: `duplicate question title within ${subjectId}.json: "${(q.question || '').slice(0, 70)}"` })
+        const first = seenText.get(normalized)
+        if (contentSignature(first.question) === contentSignature(q)) {
+          findings.push({ level: 'ERROR', area: 'master', message: `exact duplicate question in ${subjectId}.json at #${i + 1} (same content as #${first.index + 1})` })
+        } else {
+          sharedTitleVariants++
+        }
+      } else {
+        seenText.set(normalized, { index: i, question: q })
       }
-      seenText.add(normalized)
 
       if (globalTextMap.has(normalized)) {
         const other = globalTextMap.get(normalized)
-        if (other.subject !== subjectId) {
+        if (other.subject !== subjectId && contentSignature(other.question) === contentSignature(q)) {
           findings.push({ level: 'WARN', area: 'master', message: `cross-subject duplicate: ${subjectId} #${i + 1} duplicates ${other.subject} #${other.index + 1}` })
         }
       } else {
-        globalTextMap.set(normalized, { subject: subjectId, index: i })
+        globalTextMap.set(normalized, { subject: subjectId, index: i, question: q })
       }
     }
 
@@ -184,6 +200,7 @@ function auditMasterBank() {
     difficultyTotals,
     typeTotals,
     findings,
+    sharedTitleVariants,
     summary: `${files.length} subject files, ${actualTotal} questions (catalog claims ${claimedTotal})`,
   }
 }
@@ -281,6 +298,9 @@ function buildReport(master, main) {
   lines.push(`- Master bank: ${master.summary}`)
   lines.push(`- Main bank: ${main.summary}`)
   lines.push(`- Findings: ${errors.length} error(s), ${warnings.length} warning(s)`)
+  if (master.sharedTitleVariants > 0) {
+    lines.push(`- Shared-title variant pair(s): ${master.sharedTitleVariants} (base + advanced question sharing a title, distinct content — accepted)`)
+  }
   lines.push('')
   lines.push(`## ${master.title}`)
   lines.push('')
@@ -353,6 +373,9 @@ function printSummary(master, main) {
   console.log('')
 
   console.log(`Findings: ${errors} error(s), ${warnings} warning(s)`)
+  if (master.sharedTitleVariants > 0) {
+    console.log(`Shared-title variant pairs: ${master.sharedTitleVariants} (accepted)`)
+  }
   for (const f of allFindings.slice(0, 30)) {
     console.log(`  [${f.level}] (${f.area}) ${f.message}`)
   }

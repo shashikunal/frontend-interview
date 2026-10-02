@@ -3,7 +3,9 @@ import { Link } from 'react-router-dom'
 import { interviewQuestionsDataService } from '../services/interviewQuestionsDataService'
 import { interviewQuestionsProgressService } from '../services/interviewQuestionsProgressService'
 import { verifyQuestionDuplicate, computeQuestionHash, formatStandardQuestionId } from '../utils/duplicatePipeline'
+import { FormattedAnswerText } from './FormattedAnswerText'
 import type { MasterSubjectId, MasterQuestion, MasterBankCatalog, QuestionStatus } from '../types/interviewQuestions.types'
+import './MasterBankAdminTab.css'
 
 export default function MasterBankAdminTab() {
   const [catalog, setCatalog] = useState<MasterBankCatalog | null>(null)
@@ -187,37 +189,37 @@ export default function MasterBankAdminTab() {
   }
 
   return (
-    <div className="admin-tab-pane" id="admin-master-bank-tab" style={{ padding: '1rem' }}>
+    <div className="mbk-pane" id="admin-master-bank-tab">
       {/* Top Banner */}
-      <div style={{ background: 'var(--mqb-bg-glass, rgba(15,23,42,0.8))', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '16px', padding: '1.5rem', marginBottom: '1.5rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
+      <div className="mbk-card mbk-hero">
+        <div className="mbk-hero-head">
           <div>
-            <h2 style={{ margin: '0 0 0.5rem', fontSize: '1.5rem', fontWeight: 800, color: '#fff' }}>
+            <h2 className="mbk-hero-title">
               🎯 Master Interview Question Bank Operations ({catalog?.subjects.length ?? '—'} Tracks)
             </h2>
-            <p style={{ margin: 0, color: '#94a3b8', fontSize: '0.92rem' }}>
+            <p className="mbk-hero-sub">
               Full CRUD management, zero-duplicate audit pipeline, status transitions, and bulk exports across all {catalog?.subjects.length ?? '—'} subjects.
             </p>
           </div>
 
-          <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+          <div className="mbk-hero-actions">
             <button
               type="button"
-              className="mqb-action-pill-btn primary"
+              className="mbk-btn primary"
               onClick={() => setShowCreateModal(true)}
             >
               ➕ Create Question / MCQ
             </button>
             <button
               type="button"
-              className="mqb-action-pill-btn"
+              className="mbk-btn"
               onClick={handleRunDuplicateAudit}
             >
               🔍 Audit Duplicates
             </button>
             <button
               type="button"
-              className="mqb-action-pill-btn"
+              className="mbk-btn"
               onClick={handleExportJSON}
             >
               📥 Export JSON
@@ -225,7 +227,7 @@ export default function MasterBankAdminTab() {
             <Link
               to="/interview-questions"
               target="_blank"
-              className="mqb-action-pill-btn"
+              className="mbk-btn"
             >
               Live Bank ↗
             </Link>
@@ -233,58 +235,57 @@ export default function MasterBankAdminTab() {
         </div>
 
         {/* Real Metrics Row */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem', marginTop: '1.25rem' }}>
-          <div style={{ background: 'rgba(0,0,0,0.25)', padding: '1rem', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.05)' }}>
-            <div style={{ fontSize: '0.75rem', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 600 }}>Total Catalog Size</div>
-            <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#38bdf8' }}>
+        <div className="mbk-stats">
+          <div className="mbk-stat">
+            <div className="mbk-stat-label">Total Catalog Size</div>
+            <div className="mbk-stat-value blue">
               {catalog ? `${catalog.totalQuestions.toLocaleString()} Qs` : '—'}
             </div>
-            <div style={{ fontSize: '0.75rem', color: '#34d399', marginTop: '0.2rem' }}>✓ 100% Quality Audited</div>
+            <div className="mbk-stat-sub green">✓ 100% Quality Audited</div>
           </div>
 
-          <div style={{ background: 'rgba(0,0,0,0.25)', padding: '1rem', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.05)' }}>
-            <div style={{ fontSize: '0.75rem', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 600 }}>Total Tracks</div>
-            <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#fff' }}>
+          <div className="mbk-stat">
+            <div className="mbk-stat-label">Total Tracks</div>
+            <div className="mbk-stat-value">
               {catalog ? `${catalog.subjects.length} Subjects` : '—'}
             </div>
-            <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: '0.2rem' }}>Dedicated modules</div>
+            <div className="mbk-stat-sub">Dedicated modules</div>
           </div>
 
-          <div style={{ background: 'rgba(0,0,0,0.25)', padding: '1rem', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.05)' }}>
-            <div style={{ fontSize: '0.75rem', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 600 }}>Platform Solved Count</div>
-            <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#34d399' }}>
+          <div className="mbk-stat">
+            <div className="mbk-stat-label">Platform Solved Count</div>
+            <div className="mbk-stat-value green">
               {progressState.completedQuestionIds.length}
             </div>
-            <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: '0.2rem' }}>Candidate completions</div>
+            <div className="mbk-stat-sub">Candidate completions</div>
           </div>
 
-          <div style={{ background: 'rgba(0,0,0,0.25)', padding: '1rem', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.05)' }}>
-            <div style={{ fontSize: '0.75rem', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 600 }}>Current Subject Pool</div>
-            <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#a78bfa' }}>
+          <div className="mbk-stat">
+            <div className="mbk-stat-label">Current Subject Pool</div>
+            <div className="mbk-stat-value purple">
               {questions.length} Qs
             </div>
-            <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: '0.2rem' }}>{selectedSubject.toUpperCase()}</div>
+            <div className="mbk-stat-sub">{selectedSubject.toUpperCase()}</div>
           </div>
         </div>
 
         {duplicateAuditResult && (
-          <div style={{ marginTop: '1rem', padding: '0.85rem 1rem', borderRadius: '8px', background: duplicateAuditResult.startsWith('✅') ? 'rgba(16,185,129,0.15)' : 'rgba(239,68,68,0.15)', border: `1px solid ${duplicateAuditResult.startsWith('✅') ? '#10b981' : '#ef4444'}`, color: '#fff', fontSize: '0.88rem', whiteSpace: 'pre-line' }}>
+          <div className={`mbk-alert ${duplicateAuditResult.startsWith('✅') ? 'ok' : 'err'}`}>
             {duplicateAuditResult}
           </div>
         )}
       </div>
 
       {/* Content Management & Inspector Controls */}
-      <div style={{ display: 'grid', gridTemplateColumns: inspectingQ ? '1.2fr 1fr' : '1fr', gap: '1.5rem' }}>
+      <div className={`mbk-layout ${inspectingQ ? 'with-inspector' : ''}`}>
         {/* Left: Table of Questions with Deep Filters */}
-        <div style={{ background: 'var(--mqb-bg-glass, rgba(15,23,42,0.8))', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '16px', padding: '1.25rem' }}>
+        <div className="mbk-card mbk-panel">
           {/* Filter Bar */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '1rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem' }}>
+          <div className="mbk-filters">
+            <div className="mbk-filters-top">
               {/* Subject Dropdown */}
               <select
-                className="mqb-filter-select"
-                style={{ fontWeight: 700 }}
+                className="mbk-select strong"
                 value={selectedSubject}
                 onChange={e => setSelectedSubject(e.target.value as MasterSubjectId)}
               >
@@ -297,8 +298,7 @@ export default function MasterBankAdminTab() {
 
               <input
                 type="text"
-                className="mqb-search-input"
-                style={{ width: '220px', padding: '0.5rem 0.8rem' }}
+                className="mbk-input mbk-search"
                 placeholder="Search ID, title..."
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
@@ -306,10 +306,9 @@ export default function MasterBankAdminTab() {
             </div>
 
             {/* Sub-Filters: Difficulty, Type, Status */}
-            <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', fontSize: '0.82rem' }}>
+            <div className="mbk-filters-sub">
               <select
-                className="mqb-filter-select"
-                style={{ padding: '0.4rem 0.6rem', fontSize: '0.82rem' }}
+                className="mbk-select"
                 value={filterDiff}
                 onChange={e => setFilterDiff(e.target.value)}
               >
@@ -320,8 +319,7 @@ export default function MasterBankAdminTab() {
               </select>
 
               <select
-                className="mqb-filter-select"
-                style={{ padding: '0.4rem 0.6rem', fontSize: '0.82rem' }}
+                className="mbk-select"
                 value={filterType}
                 onChange={e => setFilterType(e.target.value)}
               >
@@ -331,8 +329,7 @@ export default function MasterBankAdminTab() {
               </select>
 
               <select
-                className="mqb-filter-select"
-                style={{ padding: '0.4rem 0.6rem', fontSize: '0.82rem' }}
+                className="mbk-select"
                 value={filterStatus}
                 onChange={e => setFilterStatus(e.target.value)}
               >
@@ -345,27 +342,27 @@ export default function MasterBankAdminTab() {
                 <option value="archived">Archived</option>
               </select>
 
-              <span style={{ marginLeft: 'auto', alignSelf: 'center', color: '#94a3b8', fontSize: '0.82rem' }}>
+              <span className="mbk-count">
                 Showing {filtered.length} records
               </span>
             </div>
           </div>
 
           {loading ? (
-            <div style={{ textAlign: 'center', padding: '3rem 0', color: '#94a3b8' }}>
+            <div className="mbk-loading">
               Loading {selectedSubject} records...
             </div>
           ) : (
-            <div style={{ maxHeight: '550px', overflowY: 'auto' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
+            <div className="mbk-table-wrap">
+              <table className="mbk-table">
                 <thead>
-                  <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.08)', color: '#94a3b8', textAlign: 'left' }}>
-                    <th style={{ padding: '0.6rem 0.5rem' }}>ID</th>
-                    <th style={{ padding: '0.6rem 0.5rem' }}>Question</th>
-                    <th style={{ padding: '0.6rem 0.5rem' }}>Diff</th>
-                    <th style={{ padding: '0.6rem 0.5rem' }}>Format</th>
-                    <th style={{ padding: '0.6rem 0.5rem' }}>Status</th>
-                    <th style={{ padding: '0.6rem 0.5rem' }}>Action</th>
+                  <tr>
+                    <th>ID</th>
+                    <th>Question</th>
+                    <th>Diff</th>
+                    <th>Format</th>
+                    <th>Status</th>
+                    <th>Action</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -375,43 +372,32 @@ export default function MasterBankAdminTab() {
                     return (
                       <tr
                         key={q.id}
-                        style={{
-                          borderBottom: '1px solid rgba(255,255,255,0.04)',
-                          background: inspectingQ?.id === q.id ? 'rgba(56,189,248,0.1)' : 'transparent',
-                          cursor: 'pointer',
-                        }}
+                        className={inspectingQ?.id === q.id ? 'selected' : ''}
                         onClick={() => setInspectingQ(q)}
                       >
-                        <td style={{ padding: '0.6rem 0.5rem', fontFamily: 'monospace', color: '#38bdf8', whiteSpace: 'nowrap' }}>
+                        <td className="mbk-qid">
                           {q.standard_id || q.id}
                         </td>
-                        <td style={{ padding: '0.6rem 0.5rem', color: '#e2e8f0', maxWidth: '280px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        <td className="mbk-qtext">
                           {q.question}
                         </td>
-                        <td style={{ padding: '0.6rem 0.5rem' }}>
-                          <span className={`mqb-diff-pill ${q.difficulty}`} style={{ fontSize: '0.7rem' }}>
+                        <td>
+                          <span className={`mbk-diff-pill ${q.difficulty}`}>
                             {q.difficulty}
                           </span>
                         </td>
-                        <td style={{ padding: '0.6rem 0.5rem', color: isMCQ ? '#fbbf24' : '#94a3b8' }}>
+                        <td className={`mbk-format ${isMCQ ? 'mcq' : ''}`}>
                           {isMCQ ? '⚡ MCQ' : '📖 Concept'}
                         </td>
-                        <td style={{ padding: '0.6rem 0.5rem' }}>
-                          <span style={{
-                            padding: '0.2rem 0.45rem',
-                            borderRadius: '4px',
-                            fontSize: '0.72rem',
-                            fontWeight: 600,
-                            background: status === 'published' ? 'rgba(16,185,129,0.15)' : status === 'review' ? 'rgba(245,158,11,0.15)' : 'rgba(255,255,255,0.08)',
-                            color: status === 'published' ? '#34d399' : status === 'review' ? '#fbbf24' : '#94a3b8'
-                          }}>
+                        <td>
+                          <span className={`mbk-status ${status}`}>
                             {status}
                           </span>
                         </td>
-                        <td style={{ padding: '0.6rem 0.5rem' }} onClick={e => e.stopPropagation()}>
+                        <td onClick={e => e.stopPropagation()}>
                           <button
                             type="button"
-                            style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', fontSize: '0.85rem' }}
+                            className="mbk-del-btn"
                             title="Delete"
                             onClick={() => handleDeleteQuestion(q.id)}
                           >
@@ -429,20 +415,19 @@ export default function MasterBankAdminTab() {
 
         {/* Right: Question Inspector & Action Studio */}
         {inspectingQ && (
-          <div style={{ background: 'var(--mqb-bg-glass, rgba(15,23,42,0.8))', border: '1px solid rgba(56,189,248,0.3)', borderRadius: '16px', padding: '1.5rem', overflowY: 'auto', maxHeight: '660px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
+          <div className="mbk-card mbk-inspector">
+            <div className="mbk-inspector-head">
               <div>
-                <span style={{ fontSize: '0.78rem', color: '#38bdf8', fontFamily: 'monospace', fontWeight: 700 }}>
+                <span className="mbk-inspector-id">
                   {inspectingQ.standard_id || inspectingQ.id}
                 </span>
-                <h3 style={{ margin: '0.2rem 0 0', fontSize: '1.15rem', color: '#fff' }}>
+                <h3 className="mbk-inspector-title">
                   {inspectingQ.question}
                 </h3>
               </div>
               <button
                 type="button"
-                className="mqb-action-pill-btn"
-                style={{ fontSize: '0.75rem', padding: '0.3rem 0.6rem' }}
+                className="mbk-btn sm"
                 onClick={() => setInspectingQ(null)}
               >
                 ✕ Close
@@ -450,25 +435,16 @@ export default function MasterBankAdminTab() {
             </div>
 
             {/* Status Transition Toolbar */}
-            <div style={{ background: 'rgba(0,0,0,0.3)', padding: '0.75rem', borderRadius: '8px', marginBottom: '1.25rem' }}>
-              <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginBottom: '0.4rem', fontWeight: 600 }}>
-                LIFECYCLE STATUS TRANSITION:
+            <div className="mbk-transition-box">
+              <div className="mbk-stat-label mbk-spaced-xs">
+                Lifecycle Status Transition:
               </div>
-              <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
+              <div className="mbk-chip-row">
                 {(['published', 'review', 'approved', 'draft', 'rejected', 'archived'] as QuestionStatus[]).map(st => (
                   <button
                     key={st}
                     type="button"
-                    style={{
-                      padding: '0.3rem 0.6rem',
-                      borderRadius: '4px',
-                      fontSize: '0.75rem',
-                      fontWeight: 600,
-                      border: inspectingQ.status === st ? '1px solid #38bdf8' : '1px solid rgba(255,255,255,0.1)',
-                      background: inspectingQ.status === st ? 'rgba(56,189,248,0.2)' : 'transparent',
-                      color: inspectingQ.status === st ? '#38bdf8' : '#94a3b8',
-                      cursor: 'pointer',
-                    }}
+                    className={`mbk-chip ${inspectingQ.status === st ? 'active' : ''}`}
                     onClick={() => handleUpdateStatus(inspectingQ.id, st)}
                   >
                     {st.toUpperCase()}
@@ -478,33 +454,33 @@ export default function MasterBankAdminTab() {
             </div>
 
             {/* Metadata Badges */}
-            <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '1rem' }}>
-              <span className={`mqb-diff-pill ${inspectingQ.difficulty}`}>{inspectingQ.difficulty}</span>
-              <span className="mqb-sc-badge">{inspectingQ.topic}</span>
+            <div className="mbk-badges">
+              <span className={`mbk-diff-pill ${inspectingQ.difficulty}`}>{inspectingQ.difficulty}</span>
+              <span className="mbk-tag plain">{inspectingQ.topic}</span>
               {inspectingQ.question_hash && (
-                <span style={{ fontSize: '0.72rem', color: '#94a3b8', background: 'rgba(255,255,255,0.05)', padding: '0.2rem 0.5rem', borderRadius: '4px', fontFamily: 'monospace' }}>
+                <span className="mbk-tag">
                   Hash: {inspectingQ.question_hash}
                 </span>
               )}
             </div>
 
             {/* Short Answer */}
-            <div style={{ marginBottom: '1rem' }}>
-              <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#38bdf8', marginBottom: '0.3rem' }}>
-                SHORT INTERVIEW ANSWER:
+            <div className="mbk-section">
+              <div className="mbk-section-label">
+                Short Interview Answer:
               </div>
-              <div style={{ fontSize: '0.88rem', color: '#cbd5e1', lineHeight: 1.6, background: 'rgba(0,0,0,0.25)', padding: '0.75rem', borderRadius: '8px' }}>
-                {inspectingQ.shortAnswer}
+              <div className="mbk-inset">
+                <FormattedAnswerText text={inspectingQ.shortAnswer} />
               </div>
             </div>
 
             {/* MCQ Details if MCQ */}
             {inspectingQ.options && inspectingQ.options.length > 0 && (
-              <div style={{ marginBottom: '1rem' }}>
-                <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#fbbf24', marginBottom: '0.4rem' }}>
-                  MCQ OPTIONS (Correct: {inspectingQ.correctAnswer || 'A'}):
+              <div className="mbk-section">
+                <div className="mbk-section-label amber">
+                  MCQ Options (Correct: {inspectingQ.correctAnswer || 'A'}):
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+                <div className="mbk-mcq-list tight">
                   {inspectingQ.options.map((opt, optIdx) => {
                     const optKey = typeof opt === 'string' ? String.fromCharCode(65 + optIdx) : opt.key
                     const optText = typeof opt === 'string' ? opt : opt.text
@@ -512,14 +488,7 @@ export default function MasterBankAdminTab() {
                     return (
                       <div
                         key={optKey}
-                        style={{
-                          padding: '0.5rem 0.75rem',
-                          borderRadius: '6px',
-                          fontSize: '0.84rem',
-                          background: isCorrect ? 'rgba(16,185,129,0.15)' : 'rgba(255,255,255,0.03)',
-                          border: isCorrect ? '1px solid #10b981' : '1px solid rgba(255,255,255,0.06)',
-                          color: isCorrect ? '#34d399' : '#cbd5e1'
-                        }}
+                        className={`mbk-option ${isCorrect ? 'correct' : ''}`}
                       >
                         <strong>{optKey}:</strong> {optText}
                       </div>
@@ -531,11 +500,11 @@ export default function MasterBankAdminTab() {
 
             {/* Code Snippet if present */}
             {inspectingQ.codeExample && (
-              <div>
-                <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#a78bfa', marginBottom: '0.3rem' }}>
-                  CODE SNIPPET:
+              <div className="mbk-section">
+                <div className="mbk-section-label purple">
+                  Code Snippet:
                 </div>
-                <pre style={{ background: '#090d16', padding: '0.75rem', borderRadius: '8px', fontSize: '0.8rem', color: '#e2e8f0', overflowX: 'auto', margin: 0 }}>
+                <pre className="mbk-code">
                   <code>{inspectingQ.codeExample}</code>
                 </pre>
               </div>
@@ -546,40 +515,40 @@ export default function MasterBankAdminTab() {
 
       {/* Create Question Modal */}
       {showCreateModal && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999, padding: '1rem' }}>
-          <div style={{ background: '#0f172a', border: '1px solid #38bdf8', borderRadius: '16px', maxWidth: '600px', width: '100%', maxHeight: '90vh', overflowY: 'auto', padding: '2rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
-              <h3 style={{ margin: 0, color: '#fff', fontSize: '1.3rem' }}>➕ Create Question / MCQ for {selectedSubject.toUpperCase()}</h3>
+        <div className="mbk-modal-backdrop">
+          <div className="mbk-modal">
+            <div className="mbk-modal-head">
+              <h3 className="mbk-modal-title">➕ Create Question / MCQ for {selectedSubject.toUpperCase()}</h3>
               <button
                 type="button"
-                className="mqb-action-pill-btn"
+                className="mbk-btn sm"
                 onClick={() => setShowCreateModal(false)}
               >
                 ✕
               </button>
             </div>
 
-            <form onSubmit={handleCreateQuestion} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <form onSubmit={handleCreateQuestion} className="mbk-form">
               <div>
-                <label style={{ display: 'block', fontSize: '0.82rem', color: '#94a3b8', marginBottom: '0.3rem' }}>Question Title / Text</label>
+                <label className="mbk-label" htmlFor="mbk-new-title">Question Title / Text</label>
                 <input
+                  id="mbk-new-title"
                   type="text"
                   required
-                  className="mqb-search-input"
-                  style={{ width: '100%' }}
+                  className="mbk-input mbk-full"
                   placeholder="e.g. What is the difference between shallow and deep copy?"
                   value={newQTitle}
                   onChange={e => setNewQTitle(e.target.value)}
                 />
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+              <div className="mbk-form-grid">
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.82rem', color: '#94a3b8', marginBottom: '0.3rem' }}>Topic</label>
+                  <label className="mbk-label" htmlFor="mbk-new-topic">Topic</label>
                   <input
+                    id="mbk-new-topic"
                     type="text"
-                    className="mqb-search-input"
-                    style={{ width: '100%' }}
+                    className="mbk-input mbk-full"
                     placeholder="e.g. Objects & Memory"
                     value={newQTopic}
                     onChange={e => setNewQTopic(e.target.value)}
@@ -587,10 +556,10 @@ export default function MasterBankAdminTab() {
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.82rem', color: '#94a3b8', marginBottom: '0.3rem' }}>Difficulty</label>
+                  <label className="mbk-label" htmlFor="mbk-new-diff">Difficulty</label>
                   <select
-                    className="mqb-filter-select"
-                    style={{ width: '100%' }}
+                    id="mbk-new-diff"
+                    className="mbk-select mbk-full"
                     value={newQDiff}
                     onChange={e => setNewQDiff(e.target.value)}
                   >
@@ -602,12 +571,12 @@ export default function MasterBankAdminTab() {
               </div>
 
               <div>
-                <label style={{ display: 'block', fontSize: '0.82rem', color: '#94a3b8', marginBottom: '0.3rem' }}>Format</label>
+                <label className="mbk-label" htmlFor="mbk-new-type">Format</label>
                 <select
-                  className="mqb-filter-select"
-                  style={{ width: '100%' }}
+                  id="mbk-new-type"
+                  className="mbk-select mbk-full"
                   value={newQType}
-                  onChange={e => setNewQType(e.target.value as any)}
+                  onChange={e => setNewQType(e.target.value as 'MCQ' | 'CONCEPTUAL')}
                 >
                   <option value="MCQ">Interactive MCQ (Options A-D)</option>
                   <option value="CONCEPTUAL">Conceptual Text Answer</option>
@@ -615,12 +584,12 @@ export default function MasterBankAdminTab() {
               </div>
 
               <div>
-                <label style={{ display: 'block', fontSize: '0.82rem', color: '#94a3b8', marginBottom: '0.3rem' }}>Short Interview Answer</label>
+                <label className="mbk-label" htmlFor="mbk-new-ans">Short Interview Answer</label>
                 <textarea
+                  id="mbk-new-ans"
                   required
                   rows={3}
-                  className="mqb-search-input"
-                  style={{ width: '100%', resize: 'vertical' }}
+                  className="mbk-input mbk-full mbk-textarea"
                   placeholder="2-5 crisp sentences explaining the core answer..."
                   value={newQShortAns}
                   onChange={e => setNewQShortAns(e.target.value)}
@@ -628,17 +597,17 @@ export default function MasterBankAdminTab() {
               </div>
 
               {newQType === 'MCQ' && (
-                <div style={{ background: 'rgba(0,0,0,0.25)', padding: '1rem', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.06)' }}>
-                  <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#fbbf24', marginBottom: '0.75rem' }}>MCQ Options:</div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                    <input className="mqb-search-input" style={{ width: '100%' }} placeholder="Option A (Text)" value={newQOptA} onChange={e => setNewQOptA(e.target.value)} />
-                    <input className="mqb-search-input" style={{ width: '100%' }} placeholder="Option B (Text)" value={newQOptB} onChange={e => setNewQOptB(e.target.value)} />
-                    <input className="mqb-search-input" style={{ width: '100%' }} placeholder="Option C (Text)" value={newQOptC} onChange={e => setNewQOptC(e.target.value)} />
-                    <input className="mqb-search-input" style={{ width: '100%' }} placeholder="Option D (Text)" value={newQOptD} onChange={e => setNewQOptD(e.target.value)} />
+                <div className="mbk-mcq-box">
+                  <div className="mbk-section-label amber mbk-spaced-sm">MCQ Options:</div>
+                  <div className="mbk-mcq-list">
+                    <input className="mbk-input mbk-full" placeholder="Option A (Text)" value={newQOptA} onChange={e => setNewQOptA(e.target.value)} />
+                    <input className="mbk-input mbk-full" placeholder="Option B (Text)" value={newQOptB} onChange={e => setNewQOptB(e.target.value)} />
+                    <input className="mbk-input mbk-full" placeholder="Option C (Text)" value={newQOptC} onChange={e => setNewQOptC(e.target.value)} />
+                    <input className="mbk-input mbk-full" placeholder="Option D (Text)" value={newQOptD} onChange={e => setNewQOptD(e.target.value)} />
                   </div>
-                  <div style={{ marginTop: '0.75rem' }}>
-                    <label style={{ fontSize: '0.82rem', color: '#94a3b8', marginRight: '0.5rem' }}>Correct Option:</label>
-                    <select className="mqb-filter-select" value={newQCorrect} onChange={e => setNewQCorrect(e.target.value)}>
+                  <div className="mbk-correct-row">
+                    <label className="mbk-label" htmlFor="mbk-new-correct">Correct Option:</label>
+                    <select id="mbk-new-correct" className="mbk-select" value={newQCorrect} onChange={e => setNewQCorrect(e.target.value)}>
                       <option value="A">Option A</option>
                       <option value="B">Option B</option>
                       <option value="C">Option C</option>
@@ -648,17 +617,17 @@ export default function MasterBankAdminTab() {
                 </div>
               )}
 
-              <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', marginTop: '1rem' }}>
+              <div className="mbk-form-actions">
                 <button
                   type="button"
-                  className="mqb-action-pill-btn"
+                  className="mbk-btn"
                   onClick={() => setShowCreateModal(false)}
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="mqb-action-pill-btn primary"
+                  className="mbk-btn primary"
                 >
                   Publish Question
                 </button>

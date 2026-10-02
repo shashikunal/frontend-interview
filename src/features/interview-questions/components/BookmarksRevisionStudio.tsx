@@ -5,6 +5,7 @@ import { interviewQuestionsDataService } from '../services/interviewQuestionsDat
 import { interviewQuestionsProgressService } from '../services/interviewQuestionsProgressService'
 import type { MasterQuestion, MasterSubjectId } from '../types/interviewQuestions.types'
 import { SkeletonLoader } from '../../../components/common/SkeletonLoader'
+import { toPlainSnippet } from '../utils/answerBlocks'
 
 export default function BookmarksRevisionStudio() {
   const [activeTab, setActiveTab] = useState<'bookmarks' | 'needs_review'>('bookmarks')
@@ -191,7 +192,7 @@ export default function BookmarksRevisionStudio() {
                       <span className="mqb-tag-pill">{q.topic}</span>
                     </div>
                     <h3 className="mqb-qcard-title">{q.question}</h3>
-                    <p className="mqb-qcard-snippet">{q.shortAnswer}</p>
+                    <p className="mqb-qcard-snippet">{toPlainSnippet(q.shortAnswer)}</p>
                   </div>
                 </div>
 

@@ -1,15 +1,57 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import { interviewQuestionsDataService } from '../services/interviewQuestionsDataService'
-import { interviewQuestionsProgressService } from '../services/interviewQuestionsProgressService'
-import type { MasterBankCatalog, SubjectMeta, SubjectProgressStat } from '../types/interviewQuestions.types'
+import type { MasterBankCatalog, MasterQuestion, MasterSubjectId } from '../types/interviewQuestions.types'
 import { SkeletonLoader } from '../../../components/common/SkeletonLoader'
+
+interface SubjectGroup {
+  subject: MasterBankCatalog['subjects'][number]
+  questions: MasterQuestion[] | null
+  matched: MasterQuestion[]
+}
+
+function matchesQuery(q: MasterQuestion, term: string): boolean {
+  const hay = [
+    q.question,
+    q.concept,
+    q.topic,
+    q.subtopic,
+    q.category,
+    q.id,
+    ...(q.tags || []),
+  ]
+    .filter(Boolean)
+    .join(' ')
+    .toLowerCase()
+  return hay.includes(term)
+}
+
+function diffLabel(difficulty: string): string {
+  const d = (difficulty || '').toUpperCase()
+  if (d === 'EASY') return 'Easy'
+  if (d === 'INTERMEDIATE' || d === 'MEDIUM') return 'Medium'
+  if (d === 'DIFFICULT' || d === 'HARD') return 'Hard'
+  return d ? d.charAt(0) + d.slice(1).toLowerCase() : ''
+}
 
 export default function SubjectLandingPage() {
   const [catalog, setCatalog] = useState<MasterBankCatalog | null>(null)
   const [loading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
-  const [progressState, setProgressState] = useState(() => interviewQuestionsProgressService.getState())
+
+  const [query, setQuery] = useState<string>('')
+  const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({})
+  const [questionsBySubject, setQuestionsBySubject] = useState<Record<string, MasterQuestion[]>>({})
+  const [searching, setSearching] = useState<boolean>(false)
+  const [searchProgress, setSearchProgress] = useState<number>(0)
+
+  const inFlight = useRef<Set<string>>(new Set())
+  const questionsRef = useRef<Record<string, MasterQuestion[]>>({})
+  const searchRunning = useRef(false)
+
+  useEffect(() => {
+    questionsRef.current = questionsBySubject
+  }, [questionsBySubject])
 
   useEffect(() => {
     let mounted = true
@@ -23,58 +65,85 @@ export default function SubjectLandingPage() {
           setError(null)
         }
       } catch (err: any) {
-        if (mounted) {
-          setError(err.message || 'Failed to load master question bank catalog')
-        }
+        if (mounted) setError(err.message || 'Failed to load question bank')
       } finally {
         if (mounted) setLoading(false)
       }
     }
 
     load()
-
-    const handleUpdate = () => {
-      setProgressState(interviewQuestionsProgressService.getState())
-    }
-
-    window.addEventListener('master_bank_progress_updated', handleUpdate)
     return () => {
       mounted = false
-      window.removeEventListener('master_bank_progress_updated', handleUpdate)
     }
   }, [])
 
-  const [selectedCategory, setSelectedCategory] = useState<'ALL' | 'FOUNDATIONS' | 'FRAMEWORKS' | 'PLATFORM' | 'SYSTEM_DESIGN'>('ALL')
-
-  // Calculate real subject stats for all subjects
-  const subjectStatsMap = useMemo(() => {
-    const map = new Map<string, SubjectProgressStat>()
-    if (!catalog) return map
-
-    for (const sub of catalog.subjects) {
-      const stats = interviewQuestionsProgressService.getSubjectStats(sub.id)
-      map.set(sub.id, stats)
+  const loadSubject = useCallback(async (subjectId: MasterSubjectId) => {
+    if (questionsRef.current[subjectId] || inFlight.current.has(subjectId)) return
+    inFlight.current.add(subjectId)
+    try {
+      const qs = await interviewQuestionsDataService.getSubjectQuestions(subjectId)
+      questionsRef.current = { ...questionsRef.current, [subjectId]: qs }
+      setQuestionsBySubject(questionsRef.current)
+    } catch (err: any) {
+      console.error(`Failed to load ${subjectId}:`, err)
+    } finally {
+      inFlight.current.delete(subjectId)
     }
-    return map
-  }, [catalog, progressState])
+  }, [])
 
-  const overallStats = useMemo(() => {
-    return interviewQuestionsProgressService.getOverallStats(catalog)
-  }, [catalog, progressState])
+  const toggleGroup = useCallback(
+    (subjectId: string) => {
+      setOpenGroups(prev => {
+        const next = { ...prev, [subjectId]: !prev[subjectId] }
+        if (next[subjectId]) void loadSubject(subjectId as MasterSubjectId)
+        return next
+      })
+    },
+    [loadSubject],
+  )
 
-  const CATEGORY_SUBJECTS = useMemo(() => ({
-    FOUNDATIONS: ['html', 'css', 'javascript', 'es6', 'es7', 'es8', 'dom', 'bom', 'web-apis', 'jquery'],
-    FRAMEWORKS: ['typescript', 'react', 'redux', 'react-router', 'tanstack-query', 'nextjs'],
-    PLATFORM: ['http', 'rest-apis', 'websockets', 'browser-internals', 'performance', 'accessibility', 'seo', 'security', 'testing', 'git', 'build-tools', 'micro-frontends'],
-    SYSTEM_DESIGN: ['design-patterns', 'frontend-architecture', 'machine-coding', 'system-design', 'coding-problems', 'scenarios', 'company-questions']
-  }), [])
+  const term = query.trim().toLowerCase()
 
-  const displayedSubjects = useMemo(() => {
+  useEffect(() => {
+    if (!catalog || term.length < 2 || searchRunning.current) return
+    const missing = catalog.subjects.filter(s => !questionsRef.current[s.id])
+    if (missing.length === 0) return
+
+    let cancelled = false
+    searchRunning.current = true
+    setSearching(true)
+    setSearchProgress(0)
+
+    ;(async () => {
+      for (const s of missing) {
+        if (cancelled) break
+        await loadSubject(s.id)
+        setSearchProgress(prev => prev + 1)
+      }
+      if (!cancelled) setSearching(false)
+      searchRunning.current = false
+    })()
+
+    return () => {
+      cancelled = true
+    }
+  }, [term, catalog, loadSubject])
+
+  const groups: SubjectGroup[] = useMemo(() => {
     if (!catalog) return []
-    if (selectedCategory === 'ALL') return catalog.subjects
-    const allowed = new Set(CATEGORY_SUBJECTS[selectedCategory] || [])
-    return catalog.subjects.filter(s => allowed.has(s.id))
-  }, [catalog, selectedCategory, CATEGORY_SUBJECTS])
+    const out: SubjectGroup[] = []
+    for (const subject of catalog.subjects) {
+      const list = questionsBySubject[subject.id] || null
+      if (!list) {
+        if (!term) out.push({ subject, questions: null, matched: [] })
+        continue
+      }
+      const matched = term ? list.filter(q => matchesQuery(q, term)) : list
+      if (term && matched.length === 0) continue
+      out.push({ subject, questions: list, matched })
+    }
+    return out
+  }, [catalog, questionsBySubject, term])
 
   if (loading) {
     return (
@@ -88,382 +157,72 @@ export default function SubjectLandingPage() {
     return (
       <div className="mqb-error-state" id="mqb-error-container" style={{ textAlign: 'center', padding: '4rem 1rem' }}>
         <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>⚠️</div>
-        <h2 style={{ color: 'var(--mqb-accent-rose)' }}>Unable to Initialize Master Bank</h2>
+        <h2 style={{ color: 'var(--mqb-tone-danger)' }}>Unable to load questions</h2>
         <p style={{ color: 'var(--mqb-text-secondary)', maxWidth: 500, margin: '0 auto 1.5rem' }}>{error}</p>
-        <button
-          type="button"
-          className="mqb-action-pill-btn primary"
-          onClick={() => window.location.reload()}
-        >
-          🔄 Retry Initialization
+        <button type="button" className="mqb-action-pill-btn primary" onClick={() => window.location.reload()}>
+          Retry
         </button>
       </div>
     )
   }
 
   return (
-    <div className="mqb-landing-view" id="master-bank-landing-page">
-      {/* Hero Section */}
-      <section className="mqb-hero-banner" id="mqb-hero-section">
-        <div className="mqb-hero-top">
-          <div className="mqb-hero-text">
-            <h1>Frontend Interview Master Question Bank</h1>
-            <p>
-              The industry's most authentic, non-duplicated question system. {overallStats.totalQuestions.toLocaleString()} comprehensive technical questions across {catalog.subjects.length} frontend subjects with clean Text-to-Speech narration, line-by-line code breakdowns, execution flow diagrams, and real-time candidate metrics.
-            </p>
-            <div className="mqb-hero-badges-row">
-              <span className="mqb-hero-tag fresher-tag">
-                🌱 Fresher to Staff Engineer Path
-              </span>
-              <span className="mqb-hero-tag">🔥 {overallStats.totalQuestions.toLocaleString()} Unique Questions</span>
-              <span className="mqb-hero-tag">🎯 {catalog.subjects.length} Dedicated Tracks</span>
-              <span className="mqb-hero-tag">🎙️ Spoken Speech Answers</span>
-              <span className="mqb-hero-tag">⚡ Interactive MCQs</span>
-              <span className="mqb-hero-tag">🔍 Line-by-Line Code Breakdown</span>
-              <span className="mqb-hero-tag">🚀 100% Real Candidate Metrics</span>
-            </div>
-          </div>
-          <div style={{ display: 'flex', gap: '0.75rem', flexShrink: 0, flexWrap: 'wrap' }}>
-            <Link
-              to="/interview-questions/javascript?difficulty=EASY"
-              className="mqb-action-pill-btn fresher-btn"
-              id="mqb-hero-fresher-start-btn"
-            >
-              🌱 Start with Easy (Fresher Mode)
-            </Link>
-            <Link
-              to="/interview-questions/practice"
-              className="mqb-action-pill-btn primary"
-              id="mqb-hero-start-practice-btn"
-            >
-              ⚡ Quick Practice Drill
-            </Link>
-            <Link
-              to="/interview-questions/test"
-              className="mqb-action-pill-btn"
-              id="mqb-hero-start-test-btn"
-            >
-              ⏱️ Timed Mock Test
-            </Link>
-          </div>
-        </div>
+    <div className="mqb-plain-hub" id="master-bank-landing-page">
+      <h1>Frontend Interview Questions</h1>
+      <p className="mqb-plain-meta">
+        {catalog.totalQuestions.toLocaleString()} questions · {catalog.subjects.length} subjects
+      </p>
 
-        {/* Global Platform Real Metrics */}
-        <div className="mqb-stats-grid" id="mqb-global-stats-grid">
-          <div className="mqb-stat-card" id="mqb-stat-total-completed">
-            <div className="mqb-stat-label">Total Questions Solved</div>
-            <div className="mqb-stat-val">
-              {overallStats.totalCompleted.toLocaleString()}
-              <span className="mqb-stat-sub">/ {overallStats.totalQuestions.toLocaleString()}</span>
-            </div>
-            <div className="mqb-progress-track">
-              <div
-                className="mqb-progress-bar"
-                style={{ width: `${Math.min(overallStats.overallPct, 100)}%`, background: 'var(--mqb-grad-brand)' }}
-              />
-            </div>
-          </div>
+      <input
+        type="search"
+        className="mqb-plain-search"
+        value={query}
+        onChange={e => setQuery(e.target.value)}
+        placeholder="Search questions (e.g. semantic HTML, closures, hooks)..."
+        aria-label="Search questions"
+      />
 
-          <div className="mqb-stat-card" id="mqb-stat-completion-pct">
-            <div className="mqb-stat-label">Mastery Completion Rate</div>
-            <div className="mqb-stat-val cyan-accent">
-              {overallStats.overallPct}%
-            </div>
-            <div className="mqb-stat-sub" style={{ marginTop: '0.5rem' }}>
-              Based on verified candidate progress
-            </div>
-          </div>
+      {term.length >= 2 && searching && (
+        <p className="mqb-plain-status">
+          Searching… loaded {searchProgress} of {catalog.subjects.length} subjects
+        </p>
+      )}
 
-          <div className="mqb-stat-card" id="mqb-stat-bookmarked">
-            <div className="mqb-stat-label">Bookmarked for Review</div>
-            <div className="mqb-stat-val med-accent">
-              {overallStats.totalBookmarked}
-              <span className="mqb-stat-sub">saved</span>
-            </div>
-            <div className="mqb-stat-sub" style={{ marginTop: '0.5rem' }}>
-              <Link to="/interview-questions/bookmarks" style={{ color: 'var(--mqb-med-text)', textDecoration: 'none' }}>
-                Open Revision Hub →
-              </Link>
-            </div>
-          </div>
+      <div className="mqb-plain-groups" id="mqb-subject-groups">
+        {groups.length === 0 && <p className="mqb-plain-status">No questions match “{query}”.</p>}
 
-          <div className="mqb-stat-card" id="mqb-stat-tests-completed">
-            <div className="mqb-stat-label">Mock Tests Completed</div>
-            <div className="mqb-stat-val purple-accent">
-              {overallStats.totalTestsTaken}
-              <span className="mqb-stat-sub">exams</span>
-            </div>
-            <div className="mqb-stat-sub" style={{ marginTop: '0.5rem' }}>
-              Timed evaluation sessions
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* High-Frequency Interview Hub & Quick Recommended Prep */}
-      <section style={{ background: 'var(--mqb-bg-glass)', border: '1px solid rgba(245,158,11,0.3)', borderRadius: '16px', padding: '1.5rem', marginBottom: '2rem', boxShadow: '0 8px 30px rgba(0,0,0,0.1)' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem', marginBottom: '1rem' }}>
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-              <span style={{ fontSize: '1.4rem' }}>🔥</span>
-              <h2 style={{ fontSize: '1.35rem', fontWeight: 800, margin: 0, color: 'var(--mqb-text-primary)' }}>
-                High-Frequency Interview Hub
-              </h2>
-              <span className="mqb-highfreq-badge">Top-Asked Real Questions</span>
-            </div>
-            <p style={{ color: 'var(--mqb-text-secondary)', margin: '0.35rem 0 0', fontSize: '0.9rem' }}>
-              Curated target question pools tagged by Tier-1 tech companies (Google, Meta, Amazon, Microsoft, Netflix, Apple).
-            </p>
-          </div>
-          <Link
-            to="/interview-questions/javascript?highFreq=true"
-            className="mqb-action-pill-btn"
-            style={{ background: 'rgba(245,158,11,0.15)', color: '#fbbf24', border: '1px solid rgba(245,158,11,0.4)', fontWeight: 700 }}
-          >
-            🔥 Explore High-Frequency Pool →
-          </Link>
-        </div>
-
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '0.85rem' }}>
-          <Link
-            to="/interview-questions/javascript?company=Google"
-            style={{ textDecoration: 'none', background: 'var(--mqb-bg-card)', border: '1px solid var(--mqb-border)', padding: '0.85rem 1rem', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', color: 'var(--mqb-text-primary)', transition: 'transform 0.2s ease' }}
-          >
-            <div>
-              <div style={{ fontWeight: 700, fontSize: '0.92rem' }}>🏢 Google Interview Suite</div>
-              <div style={{ fontSize: '0.78rem', color: 'var(--mqb-text-muted)' }}>JS Core, Engine & V8 Optimization</div>
-            </div>
-            <span style={{ color: '#38bdf8', fontWeight: 700 }}>→</span>
-          </Link>
-
-          <Link
-            to="/interview-questions/react?company=Meta"
-            style={{ textDecoration: 'none', background: 'var(--mqb-bg-card)', border: '1px solid var(--mqb-border)', padding: '0.85rem 1rem', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', color: 'var(--mqb-text-primary)', transition: 'transform 0.2s ease' }}
-          >
-            <div>
-              <div style={{ fontWeight: 700, fontSize: '0.92rem' }}>🏢 Meta (Facebook) Suite</div>
-              <div style={{ fontSize: '0.78rem', color: 'var(--mqb-text-muted)' }}>React Internals, Fiber & Reconciliation</div>
-            </div>
-            <span style={{ color: '#818cf8', fontWeight: 700 }}>→</span>
-          </Link>
-
-          <Link
-            to="/interview-questions/dom?company=Amazon"
-            style={{ textDecoration: 'none', background: 'var(--mqb-bg-card)', border: '1px solid var(--mqb-border)', padding: '0.85rem 1rem', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', color: 'var(--mqb-text-primary)', transition: 'transform 0.2s ease' }}
-          >
-            <div>
-              <div style={{ fontWeight: 700, fontSize: '0.92rem' }}>🏢 Amazon Suite</div>
-              <div style={{ fontSize: '0.78rem', color: 'var(--mqb-text-muted)' }}>DOM Tree & Mutation Architecture</div>
-            </div>
-            <span style={{ color: '#fbbf24', fontWeight: 700 }}>→</span>
-          </Link>
-
-          <Link
-            to="/interview-questions/web-apis?company=Microsoft"
-            style={{ textDecoration: 'none', background: 'var(--mqb-bg-card)', border: '1px solid var(--mqb-border)', padding: '0.85rem 1rem', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', color: 'var(--mqb-text-primary)', transition: 'transform 0.2s ease' }}
-          >
-            <div>
-              <div style={{ fontWeight: 700, fontSize: '0.92rem' }}>🏢 Microsoft Suite</div>
-              <div style={{ fontSize: '0.78rem', color: 'var(--mqb-text-muted)' }}>Modern Web APIs & Async Workflows</div>
-            </div>
-            <span style={{ color: '#34d399', fontWeight: 700 }}>→</span>
-          </Link>
-        </div>
-      </section>
-
-      {/* Subject Dashboard Cards Grid with Category Filter */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '1.5rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem' }}>
-          <div>
-            <h2 style={{ fontSize: '1.5rem', fontWeight: 800, margin: '0 0 0.25rem', color: 'var(--mqb-text-primary)' }}>
-              Master Question Banks ({catalog.subjects.length} Dedicated Subjects)
-            </h2>
-            <p style={{ color: 'var(--mqb-text-secondary)', margin: 0, fontSize: '0.95rem' }}>
-              100% authentic, curated real-world technical interview questions with live candidate metrics, spoken TTS scripts, and interactive MCQs.
-            </p>
-          </div>
-          <span className="mqb-catalog-count-pill" style={{ fontSize: '0.9rem', padding: '0.4rem 0.8rem' }}>
-            Showing {displayedSubjects.length} of {catalog.subjects.length} Tracks
-          </span>
-        </div>
-
-        {/* Category Filter Pills */}
-        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }} id="mqb-category-filters">
-          <button
-            type="button"
-            className={`mqb-action-pill-btn ${selectedCategory === 'ALL' ? 'primary' : ''}`}
-            onClick={() => setSelectedCategory('ALL')}
-            style={{ fontSize: '0.85rem', padding: '0.45rem 0.85rem' }}
-          >
-            All Tracks ({catalog.subjects.length})
-          </button>
-          <button
-            type="button"
-            className={`mqb-action-pill-btn ${selectedCategory === 'FOUNDATIONS' ? 'primary' : ''}`}
-            onClick={() => setSelectedCategory('FOUNDATIONS')}
-            style={{ fontSize: '0.85rem', padding: '0.45rem 0.85rem' }}
-          >
-            🌐 Core Foundations ({CATEGORY_SUBJECTS.FOUNDATIONS.length})
-          </button>
-          <button
-            type="button"
-            className={`mqb-action-pill-btn ${selectedCategory === 'FRAMEWORKS' ? 'primary' : ''}`}
-            onClick={() => setSelectedCategory('FRAMEWORKS')}
-            style={{ fontSize: '0.85rem', padding: '0.45rem 0.85rem' }}
-          >
-            ⚛️ Frameworks & State ({CATEGORY_SUBJECTS.FRAMEWORKS.length})
-          </button>
-          <button
-            type="button"
-            className={`mqb-action-pill-btn ${selectedCategory === 'PLATFORM' ? 'primary' : ''}`}
-            onClick={() => setSelectedCategory('PLATFORM')}
-            style={{ fontSize: '0.85rem', padding: '0.45rem 0.85rem' }}
-          >
-            🛡️ Platform, Networking & Security ({CATEGORY_SUBJECTS.PLATFORM.length})
-          </button>
-          <button
-            type="button"
-            className={`mqb-action-pill-btn ${selectedCategory === 'SYSTEM_DESIGN' ? 'primary' : ''}`}
-            onClick={() => setSelectedCategory('SYSTEM_DESIGN')}
-            style={{ fontSize: '0.85rem', padding: '0.45rem 0.85rem' }}
-          >
-            📐 Architecture, System Design & Practice ({CATEGORY_SUBJECTS.SYSTEM_DESIGN.length})
-          </button>
-        </div>
-      </div>
-
-      <div className="mqb-subjects-grid" id="mqb-subjects-grid">
-        {displayedSubjects.map((subject: SubjectMeta) => {
-          const stats = subjectStatsMap.get(subject.id) || {
-            subjectId: subject.id,
-            totalQuestions: subject.totalQuestions || 125,
-            completed: 0,
-            remaining: subject.totalQuestions || 125,
-            completionPct: 0,
-            easyCount: Math.round((subject.totalQuestions || 125) * 0.4),
-            easyCompleted: 0,
-            intermediateCount: Math.round((subject.totalQuestions || 125) * 0.4),
-            intermediateCompleted: 0,
-            difficultCount: Math.round((subject.totalQuestions || 125) * 0.2),
-            difficultCompleted: 0,
-            bookmarkedCount: 0,
-            needsReviewCount: 0,
-          }
+        {groups.map(({ subject, questions, matched }) => {
+          const isOpen = term.length >= 2 || !!openGroups[subject.id]
+          const visible = term ? matched : questions
+          const count = term ? matched.length : (questions ? questions.length : subject.totalQuestions)
 
           return (
-            <article
-              key={subject.id}
-              className="mqb-subject-card"
-              id={`mqb-subject-card-${subject.id}`}
-              style={{ '--subject-accent': subject.color } as React.CSSProperties}
-            >
-              <div>
-                {/* Header */}
-                <div className="mqb-sc-header">
-                  <div className="mqb-sc-title-wrap">
-                    <div className="mqb-sc-icon">{subject.icon}</div>
-                    <div>
-                      <h3 className="mqb-sc-title">{subject.name}</h3>
-                      <span className="mqb-sc-badge">{subject.badge}</span>
-                    </div>
-                  </div>
-                  <span className="mqb-catalog-count-pill">
-                    {subject.totalQuestions || stats.totalQuestions} Qs
-                  </span>
-                </div>
+            <section key={subject.id} className="mqb-plain-group" id={`mqb-group-${subject.id}`}>
+              <button
+                type="button"
+                className="mqb-plain-group-head"
+                aria-expanded={isOpen}
+                onClick={() => toggleGroup(subject.id)}
+              >
+                <span className="mqb-plain-group-title">{subject.name}</span>
+                <span className="mqb-plain-group-count">{count} questions</span>
+              </button>
 
-                {/* Description */}
-                <p className="mqb-sc-desc">{subject.description}</p>
+              {isOpen && !visible && <p className="mqb-plain-status">Loading questions…</p>}
 
-                {/* Real Completion Progress */}
-                <div className="mqb-sc-progress-row">
-                  <div className="mqb-sc-progress-label">
-                    <span>
-                      <strong>{stats.completed}</strong> / {stats.totalQuestions} Completed
-                    </span>
-                    <span className="mqb-sc-progress-pct">{stats.completionPct}%</span>
-                  </div>
-                  <div className="mqb-progress-track">
-                    <div
-                      className="mqb-progress-bar"
-                      style={{
-                        width: `${Math.min(stats.completionPct, 100)}%`,
-                        background: subject.accentGradient || 'linear-gradient(90deg, #0ea5e9, #38bdf8)',
-                      }}
-                    />
-                  </div>
-                </div>
-
-                {/* Real Difficulty Breakdown */}
-                <div className="mqb-sc-diff-row">
-                  <Link
-                    to={`/interview-questions/${subject.id}?difficulty=EASY`}
-                    className="mqb-sc-diff-pill easy"
-                    title={`Easy: ${stats.easyCompleted} completed out of ${stats.easyCount}. Click to start with easy questions!`}
-                    style={{ textDecoration: 'none', cursor: 'pointer' }}
-                  >
-                    <span className="mqb-sc-dot" />
-                    <span>🌱 Easy: {stats.easyCount}</span>
-                  </Link>
-                  <div className="mqb-sc-diff-pill med" title={`Intermediate: ${stats.intermediateCompleted} completed out of ${stats.intermediateCount}`}>
-                    <span className="mqb-sc-dot" />
-                    <span>Inter: {stats.intermediateCount}</span>
-                  </div>
-                  <div className="mqb-sc-diff-pill diff" title={`Difficult: ${stats.difficultCompleted} completed out of ${stats.difficultCount}`}>
-                    <span className="mqb-sc-dot" />
-                    <span>Diff: {stats.difficultCount}</span>
-                  </div>
-                </div>
-
-                {/* Flags row: Bookmarks & Needs Review */}
-                <div style={{ display: 'flex', gap: '1rem', fontSize: '0.8rem', color: 'var(--mqb-text-muted)', marginBottom: '1.25rem' }}>
-                  <span>⭐ {stats.bookmarkedCount} Bookmarked</span>
-                  <span>🚩 {stats.needsReviewCount} Needs Review</span>
-                </div>
-              </div>
-
-              {/* Action Buttons: Easy First, Practice & Browse */}
-              <div className="mqb-sc-actions" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
-                <Link
-                  to={`/interview-questions/${subject.id}?difficulty=EASY`}
-                  className="mqb-sc-btn"
-                  id={`fresher-easy-btn-${subject.id}`}
-                  style={{
-                    gridColumn: '1 / -1',
-                    background: 'rgba(16,185,129,0.15)',
-                    color: '#34d399',
-                    border: '1px solid rgba(16,185,129,0.3)',
-                    textAlign: 'center',
-                    padding: '0.55rem',
-                    borderRadius: '8px',
-                    fontWeight: 700,
-                    textDecoration: 'none',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '0.4rem',
-                  }}
-                >
-                  🌱 Start with Easy (Fresher Qs 1–400)
-                </Link>
-                <Link
-                  to={`/interview-questions/${subject.id}`}
-                  className="mqb-sc-btn browse"
-                  id={`browse-btn-${subject.id}`}
-                  style={{ textAlign: 'center' }}
-                >
-                  All Questions
-                </Link>
-                <Link
-                  to={`/interview-questions/${subject.id}/practice`}
-                  className="mqb-sc-btn practice"
-                  id={`practice-btn-${subject.id}`}
-                  style={{ textAlign: 'center' }}
-                >
-                  Practice Drill
-                </Link>
-              </div>
-            </article>
+              {isOpen && visible && (
+                <ol className="mqb-plain-list">
+                  {visible.map((q, idx) => (
+                    <li key={q.id}>
+                      <Link to={`/interview-questions/${subject.id}/${q.id}`}>
+                        {q.questionNumber ?? idx + 1}. {q.question}
+                      </Link>
+                      <span className="mqb-plain-diff">{diffLabel(String(q.difficulty))}</span>
+                    </li>
+                  ))}
+                </ol>
+              )}
+            </section>
           )
         })}
       </div>

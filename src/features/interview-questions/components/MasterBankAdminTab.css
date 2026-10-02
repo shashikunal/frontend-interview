@@ -1,0 +1,715 @@
+/* ==============================================================================
+   Master Bank Admin Tab (dashboard ?tab=master_bank)
+   Horizon UI tokens (--h-*) so it follows the dashboard dark/light theme
+   ============================================================================== */
+
+.mbk-pane {
+  padding: 1rem 0 2rem;
+  color: var(--h-text-white);
+}
+
+/* ─── Shared primitives ───────────────────────────────────────────────────── */
+.mbk-card {
+  background: var(--h-card);
+  border: 1px solid var(--h-border);
+  border-radius: var(--h-radius);
+  box-shadow: var(--h-shadow-sm);
+}
+
+.mbk-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.55rem 1rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-family: inherit;
+  border-radius: 10px;
+  border: 1px solid var(--h-border);
+  background: var(--h-card-inner);
+  color: var(--h-text-white);
+  cursor: pointer;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.mbk-btn:hover {
+  background: var(--h-card-hover);
+  border-color: var(--h-brand-light);
+  transform: translateY(-1px);
+}
+
+.mbk-btn.primary {
+  background: var(--h-brand-gradient);
+  border-color: transparent;
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(67, 24, 255, 0.35);
+}
+
+.mbk-btn.primary:hover {
+  box-shadow: 0 6px 20px rgba(67, 24, 255, 0.45);
+  transform: translateY(-2px);
+}
+
+.mbk-btn.sm {
+  padding: 0.3rem 0.65rem;
+  font-size: 0.75rem;
+  border-radius: 8px;
+}
+
+.mbk-input,
+.mbk-select {
+  appearance: none;
+  -webkit-appearance: none;
+  background: var(--h-input-bg);
+  border: 1px solid var(--h-border);
+  border-radius: 10px;
+  padding: 0.55rem 0.85rem;
+  color: var(--h-text-white);
+  font-size: 0.85rem;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.mbk-select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23a3aed0' d='M6 8 0 0h12z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.85rem center;
+  padding-right: 2.1rem;
+}
+
+.mbk-input::placeholder {
+  color: var(--h-text-sub);
+}
+
+.mbk-input:focus,
+.mbk-select:focus {
+  border-color: var(--h-brand-light);
+  box-shadow: 0 0 0 3px rgba(117, 81, 255, 0.2);
+}
+
+.mbk-select option {
+  background: var(--h-card);
+  color: var(--h-text-white);
+}
+
+.mbk-select.strong {
+  font-weight: 700;
+}
+
+.mbk-label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--h-text-muted);
+  margin-bottom: 0.35rem;
+}
+
+/* ─── Hero banner ─────────────────────────────────────────────────────────── */
+.mbk-hero {
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.mbk-hero-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.mbk-hero-title {
+  margin: 0 0 0.5rem;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--h-text-white);
+}
+
+.mbk-hero-sub {
+  margin: 0;
+  max-width: 70ch;
+  color: var(--h-text-muted);
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+.mbk-hero-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+/* ─── Metric cards ────────────────────────────────────────────────────────── */
+.mbk-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+  margin-top: 1.25rem;
+}
+
+.mbk-stat {
+  background: var(--h-card-inner);
+  border: 1px solid var(--h-border-subtle);
+  border-radius: var(--h-radius-sm);
+  padding: 1rem;
+}
+
+.mbk-stat-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: var(--h-text-muted);
+}
+
+.mbk-stat-value {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--h-text-white);
+  line-height: 1.3;
+}
+
+.mbk-stat-value.blue { color: var(--h-brand-blue); }
+.mbk-stat-value.green { color: var(--h-brand-green); }
+.mbk-stat-value.purple { color: var(--h-brand-purple); }
+
+.mbk-stat-sub {
+  margin-top: 0.2rem;
+  font-size: 0.75rem;
+  color: var(--h-text-sub);
+}
+
+.mbk-stat-sub.green { color: var(--h-brand-green); }
+
+/* ─── Audit result banner ─────────────────────────────────────────────────── */
+.mbk-alert {
+  margin-top: 1rem;
+  padding: 0.85rem 1rem;
+  border-radius: 10px;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  white-space: pre-line;
+  color: var(--h-text-white);
+}
+
+.mbk-alert.ok {
+  background: rgba(1, 181, 116, 0.14);
+  border: 1px solid rgba(1, 181, 116, 0.45);
+}
+
+.mbk-alert.err {
+  background: rgba(238, 93, 80, 0.14);
+  border: 1px solid rgba(238, 93, 80, 0.45);
+}
+
+/* ─── Layout: list + inspector ────────────────────────────────────────────── */
+.mbk-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.mbk-layout.with-inspector {
+  grid-template-columns: 1.2fr 1fr;
+}
+
+.mbk-panel {
+  padding: 1.25rem;
+  min-width: 0;
+}
+
+/* ─── Filter bar ──────────────────────────────────────────────────────────── */
+.mbk-filters {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.mbk-filters-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.mbk-search {
+  width: 240px;
+}
+
+.mbk-filters-sub {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  align-items: center;
+  font-size: 0.82rem;
+}
+
+.mbk-filters-sub .mbk-select {
+  padding: 0.4rem 2.1rem 0.4rem 0.65rem;
+  font-size: 0.82rem;
+}
+
+.mbk-count {
+  margin-left: auto;
+  align-self: center;
+  color: var(--h-text-muted);
+  font-size: 0.82rem;
+}
+
+/* ─── Question table ──────────────────────────────────────────────────────── */
+.mbk-table-wrap {
+  max-height: 550px;
+  overflow: auto;
+  margin: 0 -0.4rem;
+  padding: 0 0.4rem;
+  scrollbar-width: thin;
+}
+
+.mbk-table {
+  width: 100%;
+  min-width: 560px;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.mbk-table th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding: 0.65rem 0.6rem;
+  text-align: left;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: var(--h-text-muted);
+  background: var(--h-card);
+  border-bottom: 1px solid var(--h-border);
+}
+
+.mbk-table td {
+  padding: 0.65rem 0.6rem;
+  border-bottom: 1px solid var(--h-border-subtle);
+  color: var(--h-text-white);
+  vertical-align: middle;
+}
+
+.mbk-table tbody tr {
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.mbk-table tbody tr:hover {
+  background: var(--h-tr-hover);
+}
+
+.mbk-table tbody tr.selected {
+  background: rgba(117, 81, 255, 0.14);
+  box-shadow: inset 3px 0 0 var(--h-brand-light);
+}
+
+.mbk-qid {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.78rem;
+  color: var(--h-brand-blue);
+  white-space: nowrap;
+}
+
+.mbk-qtext {
+  max-width: 280px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--h-text-white);
+}
+
+/* Narrower table beside the inspector so no column is clipped */
+.mbk-layout.with-inspector .mbk-qtext {
+  max-width: 150px;
+}
+
+.mbk-layout.with-inspector .mbk-table {
+  font-size: 0.8rem;
+}
+
+.mbk-layout.with-inspector .mbk-table th,
+.mbk-layout.with-inspector .mbk-table td {
+  padding: 0.6rem 0.4rem;
+}
+
+.mbk-format {
+  font-weight: 600;
+  color: var(--h-text-muted);
+  white-space: nowrap;
+}
+
+.mbk-format.mcq {
+  color: var(--h-brand-amber);
+}
+
+.mbk-diff-pill {
+  display: inline-block;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  padding: 0.18rem 0.5rem;
+  border-radius: 5px;
+}
+
+.mbk-diff-pill.EASY {
+  background: var(--badge-easy-bg);
+  color: var(--badge-easy-text);
+  border: 1px solid var(--badge-easy-border);
+}
+
+.mbk-diff-pill.INTERMEDIATE {
+  background: var(--badge-medium-bg);
+  color: var(--badge-medium-text);
+  border: 1px solid var(--badge-medium-border);
+}
+
+.mbk-diff-pill.DIFFICULT {
+  background: var(--badge-hard-bg);
+  color: var(--badge-hard-text);
+  border: 1px solid var(--badge-hard-border);
+}
+
+.mbk-status {
+  display: inline-block;
+  padding: 0.2rem 0.5rem;
+  border-radius: 5px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  background: var(--h-tag-bg);
+  color: var(--h-text-muted);
+}
+
+.mbk-status.published {
+  background: rgba(1, 181, 116, 0.15);
+  color: var(--h-brand-green);
+}
+
+.mbk-status.review,
+.mbk-status.approved {
+  background: rgba(255, 181, 71, 0.15);
+  color: var(--h-brand-amber);
+}
+
+.mbk-status.draft {
+  background: rgba(56, 189, 248, 0.15);
+  color: var(--h-brand-blue);
+}
+
+.mbk-del-btn {
+  background: none;
+  border: none;
+  color: var(--h-brand-red);
+  cursor: pointer;
+  font-size: 0.9rem;
+  padding: 0.15rem 0.3rem;
+  border-radius: 6px;
+  transition: background 0.15s ease;
+}
+
+.mbk-del-btn:hover {
+  background: rgba(238, 93, 80, 0.15);
+}
+
+.mbk-loading {
+  text-align: center;
+  padding: 3rem 0;
+  color: var(--h-text-muted);
+  font-size: 0.9rem;
+}
+
+/* ─── Inspector ───────────────────────────────────────────────────────────── */
+.mbk-inspector {
+  padding: 1.5rem;
+  border-color: rgba(56, 189, 248, 0.35);
+  max-height: 680px;
+  overflow-y: auto;
+  position: sticky;
+  top: 1rem;
+}
+
+.mbk-inspector-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.mbk-inspector-id {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--h-brand-blue);
+}
+
+.mbk-inspector-title {
+  margin: 0.25rem 0 0;
+  font-size: 1.12rem;
+  font-weight: 700;
+  line-height: 1.4;
+  color: var(--h-text-white);
+}
+
+.mbk-section {
+  margin-bottom: 1.1rem;
+}
+
+.mbk-section-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--h-brand-blue);
+  margin-bottom: 0.35rem;
+}
+
+.mbk-section-label.amber { color: var(--h-brand-amber); }
+.mbk-section-label.purple { color: var(--h-brand-purple); }
+
+.mbk-inset {
+  background: var(--h-card-inner);
+  border: 1px solid var(--h-border-subtle);
+  border-radius: 10px;
+  padding: 0.75rem;
+  font-size: 0.88rem;
+  line-height: 1.6;
+  color: var(--h-text-white);
+}
+
+.mbk-transition-box {
+  background: var(--h-card-inner);
+  border: 1px solid var(--h-border-subtle);
+  border-radius: 10px;
+  padding: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.mbk-chip-row {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.mbk-chip {
+  padding: 0.3rem 0.6rem;
+  border-radius: 6px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  border: 1px solid var(--h-border);
+  background: transparent;
+  color: var(--h-text-muted);
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s ease;
+}
+
+.mbk-chip:hover {
+  border-color: var(--h-brand-light);
+  color: var(--h-text-white);
+}
+
+.mbk-chip.active {
+  border-color: var(--h-brand-light);
+  background: rgba(117, 81, 255, 0.18);
+  color: var(--h-brand-light);
+}
+
+.mbk-badges {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.mbk-tag {
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.2rem 0.55rem;
+  border-radius: 5px;
+  background: var(--h-tag-bg);
+  border: 1px solid var(--h-border);
+  color: var(--h-text-muted);
+  font-family: var(--font-mono, monospace);
+}
+
+.mbk-tag.plain {
+  font-family: inherit;
+}
+
+.mbk-option {
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.84rem;
+  line-height: 1.5;
+  background: var(--h-card-inner);
+  border: 1px solid var(--h-border-subtle);
+  color: var(--h-text-white);
+}
+
+.mbk-option.correct {
+  background: rgba(1, 181, 116, 0.14);
+  border-color: rgba(1, 181, 116, 0.45);
+  color: var(--h-brand-green);
+}
+
+.mbk-code {
+  margin: 0;
+  padding: 0.85rem;
+  border-radius: 10px;
+  background: var(--code-bg);
+  border: 1px solid var(--code-border, var(--h-border));
+  color: var(--code-text, var(--h-text-white));
+  font-family: var(--font-mono, monospace);
+  font-size: 0.8rem;
+  line-height: 1.55;
+  overflow-x: auto;
+}
+
+/* ─── Create question modal ───────────────────────────────────────────────── */
+.mbk-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: var(--h-modal-backdrop);
+  backdrop-filter: blur(6px);
+}
+
+.mbk-modal {
+  width: 100%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 2rem;
+  background: var(--h-card);
+  border: 1px solid var(--h-border);
+  border-radius: var(--h-radius);
+  box-shadow: var(--h-shadow);
+}
+
+.mbk-modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.mbk-modal-title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--h-text-white);
+}
+
+.mbk-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.mbk-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.mbk-form-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+  margin-top: 0.5rem;
+}
+
+.mbk-mcq-box {
+  background: var(--h-card-inner);
+  border: 1px solid var(--h-border-subtle);
+  border-radius: 10px;
+  padding: 1rem;
+}
+
+.mbk-mcq-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.mbk-mcq-list.tight {
+  gap: 0.4rem;
+}
+
+/* ─── Utilities ───────────────────────────────────────────────────────────── */
+.mbk-full {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.mbk-textarea {
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.mbk-spaced-xs {
+  margin-bottom: 0.4rem;
+}
+
+.mbk-spaced-sm {
+  margin-bottom: 0.75rem;
+}
+
+.mbk-correct-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  font-size: 0.82rem;
+  color: var(--h-text-muted);
+}
+
+.mbk-correct-row .mbk-label {
+  display: inline;
+  margin: 0;
+}
+
+/* ─── Responsive ──────────────────────────────────────────────────────────── */
+@media (max-width: 1100px) {
+  .mbk-layout.with-inspector {
+    grid-template-columns: 1fr;
+  }
+
+  .mbk-inspector {
+    position: static;
+    max-height: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .mbk-hero-title {
+    font-size: 1.2rem;
+  }
+
+  .mbk-search {
+    width: 100%;
+  }
+
+  .mbk-form-grid {
+    grid-template-columns: 1fr;
+  }
+}
