@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { interviewQuestionsProgressService } from '../services/interviewQuestionsProgressService'
+import { bankTotals, fmtCount } from '../../../data/bankTotals'
 
 export default function CandidateMasterBankCard() {
   const [overallStats, setOverallStats] = useState(() => interviewQuestionsProgressService.getOverallStats())
@@ -36,7 +37,7 @@ export default function CandidateMasterBankCard() {
               Frontend Interview Master Bank
             </h3>
             <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary, #94a3b8)' }}>
-              12,000 Questions across 12 Subject Tracks
+              {fmtCount(bankTotals.masterBankQuestions)} Questions across {fmtCount(bankTotals.masterBankSubjects)} Subject Tracks
             </span>
           </div>
         </div>

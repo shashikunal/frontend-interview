@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
+import { bankTotals, fmtCount } from '../../data/bankTotals'
 import { useBookmarks } from '../../context/BookmarkContext'
 import { useProgress } from '../../context/ProgressContext'
 import { useAuth } from '../../context/AuthContext'
@@ -189,7 +190,7 @@ export default function QuestionList() {
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <h1>{savedOnly ? 'Saved Questions' : 'Questions'}</h1>
           <span className={`badge ${hasFullAccess ? 'badge-pro' : 'badge-candidate'}`} style={{ fontSize: '0.75rem', padding: '4px 10px', borderRadius: '12px', background: hasFullAccess ? 'rgba(99, 102, 241, 0.15)' : 'var(--surface-hover)', border: '1px solid var(--border-subtle)', fontWeight: 600 }}>
-            {hasFullAccess ? '⚡ 22,222 Bank Unlocked' : '🔒 Free Preview Tier (250 items)'}
+            {hasFullAccess ? `⚡ ${fmtCount(bankTotals.mainBankQuestions)} Bank Unlocked` : '🔒 Free Preview Tier'}
           </span>
         </div>
         <button
@@ -207,7 +208,7 @@ export default function QuestionList() {
       {!hasFullAccess && !savedOnly && (
         <div style={{ padding: '12px 18px', background: 'rgba(59, 130, 246, 0.08)', border: '1px solid rgba(59, 130, 246, 0.25)', borderRadius: 'var(--radius-md)', marginBottom: '18px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>
           <div style={{ fontSize: '0.86rem', color: 'var(--text-secondary)' }}>
-            <strong style={{ color: 'var(--text-primary)' }}>🔒 Standard Preview Access:</strong> You are browsing preview questions. Access to the full 22,222 questions bank is granted and managed by Platform Administrators.
+            <strong style={{ color: 'var(--text-primary)' }}>🔒 Standard Preview Access:</strong> You are browsing preview questions. Access to the full {fmtCount(bankTotals.mainBankQuestions)} questions bank is granted and managed by Platform Administrators.
           </div>
           <button type="button" className="btn btn-secondary btn-sm" onClick={() => openAuthModal()} style={{ whiteSpace: 'nowrap' }}>
             {user ? 'View Entitlements' : 'Sign In'}

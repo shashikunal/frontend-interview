@@ -6,11 +6,12 @@ import {
   type FeatureEntitlements,
   type StoredUserAccount,
 } from '../../context/AuthContext'
+import { bankTotals, fmtCount, fmtK } from '../../data/bankTotals'
 
 import './UserManagementStudio.css'
 
 const PERMISSIONS = [
-  { key: 'questions_full', label: 'Full 22,222 Questions Bank Access', candidate: false, pro: true, admin: true },
+  { key: 'questions_full', label: `Full ${fmtCount(bankTotals.mainBankQuestions)} Questions Bank Access`, candidate: false, pro: true, admin: true },
   { key: 'coding_sandbox', label: 'Execute Monaco Code Sandbox', candidate: false, pro: true, admin: true },
   { key: 'system_design', label: 'System Design Canvas & Blueprints', candidate: false, pro: true, admin: true },
   { key: 'video_mock', label: 'AI Video Mock Interviews with Rubrics', candidate: false, pro: true, admin: true },
@@ -231,9 +232,9 @@ export default function UserManagementStudio() {
                             type="button"
                             className={`chip-btn ${u.entitlements.questions_full ? 'active' : 'inactive'}`}
                             onClick={() => handleToggleEntitlement(u, 'questions_full')}
-                            title="Toggle 22,222 Questions Bank"
+                            title={`Toggle ${fmtCount(bankTotals.mainBankQuestions)} Questions Bank`}
                           >
-                            {u.entitlements.questions_full ? '✅ 22K Questions' : '🔒 22K Locked'}
+                            {u.entitlements.questions_full ? `✅ ${fmtK(bankTotals.mainBankQuestions)} Questions` : `🔒 ${fmtK(bankTotals.mainBankQuestions)} Locked`}
                           </button>
 
                           <button
@@ -264,7 +265,7 @@ export default function UserManagementStudio() {
                           </button>
                         </div>
                       </td>
-                      <td><strong>{u.solvedCount}</strong> / 22,222</td>
+                      <td><strong>{u.solvedCount}</strong> / {fmtCount(bankTotals.mainBankQuestions)}</td>
                       <td>🔥 {u.streak}d</td>
                       <td>
                         <div className="action-btns-row">
@@ -312,7 +313,7 @@ export default function UserManagementStudio() {
               <div className="ed-grid">
                 {(
                   [
-                    { key: 'questions_full', label: 'Full 22,222 Question Bank', desc: 'Unlocks complete question bank vs 500 free items.' },
+                    { key: 'questions_full', label: `Full ${fmtCount(bankTotals.mainBankQuestions)} Question Bank`, desc: 'Unlocks the complete question bank vs the free preview tier.' },
                     { key: 'coding_sandbox', label: 'Interactive Monaco Sandbox', desc: 'Execute JavaScript, TypeScript & React code in sandbox.' },
                     { key: 'system_design', label: 'System Design Studio & Blueprints', desc: 'Access 4-tier canvas and capacity estimators.' },
                     { key: 'video_mock', label: 'AI Audio & Video Mock Interviews', desc: 'Timed candidate simulations with automated rubrics.' },

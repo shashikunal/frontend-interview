@@ -8122,7 +8122,7 @@
     "id": "iq-javascript-0354",
     "subject": "javascript",
     "category": "Core JavaScript",
-    "concept": "Benefits",
+    "concept": "Benefits of Mixins",
     "difficulty": "INTERMEDIATE",
     "experienceLevel": "1_3_YEARS",
     "questionType": "CONCEPTUAL",
@@ -8133,13 +8133,13 @@
       "javascript",
       "core-javascript"
     ],
-    "question": "Benefits?",
+    "question": "What are the benefits of using mixins?",
     "shortAnswer": "- Avoids deep inheritance hierarchies\n- Encourages composition over inheritance\n- Promotes reusable and modular code\n\nModern JavaScript favors mixin alternatives like composition, delegation, higher-order functions, and class mixins to promote reusable and modular code. Libraries like Lodash offer utilities for object composition, while frameworks like Vue.js provide built-in mixin features to promote reusable and modular code.",
     "interviewAnswer": "Benefits\r\n      - Avoids deep inheritance hierarchies\r\n      - Encourages composition over inheritance\r\n      - Promotes reusable and modular code\r\n  \r\n      Modern JavaScript favors mixin alternatives like composition, delegation, higher-order functions, and class mixins to promote reusable and modular code. Libraries like Lodash offer utilities for object composition, while frameworks like Vue.js provide built-in mixin features to promote reusable and modular code.\r\n\r\n      **[⬆ Back to Top](#table-of-contents)**",
     "status": "published",
     "questionNumber": 354,
     "standard_id": "JAVASCRIPT-000354",
-    "question_hash": "qh_49201629"
+    "question_hash": "qh_2dde2d1"
   },
   {
     "id": "iq-javascript-0355",

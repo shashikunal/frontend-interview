@@ -6,6 +6,7 @@ import { interviewQuestionsProgressService } from '../services/interviewQuestion
 import type { MasterQuestion, MasterSubjectId } from '../types/interviewQuestions.types'
 import { SkeletonLoader } from '../../../components/common/SkeletonLoader'
 import { toPlainSnippet } from '../utils/answerBlocks'
+import { bankTotals, fmtCount } from '../../../data/bankTotals'
 
 export default function BookmarksRevisionStudio() {
   const [activeTab, setActiveTab] = useState<'bookmarks' | 'needs_review'>('bookmarks')
@@ -163,10 +164,10 @@ export default function BookmarksRevisionStudio() {
             No {activeTab === 'bookmarks' ? 'Bookmarked Questions' : 'Questions Flagged For Review'}
           </h3>
           <p style={{ color: 'var(--mqb-text-secondary)', maxWidth: 450, margin: '0 auto 1.5rem' }}>
-            Browse any of the 12 subject catalogs and click the star or flag icon to organize your personal revision list.
+            Browse any of the {fmtCount(bankTotals.masterBankSubjects)} subject catalogs and click the star or flag icon to organize your personal revision list.
           </p>
           <Link to="/interview-questions" className="mqb-action-pill-btn primary">
-            Explore 12,000 Questions →
+            Explore {fmtCount(bankTotals.masterBankQuestions)} Questions →
           </Link>
         </div>
       ) : (

@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from 'react'
 import { Link } from 'react-router-dom'
+import { bankTotals, fmtCount } from '../../data/bankTotals'
 import './DailyChallenge.css'
 
 export interface DailyProblem {
@@ -471,7 +472,7 @@ export default function DailyChallenge() {
       {/* Footer Navigation */}
       <div className="daily-footer">
         <Link to="/questions" className="btn btn-secondary">
-          📚 Browse 22,222 Question Bank
+          📚 Browse {fmtCount(bankTotals.mainBankQuestions)} Question Bank
         </Link>
         <Link to="/mock-interview" className="btn btn-primary">
           ⏱️ Timed Mock Interview Simulator →

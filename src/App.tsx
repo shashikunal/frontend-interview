@@ -1,5 +1,6 @@
 import { lazy, Suspense } from 'react'
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
+import { bankTotals, fmtCount } from './data/bankTotals'
 import Header from './components/layout/Header'
 import Footer from './components/layout/Footer'
 import Home from './components/home/Home'
@@ -613,11 +614,11 @@ export default function App() {
             }
           />
 
-          {/* Questions Bank (22,222+ Questions) */}
+          {/* Questions Bank (15,941 Questions) */}
           <Route
             path="/questions"
             element={
-              <FeatureGuard feature="questions_full" featureName="22,222 Questions Bank">
+              <FeatureGuard feature="questions_full" featureName={`${fmtCount(bankTotals.mainBankQuestions)} Questions Bank`}>
                 <QuestionList />
               </FeatureGuard>
             }
@@ -639,7 +640,7 @@ export default function App() {
             }
           />
 
-          {/* Frontend Interview Master Question Bank (12,000 Questions) */}
+          {/* Frontend Interview Master Question Bank (1,233 Questions) */}
           <Route
             path="/interview-questions/*"
             element={<MasterQuestionBankApp />}

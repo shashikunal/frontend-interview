@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { ALL_TECHNOLOGY_TRACKS } from '../../types/questionBank.types';
+import { bankTotals, fmtCount } from '../../../../data/bankTotals';
 
 export default function AIVideoMockHome() {
   return (
@@ -64,14 +65,14 @@ export default function AIVideoMockHome() {
         </div>
       </div>
 
-      {/* 16 Tracks Banner */}
+      {/* Tracks Banner */}
       <div style={{ marginTop: 48, background: 'var(--surface)', borderRadius: 16, padding: 24, border: '1px solid var(--border)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
           <h3 style={{ margin: 0, fontSize: '1.1rem' }}>
-            📚 16 Verified Interview Tracks (300+ Genuine Questions Each)
+            📚 {fmtCount(bankTotals.mockBankTracks)} Verified Interview Tracks ({fmtCount(bankTotals.mockBankQuestions)} Genuine Questions)
           </h3>
           <Link to="/ai-video-mock/question-bank" style={{ color: '#818cf8', fontSize: '0.85rem', textDecoration: 'none', fontWeight: 600 }}>
-            Explore All 5,120+ Questions →
+            Explore All {fmtCount(bankTotals.mockBankQuestions)} Questions →
           </Link>
         </div>
 

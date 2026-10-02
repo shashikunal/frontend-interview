@@ -1,6 +1,10 @@
 // Vercel Serverless Function: /api/send-email
 // Handles transactional OTP emails and welcome confirmation emails
 
+import bankTotals from '../src/data/bankTotals.json' with { type: 'json' }
+
+const BANK_SIZE = bankTotals.mainBankQuestions.toLocaleString('en-US')
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method Not Allowed' })
@@ -36,7 +40,7 @@ export default async function handler(req, res) {
             <p style="font-size: 13px; color: #94a3b8; line-height: 1.5; margin: 0;">This passcode expires in <strong>5 minutes</strong>. If you did not request this login code, you can safely ignore this email.</p>
             
             <hr style="border: none; border-top: 1px solid #1f2937; margin: 24px 0;" />
-            <p style="font-size: 11px; color: #64748b; text-align: center; margin: 0;">© FAANG Frontend & System Design Prep • 22,222 Questions Bank</p>
+            <p style="font-size: 11px; color: #64748b; text-align: center; margin: 0;">© FAANG Frontend & System Design Prep • ${BANK_SIZE} Questions Bank</p>
           </div>
         </body>
         </html>
@@ -50,7 +54,7 @@ export default async function handler(req, res) {
           <div style="max-width: 540px; margin: 0 auto; background-color: #111827; border: 1px solid #1f2937; border-radius: 12px; padding: 32px;">
             <h2 style="color: #ffffff; margin-top: 0;">Welcome to FAANG Interview Prep! 🎉</h2>
             <p style="color: #cbd5e1; font-size: 14px; line-height: 1.6;">Hello ${userName}, your account has been verified with <strong>${role.toUpperCase()}</strong> tier access.</p>
-            <p style="color: #94a3b8; font-size: 14px; line-height: 1.6;">You now have full access to our 22,222 questions bank, live system design studio, AST compiler visualizer, and AI mock interviews.</p>
+            <p style="color: #94a3b8; font-size: 14px; line-height: 1.6;">You now have full access to our ${BANK_SIZE} questions bank, live system design studio, AST compiler visualizer, and AI mock interviews.</p>
             <hr style="border: none; border-top: 1px solid #1f2937; margin: 24px 0;" />
             <p style="font-size: 11px; color: #64748b; text-align: center; margin: 0;">Happy coding and good luck with your interviews!</p>
           </div>

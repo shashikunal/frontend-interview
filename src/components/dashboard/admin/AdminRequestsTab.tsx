@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react'
 import type { AccessNotificationItem } from '../../../features/auth/services/audit.service'
+import { bankTotals, fmtCount } from '../../../data/bankTotals'
 import './AdminRequestsTab.css'
 
 interface AdminRequestsTabProps {
@@ -150,7 +151,7 @@ export default function AdminRequestsTab({
                 </span>
               </h3>
               <p className="req-desc">
-                When candidates navigate to restricted platform features (such as System Design Studio or the 22,222 Questions Bank), their access requests stream here in real time. Approving grants instantaneous entitlements in Supabase without requiring re-login.
+                When candidates navigate to restricted platform features (such as System Design Studio or the {fmtCount(bankTotals.mainBankQuestions)} Questions Bank), their access requests stream here in real time. Approving grants instantaneous entitlements in Supabase without requiring re-login.
               </p>
             </div>
 

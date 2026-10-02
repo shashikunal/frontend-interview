@@ -10,6 +10,9 @@ const ROOT = path.resolve(__dirname, '..')
 const MASTER_DIR = path.join(ROOT, 'public', 'data', 'interview-questions')
 const PUBLIC_DATA_DIR = path.join(ROOT, 'public', 'data')
 const QUESTION_SERVICE = path.join(ROOT, 'src', 'data', 'questionService.ts')
+const BANK_TOTALS_PATH = path.join(ROOT, 'src', 'data', 'bankTotals.json')
+const MOCK_BANK_DIR = path.join(ROOT, 'src', 'features', 'ai-video-mock', 'data', 'questionBank')
+const WRITE_TOTALS = process.argv.includes('--write')
 
 const MASTER_DIFFICULTIES = new Set(['EASY', 'INTERMEDIATE', 'DIFFICULT'])
 const MASTER_LEVELS = new Set(['FRESHER', '1_3_YEARS', '3_5_YEARS', '5_8_YEARS', '8_PLUS_YEARS'])
@@ -248,6 +251,60 @@ function validateMainBank(dataFiles) {
   return { dataFileCount: dataFiles.length, questionCount }
 }
 
+function validateMockBank() {
+  if (!fs.existsSync(MOCK_BANK_DIR)) {
+    error('mock: question bank directory is missing')
+    return { questionCount: 0, trackCount: 0 }
+  }
+
+  const files = fs.readdirSync(MOCK_BANK_DIR).filter(f => f.endsWith('.ts')).sort()
+  let questionCount = 0
+
+  for (const file of files) {
+    const source = fs.readFileSync(path.join(MOCK_BANK_DIR, file), 'utf8')
+    questionCount += (source.match(/"questionType":/g) || []).length
+  }
+
+  console.log(`mock bank   : ${files.length} tracks, ${questionCount} questions`)
+  return { questionCount, trackCount: files.length }
+}
+
+function validateBankTotals(master, mainBank, mockBank) {
+  const expected = {
+    mainBankQuestions: mainBank.questionCount,
+    masterBankQuestions: master.questionCount,
+    masterBankSubjects: master.subjectCount,
+    mockBankQuestions: mockBank.questionCount,
+    mockBankTracks: mockBank.trackCount,
+  }
+
+  let actual = null
+  try {
+    actual = JSON.parse(fs.readFileSync(BANK_TOTALS_PATH, 'utf8'))
+  } catch (err) {
+    error(`totals: src/data/bankTotals.json is missing or invalid JSON (${err.message})`)
+  }
+
+  if (!actual) return expected
+
+  const stale = Object.entries(expected).filter(([key, value]) => actual[key] !== value)
+
+  if (stale.length > 0) {
+    if (WRITE_TOTALS) {
+      fs.writeFileSync(BANK_TOTALS_PATH, `${JSON.stringify(expected, null, 2)}\n`)
+      console.log(`totals      : rewrote src/data/bankTotals.json (${stale.map(([k]) => k).join(', ')})`)
+    } else {
+      stale.forEach(([key, value]) => {
+        error(`totals: bankTotals.${key}=${actual[key]} but actual value is ${value} (run "npm run validate:questions -- --write")`)
+      })
+    }
+  } else {
+    console.log('totals      : src/data/bankTotals.json matches computed counts')
+  }
+
+  return expected
+}
+
 function main() {
   console.log('================================================================')
   console.log('Strict Question Bank Validation')
@@ -256,6 +313,8 @@ function main() {
   const dataFiles = readDataFiles()
   const master = validateMasterBank()
   const mainBank = validateMainBank(dataFiles)
+  const mockBank = validateMockBank()
+  validateBankTotals(master, mainBank, mockBank)
 
   console.log('----------------------------------------------------------------')
   console.log(`Warnings: ${warnings.length}`)

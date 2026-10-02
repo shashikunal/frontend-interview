@@ -82,6 +82,7 @@
     "question_type": "concept",
     "question_hash": "qh_40865fae",
     "codeExplanationSpeech": "This code demonstrates the implementation of Internal Engine Execution & Microtask Synchronization of Array.prototype.includes() & SameValueZero Search Semantics with clear input and output handling.",
+    "status": "published",
     "simpleExplanation": "V8 Compilation Pipeline: Modern V8 parses source text into an Abstract Syntax Tree (AST). The Ignition bytecode interpreter produces compact bytecode, while TurboFan JIT compiler optimizes hot code paths into machine assembly. Execution Context & Scoping: When code runs, the engine creates an Execution Context containing a Lexical Environment (let/const bindings in TDZ until evaluated) and a Variable Environment (var declarations hoisted)."
   },
   {
@@ -196,6 +197,7 @@
       "D": "Client storage APIs and variable scopes maintain strict sandboxed boundaries."
     },
     "codeExplanationSpeech": "This code demonstrates the implementation of Internal Engine Execution & Microtask Synchronization of Strict Equality (===) vs SameValueZero Comparison with clear input and output handling.",
+    "status": "published",
     "simpleExplanation": "V8 Compilation Pipeline: Modern V8 parses source text into an Abstract Syntax Tree (AST). The Ignition bytecode interpreter produces compact bytecode, while TurboFan JIT compiler optimizes hot code paths into machine assembly. Execution Context & Scoping: When code runs, the engine creates an Execution Context containing a Lexical Environment (let/const bindings in TDZ until evaluated) and a Variable Environment (var declarations hoisted)."
   },
   {
@@ -281,6 +283,7 @@
     "question_type": "concept",
     "question_hash": "qh_3b974f2",
     "codeExplanationSpeech": "This code demonstrates the implementation of Internal Engine Execution & Microtask Synchronization of NaN Handling in Array Lookups (includes vs indexOf) with clear input and output handling.",
+    "status": "published",
     "simpleExplanation": "V8 Compilation Pipeline: Modern V8 parses source text into an Abstract Syntax Tree (AST). The Ignition bytecode interpreter produces compact bytecode, while TurboFan JIT compiler optimizes hot code paths into machine assembly. Execution Context & Scoping: When code runs, the engine creates an Execution Context containing a Lexical Environment (let/const bindings in TDZ until evaluated) and a Variable Environment (var declarations hoisted)."
   },
   {
@@ -395,6 +398,7 @@
       "D": "Client storage APIs and variable scopes maintain strict sandboxed boundaries."
     },
     "codeExplanationSpeech": "This code demonstrates the implementation of Internal Engine Execution & Microtask Synchronization of Exponentiation Operator (**) Syntax & Precedence Rules with clear input and output handling.",
+    "status": "published",
     "simpleExplanation": "V8 Compilation Pipeline: Modern V8 parses source text into an Abstract Syntax Tree (AST). The Ignition bytecode interpreter produces compact bytecode, while TurboFan JIT compiler optimizes hot code paths into machine assembly. Execution Context & Scoping: When code runs, the engine creates an Execution Context containing a Lexical Environment (let/const bindings in TDZ until evaluated) and a Variable Environment (var declarations hoisted)."
   },
   {
@@ -480,6 +484,7 @@
     "question_type": "concept",
     "question_hash": "qh_616bd1d3",
     "codeExplanationSpeech": "This code demonstrates the implementation of Internal Engine Execution & Microtask Synchronization of Right-Associative Evaluation of Exponentiation (**) with clear input and output handling.",
+    "status": "published",
     "simpleExplanation": "V8 Compilation Pipeline: Modern V8 parses source text into an Abstract Syntax Tree (AST). The Ignition bytecode interpreter produces compact bytecode, while TurboFan JIT compiler optimizes hot code paths into machine assembly. Execution Context & Scoping: When code runs, the engine creates an Execution Context containing a Lexical Environment (let/const bindings in TDZ until evaluated) and a Variable Environment (var declarations hoisted)."
   },
   {
@@ -594,6 +599,7 @@
       "D": "Client storage APIs and variable scopes maintain strict sandboxed boundaries."
     },
     "codeExplanationSpeech": "This code demonstrates the implementation of Internal Engine Execution & Microtask Synchronization of Math.pow() vs ** V8 Engine Optimization with clear input and output handling.",
+    "status": "published",
     "simpleExplanation": "V8 Compilation Pipeline: Modern V8 parses source text into an Abstract Syntax Tree (AST). The Ignition bytecode interpreter produces compact bytecode, while TurboFan JIT compiler optimizes hot code paths into machine assembly. Execution Context & Scoping: When code runs, the engine creates an Execution Context containing a Lexical Environment (let/const bindings in TDZ until evaluated) and a Variable Environment (var declarations hoisted)."
   },
   {
@@ -679,6 +685,7 @@
     "question_type": "concept",
     "question_hash": "qh_2af6095",
     "codeExplanationSpeech": "This code demonstrates the implementation of Internal Engine Execution & Microtask Synchronization of TC39 Stage Process: Stage 0 to Stage 4 Finalization with clear input and output handling.",
+    "status": "published",
     "simpleExplanation": "V8 Compilation Pipeline: Modern V8 parses source text into an Abstract Syntax Tree (AST). The Ignition bytecode interpreter produces compact bytecode, while TurboFan JIT compiler optimizes hot code paths into machine assembly. Execution Context & Scoping: When code runs, the engine creates an Execution Context containing a Lexical Environment (let/const bindings in TDZ until evaluated) and a Variable Environment (var declarations hoisted)."
   },
   {
@@ -793,6 +800,7 @@
       "D": "Client storage APIs and variable scopes maintain strict sandboxed boundaries."
     },
     "codeExplanationSpeech": "This code demonstrates the implementation of Internal Engine Execution & Microtask Synchronization of Annual Cadence Release Cycle of ECMAScript Standards with clear input and output handling.",
+    "status": "published",
     "simpleExplanation": "V8 Compilation Pipeline: Modern V8 parses source text into an Abstract Syntax Tree (AST). The Ignition bytecode interpreter produces compact bytecode, while TurboFan JIT compiler optimizes hot code paths into machine assembly. Execution Context & Scoping: When code runs, the engine creates an Execution Context containing a Lexical Environment (let/const bindings in TDZ until evaluated) and a Variable Environment (var declarations hoisted)."
   },
   {
@@ -878,6 +886,7 @@
     "question_type": "concept",
     "question_hash": "qh_3fcc9a9d",
     "codeExplanationSpeech": "This code demonstrates the implementation of Internal Engine Execution & Microtask Synchronization of Polyfilling & Transpilation Strategies for ES2016 Features with clear input and output handling.",
+    "status": "published",
     "simpleExplanation": "V8 Compilation Pipeline: Modern V8 parses source text into an Abstract Syntax Tree (AST). The Ignition bytecode interpreter produces compact bytecode, while TurboFan JIT compiler optimizes hot code paths into machine assembly. Execution Context & Scoping: When code runs, the engine creates an Execution Context containing a Lexical Environment (let/const bindings in TDZ until evaluated) and a Variable Environment (var declarations hoisted)."
   },
   {
@@ -992,6 +1001,7 @@
       "D": "Client storage APIs and variable scopes maintain strict sandboxed boundaries."
     },
     "codeExplanationSpeech": "This code demonstrates the implementation of Internal Engine Execution & Microtask Synchronization of Negative Number Base Exponentiation Edge Cases (-2 ** 2) with clear input and output handling.",
+    "status": "published",
     "simpleExplanation": "V8 Compilation Pipeline: Modern V8 parses source text into an Abstract Syntax Tree (AST). The Ignition bytecode interpreter produces compact bytecode, while TurboFan JIT compiler optimizes hot code paths into machine assembly. Execution Context & Scoping: When code runs, the engine creates an Execution Context containing a Lexical Environment (let/const bindings in TDZ until evaluated) and a Variable Environment (var declarations hoisted)."
   }
 ]
