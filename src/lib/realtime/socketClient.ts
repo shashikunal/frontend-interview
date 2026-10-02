@@ -26,9 +26,10 @@ export function createInterviewSocket(token?: string | null, devUser?: any): Typ
     path: '/api/socket',
     autoConnect: true,
     reconnection: true,
-    reconnectionAttempts: Infinity,
-    reconnectionDelay: 1000,
-    reconnectionDelayMax: 5000,
+    reconnectionAttempts: 5,
+    reconnectionDelay: 2000,
+    reconnectionDelayMax: 10000,
+    timeout: 5000,
     transports: ['websocket', 'polling'],
     auth: {
       token: effectiveToken,
@@ -36,14 +37,18 @@ export function createInterviewSocket(token?: string | null, devUser?: any): Typ
     },
   });
 
+  let connectWarned = false;
+
   socket.on('connect', () => {
+    connectWarned = false;
     if (import.meta.env?.DEV) {
       console.log(`[Socket.IO Client] Connected to server (id: ${socket.id})`);
     }
   });
 
   socket.on('connect_error', (err) => {
-    if (import.meta.env?.DEV) {
+    if (import.meta.env?.DEV && !connectWarned) {
+      connectWarned = true;
       console.warn(`[Socket.IO Client] Connection error: ${err.message}`);
     }
   });

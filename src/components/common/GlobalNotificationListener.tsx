@@ -51,6 +51,10 @@ export const GlobalNotificationListener: React.FC = () => {
         path: '/api/socket',
         transports: ['websocket', 'polling'],
         reconnection: true,
+        reconnectionAttempts: 3,
+        reconnectionDelay: 2000,
+        reconnectionDelayMax: 8000,
+        timeout: 5000,
       });
 
       socket.on('notification:meeting-link', (data: any) => {
