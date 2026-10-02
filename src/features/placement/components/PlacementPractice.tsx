@@ -24,11 +24,26 @@ const CATEGORY_LABELS: Record<PlacementCategory, string> = {
   communication: 'Communication',
 }
 
+const SUBJECT_FILTERS = [
+  { key: 'all', label: 'All Subjects' },
+  { key: 'react', label: 'ReactJS' },
+  { key: 'typescript', label: 'TypeScript' },
+  { key: 'javascript', label: 'JavaScript' },
+  { key: 'html', label: 'HTML' },
+  { key: 'css', label: 'CSS' },
+  { key: 'es6', label: 'ES6' },
+  { key: 'redux', label: 'Redux' },
+  { key: 'jquery', label: 'jQuery' },
+] as const
+
+type SubjectFilter = (typeof SUBJECT_FILTERS)[number]['key']
+
 export default function PlacementPractice() {
   const { user } = useAuth()
   const { recordAttempt, weakTopics, refresh } = usePlacement(user?.id)
 
   const [category, setCategory] = useState<PlacementCategory | 'all' | 'weakness'>('all')
+  const [subject, setSubject] = useState<SubjectFilter>('all')
   const [limit, setLimit] = useState(5)
   const [queue, setQueue] = useState<PlacementQuestionRecord[]>([])
   const [index, setIndex] = useState(0)
@@ -43,19 +58,27 @@ export default function PlacementPractice() {
   const buildQueue = useMemo(() => {
     return () => {
       const weakSubcategories = weakTopics.map((w) => w.subcategory)
-      const questions =
+      let questions =
         category === 'weakness'
           ? buildWeaknessPracticeSet(weakSubcategories, limit)
           : category === 'all'
             ? pickQuestions({ limit, seed: Date.now() % 100000 })
             : pickQuestions({ categories: [category], limit, seed: Date.now() % 100000 })
+      if (subject !== 'all') {
+        questions = questions.filter(
+          (q) =>
+            q.subcategory.toLowerCase().includes(subject) ||
+            q.topic.toLowerCase().includes(subject) ||
+            q.tags.some((t) => t.toLowerCase().includes(subject))
+        )
+      }
       setQueue(questions)
       setIndex(0)
       setSelected(null)
       setGraded(null)
       setSelfNote('')
     }
-  }, [category, limit, weakTopics])
+  }, [category, subject, limit, weakTopics])
 
   useEffect(() => {
     buildQueue()
@@ -144,6 +167,19 @@ export default function PlacementPractice() {
                       {CATEGORY_LABELS[key]}
                     </option>
                   ))}
+              </select>
+            </label>
+            <label>
+              Subject
+              <select
+                value={subject}
+                onChange={(e) => setSubject(e.target.value as SubjectFilter)}
+              >
+                {SUBJECT_FILTERS.map((s) => (
+                  <option key={s.key} value={s.key}>
+                    {s.label}
+                  </option>
+                ))}
               </select>
             </label>
             <label>
