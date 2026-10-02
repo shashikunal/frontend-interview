@@ -304,7 +304,8 @@ html.dark .admin-cand-select:focus {
 .perf-table-responsive {
   width: 100%;
   max-width: 100%;
-  overflow-x: hidden;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
   border-radius: 18px;
   box-sizing: border-box;
   transition: background-color 0.2s, border-color 0.2s;
@@ -330,6 +331,7 @@ html.dark .perf-table-responsive {
 
 .admin-cand-table {
   width: 100%;
+  min-width: 840px;
   table-layout: auto;
   border-collapse: collapse;
   text-align: left;

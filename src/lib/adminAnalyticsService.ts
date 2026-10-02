@@ -10,10 +10,7 @@ import {
   LOCAL_FJS_SUBMISSIONS_KEY,
   type StoredCandidateSubmission,
 } from './leaderboardService'
-import { MACHINE_CODING_CATALOG } from '../components/machinecoding/data/machineCodingCatalog'
-import { DSA_QUESTIONS } from '../components/dsa/data/dsaQuestions'
-import { CORE_PROGRAMMING_QUESTIONS } from '../components/coreprogramming/data/coreProgrammingQuestions'
-import { FRONTEND_JS_QUESTIONS } from '../components/frontendjs/data/frontendJsQuestions'
+import { getMCCatalog, getDSACatalog, getCPCatalog, getFJSCatalog } from './catalogRegistry'
 import { getStoredAuthHeader } from '../features/auth/services/adminTokenHelper'
 
 export type { SubmissionRecord, QuestionAttempt }
@@ -257,8 +254,8 @@ export const adminAnalyticsService = {
     let totalTimeSpentSeconds = 0
 
     // Machine Coding Isolated Counters (500 Questions)
-    const mcTotalQuestions = MACHINE_CODING_CATALOG.length
-    const dsaTotalQuestions = DSA_QUESTIONS.length
+    const mcTotalQuestions = getMCCatalog().length
+    const dsaTotalQuestions = getDSACatalog().length
     let mcSubmissionsCount = 0
     let mcAcceptedCount = 0
     let mcAttemptsCount = 0
@@ -269,12 +266,12 @@ export const adminAnalyticsService = {
     let dsaAcceptedCount = 0
 
     // Core Programming Counters â€” derived from actual question array, not hardcoded
-    const cpTotalQuestions = CORE_PROGRAMMING_QUESTIONS.length
+    const cpTotalQuestions = getCPCatalog().length
     let cpSubmissionsCount = 0
     let cpAcceptedCount = 0
 
     // Frontend JS Counters â€” derived from actual question array, not hardcoded
-    const fjsTotalQuestions = FRONTEND_JS_QUESTIONS.length
+    const fjsTotalQuestions = getFJSCatalog().length
     let fjsSubmissionsCount = 0
     let fjsAcceptedCount = 0
 
@@ -318,8 +315,8 @@ export const adminAnalyticsService = {
       subsData.forEach(s => {
         const qid = String(s.question_id || '')
         const qUpper = qid.toUpperCase()
-        const isCP = (qUpper.startsWith('JS-P') || qUpper.startsWith('JSP') || qUpper.startsWith('CP') || CORE_PROGRAMMING_QUESTIONS.some(q => q.id.toLowerCase() === qid.toLowerCase())) && !qUpper.startsWith('Q') && !qUpper.startsWith('MC')
-        const isDSA = !isCP && (qUpper.startsWith('DSA') || (!qUpper.startsWith('Q') && !qUpper.startsWith('MC') && !qUpper.startsWith('FJP') && /^\d+$/.test(qid)) || DSA_QUESTIONS.some(q => q.id === qid))
+        const isCP = (qUpper.startsWith('JS-P') || qUpper.startsWith('JSP') || qUpper.startsWith('CP') || getCPCatalog().some(q => q.id.toLowerCase() === qid.toLowerCase())) && !qUpper.startsWith('Q') && !qUpper.startsWith('MC')
+        const isDSA = !isCP && (qUpper.startsWith('DSA') || (!qUpper.startsWith('Q') && !qUpper.startsWith('MC') && !qUpper.startsWith('FJP') && /^\d+$/.test(qid)) || getDSACatalog().some(q => q.id === qid))
         const isFJS = !isCP && qUpper.startsWith('FJP')
         // Dedupe vs dedicated tables (dual-written mirrors): skip canonical CP/FJS
         // rows here when the dedicated fetch succeeded; fallback-count them otherwise.
@@ -718,7 +715,7 @@ export const adminAnalyticsService = {
         const qUpper = qid.toUpperCase()
         const prof = profileMap.get(d.user_id)
 
-        const isCP = (d.category === 'CORE_PROGRAMMING' || qUpper.startsWith('JS-P') || qUpper.startsWith('JSP') || qUpper.startsWith('CP') || CORE_PROGRAMMING_QUESTIONS.some(q => q.id.toLowerCase() === qid.toLowerCase())) && !qUpper.startsWith('Q') && !qUpper.startsWith('MC')
+        const isCP = (d.category === 'CORE_PROGRAMMING' || qUpper.startsWith('JS-P') || qUpper.startsWith('JSP') || qUpper.startsWith('CP') || getCPCatalog().some(q => q.id.toLowerCase() === qid.toLowerCase())) && !qUpper.startsWith('Q') && !qUpper.startsWith('MC')
         const isDSA = !isCP && (d.category === 'DSA' || qUpper.startsWith('DSA') || (!qUpper.startsWith('Q') && !qUpper.startsWith('MC') && !qUpper.startsWith('FJP') && /^\d+$/.test(qid)))
         const isFJS = !isCP && (d.category === 'FRONTEND_JS' || qUpper.startsWith('FJP'))
         const isMC = !isCP && !isDSA && !isFJS
@@ -1155,8 +1152,8 @@ export const adminAnalyticsService = {
         const title = resolveQuestionTitle(qid)
 
         const qUpper = qid.toUpperCase()
-        const isCP = (qUpper.startsWith('JS-P') || qUpper.startsWith('JSP') || qUpper.startsWith('CP') || CORE_PROGRAMMING_QUESTIONS.some(q => q.id.toLowerCase() === qid.toLowerCase())) && !qUpper.startsWith('Q') && !qUpper.startsWith('MC')
-        const isDSA = !isCP && (qUpper.startsWith('DSA') || (!qUpper.startsWith('Q') && !qUpper.startsWith('MC') && !qUpper.startsWith('FJP') && /^\d+$/.test(qid)) || DSA_QUESTIONS.some(q => q.id === qid))
+        const isCP = (qUpper.startsWith('JS-P') || qUpper.startsWith('JSP') || qUpper.startsWith('CP') || getCPCatalog().some(q => q.id.toLowerCase() === qid.toLowerCase())) && !qUpper.startsWith('Q') && !qUpper.startsWith('MC')
+        const isDSA = !isCP && (qUpper.startsWith('DSA') || (!qUpper.startsWith('Q') && !qUpper.startsWith('MC') && !qUpper.startsWith('FJP') && /^\d+$/.test(qid)) || getDSACatalog().some(q => q.id === qid))
         const isFJS = !isCP && qUpper.startsWith('FJP')
 
         const track: AdminAttemptItem['track'] = isCP ? 'CORE_PROGRAMMING' : isDSA ? 'DSA' : isFJS ? 'FRONTEND_JS' : 'MACHINE_CODING'
@@ -1476,7 +1473,7 @@ export const adminAnalyticsService = {
         const avgAttempts = val.completed > 0 ? Number((val.attempts / val.completed).toFixed(1)) : 1
         const avgTimeSpentSeconds = val.attempts > 0 ? Math.round(val.timeSpentTotal / val.attempts) : 0
 
-        const mcMatch = MACHINE_CODING_CATALOG.find(q => q.id.toLowerCase() === qId.toLowerCase())
+        const mcMatch = getMCCatalog().find(q => q.id.toLowerCase() === qId.toLowerCase())
         const title = mcMatch ? mcMatch.title : resolveQuestionTitle(qId)
         const category = mcMatch ? mcMatch.category : (qId.startsWith('Q') ? 'Machine Coding' : 'Frontend Core')
 
@@ -1742,31 +1739,6 @@ export const adminAnalyticsService = {
           }
         })
       }
-
-      // Fallback to local mock session cache if available
-      try {
-        if (typeof localStorage !== 'undefined') {
-          const rawMocks = localStorage.getItem('ai_video_mock_sessions_v1')
-          if (rawMocks) {
-            const list = JSON.parse(rawMocks)
-            if (Array.isArray(list)) {
-              list.forEach((m: any) => {
-                if (!mockSessionList.some(ex => ex.id === String(m.id))) {
-                  mockSessionList.push({
-                    id: String(m.id),
-                    role: m.role || 'Frontend Specialist',
-                    interviewType: m.interviewType || 'AI Video Evaluation',
-                    status: m.status || 'completed',
-                    overallScore: Number(m.overallScore || 85),
-                    durationMinutes: m.durationMinutes || 20,
-                    createdAt: m.createdAt || new Date().toISOString(),
-                  })
-                }
-              })
-            }
-          }
-        }
-      } catch {}
 
       // Calculate global aggregates
       const totalAttempts = rawAttempts.length

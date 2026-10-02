@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom'
 import { interviewQuestionsDataService } from '../services/interviewQuestionsDataService'
 import { interviewQuestionsProgressService } from '../services/interviewQuestionsProgressService'
 import type { MasterSubjectId, MasterQuestion } from '../types/interviewQuestions.types'
+import { SkeletonLoader } from '../../../components/common/SkeletonLoader'
 
 export default function PracticeDrillStudio() {
   const { subject: urlSubject } = useParams<{ subject?: string }>()
@@ -79,9 +80,8 @@ export default function PracticeDrillStudio() {
 
   if (loading) {
     return (
-      <div style={{ textAlign: 'center', padding: '5rem 0' }}>
-        <div className="app-route-spinner" style={{ margin: '0 auto 1.5rem', width: 44, height: 44, border: '3px solid rgba(56,189,248,0.2)', borderTopColor: '#38bdf8', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
-        <h3 style={{ color: 'var(--mqb-text-primary)' }}>Preparing Practice Drill...</h3>
+      <div style={{ padding: '24px' }}>
+        <SkeletonLoader variant="studio" />
       </div>
     )
   }

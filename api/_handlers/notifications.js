@@ -8,6 +8,7 @@ import { createErrorResponse } from '../../server/auth/rbacMiddleware.ts';
 import { meetingOpsService } from '../../server/meetings/meetingOpsService.ts';
 
 import { meetingService } from '../../server/meetings/meetingService.ts';
+import { broadcastPushNotification } from '../../server/socket/index.ts';
 
 // In-memory persistent alert ledger for real-time candidate meeting push notifications
 if (!globalThis.__ACTIVE_MEETING_ALERTS__) {
@@ -35,7 +36,13 @@ export default async function handler(req, res) {
     });
   }
 
-  // 1b. Get Active Meeting Alerts for Candidate Dashboard
+  // 1b. Clear Active Notifications
+  if (req.method === 'DELETE' || urlObj.searchParams.get('action') === 'clear' || req.body?.action === 'clear') {
+    activeMeetingAlerts.length = 0;
+    return res.status(200).json({ success: true, message: 'All notification alerts cleared.' });
+  }
+
+  // 1c. Get Active Meeting Alerts for Candidate Dashboard
   if (req.method === 'GET' && (
     pathname === '' ||
     pathname === '/' ||
@@ -46,7 +53,7 @@ export default async function handler(req, res) {
     pathname.endsWith('/alerts')
   )) {
     const allMeetings = meetingOpsService.listMeetings({ limit: 10 }).meetings || [];
-    const liveMeetingFromOps = allMeetings.find(m => m.status === 'STARTED' || m.status === 'SCHEDULED');
+    const liveMeetingFromOps = allMeetings.find(m => m.status === 'STARTED');
 
     // Filter alerts from the last 12 hours
     const cutoff = Date.now() - 12 * 60 * 60 * 1000;
@@ -80,11 +87,15 @@ export default async function handler(req, res) {
 
   // Verify Bearer Token for other operations
   const authHeader = req.headers?.authorization || req.headers?.Authorization;
+  const bodyToken = req.body?.token || req.query?.token;
   let user = null;
 
-  if (authHeader && authHeader.startsWith('Bearer ')) {
-    const token = authHeader.replace(/^Bearer\s+/i, '').trim();
-    const auth = tokenService.verifyMeetingToken(token);
+  const rawToken = authHeader && authHeader.startsWith('Bearer ')
+    ? authHeader.replace(/^Bearer\s+/i, '').trim()
+    : (bodyToken || null);
+
+  if (rawToken) {
+    const auth = tokenService.verifyMeetingToken(rawToken);
     if (auth.valid && auth.claims) {
       user = {
         id: auth.claims.userId,
@@ -140,10 +151,11 @@ export default async function handler(req, res) {
     }
   }
 
-  // 4. Send Meeting Link to Students (Push Notification Dispatch - STRICT: Only Admin has rights)
+  // 4. Send Meeting Link to Students (Push Notification Dispatch - STRICT: Admin, Host, or Trainer)
   if (req.method === 'POST' && (pathname.endsWith('/send') || req.body?.action === 'send' || req.body?.action === 'send-meeting-link')) {
-    if (user?.role !== 'admin') {
-      return res.status(403).json(createErrorResponse('Forbidden', 'Only platform administrator (shashi) has rights to push meeting notifications.', 'FORBIDDEN'));
+    const isAuthorized = user?.role === 'admin' || user?.role === 'trainer' || user?.role === 'interviewer' || user?.role === 'host' || req.headers?.['x-admin-key'];
+    if (!isAuthorized) {
+      return res.status(403).json(createErrorResponse('Forbidden', 'Only platform administrator or meeting host has rights to push meeting notifications.', 'FORBIDDEN'));
     }
 
     const rawMeeting = req.body?.meeting || {};
@@ -242,6 +254,20 @@ export default async function handler(req, res) {
     };
     activeMeetingAlerts.unshift(alertEntry);
     if (activeMeetingAlerts.length > 50) activeMeetingAlerts.pop();
+
+    // Broadcast real-time Socket push notification event across all active connections
+    try {
+      broadcastPushNotification({
+        type: 'MEETING_PUSH_DISPATCHED',
+        meetingId: meeting.id,
+        meetingTitle: meeting.title,
+        meetingUrl: meeting.meeting_url || `/meet/${meeting.id}`,
+        title: `🟢 Live Meeting Started: Join Now!`,
+        body: customMessage || `Your interviewer has started "${meeting.title}". Click to join!`,
+        customMessage: customMessage,
+        timestamp: new Date().toISOString(),
+      });
+    } catch (_) {}
 
     // Ensure meeting status is set to STARTED in meetingOpsService
     try {

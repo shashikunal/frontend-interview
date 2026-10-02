@@ -248,6 +248,9 @@ export interface ServerToClientEvents {
   'meeting:webrtc:answer': (data: { meetingId: string; senderSocketId: string; senderUserId: string; senderName?: string; answer: any; streamType?: string }) => void;
   'meeting:webrtc:ice-candidate': (data: { meetingId: string; senderSocketId: string; senderUserId: string; candidate: any; streamType?: string }) => void;
   'meeting:webrtc:renegotiate': (data: { meetingId: string; senderSocketId: string; senderUserId: string; streamType?: string }) => void;
+
+  // Real-time Push & Meeting Alerts Broadcasts
+  'notification:meeting-link': (data: any) => void;
 }
 
 export interface SocketData {

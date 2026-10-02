@@ -192,7 +192,7 @@ export default function Behavioral() {
       {/* Header */}
       <div className="behavioral-header">
         <div>
-          <span className="beh-badge">🤝 FAANG Leadership Principles &amp; STAR Simulator</span>
+          <span className="beh-badge">🤝 Leadership Principles &amp; STAR Simulator</span>
           <h1>Behavioral &amp; Leadership Principles Trainer</h1>
           <p className="subtitle">
             Practice real behavioral questions for Amazon (16 LPs), Google, Meta, and Netflix with speech-to-text dictation, real-time STAR method analysis, and quantifiable metric scoring.

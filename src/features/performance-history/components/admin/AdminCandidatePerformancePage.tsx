@@ -18,6 +18,7 @@ import {
   type CandidateAiEvaluationReport,
 } from '../../services/candidateAiEvaluationService';
 import { candidateEmailNotificationService } from '../../services/candidateEmailNotificationService';
+import { SkeletonLoader } from '../../../../components/common/SkeletonLoader';
 import type {
   CodingAttempt,
   UserPerformanceSummary,
@@ -441,8 +442,6 @@ export default function AdminCandidatePerformancePage({ isEmbedded = false }: Ad
             name: p.name,
             email: p.email,
             role: p.role,
-            targetCompany: p.targetCompany,
-            experienceLevel: p.experienceLevel,
           });
         } else {
           setCompareProfile({
@@ -485,8 +484,6 @@ export default function AdminCandidatePerformancePage({ isEmbedded = false }: Ad
               name: profile.name,
               email: profile.email,
               role: profile.role,
-              targetCompany: profile.targetCompany,
-              experienceLevel: profile.experienceLevel,
               joinedDate: profile.createdAt,
             });
           } else {
@@ -1284,11 +1281,8 @@ export default function AdminCandidatePerformancePage({ isEmbedded = false }: Ad
 
   if (loading) {
     return (
-      <div className={`admin-perf-page ${resolvedTheme === 'dark' ? 'dark-theme' : 'light-theme'}`}>
-        <div className="admin-perf-loading">
-          <div className="admin-perf-spinner" />
-          <p>Loading candidate dossier and synchronized historical records...</p>
-        </div>
+      <div className={`admin-perf-page ${resolvedTheme === 'dark' ? 'dark-theme' : 'light-theme'}`} style={{ padding: '32px' }}>
+        <SkeletonLoader variant="admin" rows={6} />
       </div>
     );
   }
@@ -1336,13 +1330,13 @@ export default function AdminCandidatePerformancePage({ isEmbedded = false }: Ad
                 className="admin-perf-back-btn"
                 onClick={() => navigate(basePath)}
               >
-                Candidate Dossier ({candidateProfile.name})
+                Candidate Report ({candidateProfile.name})
               </button>
               <span className="admin-perf-sep">/</span>
               <span className="admin-perf-current">{trackMeta?.title} Question History</span>
             </>
           ) : (
-            <span className="admin-perf-current">Candidate Dossier &amp; Full Performance</span>
+            <span className="admin-perf-current">Candidate Report &amp; Full Performance</span>
           )}
         </div>
 
@@ -1419,9 +1413,9 @@ export default function AdminCandidatePerformancePage({ isEmbedded = false }: Ad
               type="button"
               className="admin-perf-btn-dossier"
               onClick={() => setShowDossierModal(true)}
-              title="Generate and print standardized executive hiring dossier (PDF)"
+              title="Generate and print standardized candidate performance report (PDF)"
             >
-              📄 Export Hiring Dossier (PDF)
+              📄 Export Candidate Report (PDF)
             </button>
             {isAdmin && (
               <button
@@ -3150,7 +3144,7 @@ export default function AdminCandidatePerformancePage({ isEmbedded = false }: Ad
               <div className="admin-dossier-modal-title">
                 <span className="dossier-icon">📄</span>
                 <div>
-                  <h3>Executive Candidate Hiring Dossier</h3>
+                  <h3>Candidate Performance Report</h3>
                   <p>Standardized Technical Interview Brief &amp; PDF Export</p>
                 </div>
               </div>
@@ -3167,7 +3161,7 @@ export default function AdminCandidatePerformancePage({ isEmbedded = false }: Ad
                   type="button"
                   className="admin-dossier-btn-close"
                   onClick={() => setShowDossierModal(false)}
-                  title="Close Dossier Preview"
+                  title="Close Report Preview"
                 >
                   ✕ Close
                 </button>
@@ -3184,7 +3178,7 @@ export default function AdminCandidatePerformancePage({ isEmbedded = false }: Ad
                       <span className="logo-spark">⚡</span>
                       <span className="logo-name">React Interview Prep</span>
                     </div>
-                    <span className="dossier-confidential-tag">CONFIDENTIAL • TECHNICAL HIRING DOSSIER</span>
+                    <span className="dossier-confidential-tag">CONFIDENTIAL • TECHNICAL EVALUATION REPORT</span>
                   </div>
                   <div className="dossier-brand-right">
                     <span className="dossier-date">
@@ -3716,9 +3710,8 @@ export default function AdminCandidatePerformancePage({ isEmbedded = false }: Ad
                 </div>
 
                 {loadingCompare ? (
-                  <div className="admin-compare-loading">
-                    <div className="admin-perf-spinner" />
-                    <p>Fetching competitor metrics and rubric breakdown...</p>
+                  <div className="admin-compare-loading" style={{ padding: '24px' }}>
+                    <SkeletonLoader variant="admin" rows={3} />
                   </div>
                 ) : compareProfile && compareSummary ? (
                   <div className="compare-body">

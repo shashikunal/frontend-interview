@@ -13,6 +13,7 @@ import {
   setStoredSpeechRate,
 } from '../utils/speechSanitizer'
 import { isGenericHowItWorks, isGenericExecutionFlow } from '../utils/contentSanitizer'
+import { SkeletonLoader } from '../../../components/common/SkeletonLoader'
 import type {
   MasterSubjectId,
   MasterQuestion,
@@ -331,10 +332,8 @@ export default function QuestionDetailStudio() {
 
   if (loading) {
     return (
-      <div className="mqb-loading-state" id="mqb-detail-loading" style={{ textAlign: 'center', padding: '5rem 0' }}>
-        <div className="app-route-spinner" style={{ margin: '0 auto 1.5rem', width: 44, height: 44, border: '3px solid rgba(56,189,248,0.2)', borderTopColor: '#38bdf8', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
-        <h3 style={{ color: 'var(--mqb-text-primary)' }}>Loading Question Breakdown...</h3>
-        <p style={{ color: 'var(--mqb-text-secondary)' }}>Synthesizing speech answers, line-by-line mechanics & execution flow</p>
+      <div style={{ padding: '24px' }}>
+        <SkeletonLoader variant="studio" />
       </div>
     )
   }
@@ -411,7 +410,7 @@ export default function QuestionDetailStudio() {
                 </span>
                 <span className={`mqb-diff-pill ${question.difficulty}`}>{question.difficulty}</span>
                 {question.isHighFrequency && (
-                  <span className="mqb-highfreq-badge">🔥 FAANG High Frequency</span>
+                  <span className="mqb-highfreq-badge">🔥 High Frequency</span>
                 )}
                 {question.companyTags && question.companyTags.map(comp => (
                   <span key={comp} className="mqb-company-badge">🏢 {comp}</span>
@@ -1379,7 +1378,7 @@ export default function QuestionDetailStudio() {
                     </h3>
                   </div>
                   <p style={{ margin: 0, fontSize: '0.88rem', color: 'var(--mqb-text-secondary)', maxWidth: '600px', lineHeight: 1.5 }}>
-                    Practice answering <strong style={{ color: 'var(--mqb-text-primary)' }}>&ldquo;{question.question}&rdquo;</strong> in the AI Video Mock Studio with our interactive FAANG interviewer persona, real-time speech evaluation, and instant rubric scoring.
+                    Practice answering <strong style={{ color: 'var(--mqb-text-primary)' }}>&ldquo;{question.question}&rdquo;</strong> in the AI Video Mock Studio with our interactive interviewer persona, real-time speech evaluation, and instant rubric scoring.
                   </p>
                 </div>
                 <button

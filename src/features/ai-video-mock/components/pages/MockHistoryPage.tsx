@@ -60,7 +60,7 @@ export default function MockHistoryPage() {
           <div style={{ fontSize: '2.5rem', marginBottom: 12 }}>📋</div>
           <h3 style={{ margin: '0 0 8px' }}>No Mock Interviews Recorded Yet</h3>
           <p style={{ color: 'var(--text-secondary)', maxWidth: 460, margin: '0 auto 20px' }}>
-            Configure your first mock interview to evaluate your technical and verbal communication skills against senior FAANG rubrics.
+            Configure your first mock interview to evaluate your technical and verbal communication skills against standardized rubrics.
           </p>
           <Link to="/ai-video-mock/setup" className="ai-vm-btn-primary">
             Start Your First Mock Interview →

@@ -2,9 +2,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import type { MCQuestion } from '../../machinecoding/machineCodingQuestions'
 import { MACHINE_CODING_CATALOG, getQuestionDetailById } from '../../machinecoding/lib/mcCatalogService'
-import { DSA_QUESTIONS } from '../../dsa/data/dsaQuestions'
-import { CORE_PROGRAMMING_QUESTIONS } from '../../coreprogramming/data/coreProgrammingQuestions'
-import { FRONTEND_JS_QUESTIONS } from '../../frontendjs/data/frontendJsQuestions'
+import { getDSACatalog, getCPCatalog, getFJSCatalog } from '../../../lib/catalogRegistry'
 import {
   questionManagementService,
   type CustomMCQuestion,
@@ -138,7 +136,7 @@ export default function AdminQuestionsTab() {
       }))
     }
     if (viewTab === 'dsa') {
-      return DSA_QUESTIONS.map(q => ({
+      return getDSACatalog().map(q => ({
         id: q.id,
         title: q.title,
         category: q.topic || (q.tags && q.tags[0]) || 'Algorithms',
@@ -151,7 +149,7 @@ export default function AdminQuestionsTab() {
       }))
     }
     if (viewTab === 'cp') {
-      return CORE_PROGRAMMING_QUESTIONS.map(q => ({
+      return getCPCatalog().map(q => ({
         id: q.id,
         title: q.title,
         category: q.category || 'JavaScript Core',
@@ -164,7 +162,7 @@ export default function AdminQuestionsTab() {
       }))
     }
     if (viewTab === 'fjs') {
-      return FRONTEND_JS_QUESTIONS.map(q => ({
+      return getFJSCatalog().map(q => ({
         id: q.id,
         title: q.title,
         category: q.category || 'Web APIs & DOM',
@@ -275,9 +273,9 @@ export default function AdminQuestionsTab() {
         <div style={{ display: 'flex', gap: 4, borderBottom: '1px solid rgba(255,255,255,0.07)', overflowX: 'auto' }}>
           {[
             { id: 'mc' as const, label: `⚡ Machine Coding (${MACHINE_CODING_CATALOG.length})` },
-            { id: 'dsa' as const, label: `📐 DSA Masterclass (${DSA_QUESTIONS.length})` },
-            { id: 'cp' as const, label: `💻 Core Programming (${CORE_PROGRAMMING_QUESTIONS.length})` },
-            { id: 'fjs' as const, label: `🌐 Frontend JS (${FRONTEND_JS_QUESTIONS.length})` },
+            { id: 'dsa' as const, label: `📐 DSA Masterclass (${getDSACatalog().length})` },
+            { id: 'cp' as const, label: `💻 Core Programming (${getCPCatalog().length})` },
+            { id: 'fjs' as const, label: `🌐 Frontend JS (${getFJSCatalog().length})` },
             { id: 'custom' as const, label: `✏️ Custom Questions (${customList.length})` },
           ].map(t => (
             <button

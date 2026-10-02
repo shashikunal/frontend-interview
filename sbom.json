@@ -1,10 +1,10 @@
 {
   "bomFormat": "CycloneDX",
   "specVersion": "1.5",
-  "serialNumber": "urn:uuid:interviewprep-sbom-1790164595544",
+  "serialNumber": "urn:uuid:interviewprep-sbom-1790844423743",
   "version": 1,
   "metadata": {
-    "timestamp": "2026-09-23T11:56:35.544Z",
+    "timestamp": "2026-10-01T08:47:03.744Z",
     "tools": [
       {
         "vendor": "InterviewPrep DevOps",
@@ -49,10 +49,37 @@
     },
     {
       "type": "library",
+      "name": "@reduxjs/toolkit",
+      "version": "2.12.0",
+      "purl": "pkg:npm/@reduxjs/toolkit@2.12.0",
+      "integrity": "sha512-KiT+RzZbp6mQET+Mg+h2c97+9j1sNflUxQkIHI7Yuzf6Peu+OYpmkn6nbHWmLLWj+1ZODUJFwGZ7gx3L9R9EOw==",
+      "license": "MIT",
+      "scope": "required"
+    },
+    {
+      "type": "library",
       "name": "@supabase/supabase-js",
       "version": "2.113.0",
       "purl": "pkg:npm/@supabase/supabase-js@2.113.0",
       "integrity": "sha512-TZgdcDLeShUmf/XpXTmEKCmIpv6mqHgyDemiBh3fxeMOYE23oYz576ArbOB3Sa0lG9yTj+ofh52IauxIKENAOw==",
+      "license": "MIT",
+      "scope": "required"
+    },
+    {
+      "type": "library",
+      "name": "@tanstack/react-query",
+      "version": "5.104.0",
+      "purl": "pkg:npm/@tanstack/react-query@5.104.0",
+      "integrity": "sha512-e1TZmDCQnWIfiDVryIHeA6Idj+Lfx1hORLOhXS/l5wcgvtVD4yYqbTDl378sGQKIi2cSgb0TEMC9cKK8GGoJEw==",
+      "license": "MIT",
+      "scope": "required"
+    },
+    {
+      "type": "library",
+      "name": "@tanstack/react-table",
+      "version": "9.2.4",
+      "purl": "pkg:npm/@tanstack/react-table@9.2.4",
+      "integrity": "sha512-Rzp1Q4e0/nIgEjmISYR5HeEgLTNtrG+C7NFZf/AbCxPO5hg+zC3yNGwcoECigUk8SFzzvhXbd2rFdtP2ZiGrfA==",
       "license": "MIT",
       "scope": "required"
     },
@@ -134,6 +161,15 @@
       "version": "19.2.8",
       "purl": "pkg:npm/react-dom@19.2.8",
       "integrity": "sha512-rVprimfGBG3DR+Tq0IQG2DT5PxKth1WIGDmj5yPmlzr4YBe7uyE+Du4oVqTDXZSHGGGXRtTJEGSSePyQCMBglQ==",
+      "license": "MIT",
+      "scope": "required"
+    },
+    {
+      "type": "library",
+      "name": "react-redux",
+      "version": "9.3.0",
+      "purl": "pkg:npm/react-redux@9.3.0",
+      "integrity": "sha512-KQopgqFo/p/fgmAs5qz6p5RWaNAzq40WAu7fJIXnQpYxFPbJYtsJPWvGeF2rOBaY/kEuV77AVsX8TsQzKm+A/g==",
       "license": "MIT",
       "scope": "required"
     },

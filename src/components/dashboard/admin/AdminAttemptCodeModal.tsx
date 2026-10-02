@@ -24,14 +24,13 @@ export default function AdminAttemptCodeModal({
   const [previewSize, setPreviewSize] = useState<'desktop' | 'mobile'>('desktop')
   const iframeRef = useRef<HTMLIFrameElement>(null)
 
-  if (!attempt) return null
-
-  const codeContent = attempt.code || '// No source code recorded for this attempt.'
+  const codeContent = attempt?.code || '// No source code recorded for this attempt.'
   const lines = codeContent.split('\n')
-  const lang = attempt.language || 'react'
+  const lang = attempt?.language || 'react'
 
   // Compile code into runnable sandbox doc
   const handleCompileAndRun = async () => {
+    if (!attempt) return
     setIsRunning(true)
     setCompileError(null)
     setActiveTab('preview')
@@ -103,10 +102,12 @@ export default function AdminAttemptCodeModal({
 
   // Auto-compile preview on first render of preview tab if empty
   useEffect(() => {
-    if (activeTab === 'preview' && !srcDoc && !isRunning && !compileError) {
+    if (attempt && activeTab === 'preview' && !srcDoc && !isRunning && !compileError) {
       handleCompileAndRun()
     }
-  }, [activeTab])
+  }, [activeTab, attempt, srcDoc, isRunning, compileError])
+
+  if (!attempt) return null
 
   const handleCopy = () => {
     if (codeContent) {

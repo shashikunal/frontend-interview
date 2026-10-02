@@ -7,6 +7,7 @@ import {
   type QuestionAttempt,
 } from '../../../lib/adminAnalyticsService'
 import { resolveCandidateQuestionDetails } from '../../../lib/candidateCodeHelper'
+import { geoTelemetryService } from '../../../services/geoTelemetryService'
 import AdminSubmissionCodeModal from './AdminSubmissionCodeModal'
 import AdminAttemptCodeModal from './AdminAttemptCodeModal'
 
@@ -27,7 +28,7 @@ export default function AdminUserDetailModal({
   onViewCode,
   onViewAttemptCode,
 }: AdminUserDetailModalProps) {
-  const [activeSubTab, setActiveSubTab] = useState<'submissions' | 'attempts' | 'mocks' | 'activity'>('submissions')
+  const [activeSubTab, setActiveSubTab] = useState<'submissions' | 'attempts' | 'mocks' | 'activity' | 'telemetry'>('submissions')
   const [selectedCurriculumTrack, setSelectedCurriculumTrack] = useState<'all' | 'mc' | 'cp' | 'dsa' | 'fjs' | 'mocks' | 'docs'>('all')
   const [subFilter, setSubFilter] = useState<'all' | 'mc' | 'cp' | 'dsa' | 'fjs'>('all')
   const [attemptFilter, setAttemptFilter] = useState<'all' | 'mc' | 'cp' | 'dsa' | 'fjs'>('all')
@@ -58,6 +59,12 @@ export default function AdminUserDetailModal({
 
   const userDetail = propUserDetail || fetchedDetail
   const isLoading = loading
+
+  const loginHistory = useMemo(() => {
+    const targetId = userId || userDetail?.userId || userDetail?.email || ''
+    if (!targetId) return []
+    return geoTelemetryService.getUserLoginHistory(targetId)
+  }, [userId, userDetail])
 
   const handleViewSub = (sub: AdminSubmissionItem) => {
     const candidateInfo = resolveCandidateQuestionDetails(sub.questionId, userDetail?.name || 'Candidate')
@@ -693,6 +700,13 @@ export default function AdminUserDetailModal({
                 >
                   ⚡ Activity History ({userDetail.recentActivities.length})
                 </button>
+                <button
+                  type="button"
+                  className={`aud-tab ${activeSubTab === 'telemetry' ? 'active' : ''}`}
+                  onClick={() => setActiveSubTab('telemetry')}
+                >
+                  📍 Login Telemetry &amp; Geolocation ({loginHistory.length})
+                </button>
               </div>
 
               {/* Sub-tab 1: Recent Submissions Table with Multi-Track Filter */}
@@ -977,6 +991,93 @@ export default function AdminUserDetailModal({
                           <span className="aud-act-text">{act.formattedText}</span>
                         </div>
                       ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Sub-tab 5: Login Telemetry & Geolocation History */}
+              {activeSubTab === 'telemetry' && (
+                <div className="aud-tab-body">
+                  {loginHistory.length > 0 && (
+                    <div style={{
+                      background: 'linear-gradient(135deg, rgba(16,185,129,0.1) 0%, rgba(15,23,42,0.8) 100%)',
+                      border: '1px solid rgba(16,185,129,0.3)',
+                      borderRadius: '12px',
+                      padding: '16px',
+                      marginBottom: '16px',
+                      display: 'grid',
+                      gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+                      gap: '12px'
+                    }}>
+                      <div>
+                        <span style={{ fontSize: '0.72rem', color: '#94a3b8', display: 'block' }}>RECENT IP ADDRESS</span>
+                        <strong style={{ fontSize: '1rem', color: '#34d399', fontFamily: 'monospace' }}>
+                          🌐 {loginHistory[0].ipAddress}
+                        </strong>
+                      </div>
+                      <div>
+                        <span style={{ fontSize: '0.72rem', color: '#94a3b8', display: 'block' }}>LATITUDE &amp; LONGITUDE</span>
+                        <strong style={{ fontSize: '0.9rem', color: '#38bdf8' }}>
+                          📍 {loginHistory[0].latitude}° N, {loginHistory[0].longitude}° E
+                        </strong>
+                      </div>
+                      <div>
+                        <span style={{ fontSize: '0.72rem', color: '#94a3b8', display: 'block' }}>NEAREST CITY &amp; LOCATION</span>
+                        <strong style={{ fontSize: '0.9rem', color: '#e2e8f0' }}>
+                          🏙️ {loginHistory[0].nearestLocation || `${loginHistory[0].city}, ${loginHistory[0].country}`}
+                        </strong>
+                      </div>
+                      <div>
+                        <span style={{ fontSize: '0.72rem', color: '#94a3b8', display: 'block' }}>DEVICE &amp; BROWSER</span>
+                        <span style={{ fontSize: '0.85rem', color: '#cbd5e1' }}>
+                          💻 {loginHistory[0].device} ({loginHistory[0].os}, {loginHistory[0].browser})
+                        </span>
+                      </div>
+                    </div>
+                  )}
+
+                  <h4 style={{ margin: '0 0 10px 0', fontSize: '0.9rem', color: '#e2e8f0' }}>
+                    📜 Complete Geolocation &amp; Login History Log
+                  </h4>
+
+                  {loginHistory.length === 0 ? (
+                    <p className="empty-subtab-msg">No geolocation telemetry sessions recorded for this user yet.</p>
+                  ) : (
+                    <div style={{ overflowX: 'auto' }}>
+                      <table className="aud-table" style={{ width: '100%', fontSize: '0.82rem' }}>
+                        <thead>
+                          <tr>
+                            <th>Timestamp</th>
+                            <th>IP Address</th>
+                            <th>Nearest City &amp; Location</th>
+                            <th style={{ textAlign: 'center' }}>Lat / Lng</th>
+                            <th>Device &amp; OS</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {loginHistory.map(session => (
+                            <tr key={session.id}>
+                              <td>{new Date(session.timestamp).toLocaleString()}</td>
+                              <td style={{ fontFamily: 'monospace', color: '#34d399', fontWeight: 600 }}>
+                                {session.ipAddress}
+                              </td>
+                              <td>
+                                🏙️ <strong>{session.city}</strong>, {session.region}, {session.country}
+                                <span style={{ display: 'block', fontSize: '0.72rem', color: '#94a3b8' }}>
+                                  {session.nearestLocation}
+                                </span>
+                              </td>
+                              <td style={{ textAlign: 'center', fontFamily: 'monospace', color: '#38bdf8', fontSize: '0.78rem' }}>
+                                {session.latitude.toFixed(4)}, {session.longitude.toFixed(4)}
+                              </td>
+                              <td style={{ fontSize: '0.78rem', color: '#cbd5e1' }}>
+                                {session.device} &bull; {session.os} ({session.browser})
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
                     </div>
                   )}
                 </div>

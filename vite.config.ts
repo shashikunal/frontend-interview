@@ -460,6 +460,7 @@ function localAdminAuthPlugin(): Plugin {
 
       // Web Push Notifications & Meeting Link Dispatch
       registerDevEndpoint('/api/v1/notifications', './api/_handlers/notifications.js')
+      registerDevEndpoint('/api/cloudinary', './api/_handlers/cloudinary.js')
 
       // Local Dev Phase 11 Compliance Audit Trail Middleware
       registerDevEndpoint('/api/v1/audit', './api/v1/audit/index.js')
@@ -476,6 +477,7 @@ function localAdminAuthPlugin(): Plugin {
 
       // AI Resume Center
       registerDevEndpoint('/api/resume', './api/resume/index.js')
+      registerDevEndpoint('/api/job-matching', './api/job-matching/index.js')
     },
   }
 }
@@ -817,8 +819,42 @@ export default defineConfig({
           if (id.includes('node_modules/@supabase')) {
             return 'vendor-supabase'
           }
-          if (id.includes('node_modules/recharts')) {
+          if (id.includes('node_modules/recharts') || id.includes('node_modules/@tanstack')) {
             return 'vendor-charts'
+          }
+          if (id.includes('node_modules/mermaid')) {
+            return 'vendor-mermaid'
+          }
+          if (id.includes('node_modules/@babel/standalone')) {
+            return 'vendor-babel'
+          }
+          if (id.includes('node_modules/yjs') || id.includes('node_modules/socket.io') || id.includes('node_modules/y-')) {
+            return 'vendor-realtime'
+          }
+          if (id.includes('src/features/ai-video-mock/data/questionBank/')) {
+            const match = id.match(/questionBank\/([a-z-]+)\.ts/i)
+            return match ? `ai-mock-${match[1].toLowerCase()}` : 'ai-mock-bank'
+          }
+          if (id.includes('src/features/interview-docs/data/tracks') || id.includes('subjectsCatalog') || id.includes('docsRegistry')) {
+            return 'vendor-docs'
+          }
+          if (id.includes('src/components/machinecoding/data/masterCatalog')) {
+            return 'mc-master'
+          }
+          if (id.includes('src/components/machinecoding/data') || id.includes('src/components/dsa/data') || id.includes('src/components/frontendjs/data') || id.includes('src/components/coreprogramming/data')) {
+            if (id.includes('src/components/dsa/data/batches/')) {
+              const match = id.match(/batch\d+/i)
+              return match ? `dsa-${match[0].toLowerCase()}` : 'dsa-batches'
+            }
+            if (id.includes('src/components/frontendjs/data/batches/')) {
+              const match = id.match(/batch\d+/i)
+              return match ? `fjs-${match[0].toLowerCase()}` : 'fjs-batches'
+            }
+            if (id.includes('src/components/coreprogramming/data/batches/')) {
+              const match = id.match(/batch\d+/i)
+              return match ? `cp-${match[0].toLowerCase()}` : 'cp-batches'
+            }
+            return 'vendor-catalogs'
           }
           if (id.includes('src/components/dsa/data/batches/')) {
             const match = id.match(/batch\d+/i)

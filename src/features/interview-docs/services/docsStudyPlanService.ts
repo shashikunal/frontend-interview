@@ -62,7 +62,7 @@ export interface GeneratedStudyPlan {
 export const ARCHETYPE_PROFILES: Record<CompanyArchetype, ArchetypeProfile> = {
   faang: {
     id: 'faang',
-    title: 'Tier-1 Tech & FAANG',
+    title: 'Tier-1 Tech & Enterprise',
     badge: 'High Bar Systems & Algorithms',
     icon: '🏢',
     targetCompanies: ['Meta', 'Google', 'Amazon', 'Apple', 'Netflix', 'Microsoft'],

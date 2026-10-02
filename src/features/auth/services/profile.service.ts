@@ -8,14 +8,19 @@ const PROFILES_LOCAL_KEY = 'supabase_profiles_real'
 
 export const KNOWN_SUPABASE_AUTH_USERS: AuthUserProfile[] = [
   {
-    id: 'usr_shashikunal_sb',
-    email: 'shashikunal@gmail.com',
-    name: 'Shashi Kunal',
+    id: 'usr_candidate_demo',
+    email: 'candidate@interviewprep.com',
+    name: 'Demo Candidate',
     role: 'candidate',
-    targetCompany: 'Google',
-    experienceLevel: 'L5 (Senior 5-9y)',
     entitlements: DEFAULT_ENTITLEMENTS.candidate,
     status: 'ACTIVE',
+    batch: '2026-Alpha',
+    batchCode: 'FE-2026-A',
+    targetTrack: 'Frontend Architecture & Staff Level Engineering',
+    phone: '+1 (555) 019-2831',
+    githubUrl: 'https://github.com/democandidate',
+    linkedinUrl: 'https://linkedin.com/in/democandidate',
+    bio: 'Staff Frontend Architect with deep expertise in React 18, Web Vitals, micro-frontends, and design systems.',
     createdAt: new Date().toISOString(),
   },
 ]
@@ -49,63 +54,85 @@ export const profileService = {
   /**
    * Fetch profile from public.profiles table
    */
+  /**
+   * Fetch profile from public.profiles table or local storage mirror
+   */
   getProfile: async (userId: string): Promise<AuthUserProfile | null> => {
     if (!userId) return null
 
+    let localMatch: AuthUserProfile | null = null
+    const local = getLocalProfiles()
+    localMatch = local.find(p => p.id === userId || (p.email && p.email.toLowerCase() === userId.toLowerCase())) || null
+
+    if (!localMatch && typeof localStorage !== 'undefined') {
+      try {
+        const savedActive = localStorage.getItem('interviewprep_active_profile')
+        if (savedActive) {
+          const parsed = JSON.parse(savedActive)
+          if (parsed && (parsed.id === userId || (parsed.email && parsed.email.toLowerCase() === userId.toLowerCase()))) {
+            localMatch = parsed
+          }
+        }
+      } catch {}
+    }
+
     try {
-      // NOTE: .maybeSingle() intentionally (not .single()).
-      // .single() makes PostgREST request `Accept: application/vnd.pgrst.object+json`,
-      // so 0 visible rows (new user, trigger delay, or RLS denial) surfaces as HTTP 406
-      // (PGRST116). .maybeSingle() returns { data: null } for 0 rows instead.
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', userId)
         .maybeSingle()
 
-      if (error) {
-        if ((import.meta as any).env?.DEV) {
-          console.warn('[CORE] profile lookup', { userId, code: (error as { code?: string }).code, message: error.message })
-        }
-      } else if (data) {
+      if (!error && data) {
         const role = (data.role as UserRole) || 'candidate'
         const entitlements = data.feature_entitlements || DEFAULT_ENTITLEMENTS[role]
 
         return {
           id: data.id,
           email: data.email,
-          name: data.full_name || data.email?.split('@')[0] || 'Candidate',
+          name: data.full_name || data.email?.split('@')[0] || localMatch?.name || 'User',
           role,
-          avatarUrl: data.avatar_url,
-          targetCompany: data.target_company || 'Google',
-          experienceLevel: data.experience_level || 'L5 (Senior 5-9y)',
+          avatarUrl: data.avatar_url || localMatch?.avatarUrl,
+          avatarPublicId: data.avatar_public_id || localMatch?.avatarPublicId,
           entitlements,
           status: (data.status as 'ACTIVE' | 'SUSPENDED') || 'ACTIVE',
-          createdAt: data.created_at,
-          updatedAt: data.updated_at,
+          batch: data.batch || localMatch?.batch || '2026-Alpha',
+          batchCode: data.batch_code || localMatch?.batchCode || 'FE-2026-A',
+          targetTrack: data.target_track || localMatch?.targetTrack || 'Frontend Architecture',
+          githubUrl: data.github_url || localMatch?.githubUrl,
+          linkedinUrl: data.linkedin_url || localMatch?.linkedinUrl,
+          phone: data.phone || localMatch?.phone,
+          bio: data.bio || localMatch?.bio,
+          createdAt: data.created_at || localMatch?.createdAt,
+          updatedAt: data.updated_at || new Date().toISOString(),
         }
       }
     } catch {
       // ignore
     }
 
-    // Check local mirror
-    const local = getLocalProfiles()
-    return local.find(p => p.id === userId) || null
+    // Return local mirror match
+    return localMatch
   },
 
   /**
-   * Update profile fields in public.profiles table
+   * Update profile fields in public.profiles table & local mirror
    */
   updateProfile: async (
     userId: string,
     updates: Partial<{
       full_name: string
-      target_company: string
-      experience_level: string
       avatar_url: string
+      avatar_public_id: string
       feature_entitlements: FeatureEntitlements
       status: 'ACTIVE' | 'SUSPENDED'
+      batch: string
+      batch_code: string
+      target_track: string
+      github_url: string
+      linkedin_url: string
+      phone: string
+      bio: string
     }>
   ): Promise<{ success: boolean; message: string }> => {
     if (!userId) {
@@ -114,32 +141,66 @@ export const profileService = {
 
     // 1. Update in local mirror
     const local = getLocalProfiles()
+    let found = false
     const updatedLocal = local.map(p => {
-      if (p.id === userId) {
+      if (p.id === userId || (p.email && userId.toLowerCase().includes(p.email.toLowerCase()))) {
+        found = true
         return {
           ...p,
-          name: updates.full_name || p.name,
-          targetCompany: updates.target_company || p.targetCompany,
-          experienceLevel: updates.experience_level || p.experienceLevel,
-          avatarUrl: updates.avatar_url || p.avatarUrl,
-          entitlements: updates.feature_entitlements || p.entitlements,
+          name: updates.full_name !== undefined ? updates.full_name : p.name,
+          avatarUrl: updates.avatar_url !== undefined ? updates.avatar_url : p.avatarUrl,
+          avatarPublicId: updates.avatar_public_id !== undefined ? updates.avatar_public_id : p.avatarPublicId,
+          entitlements: updates.feature_entitlements !== undefined ? updates.feature_entitlements : p.entitlements,
           status: updates.status || p.status || 'ACTIVE',
+          batch: updates.batch !== undefined ? updates.batch : p.batch || '2026-Alpha',
+          batchCode: updates.batch_code !== undefined ? updates.batch_code : p.batchCode || 'FE-2026-A',
+          targetTrack: updates.target_track !== undefined ? updates.target_track : p.targetTrack || 'Frontend Architecture',
+          githubUrl: updates.github_url !== undefined ? updates.github_url : p.githubUrl,
+          linkedinUrl: updates.linkedin_url !== undefined ? updates.linkedin_url : p.linkedinUrl,
+          phone: updates.phone !== undefined ? updates.phone : p.phone,
+          bio: updates.bio !== undefined ? updates.bio : p.bio,
           updatedAt: new Date().toISOString(),
         }
       }
       return p
     })
+
+    if (!found) {
+      updatedLocal.push({
+        id: userId,
+        email: userId.includes('@') ? userId : 'candidate@interviewprep.com',
+        name: updates.full_name || 'User',
+        role: 'candidate',
+        avatarUrl: updates.avatar_url,
+        avatarPublicId: updates.avatar_public_id,
+        entitlements: updates.feature_entitlements || DEFAULT_ENTITLEMENTS.candidate,
+        status: updates.status || 'ACTIVE',
+        batch: updates.batch || '2026-Alpha',
+        batchCode: updates.batch_code || 'FE-2026-A',
+        targetTrack: updates.target_track || 'Frontend Architecture',
+        githubUrl: updates.github_url,
+        linkedinUrl: updates.linkedin_url,
+        phone: updates.phone,
+        bio: updates.bio,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      })
+    }
+
     saveLocalProfiles(updatedLocal)
 
     // 2. Update in Supabase
     try {
-      await supabase
-        .from('profiles')
-        .update({
-          ...updates,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', userId)
+      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(userId)
+      if (isUuid) {
+        await supabase
+          .from('profiles')
+          .update({
+            ...updates,
+            updated_at: new Date().toISOString(),
+          })
+          .eq('id', userId)
+      }
 
       return { success: true, message: 'Profile successfully updated!' }
     } catch (err: unknown) {
@@ -154,8 +215,6 @@ export const profileService = {
     email: string
     name: string
     role: UserRole
-    targetCompany?: string
-    experienceLevel?: string
     entitlements?: FeatureEntitlements
   }): Promise<{ success: boolean; message: string; user?: AuthUserProfile }> => {
     const cleanEmail = params.email.toLowerCase().trim()
@@ -185,8 +244,6 @@ export const profileService = {
     }
 
     if (!createdId) {
-      // profiles.id is UUID-typed: a `usr_*` fallback could never match a row
-      // and every later `.eq('id', ...)` write would 403. Always mint a UUID.
       createdId = typeof crypto !== 'undefined' && crypto.randomUUID
         ? crypto.randomUUID()
         : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
@@ -200,8 +257,6 @@ export const profileService = {
       email: cleanEmail,
       name: params.name,
       role,
-      targetCompany: params.targetCompany || 'Google',
-      experienceLevel: params.experienceLevel || 'L5 Senior',
       entitlements,
       status: 'ACTIVE',
       createdAt: new Date().toISOString(),
@@ -214,15 +269,11 @@ export const profileService = {
       saveLocalProfiles(local)
     }
 
-    // 2. Update company, level, entitlements in Supabase profiles.
-    // maybeSingle-style guard: only a real UUID row can be updated; anything
-    // else fails silently into the local mirror above (never a 403 crash).
+    // 2. Update entitlements in Supabase profiles
     try {
       const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(createdId)
       if (isUuid) {
         await supabase.from('profiles').update({
-          target_company: params.targetCompany || 'Google',
-          experience_level: params.experienceLevel || 'L5 Senior',
           feature_entitlements: entitlements,
         }).eq('id', createdId)
       }
@@ -254,14 +305,12 @@ export const profileService = {
     userIds: string[],
     entitlements: FeatureEntitlements
   ): Promise<{ success: boolean; message: string }> => {
-    // 1. Update local mirror
     const local = getLocalProfiles()
     const updated = local.map(p =>
       userIds.includes(p.id) ? { ...p, entitlements, updatedAt: new Date().toISOString() } : p
     )
     saveLocalProfiles(updated)
 
-    // 2. Update Supabase
     try {
       const promises = userIds.map(id =>
         supabase
@@ -302,15 +351,13 @@ export const profileService = {
             name: d.full_name || d.email?.split('@')[0] || 'User',
             role,
             avatarUrl: d.avatar_url,
-            targetCompany: d.target_company,
-            experienceLevel: d.experience_level,
+            avatarPublicId: d.avatar_public_id,
             entitlements: d.feature_entitlements || DEFAULT_ENTITLEMENTS[role],
             status: (d.status as 'ACTIVE' | 'SUSPENDED') || 'ACTIVE',
             createdAt: d.created_at,
             updatedAt: d.updated_at,
           }
         })
-        // Ensure known Supabase Auth accounts (like shashikunal@gmail.com) are always included
         for (const known of KNOWN_SUPABASE_AUTH_USERS) {
           if (!mapped.some(p => p.email.toLowerCase() === known.email.toLowerCase())) {
             mapped.push(known)
@@ -320,7 +367,6 @@ export const profileService = {
         return mapped
       }
 
-      // If RLS blocked anon client, fetch via candidate-history gateway
       try {
         const apiRes = await fetch('/api/candidate-history?mode=profiles', {
           headers: getStoredAuthHeader(),
@@ -334,8 +380,7 @@ export const profileService = {
               name: d.full_name || d.email?.split('@')[0] || 'User',
               role: (d.role as UserRole) || 'candidate',
               avatarUrl: d.avatar_url,
-              targetCompany: d.target_company,
-              experienceLevel: d.experience_level,
+              avatarPublicId: d.avatar_public_id,
               entitlements: d.feature_entitlements || DEFAULT_ENTITLEMENTS[(d.role as UserRole) || 'candidate'],
               status: (d.status as 'ACTIVE' | 'SUSPENDED') || 'ACTIVE',
               createdAt: d.created_at,
@@ -355,7 +400,6 @@ export const profileService = {
       // ignore
     }
 
-    // Return real local profiles
     return getLocalProfiles()
   },
 }

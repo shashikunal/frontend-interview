@@ -85,94 +85,25 @@ export class MeetingOpsService {
   }
 
   private seedInitialProductionMeetings(): void {
-    const now = new Date();
-    const todayAt2PM = new Date(now);
-    todayAt2PM.setHours(14, 0, 0, 0);
+    // Load persisted state from disk (starts clean from scratch)
+    this.loadPersistedMeetings();
+  }
 
-    const todayAt3PM = new Date(now);
-    todayAt3PM.setHours(15, 0, 0, 0);
+  public clearAllMeetings(): { success: boolean; clearedCount: number } {
+    const clearedCount = this.meetings.size;
+    this.meetings.clear();
+    this.participants.clear();
+    this.auditLogs = [];
+    this.savePersistedMeetings();
 
-    // Initial default meeting
-    const m1: MeetingRecord = {
-      id: 'meet_meta_arch_live',
-      title: 'Meta Staff Frontend Architecture Loop',
-      description: 'Distributed UI State, Concurrent React 19 Fiber execution, and System Scalability Evaluation',
-      meeting_type: 'Interview',
-      meeting_provider: 'Google Meet',
-      meeting_url: 'https://meet.google.com/xyz-meta-arch',
-      start_at: todayAt2PM.toISOString(),
-      end_at: todayAt3PM.toISOString(),
-      timezone: 'Asia/Kolkata',
-      trainer_id: 'usr_trainer_shashi',
-      trainer_name: 'Shashi Kunal (Staff Evaluator)',
-      created_by: 'admin_master',
-      batch_id: 'Batch 2026-Alpha',
-      status: 'SCHEDULED',
-      capacity: 50,
-      recurrence_rule: null,
-      parent_meeting_id: null,
-      created_at: now.toISOString(),
-      updated_at: now.toISOString(),
-    };
-
-    this.meetings.set(m1.id, m1);
-
-    // Sample student participant
-    const p1: MeetingParticipantRecord = {
-      id: crypto.randomUUID(),
-      meeting_id: m1.id,
-      student_id: 'usr_shashikunal_sb',
-      student_name: 'Shashi Kunal',
-      student_email: 'shashikunal@gmail.com',
-      status: 'SCHEDULED',
-      invitation_status: 'pending',
-      attendance_status: 'pending',
-      calendar_status: 'synced',
-      notification_status: 'scheduled',
-      created_at: now.toISOString(),
-      updated_at: now.toISOString(),
-    };
-
-    this.participants.set(p1.id, p1);
-
-    this.recordAuditLog({
-      meetingId: m1.id,
-      actorId: 'admin_master',
-      action: 'MEETING_CREATED',
-      new_value: m1 as any,
+    Promise.resolve().then(async () => {
+      try {
+        await supabase.from('meeting_participants').delete().neq('id', 'placeholder');
+        await supabase.from('meetings').delete().neq('id', 'placeholder');
+      } catch (_) {}
     });
 
-    // Seed Google Meet-style instant meeting room (specifically ensuring meet_9207d42bde624ec2 persists across server restarts)
-    const instantMeetingId = 'meet_9207d42bde624ec2';
-    if (!this.meetings.has(instantMeetingId)) {
-      const oneHourLater = new Date(now.getTime() + 60 * 60 * 1000);
-      const mInstant: MeetingRecord = {
-        id: instantMeetingId,
-        title: 'Instant Technical Meeting',
-        description: 'Instant ad-hoc collaboration and technical interview session.',
-        meeting_type: 'Technical Discussion',
-        meeting_provider: 'Platform Meet (Built-in)',
-        meeting_url: `/meet/${instantMeetingId}`,
-        start_at: now.toISOString(),
-        end_at: oneHourLater.toISOString(),
-        timezone: 'Asia/Kolkata',
-        trainer_id: 'usr_trainer_shashi',
-        trainer_name: 'Meeting Host',
-        created_by: 'usr_trainer_shashi',
-        status: 'IN_PROGRESS',
-        capacity: 50,
-        recurrence_rule: null,
-        parent_meeting_id: null,
-        created_at: now.toISOString(),
-        updated_at: now.toISOString(),
-      };
-      this.meetings.set(instantMeetingId, mInstant);
-    }
-
-    // Load persisted state from disk
-    this.loadPersistedMeetings();
-    // Save combined state to disk so it survives any server stops/restarts
-    this.savePersistedMeetings();
+    return { success: true, clearedCount };
   }
 
   /**
@@ -247,7 +178,18 @@ export class MeetingOpsService {
       return { success: false, error: 'End time must be after start time.' };
     }
 
-    const meetingId = `meet_${crypto.randomUUID().replace(/-/g, '').slice(0, 16)}`;
+    // Idempotency Check: if idempotency key provided, return existing meeting without duplicate creation
+    const idempotencyKey = (dto as any).idempotencyKey || (dto as any).idempotency_key;
+    if (idempotencyKey) {
+      const existing = Array.from(this.meetings.values()).find(
+        m => m.idempotency_key === idempotencyKey && !m.deleted_at
+      );
+      if (existing) {
+        return { success: true, meeting: existing, occurrences: [] };
+      }
+    }
+
+    const meetingId = (dto as any).id || (dto as any).meetingId || `meet_${crypto.randomUUID().replace(/-/g, '').slice(0, 16)}`;
     const now = new Date().toISOString();
 
     const meeting: MeetingRecord = {
@@ -264,12 +206,16 @@ export class MeetingOpsService {
       trainer_name: dto.trainer_name || caller.name || 'Platform Trainer',
       created_by: caller.id,
       batch_id: dto.batch_id || undefined,
+      batch_code: dto.batch_code || undefined,
+      batch_name: dto.batch_name || undefined,
       status: 'SCHEDULED',
       capacity: dto.capacity || 50,
       recurrence_rule: dto.recurrence || null,
       parent_meeting_id: null,
       created_at: now,
       updated_at: now,
+      version: 1,
+      idempotency_key: idempotencyKey || null,
     };
 
     // Store in-memory
@@ -375,9 +321,19 @@ export class MeetingOpsService {
    */
   public async createInstantMeeting(
     caller: { id: string; role?: string; name?: string; email?: string },
-    options?: { title?: string; meeting_type?: any }
+    options?: { title?: string; meeting_type?: any; idempotencyKey?: string; idempotency_key?: string }
   ): Promise<{ success: boolean; meeting?: MeetingRecord; meetingUrl?: string; error?: string }> {
-    const meetingId = `meet_${crypto.randomUUID().replace(/-/g, '').slice(0, 16)}`;
+    const idempotencyKey = options?.idempotencyKey || options?.idempotency_key;
+    if (idempotencyKey) {
+      const existing = Array.from(this.meetings.values()).find(
+        m => m.idempotency_key === idempotencyKey && !m.deleted_at
+      );
+      if (existing) {
+        return { success: true, meeting: existing, meetingUrl: existing.meeting_url };
+      }
+    }
+
+    const meetingId = (options as any)?.id || (options as any)?.meetingId || `meet_${crypto.randomUUID().replace(/-/g, '').slice(0, 16)}`;
     const now = new Date();
     const oneHourLater = new Date(now.getTime() + 60 * 60 * 1000);
     const nowIso = now.toISOString();
@@ -404,6 +360,8 @@ export class MeetingOpsService {
       parent_meeting_id: null,
       created_at: nowIso,
       updated_at: nowIso,
+      version: 1,
+      idempotency_key: idempotencyKey || null,
     };
 
     // Store in-memory
@@ -541,7 +499,8 @@ export class MeetingOpsService {
     page?: number;
     limit?: number;
   }): { meetings: MeetingRecord[]; total: number; page: number; limit: number; totalPages: number } {
-    let list = Array.from(this.meetings.values());
+    // Single Source of Truth & Soft-Delete Enforcement: Exclude all deleted records
+    let list = Array.from(this.meetings.values()).filter(m => !m.deleted_at);
     const now = new Date();
 
     // Student Isolation Filter (Strict RBAC: Student sees assigned meetings, plus all live/started and cohort interview sessions)
@@ -551,7 +510,7 @@ export class MeetingOpsService {
           .filter(p => p.student_id === options.student_id || (options.student_email && p.student_email && p.student_email.toLowerCase() === options.student_email.toLowerCase()))
           .map(p => p.meeting_id)
       );
-      list = list.filter(m => assignedMeetingIds.has(m.id) || m.status === 'STARTED' || !m.batch_id || m.meeting_type === 'Interview' || m.meeting_type === 'Technical Discussion');
+      list = list.filter(m => assignedMeetingIds.has(m.id) || m.status === 'STARTED');
     }
 
     if (options.status && options.status !== 'ALL') {
@@ -572,7 +531,13 @@ export class MeetingOpsService {
     }
 
     if (options.batch_id && options.batch_id !== 'ALL') {
-      list = list.filter(m => m.batch_id === options.batch_id);
+      const bQuery = options.batch_id.toLowerCase();
+      list = list.filter(
+        m =>
+          (m.batch_id && m.batch_id.toLowerCase() === bQuery) ||
+          (m.batch_code && m.batch_code.toLowerCase() === bQuery) ||
+          (m.batch_name && m.batch_name.toLowerCase() === bQuery)
+      );
     }
 
     if (options.trainer_id && options.trainer_id !== 'ALL') {
@@ -609,15 +574,16 @@ export class MeetingOpsService {
   }
 
   /**
-   * Get single meeting record by ID (memory + disk check)
+   * Get single meeting record by ID (memory + disk check, excludes deleted)
    */
   public getMeetingById(meetingId: string): MeetingRecord | null {
     if (!meetingId) return null;
     let m = this.meetings.get(meetingId);
-    if (m) return m;
+    if (m && !m.deleted_at) return m;
 
     this.loadPersistedMeetings();
-    return this.meetings.get(meetingId) || null;
+    m = this.meetings.get(meetingId);
+    return (m && !m.deleted_at) ? m : null;
   }
 
   /**
@@ -631,7 +597,7 @@ export class MeetingOpsService {
     end_at?: string;
   }): MeetingRecord {
     const existing = this.meetings.get(params.id);
-    if (existing) return existing;
+    if (existing && !existing.deleted_at) return existing;
 
     const now = new Date();
     const oneHourLater = new Date(now.getTime() + 60 * 60 * 1000);
@@ -673,7 +639,7 @@ export class MeetingOpsService {
   }
 
   /**
-   * Get single meeting details with roster, audit trail, and stats
+   * Get single meeting details with roster, audit trail, and stats (excludes deleted)
    */
   public getMeetingDetails(meetingId: string): {
     meeting: MeetingRecord | null;
@@ -682,7 +648,7 @@ export class MeetingOpsService {
     auditLogs: MeetingAuditLogRecord[];
   } | null {
     const meeting = this.meetings.get(meetingId);
-    if (!meeting) return null;
+    if (!meeting || meeting.deleted_at) return null;
 
     const participants = Array.from(this.participants.values()).filter(p => p.meeting_id === meetingId);
     const notifications = notificationWorker.listNotifications(meetingId);
@@ -736,6 +702,9 @@ export class MeetingOpsService {
       if (updates.timezone) target.timezone = updates.timezone;
       if (updates.trainer_id) target.trainer_id = updates.trainer_id;
       if (updates.trainer_name) target.trainer_name = updates.trainer_name;
+      if (updates.batch_id !== undefined) target.batch_id = updates.batch_id;
+      if (updates.batch_code !== undefined) target.batch_code = updates.batch_code;
+      if (updates.batch_name !== undefined) target.batch_name = updates.batch_name;
       if (updates.status) target.status = updates.status;
 
       target.updated_at = now;
@@ -856,6 +825,85 @@ export class MeetingOpsService {
     }
 
     return { success: true };
+  }
+
+  /**
+   * Permanently delete a single meeting and its participant records (Strictly Idempotent)
+   */
+  public async deleteSingleMeeting(
+    callerOrMeetingId: { id: string; role?: string } | string,
+    meetingIdOrActor?: string,
+    reason?: string
+  ): Promise<{ success: boolean; message: string; meetingId: string; version: number; error?: string }> {
+    let callerId = 'admin';
+    let targetMeetingId = '';
+
+    if (typeof callerOrMeetingId === 'object' && callerOrMeetingId !== null) {
+      if (callerOrMeetingId.role && callerOrMeetingId.role !== 'admin') {
+        return { success: false, error: 'Forbidden: Only platform administrators can permanently delete meetings.', message: 'Forbidden', meetingId: meetingIdOrActor || '', version: Date.now() };
+      }
+      callerId = callerOrMeetingId.id || 'admin';
+      targetMeetingId = meetingIdOrActor || '';
+    } else {
+      targetMeetingId = callerOrMeetingId;
+      callerId = meetingIdOrActor || 'admin';
+    }
+
+    const meeting = this.meetings.get(targetMeetingId);
+    const now = new Date().toISOString();
+    const version = Date.now();
+
+    // Idempotent: if already deleted or doesn't exist, return success cleanly
+    if (!meeting || meeting.deleted_at) {
+      return {
+        success: true,
+        message: 'Meeting already deleted or does not exist.',
+        meetingId: targetMeetingId,
+        version,
+      };
+    }
+
+    // Soft-delete attributes for audit integrity (Requirement 26)
+    meeting.deleted_at = now;
+    meeting.deleted_by = callerId;
+    meeting.status = 'CANCELLED';
+    meeting.version = version;
+    meeting.updated_at = now;
+
+    // Remove associated participants
+    for (const [pId, p] of this.participants.entries()) {
+      if (p.meeting_id === targetMeetingId) {
+        this.participants.delete(pId);
+      }
+    }
+
+    meetingScheduler.cancelMeetingReminders(targetMeetingId);
+    this.savePersistedMeetings();
+
+    try {
+      await supabase.from('meetings').update({
+        deleted_at: now,
+        deleted_by: callerId,
+        status: 'CANCELLED',
+        version,
+        updated_at: now,
+      }).eq('id', targetMeetingId);
+    } catch (_) {}
+
+    this.recordAuditLog({
+      meetingId: meeting.id,
+      actorId: callerId,
+      action: 'MEETING_DELETED_PERMANENTLY',
+      old_value: meeting as any,
+      metadata: { reason: reason || 'Deleted by admin' },
+    });
+
+    return {
+      success: true,
+      message: 'Meeting permanently deleted.',
+      meetingId: targetMeetingId,
+      version,
+    };
   }
 
   /**

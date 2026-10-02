@@ -10,6 +10,9 @@ interface AdminSubmissionsTabProps {
   onInspectUser?: (userId: string) => void
 }
 
+type SortField = 'createdAt' | 'userName' | 'questionId' | 'language' | 'status' | 'score' | 'executionTime'
+type SortOrder = 'asc' | 'desc'
+
 export default function AdminSubmissionsTab({
   submissions,
   initialSubmissions,
@@ -23,13 +26,15 @@ export default function AdminSubmissionsTab({
   const [search, setSearch] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
   const [pageSize, setPageSize] = useState(25)
+  const [sortField, setSortField] = useState<SortField>('createdAt')
+  const [sortOrder, setSortOrder] = useState<SortOrder>('desc')
   const [reviewsMap, setReviewsMap] = useState<Record<string, EvaluatorReview>>({})
 
   useEffect(() => {
     gradingService.getAllEvaluatorReviews().then(setReviewsMap)
   }, [submissions])
 
-  const effectiveList = submissions || initialSubmissions || []
+  const effectiveList = useMemo(() => submissions || initialSubmissions || [], [submissions, initialSubmissions])
 
   const isItemCP = (s: AdminSubmissionItem) => {
     const qUpper = s.questionId.toUpperCase()
@@ -83,11 +88,39 @@ export default function AdminSubmissionsTab({
     })
   }, [effectiveList, statusFilter, langFilter, typeFilter, search])
 
-  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize))
+  const sortedData = useMemo(() => {
+    const data = [...filtered]
+    data.sort((a, b) => {
+      let valA: any = a[sortField as keyof AdminSubmissionItem]
+      let valB: any = b[sortField as keyof AdminSubmissionItem]
+      if (sortField === 'score') {
+        valA = reviewsMap[a.id]?.score ?? a.score
+        valB = reviewsMap[b.id]?.score ?? b.score
+      }
+      if (typeof valA === 'string') valA = valA.toLowerCase()
+      if (typeof valB === 'string') valB = valB.toLowerCase()
+
+      if (valA < valB) return sortOrder === 'asc' ? -1 : 1
+      if (valA > valB) return sortOrder === 'asc' ? 1 : -1
+      return 0
+    })
+    return data
+  }, [filtered, sortField, sortOrder, reviewsMap])
+
+  const totalPages = Math.max(1, Math.ceil(sortedData.length / pageSize))
   const paginated = useMemo(() => {
     const start = (currentPage - 1) * pageSize
-    return filtered.slice(start, start + pageSize)
-  }, [filtered, currentPage, pageSize])
+    return sortedData.slice(start, start + pageSize)
+  }, [sortedData, currentPage, pageSize])
+
+  const handleSort = (field: SortField) => {
+    if (sortField === field) {
+      setSortOrder(o => (o === 'asc' ? 'desc' : 'asc'))
+    } else {
+      setSortField(field)
+      setSortOrder('desc')
+    }
+  }
 
   const handleFilterChange = (setter: (val: any) => void, val: any) => {
     setter(val)
@@ -230,13 +263,27 @@ export default function AdminSubmissionsTab({
           <table className="admin-data-table">
             <thead>
               <tr>
-                <th>Timestamp</th>
-                <th>Candidate / User</th>
-                <th>Submitted Question</th>
-                <th>Language</th>
-                <th>Status</th>
-                <th>Marks / Score</th>
-                <th>Exec Time</th>
+                <th onClick={() => handleSort('createdAt')} style={{ cursor: 'pointer', userSelect: 'none' }}>
+                  Timestamp {sortField === 'createdAt' ? (sortOrder === 'asc' ? '🔼' : '🔽') : ''}
+                </th>
+                <th onClick={() => handleSort('userName')} style={{ cursor: 'pointer', userSelect: 'none' }}>
+                  Candidate / User {sortField === 'userName' ? (sortOrder === 'asc' ? '🔼' : '🔽') : ''}
+                </th>
+                <th onClick={() => handleSort('questionId')} style={{ cursor: 'pointer', userSelect: 'none' }}>
+                  Submitted Question {sortField === 'questionId' ? (sortOrder === 'asc' ? '🔼' : '🔽') : ''}
+                </th>
+                <th onClick={() => handleSort('language')} style={{ cursor: 'pointer', userSelect: 'none' }}>
+                  Language {sortField === 'language' ? (sortOrder === 'asc' ? '🔼' : '🔽') : ''}
+                </th>
+                <th onClick={() => handleSort('status')} style={{ cursor: 'pointer', userSelect: 'none' }}>
+                  Status {sortField === 'status' ? (sortOrder === 'asc' ? '🔼' : '🔽') : ''}
+                </th>
+                <th onClick={() => handleSort('score')} style={{ cursor: 'pointer', userSelect: 'none' }}>
+                  Marks / Score {sortField === 'score' ? (sortOrder === 'asc' ? '🔼' : '🔽') : ''}
+                </th>
+                <th onClick={() => handleSort('executionTime')} style={{ cursor: 'pointer', userSelect: 'none' }}>
+                  Exec Time {sortField === 'executionTime' ? (sortOrder === 'asc' ? '🔼' : '🔽') : ''}
+                </th>
                 <th>Actions</th>
               </tr>
             </thead>

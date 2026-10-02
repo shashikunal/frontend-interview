@@ -63,7 +63,7 @@ export const emailService = {
     userName: string = 'Candidate'
   ): Promise<EmailDispatchResult> => {
     const cleanEmail = toEmail.toLowerCase().trim()
-    const subject = `🔐 Your FAANG Platform Verification Code: ${otpCode}`
+    const subject = `🔐 Your Platform Verification Code: ${otpCode}`
     const previewText = `Hello ${userName}, your one-time verification passcode is ${otpCode}. Valid for 5 minutes.`
 
     // A. Attempt Real EmailJS dispatch if configured
@@ -77,7 +77,7 @@ export const emailService = {
             user_name: userName,
             otp_code: otpCode,
             subject,
-            platform_name: 'FAANG Frontend & System Design Interview Platform',
+            platform_name: 'Frontend & System Design Interview Platform',
           },
           EMAILJS_PUBLIC_KEY
         )
@@ -162,8 +162,8 @@ export const emailService = {
     role: string = 'Candidate'
   ): Promise<EmailDispatchResult> => {
     const cleanEmail = toEmail.toLowerCase().trim()
-    const subject = `🎉 Welcome to FAANG Interview Platform - Account Verified!`
-    const previewText = `Welcome ${userName}! Your account has been verified with ${role.toUpperCase()} access across all 22,222 questions.`
+    const subject = `🎉 Welcome to Interview Platform - Account Verified!`
+    const previewText = `Welcome ${userName}! Your account has been verified with ${role.toUpperCase()} access across all challenge tracks.`
 
     if (isEmailJsConfigured) {
       try {

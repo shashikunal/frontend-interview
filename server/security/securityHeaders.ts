@@ -29,20 +29,30 @@ if (process.env.ADDITIONAL_TRUSTED_ORIGINS) {
 /**
  * Validates incoming origin against trusted origins.
  * In development, permits localhost origins.
+ * In production, permits configured origins and all Vercel deployment domains (*.vercel.app).
  */
-export function isOriginAllowed(origin?: string): boolean {
+export function isOriginAllowed(origin?: string, reqHost?: string): boolean {
   if (!origin) return true; // Direct same-origin / server-to-server requests
   if (TRUSTED_ORIGINS.has(origin)) return true;
 
-  if (process.env.NODE_ENV !== 'production') {
-    try {
-      const url = new URL(origin);
+  try {
+    const url = new URL(origin);
+    // Allow any localhost/127.0.0.1 in non-production
+    if (process.env.NODE_ENV !== 'production') {
       if (url.hostname === 'localhost' || url.hostname === '127.0.0.1') {
         return true;
       }
-    } catch (_) {
-      return false;
     }
+    // Allow Vercel production and preview deployment domains (*.vercel.app)
+    if (url.hostname === 'vercel.app' || url.hostname.endsWith('.vercel.app')) {
+      return true;
+    }
+    // Allow if origin matches current host header (same-domain requests)
+    if (reqHost && (url.host === reqHost || url.hostname === reqHost)) {
+      return true;
+    }
+  } catch (_) {
+    return false;
   }
 
   return false;
@@ -54,10 +64,11 @@ export function isOriginAllowed(origin?: string): boolean {
  */
 export function applySecurityHeaders(req: any, res: any): boolean {
   const origin = req.headers?.origin || req.headers?.Origin;
+  const reqHost = req.headers?.host || req.headers?.Host;
 
   // 1. Strict Origin Validation for CORS
   if (origin) {
-    if (isOriginAllowed(origin)) {
+    if (isOriginAllowed(origin, reqHost)) {
       res.setHeader('Access-Control-Allow-Origin', origin);
       res.setHeader('Access-Control-Allow-Credentials', 'true');
       res.setHeader('Vary', 'Origin');
@@ -77,6 +88,13 @@ export function applySecurityHeaders(req: any, res: any): boolean {
     'Access-Control-Allow-Headers',
     'Content-Type, Authorization, X-Correlation-Id, X-Request-Id, X-User-Id, X-Session-Id'
   );
+
+  // Handle CORS preflight OPTIONS request
+  if (req.method === 'OPTIONS') {
+    res.statusCode = 204;
+    res.end();
+    return false;
+  }
 
   // 2. Production Security Headers
   res.setHeader('X-Content-Type-Options', 'nosniff');

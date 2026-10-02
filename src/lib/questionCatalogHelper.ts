@@ -1,7 +1,4 @@
-import { CORE_PROGRAMMING_QUESTIONS, getCoreProgrammingQuestion } from '../components/coreprogramming/data/coreProgrammingQuestions';
-import { DSA_QUESTIONS } from '../components/dsa/data/dsaQuestions';
-import { FRONTEND_JS_QUESTIONS } from '../components/frontendjs/data/frontendJsQuestions';
-import { MACHINE_CODING_CATALOG } from '../components/machinecoding/data/machineCodingCatalog';
+import { getCPCatalog, getDSACatalog, getFJSCatalog, getMCCatalog, getCachedCPQuestion } from './catalogRegistry';
 
 export interface UnifiedQuestionMetadata {
   id: string;
@@ -24,13 +21,13 @@ export function getUnifiedQuestionMetadata(questionId?: string): UnifiedQuestion
 
   // 1. Core Programming (JS-Pxxx, JSPxxx, CPxxx)
   if (upper.startsWith('JS-P') || upper.startsWith('JSP') || upper.startsWith('CP')) {
-    const cp = getCoreProgrammingQuestion(qid);
-    const questionsList = CORE_PROGRAMMING_QUESTIONS.map((q, idx) => ({
+    const cp = getCachedCPQuestion(qid);
+    const questionsList = getCPCatalog().map((q, idx) => ({
       id: q.id,
       title: q.title,
       order: idx + 1,
     }));
-    const orderIdx = CORE_PROGRAMMING_QUESTIONS.findIndex(q => q.id.toUpperCase() === upper);
+    const orderIdx = getCPCatalog().findIndex(q => q.id.toUpperCase() === upper);
     const orderNumber = orderIdx >= 0 ? orderIdx + 1 : 1;
 
     return {
@@ -44,20 +41,20 @@ export function getUnifiedQuestionMetadata(questionId?: string): UnifiedQuestion
       programName: 'Full Stack Web Engineering',
       description: (cp as any)?.prompt || 'Implement the required algorithmic logic matching all edge cases and unit tests.',
       orderNumber,
-      totalInTrack: CORE_PROGRAMMING_QUESTIONS.length || 10,
+      totalInTrack: getCPCatalog().length || 10,
       questionsInTrack: questionsList,
     };
   }
 
   // 2. DSA Masterclass (DSAxxx)
   if (upper.startsWith('DSA')) {
-    const dsa = DSA_QUESTIONS.find(q => q.id.toUpperCase() === upper);
-    const questionsList = DSA_QUESTIONS.map((q, idx) => ({
+    const dsa = getDSACatalog().find(q => q.id.toUpperCase() === upper);
+    const questionsList = getDSACatalog().map((q, idx) => ({
       id: q.id,
       title: q.title,
       order: idx + 1,
     }));
-    const orderIdx = DSA_QUESTIONS.findIndex(q => q.id.toUpperCase() === upper);
+    const orderIdx = getDSACatalog().findIndex(q => q.id.toUpperCase() === upper);
     const orderNumber = orderIdx >= 0 ? orderIdx + 1 : 1;
 
     return {
@@ -71,20 +68,20 @@ export function getUnifiedQuestionMetadata(questionId?: string): UnifiedQuestion
       programName: 'Computer Science & Software Engineering',
       description: (dsa as any)?.summary || 'Implement the optimal time and space complexity solution.',
       orderNumber,
-      totalInTrack: DSA_QUESTIONS.length || 75,
+      totalInTrack: getDSACatalog().length || 75,
       questionsInTrack: questionsList,
     };
   }
 
   // 3. Frontend JS (FJPxxx)
   if (upper.startsWith('FJP') || upper.startsWith('FJ')) {
-    const fjs = FRONTEND_JS_QUESTIONS.find(q => q.id.toUpperCase() === upper);
-    const questionsList = FRONTEND_JS_QUESTIONS.map((q, idx) => ({
+    const fjs = getFJSCatalog().find(q => q.id.toUpperCase() === upper);
+    const questionsList = getFJSCatalog().map((q, idx) => ({
       id: q.id,
       title: q.title,
       order: idx + 1,
     }));
-    const orderIdx = FRONTEND_JS_QUESTIONS.findIndex(q => q.id.toUpperCase() === upper);
+    const orderIdx = getFJSCatalog().findIndex(q => q.id.toUpperCase() === upper);
     const orderNumber = orderIdx >= 0 ? orderIdx + 1 : 1;
 
     return {
@@ -98,19 +95,19 @@ export function getUnifiedQuestionMetadata(questionId?: string): UnifiedQuestion
       programName: 'Modern Frontend Architecture',
       description: (fjs as any)?.summary || 'Implement the interactive browser functionality using modern JavaScript APIs.',
       orderNumber,
-      totalInTrack: FRONTEND_JS_QUESTIONS.length || 20,
+      totalInTrack: getFJSCatalog().length || 20,
       questionsInTrack: questionsList,
     };
   }
 
   // 4. Machine Coding (MC / Projects)
-  const mc = MACHINE_CODING_CATALOG.find((p: any) => p.id === qid || p.id.toUpperCase() === upper);
-  const questionsList = MACHINE_CODING_CATALOG.map((p: any, idx: number) => ({
+  const mc = getMCCatalog().find((p: any) => p.id === qid || p.id.toUpperCase() === upper);
+  const questionsList = getMCCatalog().map((p: any, idx: number) => ({
     id: p.id,
     title: p.title,
     order: idx + 1,
   }));
-  const orderIdx = MACHINE_CODING_CATALOG.findIndex((p: any) => p.id === qid || p.id.toUpperCase() === upper);
+  const orderIdx = getMCCatalog().findIndex((p: any) => p.id === qid || p.id.toUpperCase() === upper);
   const orderNumber = orderIdx >= 0 ? orderIdx + 1 : 1;
 
   return {
@@ -124,7 +121,7 @@ export function getUnifiedQuestionMetadata(questionId?: string): UnifiedQuestion
     programName: 'Senior Frontend Engineering',
     description: mc?.summary || 'Architect and build the complete interactive application component.',
     orderNumber,
-    totalInTrack: MACHINE_CODING_CATALOG.length || 15,
+    totalInTrack: getMCCatalog().length || 15,
     questionsInTrack: questionsList,
   };
 }

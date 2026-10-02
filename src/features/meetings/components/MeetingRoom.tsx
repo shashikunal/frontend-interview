@@ -7,6 +7,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext';
+import ThemeToggle from '../../../components/layout/ThemeToggle';
 import { mediaRoomClientService } from '../services/mediaRoomClientService';
 import { invitationClientService } from '../services/invitationClientService';
 import { meetingClientService } from '../services/meetingClientService';
@@ -20,6 +21,8 @@ import { MeetingCodeEditor } from './MeetingCodeEditor';
 import { meetingCollaborationService } from '../services/meetingCollaborationService';
 import { webrtcPeerService } from '../services/webrtcPeerService';
 import { pushClientService } from '../../notifications/services/pushClientService';
+import { getAdminBearerToken } from '../../auth/services/adminTokenHelper';
+import { MeetingOpsDiagnosticsPanel } from './MeetingOpsDiagnosticsPanel';
 import type { ChatMessageRecord, ChatMessageType } from '../../../../server/meetings/chatTypes';
 import type { WhiteboardElement, WhiteboardElementType } from '../../../../server/meetings/whiteboardTypes';
 import type {
@@ -55,6 +58,14 @@ export const MeetingRoom: React.FC = () => {
   const [connectionQuality, setConnectionQuality] = useState<ConnectionQuality>('EXCELLENT');
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
+  // Pre-Join Meeting Setup & Verification (Requirement: First give create meeting details then join)
+  const [meetingExists, setMeetingExists] = useState<boolean | null>(null);
+  const [setupTitle, setSetupTitle] = useState<string>('Platform Architecture & Technical Interview');
+  const [setupHostName, setSetupHostName] = useState<string>(user?.name || 'Platform Administrator');
+  const [setupType, setSetupType] = useState<string>('Interview');
+  const [setupDesc, setSetupDesc] = useState<string>('Live interactive coding session, system design assessment, and evaluation.');
+  const [isCreatingMeeting, setIsCreatingMeeting] = useState<boolean>(false);
+
   // Phase 16: Collaboration State
   const [isHandRaised, setIsHandRaised] = useState<boolean>(false);
   const [activeReactions, setActiveReactions] = useState<Array<{ id: string; emoji: string; userName: string; x: number }>>([]);
@@ -80,9 +91,9 @@ export const MeetingRoom: React.FC = () => {
   const [isCodeEditorOpen, setIsCodeEditorOpen] = useState<boolean>(false);
   const [whiteboardElements, setWhiteboardElements] = useState<WhiteboardElement[]>([]);
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
+  const [isDiagnosticsOpen, setIsDiagnosticsOpen] = useState<boolean>(false);
   const [copiedInvite, setCopiedInvite] = useState<boolean>(false);
   const [showReadyCard, setShowReadyCard] = useState<boolean>(true);
-  const [remoteScreenFrame, setRemoteScreenFrame] = useState<string | null>(null);
 
   // Active Speaker
   const [dominantSpeakerId, setDominantSpeakerId] = useState<string | null>(null);
@@ -133,129 +144,16 @@ export const MeetingRoom: React.FC = () => {
     screenStreamRef.current = localMedia.screenStream;
   }, [localMedia.stream, localMedia.screenStream]);
 
-  // Cross-tab & network screen frame mirroring listener for multi-participant and multi-browser testing
+
+
+  // Screen share WebRTC track attachment
   useEffect(() => {
-    if (!meetingId) return;
-    let bc: BroadcastChannel | null = null;
-    try {
-      bc = new BroadcastChannel(`meet_screen_${meetingId}`);
-      bc.onmessage = (e) => {
-        if (e.data?.type === 'screen_frame' && e.data.dataUrl) {
-          if (e.data.presenterId !== user?.id) {
-            setRemoteScreenFrame(e.data.dataUrl);
-          }
-        } else if (e.data?.type === 'screen_stop') {
-          setRemoteScreenFrame(null);
-        }
-      };
-    } catch (_) {}
-
-    // Resilient server signaling relay polling for remote screen frames
-    const relayInterval = setInterval(async () => {
-      const token = activeSessionTokenRef.current;
-      if (!token) return;
-      try {
-        const res = await fetch(`/api/v1/meetings/signaling?meetingId=${encodeURIComponent(meetingId)}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        if (res.ok) {
-          const data = await res.json();
-          if (data.screenShare?.dataUrl && data.screenShare.presenterId !== user?.id) {
-            setRemoteScreenFrame(data.screenShare.dataUrl);
-          } else if (!data.screenShare && !localMedia.screenShareEnabled) {
-            setRemoteScreenFrame(null);
-          }
-        }
-      } catch (_) {}
-    }, 1200);
-
-    return () => {
-      clearInterval(relayInterval);
-      if (bc) {
-        try { bc.close(); } catch (_) {}
-      }
-    };
-  }, [meetingId, user?.id, localMedia.screenShareEnabled]);
-
-  // Screen frame broadcast sender (via BroadcastChannel & serverless signaling relay)
-  useEffect(() => {
-    if (!localMedia.screenShareEnabled || !localMedia.screenStream || !meetingId) {
-      setRemoteScreenFrame(null);
-      return;
+    if (localMedia.screenShareEnabled && localMedia.screenStream) {
+      webrtcPeerService.setLocalScreenStream(localMedia.screenStream);
+    } else {
+      webrtcPeerService.setLocalScreenStream(null);
     }
-
-    let intervalId: any = null;
-    let bc: BroadcastChannel | null = null;
-    let frameCount = 0;
-    const video = document.createElement('video');
-    video.srcObject = localMedia.screenStream;
-    video.muted = true;
-    video.play().catch(() => {});
-
-    try {
-      bc = new BroadcastChannel(`meet_screen_${meetingId}`);
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-
-      const startBroadcasting = () => {
-        canvas.width = Math.min(1280, video.videoWidth || 1280);
-        canvas.height = Math.min(720, video.videoHeight || 720);
-
-        intervalId = setInterval(() => {
-          if (video.videoWidth > 0 && ctx) {
-            frameCount++;
-            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-            const dataUrl = canvas.toDataURL('image/jpeg', 0.65);
-            if (bc) {
-              bc.postMessage({ type: 'screen_frame', dataUrl, presenterId: user?.id || 'local' });
-            }
-            // Send frame to signaling relay every ~600ms for cross-browser / remote peers
-            if (frameCount % 4 === 0) {
-              const token = activeSessionTokenRef.current;
-              if (token) {
-                fetch('/api/v1/meetings/signaling', {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-                  body: JSON.stringify({
-                    action: 'SCREEN_FRAME',
-                    meetingId,
-                    userId: user?.id,
-                    userName: user?.name,
-                    screenFrame: dataUrl,
-                  }),
-                }).catch(() => {});
-              }
-            }
-          }
-        }, 150);
-      };
-
-      if (video.videoWidth > 0) {
-        startBroadcasting();
-      } else {
-        video.onloadedmetadata = startBroadcasting;
-      }
-    } catch (_) {}
-
-    return () => {
-      if (intervalId) clearInterval(intervalId);
-      if (bc) {
-        try {
-          bc.postMessage({ type: 'screen_stop' });
-          bc.close();
-        } catch (_) {}
-      }
-      const token = activeSessionTokenRef.current;
-      if (token) {
-        fetch('/api/v1/meetings/signaling', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-          body: JSON.stringify({ action: 'SCREEN_FRAME', meetingId, screenFrame: null }),
-        }).catch(() => {});
-      }
-      video.srcObject = null;
-    };
-  }, [localMedia.screenShareEnabled, localMedia.screenStream, meetingId, user?.id, user?.name]);
+  }, [localMedia.screenShareEnabled, localMedia.screenStream]);
 
   // Stable lobby preview video stream attachment (prevents black screen and flickering on audioLevel re-renders)
   useEffect(() => {
@@ -329,18 +227,33 @@ export const MeetingRoom: React.FC = () => {
           cleanupAudioRef.current = stopAudio;
         }
 
-        // Fetch meeting info if available
-        if (meetingId && user) {
+        // Fetch meeting info & verify existence
+        if (meetingId) {
           try {
-            const meetingData = await meetingClientService.getMeetingById(
-              { id: user.id, email: user.email, name: user.name, role: user.role },
-              meetingId
-            );
-            if (isMounted && meetingData) {
-              setMeetingTitle(meetingData.title);
+            const token = user ? await getAdminBearerToken(user) : '';
+            const res = await fetch(`/api/v1/meetings?id=${encodeURIComponent(meetingId)}`, {
+              headers: token ? { Authorization: `Bearer ${token}` } : {},
+            });
+            if (res.ok) {
+              const data = await res.json();
+              const found = data.meetings?.find((m: any) => m.id === meetingId);
+              if (isMounted) {
+                if (found) {
+                  setMeetingExists(true);
+                  setMeetingTitle(found.title);
+                  setSetupTitle(found.title);
+                  setSetupHostName(found.trainer_name || found.hostName || user?.name || 'Platform Administrator');
+                  setSetupType(found.meeting_type || 'Interview');
+                  setSetupDesc(found.description || '');
+                } else {
+                  setMeetingExists(false);
+                }
+              }
+            } else {
+              if (isMounted) setMeetingExists(false);
             }
           } catch {
-            // Meeting might not exist yet or local mock
+            if (isMounted) setMeetingExists(false);
           }
         }
       } catch (err: any) {
@@ -430,6 +343,72 @@ export const MeetingRoom: React.FC = () => {
     }, 150); // max 6 dominant-speaker evaluations/sec
   }, [localMedia.audioLevel, localMedia.audioEnabled, participants, inLobby, hasLeft, user?.name]);
 
+  // 3b. Create Meeting Details & Join Action (Requirement: First give create meeting details then join)
+  const handleCreateAndJoinMeeting = async () => {
+    if (!meetingId) return;
+    setIsCreatingMeeting(true);
+    setErrorMsg(null);
+
+    try {
+      const token = await getAdminBearerToken(user);
+      const meetingPayload = {
+        id: meetingId,
+        title: setupTitle.trim() || 'Platform Architecture & Technical Interview',
+        description: setupDesc.trim(),
+        meeting_type: setupType,
+        meeting_provider: 'Platform Meet (Built-in)',
+        meeting_url: `/meet/${meetingId}`,
+        start_at: new Date().toISOString(),
+        end_at: new Date(Date.now() + 60 * 60 * 1000).toISOString(),
+        trainer_name: setupHostName.trim() || user?.name || 'Platform Administrator',
+        capacity: 50,
+      };
+
+      // 1. Try Admin Meeting creation
+      let created = false;
+      try {
+        const adminRes = await fetch('/api/v1/admin/meetings', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+          body: JSON.stringify({ action: 'create', ...meetingPayload }),
+        });
+        const adminData = await adminRes.json();
+        if (adminRes.ok && adminData.success) {
+          created = true;
+        }
+      } catch (_) {}
+
+      // 2. Fallback to general meeting create endpoint
+      if (!created) {
+        const genRes = await fetch('/api/v1/meetings', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+          body: JSON.stringify(meetingPayload),
+        });
+        const genData = await genRes.json();
+        if (!genRes.ok || !genData.success) {
+          throw new Error(genData.message || 'Failed to initialize meeting details.');
+        }
+      }
+
+      setMeetingExists(true);
+      setMeetingTitle(setupTitle.trim());
+      setIsCreatingMeeting(false);
+
+      // 3. Seamlessly enter the meeting room
+      await handleJoinMeeting();
+    } catch (err: any) {
+      setErrorMsg(err.message || 'Failed to initialize meeting details before joining.');
+      setIsCreatingMeeting(false);
+    }
+  };
+
   // 4. Join Meeting Action
   const handleJoinMeeting = async () => {
     if (!meetingId) return;
@@ -491,7 +470,7 @@ export const MeetingRoom: React.FC = () => {
                   if (p.id === peerUserId) {
                     return streamType === 'screen'
                       ? { ...p, screenStream: stream, screenShareEnabled: true }
-                      : { ...p, stream };
+                      : { ...p, stream, videoEnabled: true, audioEnabled: true };
                   }
                   return p;
                 })
@@ -727,6 +706,15 @@ export const MeetingRoom: React.FC = () => {
   };
 
   const handleSendReaction = async (emoji: string) => {
+    // 1. Trigger floating reaction animation bubble
+    const reactionId = `react_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
+    const x = Math.floor(15 + Math.random() * 70);
+    setActiveReactions(prev => [...prev, { id: reactionId, emoji, userName: user?.name || 'You', x }]);
+    setTimeout(() => {
+      setActiveReactions(prev => prev.filter(r => r.id !== reactionId));
+    }, 2500);
+
+    // 2. Broadcast reaction via meeting collaboration service
     if (!meetingId) return;
     const res = await meetingCollaborationService.sendReaction(meetingId, emoji);
     if (!res.success && res.error) {
@@ -1345,20 +1333,44 @@ export const MeetingRoom: React.FC = () => {
   if (isRemovedFromMeeting) {
     return (
       <div className="rtc-fullscreen-wrap rtc-post-call-page">
-        <div className="rtc-post-call-card">
-          <div className="rtc-post-call-icon">🚫</div>
-          <h2>Removed from Meeting</h2>
-          <p className="rtc-post-call-subtitle">
-            {removalReason || 'A meeting host has removed you from this session.'}
-          </p>
-          <div className="rtc-post-call-actions">
+        <nav className="rtc-platform-navbar">
+          <div className="rtc-nav-brand" onClick={() => navigate('/dashboard')}>
+            <div className="rtc-nav-logo-badge">
+              <span>📹</span>
+            </div>
+            <div className="rtc-nav-brand-texts">
+              <span className="rtc-nav-brand-title">Frontend Interview</span>
+              <span className="rtc-nav-brand-sub">Platform Meet</span>
+            </div>
+          </div>
+          <div className="rtc-nav-right">
             <button
               type="button"
-              className="rtc-btn rtc-btn-primary"
-              onClick={() => navigate('/')}
+              className="rtc-nav-back-btn"
+              onClick={() => navigate('/dashboard')}
+              title="Return to Dashboard"
             >
-              Return Home
+              ← Dashboard
             </button>
+            <ThemeToggle />
+          </div>
+        </nav>
+        <div className="rtc-post-call-container">
+          <div className="rtc-post-call-card">
+            <div className="rtc-post-call-icon">🚫</div>
+            <h2>Removed from Meeting</h2>
+            <p className="rtc-post-call-subtitle">
+              {removalReason || 'A meeting host has removed you from this session.'}
+            </p>
+            <div className="rtc-post-call-actions">
+              <button
+                type="button"
+                className="rtc-btn rtc-btn-primary"
+                onClick={() => navigate('/dashboard')}
+              >
+                Return to Dashboard
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -1369,23 +1381,47 @@ export const MeetingRoom: React.FC = () => {
   if (isMeetingEndedByHost) {
     return (
       <div className="rtc-fullscreen-wrap rtc-post-call-page">
-        <div className="rtc-post-call-card">
-          <div className="rtc-post-call-icon">🏁</div>
-          <h2>Meeting Ended</h2>
-          <p className="rtc-post-call-subtitle">
-            The host has ended this meeting for all participants.
-          </p>
-          <p className="rtc-post-call-subtitle">
-            Total Duration: <strong>{formatTimer(elapsedSeconds)}</strong>
-          </p>
-          <div className="rtc-post-call-actions">
+        <nav className="rtc-platform-navbar">
+          <div className="rtc-nav-brand" onClick={() => navigate('/dashboard')}>
+            <div className="rtc-nav-logo-badge">
+              <span>📹</span>
+            </div>
+            <div className="rtc-nav-brand-texts">
+              <span className="rtc-nav-brand-title">Frontend Interview</span>
+              <span className="rtc-nav-brand-sub">Platform Meet</span>
+            </div>
+          </div>
+          <div className="rtc-nav-right">
             <button
               type="button"
-              className="rtc-btn rtc-btn-primary"
-              onClick={() => navigate('/')}
+              className="rtc-nav-back-btn"
+              onClick={() => navigate('/dashboard')}
+              title="Return to Dashboard"
             >
-              Return Home
+              ← Dashboard
             </button>
+            <ThemeToggle />
+          </div>
+        </nav>
+        <div className="rtc-post-call-container">
+          <div className="rtc-post-call-card">
+            <div className="rtc-post-call-icon">🏁</div>
+            <h2>Meeting Ended</h2>
+            <p className="rtc-post-call-subtitle">
+              The host has ended this meeting for all participants.
+            </p>
+            <p className="rtc-post-call-subtitle">
+              Total Duration: <strong>{formatTimer(elapsedSeconds)}</strong>
+            </p>
+            <div className="rtc-post-call-actions">
+              <button
+                type="button"
+                className="rtc-btn rtc-btn-primary"
+                onClick={() => navigate('/dashboard')}
+              >
+                Return to Dashboard
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -1396,30 +1432,54 @@ export const MeetingRoom: React.FC = () => {
   if (hasLeft) {
     return (
       <div className="rtc-fullscreen-wrap rtc-post-call-page">
-        <div className="rtc-post-call-card">
-          <div className="rtc-post-call-icon">👋</div>
-          <h2>You left the meeting</h2>
-          <p className="rtc-post-call-subtitle">
-            Meeting Duration: <strong>{formatTimer(elapsedSeconds)}</strong>
-          </p>
-          <div className="rtc-post-call-actions">
+        <nav className="rtc-platform-navbar">
+          <div className="rtc-nav-brand" onClick={() => navigate('/dashboard')}>
+            <div className="rtc-nav-logo-badge">
+              <span>📹</span>
+            </div>
+            <div className="rtc-nav-brand-texts">
+              <span className="rtc-nav-brand-title">Frontend Interview</span>
+              <span className="rtc-nav-brand-sub">Platform Meet</span>
+            </div>
+          </div>
+          <div className="rtc-nav-right">
             <button
               type="button"
-              className="rtc-btn rtc-btn-primary"
-              onClick={() => {
-                setHasLeft(false);
-                setInLobby(true);
-              }}
+              className="rtc-nav-back-btn"
+              onClick={() => navigate('/dashboard')}
+              title="Return to Dashboard"
             >
-              Rejoin Lobby
+              ← Dashboard
             </button>
-            <button
-              type="button"
-              className="rtc-btn rtc-btn-secondary"
-              onClick={() => navigate('/')}
-            >
-              Back to Home
-            </button>
+            <ThemeToggle />
+          </div>
+        </nav>
+        <div className="rtc-post-call-container">
+          <div className="rtc-post-call-card">
+            <div className="rtc-post-call-icon">👋</div>
+            <h2>You left the meeting</h2>
+            <p className="rtc-post-call-subtitle">
+              Meeting Duration: <strong>{formatTimer(elapsedSeconds)}</strong>
+            </p>
+            <div className="rtc-post-call-actions">
+              <button
+                type="button"
+                className="rtc-btn rtc-btn-primary"
+                onClick={() => {
+                  setHasLeft(false);
+                  setInLobby(true);
+                }}
+              >
+                Rejoin Lobby
+              </button>
+              <button
+                type="button"
+                className="rtc-btn rtc-btn-secondary"
+                onClick={() => navigate('/dashboard')}
+              >
+                Return to Dashboard
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -1430,116 +1490,275 @@ export const MeetingRoom: React.FC = () => {
   if (inLobby) {
     return (
       <div className="rtc-fullscreen-wrap rtc-lobby-page">
-        <div className="rtc-lobby-card">
-          <div className="rtc-lobby-header">
-            <span className="rtc-badge-chip">🔒 Secure Real-Time Meeting</span>
-            <h1 className="rtc-lobby-title">{meetingTitle}</h1>
-            <p className="rtc-lobby-desc">Check your audio and video before entering the room.</p>
-          </div>
-
-          {errorMsg && <div className="rtc-error-alert">⚠️ {errorMsg}</div>}
-
-          {/* Lobby Preview Frame */}
-          <div className="rtc-lobby-preview-box">
-            {localMedia.videoEnabled && localMedia.stream ? (
-              <video
-                ref={lobbyVideoRef}
-                autoPlay
-                playsInline
-                muted
-                className="rtc-video-element rtc-local-mirror"
-              />
-            ) : (
-              <div className="rtc-avatar-fallback">
-                <div className="rtc-initials-badge">
-                  {(user?.name || 'Guest')
-                    .split(' ')
-                    .map(n => n[0])
-                    .slice(0, 2)
-                    .join('')
-                    .toUpperCase()}
-                </div>
-                <div className="rtc-avatar-name">{user?.name || 'Guest User'}</div>
-                <span className="rtc-cam-off-hint">Camera is off</span>
-              </div>
-            )}
-
-            {/* Audio Indicator Bubble */}
-            <div className="rtc-lobby-mic-bubble">
-              <span
-                className={`rtc-lobby-mic-dot ${localMedia.audioLevel > 10 ? 'speaking' : ''}`}
-              />
-              <span>{localMedia.audioEnabled ? `Mic: ${localMedia.audioLevel}%` : 'Mic Muted'}</span>
+        {/* Top Platform Navigation Bar */}
+        <nav className="rtc-platform-navbar">
+          <div className="rtc-nav-brand" onClick={() => navigate('/dashboard')}>
+            <div className="rtc-nav-logo-badge">
+              <span>📹</span>
             </div>
-
-            {/* Quick Preview Toggles */}
-            <div className="rtc-lobby-preview-controls">
-              <button
-                type="button"
-                className={`rtc-lobby-toggle-btn ${localMedia.audioEnabled ? 'active' : 'muted'}`}
-                onClick={handleToggleAudio}
-                title={localMedia.audioEnabled ? 'Mute Mic' : 'Unmute Mic'}
-              >
-                {localMedia.audioEnabled ? '🎙️ Mic On' : '🔇 Mic Off'}
-              </button>
-              <button
-                type="button"
-                className={`rtc-lobby-toggle-btn ${localMedia.videoEnabled ? 'active' : 'muted'}`}
-                onClick={handleToggleVideo}
-                title={localMedia.videoEnabled ? 'Turn Off Cam' : 'Turn On Cam'}
-              >
-                {localMedia.videoEnabled ? '📹 Cam On' : '🚫 Cam Off'}
-              </button>
+            <div className="rtc-nav-brand-texts">
+              <span className="rtc-nav-brand-title">Frontend Interview</span>
+              <span className="rtc-nav-brand-sub">Platform Meet</span>
             </div>
           </div>
 
-          {/* Device Selectors */}
-          <div className="rtc-lobby-device-selects">
-            <div className="rtc-device-select-group">
-              <label>Microphone</label>
-              <select
-                value={localMedia.audioInputDeviceId}
-                onChange={e => handleSelectDevice('audioinput', e.target.value)}
-                className="rtc-select"
-              >
-                {devices
-                  .filter(d => d.kind === 'audioinput')
-                  .map(d => (
-                    <option key={d.deviceId} value={d.deviceId}>
-                      {d.label}
-                    </option>
-                  ))}
-              </select>
-            </div>
-
-            <div className="rtc-device-select-group">
-              <label>Camera</label>
-              <select
-                value={localMedia.videoInputDeviceId}
-                onChange={e => handleSelectDevice('videoinput', e.target.value)}
-                className="rtc-select"
-              >
-                {devices
-                  .filter(d => d.kind === 'videoinput')
-                  .map(d => (
-                    <option key={d.deviceId} value={d.deviceId}>
-                      {d.label}
-                    </option>
-                  ))}
-              </select>
-            </div>
+          <div className="rtc-nav-breadcrumbs">
+            <button type="button" className="rtc-nav-crumb" onClick={() => navigate('/dashboard')}>
+              Dashboard
+            </button>
+            <span className="rtc-nav-separator">/</span>
+            <button type="button" className="rtc-nav-crumb" onClick={() => navigate('/meet')}>
+              Meetings
+            </button>
+            <span className="rtc-nav-separator">/</span>
+            <span className="rtc-nav-crumb rtc-nav-current">{meetingId}</span>
+            <span className="rtc-badge-chip rtc-nav-badge">Lobby</span>
           </div>
 
-          {/* Join CTA */}
-          <div className="rtc-lobby-cta-row">
+          <div className="rtc-nav-right">
             <button
               type="button"
-              className="rtc-btn rtc-btn-primary rtc-btn-large"
-              onClick={handleJoinMeeting}
-              disabled={connectionState === 'CONNECTING'}
+              className="rtc-nav-back-btn"
+              onClick={() => navigate('/dashboard')}
+              title="Return to Dashboard"
             >
-              {connectionState === 'CONNECTING' ? 'Connecting to Media SFU...' : 'Join Meeting Now'}
+              ← Dashboard
             </button>
+            <ThemeToggle />
+            {user && (
+              <div className="rtc-nav-user-chip" title={user.email || user.name || 'User'}>
+                <div className="rtc-nav-user-avatar">
+                  {user.name ? user.name.charAt(0).toUpperCase() : 'U'}
+                </div>
+                <span className="rtc-nav-user-name">{user.name || 'User'}</span>
+              </div>
+            )}
+          </div>
+        </nav>
+
+        {/* Centered Lobby Content Area */}
+        <div className="rtc-lobby-content-container">
+          <div className="rtc-lobby-card">
+            <div className="rtc-lobby-header">
+              <span className="rtc-badge-chip">🔒 Secure Real-Time Media Room</span>
+              <h1 className="rtc-lobby-title">{meetingTitle}</h1>
+              <p className="rtc-lobby-desc">Check your camera, microphone, and devices before entering.</p>
+            </div>
+
+            {errorMsg && <div className="rtc-error-alert">⚠️ {errorMsg}</div>}
+
+            {/* Lobby Preview Frame */}
+            <div className="rtc-lobby-preview-box">
+              {localMedia.videoEnabled && localMedia.stream ? (
+                <video
+                  ref={lobbyVideoRef}
+                  autoPlay
+                  playsInline
+                  muted
+                  className="rtc-video-element rtc-local-mirror"
+                />
+              ) : (
+                <div className="rtc-avatar-fallback">
+                  <div className="rtc-initials-badge">
+                    {(user?.name || 'Guest')
+                      .split(' ')
+                      .map(n => n[0])
+                      .slice(0, 2)
+                      .join('')
+                      .toUpperCase()}
+                  </div>
+                  <div className="rtc-avatar-name">{user?.name || 'Guest User'}</div>
+                  <span className="rtc-cam-off-hint">Camera is off</span>
+                </div>
+              )}
+
+              {/* Audio Indicator Bubble */}
+              <div className="rtc-lobby-mic-bubble">
+                <span
+                  className={`rtc-lobby-mic-dot ${localMedia.audioLevel > 10 ? 'speaking' : ''}`}
+                />
+                <span>{localMedia.audioEnabled ? `Mic: ${localMedia.audioLevel}%` : 'Mic Muted'}</span>
+              </div>
+
+              {/* Quick Preview Toggles */}
+              <div className="rtc-lobby-preview-controls">
+                <button
+                  type="button"
+                  className={`rtc-lobby-toggle-btn ${localMedia.audioEnabled ? 'active' : 'muted'}`}
+                  onClick={handleToggleAudio}
+                  title={localMedia.audioEnabled ? 'Mute Mic' : 'Unmute Mic'}
+                >
+                  {localMedia.audioEnabled ? '🎙️ Mic On' : '🔇 Mic Off'}
+                </button>
+                <button
+                  type="button"
+                  className={`rtc-lobby-toggle-btn ${localMedia.videoEnabled ? 'active' : 'muted'}`}
+                  onClick={handleToggleVideo}
+                  title={localMedia.videoEnabled ? 'Turn Off Cam' : 'Turn On Cam'}
+                >
+                  {localMedia.videoEnabled ? '📹 Cam On' : '🚫 Cam Off'}
+                </button>
+              </div>
+            </div>
+
+            {/* Device Selectors */}
+            <div className="rtc-lobby-device-selects">
+              <div className="rtc-device-select-group">
+                <label>Microphone</label>
+                <select
+                  value={localMedia.audioInputDeviceId}
+                  onChange={e => handleSelectDevice('audioinput', e.target.value)}
+                  className="rtc-select"
+                >
+                  {devices
+                    .filter(d => d.kind === 'audioinput')
+                    .map(d => (
+                      <option key={d.deviceId} value={d.deviceId}>
+                        {d.label}
+                      </option>
+                    ))}
+                </select>
+              </div>
+
+              <div className="rtc-device-select-group">
+                <label>Camera</label>
+                <select
+                  value={localMedia.videoInputDeviceId}
+                  onChange={e => handleSelectDevice('videoinput', e.target.value)}
+                  className="rtc-select"
+                >
+                  {devices
+                    .filter(d => d.kind === 'videoinput')
+                    .map(d => (
+                      <option key={d.deviceId} value={d.deviceId}>
+                        {d.label}
+                      </option>
+                    ))}
+                </select>
+              </div>
+            </div>
+
+            {/* Meeting Details & Configuration Section (Requirement: First give create meeting details then join) */}
+            <div className="rtc-lobby-details-panel">
+              <div className="rtc-lobby-section-title">
+                <span>📋</span> Meeting Details &amp; Configuration
+              </div>
+
+              {meetingExists === false ? (
+                <div className="rtc-lobby-form-grid">
+                  <div className="rtc-lobby-input-group">
+                    <label>Meeting ID</label>
+                    <div className="rtc-lobby-id-pill">
+                      <code>{meetingId}</code>
+                      <span className="rtc-badge-new">New Session</span>
+                    </div>
+                  </div>
+
+                  <div className="rtc-lobby-input-group">
+                    <label>Meeting Title</label>
+                    <input
+                      type="text"
+                      className="rtc-lobby-input"
+                      value={setupTitle}
+                      onChange={e => setSetupTitle(e.target.value)}
+                      placeholder="e.g. Platform Architecture &amp; System Design"
+                    />
+                  </div>
+
+                  <div className="rtc-lobby-input-group">
+                    <label>Host / Evaluator Name</label>
+                    <input
+                      type="text"
+                      className="rtc-lobby-input"
+                      value={setupHostName}
+                      onChange={e => setSetupHostName(e.target.value)}
+                      placeholder="Your name or evaluator handle"
+                    />
+                  </div>
+
+                  <div className="rtc-lobby-input-group">
+                    <label>Meeting Type</label>
+                    <select
+                      className="rtc-lobby-select"
+                      value={setupType}
+                      onChange={e => setSetupType(e.target.value)}
+                    >
+                      <option value="Interview">Technical Interview</option>
+                      <option value="Mock Interview">Mock Interview</option>
+                      <option value="Technical Discussion">Technical Discussion</option>
+                      <option value="Architecture Review">Architecture Review</option>
+                      <option value="Training">Training Session</option>
+                      <option value="ELP Session">ELP Session</option>
+                    </select>
+                  </div>
+
+                  <div className="rtc-lobby-input-group full-width">
+                    <label>Description &amp; Agenda</label>
+                    <input
+                      type="text"
+                      className="rtc-lobby-input"
+                      value={setupDesc}
+                      onChange={e => setSetupDesc(e.target.value)}
+                      placeholder="Topics, evaluation criteria, or session agenda"
+                    />
+                  </div>
+                </div>
+              ) : (
+                <div className="rtc-lobby-existing-details">
+                  <div className="rtc-lobby-info-row">
+                    <span className="rtc-info-label">Room ID:</span>
+                    <span className="rtc-info-val"><code>{meetingId}</code></span>
+                  </div>
+                  <div className="rtc-lobby-info-row">
+                    <span className="rtc-info-label">Title:</span>
+                    <span className="rtc-info-val font-semibold">{meetingTitle}</span>
+                  </div>
+                  <div className="rtc-lobby-info-row">
+                    <span className="rtc-info-label">Host:</span>
+                    <span className="rtc-info-val">{setupHostName}</span>
+                  </div>
+                  <div className="rtc-lobby-info-row">
+                    <span className="rtc-info-label">Type:</span>
+                    <span className="rtc-badge-chip-sm">{setupType}</span>
+                  </div>
+                  {setupDesc && (
+                    <div className="rtc-lobby-info-row">
+                      <span className="rtc-info-label">Agenda:</span>
+                      <span className="rtc-info-val text-muted">{setupDesc}</span>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Join / Create CTA */}
+            <div className="rtc-lobby-cta-row">
+              {meetingExists === false ? (
+                <button
+                  type="button"
+                  className="rtc-btn rtc-btn-primary rtc-btn-large"
+                  onClick={handleCreateAndJoinMeeting}
+                  disabled={isCreatingMeeting || connectionState === 'CONNECTING'}
+                  style={{
+                    background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                    boxShadow: '0 4px 18px rgba(16, 185, 129, 0.4)',
+                  }}
+                >
+                  {isCreatingMeeting
+                    ? 'Creating Meeting Details & Joining...'
+                    : '✨ Create Meeting & Join Room'}
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  className="rtc-btn rtc-btn-primary rtc-btn-large"
+                  onClick={handleJoinMeeting}
+                  disabled={connectionState === 'CONNECTING'}
+                >
+                  {connectionState === 'CONNECTING' ? 'Connecting to Media SFU...' : '🚀 Join Meeting Now'}
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -1593,6 +1812,14 @@ export const MeetingRoom: React.FC = () => {
       {/* Top Header Bar */}
       <header className="rtc-meeting-header">
         <div className="rtc-header-left">
+          <button
+            type="button"
+            className="rtc-header-nav-btn"
+            onClick={() => navigate('/dashboard')}
+            title="Return to Dashboard"
+          >
+            ← Dashboard
+          </button>
           <div className="rtc-brand-chip">
             <span className="rtc-live-indicator-dot" />
             <span className="rtc-brand-text">MEET LIVE</span>
@@ -1614,6 +1841,14 @@ export const MeetingRoom: React.FC = () => {
             <span className="rtc-quality-dot" />
             <span>{connectionQuality}</span>
           </div>
+          <ThemeToggle />
+          {user && (
+            <div className="rtc-header-user-chip" title={user.email || user.name || 'User'}>
+              <div className="rtc-header-user-avatar">
+                {user.name ? user.name.charAt(0).toUpperCase() : 'U'}
+              </div>
+            </div>
+          )}
         </div>
       </header>
 
@@ -1642,9 +1877,9 @@ export const MeetingRoom: React.FC = () => {
 
         {/* Google Meet Style "Your meeting's ready" Info Card */}
         {(() => {
-          const remotePresenter = participants.find(p => p.screenShareEnabled);
           const isLocalScreenShare = localMedia.screenShareEnabled && !!localMedia.screenStream;
-          const isScreenSharingActive = isLocalScreenShare || !!remotePresenter || !!remoteScreenFrame;
+          const remotePresenter = participants.find(p => p.screenShareEnabled);
+          const isScreenSharingActive = isLocalScreenShare || !!remotePresenter;
           return participants.length === 0 && showReadyCard && !isWhiteboardOpen && !isCodeEditorOpen && !isScreenSharingActive;
         })() && (
           <div className="rtc-instant-ready-card">
@@ -1822,7 +2057,7 @@ export const MeetingRoom: React.FC = () => {
               onClose={() => setIsCodeEditorOpen(false)}
             />
           </div>
-        ) : (localMedia.screenShareEnabled && !!localMedia.screenStream) || participants.some(p => p.screenShareEnabled) || !!remoteScreenFrame ? (
+        ) : (localMedia.screenShareEnabled && !!localMedia.screenStream) || participants.some(p => p.screenShareEnabled) ? (
           (() => {
             const remotePresenter = participants.find(p => p.screenShareEnabled);
             const isLocalScreenShare = localMedia.screenShareEnabled && !!localMedia.screenStream;
@@ -1903,12 +2138,6 @@ export const MeetingRoom: React.FC = () => {
                         autoPlay
                         playsInline
                         muted={isLocalScreenShare}
-                        className="rtc-presentation-video"
-                      />
-                    ) : remoteScreenFrame ? (
-                      <img
-                        src={remoteScreenFrame}
-                        alt="Screen presentation"
                         className="rtc-presentation-video"
                       />
                     ) : (
@@ -2181,12 +2410,51 @@ export const MeetingRoom: React.FC = () => {
                     <span>Screen Share Permission:</span>
                     <strong>{permissions.canPublishScreen ? 'Allowed' : 'Disabled'}</strong>
                   </div>
+                  <button
+                    type="button"
+                    className="rtc-telemetry-diag-btn"
+                    onClick={() => {
+                      setIsSettingsOpen(false);
+                      setIsDiagnosticsOpen(true);
+                    }}
+                    style={{
+                      marginTop: '12px',
+                      width: '100%',
+                      padding: '8px 12px',
+                      background: 'rgba(59, 130, 246, 0.2)',
+                      border: '1px solid rgba(59, 130, 246, 0.4)',
+                      color: '#60a5fa',
+                      borderRadius: '8px',
+                      cursor: 'pointer',
+                      fontWeight: 600,
+                      fontSize: '12px',
+                    }}
+                  >
+                    🛠️ Open Real-Time Observability Diagnostics Panel
+                  </button>
                 </div>
               </div>
             </div>
           </div>
         )}
+
+        {/* Meeting Ops Observability Diagnostics Panel (Requirement 42) */}
+        <MeetingOpsDiagnosticsPanel
+          meetingId={meetingId || ''}
+          userId={user?.id || 'guest'}
+          isOpen={isDiagnosticsOpen}
+          onClose={() => setIsDiagnosticsOpen(false)}
+        />
       </main>
+
+      {/* Floating Animated Meeting Reactions Overlay */}
+      <div className="floating-reactions-overlay">
+        {activeReactions.map(r => (
+          <span key={r.id} className="floating-reaction-bubble" style={{ left: `${r.x}%` }}>
+            {r.emoji}
+          </span>
+        ))}
+      </div>
 
       {/* Floating Bottom Media Controls Dock */}
       <MediaControlsDock

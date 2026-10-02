@@ -6,7 +6,7 @@ import type {
   InterviewBlueprint,
 } from '../types/mock.types';
 import { blueprintService } from './blueprintService';
-import { getMockQuestionById, registerDynamicMockQuestion } from '../data/questionBankRegistry';
+import { getMockQuestionById, registerDynamicMockQuestion, ensureTrackLoaded, isTrackLoaded } from '../data/questionBankRegistry';
 import { mockPersistenceService, newUuid, type PersistResult } from './mockPersistenceService';
 import type { MasterQuestion } from '../../interview-questions/types/interviewQuestions.types';
 
@@ -14,7 +14,17 @@ const LOCAL_SESSION_PREFIX = 'ai_video_mock_session_';
 const LOCAL_ACTIVE_SESSION_ID = 'ai_video_mock_active_id';
 
 export const mockSessionService = {
+  /** Preloads the track chunk, then creates the session. Use from UI handlers. */
+  async createSessionAsync(userId: string, config: CandidateSetupConfig): Promise<MockInterviewSession> {
+    await ensureTrackLoaded(config.primaryTechnology);
+    return this.createSession(userId, config);
+  },
   createSession(userId: string, config: CandidateSetupConfig): MockInterviewSession {
+    if (!isTrackLoaded(config.primaryTechnology)) {
+      throw new Error(
+        `Question bank track "${config.primaryTechnology}" not loaded. Call createSessionAsync() instead of createSession().`
+      );
+    }
     // UUID session ids: required by mock_interview_sessions.id (UUID PK).
     const sessionId = newUuid();
     const blueprint = blueprintService.generateBlueprint(sessionId, config);

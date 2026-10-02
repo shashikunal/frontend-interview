@@ -1,8 +1,13 @@
 import type { CandidateSetupConfig, InterviewBlueprint, QuestionDifficulty } from '../types/mock.types';
-import { TRACK_QUESTIONS_MAP } from '../data/questionBankRegistry';
+import { TRACK_QUESTIONS_MAP, ensureTrackLoaded } from '../data/questionBankRegistry';
 import type { MockQuestion } from '../types/questionBank.types';
 
 export const blueprintService = {
+  /** Preloads the primary-technology track chunk, then generates synchronously. */
+  async generateBlueprintAsync(sessionId: string, config: CandidateSetupConfig): Promise<InterviewBlueprint> {
+    await ensureTrackLoaded(config.primaryTechnology);
+    return this.generateBlueprint(sessionId, config);
+  },
   generateBlueprint(sessionId: string, config: CandidateSetupConfig): InterviewBlueprint {
     const totalQ = Math.max(1, config.questionCount || 5);
 

@@ -49,7 +49,7 @@ export default async function handler(req, res) {
   // Strict RBAC: Admin only
   if (user.role !== 'admin') {
     return res.status(403).json(
-      createErrorResponse('Forbidden', 'Only platform administrator (shashi) has rights.', 'FORBIDDEN', correlation.correlationId)
+      createErrorResponse('Forbidden', 'Only platform administrator has rights.', 'FORBIDDEN', correlation.correlationId)
     );
   }
 
@@ -95,7 +95,7 @@ export default async function handler(req, res) {
     const page = parseInt(urlObj.searchParams.get('page') || '1', 10);
     const limit = parseInt(urlObj.searchParams.get('limit') || '10', 10);
     const status = urlObj.searchParams.get('status') || undefined;
-    const batchId = urlObj.searchParams.get('batchId') || urlObj.searchParams.get('batch_id') || undefined;
+    const batchId = urlObj.searchParams.get('batchId') || urlObj.searchParams.get('batch_id') || urlObj.searchParams.get('batch_code') || urlObj.searchParams.get('batchCode') || undefined;
     const trainerId = urlObj.searchParams.get('trainerId') || urlObj.searchParams.get('trainer_id') || undefined;
     const timeframe = (urlObj.searchParams.get('timeframe') || undefined);
     const search = urlObj.searchParams.get('search') || undefined;
@@ -132,9 +132,54 @@ export default async function handler(req, res) {
     }
   }
 
-  // 3. POST: Actions (Create, Update, Cancel, Assign, Attendance, Send Notification)
+  // 3. DELETE: Idempotent Single Meeting Delete or Clear All
+  if (req.method === 'DELETE') {
+    const meetingId = urlObj.searchParams.get('meetingId') || urlObj.searchParams.get('id') || req.body?.meetingId;
+    const action = urlObj.searchParams.get('action') || req.body?.action;
+
+    if (meetingId && !['clear_all', 'delete_all', 'all'].includes(meetingId)) {
+      const result = await meetingOpsService.deleteSingleMeeting(user, meetingId);
+      return res.status(200).json({
+        ...result,
+        correlationId: correlation.correlationId,
+      });
+    }
+
+    if (action === 'clear_all' || action === 'delete_all' || action === 'all' || !meetingId) {
+      const resClear = meetingOpsService.clearAllMeetings();
+      if (globalThis.__ACTIVE_MEETING_ALERTS__) {
+        globalThis.__ACTIVE_MEETING_ALERTS__.length = 0;
+      }
+      return res.status(200).json({
+        success: true,
+        clearedCount: resClear.clearedCount,
+        message: 'All scheduled meetings removed from roster.',
+        correlationId: correlation.correlationId,
+      });
+    }
+
+    return res.status(400).json(
+      createErrorResponse('BadRequest', 'meetingId query parameter or action=clear_all is required.', 'MISSING_PARAMETERS', correlation.correlationId)
+    );
+  }
+
+  // 3. POST: Actions (Create, Update, Cancel, Assign, Attendance, Send Notification, Clear All)
   if (req.method === 'POST') {
     const action = req.body?.action || (req.body?.targetStatus ? 'transition' : 'create');
+
+    // Clear All Meetings
+    if (action === 'clear_all' || action === 'delete_all' || action === 'clear') {
+      const resClear = meetingOpsService.clearAllMeetings();
+      if (globalThis.__ACTIVE_MEETING_ALERTS__) {
+        globalThis.__ACTIVE_MEETING_ALERTS__.length = 0;
+      }
+      return res.status(200).json({
+        success: true,
+        clearedCount: resClear.clearedCount,
+        message: 'All scheduled meetings removed from roster.',
+        correlationId: correlation.correlationId,
+      });
+    }
 
     // Create Instant Meeting (Google Meet Style)
     if (action === 'instant' || action === 'create_instant') {
@@ -188,6 +233,19 @@ export default async function handler(req, res) {
         return res.status(400).json(createErrorResponse('BadRequest', result.error || 'Cancellation failed.', 'CANCEL_FAILED', correlation.correlationId));
       }
       return res.status(200).json({ success: true, correlationId: correlation.correlationId });
+    }
+
+    // Permanently Delete Single Meeting
+    if (action === 'delete' || action === 'delete_single') {
+      const { meetingId } = req.body;
+      if (!meetingId) {
+        return res.status(400).json(createErrorResponse('BadRequest', 'meetingId is required.', 'INVALID_PARAMETERS', correlation.correlationId));
+      }
+      const result = await meetingOpsService.deleteSingleMeeting(user, meetingId);
+      if (!result.success) {
+        return res.status(400).json(createErrorResponse('BadRequest', result.error || 'Deletion failed.', 'DELETE_FAILED', correlation.correlationId));
+      }
+      return res.status(200).json({ success: true, message: 'Meeting permanently deleted.', correlationId: correlation.correlationId });
     }
 
     // Assign Students

@@ -12,6 +12,7 @@ export const PERSONAS: InterviewerPersona[] = [
     role: 'Staff Frontend Architect',
     company: 'Meta',
     avatar: '👩‍💻',
+    imageUrl: '/personas/sarah_chen.jpg',
     style: 'Senior Interviewer',
     bio: 'Focuses on concurrent React, Fiber reconciliation, state machines & distributed UI systems.',
     voicePitch: 1.0,
@@ -23,6 +24,7 @@ export const PERSONAS: InterviewerPersona[] = [
     role: 'Principal UI Engineer',
     company: 'Google',
     avatar: '👨‍💼',
+    imageUrl: '/personas/david_miller.jpg',
     style: 'Strict',
     bio: 'Deep technical examination of JavaScript runtime, event loop, memory leaks & high-load concurrency.',
     voicePitch: 0.9,
@@ -34,6 +36,7 @@ export const PERSONAS: InterviewerPersona[] = [
     role: 'Engineering Director',
     company: 'Netflix',
     avatar: '👩‍🔬',
+    imageUrl: '/personas/elena_rostova.jpg',
     style: 'System Design Interviewer',
     bio: 'Evaluates large-scale frontend architecture, trade-offs, micro-frontends, and resilience under failure.',
     voicePitch: 1.05,
@@ -45,6 +48,7 @@ export const PERSONAS: InterviewerPersona[] = [
     role: 'Bar Raiser & Senior Manager',
     company: 'Amazon',
     avatar: '👨‍🏫',
+    imageUrl: '/personas/marcus_vance.jpg',
     style: 'HR / Behavioral',
     bio: 'Focuses on STAR methodology, conflict resolution, executive communication, and customer obsession.',
     voicePitch: 0.95,
@@ -75,8 +79,12 @@ export default function MockSetupPage() {
     typescript: 3,
   });
 
-  const handleStartInterview = (e: React.FormEvent) => {
+  const [isStarting, setIsStarting] = useState(false);
+
+  const handleStartInterview = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isStarting) return;
+    setIsStarting(true);
 
     const selectedPersona = PERSONAS.find(p => p.id === selectedPersonaId) || PERSONAS[0];
 
@@ -100,8 +108,14 @@ export default function MockSetupPage() {
       pressureMode,
     };
 
-    const session = mockSessionService.createSession(user?.id || 'anonymous_candidate', config);
-    navigate(`/ai-video-mock/session/${session.id}`);
+    try {
+      const session = await mockSessionService.createSessionAsync(user?.id || 'anonymous_candidate', config);
+      navigate(`/ai-video-mock/session/${session.id}`);
+    } catch (err) {
+      console.error('[MockSetup] Failed to start interview:', err);
+      alert('Failed to load the question bank. Please check your connection and try again.');
+      setIsStarting(false);
+    }
   };
 
   return (
@@ -208,7 +222,7 @@ export default function MockSetupPage() {
                 style={{ width: '100%', padding: '10px', borderRadius: 8, background: 'var(--bg)', color: 'var(--text-primary)', border: '1px solid var(--border)' }}
               >
                 <option value="Quick">Quick Check (5 Questions)</option>
-                <option value="Standard">Standard FAANG Loop (5–10 Questions)</option>
+                <option value="Standard">Standard Interview Loop (5–10 Questions)</option>
                 <option value="Full">Full Comprehensive Round (15 Questions)</option>
                 <option value="Deep">Deep Architecture Dive (20 Questions)</option>
                 <option value="Technical">Technical Theory Only</option>
@@ -286,9 +300,10 @@ export default function MockSetupPage() {
         <button
           type="submit"
           className="ai-vm-btn-primary"
+          disabled={isStarting}
           style={{ padding: '14px', fontSize: '1.05rem', marginTop: 8 }}
         >
-          Generate Blueprint &amp; Enter Interview Room →
+          {isStarting ? 'Loading question bank...' : 'Generate Blueprint & Enter Interview Room →'}
         </button>
       </form>
     </div>

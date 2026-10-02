@@ -80,19 +80,8 @@ export default async function handler(req, res) {
   }
 
   // Handle unauthenticated requests
-  if (!user) {
-    // Allow GET /api/v1/meetings for public/candidate guest viewing
-    if (req.method === 'GET') {
-      user = {
-        id: 'candidate_guest',
-        email: 'guest@interviewprep.com',
-        name: 'Candidate',
-        role: 'candidate',
-        permissions: ['meetings:participate'],
-      };
-    } else {
-      return res.status(401).json(createErrorResponse('Unauthorized', 'Authentication required', 'MISSING_TOKEN'));
-    }
+  if (!user && req.method !== 'GET') {
+    return res.status(401).json(createErrorResponse('Unauthorized', 'Authentication required', 'MISSING_TOKEN'));
   }
 
   // 1. Download ICS Calendar Event
@@ -149,14 +138,14 @@ export default async function handler(req, res) {
     const limit = parseInt(urlObj.searchParams.get('limit') || '20', 10);
 
     // If student, filter by assigned meetings, but include live/started cohort sessions
-    const isPrivileged = user.role === 'admin' || user.role === 'interviewer';
-    const studentFilter = !isPrivileged && user.id !== 'candidate_guest' ? user.id : undefined;
+    const isPrivileged = user ? (user.role === 'admin' || user.role === 'interviewer') : false;
+    const studentFilter = isPrivileged || !user ? undefined : user.id;
 
     const result = meetingOpsService.listMeetings({
       status,
       timeframe: timeframe,
       student_id: studentFilter,
-      student_email: user.email,
+      student_email: user?.email,
       search,
       page,
       limit,
@@ -165,7 +154,7 @@ export default async function handler(req, res) {
     // Attach student participant RSVP and attendance info for student views
     const enrichedMeetings = result.meetings.map(m => {
       const details = meetingOpsService.getMeetingDetails(m.id);
-      const myParticipantRecord = details?.participants.find(p => p.student_id === user.id);
+      const myParticipantRecord = user ? details?.participants.find(p => p.student_id === user.id) : undefined;
       return {
         ...m,
         myRsvpStatus: myParticipantRecord?.invitation_status || 'pending',
@@ -192,7 +181,7 @@ export default async function handler(req, res) {
   if (req.method === 'POST' && (pathname.endsWith('/instant') || req.body?.action === 'instant' || urlObj.searchParams.get('action') === 'instant')) {
     if (user.role !== 'admin') {
       return res.status(403).json(
-        createErrorResponse('Forbidden', 'Only platform administrator (shashi) has rights to create meetings.', 'FORBIDDEN')
+        createErrorResponse('Forbidden', 'Only platform administrator has rights to create meetings.', 'FORBIDDEN')
       );
     }
 
@@ -211,7 +200,7 @@ export default async function handler(req, res) {
   if (req.method === 'POST') {
     if (user.role !== 'admin') {
       return res.status(403).json(
-        createErrorResponse('Forbidden', 'Only platform administrator (shashi) has rights to create meetings.', 'FORBIDDEN')
+        createErrorResponse('Forbidden', 'Only platform administrator has rights to create meetings.', 'FORBIDDEN')
       );
     }
 
@@ -225,6 +214,37 @@ export default async function handler(req, res) {
       meeting: result.meeting,
       occurrences: result.occurrences,
     });
+  }
+
+  // 6. DELETE: Idempotent Single Meeting Delete or Clear All (Strictly Admin only)
+  if (req.method === 'DELETE') {
+    if (!user || user.role !== 'admin') {
+      return res.status(403).json(
+        createErrorResponse('Forbidden', 'Only platform administrator has rights to delete meetings.', 'FORBIDDEN')
+      );
+    }
+
+    const meetingId = urlObj.searchParams.get('meetingId') || urlObj.searchParams.get('id') || req.body?.meetingId;
+    const action = urlObj.searchParams.get('action') || req.body?.action;
+
+    if (meetingId && !['clear_all', 'delete_all', 'all'].includes(meetingId)) {
+      const result = await meetingOpsService.deleteSingleMeeting(user, meetingId);
+      return res.status(200).json(result);
+    }
+
+    if (action === 'clear_all' || action === 'delete_all' || !meetingId || ['clear_all', 'delete_all', 'all'].includes(meetingId)) {
+      const resClear = meetingOpsService.clearAllMeetings();
+      if (globalThis.__ACTIVE_MEETING_ALERTS__) {
+        globalThis.__ACTIVE_MEETING_ALERTS__.length = 0;
+      }
+      return res.status(200).json({
+        success: true,
+        clearedCount: resClear.clearedCount,
+        message: 'All scheduled meetings removed from roster.',
+      });
+    }
+
+    return res.status(400).json(createErrorResponse('BadRequest', 'meetingId or action=clear_all is required for deletion.'));
   }
 
   return res.status(405).json(createErrorResponse('MethodNotAllowed', 'Method Not Allowed'));

@@ -5,7 +5,12 @@ import { AuthProvider } from './context/AuthContext'
 import { ThemeProvider } from './context/ThemeContext'
 import { BookmarkProvider } from './context/BookmarkContext'
 import { ProgressProvider } from './context/ProgressContext'
+import { Provider } from 'react-redux'
+import { QueryClientProvider } from '@tanstack/react-query'
+import { store } from './app/store'
+import { queryClient } from './lib/query/queryClient'
 import App from './App'
+import { GlobalErrorBoundary } from './components/common/ErrorBoundary'
 import './index.css'
 import './horizon-candidate-theme.css'
 
@@ -16,7 +21,7 @@ try {
   if (raw) {
     const list = JSON.parse(raw)
     const cleaned = Array.isArray(list)
-      ? list.filter((r: any) => !r.userEmail?.includes('faang.io') && r.userId !== 'usr_candidate_demo')
+      ? list.filter((r: any) => !r.userEmail?.includes('demo.io') && r.userId !== 'usr_candidate_demo')
       : []
     localStorage.setItem(reqKey, JSON.stringify(cleaned))
   }
@@ -26,17 +31,23 @@ try {
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <BrowserRouter>
-      <AuthProvider>
-        <ThemeProvider>
-          <BookmarkProvider>
-            <ProgressProvider>
-              <App />
-            </ProgressProvider>
-          </BookmarkProvider>
-        </ThemeProvider>
-      </AuthProvider>
-    </BrowserRouter>
+    <GlobalErrorBoundary name="Root Application">
+      <Provider store={store}>
+        <QueryClientProvider client={queryClient}>
+          <BrowserRouter>
+            <AuthProvider>
+              <ThemeProvider>
+                <BookmarkProvider>
+                  <ProgressProvider>
+                    <App />
+                  </ProgressProvider>
+                </BookmarkProvider>
+              </ThemeProvider>
+            </AuthProvider>
+          </BrowserRouter>
+        </QueryClientProvider>
+      </Provider>
+    </GlobalErrorBoundary>
   </StrictMode>,
 )
 

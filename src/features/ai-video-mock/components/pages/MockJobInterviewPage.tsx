@@ -62,7 +62,8 @@ Output JSON ONLY:
       else if (lower.includes('architecture')) primaryTrack = 'frontend-architecture';
     }
 
-    const session = mockSessionService.createSession('anonymous_candidate', {
+    try {
+    const session = await mockSessionService.createSessionAsync('anonymous_candidate', {
       totalExperienceYears: 6,
       experienceTier,
       techSpecificExperience: { [primaryTrack]: 5, javascript: 6, typescript: 3 },
@@ -84,6 +85,11 @@ Output JSON ONLY:
 
     setIsExtracting(false);
     navigate(`/ai-video-mock/session/${session.id}`);
+    } catch (err) {
+      console.error('[MockJob] Failed to synthesize interview:', err);
+      alert('Failed to load the question bank. Please check your connection and try again.');
+      setIsExtracting(false);
+    }
   };
 
   return (

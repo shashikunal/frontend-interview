@@ -12,16 +12,16 @@ const DEFAULT_SDUI_SCHEMA: SduiComponentNode[] = [
   {
     type: 'HEADER',
     props: {
-      title: 'FAANG Staff Engineer Roadmaps',
-      badge: 'PRO TIER',
+      title: 'Engineering Staff Curriculum Roadmaps',
+      badge: 'SERVER-DRIVEN UI',
       subtitle: 'Dynamic layout rendered dynamically from backend JSON response.',
     },
   },
   {
     type: 'BANNER',
     props: {
-      headline: '🔥 85% Off Black Friday Lifetime Access',
-      ctaText: 'Claim Offer',
+      headline: 'Server-Driven Dynamic UI Engine',
+      ctaText: 'Explore System',
       bgGradient: 'brand',
     },
   },
@@ -184,7 +184,7 @@ export default function SduiLab() {
           className={`sdui-tab ${activeTab === 'blueprints' ? 'active' : ''}`}
           onClick={() => setActiveTab('blueprints')}
         >
-          🏢 4. FAANG SDUI Blueprints (Airbnb &amp; Uber)
+          🏢 4. SDUI Blueprints (Airbnb &amp; Uber)
         </button>
       </div>
 
@@ -335,7 +335,7 @@ export default function SduiLab() {
       {activeTab === 'blueprints' && (
         <div className="bp-container">
           <div className="bp-intro-banner">
-            <h3>FAANG Server-Driven UI (SDUI) Production Blueprints</h3>
+            <h3>Server-Driven UI (SDUI) Production Blueprints</h3>
             <p>How top engineering teams deploy instant UI updates and A/B experiments without App Store reviews.</p>
           </div>
 
@@ -373,7 +373,7 @@ export default function SduiLab() {
           🎨 Design System &amp; Tokens Studio
         </Link>
         <Link to="/case-studies" className="btn btn-primary">
-          📐 FAANG Architecture Case Studies →
+          📐 Architecture Case Studies →
         </Link>
       </div>
     </div>

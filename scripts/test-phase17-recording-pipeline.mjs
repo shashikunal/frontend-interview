@@ -384,6 +384,7 @@ async function runPhase17Tests() {
   console.log(`\n======================================================`);
   console.log(`✅ All ${passed}/${total} Phase 17 Recording Tests PASSED`);
   console.log(`======================================================\n`);
+  process.exit(0);
 }
 
 runPhase17Tests().catch(err => {

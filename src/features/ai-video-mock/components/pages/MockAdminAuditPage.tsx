@@ -1,17 +1,28 @@
-import { useState, useMemo } from 'react';
-import { getAllMockQuestions, getQuestionBankAuditMetrics } from '../../data/questionBankRegistry';
+import { useState, useMemo, useEffect } from 'react';
+import { getAllMockQuestions, getQuestionBankAuditMetrics, ensureAllTracksLoaded } from '../../data/questionBankRegistry';
 import type { TechnologyTrack } from '../../types/questionBank.types';
 
 export default function MockAdminAuditPage() {
   const [selectedTrack, setSelectedTrack] = useState<TechnologyTrack | 'all'>('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<'ALL' | 'APPROVED' | 'DRAFT' | 'DEPRECATED'>('ALL');
+  const [isBankLoading, setIsBankLoading] = useState(true);
 
   // Track question status in local component state for demo/override
   const [questionOverrides, setQuestionOverrides] = useState<Record<string, 'APPROVED' | 'DRAFT' | 'DEPRECATED'>>({});
 
-  const allQuestions = useMemo(() => getAllMockQuestions(), []);
-  const metrics = useMemo(() => getQuestionBankAuditMetrics(), []);
+  useEffect(() => {
+    let cancelled = false;
+    ensureAllTracksLoaded().then(() => {
+      if (!cancelled) setIsBankLoading(false);
+    }).catch(() => {
+      if (!cancelled) setIsBankLoading(false);
+    });
+    return () => { cancelled = true; };
+  }, []);
+
+  const allQuestions = useMemo(() => getAllMockQuestions(), [isBankLoading]);
+  const metrics = useMemo(() => getQuestionBankAuditMetrics(), [isBankLoading]);
 
   // Filtered list
   const filteredQuestions = useMemo(() => {

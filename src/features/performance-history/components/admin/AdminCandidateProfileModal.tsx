@@ -9,6 +9,7 @@ import type {
   HiringStatus,
 } from '../../types/history.types';
 import QuestionHistoryDetailModal from '../student/QuestionHistoryDetailModal';
+import { SkeletonLoader } from '../../../../components/common/SkeletonLoader';
 
 interface AdminCandidateProfileModalProps {
   candidate: {
@@ -249,9 +250,8 @@ export default function AdminCandidateProfileModal({
         {/* Modal Body */}
         <div className="admin-cand-modal-body">
           {loading ? (
-            <div className="admin-cand-loading">
-              <div className="perf-spinner" />
-              <p>Aggregating candidate dossier and multi-attempt coding records...</p>
+            <div style={{ padding: '24px' }}>
+              <SkeletonLoader variant="profile" />
             </div>
           ) : (
             <>
@@ -750,10 +750,10 @@ export default function AdminCandidateProfileModal({
         {/* Modal Footer */}
         <div className="admin-cand-modal-footer">
           <span className="candidate-secure-footer-text">
-            🔒 Candidate Dossier &amp; Evaluations protected by Row-Level Security. Passwords encrypted.
+            🔒 Candidate Report &amp; Evaluations protected by Row-Level Security. Passwords encrypted.
           </span>
           <button className="perf-btn-done" onClick={onClose} type="button">
-            Close Dossier
+            Close Report
           </button>
         </div>
       </div>

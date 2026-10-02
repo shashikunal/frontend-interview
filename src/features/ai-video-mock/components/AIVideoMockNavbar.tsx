@@ -73,7 +73,7 @@ export default function AIVideoMockNavbar() {
       icon: '🧠',
       items: [
         { label: 'Practice Weak Areas', path: '/ai-video-mock/practice', icon: '🎯', desc: 'Targeted drilling on lower-scoring topics' },
-        { label: 'Question Bank', path: '/ai-video-mock/question-bank', icon: '📚', desc: '400+ curated FAANG questions with specs' },
+        { label: 'Question Bank', path: '/ai-video-mock/question-bank', icon: '📚', desc: '400+ curated interview questions with specs' },
         { label: 'Skills & Trends', path: '/ai-video-mock/skills', icon: '📈', desc: 'Skill readiness matrix & market benchmarks' },
       ],
     },

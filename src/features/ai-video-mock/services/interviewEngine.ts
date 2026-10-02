@@ -4,7 +4,7 @@ import type {
   QuestionDifficulty,
 } from '../types/mock.types';
 import type { MockQuestion, TechnologyTrack, ExperienceTier } from '../types/questionBank.types';
-import { TRACK_QUESTIONS_MAP } from '../data/questionBankRegistry';
+import { TRACK_QUESTIONS_MAP, ensureTrackLoaded } from '../data/questionBankRegistry';
 
 export type EngineInterviewState =
   | 'SETUP'
@@ -88,7 +88,11 @@ export const interviewEngine = {
   ): Promise<AdaptiveStepResult> {
     const track = session.config.primaryTechnology;
     const expTier = session.config.experienceTier;
+    await ensureTrackLoaded(track);
     const pool = TRACK_QUESTIONS_MAP[track] || TRACK_QUESTIONS_MAP.javascript;
+    if (pool.length === 0) {
+      throw new Error(`Question bank track "${track}" failed to load. Retry the session.`);
+    }
     const answeredIds = new Set(session.answers.map(a => a.questionId));
     const previousScore = lastAnswer.evaluation?.numericScore ?? 6.0;
     const currentDiff = lastAnswer.question.difficulty;

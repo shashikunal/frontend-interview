@@ -1,8 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
+import { queryKeys } from '../../../lib/query/queryKeys';
 import { useAuth } from '../../../context/AuthContext';
 import { getAdminBearerToken } from '../../../features/auth/services/adminTokenHelper';
 import { profileService } from '../../../features/auth/services/profile.service';
 import { pushClientService } from '../../../features/notifications/services/pushClientService';
+import { useAdminMeetingsQuery, useDeleteMeetingMutation, type UserContextParam } from '../../../features/meetings/hooks/useMeetingQueries';
 import type { AuthUserProfile } from '../../../features/auth/types/auth.types';
 import type {
   MeetingRecord,
@@ -48,10 +51,45 @@ const BATCH_OPTIONS = [
 
 export const AdminMeetingManagementTab: React.FC = () => {
   const { user } = useAuth();
+  const queryClient = useQueryClient();
 
-  // State
-  const [meetings, setMeetings] = useState<MeetingRecord[]>([]);
-  const [stats, setStats] = useState<MeetingOpsDashboardStats>({
+  // Authoritative Server State via React Query (Requirement 21: Single Source of Truth)
+  // CLIENT/UI State:
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [statusFilter, setStatusFilter] = useState<string>('ALL');
+  const [typeFilter, setTypeFilter] = useState<string>('ALL');
+  const [batchFilter, setBatchFilter] = useState<string>('ALL');
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [actionError, setActionError] = useState<string | null>(null);
+  const [successToast, setSuccessToast] = useState<string | null>(null);
+
+  const userContext: UserContextParam | undefined = user
+    ? {
+        id: user.id,
+        email: user.email,
+        name: user.name || 'Platform Administrator',
+        role: user.role,
+      }
+    : undefined;
+
+  // React Query: Server State for Meetings & Operations
+  const {
+    data: meetingsQueryData,
+    isLoading,
+    refetch: refetchMeetings,
+  } = useAdminMeetingsQuery(userContext, {
+    page: currentPage,
+    limit: 10,
+    status: statusFilter,
+    meetingType: typeFilter,
+    batchId: batchFilter,
+    search: searchQuery,
+  });
+
+  const deleteMeetingMutation = useDeleteMeetingMutation(userContext);
+
+  const meetings: MeetingRecord[] = meetingsQueryData?.meetings || [];
+  const stats: MeetingOpsDashboardStats = meetingsQueryData?.dashboardStats || {
     todayMeetingsCount: 0,
     upcomingMeetingsCount: 0,
     completedMeetingsCount: 0,
@@ -60,16 +98,8 @@ export const AdminMeetingManagementTab: React.FC = () => {
     pendingRsvpsCount: 0,
     notificationFailuresCount: 0,
     calendarSyncFailuresCount: 0,
-  });
-
-  const [pagination, setPagination] = useState({ page: 1, limit: 10, total: 0, totalPages: 1 });
-  const [statusFilter, setStatusFilter] = useState<string>('ALL');
-  const [typeFilter, setTypeFilter] = useState<string>('ALL');
-  const [batchFilter, setBatchFilter] = useState<string>('ALL');
-  const [searchQuery, setSearchQuery] = useState<string>('');
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [actionError, setActionError] = useState<string | null>(null);
-  const [successToast, setSuccessToast] = useState<string | null>(null);
+  };
+  const pagination = meetingsQueryData?.pagination || { page: currentPage, limit: 10, total: 0, totalPages: 1 };
 
   // Timezone Handling (Rule 6: Production-grade, default Asia/Kolkata)
   const [selectedTimezone, setSelectedTimezone] = useState<string>(() => {
@@ -170,63 +200,14 @@ export const AdminMeetingManagementTab: React.FC = () => {
     [selectedTimezone]
   );
 
-  // Load Meetings & Dashboard Stats
+  // Load Meetings callback (triggers React Query refetch)
   const loadMeetings = useCallback(
     async (page: number = 1) => {
-      setIsLoading(true);
-      setActionError(null);
-      try {
-        let token = await getAdminToken();
-        const params = new URLSearchParams({
-          page: String(page),
-          limit: '10',
-        });
-        if (statusFilter !== 'ALL') params.set('status', statusFilter);
-        if (typeFilter !== 'ALL') params.set('meetingType', typeFilter);
-        if (batchFilter !== 'ALL') params.set('batchId', batchFilter);
-        if (searchQuery.trim()) params.set('search', searchQuery.trim());
-
-        let res = await fetch(`/api/v1/admin/meetings?${params.toString()}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        });
-
-        if (res.status === 401) {
-          token = await getAdminToken(true);
-          res = await fetch(`/api/v1/admin/meetings?${params.toString()}`, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              'Content-Type': 'application/json',
-            },
-          });
-        }
-
-        if (!res.ok) {
-          throw new Error(`HTTP ${res.status}: Failed to load meeting roster.`);
-        }
-
-        const json = await res.json();
-        if (json.success) {
-          setMeetings(json.meetings || []);
-          setPagination(json.pagination || { page: 1, limit: 10, total: 0, totalPages: 1 });
-          if (json.dashboardStats) {
-            setStats(json.dashboardStats);
-          }
-        }
-      } catch (err: any) {
-        setActionError(err.message || 'Error fetching meetings.');
-      } finally {
-        setIsLoading(false);
-      }
+      setCurrentPage(page);
+      await refetchMeetings();
     },
-    [getAdminToken, statusFilter, typeFilter, batchFilter, searchQuery]
+    [refetchMeetings]
   );
-
-  useEffect(() => {
-    loadMeetings(1);
-  }, [loadMeetings]);
 
   const showToast = (msg: string) => {
     setSuccessToast(msg);
@@ -236,9 +217,10 @@ export const AdminMeetingManagementTab: React.FC = () => {
   // Push Meeting Link to Students
   const handlePushLinkToStudents = async (meeting: MeetingRecord) => {
     try {
+      showToast(`⏳ Dispatching push notification for "${meeting.title}"...`);
       const res = await pushClientService.sendMeetingPushNotification({
         meetingId: meeting.id,
-        customMessage: `Interview session: "${meeting.title}". Link: ${meeting.meeting_url}`,
+        customMessage: `Live interview session: "${meeting.title}". Link: ${meeting.meeting_url || `/meet/${meeting.id}`}`,
       });
       if (res.success) {
         showToast(`📲 Push notification sent to students for "${meeting.title}"!`);
@@ -247,6 +229,27 @@ export const AdminMeetingManagementTab: React.FC = () => {
       }
     } catch (err: any) {
       alert(`Error sending push notification: ${err.message}`);
+    }
+  };
+
+  // Test Push Notification Dispatch
+  const handleTestPushNotification = async () => {
+    try {
+      showToast('⏳ Testing push notification dispatch...');
+      if (user?.id) {
+        await pushClientService.subscribeUser(user.id).catch(() => null);
+      }
+      const res = await pushClientService.sendMeetingPushNotification({
+        meetingId: `test_${Date.now().toString(36)}`,
+        customMessage: '🔔 Test Notification: Push and in-app alert delivery confirmed working!',
+      });
+      if (res.success) {
+        showToast('🔔 Test push notification delivered successfully!');
+      } else {
+        alert(res.message || 'Failed to dispatch test notification.');
+      }
+    } catch (err: any) {
+      alert(`Test notification error: ${err.message}`);
     }
   };
 
@@ -556,6 +559,21 @@ export const AdminMeetingManagementTab: React.FC = () => {
     }
   };
 
+  // Permanently Delete Single Meeting with Race Condition Protection (Req 22, 24, 25)
+  const handleDeleteSingleMeeting = async (meeting: MeetingRecord) => {
+    if (!window.confirm(`Permanently delete "${meeting.title}"? This cannot be undone.`)) {
+      return;
+    }
+    setActionError(null);
+    try {
+      await deleteMeetingMutation.mutateAsync({ meetingId: meeting.id });
+      showToast(`Permanently deleted "${meeting.title}".`);
+    } catch (err: any) {
+      setActionError(err.message || 'Failed to delete meeting.');
+      alert(`Delete Error: ${err.message || 'Failed to delete meeting'}`);
+    }
+  };
+
   // Open Assign Students Modal
   const handleOpenAssignModal = (meeting: MeetingRecord) => {
     setSelectedMeeting(meeting);
@@ -656,6 +674,42 @@ export const AdminMeetingManagementTab: React.FC = () => {
     }
   };
 
+  // Clear All Meetings
+  const handleClearAllMeetings = async () => {
+    if (!window.confirm('Are you sure you want to remove all meetings? This will start completely clean from scratch.')) {
+      return;
+    }
+    try {
+      const token = await getAdminToken();
+      const res = await fetch('/api/v1/admin/meetings?action=clear_all', {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ action: 'clear_all' }),
+      });
+      const json = await res.json();
+      if (res.ok && json.success) {
+        showToast('All meetings cleared successfully.');
+        pushClientService.clearActiveMeetingAlert();
+        try {
+          localStorage.removeItem('last_active_meeting_alert');
+          sessionStorage.clear();
+        } catch (_) {}
+        // Also clear any persistent notification alerts on server
+        fetch('/api/v1/notifications?action=clear', { method: 'DELETE' }).catch(() => {});
+        queryClient.removeQueries({ queryKey: queryKeys.meetings.all });
+        await queryClient.invalidateQueries({ queryKey: queryKeys.meetings.all });
+        await loadMeetings(1);
+      } else {
+        alert(json.message || 'Failed to clear meetings.');
+      }
+    } catch (err: any) {
+      alert(`Error clearing meetings: ${err.message}`);
+    }
+  };
+
   return (
     <div className="acc-container">
       {/* Top Header */}
@@ -697,6 +751,16 @@ export const AdminMeetingManagementTab: React.FC = () => {
 
           <button
             type="button"
+            className="btn btn-sm"
+            style={{ background: 'rgba(239, 68, 68, 0.15)', border: '1px solid rgba(239, 68, 68, 0.3)', color: '#EF4444', fontWeight: 600 }}
+            onClick={handleClearAllMeetings}
+            title="Remove all scheduled meetings and start clean"
+          >
+            🗑️ Clear All Meetings
+          </button>
+
+          <button
+            type="button"
             className="acc-refresh-btn"
             style={{
               background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
@@ -717,6 +781,16 @@ export const AdminMeetingManagementTab: React.FC = () => {
             onClick={handleOpenCreateModal}
           >
             <span>➕</span> Create Meeting
+          </button>
+
+          <button
+            type="button"
+            className="acc-refresh-btn"
+            style={{ background: 'rgba(117, 81, 255, 0.15)', color: '#a78bfa', borderColor: 'rgba(117, 81, 255, 0.35)', fontWeight: 600 }}
+            onClick={handleTestPushNotification}
+            title="Dispatch a real-time push test notification to verify delivery"
+          >
+            <span>🔔</span> Test Push
           </button>
 
           <button
@@ -998,6 +1072,16 @@ export const AdminMeetingManagementTab: React.FC = () => {
                               Cancel
                             </button>
                           )}
+
+                          <button
+                            type="button"
+                            className="amm-btn-sm danger"
+                            style={{ background: 'rgba(239, 68, 68, 0.2)', color: '#ef4444', borderColor: 'rgba(239, 68, 68, 0.4)', fontWeight: 600 }}
+                            onClick={() => handleDeleteSingleMeeting(m)}
+                            title="Delete Completely (Permanent)"
+                          >
+                            🗑️ Delete
+                          </button>
                         </div>
                       </td>
                     </tr>

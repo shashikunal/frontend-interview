@@ -6,6 +6,8 @@ import { meetingTokenService } from '../../auth/services/meetingTokenService';
 import type { MeetingRecord } from '../../../../server/meetings/meetingOpsTypes';
 import '../styles/StudentMeetingDashboard.css';
 
+import { useStudentMeetings, useMeetingRsvpMutation } from '../hooks/useMeetingQueries';
+
 interface EnrichedStudentMeeting extends MeetingRecord {
   myRsvpStatus: 'pending' | 'accepted' | 'declined';
   myAttendanceStatus: 'pending' | 'attended' | 'absent' | 'late';
@@ -18,72 +20,44 @@ export const StudentMeetingDashboard: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [quickCode, setQuickCode] = useState('');
-  const [meetings, setMeetings] = useState<EnrichedStudentMeeting[]>([]);
   const [activeTab, setActiveTab] = useState<'UPCOMING' | 'TODAY' | 'COMPLETED' | 'CANCELLED'>('UPCOMING');
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
-
-  // Timezone selection (Rule 6: Production-grade timezone handling, default Asia/Kolkata)
-  const [selectedTimezone, setSelectedTimezone] = useState<string>(() => {
-    return localStorage.getItem('user_preferred_timezone') || 'Asia/Kolkata';
-  });
-
-  // Push notification state
+  const [selectedTimezone, setSelectedTimezone] = useState<string>(
+    () => localStorage.getItem('student_selected_tz') || Intl.DateTimeFormat().resolvedOptions().timeZone || 'Asia/Kolkata'
+  );
   const [pushStatus, setPushStatus] = useState<PushStatus | null>(null);
-  const [isPushLoading, setIsPushLoading] = useState<boolean>(false);
+  const [isPushLoading, setIsPushLoading] = useState(false);
   const [pushFeedback, setPushFeedback] = useState<string | null>(null);
-
-  // Selected meeting for Details modal
+  const [liveAlert, setLiveAlert] = useState<{ title: string; body: string; url: string; meetingId?: string } | null>(null);
   const [inspectingMeeting, setInspectingMeeting] = useState<EnrichedStudentMeeting | null>(null);
-
-  // Real-time ticking for countdown banner (Rule 18)
   const [nowTimestamp, setNowTimestamp] = useState<number>(Date.now());
+
+  const currentUserParam = user ? {
+    id: user.id,
+    email: user.email,
+    name: user.name || user.email.split('@')[0],
+    role: (user.role as any) || 'candidate',
+  } : undefined;
+
+  // TanStack Query Server State
+  const { data: fetchedMeetings = [], isLoading, isError, error, refetch } = useStudentMeetings(currentUserParam);
+  const rsvpMutation = useMeetingRsvpMutation();
+
+  const handleTimezoneChange = (tz: string) => {
+    setSelectedTimezone(tz);
+    localStorage.setItem('student_selected_tz', tz);
+  };
+
+  // Live 1-second timer ticker
   useEffect(() => {
     const timer = setInterval(() => setNowTimestamp(Date.now()), 1000);
     return () => clearInterval(timer);
   }, []);
 
-  // Save selected timezone
-  const handleTimezoneChange = (tz: string) => {
-    setSelectedTimezone(tz);
-    localStorage.setItem('user_preferred_timezone', tz);
-  };
+  const meetings = useMemo(() => {
+    return (fetchedMeetings as unknown as EnrichedStudentMeeting[]) || [];
+  }, [fetchedMeetings]);
 
-  // Real-time Push Notification Banner State
-  const [liveAlert, setLiveAlert] = useState<{ title: string; body: string; url: string; meetingId?: string } | null>(null);
-
-  // Load meetings assigned to this student
-  const fetchMyMeetings = useCallback(async () => {
-    setIsLoading(true);
-    setErrorMsg(null);
-    try {
-      const headers: Record<string, string> = { Accept: 'application/json' };
-      if (user) {
-        try {
-          const token = await meetingTokenService.getMeetingToken('global_list', {
-            id: user.id,
-            email: user.email,
-            name: user.name || user.email.split('@')[0],
-            role: (user.role as any) || 'candidate',
-          });
-          if (token) headers['Authorization'] = `Bearer ${token}`;
-        } catch (_) {}
-      }
-
-      const res = await fetch('/api/v1/meetings', { headers });
-      if (!res.ok) {
-        throw new Error(`HTTP ${res.status}: Failed to load meetings.`);
-      }
-      const json = await res.json();
-      if (json.success) {
-        setMeetings(json.meetings || []);
-      }
-    } catch (err: any) {
-      setErrorMsg(err.message || 'Error retrieving meeting roster.');
-    } finally {
-      setIsLoading(false);
-    }
-  }, [user]);
+  const errorMsg = isError ? (error?.message || 'Error retrieving meeting roster.') : null;
 
   // Check push support, poll active alerts, and listen for broadcast notifications
   useEffect(() => {
@@ -108,26 +82,13 @@ export const StudentMeetingDashboard: React.FC = () => {
         url: data.url || data.meetingUrl || `/meet/${data.meetingId}`,
         meetingId: data.meetingId,
       });
-      fetchMyMeetings();
-    });
-
-    const unsubscribePoll = pushClientService.startPolling((alert) => {
-      if (alert) {
-        setLiveAlert({
-          title: alert.meetingTitle ? `🟢 Live Meeting: ${alert.meetingTitle}` : '🟢 Live Meeting Started!',
-          body: alert.customMessage || 'Your interview room is now live. Click to join immediately.',
-          url: alert.meetingUrl || `/meet/${alert.meetingId}`,
-          meetingId: alert.meetingId,
-        });
-        fetchMyMeetings();
-      }
+      refetch();
     });
 
     return () => {
       unsubscribeBroadcast();
-      unsubscribePoll();
     };
-  }, [fetchMyMeetings]);
+  }, [refetch]);
 
   // Format date and time in student's selected timezone
   const formatMeetingDateTime = useCallback(
@@ -157,26 +118,19 @@ export const StudentMeetingDashboard: React.FC = () => {
     [selectedTimezone]
   );
 
-  useEffect(() => {
-    fetchMyMeetings();
-  }, [fetchMyMeetings]);
-
-  // Handle RSVP
+  // Handle RSVP via TanStack Query Mutation
   const handleRsvp = async (meetingId: string, status: 'accepted' | 'declined') => {
     try {
-      const res = await fetch('/api/v1/meetings/rsvp', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ meetingId, status }),
-      });
-      const json = await res.json();
-      if (json.success) {
-        setMeetings(prev =>
-          prev.map(m => (m.id === meetingId ? { ...m, myRsvpStatus: status } : m))
-        );
-      } else {
-        alert(json.message || 'Failed to update RSVP.');
+      let token: string | undefined = undefined;
+      if (user) {
+        token = await meetingTokenService.getMeetingToken('rsvp_update', {
+          id: user.id,
+          email: user.email,
+          name: user.name || user.email.split('@')[0],
+          role: (user.role as any) || 'candidate',
+        });
       }
+      await rsvpMutation.mutateAsync({ meetingId, status, token });
     } catch (err: any) {
       alert(`Error updating RSVP: ${err.message}`);
     }

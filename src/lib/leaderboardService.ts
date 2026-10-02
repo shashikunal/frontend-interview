@@ -1,9 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
 import { supabase, supabaseUrl, supabaseAnonKey } from './supabase/client'
-import { MACHINE_CODING_CATALOG } from '../components/machinecoding/data/machineCodingCatalog'
-import { DSA_QUESTIONS } from '../components/dsa/data/dsaQuestions'
-import { CORE_PROGRAMMING_QUESTIONS } from '../components/coreprogramming/data/coreProgrammingQuestions'
-import { FRONTEND_JS_QUESTIONS } from '../components/frontendjs/data/frontendJsQuestions'
+import { getMCCatalog, getDSACatalog, getCPCatalog, getFJSCatalog } from './catalogRegistry'
 import { getStoredAuthHeader } from '../features/auth/services/adminTokenHelper'
 
 export type TierName = 'diamond' | 'platinum' | 'gold' | 'silver' | 'bronze'
@@ -138,7 +135,7 @@ export function resolveQuestionTitle(questionId: string): string {
   const clean = questionId.trim().toLowerCase()
 
   // 1. Machine Coding Catalog (500 Questions)
-  const mc = MACHINE_CODING_CATALOG.find(q => {
+  const mc = getMCCatalog().find(q => {
     const qLower = q.id.toLowerCase()
     if (qLower === clean) return true
     const numClean = clean.replace(/\D/g, '')
@@ -148,7 +145,7 @@ export function resolveQuestionTitle(questionId: string): string {
   if (mc) return mc.title
 
   // 2. DSA Masterclass (1,000 Questions)
-  const dsa = DSA_QUESTIONS.find(q => {
+  const dsa = getDSACatalog().find(q => {
     const qLower = q.id.toLowerCase()
     return qLower === clean || clean === q.id.replace(/^DSA0*/, '').toLowerCase()
   })
@@ -160,7 +157,7 @@ export function resolveQuestionTitle(questionId: string): string {
   }
 
   // 3. Core Programming (500 Questions)
-  const cp = CORE_PROGRAMMING_QUESTIONS.find(q => q.id.toLowerCase() === clean)
+  const cp = getCPCatalog().find(q => q.id.toLowerCase() === clean)
   if (cp) return cp.title
 
   if (questionId.toUpperCase().startsWith('JS-P') || questionId.toUpperCase().startsWith('JSP')) {
@@ -168,7 +165,7 @@ export function resolveQuestionTitle(questionId: string): string {
   }
 
   // 4. Frontend JavaScript (1,000 Questions)
-  const fjs = FRONTEND_JS_QUESTIONS.find(q => q.id.toLowerCase() === clean)
+  const fjs = getFJSCatalog().find(q => q.id.toLowerCase() === clean)
   if (fjs) return fjs.title
 
   if (questionId.toUpperCase().startsWith('FJP-') || questionId.toUpperCase().startsWith('FJP')) {
@@ -857,7 +854,7 @@ export const leaderboardService = {
         const u = qid.toUpperCase().trim()
         if (u.startsWith('Q') || u.startsWith('MC')) return false
         if (u.startsWith('JS-P') || u.startsWith('JSP') || u.startsWith('CP')) return true
-        return CORE_PROGRAMMING_QUESTIONS.some(q => q.id.toLowerCase() === qid.toLowerCase())
+        return getCPCatalog().some(q => q.id.toLowerCase() === qid.toLowerCase())
       }
       const isFJSId = (qid: string) => {
         if (!qid) return false
@@ -869,13 +866,13 @@ export const leaderboardService = {
         if (!qid) return false
         if (isCPId(qid)) return false
         const u = qid.toUpperCase().trim()
-        return u.startsWith('DSA') || (!u.startsWith('Q') && !u.startsWith('MC') && !u.startsWith('FJP') && /^\d+$/.test(qid)) || DSA_QUESTIONS.some(q => q.id === qid)
+        return u.startsWith('DSA') || (!u.startsWith('Q') && !u.startsWith('MC') && !u.startsWith('FJP') && /^\d+$/.test(qid)) || getDSACatalog().some(q => q.id === qid)
       }
       const isMCId = (qid: string) => {
         if (!qid) return false
         if (isCPId(qid)) return false
         const u = qid.toUpperCase().trim()
-        return u.startsWith('Q') || u.startsWith('MC') || MACHINE_CODING_CATALOG.some(q => q.id.toLowerCase() === qid.toLowerCase()) || qid.toLowerCase().includes('counter') || qid.toLowerCase().includes('toggle')
+        return u.startsWith('Q') || u.startsWith('MC') || getMCCatalog().some(q => q.id.toLowerCase() === qid.toLowerCase()) || qid.toLowerCase().includes('counter') || qid.toLowerCase().includes('toggle')
       }
 
       const filteredSubs = filteredByTime.filter(s => {
@@ -920,8 +917,8 @@ export const leaderboardService = {
             userId: uid,
             name: resolveDisplayName(s.userName, s.userEmail, uid),
             email: s.userEmail || '',
-            company: s.company || 'FAANG Candidate',
-            level: s.level || 'L5 Senior Track',
+            company: s.company || 'Candidate',
+            level: s.level || 'Senior Track',
             totalScoreSum: 0,
             scoreCount: 0,
             totalSubmissions: 0,
@@ -971,7 +968,7 @@ export const leaderboardService = {
             userId: uid,
             name: resolveDisplayName(prof.full_name, prof.email, uid),
             email: prof.email || '',
-            company: prof.target_company || 'FAANG Candidate',
+            company: prof.target_company || 'Candidate',
             level: prof.experience_level || 'Candidate Track',
             totalScoreSum: 0,
             scoreCount: 0,
@@ -985,51 +982,7 @@ export const leaderboardService = {
         }
       }
 
-      // Safeguard: Ensure global rankings always displays a full cohort of verified candidates
-      if (candidateMap.size < 10) {
-        const cohortFallbacks = [
-          { uid: 'cand_sarah_chen', name: 'Sarah Chen', email: 'user_two_senior@meta.com', company: 'Meta', level: 'L6 Staff Engineer', solved: ['Q001', 'Q002', 'Q003', 'JS-P01', 'JS-P02'], scoreSum: 490, subCount: 5, accCount: 5, timeSec: 1200 },
-          { uid: 'cand_david_kim', name: 'David Kim', email: 'invited_candidate_2026@google.com', company: 'Google', level: 'L5 Senior Coder', solved: ['Q002', 'Q004', 'JS-P01'], scoreSum: 290, subCount: 3, accCount: 3, timeSec: 900 },
-          { uid: 'cand_tim_apple', name: 'Tim Apple', email: 'isolated_user_1788438799997@apple.com', company: 'Apple', level: 'Senior Systems UI', solved: ['JS-P01', 'JS-P03', 'Q005'], scoreSum: 285, subCount: 3, accCount: 3, timeSec: 850 },
-          { uid: 'cand_alex_rivera', name: 'Alex Rivera', email: 'alex.rivera@netflix.com', company: 'Netflix', level: 'Staff Frontend Lead', solved: ['Q001', 'Q006', 'JS-P04'], scoreSum: 280, subCount: 3, accCount: 3, timeSec: 780 },
-          { uid: 'cand_priya_sharma', name: 'Priya Sharma', email: 'priya.sharma@stripe.com', company: 'Stripe', level: 'Principal UI Arch', solved: ['JS-P02', 'JS-P05', 'Q003'], scoreSum: 275, subCount: 3, accCount: 3, timeSec: 720 },
-          { uid: 'cand_marcus_vance', name: 'Marcus Vance', email: 'm.vance@uber.com', company: 'Uber', level: 'L5 Frontend Infra', solved: ['Q004', 'Q007'], scoreSum: 190, subCount: 2, accCount: 2, timeSec: 600 },
-          { uid: 'cand_elena_rostova', name: 'Elena Rostova', email: 'e.rostova@airbnb.com', company: 'Airbnb', level: 'Design Systems Lead', solved: ['JS-P03', 'Q008'], scoreSum: 185, subCount: 2, accCount: 2, timeSec: 540 },
-          { uid: 'cand_kenji_sato', name: 'Kenji Sato', email: 'k.sato@amazon.com', company: 'Amazon', level: 'L6 Senior SDE', solved: ['Q005', 'JS-P06'], scoreSum: 180, subCount: 2, accCount: 2, timeSec: 620 },
-          { uid: 'cand_ananya_reddy', name: 'Ananya Reddy', email: 'ananya.reddy@microsoft.com', company: 'Microsoft', level: 'Principal Engineer', solved: ['JS-P04', 'Q001'], scoreSum: 175, subCount: 2, accCount: 2, timeSec: 510 },
-          { uid: 'cand_lucas_silva', name: 'Lucas Silva', email: 'lucas.silva@databricks.com', company: 'Databricks', level: 'Senior Platform Eng', solved: ['Q002', 'JS-P05'], scoreSum: 170, subCount: 2, accCount: 2, timeSec: 490 },
-          { uid: 'cand_chloe_dubois', name: 'Chloé Dubois', email: 'chloe.d@figma.com', company: 'Figma', level: 'Canvas Engine Lead', solved: ['JS-P01', 'Q003'], scoreSum: 165, subCount: 2, accCount: 2, timeSec: 460 },
-          { uid: 'cand_zack_taylor', name: 'Zack Taylor', email: 'z.taylor@coinbase.com', company: 'Coinbase', level: 'L5 Web3 / React', solved: ['Q004'], scoreSum: 95, subCount: 1, accCount: 1, timeSec: 320 },
-          { uid: 'cand_maya_lin', name: 'Maya Lin', email: 'maya.lin@openai.com', company: 'OpenAI', level: 'AI Interface Arch', solved: ['JS-P02'], scoreSum: 92, subCount: 1, accCount: 1, timeSec: 310 },
-          { uid: 'cand_rohan_gupta', name: 'Rohan Gupta', email: 'rohan.gupta@linkedin.com', company: 'LinkedIn', level: 'Senior UI Engineer', solved: ['Q005'], scoreSum: 90, subCount: 1, accCount: 1, timeSec: 290 },
-          { uid: 'cand_sofia_martinez', name: 'Sofia Martinez', email: 's.martinez@tiktok.com', company: 'ByteDance', level: 'Interactive UI Lead', solved: ['JS-P03'], scoreSum: 88, subCount: 1, accCount: 1, timeSec: 280 },
-        ]
-        for (const fb of cohortFallbacks) {
-          if (!candidateMap.has(fb.uid)) {
-            candidateMap.set(fb.uid, {
-              userId: fb.uid,
-              name: fb.name,
-              email: fb.email,
-              company: fb.company,
-              level: fb.level,
-              totalScoreSum: fb.scoreSum,
-              scoreCount: fb.subCount,
-              totalSubmissions: fb.subCount,
-              acceptedCount: fb.accCount,
-              solvedQuestions: new Set(fb.solved),
-              totalTimeSec: fb.timeSec,
-              timeCount: fb.subCount,
-              recentQuestions: fb.solved.slice(0, 3).map(qid => ({
-                id: qid,
-                title: resolveQuestionTitle(qid),
-                score: 100,
-                language: qid.startsWith('Q') ? 'react' : 'javascript',
-                status: 'accepted',
-              })),
-            })
-          }
-        }
-      }
+
 
       // Calculate real candidate scores and rankings
       const ranked: LeaderboardEntry[] = Array.from(candidateMap.values()).map(cand => {
@@ -1207,7 +1160,7 @@ export const leaderboardService = {
         const qid = String(s.question_id || '')
         if (!isMC(qid, s.language)) continue
 
-        const mcMeta = MACHINE_CODING_CATALOG.find(q => q.id.toLowerCase() === qid.toLowerCase())
+        const mcMeta = getMCCatalog().find(q => q.id.toLowerCase() === qid.toLowerCase())
         const score = Number(s.score ?? 0)
         const testsTotal = 4
         const testsPassed = score >= 100 ? testsTotal : Math.max(0, Math.round((score / 100) * testsTotal))
@@ -1243,7 +1196,7 @@ export const leaderboardService = {
         )
         if (exists) continue
 
-        const mcMeta = MACHINE_CODING_CATALOG.find(q => q.id.toLowerCase() === loc.questionId.toLowerCase())
+        const mcMeta = getMCCatalog().find(q => q.id.toLowerCase() === loc.questionId.toLowerCase())
         combined.push({
           id: loc.id,
           userId: loc.userId,
@@ -1307,7 +1260,7 @@ export const leaderboardService = {
         if (!isMC(qid, s.language)) continue
 
         const prof = profileMap.get(s.user_id)
-        const mcMeta = MACHINE_CODING_CATALOG.find(q => q.id.toLowerCase() === qid.toLowerCase())
+        const mcMeta = getMCCatalog().find(q => q.id.toLowerCase() === qid.toLowerCase())
         const score = Number(s.score ?? 0)
         const testsTotal = 4
         const testsPassed = score >= 100 ? testsTotal : Math.max(0, Math.round((score / 100) * testsTotal))

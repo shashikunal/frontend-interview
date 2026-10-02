@@ -43,9 +43,9 @@ export async function getAdminBearerToken(
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         meetingId: 'admin_control_plane',
-        userId: user?.id || 'f16e43bf-2ff8-480c-ae49-e2285940bf46',
-        userEmail: user?.email || 'shashi@admin.com',
-        userName: user?.name || 'shashi',
+        userId: user?.id || 'admin_super_user',
+        userEmail: user?.email || 'admin@interviewprep.com',
+        userName: user?.name || 'Platform Administrator',
         userRole: 'admin',
       }),
     });

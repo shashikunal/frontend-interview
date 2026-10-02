@@ -14,7 +14,14 @@ import type {
   MediaCredentialsResponse,
 } from './mediaTypes.ts';
 
-const MEDIA_SECRET = process.env.MEDIA_JWT_SECRET || 'phase4-webrtc-sfu-super-secret-key-32b';
+function getMediaSecret(): string {
+  if (process.env.MEDIA_JWT_SECRET) return process.env.MEDIA_JWT_SECRET;
+  if (process.env.NODE_ENV === 'production' && !process.env.VERCEL) {
+    throw new Error('MEDIA_JWT_SECRET environment variable is required in production.');
+  }
+  return 'phase4-webrtc-sfu-super-secret-key-32b';
+}
+
 const DEFAULT_EXPIRATION_SECONDS = 1800; // 30 minutes
 
 const DEFAULT_ICE_SERVERS = [
@@ -26,8 +33,8 @@ const DEFAULT_ICE_SERVERS = [
 export class MediaTokenService {
   private secret: string;
 
-  constructor(secret: string = MEDIA_SECRET) {
-    this.secret = secret;
+  constructor(secret?: string) {
+    this.secret = secret || getMediaSecret();
   }
 
   /**

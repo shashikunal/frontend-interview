@@ -247,7 +247,18 @@ self.addEventListener('push', (event) => {
     requireInteraction: true,
   });
 
-  event.waitUntil(notificationPromise);
+  const broadcastPromise = self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clients) => {
+    for (const client of clients) {
+      client.postMessage({
+        type: 'MEETING_PUSH_DISPATCHED',
+        ...payload,
+        meetingId: payload.data?.meetingId,
+        meetingUrl: payload.data?.meetingUrl || payload.data?.url,
+      });
+    }
+  });
+
+  event.waitUntil(Promise.all([notificationPromise, broadcastPromise]));
 });
 
 self.addEventListener('notificationclick', (event) => {

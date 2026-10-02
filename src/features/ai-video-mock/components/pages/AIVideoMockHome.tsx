@@ -6,13 +6,13 @@ export default function AIVideoMockHome() {
     <div className="ai-vm-hero">
       <div className="ai-vm-hero-header">
         <div className="ai-vm-hero-eyebrow">
-          <span>⚡ Next-Generation Mock Assessment</span>
+          <span>⚡ Interactive Mock Assessment</span>
         </div>
         <h1 className="ai-vm-hero-title">
-          Realistic AI Video Mock Interview Platform
+          Interactive AI Video Mock Interview Platform
         </h1>
         <p className="ai-vm-hero-subtitle">
-          Experience true FAANG-level interviews with live speech recognition, real-time code execution,
+          Experience real-world technical assessments with live speech recognition, real-time code execution,
           expected answer comparison, dynamic follow-ups, and evidence-based seniority assessments.
         </p>
 
