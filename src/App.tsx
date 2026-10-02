@@ -49,6 +49,9 @@ const FrontendJsStudio = lazy(() => import('./components/frontendjs/FrontendJsSt
 const AnalyticsDashboard = lazy(() => import('./components/analytics/AnalyticsDashboard'))
 const Leaderboard = lazy(() => import('./components/leaderboard/Leaderboard'))
 const AIVideoMockApp = lazy(() => import('./features/ai-video-mock/AIVideoMockApp'))
+const JobMatching = lazy(() => import('./features/job-matching/JobMatching'))
+const JobMatchHistory = lazy(() => import('./features/job-matching/JobMatchHistory'))
+const MatchResults = lazy(() => import('./features/job-matching/MatchResults'))
 const StudentPerformanceView = lazy(() => import('./features/performance-history/components/student/StudentPerformanceView'))
 const DocsPlatform = lazy(() => import('./features/interview-docs/DocsPlatform'))
 const MasterQuestionBankApp = lazy(() => import('./features/interview-questions/MasterQuestionBankApp'))
@@ -818,6 +821,11 @@ export default function App() {
             path="/ai-video-mock/*"
             element={<AIVideoMockApp />}
           />
+
+          {/* AI Job Matching */}
+          <Route path="/job-matching" element={<JobMatching />} />
+          <Route path="/job-matching/history" element={<JobMatchHistory />} />
+          <Route path="/job-matching/results/:id" element={<MatchResults />} />
 
           <Route path="/practice" element={<Navigate to="/questions" replace />} />
           <Route path="/practice/*" element={<Navigate to="/questions" replace />} />
