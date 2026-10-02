@@ -568,7 +568,7 @@ export const PLACEMENT_DAY_DEFINITIONS: PlacementDayDefinition[] = [
       { name: 'Project repository & README', category: 'project', subcategory: 'documentation', description: 'Public repo, clear README, screenshots, setup instructions.', resourceRoute: '/placement?view=project', expectedMinutes: 90 },
       { name: 'Architecture & API documentation', category: 'project', subcategory: 'architecture', description: 'Document your data flow, API layer and database choices.', resourceRoute: '/placement?view=project', expectedMinutes: 60 },
       { name: 'Authentication & error handling', category: 'project', subcategory: 'reliability', description: 'Ensure auth, loading and error handling are implemented and explainable.', resourceRoute: '/placement?view=project', expectedMinutes: 60 },
-      { name: 'Resume & profile checklist', category: 'project', subcategory: 'profile', description: 'Resume, GitHub, LinkedIn and portfolio links verified against real data.', resourceRoute: '/resume-optimizer', expectedMinutes: 45 },
+      { name: 'Resume & profile checklist', category: 'project', subcategory: 'profile', description: 'Resume, GitHub, LinkedIn and portfolio links verified against real data.', resourceRoute: '/resume-center', expectedMinutes: 45 },
     ],
   },
   {
@@ -826,7 +826,7 @@ export const PLACEMENT_DAY_DEFINITIONS: PlacementDayDefinition[] = [
     ],
     isMilestone: true,
     topics: [
-      { name: 'Application materials finalization', category: 'project', subcategory: 'profile', description: 'Polish resume, GitHub profile, LinkedIn, and portfolio.', resourceRoute: '/resume-optimizer', expectedMinutes: 60 },
+      { name: 'Application materials finalization', category: 'project', subcategory: 'profile', description: 'Polish resume, GitHub profile, LinkedIn, and portfolio.', resourceRoute: '/resume-center', expectedMinutes: 60 },
       { name: 'Application strategy', category: 'project', subcategory: 'profile', description: 'Apply to 20 companies with tailored resumes and cover letters.', resourceRoute: '/placement?view=applications', expectedMinutes: 90 },
       { name: 'Interview pipeline management', category: 'project', subcategory: 'profile', description: 'Track applications, follow-ups, and interview schedules.', resourceRoute: '/placement?view=applications', expectedMinutes: 30 },
     ],

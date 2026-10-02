@@ -44,6 +44,7 @@ import UserProfile from './components/profile/UserProfile'
 import UserManagementStudio from './components/usermanagement/UserManagementStudio'
 import AdminDashboard from './components/dashboard/AdminDashboard'
 import { PlacementApp } from './features/placement'
+import ResumeCenter from './features/resume-center/ResumeCenter'
 const MachineCodingStudio = lazy(() => import('./components/machinecoding/MachineCodingStudio'))
 const DSAStudio = lazy(() => import('./components/dsa/DSAStudio'))
 const CoreProgrammingStudio = lazy(() => import('./components/coreprogramming/CoreProgrammingStudio'))
@@ -385,6 +386,46 @@ export default function App() {
               <FeatureGuard feature="system_design" featureName="ATS Resume Optimizer">
                 <ResumeOptimizer />
               </FeatureGuard>
+            }
+          />
+          <Route
+            path="/resume-center"
+            element={
+              <ProtectedRoute>
+                <ResumeCenter />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/resume-center/:tab"
+            element={
+              <ProtectedRoute>
+                <ResumeCenter />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/resume-center"
+            element={
+              <ProtectedRoute>
+                <ResumeCenter />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/resume-center/:tab"
+            element={
+              <ProtectedRoute>
+                <ResumeCenter />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/resume-center/edit/:id"
+            element={
+              <ProtectedRoute>
+                <ResumeCenter />
+              </ProtectedRoute>
             }
           />
           <Route

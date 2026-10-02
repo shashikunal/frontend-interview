@@ -63,7 +63,7 @@ export default function Header() {
     return location.pathname === path || location.pathname.startsWith(path + '/')
   }
 
-  const isArchitectureActive = ['/experience', '/pathways', '/system-design', '/case-studies', '/ast-explorer', '/security', '/user-management', '/state-machine', '/capacity-estimator', '/memory-profiler', '/module-federation', '/whiteboard', '/webrtc-lab', '/local-first', '/search-engine', '/design-system', '/i18n-lab', '/sdui-lab', '/web-components', '/protocols', '/css-pipeline', '/wasm-lab', '/visualizer', '/profiler', '/resume-optimizer', '/compensation'].some(p => isActive(p))
+  const isArchitectureActive = ['/experience', '/pathways', '/system-design', '/case-studies', '/ast-explorer', '/security', '/user-management', '/state-machine', '/capacity-estimator', '/memory-profiler', '/module-federation', '/whiteboard', '/webrtc-lab', '/local-first', '/search-engine', '/design-system', '/i18n-lab', '/sdui-lab', '/web-components', '/protocols', '/css-pipeline', '/wasm-lab', '/visualizer', '/profiler', '/resume-center', '/resume-optimizer', '/compensation'].some(p => isActive(p))
   const isMockActive = ['/mock-interview', '/video-mock', '/ai-video-mock', '/behavioral', '/peer-room'].some(p => isActive(p))
   const isMachineCodingActive = isActive('/machine-coding') || isActive('/machine-level-coding')
   const isDsaActive = isActive('/dsa')
@@ -571,6 +571,16 @@ export default function Header() {
                         {!hasSystemDesign && <span className="drop-lock-tag">🔒 PRO</span>}
                       </span>
                       <span className="drop-desc">FAANG &amp; unicorn question tracks</span>
+                    </div>
+                  </Link>
+
+                  <Link to="/resume-center" className={`mega-item ${isActive('/resume-center') ? 'active' : ''}`}>
+                    <span className="drop-icon">📄</span>
+                    <div>
+                      <span className="drop-title">
+                        AI Resume Center
+                      </span>
+                      <span className="drop-desc">Create, review &amp; optimize resumes with AI</span>
                     </div>
                   </Link>
 

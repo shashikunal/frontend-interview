@@ -473,6 +473,9 @@ function localAdminAuthPlugin(): Plugin {
       registerDevEndpoint('/api/v1/metrics', './api/v1/metrics.js')
       registerDevEndpoint('/api/v1/performance', './api/v1/performance.js')
       registerDevEndpoint('/api/ai-feedback', './api/ai-feedback.js')
+
+      // AI Resume Center
+      registerDevEndpoint('/api/resume', './api/resume/index.js')
     },
   }
 }
