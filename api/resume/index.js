@@ -3,8 +3,14 @@
 
 export const config = { maxDuration: 60 }
 
-import { supabase } from '../../src/lib/supabase/client.ts'
+import { createClient } from '@supabase/supabase-js'
 import { parseJobDescription, analyzeResume, generateImprovedResume, validateResume } from './_handlers/aiService.js'
+
+const supabaseUrl = process.env.VITE_SUPABASE_URL || 'https://lzjkxfxaiuemjsiflwlv.supabase.co'
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx6amt4ZnhhaXVlbWpzaWZsd2x2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg0MDI2ODgsImV4cCI6MjEwMzk3ODY4OH0.PnHnvW9-V8SMLilGdhf3Em9wGIGCYxL0rCRUFpvhdn8'
+const supabase = createClient(supabaseUrl, supabaseKey, {
+  auth: { persistSession: false, autoRefreshToken: false },
+})
 
 // ─── Auth Helper ────────────────────────────────────────────────────
 
