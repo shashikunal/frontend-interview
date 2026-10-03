@@ -223,11 +223,6 @@
   color: #f87171;
 }
 
-.role-tag.pro_member {
-  background: rgba(168, 85, 247, 0.15);
-  color: #c084fc;
-}
-
 .role-tag.candidate {
   background: rgba(56, 189, 248, 0.15);
   color: #38bdf8;
@@ -522,40 +517,6 @@
   color: var(--text-muted, #94a3b8);
 }
 
-.entitlements-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 10px;
-}
-
-.entitlement-chip {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 14px;
-  border-radius: 8px;
-  font-size: 0.82rem;
-  font-weight: 600;
-  border: 1px solid transparent;
-  transition: all 0.2s ease;
-}
-
-.entitlement-chip.granted {
-  background: rgba(16, 185, 129, 0.08);
-  color: #34d399;
-  border-color: rgba(16, 185, 129, 0.25);
-}
-
-.entitlement-chip.locked {
-  background: rgba(148, 163, 184, 0.05);
-  color: var(--text-muted, #64748b);
-  border-color: rgba(148, 163, 184, 0.15);
-  opacity: 0.65;
-}
-
-.chip-icon {
-  font-size: 0.95rem;
-}
 
 /* ─── Light Mode Theme Overrides ─────────────────────────── */
 [data-theme="light"] .account-card {

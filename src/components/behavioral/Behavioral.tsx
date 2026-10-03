@@ -397,9 +397,6 @@ export default function Behavioral() {
 
       {/* Footer Navigation */}
       <div className="behavioral-footer">
-        <Link to="/experience" className="btn btn-secondary">
-          🎯 0-20 Years Career Ladder
-        </Link>
         <Link to="/video-mock" className="btn btn-primary">
           🎥 Start Live AI Video Mock Interview →
         </Link>

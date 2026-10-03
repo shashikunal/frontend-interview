@@ -3,28 +3,17 @@ import { Link } from 'react-router-dom'
 import {
   useAuth,
   type UserRole,
-  type FeatureEntitlements,
   type StoredUserAccount,
 } from '../../context/AuthContext'
-import { bankTotals, fmtCount, fmtK } from '../../data/bankTotals'
+import { bankTotals, fmtCount } from '../../data/bankTotals'
 
 import './UserManagementStudio.css'
-
-const PERMISSIONS = [
-  { key: 'questions_full', label: `Full ${fmtCount(bankTotals.mainBankQuestions)} Questions Bank Access`, candidate: false, pro: true, admin: true },
-  { key: 'coding_sandbox', label: 'Execute Monaco Code Sandbox', candidate: false, pro: true, admin: true },
-  { key: 'system_design', label: 'System Design Canvas & Blueprints', candidate: false, pro: true, admin: true },
-  { key: 'video_mock', label: 'AI Video Mock Interviews with Rubrics', candidate: false, pro: true, admin: true },
-  { key: 'compiler_studios', label: 'AST & Compiler Visualizers', candidate: false, pro: true, admin: true },
-  { key: 'cloud_sync', label: 'Supabase Postgres Cloud Progress Sync', candidate: true, pro: true, admin: true },
-]
 
 export default function UserManagementStudio() {
   const {
     user,
     switchRole,
     getAllUsers,
-    updateUserEntitlements,
     adminUpdateUserRole,
   } = useAuth()
 
@@ -34,18 +23,17 @@ export default function UserManagementStudio() {
   const [activeStep, setActiveStep] = useState<number>(1)
   const [simEmail, setSimEmail] = useState<string>('candidate@techcorp.com')
   const [simOtp, setSimOtp] = useState<string>('482910')
-  const [simRole, setSimRole] = useState<UserRole>('pro_member')
 
   // User Management State
   const [usersList, setUsersList] = useState<StoredUserAccount[]>([])
   const [isLoadingUsers, setIsLoadingUsers] = useState<boolean>(true)
   const [searchFilter, setSearchFilter] = useState<string>('')
   const [selectedRoleFilter, setSelectedRoleFilter] = useState<string>('ALL')
-  const [editingUserId, setEditingUserId] = useState<string | null>(null)
   const [statusNotification, setStatusNotification] = useState<string | null>(null)
 
   // RLS Simulation State
-  const [rlsUserContext, setRlsUserContext] = useState<'anon' | 'candidate' | 'pro_member' | 'admin'>('candidate')
+  const [simRole, setSimRole] = useState<UserRole>('candidate')
+  const [rlsUserContext, setRlsUserContext] = useState<'anon' | 'candidate' | 'interviewer' | 'admin'>('candidate')
 
   // Load real user list from Supabase
   const refreshUsers = useCallback(async () => {
@@ -72,22 +60,6 @@ export default function UserManagementStudio() {
     setTimeout(() => setStatusNotification(null), 3000)
   }
 
-  // Toggle single entitlement feature on click
-  const handleToggleEntitlement = async (
-    targetUser: StoredUserAccount,
-    featureKey: keyof FeatureEntitlements
-  ) => {
-    const nextEntitlements: FeatureEntitlements = {
-      ...targetUser.entitlements,
-      [featureKey]: !targetUser.entitlements[featureKey],
-    }
-
-    await updateUserEntitlements(targetUser.id, nextEntitlements)
-    await refreshUsers()
-    setStatusNotification(`Updated '${featureKey}' for ${targetUser.name}`)
-    setTimeout(() => setStatusNotification(null), 3000)
-  }
-
   // Filtered users
   const filteredUsers = usersList.filter(u => {
     const matchesSearch = u.name.toLowerCase().includes(searchFilter.toLowerCase()) || u.email.toLowerCase().includes(searchFilter.toLowerCase())
@@ -95,7 +67,6 @@ export default function UserManagementStudio() {
     return matchesSearch && matchesRole
   })
 
-  const editingUser = usersList.find(u => u.id === editingUserId)
 
   return (
     <div className="um-page page-enter">
@@ -109,7 +80,6 @@ export default function UserManagementStudio() {
         </div>
         <h1>Step-by-Step User Management &amp; Supabase Auth Studio</h1>
         <p className="subtitle">
-          Manage user accounts, toggle granular feature entitlements with 1-click, simulate Supabase PostgreSQL Row-Level Security (RLS), and audit active cryptographic sessions.
         </p>
       </div>
 
@@ -120,7 +90,6 @@ export default function UserManagementStudio() {
           className={`um-tab ${activeTab === 'rbac' ? 'active' : ''}`}
           onClick={() => setActiveTab('rbac')}
         >
-          👥 1. User Directory &amp; 1-Click Feature Entitlements
         </button>
         <button
           type="button"
@@ -145,7 +114,6 @@ export default function UserManagementStudio() {
         </button>
       </div>
 
-      {/* TAB 1: USER DIRECTORY & 1-CLICK FEATURE ENTITLEMENTS */}
       {activeTab === 'rbac' && (
         <div className="rbac-container">
           {/* User Directory Table */}
@@ -153,7 +121,6 @@ export default function UserManagementStudio() {
             <div className="ud-top-bar">
               <div>
                 <h3>User Directory ({filteredUsers.length} Users)</h3>
-                <p className="desc">Click <strong>"⚙️ Edit Entitlements"</strong> to enable or disable specific features for any user.</p>
               </div>
 
               <div className="ud-controls">
@@ -171,7 +138,6 @@ export default function UserManagementStudio() {
                 >
                   <option value="ALL">All Roles</option>
                   <option value="candidate">Candidate (Free)</option>
-                  <option value="pro_member">Pro Member</option>
                   <option value="interviewer">Interviewer</option>
                   <option value="admin">Admin</option>
                 </select>
@@ -184,7 +150,6 @@ export default function UserManagementStudio() {
                   <tr>
                     <th>User / Email</th>
                     <th>Role Tier</th>
-                    <th>Feature Entitlements (Click to Toggle)</th>
                     <th>Solved</th>
                     <th>Streak</th>
                     <th>Admin Actions</th>
@@ -220,62 +185,14 @@ export default function UserManagementStudio() {
                           onChange={e => handleUpdateUserRole(u.id, e.target.value as UserRole)}
                         >
                           <option value="candidate">Candidate</option>
-                          <option value="pro_member">Pro Member</option>
                           <option value="interviewer">Interviewer</option>
                           <option value="admin">Admin</option>
                         </select>
-                      </td>
-                      <td>
-                        {/* 1-Click Feature Chips */}
-                        <div className="entitlement-chips-row">
-                          <button
-                            type="button"
-                            className={`chip-btn ${u.entitlements.questions_full ? 'active' : 'inactive'}`}
-                            onClick={() => handleToggleEntitlement(u, 'questions_full')}
-                            title={`Toggle ${fmtCount(bankTotals.mainBankQuestions)} Questions Bank`}
-                          >
-                            {u.entitlements.questions_full ? `✅ ${fmtK(bankTotals.mainBankQuestions)} Questions` : `🔒 ${fmtK(bankTotals.mainBankQuestions)} Locked`}
-                          </button>
-
-                          <button
-                            type="button"
-                            className={`chip-btn ${u.entitlements.system_design ? 'active' : 'inactive'}`}
-                            onClick={() => handleToggleEntitlement(u, 'system_design')}
-                            title="Toggle System Design Canvas"
-                          >
-                            {u.entitlements.system_design ? '✅ System Design' : '🔒 Design Locked'}
-                          </button>
-
-                          <button
-                            type="button"
-                            className={`chip-btn ${u.entitlements.video_mock ? 'active' : 'inactive'}`}
-                            onClick={() => handleToggleEntitlement(u, 'video_mock')}
-                            title="Toggle AI Video Mock Interviews"
-                          >
-                            {u.entitlements.video_mock ? '✅ AI Video Mock' : '🔒 Mock Locked'}
-                          </button>
-
-                          <button
-                            type="button"
-                            className={`chip-btn ${u.entitlements.compiler_studios ? 'active' : 'inactive'}`}
-                            onClick={() => handleToggleEntitlement(u, 'compiler_studios')}
-                            title="Toggle AST & Compiler Labs"
-                          >
-                            {u.entitlements.compiler_studios ? '✅ Compilers' : '🔒 Compilers Locked'}
-                          </button>
-                        </div>
                       </td>
                       <td><strong>{u.solvedCount}</strong> / {fmtCount(bankTotals.mainBankQuestions)}</td>
                       <td>🔥 {u.streak}d</td>
                       <td>
                         <div className="action-btns-row">
-                          <button
-                            type="button"
-                            className="btn btn-sm btn-primary"
-                            onClick={() => setEditingUserId(u.id)}
-                          >
-                            ⚙️ Details
-                          </button>
                           <button
                             type="button"
                             className="btn btn-sm btn-secondary"
@@ -293,96 +210,6 @@ export default function UserManagementStudio() {
             </div>
           </div>
 
-          {/* Modal / Drawer for Detailed Entitlement Matrix */}
-          {editingUser && (
-            <div className="entitlement-drawer card-box">
-              <div className="ed-header">
-                <div>
-                  <h3>Admin Entitlement Manager for {editingUser.name}</h3>
-                  <span className="ed-sub">{editingUser.email} • Current Role: {editingUser.role.toUpperCase()}</span>
-                </div>
-                <button
-                  type="button"
-                  className="btn btn-sm btn-secondary"
-                  onClick={() => setEditingUserId(null)}
-                >
-                  ✕ Close
-                </button>
-              </div>
-
-              <div className="ed-grid">
-                {(
-                  [
-                    { key: 'questions_full', label: `Full ${fmtCount(bankTotals.mainBankQuestions)} Question Bank`, desc: 'Unlocks the complete question bank vs the free preview tier.' },
-                    { key: 'coding_sandbox', label: 'Interactive Monaco Sandbox', desc: 'Execute JavaScript, TypeScript & React code in sandbox.' },
-                    { key: 'system_design', label: 'System Design Studio & Blueprints', desc: 'Access 4-tier canvas and capacity estimators.' },
-                    { key: 'video_mock', label: 'AI Audio & Video Mock Interviews', desc: 'Timed candidate simulations with automated rubrics.' },
-                    { key: 'compiler_studios', label: 'Compilers, AST & WASM Studios', desc: 'Babel AST visualizers and WebAssembly runners.' },
-                    { key: 'cloud_sync', label: 'PostgreSQL Cloud Sync', desc: 'Sync progress across devices in Supabase.' },
-                  ] as const
-                ).map(feat => {
-                  const isEnabled = editingUser.entitlements[feat.key]
-                  return (
-                    <div
-                      key={feat.key}
-                      className={`ed-item ${isEnabled ? 'enabled' : 'disabled'}`}
-                      onClick={() => handleToggleEntitlement(editingUser, feat.key)}
-                    >
-                      <div className="ed-checkbox">
-                        <input
-                          type="checkbox"
-                          checked={isEnabled}
-                          onChange={() => {}}
-                          aria-label={feat.label}
-                        />
-                      </div>
-                      <div className="ed-info">
-                        <strong>{feat.label}</strong>
-                        <p>{feat.desc}</p>
-                      </div>
-                      <span className={`ed-status-tag ${isEnabled ? 'on' : 'off'}`}>
-                        {isEnabled ? 'ENABLED' : 'DISABLED'}
-                      </span>
-                    </div>
-                  )
-                })}
-              </div>
-            </div>
-          )}
-
-          {/* Granular RBAC Permission Matrix */}
-          <div className="card-box rbac-matrix-card">
-            <h3>Role-Based Default Matrix vs Admin Overrides</h3>
-            <p className="desc">Admin clicks above override default role settings for individual accounts in Supabase Postgres.</p>
-
-            <div className="matrix-table-wrap">
-              <table className="matrix-table">
-                <thead>
-                  <tr>
-                    <th>Platform Capability / Route</th>
-                    <th>🟢 Candidate (Default)</th>
-                    <th>⚡ Pro Member (Default)</th>
-                    <th>🔒 Admin Tier</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {PERMISSIONS.map(p => (
-                    <tr key={p.key}>
-                      <td>
-                        <div className="perm-info">
-                          <strong>{p.label}</strong>
-                          <code>{p.key}</code>
-                        </div>
-                      </td>
-                      <td className="center-cell">{p.candidate ? '✅ Allowed' : '🔒 Locked (Admin can grant)'}</td>
-                      <td className="center-cell">{p.pro ? '✅ Allowed' : '🔒 Locked'}</td>
-                      <td className="center-cell">{p.admin ? '✅ Superuser' : '🔒 Locked'}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
         </div>
       )}
 
@@ -394,7 +221,6 @@ export default function UserManagementStudio() {
               { num: 1, title: 'Identity Submission', desc: 'Email input & rate limiter check' },
               { num: 2, title: 'Cryptographic Dispatch', desc: 'Salted password hash or random OTP' },
               { num: 3, title: 'Verification Handshake', desc: 'Constant-time comparison & 5m TTL' },
-              { num: 4, title: 'JWT Token & Entitlements', desc: 'Signed claims & Supabase RLS' },
             ].map(s => (
               <button
                 key={s.num}
@@ -533,7 +359,7 @@ export default function UserManagementStudio() {
                   <div className="role-selector-sim">
                     <span>Assign Demo Role:</span>
                     <div className="rs-btns">
-                      {(['candidate', 'pro_member', 'admin'] as const).map(r => (
+                      {(['candidate', 'interviewer', 'admin'] as const).map(r => (
                         <button
                           key={r}
                           type="button"
@@ -593,7 +419,7 @@ export default function UserManagementStudio() {
             <div className="rls-context-selector">
               <span>Execute SQL Context As:</span>
               <div className="rc-btns">
-                {(['anon', 'candidate', 'pro_member', 'admin'] as const).map(c => (
+                {(['anon', 'candidate', 'interviewer', 'admin'] as const).map(c => (
                   <button
                     key={c}
                     type="button"
@@ -718,18 +544,6 @@ USING (auth.uid() = user_id);`}
                     <td>{user?.email || 'candidate@interviewprep.com'}</td>
                     <td><span className="audit-tag success">SUCCESS</span></td>
                   </tr>
-                  <tr>
-                    <td>10m ago</td>
-                    <td><code>FEATURE_ENTITLEMENT_TOGGLED</code></td>
-                    <td>sarah.connor@google.com</td>
-                    <td><span className="audit-tag info">GRANTED (system_design)</span></td>
-                  </tr>
-                  <tr>
-                    <td>1h ago</td>
-                    <td><code>ROLE_UPGRADE_PRO</code></td>
-                    <td>alex.chen@meta.com</td>
-                    <td><span className="audit-tag success">UPGRADED</span></td>
-                  </tr>
                 </tbody>
               </table>
             </div>
@@ -741,9 +555,6 @@ USING (auth.uid() = user_id);`}
       <div className="um-footer-links">
         <Link to="/profile" className="btn btn-secondary">
           👤 User Profile &amp; Progress Hub
-        </Link>
-        <Link to="/system-design" className="btn btn-primary">
-          📐 Test System Design Studio →
         </Link>
       </div>
     </div>

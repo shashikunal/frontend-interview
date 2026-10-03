@@ -13,9 +13,8 @@ import { authFailuresTotal } from '../observability/metrics.ts';
 const ROLE_HIERARCHY: Record<UserRole, number> = {
   guest: 0,
   candidate: 1,
-  pro_member: 2,
-  interviewer: 3,
-  admin: 4,
+  interviewer: 2,
+  admin: 3,
 };
 
 export function createErrorResponse(

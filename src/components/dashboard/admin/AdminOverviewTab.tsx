@@ -127,7 +127,7 @@ export default function AdminOverviewTab({
           </div>
           <div className="oc-value">{s.totalUsers.toLocaleString()}</div>
           <div className="oc-label">Total Registered Users</div>
-          <div className="oc-sub">Candidates, pro members, &amp; admins</div>
+          <div className="oc-sub">Candidates, interviewers, &amp; admins</div>
         </div>
 
         <div className="overview-card" onClick={() => onNavigateTab('users')}>

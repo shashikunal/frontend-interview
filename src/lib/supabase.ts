@@ -1,14 +1,11 @@
 import { supabase } from './supabase/client'
 import type {
   UserRole,
-  FeatureEntitlements,
   StoredUserAccount,
 } from '../features/auth/types/auth.types'
-import { DEFAULT_ENTITLEMENTS } from '../features/auth/types/auth.types'
 
 export { supabase }
-export type { UserRole, FeatureEntitlements, StoredUserAccount }
-export { DEFAULT_ENTITLEMENTS }
+export type { UserRole, StoredUserAccount }
 
 export type ActivityType =
   | 'QUESTION_SOLVED'
@@ -16,11 +13,9 @@ export type ActivityType =
   | 'QUIZ_SCORED'
   | 'FLASHCARD_MASTERED'
   | 'STUDIO_EXPLORED'
-  | 'FEATURE_GRANTED'
   | 'ROLE_UPDATED'
   | 'TRACK_SWITCHED'
   | 'AUTH_SIGN_IN'
-  | 'FEATURE_REQUESTED'
 
 export interface ActivityLogItem {
   id: string

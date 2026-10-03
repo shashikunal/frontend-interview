@@ -45,7 +45,7 @@ CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_user_activities_user_id_created_at
 
 -- INDEX 5: profiles — role-based user listing
 -- Query:   SELECT * FROM profiles WHERE role = $1 ORDER BY created_at DESC LIMIT 50;
--- Reason:  Admin user management filters users by role (candidate/admin/pro_member).
+-- Reason:  Admin user management filters users by role (candidate/interviewer/admin).
 --          Without index, every role filter scans the entire profiles table.
 -- Expected: Enum filter on indexed column — index range scan instead of sequential scan.
 -- Tradeoff: ~100KB. Low cardinality index (5 enum values) — B-tree is effective here.

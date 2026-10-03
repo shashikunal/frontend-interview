@@ -5,7 +5,6 @@ import { useProgress } from '../../context/ProgressContext'
 import { useAuth } from '../../context/AuthContext'
 import { bankTotals, fmtCount, fmtK } from '../../data/bankTotals'
 import ThemeToggle from './ThemeToggle'
-import AdminNotificationBell from './AdminNotificationBell'
 import './Header.css'
 
 export default function Header() {
@@ -33,13 +32,8 @@ export default function Header() {
   }, [])
 
   const { streak } = useProgress()
-  const { user, isAuthenticated, hasFeature, openAuthModal, signOut } = useAuth()
+  const { user, isAuthenticated, openAuthModal, signOut } = useAuth()
 
-  const hasQuestionsFull = hasFeature('questions_full')
-  const hasCodingSandbox = hasFeature('coding_sandbox')
-  const hasSystemDesign = hasFeature('system_design')
-  const hasVideoMock = hasFeature('video_mock')
-  const hasCompilerStudios = hasFeature('compiler_studios')
 
   const isActive = (path: string) => {
     if (path === '/questions') {
@@ -48,7 +42,6 @@ export default function Header() {
     return location.pathname === path || location.pathname.startsWith(path + '/')
   }
 
-  const isArchitectureActive = ['/experience', '/pathways', '/system-design', '/case-studies', '/ast-explorer', '/security', '/user-management', '/state-machine', '/capacity-estimator', '/memory-profiler', '/module-federation', '/whiteboard', '/webrtc-lab', '/local-first', '/search-engine', '/design-system', '/i18n-lab', '/sdui-lab', '/web-components', '/protocols', '/css-pipeline', '/wasm-lab', '/visualizer', '/profiler', '/resume-optimizer', '/resume-builder', '/resume-center', '/compensation'].some(p => isActive(p))
   const isResumeActive = ['/resume-builder', '/resume-center', '/resume-optimizer'].some(p => isActive(p))
   const isMockActive = ['/mock-interview', '/video-mock', '/ai-video-mock', '/behavioral', '/peer-room'].some(p => isActive(p))
   const isMachineCodingActive = isActive('/machine-coding') || isActive('/machine-level-coding')
@@ -183,18 +176,6 @@ export default function Header() {
                 Videos
               </Link>
 
-              {/* 4. Architecture & Career Dropdown */}
-              <div className="nav-dropdown-wrap">
-                <button
-                  type="button"
-                  className={`nav-link nav-dropdown-btn ${isArchitectureActive || activeDropdown === 'architecture' ? 'active' : ''}`}
-                  onClick={() => toggleDropdown('architecture')}
-                  aria-expanded={activeDropdown === 'architecture'}
-                >
-                  Architecture <span className="dropdown-caret">▾</span>
-                </button>
-              </div>
-
               {/* 5. Mock Interviews Dropdown */}
               <div className="nav-dropdown-wrap">
                 <button
@@ -269,9 +250,7 @@ export default function Header() {
           <div className="header-auth-wrap">
 
 
-            {isAuthenticated && user?.role === 'admin' && (
-              <AdminNotificationBell />
-            )}
+            
 
             {isAuthenticated && user ? (
               <div className="user-profile-menu-wrap">
@@ -294,7 +273,7 @@ export default function Header() {
                     <span className="u-avatar-icon">👨‍💻</span>
                   )}
                   <span className={`u-role-pill ${user.role}`}>
-                    {user.role === 'admin' ? 'ADMIN' : user.role === 'pro_member' ? 'PRO' : 'CANDIDATE'}
+                    {user.role.toUpperCase()}
                   </span>
                 </button>
 
@@ -439,7 +418,6 @@ export default function Header() {
                     <div>
                       <span className="drop-title">
                         Machine-Level Coding
-                        {!hasCodingSandbox && <span className="drop-lock-tag">🔒 PRO</span>}
                       </span>
                       <span className="drop-desc">Component build sandbox with auto-test harness</span>
                     </div>
@@ -455,7 +433,6 @@ export default function Header() {
                     <div>
                       <span className="drop-title">
                         LeetCode / DSA
-                        {!hasCodingSandbox && <span className="drop-lock-tag">🔒 PRO</span>}
                       </span>
                       <span className="drop-desc">1,000 curated data structures &amp; algorithm problems</span>
                     </div>
@@ -471,7 +448,6 @@ export default function Header() {
                     <div>
                       <span className="drop-title">
                         Core Programming
-                        {!hasCodingSandbox && <span className="drop-lock-tag">🔒 PRO</span>}
                       </span>
                       <span className="drop-desc">500 curated JavaScript problems across 13 domains</span>
                     </div>
@@ -487,365 +463,12 @@ export default function Header() {
                     <div>
                       <span className="drop-title">
                         Frontend JavaScript Programming
-                        {!hasCodingSandbox && <span className="drop-lock-tag">🔒 PRO</span>}
                       </span>
                       <span className="drop-desc">1,000 unique frontend JS challenges &amp; mock simulator</span>
                     </div>
                   </Link>
                 </div>
               </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* 2. ARCHITECTURE MEGA-MENU */}
-      {activeDropdown === 'architecture' && (
-        <div
-          className="mega-menu-overlay"
-          onClick={e => {
-            if (e.target === e.currentTarget) closeMenus()
-          }}
-        >
-          <div
-            className="mega-menu-content"
-            onClick={e => {
-              if ((e.target as HTMLElement).closest('a')) closeMenus()
-            }}
-          >
-            <div className="mega-menu-inner four-cols">
-
-              {/* Column 1: Career & Pathways */}
-              <div className="mega-column">
-                <span className="mega-col-title">🎯 Career &amp; Negotiations</span>
-                <div className="mega-items-group">
-                  <Link to="/experience" className={`mega-item ${isActive('/experience') ? 'active' : ''}`}>
-                    <span className="drop-icon">🎯</span>
-                    <div>
-                      <span className="drop-title">
-                        0-20y Career Ladder
-                        {!hasSystemDesign && <span className="drop-lock-tag">🔒 PRO</span>}
-                      </span>
-                      <span className="drop-desc">Google L3-L8 &amp; Meta E3-E8 rubrics</span>
-                    </div>
-                  </Link>
-
-                  <Link to="/pathways" className={`mega-item ${isActive('/pathways') ? 'active' : ''}`}>
-                    <span className="drop-icon">🏢</span>
-                    <div>
-                      <span className="drop-title">
-                        620+ Company Pathways
-                        {!hasSystemDesign && <span className="drop-lock-tag">🔒 PRO</span>}
-                      </span>
-                      <span className="drop-desc">FAANG &amp; unicorn question tracks</span>
-                    </div>
-                  </Link>
-
-                  <Link to="/resume-builder" className={`mega-item ${isActive('/resume-builder') || isActive('/resume-center') ? 'active' : ''}`}>
-                    <span className="drop-icon">📝</span>
-                    <div>
-                      <span className="drop-title">
-                        AI Resume Builder
-                        <span style={{ fontSize: '0.62rem', padding: '0.1rem 0.35rem', borderRadius: '4px', background: 'linear-gradient(135deg, #10b981, #059669)', color: '#fff', fontWeight: 700, marginLeft: '0.35rem' }}>NEW</span>
-                      </span>
-                      <span className="drop-desc">Build, edit, format &amp; export resumes</span>
-                    </div>
-                  </Link>
-
-                  <Link to="/resume-optimizer" className={`mega-item ${isActive('/resume-optimizer') ? 'active' : ''}`}>
-                    <span className="drop-icon">📄</span>
-                    <div>
-                      <span className="drop-title">
-                        ATS Resume Optimizer
-                        {!hasSystemDesign && <span className="drop-lock-tag">🔒 PRO</span>}
-                      </span>
-                      <span className="drop-desc">Google XYZ formula &amp; ATS scanner</span>
-                    </div>
-                  </Link>
-
-                  <Link to="/compensation" className={`mega-item ${isActive('/compensation') ? 'active' : ''}`}>
-                    <span className="drop-icon">💰</span>
-                    <div>
-                      <span className="drop-title">
-                        Offer Negotiation &amp; TC
-                        {!hasSystemDesign && <span className="drop-lock-tag">🔒 PRO</span>}
-                      </span>
-                      <span className="drop-desc">4-year vesting models &amp; scripts</span>
-                    </div>
-                  </Link>
-
-                  <Link to="/design-system" className={`mega-item ${isActive('/design-system') ? 'active' : ''}`}>
-                    <span className="drop-icon">🎨</span>
-                    <div>
-                      <span className="drop-title">
-                        Design System &amp; Tokens
-                        {!hasSystemDesign && <span className="drop-lock-tag">🔒 PRO</span>}
-                      </span>
-                      <span className="drop-desc">HSL palettes, type scale &amp; tokens</span>
-                    </div>
-                  </Link>
-                </div>
-              </div>
-
-
-              {/* Column 2: System Architecture */}
-              <div className="mega-column">
-                <span className="mega-col-title">🏗️ System Design &amp; Replays</span>
-                <div className="mega-items-group">
-                  <Link to="/system-design" className={`mega-item ${isActive('/system-design') ? 'active' : ''}`}>
-                    <span className="drop-icon">🏗️</span>
-                    <div>
-                      <span className="drop-title">
-                        System Design Studio
-                        {!hasSystemDesign && <span className="drop-lock-tag">🔒 PRO</span>}
-                      </span>
-                      <span className="drop-desc">Interactive 4-tier design canvas</span>
-                    </div>
-                  </Link>
-
-                  <Link to="/case-studies" className={`mega-item ${isActive('/case-studies') ? 'active' : ''}`}>
-                    <span className="drop-icon">📐</span>
-                    <div>
-                      <span className="drop-title">
-                        FAANG Architecture Replays
-                        {!hasSystemDesign && <span className="drop-lock-tag">🔒 PRO</span>}
-                      </span>
-                      <span className="drop-desc">Figma, Meta, Uber &amp; Netflix blueprints</span>
-                    </div>
-                  </Link>
-
-                  <Link to="/capacity-estimator" className={`mega-item ${isActive('/capacity-estimator') ? 'active' : ''}`}>
-                    <span className="drop-icon">📐</span>
-                    <div>
-                      <span className="drop-title">
-                        Capacity Sizing Estimator
-                        {!hasSystemDesign && <span className="drop-lock-tag">🔒 PRO</span>}
-                      </span>
-                      <span className="drop-desc">QPS, DAU, RAM Cache &amp; Storage</span>
-                    </div>
-                  </Link>
-
-                  <Link to="/whiteboard" className={`mega-item ${isActive('/whiteboard') ? 'active' : ''}`}>
-                    <span className="drop-icon">🎨</span>
-                    <div>
-                      <span className="drop-title">
-                        Collaborative Whiteboard
-                        {!hasSystemDesign && <span className="drop-lock-tag">🔒 PRO</span>}
-                      </span>
-                      <span className="drop-desc">Real-time canvas &amp; CRDT sync</span>
-                    </div>
-                  </Link>
-
-                  <Link to="/webrtc-lab" className={`mega-item ${isActive('/webrtc-lab') ? 'active' : ''}`}>
-                    <span className="drop-icon">📡</span>
-                    <div>
-                      <span className="drop-title">
-                        WebRTC &amp; ICE Lab
-                        {!hasSystemDesign && <span className="drop-lock-tag">🔒 PRO</span>}
-                      </span>
-                      <span className="drop-desc">SDP handshake, STUN/TURN &amp; SFU</span>
-                    </div>
-                  </Link>
-
-                  <Link to="/local-first" className={`mega-item ${isActive('/local-first') ? 'active' : ''}`}>
-                    <span className="drop-icon">💾</span>
-                    <div>
-                      <span className="drop-title">
-                        Local-First &amp; Offline Sync
-                        {!hasSystemDesign && <span className="drop-lock-tag">🔒 PRO</span>}
-                      </span>
-                      <span className="drop-desc">Optimistic UI &amp; Vector Clocks</span>
-                    </div>
-                  </Link>
-
-                  <Link to="/search-engine" className={`mega-item ${isActive('/search-engine') ? 'active' : ''}`}>
-                    <span className="drop-icon">⚡</span>
-                    <div>
-                      <span className="drop-title">
-                        Client Search &amp; BM25
-                        {!hasSystemDesign && <span className="drop-lock-tag">🔒 PRO</span>}
-                      </span>
-                      <span className="drop-desc">Inverted Index, BM25 &amp; Trie</span>
-                    </div>
-                  </Link>
-                </div>
-              </div>
-
-
-
-
-              {/* Column 3: Compilers & Micro-Frontends */}
-              <div className="mega-column">
-                <span className="mega-col-title">⚡ Compilers &amp; Micro-Frontends</span>
-                <div className="mega-items-group">
-                  <Link to="/ast-explorer" className={`mega-item ${isActive('/ast-explorer') ? 'active' : ''}`}>
-                    <span className="drop-icon">⚡</span>
-                    <div>
-                      <span className="drop-title">
-                        AST &amp; Babel Compiler
-                        {!hasCompilerStudios && <span className="drop-lock-tag">🔒 PRO</span>}
-                      </span>
-                      <span className="drop-desc">Live AST visualizer &amp; visitor plugin</span>
-                    </div>
-                  </Link>
-
-                  <Link to="/module-federation" className={`mega-item ${isActive('/module-federation') ? 'active' : ''}`}>
-                    <span className="drop-icon">🌐</span>
-                    <div>
-                      <span className="drop-title">
-                        Micro-Frontends Studio
-                        {!hasCompilerStudios && <span className="drop-lock-tag">🔒 PRO</span>}
-                      </span>
-                      <span className="drop-desc">Webpack 5 / Vite Module Federation</span>
-                    </div>
-                  </Link>
-
-                  <Link to="/state-machine" className={`mega-item ${isActive('/state-machine') ? 'active' : ''}`}>
-                    <span className="drop-icon">⚙️</span>
-                    <div>
-                      <span className="drop-title">
-                        State Machine &amp; XState
-                        {!hasCompilerStudios && <span className="drop-lock-tag">🔒 PRO</span>}
-                      </span>
-                      <span className="drop-desc">Visual FSM &amp; TypeScript export</span>
-                    </div>
-                  </Link>
-
-                  <Link to="/protocols" className={`mega-item ${isActive('/protocols') ? 'active' : ''}`}>
-                    <span className="drop-icon">📡</span>
-                    <div>
-                      <span className="drop-title">
-                        API Protocols &amp; GraphQL
-                        {!hasCompilerStudios && <span className="drop-lock-tag">🔒 PRO</span>}
-                      </span>
-                      <span className="drop-desc">Over-fetching, N+1 &amp; Protobuf</span>
-                    </div>
-                  </Link>
-
-                  <Link to="/wasm-lab" className={`mega-item ${isActive('/wasm-lab') ? 'active' : ''}`}>
-                    <span className="drop-icon">⚡</span>
-                    <div>
-                      <span className="drop-title">
-                        WebAssembly &amp; SIMD Lab
-                        {!hasCompilerStudios && <span className="drop-lock-tag">🔒 PRO</span>}
-                      </span>
-                      <span className="drop-desc">Native bytecode &amp; linear memory</span>
-                    </div>
-                  </Link>
-
-                  <Link to="/sdui-lab" className={`mega-item ${isActive('/sdui-lab') ? 'active' : ''}`}>
-                    <span className="drop-icon">📱</span>
-                    <div>
-                      <span className="drop-title">
-                        Server-Driven UI &amp; RSC
-                        {!hasCompilerStudios && <span className="drop-lock-tag">🔒 PRO</span>}
-                      </span>
-                      <span className="drop-desc">Dynamic JSON schema &amp; Islands</span>
-                    </div>
-                  </Link>
-
-                  <Link to="/web-components" className={`mega-item ${isActive('/web-components') ? 'active' : ''}`}>
-                    <span className="drop-icon">🛡️</span>
-                    <div>
-                      <span className="drop-title">
-                        Shadow DOM &amp; Components
-                        {!hasCompilerStudios && <span className="drop-lock-tag">🔒 PRO</span>}
-                      </span>
-                      <span className="drop-desc">Encapsulated styles, slots &amp; hooks</span>
-                    </div>
-                  </Link>
-                </div>
-              </div>
-
-
-
-
-
-              {/* Column 4: Security & Performance */}
-              <div className="mega-column">
-                <span className="mega-col-title">🔒 Security &amp; Performance</span>
-                <div className="mega-items-group">
-                  <Link to="/security" className={`mega-item ${isActive('/security') ? 'active' : ''}`}>
-                    <span className="drop-icon">🔒</span>
-                    <div>
-                      <span className="drop-title">
-                        Web Security Lab
-                        {!hasSystemDesign && <span className="drop-lock-tag">🔒 PRO</span>}
-                      </span>
-                      <span className="drop-desc">OWASP XSS, CSRF &amp; CSP sandbox</span>
-                    </div>
-                  </Link>
-
-                  <Link to="/user-management" className={`mega-item ${isActive('/user-management') ? 'active' : ''}`}>
-                    <span className="drop-icon">🛡️</span>
-                    <div>
-                      <span className="drop-title">
-                        User Management &amp; Auth
-                        <span className="drop-lock-tag" style={{ background: 'rgba(239, 68, 68, 0.15)', color: '#f87171', borderColor: 'rgba(239, 68, 68, 0.3)' }}>🛡️ ADMIN</span>
-                      </span>
-                      <span className="drop-desc">OTP lifecycle, RBAC &amp; Postgres RLS</span>
-                    </div>
-                  </Link>
-
-
-                  <Link to="/memory-profiler" className={`mega-item ${isActive('/memory-profiler') ? 'active' : ''}`}>
-                    <span className="drop-icon">🧠</span>
-                    <div>
-                      <span className="drop-title">
-                        Memory &amp; GC Profiler
-                        {!hasSystemDesign && <span className="drop-lock-tag">🔒 PRO</span>}
-                      </span>
-                      <span className="drop-desc">V8 heap &amp; detached DOM leaks</span>
-                    </div>
-                  </Link>
-
-                  <Link to="/profiler" className={`mega-item ${isActive('/profiler') ? 'active' : ''}`}>
-                    <span className="drop-icon">⚡</span>
-                    <div>
-                      <span className="drop-title">
-                        Performance Profiler Lab
-                        {!hasSystemDesign && <span className="drop-lock-tag">🔒 PRO</span>}
-                      </span>
-                      <span className="drop-desc">Layout thrashing &amp; Web Vitals</span>
-                    </div>
-                  </Link>
-
-                  <Link to="/visualizer" className={`mega-item ${isActive('/visualizer') ? 'active' : ''}`}>
-                    <span className="drop-icon">🌀</span>
-                    <div>
-                      <span className="drop-title">
-                        Event Loop &amp; Fiber
-                        {!hasSystemDesign && <span className="drop-lock-tag">🔒 PRO</span>}
-                      </span>
-                      <span className="drop-desc">Step-by-step concurrency visualizer</span>
-                    </div>
-                  </Link>
-
-                  <Link to="/css-pipeline" className={`mega-item ${isActive('/css-pipeline') ? 'active' : ''}`}>
-                    <span className="drop-icon">🎨</span>
-                    <div>
-                      <span className="drop-title">
-                        CSS Render Pipeline
-                        {!hasSystemDesign && <span className="drop-lock-tag">🔒 PRO</span>}
-                      </span>
-                      <span className="drop-desc">Reflow, repaint &amp; GPU 120fps</span>
-                    </div>
-                  </Link>
-
-                  <Link to="/i18n-lab" className={`mega-item ${isActive('/i18n-lab') ? 'active' : ''}`}>
-                    <span className="drop-icon">🌍</span>
-                    <div>
-                      <span className="drop-title">
-                        i18n &amp; RTL Studio
-                        {!hasSystemDesign && <span className="drop-lock-tag">🔒 PRO</span>}
-                      </span>
-                      <span className="drop-desc">Arabic RTL mirroring &amp; Intl APIs</span>
-                    </div>
-                  </Link>
-                </div>
-              </div>
-
-
             </div>
           </div>
         </div>
@@ -885,7 +508,6 @@ export default function Header() {
                     <div>
                       <span className="drop-title">
                         Timed Mock Simulator
-                        {!hasVideoMock && <span className="drop-lock-tag">🔒 PRO</span>}
                       </span>
                       <span className="drop-desc">Calibrated questions with realistic countdown clock</span>
                     </div>
@@ -912,7 +534,6 @@ export default function Header() {
                     <div>
                       <span className="drop-title">
                         AI Video Mock (Legacy)
-                        {!hasVideoMock && <span className="drop-lock-tag">🔒 PRO</span>}
                       </span>
                       <span className="drop-desc">Live webcam, speech audio transcription &amp; grading</span>
                     </div>
@@ -923,7 +544,6 @@ export default function Header() {
                     <div>
                       <span className="drop-title">
                         FAANG STAR Behavioral
-                        {!hasVideoMock && <span className="drop-lock-tag">🔒 PRO</span>}
                       </span>
                       <span className="drop-desc">Amazon 16 Leadership Principles &amp; Googleyness</span>
                     </div>
@@ -939,7 +559,6 @@ export default function Header() {
                     <div>
                       <span className="drop-title">
                         Peer Mock Room (Live WebRTC)
-                        {!hasVideoMock && <span className="drop-lock-tag">🔒 PRO</span>}
                       </span>
                       <span className="drop-desc">1-on-1 peer video room with shared code &amp; rubric</span>
                     </div>
@@ -1038,7 +657,6 @@ export default function Header() {
                     <span className="m-label">Questions Bank</span>
                     <span className="m-sub">{fmtCount(bankTotals.mainBankQuestions)} questions</span>
                   </div>
-                  {!hasQuestionsFull && <span className="nav-lock-tag">🔒</span>}
                 </Link>
 
                 <Link to="/machine-coding" className={`mobile-nav-item ${isMachineCodingActive ? 'active' : ''}`} onClick={closeMobileMenu}>
@@ -1047,7 +665,6 @@ export default function Header() {
                     <span className="m-label">Machine Coding</span>
                     <span className="m-sub">Live sandbox &amp; tests</span>
                   </div>
-                  {!hasCodingSandbox && <span className="nav-lock-tag">🔒</span>}
                 </Link>
 
                 <Link to="/dsa" className={`mobile-nav-item ${isDsaActive ? 'active' : ''}`} onClick={closeMobileMenu}>
@@ -1056,7 +673,6 @@ export default function Header() {
                     <span className="m-label">DSA Masterclass</span>
                     <span className="m-sub">1,000 algorithmic questions</span>
                   </div>
-                  {!hasCodingSandbox && <span className="nav-lock-tag">🔒</span>}
                 </Link>
 
                 <Link to="/core-programming" className={`mobile-nav-item ${isCoreProgActive ? 'active' : ''}`} onClick={closeMobileMenu}>
@@ -1065,7 +681,6 @@ export default function Header() {
                     <span className="m-label">Core Programming</span>
                     <span className="m-sub">500 core JavaScript challenges</span>
                   </div>
-                  {!hasCodingSandbox && <span className="nav-lock-tag">🔒</span>}
                 </Link>
 
                 <Link to="/frontend-javascript" className={`mobile-nav-item ${isFrontendJsActive ? 'active' : ''}`} onClick={closeMobileMenu}>
@@ -1074,7 +689,6 @@ export default function Header() {
                     <span className="m-label">Frontend JavaScript Programming</span>
                     <span className="m-sub">1,000 production JS questions</span>
                   </div>
-                  {!hasCodingSandbox && <span className="nav-lock-tag">🔒</span>}
                 </Link>
 
                 <Link to="/mock-coding" className={`mobile-nav-item ${isActive('/mock-coding') ? 'active' : ''}`} onClick={closeMobileMenu}>
@@ -1128,36 +742,6 @@ export default function Header() {
                     </div>
                     <span className="nav-lock-tag">🔒</span>
                   </button>
-                )}
-              </div>
-
-              {/* Collapsible Architecture Section */}
-              <div className="mobile-accordion">
-                <button
-                  type="button"
-                  className={`mobile-accordion-toggle ${mobileExpandedSection === 'architecture' ? 'open' : ''}`}
-                  onClick={() => setMobileExpandedSection(prev => prev === 'architecture' ? null : 'architecture')}
-                >
-                  <span className="m-accordion-label">
-                    <span className="m-icon">🏛️</span> Architecture &amp; System Design
-                  </span>
-                  <span className="m-accordion-caret">{mobileExpandedSection === 'architecture' ? '▲' : '▼'}</span>
-                </button>
-
-                {mobileExpandedSection === 'architecture' && (
-                  <div className="mobile-accordion-content">
-                    <Link to="/system-design" className="mobile-sublink" onClick={closeMobileMenu}>📐 System Design Canvas</Link>
-                    <Link to="/case-studies" className="mobile-sublink" onClick={closeMobileMenu}>🏢 Real-world Case Studies</Link>
-                    <Link to="/security" className="mobile-sublink" onClick={closeMobileMenu}>🛡️ Web Security Sandbox</Link>
-                    <Link to="/module-federation" className="mobile-sublink" onClick={closeMobileMenu}>🧩 Microfrontends (MFE)</Link>
-                    <Link to="/webrtc-lab" className="mobile-sublink" onClick={closeMobileMenu}>📹 WebRTC Lab</Link>
-                    <Link to="/local-first" className="mobile-sublink" onClick={closeMobileMenu}>💾 Local-First Architecture</Link>
-                    <Link to="/design-system" className="mobile-sublink" onClick={closeMobileMenu}>🎨 Enterprise Design System</Link>
-                    <Link to="/profiler" className="mobile-sublink" onClick={closeMobileMenu}>⚡ Performance Profiler</Link>
-                    <Link to="/resume-builder" className="mobile-sublink" onClick={closeMobileMenu}>📝 AI Resume Builder</Link>
-                    <Link to="/resume-optimizer" className="mobile-sublink" onClick={closeMobileMenu}>📄 AI Resume Optimizer</Link>
-                    <Link to="/compensation" className="mobile-sublink" onClick={closeMobileMenu}>💰 Compensation &amp; Offers</Link>
-                  </div>
                 )}
               </div>
 

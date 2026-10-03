@@ -603,51 +603,23 @@ export default function UserProfile({ embedded = false }: UserProfileProps) {
             </div>
           </div>
 
-          {/* Section 3: Subscription & Feature Entitlements */}
+          {/* Section 3: Account Role */}
           <div className="account-card">
             <div className="card-header-row">
-              <h3>Subscription &amp; Feature Access</h3>
-              <span className="section-sub">Active tier entitlements</span>
+              <h3>Account Role</h3>
+              <span className="section-sub">Full access to all modules</span>
             </div>
 
             <div className="entitlements-overview">
               <div className="tier-header-badge">
-                <span className="tier-icon">💎</span>
+                <span className="tier-icon">&#128081;</span>
                 <div>
-                  <div className="tier-title">{user?.role?.toUpperCase()} TIER</div>
+                  <div className="tier-title">{user?.role?.toUpperCase()}</div>
                   <div className="tier-sub font-mono">Role ID: {user?.role}</div>
-                </div>
-              </div>
-
-              <div className="entitlements-grid">
-                <div className={`entitlement-chip ${user?.entitlements?.questions_full ? 'granted' : 'locked'}`}>
-                  <span className="chip-icon">{user?.entitlements?.questions_full ? '✅' : '🔒'}</span>
-                  <span>DSA Question Catalog &amp; Runner</span>
-                </div>
-                <div className={`entitlement-chip ${user?.entitlements?.coding_sandbox ? 'granted' : 'locked'}`}>
-                  <span className="chip-icon">{user?.entitlements?.coding_sandbox ? '✅' : '🔒'}</span>
-                  <span>Machine Coding Studio</span>
-                </div>
-                <div className={`entitlement-chip ${user?.entitlements?.video_mock ? 'granted' : 'locked'}`}>
-                  <span className="chip-icon">{user?.entitlements?.video_mock ? '✅' : '🔒'}</span>
-                  <span>AI Video Mock Interview Suite</span>
-                </div>
-                <div className={`entitlement-chip ${user?.entitlements?.system_design ? 'granted' : 'locked'}`}>
-                  <span className="chip-icon">{user?.entitlements?.system_design ? '✅' : '🔒'}</span>
-                  <span>System Design &amp; MasterDocs</span>
-                </div>
-                <div className={`entitlement-chip ${user?.entitlements?.compiler_studios || user?.role === 'admin' || user?.role === 'interviewer' ? 'granted' : 'locked'}`}>
-                  <span className="chip-icon">{user?.entitlements?.compiler_studios || user?.role === 'admin' || user?.role === 'interviewer' ? '✅' : '🔒'}</span>
-                  <span>Realtime Meeting &amp; WebRTC Room</span>
-                </div>
-                <div className={`entitlement-chip ${user?.role === 'admin' ? 'granted' : 'locked'}`}>
-                  <span className="chip-icon">{user?.role === 'admin' ? '✅' : '🔒'}</span>
-                  <span>Platform Operations Control Plane</span>
                 </div>
               </div>
             </div>
           </div>
-
           {/* Section 4: Security & Password */}
           <div className="account-card">
             <div className="card-header-row">

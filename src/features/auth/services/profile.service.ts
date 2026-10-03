@@ -1,8 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
 import { supabase, supabaseUrl, supabaseAnonKey } from '../../../lib/supabase/client.ts'
-import type { AuthUserProfile, UserRole, FeatureEntitlements } from '../types/auth.types.ts'
-import { DEFAULT_ENTITLEMENTS } from '../types/auth.types.ts'
 import { getStoredAuthHeader } from './adminTokenHelper.ts'
+import type { AuthUserProfile, UserRole } from '../types/auth.types.ts'
 
 const PROFILES_LOCAL_KEY = 'supabase_profiles_real'
 
@@ -12,7 +11,6 @@ export const KNOWN_SUPABASE_AUTH_USERS: AuthUserProfile[] = [
     email: 'candidate@interviewprep.com',
     name: 'Demo Candidate',
     role: 'candidate',
-    entitlements: DEFAULT_ENTITLEMENTS.candidate,
     status: 'ACTIVE',
     batch: '2026-Alpha',
     batchCode: 'FE-2026-A',
@@ -85,7 +83,6 @@ export const profileService = {
 
       if (!error && data) {
         const role = (data.role as UserRole) || 'candidate'
-        const entitlements = data.feature_entitlements || DEFAULT_ENTITLEMENTS[role]
 
         return {
           id: data.id,
@@ -94,7 +91,6 @@ export const profileService = {
           role,
           avatarUrl: data.avatar_url || localMatch?.avatarUrl,
           avatarPublicId: data.avatar_public_id || localMatch?.avatarPublicId,
-          entitlements,
           status: (data.status as 'ACTIVE' | 'SUSPENDED') || 'ACTIVE',
           batch: data.batch || localMatch?.batch || '2026-Alpha',
           batchCode: data.batch_code || localMatch?.batchCode || 'FE-2026-A',
@@ -124,7 +120,6 @@ export const profileService = {
       full_name: string
       avatar_url: string
       avatar_public_id: string
-      feature_entitlements: FeatureEntitlements
       status: 'ACTIVE' | 'SUSPENDED'
       batch: string
       batch_code: string
@@ -150,7 +145,6 @@ export const profileService = {
           name: updates.full_name !== undefined ? updates.full_name : p.name,
           avatarUrl: updates.avatar_url !== undefined ? updates.avatar_url : p.avatarUrl,
           avatarPublicId: updates.avatar_public_id !== undefined ? updates.avatar_public_id : p.avatarPublicId,
-          entitlements: updates.feature_entitlements !== undefined ? updates.feature_entitlements : p.entitlements,
           status: updates.status || p.status || 'ACTIVE',
           batch: updates.batch !== undefined ? updates.batch : p.batch || '2026-Alpha',
           batchCode: updates.batch_code !== undefined ? updates.batch_code : p.batchCode || 'FE-2026-A',
@@ -173,7 +167,6 @@ export const profileService = {
         role: 'candidate',
         avatarUrl: updates.avatar_url,
         avatarPublicId: updates.avatar_public_id,
-        entitlements: updates.feature_entitlements || DEFAULT_ENTITLEMENTS.candidate,
         status: updates.status || 'ACTIVE',
         batch: updates.batch || '2026-Alpha',
         batchCode: updates.batch_code || 'FE-2026-A',
@@ -215,11 +208,9 @@ export const profileService = {
     email: string
     name: string
     role: UserRole
-    entitlements?: FeatureEntitlements
   }): Promise<{ success: boolean; message: string; user?: AuthUserProfile }> => {
     const cleanEmail = params.email.toLowerCase().trim()
     const role = params.role || 'candidate'
-    const entitlements = params.entitlements || DEFAULT_ENTITLEMENTS[role]
 
     let createdId = ''
     try {
@@ -257,7 +248,6 @@ export const profileService = {
       email: cleanEmail,
       name: params.name,
       role,
-      entitlements,
       status: 'ACTIVE',
       createdAt: new Date().toISOString(),
     }
@@ -267,18 +257,6 @@ export const profileService = {
     if (!local.some(p => p.email === cleanEmail)) {
       local.unshift(createdUser)
       saveLocalProfiles(local)
-    }
-
-    // 2. Update entitlements in Supabase profiles
-    try {
-      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(createdId)
-      if (isUuid) {
-        await supabase.from('profiles').update({
-          feature_entitlements: entitlements,
-        }).eq('id', createdId)
-      }
-    } catch {
-      // ignore
     }
 
     return {
@@ -296,40 +274,6 @@ export const profileService = {
     status: 'ACTIVE' | 'SUSPENDED'
   ): Promise<{ success: boolean; message: string }> => {
     return profileService.updateProfile(userId, { status })
-  },
-
-  /**
-   * Admin: Bulk grant or reset entitlements
-   */
-  bulkUpdateEntitlements: async (
-    userIds: string[],
-    entitlements: FeatureEntitlements
-  ): Promise<{ success: boolean; message: string }> => {
-    const local = getLocalProfiles()
-    const updated = local.map(p =>
-      userIds.includes(p.id) ? { ...p, entitlements, updatedAt: new Date().toISOString() } : p
-    )
-    saveLocalProfiles(updated)
-
-    try {
-      const promises = userIds.map(id =>
-        supabase
-          .from('profiles')
-          .update({
-            feature_entitlements: entitlements,
-            updated_at: new Date().toISOString(),
-          })
-          .eq('id', id)
-      )
-      await Promise.all(promises)
-    } catch {
-      // ignore
-    }
-
-    return {
-      success: true,
-      message: `Updated feature entitlements for ${userIds.length} users successfully!`,
-    }
   },
 
   /**
@@ -352,7 +296,6 @@ export const profileService = {
             role,
             avatarUrl: d.avatar_url,
             avatarPublicId: d.avatar_public_id,
-            entitlements: d.feature_entitlements || DEFAULT_ENTITLEMENTS[role],
             status: (d.status as 'ACTIVE' | 'SUSPENDED') || 'ACTIVE',
             createdAt: d.created_at,
             updatedAt: d.updated_at,
@@ -381,7 +324,6 @@ export const profileService = {
               role: (d.role as UserRole) || 'candidate',
               avatarUrl: d.avatar_url,
               avatarPublicId: d.avatar_public_id,
-              entitlements: d.feature_entitlements || DEFAULT_ENTITLEMENTS[(d.role as UserRole) || 'candidate'],
               status: (d.status as 'ACTIVE' | 'SUSPENDED') || 'ACTIVE',
               createdAt: d.created_at,
               updatedAt: d.updated_at,

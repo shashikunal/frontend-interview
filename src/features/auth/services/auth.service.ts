@@ -15,11 +15,7 @@ export const authService = {
   signUp: async ({ email, password, fullName }: SignUpCredentials): Promise<AuthActionResult> => {
     const cleanEmail = email.toLowerCase().trim()
     const name = fullName.trim() || cleanEmail.split('@')[0]
-    const role: UserRole = cleanEmail.includes('admin')
-      ? 'admin'
-      : cleanEmail.includes('pro')
-      ? 'pro_member'
-      : 'candidate'
+    const role: UserRole = cleanEmail.includes('admin') ? 'admin' : 'candidate'
 
     try {
       const { data, error } = await supabase.auth.signUp({

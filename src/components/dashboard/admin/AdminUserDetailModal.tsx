@@ -253,7 +253,7 @@ export default function AdminUserDetailModal({
           {/* Profile Info Strip Overlapping Banner */}
           <div className="h-profile-info-strip">
             <div className="h-profile-big-avatar">
-              {userDetail?.role === 'admin' ? '🛡️' : userDetail?.role === 'pro_member' ? '⚡' : '👨‍💻'}
+              {userDetail?.role === 'admin' ? '🛡️' : '👨‍💻'}
             </div>
             <div className="h-profile-titles">
               <h2 className="h-profile-name">{userDetail?.name || 'Candidate Details'}</h2>

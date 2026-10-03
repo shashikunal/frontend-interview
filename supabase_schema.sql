@@ -5,6 +5,10 @@
 -- ==============================================================================
 
 -- 1. Create Enums & Types
+-- NOTE: 'pro_member' was removed from the platform tier model. Postgres cannot
+-- DROP an enum value, so the legacy value is retained here for existing
+-- databases and migrated to 'candidate' by
+-- supabase/migrations/20261003_remove_pro_member_tier.sql
 DO $$ BEGIN
   CREATE TYPE public.app_role AS ENUM ('guest', 'candidate', 'pro_member', 'interviewer', 'admin');
 EXCEPTION
@@ -38,15 +42,6 @@ CREATE TABLE IF NOT EXISTS public.profiles (
   experience_level TEXT DEFAULT 'L5 Senior Engineer',
   avatar_url TEXT DEFAULT '',
   is_active BOOLEAN DEFAULT true,
-  -- Feature Entitlements JSONB
-  feature_entitlements JSONB DEFAULT '{
-    "questions_full": false,
-    "coding_sandbox": false,
-    "system_design": false,
-    "video_mock": false,
-    "compiler_studios": false,
-    "cloud_sync": true
-  }'::jsonb,
   created_at TIMESTAMPTZ DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
   updated_at TIMESTAMPTZ DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
 );
@@ -138,8 +133,7 @@ CREATE TABLE IF NOT EXISTS public.user_bookmarks (
 
 INSERT INTO public.roles (id, name, description, hierarchy_level) VALUES
   ('guest', 'Guest', 'Unauthenticated visitor with preview access', 0),
-  ('candidate', 'Candidate', 'Standard candidate tier with basic question access', 1),
-  ('pro_member', 'Pro Member', 'Pro tier with full questions, system design & AI mocks', 2),
+  ('candidate', 'Candidate', 'Standard candidate tier with full feature access', 1),
   ('interviewer', 'Interviewer', 'Interviewer & rubric reviewer tier', 3),
   ('admin', 'Admin', 'Platform Super Administrator with complete RBAC & user control', 4)
 ON CONFLICT (id) DO NOTHING;
@@ -156,17 +150,23 @@ INSERT INTO public.permissions (id, name, module, description) VALUES
 ON CONFLICT (id) DO NOTHING;
 
 -- Map Role Permissions
+-- Every signed-in role receives the same feature permissions; only
+-- 'admin:users_manage' is exclusive to admins.
 INSERT INTO public.role_permissions (role_id, permission_id) VALUES
   ('candidate', 'questions:read_basic'),
+  ('candidate', 'questions:read_full'),
   ('candidate', 'coding:execute'),
+  ('candidate', 'system_design:access'),
+  ('candidate', 'mocks:video_ai'),
+  ('candidate', 'studios:compilers'),
   ('candidate', 'sync:cloud_database'),
-  ('pro_member', 'questions:read_basic'),
-  ('pro_member', 'questions:read_full'),
-  ('pro_member', 'coding:execute'),
-  ('pro_member', 'system_design:access'),
-  ('pro_member', 'mocks:video_ai'),
-  ('pro_member', 'studios:compilers'),
-  ('pro_member', 'sync:cloud_database'),
+  ('interviewer', 'questions:read_basic'),
+  ('interviewer', 'questions:read_full'),
+  ('interviewer', 'coding:execute'),
+  ('interviewer', 'system_design:access'),
+  ('interviewer', 'mocks:video_ai'),
+  ('interviewer', 'studios:compilers'),
+  ('interviewer', 'sync:cloud_database'),
   ('admin', 'questions:read_basic'),
   ('admin', 'questions:read_full'),
   ('admin', 'coding:execute'),
@@ -309,28 +309,24 @@ CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS trigger AS $$
 DECLARE
   v_role public.app_role;
-  v_entitlements JSONB;
 BEGIN
-  -- Determine default role & entitlements
+  -- Determine default role. There is no PRO tier: every signed-in account has
+  -- full feature access, so only 'admin' is distinguished here.
   IF (new.raw_user_meta_data->>'role' = 'admin' OR new.email ILIKE '%admin%') THEN
     v_role := 'admin';
-    v_entitlements := '{"questions_full": true, "coding_sandbox": true, "system_design": true, "video_mock": true, "compiler_studios": true, "cloud_sync": true}'::jsonb;
-  ELSIF (new.raw_user_meta_data->>'role' = 'pro_member' OR new.email ILIKE '%pro%') THEN
-    v_role := 'pro_member';
-    v_entitlements := '{"questions_full": true, "coding_sandbox": true, "system_design": true, "video_mock": true, "compiler_studios": true, "cloud_sync": true}'::jsonb;
+  ELSIF (new.raw_user_meta_data->>'role' = 'interviewer') THEN
+    v_role := 'interviewer';
   ELSE
     v_role := 'candidate';
-    v_entitlements := '{"questions_full": false, "coding_sandbox": false, "system_design": false, "video_mock": false, "compiler_studios": false, "cloud_sync": true}'::jsonb;
   END IF;
 
   -- Create Profile
-  INSERT INTO public.profiles (id, email, full_name, role, feature_entitlements)
+  INSERT INTO public.profiles (id, email, full_name, role)
   VALUES (
     new.id,
     new.email,
     COALESCE(new.raw_user_meta_data->>'full_name', split_part(new.email, '@', 1)),
-    v_role,
-    v_entitlements
+    v_role
   )
   ON CONFLICT (id) DO UPDATE SET
     email = EXCLUDED.email,

@@ -71,7 +71,6 @@ export default function Home() {
           <Link to="/machine-coding" className="btn btn-secondary">⚡ Machine Coding Studio</Link>
           <Link to="/coding" className="btn btn-secondary">💻 Coding Challenges</Link>
           <Link to="/videos" className="btn btn-secondary">🎥 Video Masterclass</Link>
-          <Link to="/system-design" className="btn btn-secondary">🏗️ System Design</Link>
           {isAuthenticated ? (
             <Link to="/dashboard" className="btn btn-secondary">
               {streak > 0 ? `🔥 ${streak} Day Streak · Tracker` : '📊 My Dashboard'}
@@ -143,7 +142,7 @@ export default function Home() {
                 <h3>{isAuthenticated && user ? `Welcome back, ${user.name}!` : 'Your Interview Readiness Tracker'}</h3>
                 {isAuthenticated && user && (
                   <span className={`hp-role-tag ${user.role}`}>
-                    {user.role === 'admin' ? '🔒 ADMIN' : user.role === 'pro_member' ? '⚡ PRO MEMBER' : 'CANDIDATE'}
+                    {user.role.toUpperCase()}
                   </span>
                 )}
               </div>

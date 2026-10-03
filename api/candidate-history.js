@@ -201,7 +201,7 @@ export default async function handler(req, res) {
       sb.from('dsa_submissions').select('id, user_id, question_id, status, tests_passed, tests_total, created_at').order('created_at', { ascending: false }).limit(3000),
       sb.from('frontend_js_submissions').select('id, user_id, question_id, status, score, created_at').order('created_at', { ascending: false }).limit(3000),
       sb.from('question_attempts').select('id, user_id, question_id, status, time_spent, completed_at, created_at').order('created_at', { ascending: false }).limit(3000),
-      sb.from('profiles').select('id, full_name, email, role, target_company, experience_level, avatar_url, created_at, updated_at, feature_entitlements').order('created_at', { ascending: false }),
+      sb.from('profiles').select('id, full_name, email, role, target_company, experience_level, avatar_url, created_at, updated_at').order('created_at', { ascending: false }),
     ])
 
     const rawRecords = []

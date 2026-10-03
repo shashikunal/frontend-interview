@@ -12,20 +12,17 @@ import type {
   AuthContextValue,
   AuthUserProfile,
   UserRole,
-  FeatureEntitlements,
   SignUpCredentials,
   SignInCredentials,
   AuthActionResult,
   StoredUserAccount,
 } from '../types/auth.types'
-import { DEFAULT_ENTITLEMENTS } from '../types/auth.types'
 
 const ROLE_HIERARCHY: Record<UserRole, number> = {
   guest: 0,
   candidate: 1,
-  pro_member: 2,
-  interviewer: 3,
-  admin: 4,
+  interviewer: 2,
+  admin: 3,
 }
 
 export const AuthContext = createContext<AuthContextValue | undefined>(undefined)
@@ -36,7 +33,6 @@ function buildFallbackProfile(user: User | null): AuthUserProfile | null {
   const metadata = user.user_metadata || {}
   const role: UserRole = (metadata.role as UserRole) || 'candidate'
   const name: string = metadata.full_name || metadata.name || user.email?.split('@')[0] || 'User'
-  const entitlements = metadata.feature_entitlements || DEFAULT_ENTITLEMENTS[role]
 
   return {
     id: user.id,
@@ -45,7 +41,6 @@ function buildFallbackProfile(user: User | null): AuthUserProfile | null {
     role,
     avatarUrl: metadata.avatar_url,
     avatarPublicId: metadata.avatar_public_id,
-    entitlements,
     permissions: [],
     createdAt: user.created_at,
   }
@@ -90,18 +85,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (dbProfile) {
         // If admin has manually switched role, keep that override
         const effectiveRole = roleOverrideRef.current || dbProfile.role
-        // Merge: always grant what DEFAULT_ENTITLEMENTS says for this role
-        const mergedEntitlements: FeatureEntitlements = {
-          ...DEFAULT_ENTITLEMENTS[effectiveRole],
-          ...dbProfile.entitlements,
-          ...Object.fromEntries(
-            Object.entries(DEFAULT_ENTITLEMENTS[effectiveRole]).filter(([, v]) => v)
-          ),
-        }
         const finalProfile: AuthUserProfile = {
           ...dbProfile,
           role: effectiveRole,
-          entitlements: mergedEntitlements,
           avatarUrl: dbProfile.avatarUrl || savedActive?.avatarUrl,
           avatarPublicId: dbProfile.avatarPublicId || savedActive?.avatarPublicId,
           batch: dbProfile.batch || savedActive?.batch || '2026-Alpha',
@@ -126,7 +112,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           role,
           avatarUrl: savedActive?.avatarUrl || metadata.avatar_url,
           avatarPublicId: savedActive?.avatarPublicId || metadata.avatar_public_id,
-          entitlements: DEFAULT_ENTITLEMENTS[role],
           permissions: role === 'admin' ? ['admin:all', 'admin:users_manage'] : [],
           status: 'ACTIVE',
           batch: savedActive?.batch || '2026-Alpha',
@@ -142,7 +127,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               email: user.email || '',
               full_name: name,
               role,
-              feature_entitlements: profilePayload.entitlements,
               is_active: true,
               updated_at: new Date().toISOString(),
             })
@@ -337,7 +321,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           email: adminEmail,
           name: adminName,
           role: 'admin',
-          entitlements: DEFAULT_ENTITLEMENTS.admin,
           permissions: ['admin:all', 'admin:users_manage', 'admin:billing', 'admin:audit'],
           status: 'ACTIVE',
           createdAt: new Date().toISOString(),
@@ -458,7 +441,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             email: newRole === 'admin' ? 'admin@interviewprep.com' : 'candidate@interviewprep.com',
             name: newRole === 'admin' ? 'Platform Administrator' : 'Candidate',
             role: newRole,
-            entitlements: DEFAULT_ENTITLEMENTS[newRole],
             permissions: newRole === 'admin' ? ['admin:all', 'admin:users_manage'] : [],
             createdAt: new Date().toISOString(),
           }
@@ -468,7 +450,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             role: newRole,
             email: newRole === 'admin' && prev.email.includes('candidate') ? 'admin@interviewprep.com' : prev.email,
             name: newRole === 'admin' && prev.name.includes('Candidate') ? 'Platform Administrator' : prev.name,
-            entitlements: DEFAULT_ENTITLEMENTS[newRole],
             permissions: newRole === 'admin' ? ['admin:all', 'admin:users_manage'] : prev.permissions,
           }
         }
@@ -497,14 +478,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     [userProfile]
   )
 
-  const hasFeature = useCallback(
-    (featureKey: keyof FeatureEntitlements): boolean => {
-      if (!userProfile) return Boolean(DEFAULT_ENTITLEMENTS.guest[featureKey])
-      return Boolean(userProfile.entitlements?.[featureKey])
-    },
-    [userProfile]
-  )
-
   const updateProfile = useCallback(
     async (updates: Partial<AuthUserProfile>): Promise<{ success: boolean; message: string }> => {
       if (!userProfile) return { success: false, message: 'Not signed in.' }
@@ -513,7 +486,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (updates.name !== undefined) dbUpdates.full_name = updates.name
       if (updates.avatarUrl !== undefined) dbUpdates.avatar_url = updates.avatarUrl
       if (updates.avatarPublicId !== undefined) dbUpdates.avatar_public_id = updates.avatarPublicId
-      if (updates.entitlements !== undefined) dbUpdates.feature_entitlements = updates.entitlements
       if (updates.batch !== undefined) dbUpdates.batch = updates.batch
       if (updates.batchCode !== undefined) dbUpdates.batch_code = updates.batchCode
       if (updates.targetTrack !== undefined) dbUpdates.target_track = updates.targetTrack
@@ -564,14 +536,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     [signIn]
   )
 
-  const updateUserEntitlements = useCallback(async (userId: string, entitlements: FeatureEntitlements) => {
-    const res = await rbacService.updateEntitlements(userId, entitlements)
-    if (userProfile && userProfile.id === userId) {
-      setUserProfile(prev => (prev ? { ...prev, entitlements } : null))
-    }
-    return res
-  }, [userProfile])
-
   const adminUpdateUserRole = useCallback(async (userId: string, newRole: UserRole) => {
     const res = await rbacService.assignUserRole(userId, newRole)
     if (userProfile && userProfile.id === userId) {
@@ -595,7 +559,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           email: p.email,
           name: p.name,
           role: p.role,
-          entitlements: p.entitlements,
           status: p.status || 'ACTIVE',
           solvedCount: userProgress?.solvedCount || 0,
           streak: userProgress?.streak || 0,
@@ -611,7 +574,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           email: userProfile.email,
           name: userProfile.name,
           role: userProfile.role,
-          entitlements: userProfile.entitlements,
           status: userProfile.status || 'ACTIVE',
           solvedCount: progressRecord[userProfile.id]?.solvedCount || 0,
           streak: progressRecord[userProfile.id]?.streak || 0,
@@ -651,11 +613,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       verifyOtp,
       switchRole,
       hasPermission,
-      hasFeature,
       updateProfile,
       signUpWithPassword,
       signInWithPassword,
-      updateUserEntitlements,
       adminUpdateUserRole,
       getAllUsers,
     }),
@@ -679,11 +639,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       verifyOtp,
       switchRole,
       hasPermission,
-      hasFeature,
       updateProfile,
       signUpWithPassword,
       signInWithPassword,
-      updateUserEntitlements,
       adminUpdateUserRole,
       getAllUsers,
     ]

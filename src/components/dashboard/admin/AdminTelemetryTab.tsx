@@ -19,7 +19,6 @@ type EventFilterKey =
   | 'QUIZ_SCORED'
   | 'MOCK_COMPLETED'
   | 'TRACK_SWITCHED'
-  | 'FEATURE_GRANTED'
   | 'AUTH_SIGN_IN'
 
 function getRelativeTime(timestampStr: string): string {
@@ -50,12 +49,8 @@ function getEventColor(type: string): { icon: string; color: 'green' | 'amber' |
       return { icon: '🎥', color: 'purple', label: 'Mock Interview' }
     case 'TRACK_SWITCHED':
       return { icon: '🚀', color: 'cyan', label: 'Track Assigned' }
-    case 'FEATURE_GRANTED':
-      return { icon: '✨', color: 'green', label: 'Access Granted' }
     case 'AUTH_SIGN_IN':
       return { icon: '🔑', color: 'purple', label: 'Auth Session' }
-    case 'FEATURE_REQUESTED':
-      return { icon: '📩', color: 'amber', label: 'Feature Requested' }
     case 'ROLE_UPDATED':
       return { icon: '🛡️', color: 'blue', label: 'Role Updated' }
     default:
@@ -261,7 +256,6 @@ export default function AdminTelemetryTab({
             { key: 'QUIZ_SCORED', label: '🎯 Quiz Drills' },
             { key: 'MOCK_COMPLETED', label: '🎥 Mock Interviews' },
             { key: 'TRACK_SWITCHED', label: '🚀 Track Changes' },
-            { key: 'FEATURE_GRANTED', label: '✨ Access Granted' },
             { key: 'AUTH_SIGN_IN', label: '🔑 Auth Sessions' },
           ] as const
         ).map(f => (

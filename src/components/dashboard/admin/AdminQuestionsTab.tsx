@@ -10,8 +10,15 @@ import {
 } from '../../../lib/questionManagementService'
 import AdminQuestionFormModal from './AdminQuestionFormModal'
 import AdminQuestionPreviewModal from './AdminQuestionPreviewModal'
+import AdminMockQuestionFormModal from './AdminMockQuestionFormModal'
+import {
+  mockQuestionBankService,
+  EXPERIENCE_TIER_LABELS,
+  type MockBankQuestion,
+  type MockBankQuestionDraft,
+} from '../../../lib/mockQuestionBankService'
 
-export type TrackViewTab = 'mc' | 'dsa' | 'cp' | 'fjs' | 'custom'
+export type TrackViewTab = 'mc' | 'dsa' | 'cp' | 'fjs' | 'custom' | 'mockbank'
 
 const DIFF_COLOR: Record<string, string> = {
   Easy: '#10b981', Medium: '#f59e0b', Hard: '#ef4444', Difficult: '#ef4444', Senior: '#a855f7', Expert: '#a855f7',
@@ -99,6 +106,12 @@ export default function AdminQuestionsTab() {
   const [formTarget, setFormTarget] = useState<CustomMCQuestion | null | 'new'>(null)
   const [previewTarget, setPreviewTarget] = useState<MCQuestion | CustomMCQuestion | null>(null)
 
+  // Mock bank (mock_question_bank) state — feeds /video-mock
+  const [mockBankList, setMockBankList] = useState<MockBankQuestion[]>([])
+  const [mockBankLoading, setMockBankLoading] = useState(false)
+  const [mockBankError, setMockBankError] = useState<string | null>(null)
+  const [mockFormTarget, setMockFormTarget] = useState<MockBankQuestion | null | 'new'>(null)
+
   // Reset page when filters change
   useEffect(() => {
     setCurrentPage(1)
@@ -119,6 +132,20 @@ export default function AdminQuestionsTab() {
   }, [])
 
   useEffect(() => { void loadCustom() }, [loadCustom])
+
+  const loadMockBank = useCallback(async () => {
+    setMockBankLoading(true)
+    setMockBankError(null)
+    try {
+      setMockBankList(await mockQuestionBankService.list({ anyStatus: true }))
+    } catch (e) {
+      setMockBankError(e instanceof Error ? e.message : 'Failed to load mock bank.')
+    } finally {
+      setMockBankLoading(false)
+    }
+  }, [])
+
+  useEffect(() => { void loadMockBank() }, [loadMockBank])
 
   // Map each track into unified items
   const activeDataset = useMemo<UnifiedQuestionRow[]>(() => {
@@ -267,6 +294,22 @@ export default function AdminQuestionsTab() {
               ➕ Create New Question
             </button>
           )}
+          {viewTab === 'mockbank' && (
+            <button
+              type="button"
+              id="aqm-create-mockbank-btn"
+              onClick={() => setMockFormTarget('new')}
+              style={{
+                background: 'linear-gradient(135deg,#4f46e5,#6366f1)',
+                color: '#fff', border: 'none', borderRadius: 10,
+                padding: '9px 18px', fontWeight: 700, fontSize: '0.88rem',
+                cursor: 'pointer', boxShadow: '0 4px 14px rgba(99,102,241,0.35)',
+                display: 'flex', alignItems: 'center', gap: 6,
+              }}
+            >
+              🎥 Feed Question to Video Mock
+            </button>
+          )}
         </div>
 
         {/* 5 Track Sub-tabs */}
@@ -277,6 +320,7 @@ export default function AdminQuestionsTab() {
             { id: 'cp' as const, label: `💻 Core Programming (${getCPCatalog().length})` },
             { id: 'fjs' as const, label: `🌐 Frontend JS (${getFJSCatalog().length})` },
             { id: 'custom' as const, label: `✏️ Custom Questions (${customList.length})` },
+            { id: 'mockbank' as const, label: `🎥 Mock Bank / Video Mock (${mockBankList.length})` },
           ].map(t => (
             <button
               key={t.id}
@@ -302,6 +346,7 @@ export default function AdminQuestionsTab() {
         </div>
       </div>
 
+      {viewTab !== 'mockbank' && (
       <div className="card-box" style={{ marginTop: 0, borderTopLeftRadius: 0, borderTopRightRadius: 0, borderTop: 'none' }}>
         {/* Filters */}
         <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 20, paddingTop: 20 }}>
@@ -442,6 +487,82 @@ export default function AdminQuestionsTab() {
           </div>
         )}
       </div>
+      )}
+
+      {/* Mock Bank panel — replaces the shared track table on the mockbank tab. */}
+      {viewTab === 'mockbank' && (
+        <div className="card-box" style={{ marginTop: 0, borderTopLeftRadius: 0, borderTopRightRadius: 0, borderTop: 'none' }}>
+          <div style={{ paddingTop: 20 }}>
+            <p style={{ margin: '0 0 14px', fontSize: '0.82rem', color: 'var(--h-text-muted)' }}>
+              These questions are served to <code>/video-mock</code>. Candidates only receive rows with status APPROVED or PUBLISHED, filtered by the difficulty and experience level they pick.
+            </p>
+            {mockBankError && (
+              <div className="aqfm-error" style={{ marginBottom: 14 }}>
+                ⚠️ {mockBankError}
+              </div>
+            )}
+            {mockBankLoading ? (
+              <p style={{ color: 'var(--h-text-muted)' }}>Loading mock bank…</p>
+            ) : mockBankList.length === 0 ? (
+              <p style={{ color: 'var(--h-text-muted)' }}>
+                No questions yet. Use “Feed Question to Video Mock” to add the first one.
+              </p>
+            ) : (
+              <div style={{ overflowX: 'auto' }}>
+                <table className="admin-users-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
+                  <thead>
+                    <tr>
+                      <th style={{ textAlign: 'left', padding: 8 }}>ID</th>
+                      <th style={{ textAlign: 'left', padding: 8 }}>Technology</th>
+                      <th style={{ textAlign: 'left', padding: 8 }}>Topic</th>
+                      <th style={{ textAlign: 'left', padding: 8 }}>Difficulty</th>
+                      <th style={{ textAlign: 'left', padding: 8 }}>Experience Levels</th>
+                      <th style={{ textAlign: 'left', padding: 8 }}>Status</th>
+                      <th style={{ textAlign: 'left', padding: 8 }}>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {mockBankList.map(q => (
+                      <tr key={q.id} style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+                        <td style={{ padding: 8, fontSize: '0.76rem' }}><code>{q.id}</code></td>
+                        <td style={{ padding: 8, fontSize: '0.8rem' }}>{q.technology}</td>
+                        <td style={{ padding: 8, fontSize: '0.8rem' }}>{q.topic} / {q.subtopic}</td>
+                        <td style={{ padding: 8 }}><DiffBadge diff={q.difficulty} /></td>
+                        <td style={{ padding: 8, fontSize: '0.74rem' }}>
+                          {q.experienceLevels.length
+                            ? q.experienceLevels.map(t => EXPERIENCE_TIER_LABELS[t] ?? t).join(', ')
+                            : '—'}
+                        </td>
+                        <td style={{ padding: 8, fontSize: '0.74rem' }}>{q.status}</td>
+                        <td style={{ padding: 8 }}>
+                          <div style={{ display: 'flex', gap: 6 }}>
+                            <button type="button" className="btn btn-secondary btn-sm" onClick={() => setMockFormTarget(q)}>Edit</button>
+                            <button
+                              type="button"
+                              className="btn btn-secondary btn-sm"
+                              onClick={async () => {
+                                try {
+                                  await mockQuestionBankService.remove(q.id)
+                                  showToast(`Deleted ${q.id}.`)
+                                  void loadMockBank()
+                                } catch (e) {
+                                  showToast(e instanceof Error ? e.message : 'Delete failed.')
+                                }
+                              }}
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Preview Modal */}
       {previewTarget && (
@@ -471,6 +592,25 @@ export default function AdminQuestionsTab() {
             }
             setFormTarget(null)
             void loadCustom()
+          }}
+        />
+      )}
+
+      {/* Mock Bank Form Modal */}
+      {mockFormTarget && (
+        <AdminMockQuestionFormModal
+          initial={mockFormTarget === 'new' ? null : mockFormTarget}
+          onClose={() => setMockFormTarget(null)}
+          onSave={async (draft: MockBankQuestionDraft) => {
+            if (mockFormTarget === 'new') {
+              await mockQuestionBankService.create(draft)
+              showToast('Question fed to the video mock bank.')
+            } else {
+              await mockQuestionBankService.update(mockFormTarget.id, draft)
+              showToast(`Question ${mockFormTarget.id} updated.`)
+            }
+            setMockFormTarget(null)
+            void loadMockBank()
           }}
         />
       )}

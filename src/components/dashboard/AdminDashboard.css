@@ -1701,33 +1701,6 @@ html.light,
   color: var(--h-brand-light);
 }
 
-.entitlement-chips-grid {
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
-}
-
-.chip-toggle {
-  font-size: 0.7rem;
-  font-weight: 700;
-  padding: 3px 8px;
-  border-radius: 12px;
-  border: 1px solid var(--h-border);
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.chip-toggle.granted {
-  background: rgba(1, 181, 116, 0.15);
-  color: var(--h-brand-green);
-  border-color: rgba(1, 181, 116, 0.3);
-}
-
-.chip-toggle.locked {
-  background: var(--h-card-inner);
-  color: var(--h-text-sub);
-}
-
 .status-pill-badge {
   font-size: 0.72rem;
   font-weight: 800;
@@ -2782,12 +2755,6 @@ html.light,
   background: #e2e8f0;
 }
 
-.light-theme .chip-toggle.locked {
-  background: #f4f7fe;
-  border-color: #e2e8f0;
-  color: #707eae;
-}
-
 .light-theme .btn-inspect {
   background: rgba(1, 181, 116, 0.1) !important;
   border: 1px solid rgba(1, 181, 116, 0.3) !important;
@@ -2943,12 +2910,6 @@ html.light,
 
 .dark-theme .pcb-bar-wrap {
   background: #1b254b;
-}
-
-.dark-theme .chip-toggle.locked {
-  background: #1b254b;
-  border-color: rgba(255, 255, 255, 0.08);
-  color: #707eae;
 }
 
 .dark-theme .row-suspended td {

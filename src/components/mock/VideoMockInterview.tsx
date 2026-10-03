@@ -1,10 +1,18 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { Link } from 'react-router-dom'
-import { useQuestions } from '../../data/useQuestions'
+import {
+  mockQuestionBankService,
+  toVideoMockPick,
+  MOCK_DIFFICULTIES,
+  EXPERIENCE_TIERS,
+  EXPERIENCE_TIER_LABELS,
+  type VideoMockPick,
+  type ExperienceTier,
+  type QuestionDifficulty,
+} from '../../lib/mockQuestionBankService'
 import { useBookmarks } from '../../context/BookmarkContext'
 import { useProgress } from '../../context/ProgressContext'
 import { buildJsSrcDoc, buildReactSrcDoc, buildHtmlSrcDoc, isReactCode, isHtmlWorkspace } from '../../lib/runner'
-import type { Question } from '../../models/question'
 import BrowserPreview from '../common/BrowserPreview'
 import SplitPane from '../common/SplitPane'
 import './VideoMockInterview.css'
@@ -83,7 +91,7 @@ function extractKeyConcepts(answerText: string): string[] {
   return Array.from(new Set(found)).slice(0, 8)
 }
 
-function evaluateCandidateAnswer(q: Question, transcript: string, code: string): AIEvaluationResult {
+function evaluateCandidateAnswer(q: VideoMockPick, transcript: string, code: string): AIEvaluationResult {
   const combined = (transcript + ' ' + code).toLowerCase()
   const expectedConcepts = extractKeyConcepts(q.answer + ' ' + (q.example || ''))
 
@@ -146,13 +154,37 @@ function evaluateCandidateAnswer(q: Question, transcript: string, code: string):
 }
 
 export default function VideoMockInterview() {
-  const { questions, loading, error } = useQuestions()
   const { isBookmarked, toggleBookmark } = useBookmarks()
   const { recordMockInterview } = useProgress()
 
+  // Questions are admin-fed into mock_question_bank; nothing is hardcoded here.
+  const [bankQuestions, setBankQuestions] = useState<VideoMockPick[]>([])
+  const [bankLoading, setBankLoading] = useState(true)
+  const [bankError, setBankError] = useState<string | null>(null)
+  const [levelDifficulty, setLevelDifficulty] = useState<QuestionDifficulty>('Basic')
+  const [levelExperience, setLevelExperience] = useState<ExperienceTier>('0-1')
+
   const [callState, setCallState] = useState<'lobby' | 'in-call' | 'evaluation'>('lobby')
   const [selectedPersona, setSelectedPersona] = useState<InterviewerPersona>(PERSONAS[0])
-  const [selectedTrack, setSelectedTrack] = useState<'all' | 'react' | 'javascript' | 'architecture'>('all')
+
+  const loadBank = useCallback(async () => {
+    setBankLoading(true)
+    setBankError(null)
+    try {
+      const rows = await mockQuestionBankService.list({
+        difficulty: levelDifficulty,
+        experienceLevel: levelExperience,
+      })
+      setBankQuestions(rows.map(toVideoMockPick))
+    } catch (e) {
+      setBankError(e instanceof Error ? e.message : 'Could not load questions.')
+      setBankQuestions([])
+    } finally {
+      setBankLoading(false)
+    }
+  }, [levelDifficulty, levelExperience])
+
+  useEffect(() => { void loadBank() }, [loadBank])
 
   // Camera & Mic State
   const [cameraActive, setCameraActive] = useState(false)
@@ -174,7 +206,7 @@ export default function VideoMockInterview() {
   const recognitionRef = useRef<any>(null)
 
   // Call Questions & AI State
-  const [callQuestions, setCallQuestions] = useState<Question[]>([])
+  const [callQuestions, setCallQuestions] = useState<VideoMockPick[]>([])
   const [activeQIndex, setActiveQIndex] = useState(0)
   const [callSeconds, setCallSeconds] = useState(0)
   const [notes, setNotes] = useState<Record<number, string>>({})
@@ -329,29 +361,27 @@ export default function VideoMockInterview() {
     return () => clearInterval(interval)
   }, [callState])
 
-  // Join AI Video Interview Session with Randomized Questions
+  // Join AI Video Interview Session with questions fed by the admin.
   const startAIInterview = () => {
-    // 1. Core JS/React Mental Model
-    // 2. Interactive Coding Challenge
-    // 3. System Architecture / Scale
-    let pool = questions.slice()
-    if (selectedTrack === 'react') {
-      pool = pool.filter(q => q.category.toLowerCase().includes('react'))
-    } else if (selectedTrack === 'javascript') {
-      pool = pool.filter(q => q.category.toLowerCase().includes('javascript') || q.code)
-    } else if (selectedTrack === 'architecture') {
-      pool = pool.filter(q => q.category.toLowerCase().includes('performance') || q.category.toLowerCase().includes('web apis'))
+    // The bank is already filtered by difficulty + experience level server-side.
+    // Sample up to 3 distinct questions without repeating.
+    const pool = bankQuestions.slice()
+    const picked: VideoMockPick[] = []
+    const taken = new Set<number>()
+    while (picked.length < 3 && taken.size < pool.length) {
+      const candidate = pool[Math.floor(Math.random() * pool.length)]
+      if (taken.has(candidate.id)) continue
+      taken.add(candidate.id)
+      picked.push(candidate)
     }
 
-    const codingPool = pool.filter(q => q.code)
-    const conceptPool = pool.filter(q => !q.code)
+    const q1 = picked[0]
+    if (!q1) {
+      setBankError('No published questions match this difficulty and level yet.')
+      return
+    }
 
-    // Random selection
-    const q1 = conceptPool[Math.floor(Math.random() * (conceptPool.length || 1))] || pool[0]
-    const q2 = codingPool[Math.floor(Math.random() * (codingPool.length || 1))] || pool[1]
-    const q3 = conceptPool[Math.floor(Math.random() * (conceptPool.length || 1))] || pool[2]
-
-    const selectedList = [q1, q2, q3].filter(Boolean)
+    const selectedList = picked
     setCallQuestions(selectedList)
     setActiveQIndex(0)
     setCallSeconds(0)
@@ -535,17 +565,13 @@ export default function VideoMockInterview() {
     return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`
   }
 
-  if (loading) {
+  if (bankLoading) {
     return (
       <div className="video-mock-page page-enter">
         <div className="skeleton skeleton-line" style={{ width: '320px' }} />
         <div className="skeleton" style={{ height: 360 }} />
       </div>
     )
-  }
-
-  if (error) {
-    return <div className="error-note">Failed to load AI Video Mock: {error}</div>
   }
 
   return (
@@ -632,23 +658,55 @@ export default function VideoMockInterview() {
               </div>
 
               <div className="track-picker-row">
-                <label className="picker-label">Focus Area:</label>
+                <label className="picker-label">Difficulty:</label>
                 <div className="track-pill-group">
-                  {[
-                    { id: 'all' as const, label: '⚡ Balanced Mix' },
-                    { id: 'react' as const, label: '⚛️ React 19' },
-                    { id: 'javascript' as const, label: '💻 JS & Algos' },
-                    { id: 'architecture' as const, label: '🏗️ System Design' },
-                  ].map(t => (
+                  {MOCK_DIFFICULTIES.map(d => (
                     <button
-                      key={t.id}
+                      key={d}
                       type="button"
-                      className={`pill-btn ${selectedTrack === t.id ? 'active' : ''}`}
-                      onClick={() => setSelectedTrack(t.id)}
+                      className={`pill-btn ${levelDifficulty === d ? 'active' : ''}`}
+                      onClick={() => setLevelDifficulty(d)}
                     >
-                      {t.label}
+                      {d}
                     </button>
                   ))}
+                </div>
+              </div>
+
+              <div className="track-picker-row">
+                <label className="picker-label">Experience Level:</label>
+                <div className="track-pill-group">
+                  {EXPERIENCE_TIERS.map(t => (
+                    <button
+                      key={t}
+                      type="button"
+                      className={`pill-btn ${levelExperience === t ? 'active' : ''}`}
+                      onClick={() => setLevelExperience(t)}
+                    >
+                      {EXPERIENCE_TIER_LABELS[t]}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Admin-fed bank status for the selected level. */}
+              <div className="track-picker-row">
+                <label className="picker-label">Available:</label>
+                <div style={{ fontSize: '0.82rem', color: 'var(--text-secondary)' }}>
+                  {bankError ? (
+                    <span style={{ color: '#ef4444' }}>⚠️ {bankError}</span>
+                  ) : bankQuestions.length === 0 ? (
+                    <span>
+                      No published questions for {levelDifficulty} · {EXPERIENCE_TIER_LABELS[levelExperience]}.
+                      Ask an admin to add some under Admin → Questions → Mock Bank.
+                    </span>
+                  ) : (
+                    <span>
+                      {bankQuestions.length} question{bankQuestions.length === 1 ? '' : 's'} available
+                      {' · '}
+                      up to 3 will be asked.
+                    </span>
+                  )}
                 </div>
               </div>
 

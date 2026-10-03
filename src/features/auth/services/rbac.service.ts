@@ -4,9 +4,7 @@ import type {
   UserRole,
   RoleDefinition,
   PermissionDefinition,
-  FeatureEntitlements,
 } from '../types/auth.types'
-import { DEFAULT_ENTITLEMENTS } from '../types/auth.types'
 
 export const rbacService = {
   /**
@@ -26,7 +24,6 @@ export const rbacService = {
       return [
         { id: 'guest', name: 'Guest', description: 'Unauthenticated visitor', hierarchyLevel: 0 },
         { id: 'candidate', name: 'Candidate', description: 'Standard candidate tier', hierarchyLevel: 1 },
-        { id: 'pro_member', name: 'Pro Member', description: `Full access to ${fmtCount(bankTotals.mainBankQuestions)} questions & system design`, hierarchyLevel: 2 },
         { id: 'interviewer', name: 'Interviewer', description: 'Interviewer & rubric reviewer tier', hierarchyLevel: 3 },
         { id: 'admin', name: 'Admin', description: 'Platform Administrator with complete control', hierarchyLevel: 4 },
       ]
@@ -74,7 +71,6 @@ export const rbacService = {
         .from('profiles')
         .update({
           role: newRole,
-          feature_entitlements: DEFAULT_ENTITLEMENTS[newRole],
           updated_at: new Date().toISOString(),
         })
         .eq('id', userId)
@@ -90,34 +86,6 @@ export const rbacService = {
       return { success: true, message: `Role updated to ${newRole.toUpperCase()} successfully!` }
     } catch (err: unknown) {
       return { success: false, message: (err as Error).message || 'Failed to update user role.' }
-    }
-  },
-
-  /**
-   * Admin: 1-Click Update Feature Entitlements
-   */
-  updateEntitlements: async (
-    userId: string,
-    entitlements: FeatureEntitlements
-  ): Promise<{ success: boolean; message: string }> => {
-    if (!userId) {
-      return { success: false, message: 'User ID is required.' }
-    }
-
-    try {
-      const { error } = await supabase
-        .from('profiles')
-        .update({
-          feature_entitlements: entitlements,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', userId)
-
-      if (error) throw error
-
-      return { success: true, message: 'Feature entitlements updated successfully!' }
-    } catch (err: unknown) {
-      return { success: false, message: (err as Error).message || 'Failed to update entitlements.' }
     }
   },
 }

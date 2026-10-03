@@ -458,7 +458,6 @@ export default function AdminCandidateManagementTab() {
           >
             <option value="ALL">All Roles</option>
             <option value="candidate">Candidate</option>
-            <option value="pro_member">Pro Member</option>
             <option value="admin">Administrator</option>
           </select>
 

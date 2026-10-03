@@ -543,7 +543,7 @@ export default function MachineCodingStudio() {
   const [scorecardData, setScorecardData] = useState<ScorecardData | null>(null);
 
   // User & Live Collaborative Session State
-  const { user, role, hasFeature, hasPermission } = useAuth();
+  const { user, role, hasPermission } = useAuth();
   const lastSubmitTimeRef = useRef<number>(0);
   const submitInFlightRef = useRef<boolean>(false);
   const questionLoadTimeRef = useRef<number>(Date.now());
@@ -572,10 +572,6 @@ export default function MachineCodingStudio() {
     // every downstream effect that consumes userRole.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [urlRole, role, user?.id, user?.role, hasPermission]);
-
-  const canViewSolution = useMemo(() => {
-    return Boolean(hasFeature?.('questions_full') || userRole === 'admin' || role === 'admin' || user?.role === 'admin' || userRole === 'interviewer');
-  }, [hasFeature, userRole, role, user?.role]);
 
   const currentUserId = useMemo(() => {
     if (user?.id) return user.id;
@@ -2991,24 +2987,6 @@ export default function MachineCodingStudio() {
                     >
                       🏁 Finish & Submit Round Now
                     </button>
-                  </div>
-                ) : !canViewSolution ? (
-                  <div className="mc-solution-locked-card">
-                    <div className="mc-locked-icon">🔒</div>
-                    <h3 className="mc-locked-title">Reference Solution Locked</h3>
-                    <p className="mc-locked-desc">
-                      Official reference solutions require verified Pro Candidate or Platform Administrator entitlements.
-                    </p>
-                    <div className="mc-locked-rules">
-                      <div className="mc-locked-rule-item">
-                        <span>🛡️</span>
-                        <span>Role: <strong>{userRole.toUpperCase()}</strong></span>
-                      </div>
-                      <div className="mc-locked-rule-item">
-                        <span>💡</span>
-                        <span>Upgrade your account or request administrator privileges to inspect production reference solutions.</span>
-                      </div>
-                    </div>
                   </div>
                 ) : (
                   <div>

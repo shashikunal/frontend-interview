@@ -1,142 +1,68 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { Link } from 'react-router-dom'
+import {
+  questionManagementService,
+  type CustomMCQuestion,
+} from '../../lib/questionManagementService'
 import './PeerRoom.css'
 
-export interface MockProblem {
-  id: string
-  title: string
-  difficulty: 'Easy' | 'Medium' | 'Hard'
-  prompt: string
-  starterCode: string
-  solutionCode: string
-  hints: string[]
-  testCases: { input: string; expected: string }[]
+// 'Senior' is a valid admin-authored difficulty but has no dedicated pill style,
+// so it renders under the hard variant.
+const DIFF_CLASS: Record<CustomMCQuestion['difficulty'], string> = {
+  Easy: 'easy',
+  Medium: 'medium',
+  Hard: 'hard',
+  Senior: 'hard',
 }
-
-const PEER_PROBLEMS: MockProblem[] = [
-  {
-    id: 'promise-all-settled',
-    title: 'Implement Promise.allSettled Polyfill',
-    difficulty: 'Medium',
-    prompt: 'Implement a zero-dependency polyfill for `Promise.allSettled`. It accepts an array of promises and returns a single promise resolving to an array of outcome objects with `{ status: "fulfilled", value }` or `{ status: "rejected", reason }`. It should never reject.',
-    starterCode: `function myPromiseAllSettled(promises) {
-  // Return a promise that resolves when all input promises settle
-  return new Promise((resolve) => {
-    // Write your solution here...
-  });
-}
-
-// Test call
-const p1 = Promise.resolve(42);
-const p2 = Promise.reject('Network Error');
-myPromiseAllSettled([p1, p2]).then(console.log);`,
-    solutionCode: `function myPromiseAllSettled(promises) {
-  if (promises.length === 0) return Promise.resolve([]);
-
-  return new Promise((resolve) => {
-    const results = [];
-    let completed = 0;
-
-    promises.forEach((p, index) => {
-      Promise.resolve(p)
-        .then((value) => {
-          results[index] = { status: 'fulfilled', value };
-        })
-        .catch((reason) => {
-          results[index] = { status: 'rejected', reason };
-        })
-        .finally(() => {
-          completed++;
-          if (completed === promises.length) {
-            resolve(results);
-          }
-        });
-    });
-  });
-}`,
-    hints: [
-      'Remember to wrap each element in `Promise.resolve(p)` to handle non-promise primitives.',
-      'Maintain an index counter to preserve the original ordering of the input array.',
-      'The outer promise should never call reject(); always resolve all results once completed === promises.length.',
-    ],
-    testCases: [
-      { input: '[Promise.resolve(1), Promise.resolve(2)]', expected: '[{status:"fulfilled",value:1}, {status:"fulfilled",value:2}]' },
-      { input: '[Promise.resolve(1), Promise.reject("err")]', expected: '[{status:"fulfilled",value:1}, {status:"rejected",reason:"err"}]' },
-    ],
-  },
-  {
-    id: 'lru-cache-ttl',
-    title: 'Design LRU Cache with Time-to-Live (TTL)',
-    difficulty: 'Hard',
-    prompt: 'Design and implement an LRU (Least Recently Used) Cache that supports automatic item expiration via a configurable Time-To-Live (TTL in milliseconds). Expired keys must return `null` and be evicted from memory.',
-    starterCode: `class LRUCacheWithTTL {
-  constructor(capacity, defaultTtlMs = 5000) {
-    this.capacity = capacity;
-    this.defaultTtlMs = defaultTtlMs;
-    this.map = new Map();
-  }
-
-  get(key) {
-    // Return value if valid, or null if expired/not found
-  }
-
-  put(key, value, ttlMs = this.defaultTtlMs) {
-    // Insert/update key with TTL and evict least recently used if over capacity
-  }
-}`,
-    solutionCode: `class LRUCacheWithTTL {
-  constructor(capacity, defaultTtlMs = 5000) {
-    this.capacity = capacity;
-    this.defaultTtlMs = defaultTtlMs;
-    this.map = new Map();
-  }
-
-  get(key) {
-    if (!this.map.has(key)) return null;
-    const item = this.map.get(key);
-
-    if (Date.now() > item.expiresAt) {
-      this.map.delete(key);
-      return null;
-    }
-
-    // Refresh access order by re-inserting
-    this.map.delete(key);
-    this.map.set(key, item);
-    return item.value;
-  }
-
-  put(key, value, ttlMs = this.defaultTtlMs) {
-    if (this.map.has(key)) this.map.delete(key);
-
-    if (this.map.size >= this.capacity) {
-      const oldestKey = this.map.keys().next().value;
-      this.map.delete(oldestKey);
-    }
-
-    this.map.set(key, { value, expiresAt: Date.now() + ttlMs });
-  }
-}`,
-    hints: [
-      'In JavaScript, Map preserves key insertion order. Deleting and re-inserting a key moves it to the most recently used (end) position.',
-      'Check `Date.now() > item.expiresAt` on `get()` and delete expired items eagerly.',
-      'When capacity is exceeded, `this.map.keys().next().value` returns the oldest key.',
-    ],
-    testCases: [
-      { input: 'cache.put("a", 1); cache.get("a")', expected: '1' },
-      { input: 'cache.put("a", 1, 10); wait(20ms); cache.get("a")', expected: 'null (Expired)' },
-    ],
-  },
-]
 
 export default function PeerRoom() {
   const [roomId, setRoomId] = useState<string>('room-892147')
   const [isInRoom, setIsInRoom] = useState<boolean>(false)
   const [role, setRole] = useState<'candidate' | 'interviewer'>('candidate')
-  const [selectedProblem, setSelectedProblem] = useState<MockProblem>(PEER_PROBLEMS[0])
-  const [code, setCode] = useState<string>(PEER_PROBLEMS[0].starterCode)
+
+  // Questions are admin-authored in Supabase (custom_mc_questions); nothing is
+  // hardcoded here.
+  const [problems, setProblems] = useState<CustomMCQuestion[]>([])
+  const [isLoadingProblems, setIsLoadingProblems] = useState<boolean>(true)
+  const [problemsError, setProblemsError] = useState<string | null>(null)
+  const [selectedProblemId, setSelectedProblemId] = useState<string>('')
+  const [code, setCode] = useState<string>('')
   const [outputLogs, setOutputLogs] = useState<string[]>([])
   const [copiedLink, setCopiedLink] = useState<boolean>(false)
+
+  const selectedProblem: CustomMCQuestion | null =
+    problems.find(p => p.id === selectedProblemId) ?? null
+
+  const loadProblems = useCallback(async () => {
+    setIsLoadingProblems(true)
+    setProblemsError(null)
+    try {
+      const rows = await questionManagementService.list()
+      setProblems(rows)
+      setSelectedProblemId(current => {
+        if (current && rows.some(r => r.id === current)) return current
+        return rows[0]?.id ?? ''
+      })
+    } catch {
+      setProblemsError('Could not load questions from the database.')
+    } finally {
+      setIsLoadingProblems(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    void loadProblems()
+  }, [loadProblems])
+
+  // Seed the editor whenever the active question changes. `selectedProblem` is
+  // referentially stable between renders (it comes out of the `problems` array),
+  // so this only fires on an actual question switch or a reload.
+  useEffect(() => {
+    if (selectedProblem) {
+      setCode(selectedProblem.starterCode)
+      setOutputLogs([])
+    }
+  }, [selectedProblem])
 
   // Media state
   const [isAudioMuted, setIsAudioMuted] = useState<boolean>(false)
@@ -310,26 +236,47 @@ export default function PeerRoom() {
             <div className="code-workspace-column">
               {/* Problem Prompt Card */}
               <div className="peer-problem-card">
-                <div className="p-card-header">
-                  <select
-                    className="problem-select"
-                    value={selectedProblem.id}
-                    onChange={e => {
-                      const p = PEER_PROBLEMS.find(prob => prob.id === e.target.value) || PEER_PROBLEMS[0]
-                      setSelectedProblem(p)
-                      setCode(p.starterCode)
-                      setOutputLogs([])
-                    }}
-                  >
-                    {PEER_PROBLEMS.map(p => (
-                      <option key={p.id} value={p.id}>{p.title} ({p.difficulty})</option>
-                    ))}
-                  </select>
-                  <span className={`diff-pill diff-${selectedProblem.difficulty.toLowerCase()}`}>
-                    {selectedProblem.difficulty}
-                  </span>
-                </div>
-                <p className="peer-prompt-text">{selectedProblem.prompt}</p>
+                {isLoadingProblems ? (
+                  <div className="p-card-header">
+                    <span className="peer-prompt-text">Loading questions from database…</span>
+                  </div>
+                ) : problemsError ? (
+                  <div className="p-card-header">
+                    <span className="peer-prompt-text">{problemsError}</span>
+                    <button
+                      type="button"
+                      className="btn btn-secondary btn-sm"
+                      onClick={() => void loadProblems()}
+                    >
+                      Retry
+                    </button>
+                  </div>
+                ) : !selectedProblem ? (
+                  <div className="p-card-header">
+                    <span className="peer-prompt-text">
+                      No questions published yet. Ask an administrator to upload questions from
+                      Admin → Questions → Custom Questions.
+                    </span>
+                  </div>
+                ) : (
+                  <>
+                    <div className="p-card-header">
+                      <select
+                        className="problem-select"
+                        value={selectedProblem.id}
+                        onChange={e => setSelectedProblemId(e.target.value)}
+                      >
+                        {problems.map(p => (
+                          <option key={p.id} value={p.id}>{p.title} ({p.difficulty})</option>
+                        ))}
+                      </select>
+                      <span className={`diff-pill diff-${DIFF_CLASS[selectedProblem.difficulty]}`}>
+                        {selectedProblem.difficulty}
+                      </span>
+                    </div>
+                    <p className="peer-prompt-text">{selectedProblem.description || selectedProblem.summary}</p>
+                  </>
+                )}
               </div>
 
               {/* Code Editor */}
@@ -476,14 +423,16 @@ export default function PeerRoom() {
                     </div>
                   </div>
 
-                  <div className="interviewer-hints-box">
-                    <strong>💡 Progressive Hints to Give Candidate:</strong>
-                    <ol>
-                      {selectedProblem.hints.map((h, i) => (
-                        <li key={i}>{h}</li>
-                      ))}
-                    </ol>
-                  </div>
+                  {(selectedProblem?.interviewTips.length || selectedProblem?.requirements.length) ? (
+                    <div className="interviewer-hints-box">
+                      <strong>💡 Progressive Hints to Give Candidate:</strong>
+                      <ol>
+                        {[...(selectedProblem?.interviewTips ?? []), ...(selectedProblem?.requirements ?? [])].map((h, i) => (
+                          <li key={i}>{h}</li>
+                        ))}
+                      </ol>
+                    </div>
+                  ) : null}
 
                   <textarea
                     className="interviewer-notes-area"

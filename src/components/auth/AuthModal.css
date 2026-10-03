@@ -552,30 +552,6 @@
   color: #c084fc;
 }
 
-.permissions-overview {
-  background: #111827;
-  border: 1px solid #1f2937;
-  border-radius: var(--radius-md);
-  padding: 14px;
-}
-
-.permissions-overview h4 {
-  margin: 0 0 8px;
-  font-size: 0.86rem;
-  color: #fff;
-}
-
-.perms-list {
-  margin: 0;
-  padding-left: 0;
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  font-size: 0.8rem;
-  color: #cbd5e1;
-}
-
 /* ── Top-Level Portal Switcher (User vs Admin) ── */
 .auth-portal-selector {
   display: flex;

@@ -1,23 +1,6 @@
 import type { User, Session, Provider } from '@supabase/supabase-js'
 
-export type UserRole = 'guest' | 'candidate' | 'pro_member' | 'interviewer' | 'admin'
-
-export interface FeatureEntitlements {
-  questions_full: boolean
-  coding_sandbox: boolean
-  system_design: boolean
-  video_mock: boolean
-  compiler_studios: boolean
-  cloud_sync: boolean
-}
-
-export const DEFAULT_ENTITLEMENTS: Record<UserRole, FeatureEntitlements> = {
-  guest: { questions_full: false, coding_sandbox: false, system_design: false, video_mock: false, compiler_studios: false, cloud_sync: false },
-  candidate: { questions_full: true, coding_sandbox: true, system_design: false, video_mock: false, compiler_studios: false, cloud_sync: true },
-  pro_member: { questions_full: true, coding_sandbox: true, system_design: true, video_mock: true, compiler_studios: true, cloud_sync: true },
-  interviewer: { questions_full: true, coding_sandbox: true, system_design: true, video_mock: true, compiler_studios: true, cloud_sync: true },
-  admin: { questions_full: true, coding_sandbox: true, system_design: true, video_mock: true, compiler_studios: true, cloud_sync: true },
-}
+export type UserRole = 'guest' | 'candidate' | 'interviewer' | 'admin'
 
 export interface AuthUserProfile {
   id: string
@@ -26,7 +9,6 @@ export interface AuthUserProfile {
   role: UserRole
   avatarUrl?: string
   avatarPublicId?: string
-  entitlements: FeatureEntitlements
   permissions?: string[]
   status?: 'ACTIVE' | 'SUSPENDED'
   batch?: string
@@ -97,7 +79,6 @@ export interface StoredUserAccount {
   email: string
   name: string
   role: UserRole
-  entitlements: FeatureEntitlements
   status: 'ACTIVE' | 'SUSPENDED'
   batch?: string
   batchCode?: string
@@ -131,12 +112,10 @@ export interface AuthContextValue {
   verifyOtp: (email: string, token: string) => Promise<{ success: boolean; message: string }>
   switchRole: (newRole: UserRole) => void
   hasPermission: (minRoleOrPermission: UserRole | string) => boolean
-  hasFeature: (featureKey: keyof FeatureEntitlements) => boolean
   updateProfile: (updates: Partial<AuthUserProfile>) => Promise<{ success: boolean; message: string }>
   // Compatibility helpers
   signUpWithPassword: (email: string, password: string, fullName: string) => Promise<{ success: boolean; needsEmailConfirmation?: boolean; message: string }>
   signInWithPassword: (email: string, password: string) => Promise<{ success: boolean; message: string }>
-  updateUserEntitlements: (userId: string, entitlements: FeatureEntitlements) => Promise<{ success: boolean; message: string }>
   adminUpdateUserRole: (userId: string, newRole: UserRole) => Promise<{ success: boolean; message: string }>
   getAllUsers: () => Promise<StoredUserAccount[]>
 }

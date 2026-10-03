@@ -5629,15 +5629,6 @@ init_metrics();
 init_client();
 import { createClient as createClient2 } from "@supabase/supabase-js";
 
-// src/features/auth/types/auth.types.ts
-var DEFAULT_ENTITLEMENTS = {
-  guest: { questions_full: false, coding_sandbox: false, system_design: false, video_mock: false, compiler_studios: false, cloud_sync: false },
-  candidate: { questions_full: true, coding_sandbox: true, system_design: false, video_mock: false, compiler_studios: false, cloud_sync: true },
-  pro_member: { questions_full: true, coding_sandbox: true, system_design: true, video_mock: true, compiler_studios: true, cloud_sync: true },
-  interviewer: { questions_full: true, coding_sandbox: true, system_design: true, video_mock: true, compiler_studios: true, cloud_sync: true },
-  admin: { questions_full: true, coding_sandbox: true, system_design: true, video_mock: true, compiler_studios: true, cloud_sync: true }
-};
-
 // src/features/auth/services/adminTokenHelper.ts
 function getStoredAuthHeader() {
   if (typeof window === "undefined") return {};
@@ -5666,7 +5657,6 @@ var KNOWN_SUPABASE_AUTH_USERS = [
     email: "candidate@interviewprep.com",
     name: "Demo Candidate",
     role: "candidate",
-    entitlements: DEFAULT_ENTITLEMENTS.candidate,
     status: "ACTIVE",
     batch: "2026-Alpha",
     batchCode: "FE-2026-A",
@@ -5728,7 +5718,6 @@ var profileService = {
       const { data, error } = await supabase.from("profiles").select("*").eq("id", userId).maybeSingle();
       if (!error && data) {
         const role = data.role || "candidate";
-        const entitlements = data.feature_entitlements || DEFAULT_ENTITLEMENTS[role];
         return {
           id: data.id,
           email: data.email,
@@ -5736,7 +5725,6 @@ var profileService = {
           role,
           avatarUrl: data.avatar_url || localMatch?.avatarUrl,
           avatarPublicId: data.avatar_public_id || localMatch?.avatarPublicId,
-          entitlements,
           status: data.status || "ACTIVE",
           batch: data.batch || localMatch?.batch || "2026-Alpha",
           batchCode: data.batch_code || localMatch?.batchCode || "FE-2026-A",
@@ -5770,7 +5758,6 @@ var profileService = {
           name: updates.full_name !== void 0 ? updates.full_name : p.name,
           avatarUrl: updates.avatar_url !== void 0 ? updates.avatar_url : p.avatarUrl,
           avatarPublicId: updates.avatar_public_id !== void 0 ? updates.avatar_public_id : p.avatarPublicId,
-          entitlements: updates.feature_entitlements !== void 0 ? updates.feature_entitlements : p.entitlements,
           status: updates.status || p.status || "ACTIVE",
           batch: updates.batch !== void 0 ? updates.batch : p.batch || "2026-Alpha",
           batchCode: updates.batch_code !== void 0 ? updates.batch_code : p.batchCode || "FE-2026-A",
@@ -5792,7 +5779,6 @@ var profileService = {
         role: "candidate",
         avatarUrl: updates.avatar_url,
         avatarPublicId: updates.avatar_public_id,
-        entitlements: updates.feature_entitlements || DEFAULT_ENTITLEMENTS.candidate,
         status: updates.status || "ACTIVE",
         batch: updates.batch || "2026-Alpha",
         batchCode: updates.batch_code || "FE-2026-A",
@@ -5825,7 +5811,6 @@ var profileService = {
   createUserProfile: async (params) => {
     const cleanEmail = params.email.toLowerCase().trim();
     const role = params.role || "candidate";
-    const entitlements = params.entitlements || DEFAULT_ENTITLEMENTS[role];
     let createdId = "";
     try {
       const isolatedClient = createClient2(supabaseUrl, supabaseAnonKey, {
@@ -5857,7 +5842,6 @@ var profileService = {
       email: cleanEmail,
       name: params.name,
       role,
-      entitlements,
       status: "ACTIVE",
       createdAt: (/* @__PURE__ */ new Date()).toISOString()
     };
@@ -5865,15 +5849,6 @@ var profileService = {
     if (!local.some((p) => p.email === cleanEmail)) {
       local.unshift(createdUser);
       saveLocalProfiles(local);
-    }
-    try {
-      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(createdId);
-      if (isUuid) {
-        await supabase.from("profiles").update({
-          feature_entitlements: entitlements
-        }).eq("id", createdId);
-      }
-    } catch {
     }
     return {
       success: true,
@@ -5886,30 +5861,6 @@ var profileService = {
    */
   updateAccountStatus: async (userId, status) => {
     return profileService.updateProfile(userId, { status });
-  },
-  /**
-   * Admin: Bulk grant or reset entitlements
-   */
-  bulkUpdateEntitlements: async (userIds, entitlements) => {
-    const local = getLocalProfiles();
-    const updated = local.map(
-      (p) => userIds.includes(p.id) ? { ...p, entitlements, updatedAt: (/* @__PURE__ */ new Date()).toISOString() } : p
-    );
-    saveLocalProfiles(updated);
-    try {
-      const promises = userIds.map(
-        (id) => supabase.from("profiles").update({
-          feature_entitlements: entitlements,
-          updated_at: (/* @__PURE__ */ new Date()).toISOString()
-        }).eq("id", id)
-      );
-      await Promise.all(promises);
-    } catch {
-    }
-    return {
-      success: true,
-      message: `Updated feature entitlements for ${userIds.length} users successfully!`
-    };
   },
   /**
    * Admin: fetch all user profiles (Real users only)
@@ -5927,7 +5878,6 @@ var profileService = {
             role,
             avatarUrl: d.avatar_url,
             avatarPublicId: d.avatar_public_id,
-            entitlements: d.feature_entitlements || DEFAULT_ENTITLEMENTS[role],
             status: d.status || "ACTIVE",
             createdAt: d.created_at,
             updatedAt: d.updated_at
@@ -5955,7 +5905,6 @@ var profileService = {
               role: d.role || "candidate",
               avatarUrl: d.avatar_url,
               avatarPublicId: d.avatar_public_id,
-              entitlements: d.feature_entitlements || DEFAULT_ENTITLEMENTS[d.role || "candidate"],
               status: d.status || "ACTIVE",
               createdAt: d.created_at,
               updatedAt: d.updated_at
@@ -11148,7 +11097,7 @@ async function handler26(req, res) {
       sb.from("dsa_submissions").select("id, user_id, question_id, status, tests_passed, tests_total, created_at").order("created_at", { ascending: false }).limit(3e3),
       sb.from("frontend_js_submissions").select("id, user_id, question_id, status, score, created_at").order("created_at", { ascending: false }).limit(3e3),
       sb.from("question_attempts").select("id, user_id, question_id, status, time_spent, completed_at, created_at").order("created_at", { ascending: false }).limit(3e3),
-      sb.from("profiles").select("id, full_name, email, role, target_company, experience_level, avatar_url, created_at, updated_at, feature_entitlements").order("created_at", { ascending: false })
+      sb.from("profiles").select("id, full_name, email, role, target_company, experience_level, avatar_url, created_at, updated_at").order("created_at", { ascending: false })
     ]);
     const rawRecords = [];
     ;
@@ -11585,7 +11534,7 @@ ${String(s.code || "").slice(0, 2e3)}`).join("\n---\n")}`;
 // src/data/bankTotals.json
 var bankTotals_default = {
   mainBankQuestions: 15941,
-  masterBankQuestions: 1233,
+  masterBankQuestions: 2365,
   masterBankSubjects: 35,
   mockBankQuestions: 4906,
   mockBankTracks: 16

@@ -1,14 +1,12 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react'
 import { Link, useNavigate, useParams, useLocation, useSearchParams } from 'react-router-dom'
-import { useAuth, type UserRole, type FeatureEntitlements } from '../../context/AuthContext'
+import { useAuth, type UserRole } from '../../context/AuthContext'
 import { useTheme } from '../../context/ThemeContext'
-import { DEFAULT_ENTITLEMENTS } from '../../features/auth/types/auth.types'
 import { profileService } from '../../features/auth/services/profile.service'
-import { rbacService } from '../../features/auth/services/rbac.service'
-import { auditService, type AccessNotificationItem } from '../../features/auth/services/audit.service'
+import { auditService } from '../../features/auth/services/audit.service'
 import { progressSyncService, type UserTrackProgress, TRACK_DEFINITIONS } from '../../features/auth/services/progressSync.service'
 import { dbActivityService, type ActivityLogItem } from '../../lib/supabase'
-import { bankTotals, fmtCount, fmtK } from '../../data/bankTotals'
+import { bankTotals, fmtK } from '../../data/bankTotals'
 import type { AuthUserProfile } from '../../features/auth/types/auth.types'
 import AdminOverviewTab from './admin/AdminOverviewTab'
 import AdminQuestionsTab from './admin/AdminQuestionsTab'
@@ -16,7 +14,6 @@ import AdminSubmissionsTab from './admin/AdminSubmissionsTab'
 import AdminAttemptsTab from './admin/AdminAttemptsTab'
 import AdminActivityTab from './admin/AdminActivityTab'
 import AdminAnalyticsTab from './admin/AdminAnalyticsTab'
-import AdminRequestsTab from './admin/AdminRequestsTab'
 import AdminTelemetryTab from './admin/AdminTelemetryTab'
 import AdminSystemHealthTab from './admin/AdminSystemHealthTab'
 import AdminControlCenterTab from './admin/AdminControlCenterTab'
@@ -71,7 +68,6 @@ export type AdminTab =
   | 'attempts'
   | 'activity'
   | 'analytics'
-  | 'requests'
   | 'tracks'
   | 'audit'
   | 'health'
@@ -124,7 +120,6 @@ export default function AdminDashboard() {
     if (clean === 'questions') return 'questions'
     if (clean === 'activity') return 'activity'
     if (clean === 'analytics') return 'analytics'
-    if (clean === 'requests') return 'requests'
     if (clean === 'tracks') return 'tracks'
     if (clean === 'telemetry' || clean === 'audit') return 'audit'
     if (clean === 'health' || clean === 'system-health' || clean === 'system_health' || clean === 'observability') return 'health'
@@ -155,7 +150,6 @@ export default function AdminDashboard() {
 
   // State
   const [profiles, setProfiles] = useState<AuthUserProfile[]>([])
-  const [notifications, setNotifications] = useState<AccessNotificationItem[]>([])
   const [_auditLogs, _setAuditLogs] = useState<Array<{ id: string; action: string; resource: string; createdAt: string; details?: Record<string, unknown> }>>([])
   const [progressMap, setProgressMap] = useState<Record<string, UserTrackProgress>>({})
 
@@ -215,7 +209,6 @@ export default function AdminDashboard() {
   const [newUserCompany, setNewUserCompany] = useState<string>('Google')
   const [newUserLevel, setNewUserLevel] = useState<string>('L5 (Senior 5-9y)')
   const [newUserTrack, setNewUserTrack] = useState<string>('React 19 & Architecture')
-  const [newUserEntitlements, setNewUserEntitlements] = useState<FeatureEntitlements>(DEFAULT_ENTITLEMENTS.candidate)
   const [isSubmittingUser, setIsSubmittingUser] = useState<boolean>(false)
 
   // Load live data from Supabase
@@ -224,7 +217,6 @@ export default function AdminDashboard() {
     try {
       const [
         fetchedProfiles,
-        fetchedNotifications,
         fetchedAuditLogs,
         fetchedProgress,
         fetchedActivities,
@@ -235,7 +227,6 @@ export default function AdminDashboard() {
         fetchedQuestionStats,
       ] = await Promise.all([
         profileService.getAllProfiles(),
-        auditService.getAccessNotifications(),
         auditService.getAuditLogs(15),
         progressSyncService.getAllUsersProgress(),
         dbActivityService.getAllActivities(50),
@@ -261,7 +252,6 @@ export default function AdminDashboard() {
       }
       setProfiles(mergedProfiles)
 
-      setNotifications(fetchedNotifications)
       _setAuditLogs(fetchedAuditLogs)
     } catch (err) {
       console.warn('[Admin Dashboard] Load data error:', err)
@@ -308,17 +298,10 @@ export default function AdminDashboard() {
       setLiveActivities(prev => [newActivity, ...prev.slice(0, 99)])
     })
 
-    const unsubAccess = auditService.subscribeToAccessRequests(notif => {
-      setNotifications(prev => {
-        const filtered = prev.filter(p => !(p.userEmail.toLowerCase() === notif.userEmail.toLowerCase() && p.featureKey === notif.featureKey))
-        return [notif, ...filtered]
-      })
-    })
 
     return () => {
       unsubProgress()
       unsubActivities()
-      unsubAccess()
     }
   }, [])
 
@@ -326,71 +309,6 @@ export default function AdminDashboard() {
   const showToast = (msg: string) => {
     setStatusToast(msg)
     setTimeout(() => setStatusToast(null), 3500)
-  }
-
-  // 1. Approve Access Request directly from Notifications
-  const handleApproveRequest = async (notif: AccessNotificationItem) => {
-    const res = await auditService.approveAccessRequest(notif)
-    if (res.success) {
-      setNotifications(prev =>
-        prev.map(n => (n.id === notif.id ? { ...n, status: 'APPROVED' } : n))
-      )
-      if (notif.userId) {
-        setProfiles(prev =>
-          prev.map(p =>
-            p.id === notif.userId
-              ? { ...p, entitlements: { ...p.entitlements, [notif.featureKey]: true } }
-              : p
-          )
-        )
-      }
-      showToast(res.message)
-    } else {
-      showToast(res.message)
-    }
-  }
-
-  // 2. Decline Access Request
-  const handleDeclineRequest = (id: string, email: string, feature: string) => {
-    auditService.declineAccessRequest(id)
-    setNotifications(prev =>
-      prev.map(n => (n.id === id ? { ...n, status: 'DECLINED' } : n))
-    )
-    showToast(`Declined ${feature} access request for ${email}.`)
-  }
-
-  // 2b. Delete / Dismiss Access Request
-  const handleDeleteRequest = (id: string) => {
-    auditService.deleteNotification(id)
-    setNotifications(prev => prev.filter(n => n.id !== id))
-    showToast('Access request removed.')
-  }
-
-  // 2c. Clear All Requests
-  const handleClearAllRequests = () => {
-    auditService.clearAllNotifications()
-    setNotifications([])
-    showToast('All access requests cleared.')
-  }
-
-  // 3. Toggle single feature entitlement on user
-  const handleToggleEntitlement = async (targetUser: AuthUserProfile, featureKey: keyof FeatureEntitlements) => {
-    const updated = {
-      ...targetUser.entitlements,
-      [featureKey]: !targetUser.entitlements[featureKey],
-    }
-    const res = await rbacService.updateEntitlements(targetUser.id, updated)
-    if (res.success) {
-      setProfiles(prev =>
-        prev.map(p => (p.id === targetUser.id ? { ...p, entitlements: updated } : p))
-      )
-      if (inspectUser && inspectUser.id === targetUser.id) {
-        setInspectUser({ ...inspectUser, entitlements: updated })
-      }
-      showToast(`Updated '${featureKey}' for ${targetUser.name}`)
-    } else {
-      showToast(res.message)
-    }
   }
 
   // 4. Suspend or Reactivate Account
@@ -426,7 +344,6 @@ export default function AdminDashboard() {
       name: newUserName || newUserEmail.split('@')[0],
       email: newUserEmail,
       role: newUserRole,
-      entitlements: newUserEntitlements,
     })
     setIsSubmittingUser(false)
 
@@ -576,38 +493,6 @@ export default function AdminDashboard() {
     showToast(`Copied ${targetUser.name}'s evaluation dossier in Markdown!`)
   }
 
-  // 8. Bulk Grant All Features
-  const handleBulkGrantAll = async () => {
-    const targetIds = selectedUserIds.size > 0 ? Array.from(selectedUserIds) : profiles.map(p => p.id)
-    const fullEntitlements: FeatureEntitlements = {
-      questions_full: true,
-      coding_sandbox: true,
-      system_design: true,
-      video_mock: true,
-      compiler_studios: true,
-      cloud_sync: true,
-    }
-    const res = await profileService.bulkUpdateEntitlements(targetIds, fullEntitlements)
-    if (res.success) {
-      setProfiles(prev =>
-        prev.map(p => (targetIds.includes(p.id) ? { ...p, entitlements: fullEntitlements } : p))
-      )
-      showToast(`Granted all features to ${targetIds.length} users!`)
-    }
-  }
-
-  // 9. Bulk Reset Entitlements
-  const handleBulkReset = async () => {
-    const targetIds = selectedUserIds.size > 0 ? Array.from(selectedUserIds) : profiles.map(p => p.id)
-    const res = await profileService.bulkUpdateEntitlements(targetIds, DEFAULT_ENTITLEMENTS.candidate)
-    if (res.success) {
-      setProfiles(prev =>
-        prev.map(p => (targetIds.includes(p.id) ? { ...p, entitlements: DEFAULT_ENTITLEMENTS.candidate } : p))
-      )
-      showToast(`Reset features to Candidate defaults for ${targetIds.length} users.`)
-    }
-  }
-
   // 10. Export Users to CSV
   const handleExportCSV = () => {
     const targetList = selectedUserIds.size > 0
@@ -660,11 +545,6 @@ export default function AdminDashboard() {
       return matchQuery && matchRole && matchTrack && matchProgress
     })
   }, [profiles, progressMap, searchTerm, roleFilter, trackFilter, progressFilter])
-
-  // Aggregate Metrics
-  const pendingRequestsCount = useMemo(() => {
-    return notifications.filter(n => n.status === 'PENDING').length
-  }, [notifications])
 
   const avgCompletionPct = useMemo(() => {
     const list = Object.values(progressMap)
@@ -931,18 +811,6 @@ export default function AdminDashboard() {
 
           <button
             type="button"
-            className={`h-nav-item ${activeTab === 'requests' ? 'active' : ''}`}
-            onClick={() => { setActiveTab('requests'); setIsMobileSidebarOpen(false); }}
-          >
-            <span className="h-nav-icon">📩</span>
-            <span>Access Requests</span>
-            {pendingRequestsCount > 0 && (
-              <span className="h-nav-badge alert">{pendingRequestsCount}</span>
-            )}
-          </button>
-
-          <button
-            type="button"
             className={`h-nav-item ${activeTab === 'tracks' ? 'active' : ''}`}
             onClick={() => { setActiveTab('tracks'); setIsMobileSidebarOpen(false); }}
           >
@@ -1058,7 +926,6 @@ export default function AdminDashboard() {
               {!isCandidatePerformanceRoute && activeTab === 'questions' && 'Question Performance'}
               {!isCandidatePerformanceRoute && activeTab === 'activity' && 'Real-Time Activity Feed'}
               {!isCandidatePerformanceRoute && activeTab === 'analytics' && 'Platform Analytics'}
-              {!isCandidatePerformanceRoute && activeTab === 'requests' && 'Feature Access Requests'}
               {!isCandidatePerformanceRoute && activeTab === 'tracks' && 'Curriculum Tracks'}
               {!isCandidatePerformanceRoute && activeTab === 'audit' && 'Cloud Telemetry Stream'}
               {!isCandidatePerformanceRoute && activeTab === 'rankings' && '🏆 Candidate Rankings'}
@@ -1120,21 +987,6 @@ export default function AdminDashboard() {
               </button>
             </div>
 
-            <div className="h-topbar-tools">
-              <button
-                type="button"
-                className="h-topbar-icon-btn"
-                onClick={() => setActiveTab('requests')}
-                title="Access notifications"
-              >
-                🔔
-                {pendingRequestsCount > 0 && (
-                  <span className="h-notification-badge">
-                    {pendingRequestsCount}
-                  </span>
-                )}
-              </button>
-
               <button
                 type="button"
                 className="h-topbar-icon-btn"
@@ -1145,6 +997,7 @@ export default function AdminDashboard() {
                 {adminTheme === 'light' ? '🌙' : '☀️'}
               </button>
 
+              <div className="h-topbar-tools">
               <div
                 className="h-topbar-avatar-chip"
                 onClick={() => setActiveTab('profile')}
@@ -1206,16 +1059,6 @@ export default function AdminDashboard() {
                   <span className="h-stat-sub">Total session attempts</span>
                 </div>
               </div>
-
-              <div className="h-stat-widget" onClick={() => setActiveTab('requests')}>
-                <div className="h-stat-icon-circle red">📩</div>
-                <div className="h-stat-info">
-                  <span className="h-stat-label">Pending Requests</span>
-                  <span className="h-stat-value">{pendingRequestsCount}</span>
-                  <span className="h-stat-sub">{pendingRequestsCount > 0 ? 'Requires attention' : 'All approved'}</span>
-                </div>
-              </div>
-
               <div className="h-stat-widget" onClick={() => setActiveTab('users')}>
                 <div className="h-stat-icon-circle amber">🔥</div>
                 <div className="h-stat-info">
@@ -1330,7 +1173,6 @@ export default function AdminDashboard() {
               <div>
                 <h3>Real-Time Candidate Progression &amp; Tracks ({filteredUsers.length})</h3>
                 <p className="udp-desc">
-                  Inspect student track completion, quiz accuracy, streaks, and manage feature entitlements with live Supabase sync.
                 </p>
               </div>
 
@@ -1375,7 +1217,6 @@ export default function AdminDashboard() {
                 >
                   <option value="ALL">All Roles</option>
                   <option value="candidate">Candidates</option>
-                  <option value="pro_member">Pro Members</option>
                   <option value="admin">Admins</option>
                 </select>
               </div>
@@ -1387,22 +1228,6 @@ export default function AdminDashboard() {
                 <span className="bab-count">
                   {selectedUserIds.size} user{selectedUserIds.size === 1 ? '' : 's'} selected
                 </span>
-                <button
-                  type="button"
-                  className="btn btn-sm btn-secondary bab-btn"
-                  onClick={handleBulkGrantAll}
-                  title="Grant all 6 features to selected users"
-                >
-                  ⚡ Bulk Grant All Features
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-sm btn-secondary bab-btn"
-                  onClick={handleBulkReset}
-                  title="Reset selected users to candidate defaults"
-                >
-                  🔒 Bulk Reset Entitlements
-                </button>
               </div>
 
               <div className="bab-right">
@@ -1433,7 +1258,6 @@ export default function AdminDashboard() {
                     <th>Assigned Track</th>
                     <th style={{ minWidth: '180px' }}>Curriculum Completion</th>
                     <th>Streak &amp; Quiz</th>
-                    <th>Entitlements</th>
                     <th>Status</th>
                     <th>Actions</th>
                   </tr>
@@ -1488,7 +1312,6 @@ export default function AdminDashboard() {
                               title={`Inspect ${u.name}'s Full Dossier`}
                             >
                               <div className="h-avatar-circle">
-                                {isSuspended ? '⛔' : u.role === 'admin' ? '🛡️' : u.role === 'pro_member' ? '⚡' : '👨‍💻'}
                               </div>
                               <div className="h-user-meta">
                                 <span className="h-user-name">{u.name}</span>
@@ -1546,40 +1369,6 @@ export default function AdminDashboard() {
                           <div className="metrics-cell-box">
                             <span className="streak-tag">🔥 {prog.streak}d streak</span>
                             <span className="accuracy-tag">🎯 {prog.quizAccuracy}% quiz</span>
-                          </div>
-                        </td>
-
-                        <td>
-                          <div className="entitlement-chips-grid">
-                            <button
-                              type="button"
-                              className={`chip-toggle ${u.entitlements.questions_full ? 'granted' : 'locked'}`}
-                              onClick={() => handleToggleEntitlement(u, 'questions_full')}
-                              title={`Toggle ${fmtCount(bankTotals.mainBankQuestions)} Questions Bank`}
-                              disabled={isSuspended}
-                            >
-                              {u.entitlements.questions_full ? `✅ ${fmtK(bankTotals.mainBankQuestions)}` : `🔒 ${fmtK(bankTotals.mainBankQuestions)}`}
-                            </button>
-
-                            <button
-                              type="button"
-                              className={`chip-toggle ${u.entitlements.system_design ? 'granted' : 'locked'}`}
-                              onClick={() => handleToggleEntitlement(u, 'system_design')}
-                              title="Toggle System Design Canvas"
-                              disabled={isSuspended}
-                            >
-                              {u.entitlements.system_design ? '✅ Design' : '🔒 Design'}
-                            </button>
-
-                            <button
-                              type="button"
-                              className={`chip-toggle ${u.entitlements.video_mock ? 'granted' : 'locked'}`}
-                              onClick={() => handleToggleEntitlement(u, 'video_mock')}
-                              title="Toggle AI Video Mock Interviews"
-                              disabled={isSuspended}
-                            >
-                              {u.entitlements.video_mock ? '✅ Mock' : '🔒 Mock'}
-                            </button>
                           </div>
                         </td>
 
@@ -1702,23 +1491,6 @@ export default function AdminDashboard() {
             attemptsList={attemptsList}
             questionsStatsList={questionsStatsList}
             progressMap={progressMap}
-          />
-        </div>
-      )}
-
-      {/* ================================================================ */}
-      {/* TAB: ACCESS REQUESTS & NOTIFICATIONS CENTER */}
-      {/* ================================================================ */}
-      {activeTab === 'requests' && (
-        <div className="admin-tab-content">
-          <AdminRequestsTab
-            notifications={notifications}
-            pendingRequestsCount={pendingRequestsCount}
-            onApprove={handleApproveRequest}
-            onDecline={handleDeclineRequest}
-            onDelete={handleDeleteRequest}
-            onClearAll={handleClearAllRequests}
-            onInspectUser={(uId: string) => setSelectedUserForDeepDive(uId)}
           />
         </div>
       )}
@@ -1921,7 +1693,6 @@ export default function AdminDashboard() {
                 </div>
                 <div className="h-gi-item">
                   <span className="h-gi-label">Role &amp; Permissions</span>
-                  <strong className="h-gi-val">Platform Administrator (All Entitlements)</strong>
                 </div>
                 <div className="h-gi-item">
                   <span className="h-gi-label">Authentication Method</span>
@@ -2119,40 +1890,6 @@ export default function AdminDashboard() {
                       </div>
                     </div>
 
-                    {/* Entitlements Management Inside Modal */}
-                    <div className="ddm-entitlements-box">
-                      <h4>Manage Feature Entitlements for {inspectUser.name}</h4>
-                      <div className="entitlement-chips-grid">
-                        <button
-                          type="button"
-                          className={`chip-toggle ${inspectUser.entitlements.questions_full ? 'granted' : 'locked'}`}
-                          onClick={() => handleToggleEntitlement(inspectUser, 'questions_full')}
-                        >
-                          {inspectUser.entitlements.questions_full ? `✅ Full ${fmtCount(bankTotals.mainBankQuestions)} Bank` : `🔒 ${fmtK(bankTotals.mainBankQuestions)} Bank Locked`}
-                        </button>
-                        <button
-                          type="button"
-                          className={`chip-toggle ${inspectUser.entitlements.system_design ? 'granted' : 'locked'}`}
-                          onClick={() => handleToggleEntitlement(inspectUser, 'system_design')}
-                        >
-                          {inspectUser.entitlements.system_design ? '✅ System Design Studio' : '🔒 Design Studio Locked'}
-                        </button>
-                        <button
-                          type="button"
-                          className={`chip-toggle ${inspectUser.entitlements.video_mock ? 'granted' : 'locked'}`}
-                          onClick={() => handleToggleEntitlement(inspectUser, 'video_mock')}
-                        >
-                          {inspectUser.entitlements.video_mock ? '✅ AI Video Mock' : '🔒 Video Mock Locked'}
-                        </button>
-                        <button
-                          type="button"
-                          className={`chip-toggle ${inspectUser.entitlements.compiler_studios ? 'granted' : 'locked'}`}
-                          onClick={() => handleToggleEntitlement(inspectUser, 'compiler_studios')}
-                        >
-                          {inspectUser.entitlements.compiler_studios ? '✅ AST & Compiler Labs' : '🔒 Compilers Locked'}
-                        </button>
-                      </div>
-                    </div>
                   </>
                 )
               })()}
@@ -2436,7 +2173,6 @@ export default function AdminDashboard() {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <div>
                     <strong style={{ color: 'var(--h-text-white)', fontSize: '0.86rem' }}>Access Request Alerts</strong>
-                    <p style={{ margin: '2px 0 0', fontSize: '0.76rem', color: 'var(--h-text-muted)' }}>Instant banner notifications for feature approvals</p>
                   </div>
                   <span className="submission-pill accepted">ON</span>
                 </div>
@@ -2504,11 +2240,9 @@ export default function AdminDashboard() {
                     onChange={e => {
                       const r = e.target.value as UserRole
                       setNewUserRole(r)
-                      setNewUserEntitlements(DEFAULT_ENTITLEMENTS[r])
                     }}
                   >
                     <option value="candidate">Candidate</option>
-                    <option value="pro_member">Pro Member</option>
                     <option value="interviewer">Interviewer</option>
                     <option value="admin">Admin</option>
                   </select>
@@ -2560,55 +2294,6 @@ export default function AdminDashboard() {
                     <option value="L6 (Staff 10-14y)">L6 (Staff 10-14y)</option>
                     <option value="L7+ (Principal / Director)">L7+ (Principal / Director)</option>
                   </select>
-                </div>
-              </div>
-
-              <div className="form-group">
-                <label>Pre-Provisioned Feature Entitlements:</label>
-                <div className="entitlement-checkboxes-grid">
-                  <label className="checkbox-pill">
-                    <input
-                      type="checkbox"
-                      checked={newUserEntitlements.questions_full}
-                      onChange={e =>
-                        setNewUserEntitlements(prev => ({ ...prev, questions_full: e.target.checked }))
-                      }
-                    />
-                    {fmtCount(bankTotals.mainBankQuestions)} Question Bank
-                  </label>
-
-                  <label className="checkbox-pill">
-                    <input
-                      type="checkbox"
-                      checked={newUserEntitlements.system_design}
-                      onChange={e =>
-                        setNewUserEntitlements(prev => ({ ...prev, system_design: e.target.checked }))
-                      }
-                    />
-                    System Design Studio
-                  </label>
-
-                  <label className="checkbox-pill">
-                    <input
-                      type="checkbox"
-                      checked={newUserEntitlements.video_mock}
-                      onChange={e =>
-                        setNewUserEntitlements(prev => ({ ...prev, video_mock: e.target.checked }))
-                      }
-                    />
-                    AI Video Mock Interview
-                  </label>
-
-                  <label className="checkbox-pill">
-                    <input
-                      type="checkbox"
-                      checked={newUserEntitlements.compiler_studios}
-                      onChange={e =>
-                        setNewUserEntitlements(prev => ({ ...prev, compiler_studios: e.target.checked }))
-                      }
-                    />
-                    AST &amp; Compiler Labs
-                  </label>
                 </div>
               </div>
 

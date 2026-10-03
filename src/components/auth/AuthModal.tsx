@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { useAuth } from '../../context/AuthContext'
-import { bankTotals, fmtCount } from '../../data/bankTotals'
+import './AuthModal.css'
 import './AuthModal.css'
 
 export default function AuthModal() {
@@ -315,29 +315,6 @@ export default function AuthModal() {
                 </div>
               </div>
             </div>
-
-            <div className="permissions-overview">
-              <h4>Active Feature Entitlements:</h4>
-              <ul className="perms-list">
-                <li>
-                  {user.entitlements.questions_full ? '✅' : '🔒'}{' '}
-                  <strong>{fmtCount(bankTotals.mainBankQuestions)} Questions Bank</strong> {user.entitlements.questions_full ? '(Full Access)' : '(Restricted)'}
-                </li>
-                <li>
-                  {user.entitlements.coding_sandbox ? '✅' : '🔒'}{' '}
-                  <strong>Monaco Code Execution Sandbox</strong>
-                </li>
-                <li>
-                  {user.entitlements.system_design ? '✅' : '🔒'}{' '}
-                  <strong>System Design Architecture Blueprints</strong>
-                </li>
-                <li>
-                  {user.entitlements.video_mock ? '✅' : '🔒'}{' '}
-                  <strong>AI Video Mock Interview Simulator</strong>
-                </li>
-              </ul>
-            </div>
-
             <div style={{ display: 'flex', gap: '10px', marginTop: '14px' }}>
               <button
                 type="button"
