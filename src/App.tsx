@@ -59,6 +59,7 @@ const InstantMeetingLandingPage = lazy(() => import('./features/meetings/compone
 const MeetingRoom = lazy(() => import('./features/meetings/components/MeetingRoom'))
 const MeetingRecordingPage = lazy(() => import('./features/meetings/components/MeetingRecordingPage'))
 const AppChatWorkspace = lazy(() => import('./features/chat/components/AppChatWorkspace'))
+const ResumeCenter = lazy(() => import('./features/resume-center/ResumeCenter'))
 const NotFoundPage = lazy(() => import('./components/common/NotFoundPage'))
 import RoleGuard from './components/auth/RoleGuard'
 import { useAuth } from './context/AuthContext'
@@ -386,6 +387,46 @@ export default function App() {
               <FeatureGuard feature="system_design" featureName="ATS Resume Optimizer">
                 <ResumeOptimizer />
               </FeatureGuard>
+            }
+          />
+          <Route
+            path="/resume-center"
+            element={
+              <ProtectedRoute>
+                <ResumeCenter />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/resume-center/:tab"
+            element={
+              <ProtectedRoute>
+                <ResumeCenter />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/resume-center/edit/:id"
+            element={
+              <ProtectedRoute>
+                <ResumeCenter />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/resume-builder"
+            element={
+              <ProtectedRoute>
+                <ResumeCenter />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/resume-builder/:tab"
+            element={
+              <ProtectedRoute>
+                <ResumeCenter />
+              </ProtectedRoute>
             }
           />
           <Route

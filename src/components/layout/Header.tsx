@@ -48,7 +48,8 @@ export default function Header() {
     return location.pathname === path || location.pathname.startsWith(path + '/')
   }
 
-  const isArchitectureActive = ['/experience', '/pathways', '/system-design', '/case-studies', '/ast-explorer', '/security', '/user-management', '/state-machine', '/capacity-estimator', '/memory-profiler', '/module-federation', '/whiteboard', '/webrtc-lab', '/local-first', '/search-engine', '/design-system', '/i18n-lab', '/sdui-lab', '/web-components', '/protocols', '/css-pipeline', '/wasm-lab', '/visualizer', '/profiler', '/resume-optimizer', '/compensation'].some(p => isActive(p))
+  const isArchitectureActive = ['/experience', '/pathways', '/system-design', '/case-studies', '/ast-explorer', '/security', '/user-management', '/state-machine', '/capacity-estimator', '/memory-profiler', '/module-federation', '/whiteboard', '/webrtc-lab', '/local-first', '/search-engine', '/design-system', '/i18n-lab', '/sdui-lab', '/web-components', '/protocols', '/css-pipeline', '/wasm-lab', '/visualizer', '/profiler', '/resume-optimizer', '/resume-builder', '/resume-center', '/compensation'].some(p => isActive(p))
+  const isResumeActive = ['/resume-builder', '/resume-center', '/resume-optimizer'].some(p => isActive(p))
   const isMockActive = ['/mock-interview', '/video-mock', '/ai-video-mock', '/behavioral', '/peer-room'].some(p => isActive(p))
   const isMachineCodingActive = isActive('/machine-coding') || isActive('/machine-level-coding')
   const isDsaActive = isActive('/dsa')
@@ -147,20 +148,18 @@ export default function Header() {
 
               {/* 1a. Master Question Bank */}
               <Link to="/interview-questions" className={`nav-link ${isActive('/interview-questions') ? 'active' : ''}`}>
-                🎯 Master Bank <span style={{ fontSize: '0.68rem', padding: '0.12rem 0.35rem', borderRadius: '4px', background: 'linear-gradient(135deg, #0ea5e9, #6366f1)', color: '#fff', fontWeight: 700, marginLeft: '0.2rem' }}>{fmtK(bankTotals.masterBankQuestions)}</span>
+                Master Bank <span style={{ fontSize: '0.66rem', padding: '0.1rem 0.32rem', borderRadius: '4px', background: 'linear-gradient(135deg, #0ea5e9, #6366f1)', color: '#fff', fontWeight: 700, marginLeft: '0.15rem' }}>{fmtK(bankTotals.masterBankQuestions)}</span>
               </Link>
 
               {/* 1. Direct Questions Bank Link */}
               <Link to="/questions" className={`nav-link ${isActive('/questions') ? 'active' : ''}`}>
                 Questions
-                {!hasQuestionsFull && <span className="nav-lock-tag">🔒</span>}
               </Link>
 
               {/* 1b. Interview Docs */}
               <Link to="/docs" className={`nav-link ${isActive('/docs') ? 'active' : ''}`}>
-                📚 Docs
+                Docs
               </Link>
-
 
               {/* 2. Coding Dropdown */}
               <div className="nav-dropdown-wrap">
@@ -170,19 +169,18 @@ export default function Header() {
                   onClick={() => toggleDropdown('coding')}
                   aria-expanded={activeDropdown === 'coding'}
                 >
-                  Coding {!hasCodingSandbox && <span className="nav-lock-tag">🔒</span>} <span className="dropdown-caret">▾</span>
+                  Coding <span className="dropdown-caret">▾</span>
                 </button>
               </div>
 
               {/* 2b. Leaderboard */}
               <Link to="/leaderboard" className={`nav-link ${isActive('/leaderboard') ? 'active' : ''}`}>
-                🏆 Leaderboard
+                Leaderboard
               </Link>
 
-              {/* 3. Video Masterclass (Only practice lab preserved) */}
+              {/* 3. Video Masterclass */}
               <Link to="/videos" className={`nav-link ${isActive('/videos') ? 'active' : ''}`}>
-                🎥 Videos
-                {!hasQuestionsFull && <span className="nav-lock-tag">🔒</span>}
+                Videos
               </Link>
 
               {/* 4. Architecture & Career Dropdown */}
@@ -193,7 +191,7 @@ export default function Header() {
                   onClick={() => toggleDropdown('architecture')}
                   aria-expanded={activeDropdown === 'architecture'}
                 >
-                  Architecture {!hasSystemDesign && <span className="nav-lock-tag">🔒</span>} <span className="dropdown-caret">▾</span>
+                  Architecture <span className="dropdown-caret">▾</span>
                 </button>
               </div>
 
@@ -205,9 +203,14 @@ export default function Header() {
                   onClick={() => toggleDropdown('mock')}
                   aria-expanded={activeDropdown === 'mock'}
                 >
-                  Mocks {!hasVideoMock && <span className="nav-lock-tag">🔒</span>} <span className="dropdown-caret">▾</span>
+                  Mocks <span className="dropdown-caret">▾</span>
                 </button>
               </div>
+
+              {/* 5b. Resume Builder */}
+              <Link to="/resume-builder" className={`nav-link ${isResumeActive ? 'active' : ''}`}>
+                Resume
+              </Link>
 
               {/* 6. Dashboard (Only when authenticated) */}
               {isAuthenticated && (
@@ -229,7 +232,7 @@ export default function Header() {
               <input
                 type="search"
                 className="hus-input"
-                placeholder="Search 22,000+ questions & topics..."
+                placeholder="Search questions & topics..."
                 value={term}
                 onChange={e => setTerm(e.target.value)}
                 aria-label="Search all questions and topics"
@@ -377,23 +380,19 @@ export default function Header() {
               <div className="header-guest-auth-btns">
                 <button
                   type="button"
-                  className="btn btn-secondary btn-sm"
-                  style={{ fontWeight: 700 }}
+                  className="btn btn-primary btn-sm header-signin-btn"
                   onClick={() => openAuthModal('user')}
                 >
-                  🔐 User Login
+                  <span className="btn-icon">🔐</span> <span className="btn-text">Sign In</span>
                 </button>
                 <button
                   type="button"
-                  className="btn btn-primary btn-sm header-admin-login-btn"
-                  style={{
-                    background: 'linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%)',
-                    border: 'none',
-                    fontWeight: 700,
-                  }}
+                  className="btn btn-secondary btn-sm header-admin-login-btn"
                   onClick={() => openAuthModal('admin')}
+                  title="Admin Portal Login"
+                  aria-label="Admin Portal Login"
                 >
-                  🛡️ Admin Login
+                  <span className="btn-icon">🛡️</span> <span className="admin-btn-text">Admin</span>
                 </button>
               </div>
             )}
@@ -539,6 +538,17 @@ export default function Header() {
                         {!hasSystemDesign && <span className="drop-lock-tag">🔒 PRO</span>}
                       </span>
                       <span className="drop-desc">FAANG &amp; unicorn question tracks</span>
+                    </div>
+                  </Link>
+
+                  <Link to="/resume-builder" className={`mega-item ${isActive('/resume-builder') || isActive('/resume-center') ? 'active' : ''}`}>
+                    <span className="drop-icon">📝</span>
+                    <div>
+                      <span className="drop-title">
+                        AI Resume Builder
+                        <span style={{ fontSize: '0.62rem', padding: '0.1rem 0.35rem', borderRadius: '4px', background: 'linear-gradient(135deg, #10b981, #059669)', color: '#fff', fontWeight: 700, marginLeft: '0.35rem' }}>NEW</span>
+                      </span>
+                      <span className="drop-desc">Build, edit, format &amp; export resumes</span>
                     </div>
                   </Link>
 
@@ -1144,6 +1154,7 @@ export default function Header() {
                     <Link to="/local-first" className="mobile-sublink" onClick={closeMobileMenu}>💾 Local-First Architecture</Link>
                     <Link to="/design-system" className="mobile-sublink" onClick={closeMobileMenu}>🎨 Enterprise Design System</Link>
                     <Link to="/profiler" className="mobile-sublink" onClick={closeMobileMenu}>⚡ Performance Profiler</Link>
+                    <Link to="/resume-builder" className="mobile-sublink" onClick={closeMobileMenu}>📝 AI Resume Builder</Link>
                     <Link to="/resume-optimizer" className="mobile-sublink" onClick={closeMobileMenu}>📄 AI Resume Optimizer</Link>
                     <Link to="/compensation" className="mobile-sublink" onClick={closeMobileMenu}>💰 Compensation &amp; Offers</Link>
                   </div>
