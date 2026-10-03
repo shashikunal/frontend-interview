@@ -245,9 +245,9 @@ export default function PlacementPractice() {
           <p className="prompt">{question.prompt}</p>
           {question.codeSnippet ? <pre>{question.codeSnippet}</pre> : null}
 
-          {(question.options || []).length > 0 ? (
+          {(question.options ?? []).length > 0 ? (
             <div className="placement-options" role="radiogroup" aria-label="Answer options">
-              {question.options.map((option) => {
+              {(question.options ?? []).map((option) => {
                 const isSelected = selected === option.key
                 const isCorrect = graded?.correctAnswer === option.key
                 const stateClass = graded
@@ -292,7 +292,7 @@ export default function PlacementPractice() {
           {graded ? (
             <div className="placement-explanation">
               <strong>{graded.correct ? 'Correct.' : 'Not quite.'}</strong>{' '}
-              {question.options.length > 0 ? `Correct answer: ${graded.correctAnswer}. ` : ''}
+              {(question.options ?? []).length > 0 ? `Correct answer: ${graded.correctAnswer}. ` : ''}
               {question.explanation}
             </div>
           ) : null}

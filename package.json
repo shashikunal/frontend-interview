@@ -12,6 +12,7 @@
     "build": "npm run build:api && tsc -b && vite build",
     "lint": "oxlint",
     "test:unit": "vitest run",
+    "test:routes": "node scripts/test-all-navigation-routes.mjs",
     "audit:questions": "node scripts/audit-question-bank.mjs",
     "validate:questions": "node scripts/validate-interview-bank.mjs",
     "sync:catalog": "node scripts/sync-question-bank-catalog.mjs",

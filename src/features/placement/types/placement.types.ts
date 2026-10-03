@@ -132,7 +132,9 @@ export interface PlacementQuestion {
   difficulty: PlacementDifficulty
   prompt: string
   codeSnippet?: string
-  options: PlacementQuestionOption[]
+  // Only option-based question types carry choices; 'subjective', 'output',
+  // 'debugging' and 'coding' questions have none.
+  options?: PlacementQuestionOption[]
   expectedTimeSeconds: number
   points: number
   languageTrack?: LanguageTrack | 'any'

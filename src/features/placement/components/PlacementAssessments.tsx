@@ -316,7 +316,7 @@ export default function PlacementAssessments() {
         {current.codeSnippet ? <pre>{current.codeSnippet}</pre> : null}
 
         <div className="placement-options" role="radiogroup" aria-label="Answer options">
-          {current.options.map((option) => (
+          {(current.options ?? []).map((option) => (
             <button
               key={option.key}
               type="button"
