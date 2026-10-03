@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-10-03T06:40:49.856Z",
-  "totalQuestions": 2419,
+  "generatedAt": "2026-10-03T06:53:51.635Z",
+  "totalQuestions": 2563,
   "totalSubjects": 35,
   "subjects": [
     {
@@ -86,9 +86,38 @@
       "color": "#007acc",
       "accentGradient": "linear-gradient(135deg, #007acc 0%, #00b4d8 100%)",
       "description": "Comprehensive mastery of modern ECMAScript standards: arrow functions, destructuring, classes, Symbols, Proxies, Reflect, Iterators, Generators, optional chaining, and nullish coalescing.",
-      "totalQuestions": 24,
+      "totalQuestions": 168,
       "topics": [
-        "ECMAScript 2015"
+        "Array Improvements",
+        "Arrow Functions",
+        "Async/Await",
+        "Classes",
+        "Default Parameters",
+        "Destructuring",
+        "Enhanced Object Literals",
+        "ES6 Built-in Improvements",
+        "ES6 Proxy",
+        "for...of",
+        "Generators",
+        "Inheritance",
+        "Iterators",
+        "let, const and var",
+        "Map",
+        "Modules",
+        "New String Methods",
+        "Number Improvements",
+        "Object Improvements",
+        "Object.assign",
+        "Promises",
+        "Reflect",
+        "Rest Parameters",
+        "Set",
+        "Spread Syntax",
+        "Symbols",
+        "Template Literals",
+        "Unicode",
+        "WeakMap",
+        "WeakSet"
       ]
     },
     {
