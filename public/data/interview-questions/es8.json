@@ -2,1006 +2,392 @@
   {
     "id": "iq-es8-0001",
     "subject": "es8",
-    "topic": "ECMAScript 2017",
-    "subtopic": "Internal Engine Execution & Microtask Synchronization of Async Functions & Promise-Based Async Execution",
-    "concept": "Internal Engine Execution & Microtask Synchronization of Async Functions & Promise-Based Async Execution",
+    "topic": "Async JavaScript",
+    "concept": "Async / Await Syntax and Behavior",
     "difficulty": "EASY",
-    "questionType": "DEBUGGING",
-    "experienceLevel": "3_5_YEARS",
-    "isHighFrequency": true,
-    "companyTags": [
-      "Amazon",
-      "Uber"
+    "questionType": "CONCEPTUAL",
+    "questionNumber": 1,
+    "question": "What is async/await in ES8 and how does it relate to Promises?",
+    "shortAnswer": "async/await is syntactic sugar built on top of Promises and Generators. An async function always returns a Promise, and the await keyword pauses function execution non-blockingly until the awaited Promise resolves or rejects.",
+    "detailedAnswer": "Introduced in ECMAScript 2017 (ES8), async/await simplifies asynchronous code:\n\n1. Return Value: Calling an async function automatically wraps return values in Promise.resolve() and thrown errors in Promise.reject().\n\n2. await Operator: Pauses only the execution of the enclosing async function; the main thread continues running other tasks in the event loop.\n\n3. Error Handling: Uses synchronous try/catch blocks instead of .then().catch() chaining.\n\n4. Avoids callback pyramids and promise chaining boilerplate.",
+    "codeExample": "async function fetchUserData(userId) {\n  try {\n    const response = await fetch(`/api/users/${userId}`);\n    if (!response.ok) throw new Error(`HTTP error: ${response.status}`);\n    const data = await response.json();\n    return data;\n  } catch (err) {\n    console.error('Failed to load user:', err.message);\n    throw err;\n  }\n}\n\n// Usage:\nfetchUserData(42).then(user => console.log(user));",
+    "followUpQuestions": [
+      "What happens if you await a non-Promise value (e.g. await 42)?",
+      "How can you execute multiple independent async operations in parallel?"
+    ],
+    "followUpAnswers": [
+      "await converts non-Promise values into resolved Promises using Promise.resolve(42) and immediately yields execution.",
+      "Use Promise.all([task1(), task2()]) or Promise.allSettled() instead of sequentially awaiting each one."
     ],
     "tags": [
       "es8",
-      "es8",
-      "Amazon",
-      "Uber",
-      "interview-prep"
+      "javascript",
+      "async",
+      "promises"
     ],
-    "question": "Async Functions & Promise-Based Async Execution",
-    "shortAnswer": "async/await is syntactic sugar built on top of JavaScript Promises that allows asynchronous, non-blocking code to be written and read like synchronous code. An async function automatically wraps its return value in a Promise, and the await keyword pauses execution until the awaited Promise settles.",
-    "interviewAnswer": "async/await is syntactic sugar built on top of JavaScript Promises that allows asynchronous, non-blocking code to be written and read like synchronous code. An async function automatically wraps its return value in a Promise, and the await keyword pauses execution until the awaited Promise settles.\n\nIn practical production projects, mastering this ensures predictable state management, high runtime performance, and clean maintainability across our team.",
-    "detailedExplanation": "### Deep Technical Dive: JavaScript V8 Engine & Execution Lifecycle for Internal Engine Execution & Microtask Synchronization of Async Functions & Promise-Based Async Execution\n\n1. **V8 Compilation Pipeline**: Modern V8 parses source text into an Abstract Syntax Tree (AST). The **Ignition** bytecode interpreter produces compact bytecode, while **TurboFan** JIT compiler optimizes hot code paths into machine assembly.\n2. **Execution Context & Scoping**: When code runs, the engine creates an Execution Context containing a Lexical Environment (let/const bindings in TDZ until evaluated) and a Variable Environment (var declarations hoisted). Closures capture parent lexical scopes in the memory heap.\n3. **Event Loop & Microtask Priority**: Synchronous code executes on the single-threaded Call Stack. Microtasks (Promise resolutions, queueMicrotask) run immediately when the call stack empties, preceding macrotasks (setTimeout, DOM events) in the Event Loop cycle.",
-    "why": "Why does Internal Engine Execution & Microtask Synchronization of Async Functions & Promise-Based Async Execution exist in modern JavaScript?\n1. Eliminates error-prone legacy patterns (callback hell, global scope pollution, hoisting bugs).\n2. Enhances developer ergonomics with declarative, expressive, and self-documenting syntax.\n3. Enables V8 and other modern engines to apply runtime JIT optimizations and efficient garbage collection.",
-    "howItWorks": "",
-    "realWorldExample": "Production Scenario: Real-time fintech stock price ticker or dashboard where data streams are processed asynchronously, cached safely in scope without memory leaks, and rendered to users with sub-millisecond latency.",
-    "example": "// Practical Demonstration: Internal Engine Execution & Microtask Synchronization of Async Functions & Promise-Based Async Execution\nfunction executeFeature() {\n  console.log(\"Step 1: Initializing demonstration for Internal Engine Execution & Microtask Synchronization of Async Functions & Promise-Based Async Execution...\");\n\n  const data = {\n    title: \"Internal Engine Execution & Microtask Synchronization of Async Functions & Promise-Based Async Execution\",\n    status: \"ACTIVE\",\n    timestamp: new Date().toLocaleTimeString()\n  };\n\n  console.log(\"Step 2: Processing data:\", data);\n  return { success: true, payload: data };\n}\n\nconst outcome = executeFeature();\nconsole.log(\"Step 3: Execution completed successfully:\", outcome);",
-    "codeSnippet": "// Practical Demonstration: Internal Engine Execution & Microtask Synchronization of Async Functions & Promise-Based Async Execution\nfunction executeFeature() {\n  console.log(\"Step 1: Initializing demonstration for Internal Engine Execution & Microtask Synchronization of Async Functions & Promise-Based Async Execution...\");\n\n  const data = {\n    title: \"Internal Engine Execution & Microtask Synchronization of Async Functions & Promise-Based Async Execution\",\n    status: \"ACTIVE\",\n    timestamp: new Date().toLocaleTimeString()\n  };\n\n  console.log(\"Step 2: Processing data:\", data);\n  return { success: true, payload: data };\n}\n\nconst outcome = executeFeature();\nconsole.log(\"Step 3: Execution completed successfully:\", outcome);",
-    "lineByLineExplanation": [
-      {
-        "line": 1,
-        "code": "// Feature Initialization",
-        "explanation": "Initializes execution in current lexical scope."
-      },
-      {
-        "line": 2,
-        "code": "const result = await processData();",
-        "explanation": "Pauses execution in async function; pushes continuation to microtask queue upon resolution."
-      },
-      {
-        "line": 3,
-        "code": "return { success: true, payload: result };",
-        "explanation": "Returns immutable data payload to caller."
-      }
-    ],
-    "executionFlow": [],
-    "commonMistakes": [
-      "Confusing synchronous execution with asynchronous microtask scheduling in the event loop.",
-      "Accidentally creating memory leaks by retaining references in closures or uncleared event listeners.",
-      "Assuming 'this' binding is lexical in regular functions instead of dynamically determined at call time."
-    ],
-    "interviewTraps": [
-      "Interviewer presents code mixing Promise.resolve(), setTimeout(..., 0), and synchronous console.log to test exact queue order.",
-      "How closures retain access to outer variables even after the outer function has completed execution and returned.",
-      "Temporal Dead Zone (TDZ): accessing let/const before initialization throws ReferenceError, unlike var which is initialized to undefined."
-    ],
-    "interviewTips": [
-      "Clearly articulate the phases: Creation Phase (hoisting) vs Execution Phase.",
-      "Explain the Event Loop clearly: Call Stack -> Microtask Queue (Promises) -> Macrotask Queue (Timers).",
-      "Highlight immutability, pure functions, and predictable state transformations."
-    ],
+    "detailedExplanation": "Introduced in ECMAScript 2017 (ES8), async/await simplifies asynchronous code:\n\n1. Return Value: Calling an async function automatically wraps return values in Promise.resolve() and thrown errors in Promise.reject().\n\n2. await Operator: Pauses only the execution of the enclosing async function; the main thread continues running other tasks in the event loop.\n\n3. Error Handling: Uses synchronous try/catch blocks instead of .then().catch() chaining.\n\n4. Avoids callback pyramids and promise chaining boilerplate.",
+    "simpleExplanation": "async/await is syntactic sugar built on top of Promises and Generators. An async function always returns a Promise, and the await keyword pauses function execution non-blockingly until the awaited Promise resolves or rejects.",
+    "example": "async function fetchUserData(userId) {\n  try {\n    const response = await fetch(`/api/users/${userId}`);\n    if (!response.ok) throw new Error(`HTTP error: ${response.status}`);\n    const data = await response.json();\n    return data;\n  } catch (err) {\n    console.error('Failed to load user:', err.message);\n    throw err;\n  }\n}\n\n// Usage:\nfetchUserData(42).then(user => console.log(user));",
+    "codeSnippet": "async function fetchUserData(userId) {\n  try {\n    const response = await fetch(`/api/users/${userId}`);\n    if (!response.ok) throw new Error(`HTTP error: ${response.status}`);\n    const data = await response.json();\n    return data;\n  } catch (err) {\n    console.error('Failed to load user:', err.message);\n    throw err;\n  }\n}\n\n// Usage:\nfetchUserData(42).then(user => console.log(user));",
     "followUps": [
-      "What is the difference between the Microtask Queue and the Macrotask (Callback) Queue?",
-      "How does the V8 garbage collector detect and clean up unreferenced memory in closures?",
-      "What is the Temporal Dead Zone (TDZ) and why was it introduced in ES6?"
+      "What happens if you await a non-Promise value (e.g. await 42)?",
+      "How can you execute multiple independent async operations in parallel?"
     ],
-    "followUpAnswers": [
-      "Microtasks (Promise.then, queueMicrotask) have higher priority and run completely to exhaustion after every call stack frame, whereas Macrotasks (setTimeout, setInterval) run one per event loop tick.",
-      "V8 uses a Generational Garbage Collector (Scavenger for young generation, Mark-Sweep-Compact for old generation) tracing reachability from roots (window/global).",
-      "The TDZ is the period between entering scope and variable declaration evaluation; accessing let/const during TDZ throws a ReferenceError to prevent accessing uninitialized state."
-    ],
-    "diagram": "flowchart TD\n    Stack[\"1. Call Stack (Synchronous Code Runs Here First)\"]\n    Stack -->|Stack Becomes Empty| Micro[\"2. Microtask Queue (VIP: Promises & queueMicrotask)\"]\n    Micro -->|All Microtasks Drained| Macro[\"3. Macrotask Queue (setTimeout, setInterval, I/O)\"]\n    Macro -->|Next Iteration| Stack",
-    "diagramCaption": "JavaScript Event Loop Priority Pipeline: Stack -> Microtasks -> Macrotasks",
-    "expectedOutput": "Step 1: Starting operation for Internal Engine Execution & Microtask Synchronization of Async Functions & Promise-Based Async Execution...\nStep 2: Operation evaluated successfully.\nStep 3: Cleanup completed deterministically.\nFinal Result: { ok: true, data: { status: 'SUCCESS' } }",
-    "videoUrl": "https://www.youtube-nocookie.com/embed/DHvZLI7Db8E",
-    "videoTitle": "JavaScript Promises in 10 Minutes (Web Dev Simplified)",
-    "standard_id": "ES8-000001",
-    "questionNumber": 1,
-    "question_type": "concept",
-    "question_hash": "qh_6b37ed06",
-    "codeExplanationSpeech": "This code demonstrates the implementation of Internal Engine Execution & Microtask Synchronization of Async Functions & Promise-Based Async Execution with clear input and output handling.",
-    "status": "published",
-    "simpleExplanation": "V8 Compilation Pipeline: Modern V8 parses source text into an Abstract Syntax Tree (AST). The Ignition bytecode interpreter produces compact bytecode, while TurboFan JIT compiler optimizes hot code paths into machine assembly. Execution Context & Scoping: When code runs, the engine creates an Execution Context containing a Lexical Environment (let/const bindings in TDZ until evaluated) and a Variable Environment (var declarations hoisted)."
+    "interviewTips": [],
+    "interviewAnswer": "async/await is syntactic sugar built on top of Promises and Generators. An async function always returns a Promise, and the await keyword pauses function execution non-blockingly until the awaited Promise resolves or rejects.",
+    "realWorldExample": "",
+    "experienceLevel": "1_3_YEARS"
   },
   {
     "id": "iq-es8-0002",
     "subject": "es8",
-    "topic": "ECMAScript 2017",
-    "subtopic": "Internal Engine Execution & Microtask Synchronization of Await Microtask Scheduling & Frame Suspension",
-    "concept": "Internal Engine Execution & Microtask Synchronization of Await Microtask Scheduling & Frame Suspension",
-    "difficulty": "INTERMEDIATE",
-    "questionType": "MCQ",
-    "experienceLevel": "5_8_YEARS",
-    "isHighFrequency": false,
-    "companyTags": [
-      "Microsoft",
-      "Apple"
+    "topic": "Object Methods",
+    "concept": "Object.values()",
+    "difficulty": "EASY",
+    "questionType": "CONCEPTUAL",
+    "questionNumber": 2,
+    "question": "What does Object.values() do and how does it compare to Object.keys()?",
+    "shortAnswer": "Object.values(obj) returns an array of a given object's own enumerable string-keyed property values, in the same order as a for...in loop (excluding the prototype chain).",
+    "detailedAnswer": "While Object.keys() returns an array of property names/keys, Object.values() directly returns the corresponding values.\n\nKey behaviors:\n\n- Ignores inherited prototype properties.\n\n- Ignores Symbol keys.\n\n- Preserves numeric key ascending order first, followed by string insertion order.\n\n- Accepts primitive inputs (e.g. Object.values('cat') returns ['c', 'a', 't']).",
+    "codeExample": "const user = {\n  id: 101,\n  name: 'Sarah',\n  role: 'Engineer'\n};\n\nconsole.log(Object.keys(user));   // ['id', 'name', 'role']\nconsole.log(Object.values(user)); // [101, 'Sarah', 'Engineer']\n\n// Iterating values directly:\nfor (const val of Object.values(user)) {\n  console.log(val);\n}",
+    "followUpQuestions": [
+      "Does Object.values include non-enumerable properties?",
+      "Does Object.values include Symbol-keyed values?"
+    ],
+    "followUpAnswers": [
+      "No. It only includes own enumerable properties. Non-enumerable properties are omitted.",
+      "No. To retrieve Symbol-keyed properties, use Object.getOwnPropertySymbols()."
     ],
     "tags": [
       "es8",
-      "es8",
-      "Microsoft",
-      "Apple",
-      "interview-prep"
+      "javascript",
+      "objects",
+      "methods"
     ],
-    "question": "Await Microtask Scheduling & Frame Suspension",
-    "shortAnswer": "In ES8, Internal Engine Execution & Microtask Synchronization of Await Microtask Scheduling & Frame Suspension ensures standards-compliant execution and predictable runtime characteristics.",
-    "interviewAnswer": "In ES8, Internal Engine Execution & Microtask Synchronization of Await Microtask Scheduling & Frame Suspension ensures standards-compliant execution and predictable runtime characteristics.\n\nIn practical production projects, mastering this ensures predictable state management, high runtime performance, and clean maintainability across our team.",
-    "detailedExplanation": "### Deep Technical Dive: JavaScript V8 Engine & Execution Lifecycle for Internal Engine Execution & Microtask Synchronization of Await Microtask Scheduling & Frame Suspension\n\n1. **V8 Compilation Pipeline**: Modern V8 parses source text into an Abstract Syntax Tree (AST). The **Ignition** bytecode interpreter produces compact bytecode, while **TurboFan** JIT compiler optimizes hot code paths into machine assembly.\n2. **Execution Context & Scoping**: When code runs, the engine creates an Execution Context containing a Lexical Environment (let/const bindings in TDZ until evaluated) and a Variable Environment (var declarations hoisted). Closures capture parent lexical scopes in the memory heap.\n3. **Event Loop & Microtask Priority**: Synchronous code executes on the single-threaded Call Stack. Microtasks (Promise resolutions, queueMicrotask) run immediately when the call stack empties, preceding macrotasks (setTimeout, DOM events) in the Event Loop cycle.",
-    "why": "Why does Internal Engine Execution & Microtask Synchronization of Await Microtask Scheduling & Frame Suspension exist in modern JavaScript?\n1. Eliminates error-prone legacy patterns (callback hell, global scope pollution, hoisting bugs).\n2. Enhances developer ergonomics with declarative, expressive, and self-documenting syntax.\n3. Enables V8 and other modern engines to apply runtime JIT optimizations and efficient garbage collection.",
-    "howItWorks": "",
-    "realWorldExample": "Production Scenario: Real-time fintech stock price ticker or dashboard where data streams are processed asynchronously, cached safely in scope without memory leaks, and rendered to users with sub-millisecond latency.",
-    "example": "// Practical Demonstration: Internal Engine Execution & Microtask Synchronization of Await Microtask Scheduling & Frame Suspension\nfunction executeFeature() {\n  console.log(\"Step 1: Initializing demonstration for Internal Engine Execution & Microtask Synchronization of Await Microtask Scheduling & Frame Suspension...\");\n\n  const data = {\n    title: \"Internal Engine Execution & Microtask Synchronization of Await Microtask Scheduling & Frame Suspension\",\n    status: \"ACTIVE\",\n    timestamp: new Date().toLocaleTimeString()\n  };\n\n  console.log(\"Step 2: Processing data:\", data);\n  return { success: true, payload: data };\n}\n\nconst outcome = executeFeature();\nconsole.log(\"Step 3: Execution completed successfully:\", outcome);",
-    "codeSnippet": "// Practical Demonstration: Internal Engine Execution & Microtask Synchronization of Await Microtask Scheduling & Frame Suspension\nfunction executeFeature() {\n  console.log(\"Step 1: Initializing demonstration for Internal Engine Execution & Microtask Synchronization of Await Microtask Scheduling & Frame Suspension...\");\n\n  const data = {\n    title: \"Internal Engine Execution & Microtask Synchronization of Await Microtask Scheduling & Frame Suspension\",\n    status: \"ACTIVE\",\n    timestamp: new Date().toLocaleTimeString()\n  };\n\n  console.log(\"Step 2: Processing data:\", data);\n  return { success: true, payload: data };\n}\n\nconst outcome = executeFeature();\nconsole.log(\"Step 3: Execution completed successfully:\", outcome);",
-    "lineByLineExplanation": [
-      {
-        "line": 1,
-        "code": "// Feature Initialization",
-        "explanation": "Initializes execution in current lexical scope."
-      },
-      {
-        "line": 2,
-        "code": "const result = await processData();",
-        "explanation": "Pauses execution in async function; pushes continuation to microtask queue upon resolution."
-      },
-      {
-        "line": 3,
-        "code": "return { success: true, payload: result };",
-        "explanation": "Returns immutable data payload to caller."
-      }
-    ],
-    "executionFlow": [],
-    "commonMistakes": [
-      "Confusing synchronous execution with asynchronous microtask scheduling in the event loop.",
-      "Accidentally creating memory leaks by retaining references in closures or uncleared event listeners.",
-      "Assuming 'this' binding is lexical in regular functions instead of dynamically determined at call time."
-    ],
-    "interviewTraps": [
-      "Interviewer presents code mixing Promise.resolve(), setTimeout(..., 0), and synchronous console.log to test exact queue order.",
-      "How closures retain access to outer variables even after the outer function has completed execution and returned.",
-      "Temporal Dead Zone (TDZ): accessing let/const before initialization throws ReferenceError, unlike var which is initialized to undefined."
-    ],
-    "interviewTips": [
-      "Clearly articulate the phases: Creation Phase (hoisting) vs Execution Phase.",
-      "Explain the Event Loop clearly: Call Stack -> Microtask Queue (Promises) -> Macrotask Queue (Timers).",
-      "Highlight immutability, pure functions, and predictable state transformations."
-    ],
+    "detailedExplanation": "While Object.keys() returns an array of property names/keys, Object.values() directly returns the corresponding values.\n\nKey behaviors:\n\n- Ignores inherited prototype properties.\n\n- Ignores Symbol keys.\n\n- Preserves numeric key ascending order first, followed by string insertion order.\n\n- Accepts primitive inputs (e.g. Object.values('cat') returns ['c', 'a', 't']).",
+    "simpleExplanation": "Object.values(obj) returns an array of a given object's own enumerable string-keyed property values, in the same order as a for...in loop (excluding the prototype chain).",
+    "example": "const user = {\n  id: 101,\n  name: 'Sarah',\n  role: 'Engineer'\n};\n\nconsole.log(Object.keys(user));   // ['id', 'name', 'role']\nconsole.log(Object.values(user)); // [101, 'Sarah', 'Engineer']\n\n// Iterating values directly:\nfor (const val of Object.values(user)) {\n  console.log(val);\n}",
+    "codeSnippet": "const user = {\n  id: 101,\n  name: 'Sarah',\n  role: 'Engineer'\n};\n\nconsole.log(Object.keys(user));   // ['id', 'name', 'role']\nconsole.log(Object.values(user)); // [101, 'Sarah', 'Engineer']\n\n// Iterating values directly:\nfor (const val of Object.values(user)) {\n  console.log(val);\n}",
     "followUps": [
-      "What is the difference between the Microtask Queue and the Macrotask (Callback) Queue?",
-      "How does the V8 garbage collector detect and clean up unreferenced memory in closures?",
-      "What is the Temporal Dead Zone (TDZ) and why was it introduced in ES6?"
+      "Does Object.values include non-enumerable properties?",
+      "Does Object.values include Symbol-keyed values?"
     ],
-    "followUpAnswers": [
-      "Microtasks (Promise.then, queueMicrotask) have higher priority and run completely to exhaustion after every call stack frame, whereas Macrotasks (setTimeout, setInterval) run one per event loop tick.",
-      "V8 uses a Generational Garbage Collector (Scavenger for young generation, Mark-Sweep-Compact for old generation) tracing reachability from roots (window/global).",
-      "The TDZ is the period between entering scope and variable declaration evaluation; accessing let/const during TDZ throws a ReferenceError to prevent accessing uninitialized state."
-    ],
-    "diagram": "flowchart TD\n    Stack[\"1. Call Stack (Synchronous Code Runs Here First)\"]\n    Stack -->|Stack Becomes Empty| Micro[\"2. Microtask Queue (VIP: Promises & queueMicrotask)\"]\n    Micro -->|All Microtasks Drained| Macro[\"3. Macrotask Queue (setTimeout, setInterval, I/O)\"]\n    Macro -->|Next Iteration| Stack",
-    "diagramCaption": "JavaScript Event Loop Priority Pipeline: Stack -> Microtasks -> Macrotasks",
-    "expectedOutput": "Step 1: Starting operation for Internal Engine Execution & Microtask Synchronization of Await Microtask Scheduling & Frame Suspension...\nStep 2: Operation evaluated successfully.\nStep 3: Cleanup completed deterministically.\nFinal Result: { ok: true, data: { status: 'SUCCESS' } }",
-    "videoUrl": "https://www.youtube-nocookie.com/embed/8aGhZQkoFbQ",
-    "videoTitle": "What the heck is the event loop anyway? (Philip Roberts)",
-    "standard_id": "ES8-MCQ-000002",
-    "questionNumber": 2,
-    "question_type": "mcq",
-    "question_hash": "qh_76cf1984",
-    "options": [
-      {
-        "key": "A",
-        "text": "It enables deterministic behavior for Internal Engine Execution & Microtask Synchronization of Await Microtask Scheduling & Frame Suspension per the official specification.",
-        "explanation": "Correct. Internal Engine Execution & Microtask Synchronization of Await Microtask Scheduling & Frame Suspension provides standard, predictable execution in ES8."
-      },
-      {
-        "key": "B",
-        "text": "It forces an immediate full synchronous DOM reflow and redraws the operating system desktop.",
-        "explanation": "Incorrect. Web engines isolate styling and computation to the document view."
-      },
-      {
-        "key": "C",
-        "text": "It disables the JavaScript microtask queue and switches the browser to single-process mode.",
-        "explanation": "Incorrect. Browser process architecture and task scheduling are not disabled by Internal Engine Execution & Microtask Synchronization of Await Microtask Scheduling & Frame Suspension."
-      },
-      {
-        "key": "D",
-        "text": "It converts all variables to global strings and clears browser localStorage.",
-        "explanation": "Incorrect. Scope rules and client storage remain strictly governed by standards."
-      }
-    ],
-    "correctAnswer": "A",
-    "mcqExplanation": "In ES8, Internal Engine Execution & Microtask Synchronization of Await Microtask Scheduling & Frame Suspension ensures standards-compliant execution and predictable runtime characteristics.",
-    "wrongOptionExplanations": {
-      "B": "Layout and rendering engines maintain isolated graphical compositing layers.",
-      "C": "The JavaScript event loop and microtask queue operate independently of this syntax.",
-      "D": "Client storage APIs and variable scopes maintain strict sandboxed boundaries."
-    },
-    "codeExplanationSpeech": "This code demonstrates the implementation of Internal Engine Execution & Microtask Synchronization of Await Microtask Scheduling & Frame Suspension with clear input and output handling.",
-    "status": "published",
-    "simpleExplanation": "V8 Compilation Pipeline: Modern V8 parses source text into an Abstract Syntax Tree (AST). The Ignition bytecode interpreter produces compact bytecode, while TurboFan JIT compiler optimizes hot code paths into machine assembly. Execution Context & Scoping: When code runs, the engine creates an Execution Context containing a Lexical Environment (let/const bindings in TDZ until evaluated) and a Variable Environment (var declarations hoisted)."
+    "interviewTips": [],
+    "interviewAnswer": "Object.values(obj) returns an array of a given object's own enumerable string-keyed property values, in the same order as a for...in loop (excluding the prototype chain).",
+    "realWorldExample": "",
+    "experienceLevel": "1_3_YEARS"
   },
   {
     "id": "iq-es8-0003",
     "subject": "es8",
-    "topic": "ECMAScript 2017",
-    "subtopic": "Internal Engine Execution & Microtask Synchronization of Async Function Error Trapping with try/catch",
-    "concept": "Internal Engine Execution & Microtask Synchronization of Async Function Error Trapping with try/catch",
-    "difficulty": "DIFFICULT",
+    "topic": "Object Methods",
+    "concept": "Object.entries()",
+    "difficulty": "EASY",
     "questionType": "CONCEPTUAL",
-    "experienceLevel": "FRESHER",
-    "isHighFrequency": true,
-    "companyTags": [
-      "Netflix",
-      "Airbnb"
+    "questionNumber": 3,
+    "question": "What does Object.entries() do and what are its most common use cases?",
+    "shortAnswer": "Object.entries(obj) returns an array of the object's own enumerable string-keyed [key, value] pairs. It is commonly used for iterating with for...of, converting objects to Maps, and functional transformations with Array methods.",
+    "detailedAnswer": "Object.entries() bridges the gap between Objects and Arrays:\n\n1. Key-Value Iteration: Loop over both key and value simultaneously with for (const [k, v] of Object.entries(obj)).\n\n2. Object to Map Conversion: Easily construct a Map using new Map(Object.entries(obj)).\n\n3. Functional Object Transformation: Filter or map an object using Object.fromEntries(Object.entries(obj).filter(...)).",
+    "codeExample": "const scores = { Alice: 95, Bob: 80, Charlie: 92 };\n\n// 1. Destructured iteration\nfor (const [student, score] of Object.entries(scores)) {\n  console.log(`${student}: ${score}`);\n}\n\n// 2. Filter object entries and rebuild\nconst topStudents = Object.fromEntries(\n  Object.entries(scores).filter(([_, score]) => score >= 90)\n);\nconsole.log(topStudents); // { Alice: 95, Charlie: 92 }\n\n// 3. Convert to Map\nconst scoresMap = new Map(Object.entries(scores));",
+    "followUpQuestions": [
+      "What is the reverse method of Object.entries()?",
+      "How does Object.entries() order object keys?"
+    ],
+    "followUpAnswers": [
+      "Object.fromEntries() (introduced in ES2019) takes an iterable of [key, value] pairs and returns a new object.",
+      "It orders non-negative integer indices in ascending numerical order, followed by other string keys in insertion order."
     ],
     "tags": [
       "es8",
-      "es8",
-      "Netflix",
-      "Airbnb",
-      "interview-prep"
+      "javascript",
+      "objects",
+      "entries"
     ],
-    "question": "Async Function Error Trapping with try/catch",
-    "shortAnswer": "async/await is syntactic sugar built on top of JavaScript Promises that allows asynchronous, non-blocking code to be written and read like synchronous code. An async function automatically wraps its return value in a Promise, and the await keyword pauses execution until the awaited Promise settles.",
-    "interviewAnswer": "async/await is syntactic sugar built on top of JavaScript Promises that allows asynchronous, non-blocking code to be written and read like synchronous code. An async function automatically wraps its return value in a Promise, and the await keyword pauses execution until the awaited Promise settles.\n\nIn practical production projects, mastering this ensures predictable state management, high runtime performance, and clean maintainability across our team.",
-    "detailedExplanation": "### Deep Technical Dive: JavaScript V8 Engine & Execution Lifecycle for Internal Engine Execution & Microtask Synchronization of Async Function Error Trapping with try/catch\n\n1. **V8 Compilation Pipeline**: Modern V8 parses source text into an Abstract Syntax Tree (AST). The **Ignition** bytecode interpreter produces compact bytecode, while **TurboFan** JIT compiler optimizes hot code paths into machine assembly.\n2. **Execution Context & Scoping**: When code runs, the engine creates an Execution Context containing a Lexical Environment (let/const bindings in TDZ until evaluated) and a Variable Environment (var declarations hoisted). Closures capture parent lexical scopes in the memory heap.\n3. **Event Loop & Microtask Priority**: Synchronous code executes on the single-threaded Call Stack. Microtasks (Promise resolutions, queueMicrotask) run immediately when the call stack empties, preceding macrotasks (setTimeout, DOM events) in the Event Loop cycle.",
-    "why": "Why does Internal Engine Execution & Microtask Synchronization of Async Function Error Trapping with try/catch exist in modern JavaScript?\n1. Eliminates error-prone legacy patterns (callback hell, global scope pollution, hoisting bugs).\n2. Enhances developer ergonomics with declarative, expressive, and self-documenting syntax.\n3. Enables V8 and other modern engines to apply runtime JIT optimizations and efficient garbage collection.",
-    "howItWorks": "",
-    "realWorldExample": "Production Scenario: Real-time fintech stock price ticker or dashboard where data streams are processed asynchronously, cached safely in scope without memory leaks, and rendered to users with sub-millisecond latency.",
-    "example": "// Practical Demonstration: Internal Engine Execution & Microtask Synchronization of Async Function Error Trapping with try/catch\nfunction executeFeature() {\n  console.log(\"Step 1: Initializing demonstration for Internal Engine Execution & Microtask Synchronization of Async Function Error Trapping with try/catch...\");\n\n  const data = {\n    title: \"Internal Engine Execution & Microtask Synchronization of Async Function Error Trapping with try/catch\",\n    status: \"ACTIVE\",\n    timestamp: new Date().toLocaleTimeString()\n  };\n\n  console.log(\"Step 2: Processing data:\", data);\n  return { success: true, payload: data };\n}\n\nconst outcome = executeFeature();\nconsole.log(\"Step 3: Execution completed successfully:\", outcome);",
-    "codeSnippet": "// Practical Demonstration: Internal Engine Execution & Microtask Synchronization of Async Function Error Trapping with try/catch\nfunction executeFeature() {\n  console.log(\"Step 1: Initializing demonstration for Internal Engine Execution & Microtask Synchronization of Async Function Error Trapping with try/catch...\");\n\n  const data = {\n    title: \"Internal Engine Execution & Microtask Synchronization of Async Function Error Trapping with try/catch\",\n    status: \"ACTIVE\",\n    timestamp: new Date().toLocaleTimeString()\n  };\n\n  console.log(\"Step 2: Processing data:\", data);\n  return { success: true, payload: data };\n}\n\nconst outcome = executeFeature();\nconsole.log(\"Step 3: Execution completed successfully:\", outcome);",
-    "lineByLineExplanation": [
-      {
-        "line": 1,
-        "code": "// Feature Initialization",
-        "explanation": "Initializes execution in current lexical scope."
-      },
-      {
-        "line": 2,
-        "code": "const result = await processData();",
-        "explanation": "Pauses execution in async function; pushes continuation to microtask queue upon resolution."
-      },
-      {
-        "line": 3,
-        "code": "return { success: true, payload: result };",
-        "explanation": "Returns immutable data payload to caller."
-      }
-    ],
-    "executionFlow": [],
-    "commonMistakes": [
-      "Confusing synchronous execution with asynchronous microtask scheduling in the event loop.",
-      "Accidentally creating memory leaks by retaining references in closures or uncleared event listeners.",
-      "Assuming 'this' binding is lexical in regular functions instead of dynamically determined at call time."
-    ],
-    "interviewTraps": [
-      "Interviewer presents code mixing Promise.resolve(), setTimeout(..., 0), and synchronous console.log to test exact queue order.",
-      "How closures retain access to outer variables even after the outer function has completed execution and returned.",
-      "Temporal Dead Zone (TDZ): accessing let/const before initialization throws ReferenceError, unlike var which is initialized to undefined."
-    ],
-    "interviewTips": [
-      "Clearly articulate the phases: Creation Phase (hoisting) vs Execution Phase.",
-      "Explain the Event Loop clearly: Call Stack -> Microtask Queue (Promises) -> Macrotask Queue (Timers).",
-      "Highlight immutability, pure functions, and predictable state transformations."
-    ],
+    "detailedExplanation": "Object.entries() bridges the gap between Objects and Arrays:\n\n1. Key-Value Iteration: Loop over both key and value simultaneously with for (const [k, v] of Object.entries(obj)).\n\n2. Object to Map Conversion: Easily construct a Map using new Map(Object.entries(obj)).\n\n3. Functional Object Transformation: Filter or map an object using Object.fromEntries(Object.entries(obj).filter(...)).",
+    "simpleExplanation": "Object.entries(obj) returns an array of the object's own enumerable string-keyed [key, value] pairs. It is commonly used for iterating with for...of, converting objects to Maps, and functional transformations with Array methods.",
+    "example": "const scores = { Alice: 95, Bob: 80, Charlie: 92 };\n\n// 1. Destructured iteration\nfor (const [student, score] of Object.entries(scores)) {\n  console.log(`${student}: ${score}`);\n}\n\n// 2. Filter object entries and rebuild\nconst topStudents = Object.fromEntries(\n  Object.entries(scores).filter(([_, score]) => score >= 90)\n);\nconsole.log(topStudents); // { Alice: 95, Charlie: 92 }\n\n// 3. Convert to Map\nconst scoresMap = new Map(Object.entries(scores));",
+    "codeSnippet": "const scores = { Alice: 95, Bob: 80, Charlie: 92 };\n\n// 1. Destructured iteration\nfor (const [student, score] of Object.entries(scores)) {\n  console.log(`${student}: ${score}`);\n}\n\n// 2. Filter object entries and rebuild\nconst topStudents = Object.fromEntries(\n  Object.entries(scores).filter(([_, score]) => score >= 90)\n);\nconsole.log(topStudents); // { Alice: 95, Charlie: 92 }\n\n// 3. Convert to Map\nconst scoresMap = new Map(Object.entries(scores));",
     "followUps": [
-      "What is the difference between the Microtask Queue and the Macrotask (Callback) Queue?",
-      "How does the V8 garbage collector detect and clean up unreferenced memory in closures?",
-      "What is the Temporal Dead Zone (TDZ) and why was it introduced in ES6?"
+      "What is the reverse method of Object.entries()?",
+      "How does Object.entries() order object keys?"
     ],
-    "followUpAnswers": [
-      "Microtasks (Promise.then, queueMicrotask) have higher priority and run completely to exhaustion after every call stack frame, whereas Macrotasks (setTimeout, setInterval) run one per event loop tick.",
-      "V8 uses a Generational Garbage Collector (Scavenger for young generation, Mark-Sweep-Compact for old generation) tracing reachability from roots (window/global).",
-      "The TDZ is the period between entering scope and variable declaration evaluation; accessing let/const during TDZ throws a ReferenceError to prevent accessing uninitialized state."
-    ],
-    "diagram": "flowchart TD\n    Stack[\"1. Call Stack (Synchronous Code Runs Here First)\"]\n    Stack -->|Stack Becomes Empty| Micro[\"2. Microtask Queue (VIP: Promises & queueMicrotask)\"]\n    Micro -->|All Microtasks Drained| Macro[\"3. Macrotask Queue (setTimeout, setInterval, I/O)\"]\n    Macro -->|Next Iteration| Stack",
-    "diagramCaption": "JavaScript Event Loop Priority Pipeline: Stack -> Microtasks -> Macrotasks",
-    "expectedOutput": "Step 1: Starting operation for Internal Engine Execution & Microtask Synchronization of Async Function Error Trapping with try/catch...\nStep 2: Operation evaluated successfully.\nStep 3: Cleanup completed deterministically.\nFinal Result: { ok: true, data: { status: 'SUCCESS' } }",
-    "videoUrl": "https://www.youtube-nocookie.com/embed/8aGhZQkoFbQ",
-    "videoTitle": "What the heck is the event loop anyway? (Philip Roberts)",
-    "standard_id": "ES8-000003",
-    "questionNumber": 3,
-    "question_type": "concept",
-    "question_hash": "qh_73ad3d66",
-    "codeExplanationSpeech": "This code demonstrates the implementation of Internal Engine Execution & Microtask Synchronization of Async Function Error Trapping with try/catch with clear input and output handling.",
-    "status": "published",
-    "simpleExplanation": "V8 Compilation Pipeline: Modern V8 parses source text into an Abstract Syntax Tree (AST). The Ignition bytecode interpreter produces compact bytecode, while TurboFan JIT compiler optimizes hot code paths into machine assembly. Execution Context & Scoping: When code runs, the engine creates an Execution Context containing a Lexical Environment (let/const bindings in TDZ until evaluated) and a Variable Environment (var declarations hoisted)."
+    "interviewTips": [],
+    "interviewAnswer": "Object.entries(obj) returns an array of the object's own enumerable string-keyed [key, value] pairs. It is commonly used for iterating with for...of, converting objects to Maps, and functional transformations with Array methods.",
+    "realWorldExample": "",
+    "experienceLevel": "1_3_YEARS"
   },
   {
     "id": "iq-es8-0004",
     "subject": "es8",
-    "topic": "ECMAScript 2017",
-    "subtopic": "Internal Engine Execution & Microtask Synchronization of Object.values() & Object.entries() Iteration",
-    "concept": "Internal Engine Execution & Microtask Synchronization of Object.values() & Object.entries() Iteration",
+    "topic": "String Methods",
+    "concept": "String.prototype.padStart() & padEnd()",
     "difficulty": "EASY",
-    "questionType": "MCQ",
-    "experienceLevel": "1_3_YEARS",
-    "isHighFrequency": false,
-    "companyTags": [
-      "Uber",
-      "Google"
+    "questionType": "CONCEPTUAL",
+    "questionNumber": 4,
+    "question": "How do String.prototype.padStart() and padEnd() work in ES8?",
+    "shortAnswer": "padStart(targetLength, padString) pads the start of a string with another string until it reaches the target length. padEnd() pads the end of the string. Both are pure methods returning a new string.",
+    "detailedAnswer": "Prior to ES8, padding strings required external packages (such as left-pad) or custom loops.\n\nSyntax: str.padStart(targetLength [, padString])\n\n- If str.length >= targetLength, the original string is returned unchanged.\n\n- Default padString is a single space ' '.\n\n- If padString exceeds targetLength, it is truncated.\n\nCommon uses: formatting timestamps, aligning console logs, masking credit cards, formatting currency amounts.",
+    "codeExample": "// 1. Time formatting\nconst hours = String(9).padStart(2, '0');\nconst mins = String(5).padStart(2, '0');\nconsole.log(`${hours}:${mins}`); // \"09:05\"\n\n// 2. Masking credit card numbers\nconst last4 = '8492';\nconsole.log(last4.padStart(16, '*')); // \"************8492\"\n\n// 3. Table column alignment with padEnd\nconsole.log('Item'.padEnd(10) + 'Price'.padStart(8));\nconsole.log('Coffee'.padEnd(10) + '$4.50'.padStart(8));",
+    "followUpQuestions": [
+      "What happens if targetLength is smaller than the string length?",
+      "Does padStart mutate the original string?"
+    ],
+    "followUpAnswers": [
+      "It returns the original string as-is without truncating or padding.",
+      "No. Strings in JavaScript are immutable; padStart returns a brand-new string."
     ],
     "tags": [
       "es8",
-      "es8",
-      "Uber",
-      "Google",
-      "interview-prep"
+      "javascript",
+      "strings",
+      "formatting"
     ],
-    "question": "Object.values() & Object.entries() Iteration",
-    "shortAnswer": "In ES8, Internal Engine Execution & Microtask Synchronization of Object.values() & Object.entries() Iteration ensures standards-compliant execution and predictable runtime characteristics.",
-    "interviewAnswer": "In ES8, Internal Engine Execution & Microtask Synchronization of Object.values() & Object.entries() Iteration ensures standards-compliant execution and predictable runtime characteristics.\n\nIn practical production projects, mastering this ensures predictable state management, high runtime performance, and clean maintainability across our team.",
-    "detailedExplanation": "### Deep Technical Dive: JavaScript V8 Engine & Execution Lifecycle for Internal Engine Execution & Microtask Synchronization of Object.values() & Object.entries() Iteration\n\n1. **V8 Compilation Pipeline**: Modern V8 parses source text into an Abstract Syntax Tree (AST). The **Ignition** bytecode interpreter produces compact bytecode, while **TurboFan** JIT compiler optimizes hot code paths into machine assembly.\n2. **Execution Context & Scoping**: When code runs, the engine creates an Execution Context containing a Lexical Environment (let/const bindings in TDZ until evaluated) and a Variable Environment (var declarations hoisted). Closures capture parent lexical scopes in the memory heap.\n3. **Event Loop & Microtask Priority**: Synchronous code executes on the single-threaded Call Stack. Microtasks (Promise resolutions, queueMicrotask) run immediately when the call stack empties, preceding macrotasks (setTimeout, DOM events) in the Event Loop cycle.",
-    "why": "Why does Internal Engine Execution & Microtask Synchronization of Object.values() & Object.entries() Iteration exist in modern JavaScript?\n1. Eliminates error-prone legacy patterns (callback hell, global scope pollution, hoisting bugs).\n2. Enhances developer ergonomics with declarative, expressive, and self-documenting syntax.\n3. Enables V8 and other modern engines to apply runtime JIT optimizations and efficient garbage collection.",
-    "howItWorks": "",
-    "realWorldExample": "Production Scenario: Real-time fintech stock price ticker or dashboard where data streams are processed asynchronously, cached safely in scope without memory leaks, and rendered to users with sub-millisecond latency.",
-    "example": "// Practical Demonstration: Internal Engine Execution & Microtask Synchronization of Object.values() & Object.entries() Iteration\nfunction executeFeature() {\n  console.log(\"Step 1: Initializing demonstration for Internal Engine Execution & Microtask Synchronization of Object.values() & Object.entries() Iteration...\");\n\n  const data = {\n    title: \"Internal Engine Execution & Microtask Synchronization of Object.values() & Object.entries() Iteration\",\n    status: \"ACTIVE\",\n    timestamp: new Date().toLocaleTimeString()\n  };\n\n  console.log(\"Step 2: Processing data:\", data);\n  return { success: true, payload: data };\n}\n\nconst outcome = executeFeature();\nconsole.log(\"Step 3: Execution completed successfully:\", outcome);",
-    "codeSnippet": "// Practical Demonstration: Internal Engine Execution & Microtask Synchronization of Object.values() & Object.entries() Iteration\nfunction executeFeature() {\n  console.log(\"Step 1: Initializing demonstration for Internal Engine Execution & Microtask Synchronization of Object.values() & Object.entries() Iteration...\");\n\n  const data = {\n    title: \"Internal Engine Execution & Microtask Synchronization of Object.values() & Object.entries() Iteration\",\n    status: \"ACTIVE\",\n    timestamp: new Date().toLocaleTimeString()\n  };\n\n  console.log(\"Step 2: Processing data:\", data);\n  return { success: true, payload: data };\n}\n\nconst outcome = executeFeature();\nconsole.log(\"Step 3: Execution completed successfully:\", outcome);",
-    "lineByLineExplanation": [
-      {
-        "line": 1,
-        "code": "// Feature Initialization",
-        "explanation": "Initializes execution in current lexical scope."
-      },
-      {
-        "line": 2,
-        "code": "const result = await processData();",
-        "explanation": "Pauses execution in async function; pushes continuation to microtask queue upon resolution."
-      },
-      {
-        "line": 3,
-        "code": "return { success: true, payload: result };",
-        "explanation": "Returns immutable data payload to caller."
-      }
-    ],
-    "executionFlow": [],
-    "commonMistakes": [
-      "Confusing synchronous execution with asynchronous microtask scheduling in the event loop.",
-      "Accidentally creating memory leaks by retaining references in closures or uncleared event listeners.",
-      "Assuming 'this' binding is lexical in regular functions instead of dynamically determined at call time."
-    ],
-    "interviewTraps": [
-      "Interviewer presents code mixing Promise.resolve(), setTimeout(..., 0), and synchronous console.log to test exact queue order.",
-      "How closures retain access to outer variables even after the outer function has completed execution and returned.",
-      "Temporal Dead Zone (TDZ): accessing let/const before initialization throws ReferenceError, unlike var which is initialized to undefined."
-    ],
-    "interviewTips": [
-      "Clearly articulate the phases: Creation Phase (hoisting) vs Execution Phase.",
-      "Explain the Event Loop clearly: Call Stack -> Microtask Queue (Promises) -> Macrotask Queue (Timers).",
-      "Highlight immutability, pure functions, and predictable state transformations."
-    ],
+    "detailedExplanation": "Prior to ES8, padding strings required external packages (such as left-pad) or custom loops.\n\nSyntax: str.padStart(targetLength [, padString])\n\n- If str.length >= targetLength, the original string is returned unchanged.\n\n- Default padString is a single space ' '.\n\n- If padString exceeds targetLength, it is truncated.\n\nCommon uses: formatting timestamps, aligning console logs, masking credit cards, formatting currency amounts.",
+    "simpleExplanation": "padStart(targetLength, padString) pads the start of a string with another string until it reaches the target length. padEnd() pads the end of the string. Both are pure methods returning a new string.",
+    "example": "// 1. Time formatting\nconst hours = String(9).padStart(2, '0');\nconst mins = String(5).padStart(2, '0');\nconsole.log(`${hours}:${mins}`); // \"09:05\"\n\n// 2. Masking credit card numbers\nconst last4 = '8492';\nconsole.log(last4.padStart(16, '*')); // \"************8492\"\n\n// 3. Table column alignment with padEnd\nconsole.log('Item'.padEnd(10) + 'Price'.padStart(8));\nconsole.log('Coffee'.padEnd(10) + '$4.50'.padStart(8));",
+    "codeSnippet": "// 1. Time formatting\nconst hours = String(9).padStart(2, '0');\nconst mins = String(5).padStart(2, '0');\nconsole.log(`${hours}:${mins}`); // \"09:05\"\n\n// 2. Masking credit card numbers\nconst last4 = '8492';\nconsole.log(last4.padStart(16, '*')); // \"************8492\"\n\n// 3. Table column alignment with padEnd\nconsole.log('Item'.padEnd(10) + 'Price'.padStart(8));\nconsole.log('Coffee'.padEnd(10) + '$4.50'.padStart(8));",
     "followUps": [
-      "What is the difference between the Microtask Queue and the Macrotask (Callback) Queue?",
-      "How does the V8 garbage collector detect and clean up unreferenced memory in closures?",
-      "What is the Temporal Dead Zone (TDZ) and why was it introduced in ES6?"
+      "What happens if targetLength is smaller than the string length?",
+      "Does padStart mutate the original string?"
     ],
-    "followUpAnswers": [
-      "Microtasks (Promise.then, queueMicrotask) have higher priority and run completely to exhaustion after every call stack frame, whereas Macrotasks (setTimeout, setInterval) run one per event loop tick.",
-      "V8 uses a Generational Garbage Collector (Scavenger for young generation, Mark-Sweep-Compact for old generation) tracing reachability from roots (window/global).",
-      "The TDZ is the period between entering scope and variable declaration evaluation; accessing let/const during TDZ throws a ReferenceError to prevent accessing uninitialized state."
-    ],
-    "diagram": "flowchart TD\n    Stack[\"1. Call Stack (Synchronous Code Runs Here First)\"]\n    Stack -->|Stack Becomes Empty| Micro[\"2. Microtask Queue (VIP: Promises & queueMicrotask)\"]\n    Micro -->|All Microtasks Drained| Macro[\"3. Macrotask Queue (setTimeout, setInterval, I/O)\"]\n    Macro -->|Next Iteration| Stack",
-    "diagramCaption": "JavaScript Event Loop Priority Pipeline: Stack -> Microtasks -> Macrotasks",
-    "expectedOutput": "Step 1: Starting operation for Internal Engine Execution & Microtask Synchronization of Object.values() & Object.entries() Iteration...\nStep 2: Operation evaluated successfully.\nStep 3: Cleanup completed deterministically.\nFinal Result: { ok: true, data: { status: 'SUCCESS' } }",
-    "videoUrl": "https://www.youtube-nocookie.com/embed/8aGhZQkoFbQ",
-    "videoTitle": "What the heck is the event loop anyway? (Philip Roberts)",
-    "standard_id": "ES8-MCQ-000004",
-    "questionNumber": 4,
-    "question_type": "mcq",
-    "question_hash": "qh_7e8d9384",
-    "options": [
-      {
-        "key": "A",
-        "text": "It enables deterministic behavior for Internal Engine Execution & Microtask Synchronization of Object.values() & Object.entries() Iteration per the official specification.",
-        "explanation": "Correct. Internal Engine Execution & Microtask Synchronization of Object.values() & Object.entries() Iteration provides standard, predictable execution in ES8."
-      },
-      {
-        "key": "B",
-        "text": "It forces an immediate full synchronous DOM reflow and redraws the operating system desktop.",
-        "explanation": "Incorrect. Web engines isolate styling and computation to the document view."
-      },
-      {
-        "key": "C",
-        "text": "It disables the JavaScript microtask queue and switches the browser to single-process mode.",
-        "explanation": "Incorrect. Browser process architecture and task scheduling are not disabled by Internal Engine Execution & Microtask Synchronization of Object.values() & Object.entries() Iteration."
-      },
-      {
-        "key": "D",
-        "text": "It converts all variables to global strings and clears browser localStorage.",
-        "explanation": "Incorrect. Scope rules and client storage remain strictly governed by standards."
-      }
-    ],
-    "correctAnswer": "A",
-    "mcqExplanation": "In ES8, Internal Engine Execution & Microtask Synchronization of Object.values() & Object.entries() Iteration ensures standards-compliant execution and predictable runtime characteristics.",
-    "wrongOptionExplanations": {
-      "B": "Layout and rendering engines maintain isolated graphical compositing layers.",
-      "C": "The JavaScript event loop and microtask queue operate independently of this syntax.",
-      "D": "Client storage APIs and variable scopes maintain strict sandboxed boundaries."
-    },
-    "codeExplanationSpeech": "This code demonstrates the implementation of Internal Engine Execution & Microtask Synchronization of Object.values() & Object.entries() Iteration with clear input and output handling.",
-    "status": "published",
-    "simpleExplanation": "V8 Compilation Pipeline: Modern V8 parses source text into an Abstract Syntax Tree (AST). The Ignition bytecode interpreter produces compact bytecode, while TurboFan JIT compiler optimizes hot code paths into machine assembly. Execution Context & Scoping: When code runs, the engine creates an Execution Context containing a Lexical Environment (let/const bindings in TDZ until evaluated) and a Variable Environment (var declarations hoisted)."
+    "interviewTips": [],
+    "interviewAnswer": "padStart(targetLength, padString) pads the start of a string with another string until it reaches the target length. padEnd() pads the end of the string. Both are pure methods returning a new string.",
+    "realWorldExample": "",
+    "experienceLevel": "1_3_YEARS"
   },
   {
     "id": "iq-es8-0005",
     "subject": "es8",
-    "topic": "ECMAScript 2017",
-    "subtopic": "Internal Engine Execution & Microtask Synchronization of Object.getOwnPropertyDescriptors() Metadata Extraction",
-    "concept": "Internal Engine Execution & Microtask Synchronization of Object.getOwnPropertyDescriptors() Metadata Extraction",
+    "topic": "Object Methods",
+    "concept": "Object.getOwnPropertyDescriptors()",
     "difficulty": "INTERMEDIATE",
-    "questionType": "DEBUGGING",
-    "experienceLevel": "3_5_YEARS",
-    "isHighFrequency": true,
-    "companyTags": [
-      "Apple",
-      "Meta"
+    "questionType": "CONCEPTUAL",
+    "questionNumber": 5,
+    "question": "What is Object.getOwnPropertyDescriptors() and why is it needed for true shallow copying?",
+    "shortAnswer": "Object.getOwnPropertyDescriptors(obj) returns all own property descriptors of an object (including getters, setters, enumerable, writable, configurable). It is essential for properly cloning objects that contain getters/setters without prematurely evaluating them.",
+    "detailedAnswer": "Object.assign() copies properties by invoking their [[Get]] accessor and [[Set]] accessor, meaning:\n\n1. It resolves getters to values, losing the getter function definition in the target object.\n\n2. It does not copy custom attributes like non-enumerable or read-only (writable: false) flags.\n\nBy combining Object.defineProperties() with Object.getOwnPropertyDescriptors(), you can clone objects with complete fidelity, including accessors and flags.",
+    "codeExample": "const source = {\n  firstName: 'John',\n  lastName: 'Doe',\n  get fullName() {\n    return `${this.firstName} ${this.lastName}`;\n  }\n};\n\n// Object.assign evaluates the getter prematurely:\nconst badClone = Object.assign({}, source);\nconsole.log(badClone.fullName); // \"John Doe\"\nsource.firstName = 'Jane';\nconsole.log(badClone.fullName); // Still \"John Doe\" (getter was turned into static property!)\n\n// True clone preserving getter accessors:\nconst goodClone = Object.defineProperties(\n  {},\n  Object.getOwnPropertyDescriptors(source)\n);\ngoodClone.firstName = 'Jane';\nconsole.log(goodClone.fullName); // \"Jane Doe\" (getter function was preserved!)",
+    "followUpQuestions": [
+      "What properties are included in a property descriptor object?",
+      "Can Object.getOwnPropertyDescriptors be used for subclassing prototypes?"
+    ],
+    "followUpAnswers": [
+      "For data descriptors: value, writable, enumerable, configurable. For accessor descriptors: get, set, enumerable, configurable.",
+      "Yes. Object.create(prototype, Object.getOwnPropertyDescriptors(props)) cleanly defines subclasses with accessors."
     ],
     "tags": [
       "es8",
-      "es8",
-      "Apple",
-      "Meta",
-      "interview-prep"
+      "javascript",
+      "descriptors",
+      "objects"
     ],
-    "question": "Object.getOwnPropertyDescriptors() Metadata Extraction",
-    "shortAnswer": "Internal Engine Execution & Microtask Synchronization of Object.getOwnPropertyDescriptors() Metadata Extraction is a standardized ECMAScript feature that enhances language expressiveness and code maintainability. It simplifies asynchronous operations and eliminates common pitfalls in JavaScript development.",
-    "interviewAnswer": "Internal Engine Execution & Microtask Synchronization of Object.getOwnPropertyDescriptors() Metadata Extraction is a standardized ECMAScript feature that enhances language expressiveness and code maintainability. It simplifies asynchronous operations and eliminates common pitfalls in JavaScript development.\n\nIn practical production projects, mastering this ensures predictable state management, high runtime performance, and clean maintainability across our team.",
-    "detailedExplanation": "### Deep Technical Dive: JavaScript V8 Engine & Execution Lifecycle for Internal Engine Execution & Microtask Synchronization of Object.getOwnPropertyDescriptors() Metadata Extraction\n\n1. **V8 Compilation Pipeline**: Modern V8 parses source text into an Abstract Syntax Tree (AST). The **Ignition** bytecode interpreter produces compact bytecode, while **TurboFan** JIT compiler optimizes hot code paths into machine assembly.\n2. **Execution Context & Scoping**: When code runs, the engine creates an Execution Context containing a Lexical Environment (let/const bindings in TDZ until evaluated) and a Variable Environment (var declarations hoisted). Closures capture parent lexical scopes in the memory heap.\n3. **Event Loop & Microtask Priority**: Synchronous code executes on the single-threaded Call Stack. Microtasks (Promise resolutions, queueMicrotask) run immediately when the call stack empties, preceding macrotasks (setTimeout, DOM events) in the Event Loop cycle.",
-    "why": "Why does Internal Engine Execution & Microtask Synchronization of Object.getOwnPropertyDescriptors() Metadata Extraction exist in modern JavaScript?\n1. Eliminates error-prone legacy patterns (callback hell, global scope pollution, hoisting bugs).\n2. Enhances developer ergonomics with declarative, expressive, and self-documenting syntax.\n3. Enables V8 and other modern engines to apply runtime JIT optimizations and efficient garbage collection.",
-    "howItWorks": "",
-    "realWorldExample": "Production Scenario: Real-time fintech stock price ticker or dashboard where data streams are processed asynchronously, cached safely in scope without memory leaks, and rendered to users with sub-millisecond latency.",
-    "example": "// Practical Demonstration: Internal Engine Execution & Microtask Synchronization of Object.getOwnPropertyDescriptors() Metadata Extraction\nfunction executeFeature() {\n  console.log(\"Step 1: Initializing demonstration for Internal Engine Execution & Microtask Synchronization of Object.getOwnPropertyDescriptors() Metadata Extraction...\");\n\n  const data = {\n    title: \"Internal Engine Execution & Microtask Synchronization of Object.getOwnPropertyDescriptors() Metadata Extraction\",\n    status: \"ACTIVE\",\n    timestamp: new Date().toLocaleTimeString()\n  };\n\n  console.log(\"Step 2: Processing data:\", data);\n  return { success: true, payload: data };\n}\n\nconst outcome = executeFeature();\nconsole.log(\"Step 3: Execution completed successfully:\", outcome);",
-    "codeSnippet": "// Practical Demonstration: Internal Engine Execution & Microtask Synchronization of Object.getOwnPropertyDescriptors() Metadata Extraction\nfunction executeFeature() {\n  console.log(\"Step 1: Initializing demonstration for Internal Engine Execution & Microtask Synchronization of Object.getOwnPropertyDescriptors() Metadata Extraction...\");\n\n  const data = {\n    title: \"Internal Engine Execution & Microtask Synchronization of Object.getOwnPropertyDescriptors() Metadata Extraction\",\n    status: \"ACTIVE\",\n    timestamp: new Date().toLocaleTimeString()\n  };\n\n  console.log(\"Step 2: Processing data:\", data);\n  return { success: true, payload: data };\n}\n\nconst outcome = executeFeature();\nconsole.log(\"Step 3: Execution completed successfully:\", outcome);",
-    "lineByLineExplanation": [
-      {
-        "line": 1,
-        "code": "// Feature Initialization",
-        "explanation": "Initializes execution in current lexical scope."
-      },
-      {
-        "line": 2,
-        "code": "const result = await processData();",
-        "explanation": "Pauses execution in async function; pushes continuation to microtask queue upon resolution."
-      },
-      {
-        "line": 3,
-        "code": "return { success: true, payload: result };",
-        "explanation": "Returns immutable data payload to caller."
-      }
-    ],
-    "executionFlow": [],
-    "commonMistakes": [
-      "Confusing synchronous execution with asynchronous microtask scheduling in the event loop.",
-      "Accidentally creating memory leaks by retaining references in closures or uncleared event listeners.",
-      "Assuming 'this' binding is lexical in regular functions instead of dynamically determined at call time."
-    ],
-    "interviewTraps": [
-      "Interviewer presents code mixing Promise.resolve(), setTimeout(..., 0), and synchronous console.log to test exact queue order.",
-      "How closures retain access to outer variables even after the outer function has completed execution and returned.",
-      "Temporal Dead Zone (TDZ): accessing let/const before initialization throws ReferenceError, unlike var which is initialized to undefined."
-    ],
-    "interviewTips": [
-      "Clearly articulate the phases: Creation Phase (hoisting) vs Execution Phase.",
-      "Explain the Event Loop clearly: Call Stack -> Microtask Queue (Promises) -> Macrotask Queue (Timers).",
-      "Highlight immutability, pure functions, and predictable state transformations."
-    ],
+    "detailedExplanation": "Object.assign() copies properties by invoking their [[Get]] accessor and [[Set]] accessor, meaning:\n\n1. It resolves getters to values, losing the getter function definition in the target object.\n\n2. It does not copy custom attributes like non-enumerable or read-only (writable: false) flags.\n\nBy combining Object.defineProperties() with Object.getOwnPropertyDescriptors(), you can clone objects with complete fidelity, including accessors and flags.",
+    "simpleExplanation": "Object.getOwnPropertyDescriptors(obj) returns all own property descriptors of an object (including getters, setters, enumerable, writable, configurable). It is essential for properly cloning objects that contain getters/setters without prematurely evaluating them.",
+    "example": "const source = {\n  firstName: 'John',\n  lastName: 'Doe',\n  get fullName() {\n    return `${this.firstName} ${this.lastName}`;\n  }\n};\n\n// Object.assign evaluates the getter prematurely:\nconst badClone = Object.assign({}, source);\nconsole.log(badClone.fullName); // \"John Doe\"\nsource.firstName = 'Jane';\nconsole.log(badClone.fullName); // Still \"John Doe\" (getter was turned into static property!)\n\n// True clone preserving getter accessors:\nconst goodClone = Object.defineProperties(\n  {},\n  Object.getOwnPropertyDescriptors(source)\n);\ngoodClone.firstName = 'Jane';\nconsole.log(goodClone.fullName); // \"Jane Doe\" (getter function was preserved!)",
+    "codeSnippet": "const source = {\n  firstName: 'John',\n  lastName: 'Doe',\n  get fullName() {\n    return `${this.firstName} ${this.lastName}`;\n  }\n};\n\n// Object.assign evaluates the getter prematurely:\nconst badClone = Object.assign({}, source);\nconsole.log(badClone.fullName); // \"John Doe\"\nsource.firstName = 'Jane';\nconsole.log(badClone.fullName); // Still \"John Doe\" (getter was turned into static property!)\n\n// True clone preserving getter accessors:\nconst goodClone = Object.defineProperties(\n  {},\n  Object.getOwnPropertyDescriptors(source)\n);\ngoodClone.firstName = 'Jane';\nconsole.log(goodClone.fullName); // \"Jane Doe\" (getter function was preserved!)",
     "followUps": [
-      "What is the difference between the Microtask Queue and the Macrotask (Callback) Queue?",
-      "How does the V8 garbage collector detect and clean up unreferenced memory in closures?",
-      "What is the Temporal Dead Zone (TDZ) and why was it introduced in ES6?"
+      "What properties are included in a property descriptor object?",
+      "Can Object.getOwnPropertyDescriptors be used for subclassing prototypes?"
     ],
-    "followUpAnswers": [
-      "Microtasks (Promise.then, queueMicrotask) have higher priority and run completely to exhaustion after every call stack frame, whereas Macrotasks (setTimeout, setInterval) run one per event loop tick.",
-      "V8 uses a Generational Garbage Collector (Scavenger for young generation, Mark-Sweep-Compact for old generation) tracing reachability from roots (window/global).",
-      "The TDZ is the period between entering scope and variable declaration evaluation; accessing let/const during TDZ throws a ReferenceError to prevent accessing uninitialized state."
-    ],
-    "diagram": "flowchart TD\n    Stack[\"1. Call Stack (Synchronous Code Runs Here First)\"]\n    Stack -->|Stack Becomes Empty| Micro[\"2. Microtask Queue (VIP: Promises & queueMicrotask)\"]\n    Micro -->|All Microtasks Drained| Macro[\"3. Macrotask Queue (setTimeout, setInterval, I/O)\"]\n    Macro -->|Next Iteration| Stack",
-    "diagramCaption": "JavaScript Event Loop Priority Pipeline: Stack -> Microtasks -> Macrotasks",
-    "expectedOutput": "Step 1: Starting operation for Internal Engine Execution & Microtask Synchronization of Object.getOwnPropertyDescriptors() Metadata Extraction...\nStep 2: Operation evaluated successfully.\nStep 3: Cleanup completed deterministically.\nFinal Result: { ok: true, data: { status: 'SUCCESS' } }",
-    "videoUrl": "https://www.youtube-nocookie.com/embed/8aGhZQkoFbQ",
-    "videoTitle": "What the heck is the event loop anyway? (Philip Roberts)",
-    "standard_id": "ES8-000005",
-    "questionNumber": 5,
-    "question_type": "concept",
-    "question_hash": "qh_3bf5faaf",
-    "codeExplanationSpeech": "This code demonstrates the implementation of Internal Engine Execution & Microtask Synchronization of Object.getOwnPropertyDescriptors() Metadata Extraction with clear input and output handling.",
-    "status": "published",
-    "simpleExplanation": "V8 Compilation Pipeline: Modern V8 parses source text into an Abstract Syntax Tree (AST). The Ignition bytecode interpreter produces compact bytecode, while TurboFan JIT compiler optimizes hot code paths into machine assembly. Execution Context & Scoping: When code runs, the engine creates an Execution Context containing a Lexical Environment (let/const bindings in TDZ until evaluated) and a Variable Environment (var declarations hoisted)."
+    "interviewTips": [],
+    "interviewAnswer": "Object.getOwnPropertyDescriptors(obj) returns all own property descriptors of an object (including getters, setters, enumerable, writable, configurable). It is essential for properly cloning objects that contain getters/setters without prematurely evaluating them.",
+    "realWorldExample": "",
+    "experienceLevel": "1_3_YEARS"
   },
   {
     "id": "iq-es8-0006",
     "subject": "es8",
-    "topic": "ECMAScript 2017",
-    "subtopic": "Internal Engine Execution & Microtask Synchronization of Object Property Descriptor Cloning & Getter/Setter Retention",
-    "concept": "Internal Engine Execution & Microtask Synchronization of Object Property Descriptor Cloning & Getter/Setter Retention",
-    "difficulty": "DIFFICULT",
-    "questionType": "MCQ",
-    "experienceLevel": "5_8_YEARS",
-    "isHighFrequency": false,
-    "companyTags": [
-      "Airbnb",
-      "Amazon"
+    "topic": "Syntax Enhancements",
+    "concept": "Trailing Commas in Function Parameter & Argument Lists",
+    "difficulty": "EASY",
+    "questionType": "CONCEPTUAL",
+    "questionNumber": 6,
+    "question": "Why were trailing commas allowed in function parameter lists and call arguments in ES8?",
+    "shortAnswer": "ES8 allowed trailing commas in function declarations and function invocations to produce cleaner git diffs when adding new parameters, and to avoid syntax errors when rearranging lines.",
+    "detailedAnswer": "Trailing commas had already been permitted in object literals and array literals since ES5.\n\nES8 extended this to:\n\n1. Function parameter declarations: function add(a, b,) {}\n\n2. Function calls: add(1, 2,)\n\n3. Named parameter lists in arrow functions.\n\nBenefits:\n\n- Git diffs only show the newly added line (+ item,) instead of also modifying the previous line to add a comma.\n\n- Copying and pasting or reordering lines does not break syntax.",
+    "codeExample": "// Clean multi-line declaration with trailing comma:\nfunction createConfig(\n  apiKey,\n  timeout,\n  retries,\n) {\n  return { apiKey, timeout, retries };\n}\n\n// Invocation with trailing comma:\ncreateConfig(\n  'xyz-123',\n  5000,\n  3,\n);",
+    "followUpQuestions": [
+      "Are trailing commas allowed when using rest parameters (...args)?",
+      "Are trailing commas allowed in function signatures with only a comma (e.g. function foo(,))?"
+    ],
+    "followUpAnswers": [
+      "No. A rest parameter must be the last element; writing function foo(...args,) produces a SyntaxError.",
+      "No. A parameter or argument must precede the comma; an empty comma produces a SyntaxError."
     ],
     "tags": [
       "es8",
-      "es8",
-      "Airbnb",
-      "Amazon",
-      "interview-prep"
+      "javascript",
+      "syntax",
+      "git"
     ],
-    "question": "Object Property Descriptor Cloning & Getter/Setter Retention",
-    "shortAnswer": "In ES8, Internal Engine Execution & Microtask Synchronization of Object Property Descriptor Cloning & Getter/Setter Retention ensures standards-compliant execution and predictable runtime characteristics.",
-    "interviewAnswer": "In ES8, Internal Engine Execution & Microtask Synchronization of Object Property Descriptor Cloning & Getter/Setter Retention ensures standards-compliant execution and predictable runtime characteristics.\n\nIn practical production projects, mastering this ensures predictable state management, high runtime performance, and clean maintainability across our team.",
-    "detailedExplanation": "### Deep Technical Dive: JavaScript V8 Engine & Execution Lifecycle for Internal Engine Execution & Microtask Synchronization of Object Property Descriptor Cloning & Getter/Setter Retention\n\n1. **V8 Compilation Pipeline**: Modern V8 parses source text into an Abstract Syntax Tree (AST). The **Ignition** bytecode interpreter produces compact bytecode, while **TurboFan** JIT compiler optimizes hot code paths into machine assembly.\n2. **Execution Context & Scoping**: When code runs, the engine creates an Execution Context containing a Lexical Environment (let/const bindings in TDZ until evaluated) and a Variable Environment (var declarations hoisted). Closures capture parent lexical scopes in the memory heap.\n3. **Event Loop & Microtask Priority**: Synchronous code executes on the single-threaded Call Stack. Microtasks (Promise resolutions, queueMicrotask) run immediately when the call stack empties, preceding macrotasks (setTimeout, DOM events) in the Event Loop cycle.",
-    "why": "Why does Internal Engine Execution & Microtask Synchronization of Object Property Descriptor Cloning & Getter/Setter Retention exist in modern JavaScript?\n1. Eliminates error-prone legacy patterns (callback hell, global scope pollution, hoisting bugs).\n2. Enhances developer ergonomics with declarative, expressive, and self-documenting syntax.\n3. Enables V8 and other modern engines to apply runtime JIT optimizations and efficient garbage collection.",
-    "howItWorks": "",
-    "realWorldExample": "Production Scenario: Real-time fintech stock price ticker or dashboard where data streams are processed asynchronously, cached safely in scope without memory leaks, and rendered to users with sub-millisecond latency.",
-    "example": "// Practical Demonstration: Internal Engine Execution & Microtask Synchronization of Object Property Descriptor Cloning & Getter/Setter Retention\nfunction executeFeature() {\n  console.log(\"Step 1: Initializing demonstration for Internal Engine Execution & Microtask Synchronization of Object Property Descriptor Cloning & Getter/Setter Retention...\");\n\n  const data = {\n    title: \"Internal Engine Execution & Microtask Synchronization of Object Property Descriptor Cloning & Getter/Setter Retention\",\n    status: \"ACTIVE\",\n    timestamp: new Date().toLocaleTimeString()\n  };\n\n  console.log(\"Step 2: Processing data:\", data);\n  return { success: true, payload: data };\n}\n\nconst outcome = executeFeature();\nconsole.log(\"Step 3: Execution completed successfully:\", outcome);",
-    "codeSnippet": "// Practical Demonstration: Internal Engine Execution & Microtask Synchronization of Object Property Descriptor Cloning & Getter/Setter Retention\nfunction executeFeature() {\n  console.log(\"Step 1: Initializing demonstration for Internal Engine Execution & Microtask Synchronization of Object Property Descriptor Cloning & Getter/Setter Retention...\");\n\n  const data = {\n    title: \"Internal Engine Execution & Microtask Synchronization of Object Property Descriptor Cloning & Getter/Setter Retention\",\n    status: \"ACTIVE\",\n    timestamp: new Date().toLocaleTimeString()\n  };\n\n  console.log(\"Step 2: Processing data:\", data);\n  return { success: true, payload: data };\n}\n\nconst outcome = executeFeature();\nconsole.log(\"Step 3: Execution completed successfully:\", outcome);",
-    "lineByLineExplanation": [
-      {
-        "line": 1,
-        "code": "// Feature Initialization",
-        "explanation": "Initializes execution in current lexical scope."
-      },
-      {
-        "line": 2,
-        "code": "const result = await processData();",
-        "explanation": "Pauses execution in async function; pushes continuation to microtask queue upon resolution."
-      },
-      {
-        "line": 3,
-        "code": "return { success: true, payload: result };",
-        "explanation": "Returns immutable data payload to caller."
-      }
-    ],
-    "executionFlow": [],
-    "commonMistakes": [
-      "Confusing synchronous execution with asynchronous microtask scheduling in the event loop.",
-      "Accidentally creating memory leaks by retaining references in closures or uncleared event listeners.",
-      "Assuming 'this' binding is lexical in regular functions instead of dynamically determined at call time."
-    ],
-    "interviewTraps": [
-      "Interviewer presents code mixing Promise.resolve(), setTimeout(..., 0), and synchronous console.log to test exact queue order.",
-      "How closures retain access to outer variables even after the outer function has completed execution and returned.",
-      "Temporal Dead Zone (TDZ): accessing let/const before initialization throws ReferenceError, unlike var which is initialized to undefined."
-    ],
-    "interviewTips": [
-      "Clearly articulate the phases: Creation Phase (hoisting) vs Execution Phase.",
-      "Explain the Event Loop clearly: Call Stack -> Microtask Queue (Promises) -> Macrotask Queue (Timers).",
-      "Highlight immutability, pure functions, and predictable state transformations."
-    ],
+    "detailedExplanation": "Trailing commas had already been permitted in object literals and array literals since ES5.\n\nES8 extended this to:\n\n1. Function parameter declarations: function add(a, b,) {}\n\n2. Function calls: add(1, 2,)\n\n3. Named parameter lists in arrow functions.\n\nBenefits:\n\n- Git diffs only show the newly added line (+ item,) instead of also modifying the previous line to add a comma.\n\n- Copying and pasting or reordering lines does not break syntax.",
+    "simpleExplanation": "ES8 allowed trailing commas in function declarations and function invocations to produce cleaner git diffs when adding new parameters, and to avoid syntax errors when rearranging lines.",
+    "example": "// Clean multi-line declaration with trailing comma:\nfunction createConfig(\n  apiKey,\n  timeout,\n  retries,\n) {\n  return { apiKey, timeout, retries };\n}\n\n// Invocation with trailing comma:\ncreateConfig(\n  'xyz-123',\n  5000,\n  3,\n);",
+    "codeSnippet": "// Clean multi-line declaration with trailing comma:\nfunction createConfig(\n  apiKey,\n  timeout,\n  retries,\n) {\n  return { apiKey, timeout, retries };\n}\n\n// Invocation with trailing comma:\ncreateConfig(\n  'xyz-123',\n  5000,\n  3,\n);",
     "followUps": [
-      "What is the difference between the Microtask Queue and the Macrotask (Callback) Queue?",
-      "How does the V8 garbage collector detect and clean up unreferenced memory in closures?",
-      "What is the Temporal Dead Zone (TDZ) and why was it introduced in ES6?"
+      "Are trailing commas allowed when using rest parameters (...args)?",
+      "Are trailing commas allowed in function signatures with only a comma (e.g. function foo(,))?"
     ],
-    "followUpAnswers": [
-      "Microtasks (Promise.then, queueMicrotask) have higher priority and run completely to exhaustion after every call stack frame, whereas Macrotasks (setTimeout, setInterval) run one per event loop tick.",
-      "V8 uses a Generational Garbage Collector (Scavenger for young generation, Mark-Sweep-Compact for old generation) tracing reachability from roots (window/global).",
-      "The TDZ is the period between entering scope and variable declaration evaluation; accessing let/const during TDZ throws a ReferenceError to prevent accessing uninitialized state."
-    ],
-    "diagram": "flowchart TD\n    Stack[\"1. Call Stack (Synchronous Code Runs Here First)\"]\n    Stack -->|Stack Becomes Empty| Micro[\"2. Microtask Queue (VIP: Promises & queueMicrotask)\"]\n    Micro -->|All Microtasks Drained| Macro[\"3. Macrotask Queue (setTimeout, setInterval, I/O)\"]\n    Macro -->|Next Iteration| Stack",
-    "diagramCaption": "JavaScript Event Loop Priority Pipeline: Stack -> Microtasks -> Macrotasks",
-    "expectedOutput": "Step 1: Starting operation for Internal Engine Execution & Microtask Synchronization of Object Property Descriptor Cloning & Getter/Setter Retention...\nStep 2: Operation evaluated successfully.\nStep 3: Cleanup completed deterministically.\nFinal Result: { ok: true, data: { status: 'SUCCESS' } }",
-    "videoUrl": "https://www.youtube-nocookie.com/embed/8aGhZQkoFbQ",
-    "videoTitle": "What the heck is the event loop anyway? (Philip Roberts)",
-    "standard_id": "ES8-MCQ-000006",
-    "questionNumber": 6,
-    "question_type": "mcq",
-    "question_hash": "qh_70e6c6c4",
-    "options": [
-      {
-        "key": "A",
-        "text": "It enables deterministic behavior for Internal Engine Execution & Microtask Synchronization of Object Property Descriptor Cloning & Getter/Setter Retention per the official specification.",
-        "explanation": "Correct. Internal Engine Execution & Microtask Synchronization of Object Property Descriptor Cloning & Getter/Setter Retention provides standard, predictable execution in ES8."
-      },
-      {
-        "key": "B",
-        "text": "It forces an immediate full synchronous DOM reflow and redraws the operating system desktop.",
-        "explanation": "Incorrect. Web engines isolate styling and computation to the document view."
-      },
-      {
-        "key": "C",
-        "text": "It disables the JavaScript microtask queue and switches the browser to single-process mode.",
-        "explanation": "Incorrect. Browser process architecture and task scheduling are not disabled by Internal Engine Execution & Microtask Synchronization of Object Property Descriptor Cloning & Getter/Setter Retention."
-      },
-      {
-        "key": "D",
-        "text": "It converts all variables to global strings and clears browser localStorage.",
-        "explanation": "Incorrect. Scope rules and client storage remain strictly governed by standards."
-      }
-    ],
-    "correctAnswer": "A",
-    "mcqExplanation": "In ES8, Internal Engine Execution & Microtask Synchronization of Object Property Descriptor Cloning & Getter/Setter Retention ensures standards-compliant execution and predictable runtime characteristics.",
-    "wrongOptionExplanations": {
-      "B": "Layout and rendering engines maintain isolated graphical compositing layers.",
-      "C": "The JavaScript event loop and microtask queue operate independently of this syntax.",
-      "D": "Client storage APIs and variable scopes maintain strict sandboxed boundaries."
-    },
-    "codeExplanationSpeech": "This code demonstrates the implementation of Internal Engine Execution & Microtask Synchronization of Object Property Descriptor Cloning & Getter/Setter Retention with clear input and output handling.",
-    "status": "published",
-    "simpleExplanation": "V8 Compilation Pipeline: Modern V8 parses source text into an Abstract Syntax Tree (AST). The Ignition bytecode interpreter produces compact bytecode, while TurboFan JIT compiler optimizes hot code paths into machine assembly. Execution Context & Scoping: When code runs, the engine creates an Execution Context containing a Lexical Environment (let/const bindings in TDZ until evaluated) and a Variable Environment (var declarations hoisted)."
+    "interviewTips": [],
+    "interviewAnswer": "ES8 allowed trailing commas in function declarations and function invocations to produce cleaner git diffs when adding new parameters, and to avoid syntax errors when rearranging lines.",
+    "realWorldExample": "",
+    "experienceLevel": "1_3_YEARS"
   },
   {
     "id": "iq-es8-0007",
     "subject": "es8",
-    "topic": "ECMAScript 2017",
-    "subtopic": "Internal Engine Execution & Microtask Synchronization of String.prototype.padStart() & padEnd() Formatting",
-    "concept": "Internal Engine Execution & Microtask Synchronization of String.prototype.padStart() & padEnd() Formatting",
-    "difficulty": "EASY",
+    "topic": "Concurrency & Memory",
+    "concept": "SharedArrayBuffer & Atomics Overview",
+    "difficulty": "DIFFICULT",
     "questionType": "CONCEPTUAL",
-    "experienceLevel": "FRESHER",
-    "isHighFrequency": true,
-    "companyTags": [
-      "Google",
-      "Microsoft"
+    "questionNumber": 7,
+    "question": "What is SharedArrayBuffer and how does the Atomics object ensure thread safety?",
+    "shortAnswer": "SharedArrayBuffer provides a shared memory segment accessible by both the main thread and Web Workers without cloning. The Atomics object provides static atomic operations (add, load, store, wait, notify) that prevent race conditions and torn reads across concurrent threads.",
+    "detailedAnswer": "Standard Web Worker communication uses postMessage(), which clones data via the structured clone algorithm (causing memory duplication and serialization latency).\n\nSharedArrayBuffer allows multiple threads to read and write the exact same shared memory buffer.\n\nBecause multiple threads writing simultaneously cause race conditions, Atomics provides thread-safe primitives:\n\n- Atomics.load() / Atomics.store(): Atomic memory reads and writes.\n\n- Atomics.add() / Atomics.sub(): Atomic arithmetic.\n\n- Atomics.wait() / Atomics.notify(): Thread synchronization and blocking sleep/wake primitives.",
+    "codeExample": "// Main thread / Worker setup\nconst sharedBuffer = new SharedArrayBuffer(1024);\nconst sharedInt32 = new Int32Array(sharedBuffer);\n\n// Atomic increment (thread-safe, immune to race conditions)\nAtomics.add(sharedInt32, 0, 1);\n\nconsole.log(Atomics.load(sharedInt32, 0)); // 1",
+    "followUpQuestions": [
+      "Why was SharedArrayBuffer disabled in browsers after 2018?",
+      "What HTTP security headers are required to re-enable SharedArrayBuffer today?"
+    ],
+    "followUpAnswers": [
+      "It was disabled due to the Spectre CPU vulnerability, which allowed malicious timing attacks using high-resolution shared timers.",
+      "Cross-Origin-Opener-Policy: same-origin and Cross-Origin-Embedder-Policy: require-corp (Cross-Origin Isolation)."
     ],
     "tags": [
       "es8",
-      "es8",
-      "Google",
-      "Microsoft",
-      "interview-prep"
+      "javascript",
+      "threads",
+      "atomics",
+      "memory"
     ],
-    "question": "String.prototype.padStart() & padEnd() Formatting",
-    "shortAnswer": "Internal Engine Execution & Microtask Synchronization of String.prototype.padStart() & padEnd() Formatting is a standardized ECMAScript feature that enhances language expressiveness and code maintainability. It simplifies asynchronous operations and eliminates common pitfalls in JavaScript development.",
-    "interviewAnswer": "Internal Engine Execution & Microtask Synchronization of String.prototype.padStart() & padEnd() Formatting is a standardized ECMAScript feature that enhances language expressiveness and code maintainability. It simplifies asynchronous operations and eliminates common pitfalls in JavaScript development.\n\nIn practical production projects, mastering this ensures predictable state management, high runtime performance, and clean maintainability across our team.",
-    "detailedExplanation": "### Deep Technical Dive: JavaScript V8 Engine & Execution Lifecycle for Internal Engine Execution & Microtask Synchronization of String.prototype.padStart() & padEnd() Formatting\n\n1. **V8 Compilation Pipeline**: Modern V8 parses source text into an Abstract Syntax Tree (AST). The **Ignition** bytecode interpreter produces compact bytecode, while **TurboFan** JIT compiler optimizes hot code paths into machine assembly.\n2. **Execution Context & Scoping**: When code runs, the engine creates an Execution Context containing a Lexical Environment (let/const bindings in TDZ until evaluated) and a Variable Environment (var declarations hoisted). Closures capture parent lexical scopes in the memory heap.\n3. **Event Loop & Microtask Priority**: Synchronous code executes on the single-threaded Call Stack. Microtasks (Promise resolutions, queueMicrotask) run immediately when the call stack empties, preceding macrotasks (setTimeout, DOM events) in the Event Loop cycle.",
-    "why": "Why does Internal Engine Execution & Microtask Synchronization of String.prototype.padStart() & padEnd() Formatting exist in modern JavaScript?\n1. Eliminates error-prone legacy patterns (callback hell, global scope pollution, hoisting bugs).\n2. Enhances developer ergonomics with declarative, expressive, and self-documenting syntax.\n3. Enables V8 and other modern engines to apply runtime JIT optimizations and efficient garbage collection.",
-    "howItWorks": "",
-    "realWorldExample": "Production Scenario: Real-time fintech stock price ticker or dashboard where data streams are processed asynchronously, cached safely in scope without memory leaks, and rendered to users with sub-millisecond latency.",
-    "example": "// Practical Demonstration: Internal Engine Execution & Microtask Synchronization of String.prototype.padStart() & padEnd() Formatting\nfunction executeFeature() {\n  console.log(\"Step 1: Initializing demonstration for Internal Engine Execution & Microtask Synchronization of String.prototype.padStart() & padEnd() Formatting...\");\n\n  const data = {\n    title: \"Internal Engine Execution & Microtask Synchronization of String.prototype.padStart() & padEnd() Formatting\",\n    status: \"ACTIVE\",\n    timestamp: new Date().toLocaleTimeString()\n  };\n\n  console.log(\"Step 2: Processing data:\", data);\n  return { success: true, payload: data };\n}\n\nconst outcome = executeFeature();\nconsole.log(\"Step 3: Execution completed successfully:\", outcome);",
-    "codeSnippet": "// Practical Demonstration: Internal Engine Execution & Microtask Synchronization of String.prototype.padStart() & padEnd() Formatting\nfunction executeFeature() {\n  console.log(\"Step 1: Initializing demonstration for Internal Engine Execution & Microtask Synchronization of String.prototype.padStart() & padEnd() Formatting...\");\n\n  const data = {\n    title: \"Internal Engine Execution & Microtask Synchronization of String.prototype.padStart() & padEnd() Formatting\",\n    status: \"ACTIVE\",\n    timestamp: new Date().toLocaleTimeString()\n  };\n\n  console.log(\"Step 2: Processing data:\", data);\n  return { success: true, payload: data };\n}\n\nconst outcome = executeFeature();\nconsole.log(\"Step 3: Execution completed successfully:\", outcome);",
-    "lineByLineExplanation": [
-      {
-        "line": 1,
-        "code": "// Feature Initialization",
-        "explanation": "Initializes execution in current lexical scope."
-      },
-      {
-        "line": 2,
-        "code": "const result = await processData();",
-        "explanation": "Pauses execution in async function; pushes continuation to microtask queue upon resolution."
-      },
-      {
-        "line": 3,
-        "code": "return { success: true, payload: result };",
-        "explanation": "Returns immutable data payload to caller."
-      }
-    ],
-    "executionFlow": [],
-    "commonMistakes": [
-      "Confusing synchronous execution with asynchronous microtask scheduling in the event loop.",
-      "Accidentally creating memory leaks by retaining references in closures or uncleared event listeners.",
-      "Assuming 'this' binding is lexical in regular functions instead of dynamically determined at call time."
-    ],
-    "interviewTraps": [
-      "Interviewer presents code mixing Promise.resolve(), setTimeout(..., 0), and synchronous console.log to test exact queue order.",
-      "How closures retain access to outer variables even after the outer function has completed execution and returned.",
-      "Temporal Dead Zone (TDZ): accessing let/const before initialization throws ReferenceError, unlike var which is initialized to undefined."
-    ],
-    "interviewTips": [
-      "Clearly articulate the phases: Creation Phase (hoisting) vs Execution Phase.",
-      "Explain the Event Loop clearly: Call Stack -> Microtask Queue (Promises) -> Macrotask Queue (Timers).",
-      "Highlight immutability, pure functions, and predictable state transformations."
-    ],
+    "detailedExplanation": "Standard Web Worker communication uses postMessage(), which clones data via the structured clone algorithm (causing memory duplication and serialization latency).\n\nSharedArrayBuffer allows multiple threads to read and write the exact same shared memory buffer.\n\nBecause multiple threads writing simultaneously cause race conditions, Atomics provides thread-safe primitives:\n\n- Atomics.load() / Atomics.store(): Atomic memory reads and writes.\n\n- Atomics.add() / Atomics.sub(): Atomic arithmetic.\n\n- Atomics.wait() / Atomics.notify(): Thread synchronization and blocking sleep/wake primitives.",
+    "simpleExplanation": "SharedArrayBuffer provides a shared memory segment accessible by both the main thread and Web Workers without cloning. The Atomics object provides static atomic operations (add, load, store, wait, notify) that prevent race conditions and torn reads across concurrent threads.",
+    "example": "// Main thread / Worker setup\nconst sharedBuffer = new SharedArrayBuffer(1024);\nconst sharedInt32 = new Int32Array(sharedBuffer);\n\n// Atomic increment (thread-safe, immune to race conditions)\nAtomics.add(sharedInt32, 0, 1);\n\nconsole.log(Atomics.load(sharedInt32, 0)); // 1",
+    "codeSnippet": "// Main thread / Worker setup\nconst sharedBuffer = new SharedArrayBuffer(1024);\nconst sharedInt32 = new Int32Array(sharedBuffer);\n\n// Atomic increment (thread-safe, immune to race conditions)\nAtomics.add(sharedInt32, 0, 1);\n\nconsole.log(Atomics.load(sharedInt32, 0)); // 1",
     "followUps": [
-      "What is the difference between the Microtask Queue and the Macrotask (Callback) Queue?",
-      "How does the V8 garbage collector detect and clean up unreferenced memory in closures?",
-      "What is the Temporal Dead Zone (TDZ) and why was it introduced in ES6?"
+      "Why was SharedArrayBuffer disabled in browsers after 2018?",
+      "What HTTP security headers are required to re-enable SharedArrayBuffer today?"
     ],
-    "followUpAnswers": [
-      "Microtasks (Promise.then, queueMicrotask) have higher priority and run completely to exhaustion after every call stack frame, whereas Macrotasks (setTimeout, setInterval) run one per event loop tick.",
-      "V8 uses a Generational Garbage Collector (Scavenger for young generation, Mark-Sweep-Compact for old generation) tracing reachability from roots (window/global).",
-      "The TDZ is the period between entering scope and variable declaration evaluation; accessing let/const during TDZ throws a ReferenceError to prevent accessing uninitialized state."
-    ],
-    "diagram": "flowchart TD\n    Stack[\"1. Call Stack (Synchronous Code Runs Here First)\"]\n    Stack -->|Stack Becomes Empty| Micro[\"2. Microtask Queue (VIP: Promises & queueMicrotask)\"]\n    Micro -->|All Microtasks Drained| Macro[\"3. Macrotask Queue (setTimeout, setInterval, I/O)\"]\n    Macro -->|Next Iteration| Stack",
-    "diagramCaption": "JavaScript Event Loop Priority Pipeline: Stack -> Microtasks -> Macrotasks",
-    "expectedOutput": "Step 1: Starting operation for Internal Engine Execution & Microtask Synchronization of String.prototype.padStart() & padEnd() Formatting...\nStep 2: Operation evaluated successfully.\nStep 3: Cleanup completed deterministically.\nFinal Result: { ok: true, data: { status: 'SUCCESS' } }",
-    "videoUrl": "https://www.youtube-nocookie.com/embed/8aGhZQkoFbQ",
-    "videoTitle": "What the heck is the event loop anyway? (Philip Roberts)",
-    "standard_id": "ES8-000007",
-    "questionNumber": 7,
-    "question_type": "concept",
-    "question_hash": "qh_5bf39086",
-    "codeExplanationSpeech": "This code demonstrates the implementation of Internal Engine Execution & Microtask Synchronization of String.prototype.padStart() & padEnd() Formatting with clear input and output handling.",
-    "status": "published",
-    "simpleExplanation": "V8 Compilation Pipeline: Modern V8 parses source text into an Abstract Syntax Tree (AST). The Ignition bytecode interpreter produces compact bytecode, while TurboFan JIT compiler optimizes hot code paths into machine assembly. Execution Context & Scoping: When code runs, the engine creates an Execution Context containing a Lexical Environment (let/const bindings in TDZ until evaluated) and a Variable Environment (var declarations hoisted)."
+    "interviewTips": [],
+    "interviewAnswer": "SharedArrayBuffer provides a shared memory segment accessible by both the main thread and Web Workers without cloning. The Atomics object provides static atomic operations (add, load, store, wait, notify) that prevent race conditions and torn reads across concurrent threads.",
+    "realWorldExample": "",
+    "experienceLevel": "1_3_YEARS"
   },
   {
     "id": "iq-es8-0008",
     "subject": "es8",
-    "topic": "ECMAScript 2017",
-    "subtopic": "Internal Engine Execution & Microtask Synchronization of Trailing Commas in Function Parameter Lists & Calls",
-    "concept": "Internal Engine Execution & Microtask Synchronization of Trailing Commas in Function Parameter Lists & Calls",
+    "topic": "Async JavaScript",
+    "concept": "Error Handling in async / await (try/catch vs .catch)",
     "difficulty": "INTERMEDIATE",
-    "questionType": "MCQ",
-    "experienceLevel": "1_3_YEARS",
-    "isHighFrequency": false,
-    "companyTags": [
-      "Meta",
-      "Netflix"
+    "questionType": "CONCEPTUAL",
+    "questionNumber": 8,
+    "question": "How should errors be handled with async/await compared to traditional Promise chaining?",
+    "shortAnswer": "async/await allows standard synchronous try/catch/finally blocks to catch both asynchronous Promise rejections and synchronous runtime exceptions in the same block. Alternatively, individual await expressions can be caught inline using await promise.catch().",
+    "detailedAnswer": "With Promise chaining, errors are caught using .catch(err => ...).\n\nWith async/await:\n\n1. Standard try/catch: Wraps multiple await calls cleanly, handling any failure identically.\n\n2. Inline fallback: const data = await fetchData().catch(err => defaultData); allows inline fallback values without wrapping the entire function body in try/catch.\n\n3. Uncaught Rejection: If an await rejects without a try/catch or .catch(), the parent async function rejects, triggering unhandledrejection if left uncaught.",
+    "codeExample": "// 1. Unified try/catch\nasync function loadProfile(id) {\n  try {\n    const user = await fetchUser(id);\n    const posts = await fetchPosts(user.id);\n    return { user, posts };\n  } catch (err) {\n    console.error('Operation failed:', err);\n    return null;\n  }\n}\n\n// 2. Inline fallback pattern (Go-style tuple)\nasync function to(promise) {\n  return promise.then(data => [null, data]).catch(err => [err, null]);\n}\n\nconst [err, user] = await to(fetchUser(id));\nif (err) console.error('Error fetching:', err);",
+    "followUpQuestions": [
+      "Does try/catch in an async function catch errors thrown inside a setTimeout callback?",
+      "What happens if you return a rejected promise inside a try block without await?"
+    ],
+    "followUpAnswers": [
+      "No. setTimeout executes on a future macrotask after the try/catch block has finished executing.",
+      "If you write return Promise.reject(err) without await, the error bypasses the local catch block and rejects the parent function."
     ],
     "tags": [
       "es8",
-      "es8",
-      "Meta",
-      "Netflix",
-      "interview-prep"
+      "javascript",
+      "async",
+      "error-handling"
     ],
-    "question": "Trailing Commas in Function Parameter Lists & Calls",
-    "shortAnswer": "In ES8, Internal Engine Execution & Microtask Synchronization of Trailing Commas in Function Parameter Lists & Calls ensures standards-compliant execution and predictable runtime characteristics.",
-    "interviewAnswer": "In ES8, Internal Engine Execution & Microtask Synchronization of Trailing Commas in Function Parameter Lists & Calls ensures standards-compliant execution and predictable runtime characteristics.\n\nIn practical production projects, mastering this ensures predictable state management, high runtime performance, and clean maintainability across our team.",
-    "detailedExplanation": "### Deep Technical Dive: JavaScript V8 Engine & Execution Lifecycle for Internal Engine Execution & Microtask Synchronization of Trailing Commas in Function Parameter Lists & Calls\n\n1. **V8 Compilation Pipeline**: Modern V8 parses source text into an Abstract Syntax Tree (AST). The **Ignition** bytecode interpreter produces compact bytecode, while **TurboFan** JIT compiler optimizes hot code paths into machine assembly.\n2. **Execution Context & Scoping**: When code runs, the engine creates an Execution Context containing a Lexical Environment (let/const bindings in TDZ until evaluated) and a Variable Environment (var declarations hoisted). Closures capture parent lexical scopes in the memory heap.\n3. **Event Loop & Microtask Priority**: Synchronous code executes on the single-threaded Call Stack. Microtasks (Promise resolutions, queueMicrotask) run immediately when the call stack empties, preceding macrotasks (setTimeout, DOM events) in the Event Loop cycle.",
-    "why": "Why does Internal Engine Execution & Microtask Synchronization of Trailing Commas in Function Parameter Lists & Calls exist in modern JavaScript?\n1. Eliminates error-prone legacy patterns (callback hell, global scope pollution, hoisting bugs).\n2. Enhances developer ergonomics with declarative, expressive, and self-documenting syntax.\n3. Enables V8 and other modern engines to apply runtime JIT optimizations and efficient garbage collection.",
-    "howItWorks": "",
-    "realWorldExample": "Production Scenario: Real-time fintech stock price ticker or dashboard where data streams are processed asynchronously, cached safely in scope without memory leaks, and rendered to users with sub-millisecond latency.",
-    "example": "// Practical Demonstration: Internal Engine Execution & Microtask Synchronization of Trailing Commas in Function Parameter Lists & Calls\nfunction executeFeature() {\n  console.log(\"Step 1: Initializing demonstration for Internal Engine Execution & Microtask Synchronization of Trailing Commas in Function Parameter Lists & Calls...\");\n\n  const data = {\n    title: \"Internal Engine Execution & Microtask Synchronization of Trailing Commas in Function Parameter Lists & Calls\",\n    status: \"ACTIVE\",\n    timestamp: new Date().toLocaleTimeString()\n  };\n\n  console.log(\"Step 2: Processing data:\", data);\n  return { success: true, payload: data };\n}\n\nconst outcome = executeFeature();\nconsole.log(\"Step 3: Execution completed successfully:\", outcome);",
-    "codeSnippet": "// Practical Demonstration: Internal Engine Execution & Microtask Synchronization of Trailing Commas in Function Parameter Lists & Calls\nfunction executeFeature() {\n  console.log(\"Step 1: Initializing demonstration for Internal Engine Execution & Microtask Synchronization of Trailing Commas in Function Parameter Lists & Calls...\");\n\n  const data = {\n    title: \"Internal Engine Execution & Microtask Synchronization of Trailing Commas in Function Parameter Lists & Calls\",\n    status: \"ACTIVE\",\n    timestamp: new Date().toLocaleTimeString()\n  };\n\n  console.log(\"Step 2: Processing data:\", data);\n  return { success: true, payload: data };\n}\n\nconst outcome = executeFeature();\nconsole.log(\"Step 3: Execution completed successfully:\", outcome);",
-    "lineByLineExplanation": [
-      {
-        "line": 1,
-        "code": "// Feature Initialization",
-        "explanation": "Initializes execution in current lexical scope."
-      },
-      {
-        "line": 2,
-        "code": "const result = await processData();",
-        "explanation": "Pauses execution in async function; pushes continuation to microtask queue upon resolution."
-      },
-      {
-        "line": 3,
-        "code": "return { success: true, payload: result };",
-        "explanation": "Returns immutable data payload to caller."
-      }
-    ],
-    "executionFlow": [],
-    "commonMistakes": [
-      "Confusing synchronous execution with asynchronous microtask scheduling in the event loop.",
-      "Accidentally creating memory leaks by retaining references in closures or uncleared event listeners.",
-      "Assuming 'this' binding is lexical in regular functions instead of dynamically determined at call time."
-    ],
-    "interviewTraps": [
-      "Interviewer presents code mixing Promise.resolve(), setTimeout(..., 0), and synchronous console.log to test exact queue order.",
-      "How closures retain access to outer variables even after the outer function has completed execution and returned.",
-      "Temporal Dead Zone (TDZ): accessing let/const before initialization throws ReferenceError, unlike var which is initialized to undefined."
-    ],
-    "interviewTips": [
-      "Clearly articulate the phases: Creation Phase (hoisting) vs Execution Phase.",
-      "Explain the Event Loop clearly: Call Stack -> Microtask Queue (Promises) -> Macrotask Queue (Timers).",
-      "Highlight immutability, pure functions, and predictable state transformations."
-    ],
+    "detailedExplanation": "With Promise chaining, errors are caught using .catch(err => ...).\n\nWith async/await:\n\n1. Standard try/catch: Wraps multiple await calls cleanly, handling any failure identically.\n\n2. Inline fallback: const data = await fetchData().catch(err => defaultData); allows inline fallback values without wrapping the entire function body in try/catch.\n\n3. Uncaught Rejection: If an await rejects without a try/catch or .catch(), the parent async function rejects, triggering unhandledrejection if left uncaught.",
+    "simpleExplanation": "async/await allows standard synchronous try/catch/finally blocks to catch both asynchronous Promise rejections and synchronous runtime exceptions in the same block. Alternatively, individual await expressions can be caught inline using await promise.catch().",
+    "example": "// 1. Unified try/catch\nasync function loadProfile(id) {\n  try {\n    const user = await fetchUser(id);\n    const posts = await fetchPosts(user.id);\n    return { user, posts };\n  } catch (err) {\n    console.error('Operation failed:', err);\n    return null;\n  }\n}\n\n// 2. Inline fallback pattern (Go-style tuple)\nasync function to(promise) {\n  return promise.then(data => [null, data]).catch(err => [err, null]);\n}\n\nconst [err, user] = await to(fetchUser(id));\nif (err) console.error('Error fetching:', err);",
+    "codeSnippet": "// 1. Unified try/catch\nasync function loadProfile(id) {\n  try {\n    const user = await fetchUser(id);\n    const posts = await fetchPosts(user.id);\n    return { user, posts };\n  } catch (err) {\n    console.error('Operation failed:', err);\n    return null;\n  }\n}\n\n// 2. Inline fallback pattern (Go-style tuple)\nasync function to(promise) {\n  return promise.then(data => [null, data]).catch(err => [err, null]);\n}\n\nconst [err, user] = await to(fetchUser(id));\nif (err) console.error('Error fetching:', err);",
     "followUps": [
-      "What is the difference between the Microtask Queue and the Macrotask (Callback) Queue?",
-      "How does the V8 garbage collector detect and clean up unreferenced memory in closures?",
-      "What is the Temporal Dead Zone (TDZ) and why was it introduced in ES6?"
+      "Does try/catch in an async function catch errors thrown inside a setTimeout callback?",
+      "What happens if you return a rejected promise inside a try block without await?"
     ],
-    "followUpAnswers": [
-      "Microtasks (Promise.then, queueMicrotask) have higher priority and run completely to exhaustion after every call stack frame, whereas Macrotasks (setTimeout, setInterval) run one per event loop tick.",
-      "V8 uses a Generational Garbage Collector (Scavenger for young generation, Mark-Sweep-Compact for old generation) tracing reachability from roots (window/global).",
-      "The TDZ is the period between entering scope and variable declaration evaluation; accessing let/const during TDZ throws a ReferenceError to prevent accessing uninitialized state."
-    ],
-    "diagram": "flowchart TD\n    Stack[\"1. Call Stack (Synchronous Code Runs Here First)\"]\n    Stack -->|Stack Becomes Empty| Micro[\"2. Microtask Queue (VIP: Promises & queueMicrotask)\"]\n    Micro -->|All Microtasks Drained| Macro[\"3. Macrotask Queue (setTimeout, setInterval, I/O)\"]\n    Macro -->|Next Iteration| Stack",
-    "diagramCaption": "JavaScript Event Loop Priority Pipeline: Stack -> Microtasks -> Macrotasks",
-    "expectedOutput": "Step 1: Starting operation for Internal Engine Execution & Microtask Synchronization of Trailing Commas in Function Parameter Lists & Calls...\nStep 2: Operation evaluated successfully.\nStep 3: Cleanup completed deterministically.\nFinal Result: { ok: true, data: { status: 'SUCCESS' } }",
-    "videoUrl": "https://www.youtube-nocookie.com/embed/8aGhZQkoFbQ",
-    "videoTitle": "What the heck is the event loop anyway? (Philip Roberts)",
-    "standard_id": "ES8-MCQ-000008",
-    "questionNumber": 8,
-    "question_type": "mcq",
-    "question_hash": "qh_6924c0f5",
-    "options": [
-      {
-        "key": "A",
-        "text": "It enables deterministic behavior for Internal Engine Execution & Microtask Synchronization of Trailing Commas in Function Parameter Lists & Calls per the official specification.",
-        "explanation": "Correct. Internal Engine Execution & Microtask Synchronization of Trailing Commas in Function Parameter Lists & Calls provides standard, predictable execution in ES8."
-      },
-      {
-        "key": "B",
-        "text": "It forces an immediate full synchronous DOM reflow and redraws the operating system desktop.",
-        "explanation": "Incorrect. Web engines isolate styling and computation to the document view."
-      },
-      {
-        "key": "C",
-        "text": "It disables the JavaScript microtask queue and switches the browser to single-process mode.",
-        "explanation": "Incorrect. Browser process architecture and task scheduling are not disabled by Internal Engine Execution & Microtask Synchronization of Trailing Commas in Function Parameter Lists & Calls."
-      },
-      {
-        "key": "D",
-        "text": "It converts all variables to global strings and clears browser localStorage.",
-        "explanation": "Incorrect. Scope rules and client storage remain strictly governed by standards."
-      }
-    ],
-    "correctAnswer": "A",
-    "mcqExplanation": "In ES8, Internal Engine Execution & Microtask Synchronization of Trailing Commas in Function Parameter Lists & Calls ensures standards-compliant execution and predictable runtime characteristics.",
-    "wrongOptionExplanations": {
-      "B": "Layout and rendering engines maintain isolated graphical compositing layers.",
-      "C": "The JavaScript event loop and microtask queue operate independently of this syntax.",
-      "D": "Client storage APIs and variable scopes maintain strict sandboxed boundaries."
-    },
-    "codeExplanationSpeech": "This code demonstrates the implementation of Internal Engine Execution & Microtask Synchronization of Trailing Commas in Function Parameter Lists & Calls with clear input and output handling.",
-    "status": "published",
-    "simpleExplanation": "V8 Compilation Pipeline: Modern V8 parses source text into an Abstract Syntax Tree (AST). The Ignition bytecode interpreter produces compact bytecode, while TurboFan JIT compiler optimizes hot code paths into machine assembly. Execution Context & Scoping: When code runs, the engine creates an Execution Context containing a Lexical Environment (let/const bindings in TDZ until evaluated) and a Variable Environment (var declarations hoisted)."
+    "interviewTips": [],
+    "interviewAnswer": "async/await allows standard synchronous try/catch/finally blocks to catch both asynchronous Promise rejections and synchronous runtime exceptions in the same block. Alternatively, individual await expressions can be caught inline using await promise.catch().",
+    "realWorldExample": "",
+    "experienceLevel": "1_3_YEARS"
   },
   {
     "id": "iq-es8-0009",
     "subject": "es8",
-    "topic": "ECMAScript 2017",
-    "subtopic": "Internal Engine Execution & Microtask Synchronization of SharedArrayBuffer & Atomics Shared Memory Operations",
-    "concept": "Internal Engine Execution & Microtask Synchronization of SharedArrayBuffer & Atomics Shared Memory Operations",
-    "difficulty": "DIFFICULT",
-    "questionType": "DEBUGGING",
-    "experienceLevel": "3_5_YEARS",
-    "isHighFrequency": true,
-    "companyTags": [
-      "Amazon",
-      "Uber"
+    "topic": "Async JavaScript",
+    "concept": "Parallel vs Sequential Async Execution",
+    "difficulty": "INTERMEDIATE",
+    "questionType": "CONCEPTUAL",
+    "questionNumber": 9,
+    "question": "What is the performance pitfall of using await inside a loop and how do you fix it?",
+    "shortAnswer": "Awaiting inside a for loop or forEach executes operations sequentially, multiplying total execution time by the number of items. To execute in parallel, initiate the promises concurrently and use Promise.all().",
+    "detailedAnswer": "When async operations do not depend on each other's results, running them in sequence creates unnecessary latency bottlenecks:\n\nSequential (Bad for independent requests):\nfor (const id of ids) {\n  await fetchItem(id); // Wait 200ms * 10 = 2000ms\n}\n\nParallel (Optimal):\nconst promises = ids.map(id => fetchItem(id));\nconst results = await Promise.all(promises); // Total: ~200ms total!",
+    "codeExample": "const ids = [1, 2, 3];\n\n// Sequential (slow):\nasync function getSequential() {\n  const results = [];\n  for (const id of ids) {\n    results.push(await fetchItem(id));\n  }\n  return results;\n}\n\n// Parallel (fast):\nasync function getParallel() {\n  const promises = ids.map(id => fetchItem(id));\n  return await Promise.all(promises);\n}",
+    "followUpQuestions": [
+      "Why does Array.prototype.forEach not work as expected with async/await?",
+      "When IS sequential execution desirable?"
+    ],
+    "followUpAnswers": [
+      "forEach does not await the callback promise; it fires all callbacks synchronously without waiting for them to resolve.",
+      "When rate-limiting API requests, managing resource-constrained environments, or when step N requires data from step N-1."
     ],
     "tags": [
       "es8",
-      "es8",
-      "Amazon",
-      "Uber",
-      "interview-prep"
+      "javascript",
+      "performance",
+      "async"
     ],
-    "question": "SharedArrayBuffer & Atomics Shared Memory Operations",
-    "shortAnswer": "Internal Engine Execution & Microtask Synchronization of SharedArrayBuffer & Atomics Shared Memory Operations is a standardized ECMAScript feature that enhances language expressiveness and code maintainability. It simplifies asynchronous operations and eliminates common pitfalls in JavaScript development.",
-    "interviewAnswer": "Internal Engine Execution & Microtask Synchronization of SharedArrayBuffer & Atomics Shared Memory Operations is a standardized ECMAScript feature that enhances language expressiveness and code maintainability. It simplifies asynchronous operations and eliminates common pitfalls in JavaScript development.\n\nIn practical production projects, mastering this ensures predictable state management, high runtime performance, and clean maintainability across our team.",
-    "detailedExplanation": "### Deep Technical Dive: JavaScript V8 Engine & Execution Lifecycle for Internal Engine Execution & Microtask Synchronization of SharedArrayBuffer & Atomics Shared Memory Operations\n\n1. **V8 Compilation Pipeline**: Modern V8 parses source text into an Abstract Syntax Tree (AST). The **Ignition** bytecode interpreter produces compact bytecode, while **TurboFan** JIT compiler optimizes hot code paths into machine assembly.\n2. **Execution Context & Scoping**: When code runs, the engine creates an Execution Context containing a Lexical Environment (let/const bindings in TDZ until evaluated) and a Variable Environment (var declarations hoisted). Closures capture parent lexical scopes in the memory heap.\n3. **Event Loop & Microtask Priority**: Synchronous code executes on the single-threaded Call Stack. Microtasks (Promise resolutions, queueMicrotask) run immediately when the call stack empties, preceding macrotasks (setTimeout, DOM events) in the Event Loop cycle.",
-    "why": "Why does Internal Engine Execution & Microtask Synchronization of SharedArrayBuffer & Atomics Shared Memory Operations exist in modern JavaScript?\n1. Eliminates error-prone legacy patterns (callback hell, global scope pollution, hoisting bugs).\n2. Enhances developer ergonomics with declarative, expressive, and self-documenting syntax.\n3. Enables V8 and other modern engines to apply runtime JIT optimizations and efficient garbage collection.",
-    "howItWorks": "",
-    "realWorldExample": "Production Scenario: Real-time fintech stock price ticker or dashboard where data streams are processed asynchronously, cached safely in scope without memory leaks, and rendered to users with sub-millisecond latency.",
-    "example": "// Practical Demonstration: Internal Engine Execution & Microtask Synchronization of SharedArrayBuffer & Atomics Shared Memory Operations\nfunction executeFeature() {\n  console.log(\"Step 1: Initializing demonstration for Internal Engine Execution & Microtask Synchronization of SharedArrayBuffer & Atomics Shared Memory Operations...\");\n\n  const data = {\n    title: \"Internal Engine Execution & Microtask Synchronization of SharedArrayBuffer & Atomics Shared Memory Operations\",\n    status: \"ACTIVE\",\n    timestamp: new Date().toLocaleTimeString()\n  };\n\n  console.log(\"Step 2: Processing data:\", data);\n  return { success: true, payload: data };\n}\n\nconst outcome = executeFeature();\nconsole.log(\"Step 3: Execution completed successfully:\", outcome);",
-    "codeSnippet": "// Practical Demonstration: Internal Engine Execution & Microtask Synchronization of SharedArrayBuffer & Atomics Shared Memory Operations\nfunction executeFeature() {\n  console.log(\"Step 1: Initializing demonstration for Internal Engine Execution & Microtask Synchronization of SharedArrayBuffer & Atomics Shared Memory Operations...\");\n\n  const data = {\n    title: \"Internal Engine Execution & Microtask Synchronization of SharedArrayBuffer & Atomics Shared Memory Operations\",\n    status: \"ACTIVE\",\n    timestamp: new Date().toLocaleTimeString()\n  };\n\n  console.log(\"Step 2: Processing data:\", data);\n  return { success: true, payload: data };\n}\n\nconst outcome = executeFeature();\nconsole.log(\"Step 3: Execution completed successfully:\", outcome);",
-    "lineByLineExplanation": [
-      {
-        "line": 1,
-        "code": "// Feature Initialization",
-        "explanation": "Initializes execution in current lexical scope."
-      },
-      {
-        "line": 2,
-        "code": "const result = await processData();",
-        "explanation": "Pauses execution in async function; pushes continuation to microtask queue upon resolution."
-      },
-      {
-        "line": 3,
-        "code": "return { success: true, payload: result };",
-        "explanation": "Returns immutable data payload to caller."
-      }
-    ],
-    "executionFlow": [],
-    "commonMistakes": [
-      "Confusing synchronous execution with asynchronous microtask scheduling in the event loop.",
-      "Accidentally creating memory leaks by retaining references in closures or uncleared event listeners.",
-      "Assuming 'this' binding is lexical in regular functions instead of dynamically determined at call time."
-    ],
-    "interviewTraps": [
-      "Interviewer presents code mixing Promise.resolve(), setTimeout(..., 0), and synchronous console.log to test exact queue order.",
-      "How closures retain access to outer variables even after the outer function has completed execution and returned.",
-      "Temporal Dead Zone (TDZ): accessing let/const before initialization throws ReferenceError, unlike var which is initialized to undefined."
-    ],
-    "interviewTips": [
-      "Clearly articulate the phases: Creation Phase (hoisting) vs Execution Phase.",
-      "Explain the Event Loop clearly: Call Stack -> Microtask Queue (Promises) -> Macrotask Queue (Timers).",
-      "Highlight immutability, pure functions, and predictable state transformations."
-    ],
+    "detailedExplanation": "When async operations do not depend on each other's results, running them in sequence creates unnecessary latency bottlenecks:\n\nSequential (Bad for independent requests):\nfor (const id of ids) {\n  await fetchItem(id); // Wait 200ms * 10 = 2000ms\n}\n\nParallel (Optimal):\nconst promises = ids.map(id => fetchItem(id));\nconst results = await Promise.all(promises); // Total: ~200ms total!",
+    "simpleExplanation": "Awaiting inside a for loop or forEach executes operations sequentially, multiplying total execution time by the number of items. To execute in parallel, initiate the promises concurrently and use Promise.all().",
+    "example": "const ids = [1, 2, 3];\n\n// Sequential (slow):\nasync function getSequential() {\n  const results = [];\n  for (const id of ids) {\n    results.push(await fetchItem(id));\n  }\n  return results;\n}\n\n// Parallel (fast):\nasync function getParallel() {\n  const promises = ids.map(id => fetchItem(id));\n  return await Promise.all(promises);\n}",
+    "codeSnippet": "const ids = [1, 2, 3];\n\n// Sequential (slow):\nasync function getSequential() {\n  const results = [];\n  for (const id of ids) {\n    results.push(await fetchItem(id));\n  }\n  return results;\n}\n\n// Parallel (fast):\nasync function getParallel() {\n  const promises = ids.map(id => fetchItem(id));\n  return await Promise.all(promises);\n}",
     "followUps": [
-      "What is the difference between the Microtask Queue and the Macrotask (Callback) Queue?",
-      "How does the V8 garbage collector detect and clean up unreferenced memory in closures?",
-      "What is the Temporal Dead Zone (TDZ) and why was it introduced in ES6?"
+      "Why does Array.prototype.forEach not work as expected with async/await?",
+      "When IS sequential execution desirable?"
     ],
-    "followUpAnswers": [
-      "Microtasks (Promise.then, queueMicrotask) have higher priority and run completely to exhaustion after every call stack frame, whereas Macrotasks (setTimeout, setInterval) run one per event loop tick.",
-      "V8 uses a Generational Garbage Collector (Scavenger for young generation, Mark-Sweep-Compact for old generation) tracing reachability from roots (window/global).",
-      "The TDZ is the period between entering scope and variable declaration evaluation; accessing let/const during TDZ throws a ReferenceError to prevent accessing uninitialized state."
-    ],
-    "diagram": "flowchart TD\n    Stack[\"1. Call Stack (Synchronous Code Runs Here First)\"]\n    Stack -->|Stack Becomes Empty| Micro[\"2. Microtask Queue (VIP: Promises & queueMicrotask)\"]\n    Micro -->|All Microtasks Drained| Macro[\"3. Macrotask Queue (setTimeout, setInterval, I/O)\"]\n    Macro -->|Next Iteration| Stack",
-    "diagramCaption": "JavaScript Event Loop Priority Pipeline: Stack -> Microtasks -> Macrotasks",
-    "expectedOutput": "Step 1: Starting operation for Internal Engine Execution & Microtask Synchronization of SharedArrayBuffer & Atomics Shared Memory Operations...\nStep 2: Operation evaluated successfully.\nStep 3: Cleanup completed deterministically.\nFinal Result: { ok: true, data: { status: 'SUCCESS' } }",
-    "videoUrl": "https://www.youtube-nocookie.com/embed/8aGhZQkoFbQ",
-    "videoTitle": "What the heck is the event loop anyway? (Philip Roberts)",
-    "standard_id": "ES8-000009",
-    "questionNumber": 9,
-    "question_type": "concept",
-    "question_hash": "qh_2b83c499",
-    "codeExplanationSpeech": "This code demonstrates the implementation of Internal Engine Execution & Microtask Synchronization of SharedArrayBuffer & Atomics Shared Memory Operations with clear input and output handling.",
-    "status": "published",
-    "simpleExplanation": "V8 Compilation Pipeline: Modern V8 parses source text into an Abstract Syntax Tree (AST). The Ignition bytecode interpreter produces compact bytecode, while TurboFan JIT compiler optimizes hot code paths into machine assembly. Execution Context & Scoping: When code runs, the engine creates an Execution Context containing a Lexical Environment (let/const bindings in TDZ until evaluated) and a Variable Environment (var declarations hoisted)."
+    "interviewTips": [],
+    "interviewAnswer": "Awaiting inside a for loop or forEach executes operations sequentially, multiplying total execution time by the number of items. To execute in parallel, initiate the promises concurrently and use Promise.all().",
+    "realWorldExample": "",
+    "experienceLevel": "1_3_YEARS"
   },
   {
     "id": "iq-es8-0010",
     "subject": "es8",
-    "topic": "ECMAScript 2017",
-    "subtopic": "Internal Engine Execution & Microtask Synchronization of Async Generators & For-Await-Of Loop Iteration",
-    "concept": "Internal Engine Execution & Microtask Synchronization of Async Generators & For-Await-Of Loop Iteration",
+    "topic": "ECMAScript Specifications",
+    "concept": "ECMAScript 2017 (ES8) Feature Summary",
     "difficulty": "EASY",
-    "questionType": "MCQ",
-    "experienceLevel": "5_8_YEARS",
-    "isHighFrequency": false,
-    "companyTags": [
-      "Microsoft",
-      "Apple"
+    "questionType": "CONCEPTUAL",
+    "questionNumber": 10,
+    "question": "Summarize the primary features introduced in ECMAScript 2017 (ES8).",
+    "shortAnswer": "ECMAScript 2017 (ES8) introduced async/await, Object.values(), Object.entries(), Object.getOwnPropertyDescriptors(), String.prototype.padStart() & padEnd(), trailing commas in function parameter lists, and SharedArrayBuffer with Atomics.",
+    "detailedAnswer": "ES8 was a landmark release that transformed JavaScript development, headlined by native async/await syntax that standardized asynchronous programming.\n\nSummary of features:\n\n1. async / await: Replaced complex promise chains with clean synchronous-like syntax.\n\n2. Object.entries / Object.values: Native iteration utilities for object properties.\n\n3. String padding: padStart and padEnd for text formatting and layout.\n\n4. Object.getOwnPropertyDescriptors: Complete accessor-preserving cloning.\n\n5. Trailing commas: Clean diffs in function parameters and call arguments.\n\n6. SharedArrayBuffer & Atomics: Shared memory concurrency for multi-threaded Web Workers.",
+    "codeExample": "// ES8 quick recap:\nasync function demo() {\n  const obj = { a: 1, b: 2 };\n  console.log(Object.entries(obj)); // [['a', 1], ['b', 2]]\n  console.log('5'.padStart(3, '0')); // \"005\"\n}\ndemo();",
+    "followUpQuestions": [
+      "Which TC39 stage must a feature reach to be included in an ECMAScript release?",
+      "What feature in ES2018 followed ES8's object utilities?"
+    ],
+    "followUpAnswers": [
+      "Stage 4 (Finished).",
+      "Object rest/spread properties (...obj) were introduced in ES2018."
     ],
     "tags": [
       "es8",
-      "es8",
-      "Microsoft",
-      "Apple",
-      "interview-prep"
+      "javascript",
+      "tc39",
+      "ecmascript"
     ],
-    "question": "Async Generators & For-Await-Of Loop Iteration",
-    "shortAnswer": "In ES8, Internal Engine Execution & Microtask Synchronization of Async Generators & For-Await-Of Loop Iteration ensures standards-compliant execution and predictable runtime characteristics.",
-    "interviewAnswer": "In ES8, Internal Engine Execution & Microtask Synchronization of Async Generators & For-Await-Of Loop Iteration ensures standards-compliant execution and predictable runtime characteristics.\n\nIn practical production projects, mastering this ensures predictable state management, high runtime performance, and clean maintainability across our team.",
-    "detailedExplanation": "### Deep Technical Dive: JavaScript V8 Engine & Execution Lifecycle for Internal Engine Execution & Microtask Synchronization of Async Generators & For-Await-Of Loop Iteration\n\n1. **V8 Compilation Pipeline**: Modern V8 parses source text into an Abstract Syntax Tree (AST). The **Ignition** bytecode interpreter produces compact bytecode, while **TurboFan** JIT compiler optimizes hot code paths into machine assembly.\n2. **Execution Context & Scoping**: When code runs, the engine creates an Execution Context containing a Lexical Environment (let/const bindings in TDZ until evaluated) and a Variable Environment (var declarations hoisted). Closures capture parent lexical scopes in the memory heap.\n3. **Event Loop & Microtask Priority**: Synchronous code executes on the single-threaded Call Stack. Microtasks (Promise resolutions, queueMicrotask) run immediately when the call stack empties, preceding macrotasks (setTimeout, DOM events) in the Event Loop cycle.",
-    "why": "Why does Internal Engine Execution & Microtask Synchronization of Async Generators & For-Await-Of Loop Iteration exist in modern JavaScript?\n1. Eliminates error-prone legacy patterns (callback hell, global scope pollution, hoisting bugs).\n2. Enhances developer ergonomics with declarative, expressive, and self-documenting syntax.\n3. Enables V8 and other modern engines to apply runtime JIT optimizations and efficient garbage collection.",
-    "howItWorks": "",
-    "realWorldExample": "Production Scenario: Real-time fintech stock price ticker or dashboard where data streams are processed asynchronously, cached safely in scope without memory leaks, and rendered to users with sub-millisecond latency.",
-    "example": "// Practical Demonstration: Internal Engine Execution & Microtask Synchronization of Async Generators & For-Await-Of Loop Iteration\nfunction executeFeature() {\n  console.log(\"Step 1: Initializing demonstration for Internal Engine Execution & Microtask Synchronization of Async Generators & For-Await-Of Loop Iteration...\");\n\n  const data = {\n    title: \"Internal Engine Execution & Microtask Synchronization of Async Generators & For-Await-Of Loop Iteration\",\n    status: \"ACTIVE\",\n    timestamp: new Date().toLocaleTimeString()\n  };\n\n  console.log(\"Step 2: Processing data:\", data);\n  return { success: true, payload: data };\n}\n\nconst outcome = executeFeature();\nconsole.log(\"Step 3: Execution completed successfully:\", outcome);",
-    "codeSnippet": "// Practical Demonstration: Internal Engine Execution & Microtask Synchronization of Async Generators & For-Await-Of Loop Iteration\nfunction executeFeature() {\n  console.log(\"Step 1: Initializing demonstration for Internal Engine Execution & Microtask Synchronization of Async Generators & For-Await-Of Loop Iteration...\");\n\n  const data = {\n    title: \"Internal Engine Execution & Microtask Synchronization of Async Generators & For-Await-Of Loop Iteration\",\n    status: \"ACTIVE\",\n    timestamp: new Date().toLocaleTimeString()\n  };\n\n  console.log(\"Step 2: Processing data:\", data);\n  return { success: true, payload: data };\n}\n\nconst outcome = executeFeature();\nconsole.log(\"Step 3: Execution completed successfully:\", outcome);",
-    "lineByLineExplanation": [
-      {
-        "line": 1,
-        "code": "// Feature Initialization",
-        "explanation": "Initializes execution in current lexical scope."
-      },
-      {
-        "line": 2,
-        "code": "const result = await processData();",
-        "explanation": "Pauses execution in async function; pushes continuation to microtask queue upon resolution."
-      },
-      {
-        "line": 3,
-        "code": "return { success: true, payload: result };",
-        "explanation": "Returns immutable data payload to caller."
-      }
-    ],
-    "executionFlow": [],
-    "commonMistakes": [
-      "Confusing synchronous execution with asynchronous microtask scheduling in the event loop.",
-      "Accidentally creating memory leaks by retaining references in closures or uncleared event listeners.",
-      "Assuming 'this' binding is lexical in regular functions instead of dynamically determined at call time."
-    ],
-    "interviewTraps": [
-      "Interviewer presents code mixing Promise.resolve(), setTimeout(..., 0), and synchronous console.log to test exact queue order.",
-      "How closures retain access to outer variables even after the outer function has completed execution and returned.",
-      "Temporal Dead Zone (TDZ): accessing let/const before initialization throws ReferenceError, unlike var which is initialized to undefined."
-    ],
-    "interviewTips": [
-      "Clearly articulate the phases: Creation Phase (hoisting) vs Execution Phase.",
-      "Explain the Event Loop clearly: Call Stack -> Microtask Queue (Promises) -> Macrotask Queue (Timers).",
-      "Highlight immutability, pure functions, and predictable state transformations."
-    ],
+    "detailedExplanation": "ES8 was a landmark release that transformed JavaScript development, headlined by native async/await syntax that standardized asynchronous programming.\n\nSummary of features:\n\n1. async / await: Replaced complex promise chains with clean synchronous-like syntax.\n\n2. Object.entries / Object.values: Native iteration utilities for object properties.\n\n3. String padding: padStart and padEnd for text formatting and layout.\n\n4. Object.getOwnPropertyDescriptors: Complete accessor-preserving cloning.\n\n5. Trailing commas: Clean diffs in function parameters and call arguments.\n\n6. SharedArrayBuffer & Atomics: Shared memory concurrency for multi-threaded Web Workers.",
+    "simpleExplanation": "ECMAScript 2017 (ES8) introduced async/await, Object.values(), Object.entries(), Object.getOwnPropertyDescriptors(), String.prototype.padStart() & padEnd(), trailing commas in function parameter lists, and SharedArrayBuffer with Atomics.",
+    "example": "// ES8 quick recap:\nasync function demo() {\n  const obj = { a: 1, b: 2 };\n  console.log(Object.entries(obj)); // [['a', 1], ['b', 2]]\n  console.log('5'.padStart(3, '0')); // \"005\"\n}\ndemo();",
+    "codeSnippet": "// ES8 quick recap:\nasync function demo() {\n  const obj = { a: 1, b: 2 };\n  console.log(Object.entries(obj)); // [['a', 1], ['b', 2]]\n  console.log('5'.padStart(3, '0')); // \"005\"\n}\ndemo();",
     "followUps": [
-      "What is the difference between the Microtask Queue and the Macrotask (Callback) Queue?",
-      "How does the V8 garbage collector detect and clean up unreferenced memory in closures?",
-      "What is the Temporal Dead Zone (TDZ) and why was it introduced in ES6?"
+      "Which TC39 stage must a feature reach to be included in an ECMAScript release?",
+      "What feature in ES2018 followed ES8's object utilities?"
     ],
-    "followUpAnswers": [
-      "Microtasks (Promise.then, queueMicrotask) have higher priority and run completely to exhaustion after every call stack frame, whereas Macrotasks (setTimeout, setInterval) run one per event loop tick.",
-      "V8 uses a Generational Garbage Collector (Scavenger for young generation, Mark-Sweep-Compact for old generation) tracing reachability from roots (window/global).",
-      "The TDZ is the period between entering scope and variable declaration evaluation; accessing let/const during TDZ throws a ReferenceError to prevent accessing uninitialized state."
-    ],
-    "diagram": "flowchart TD\n    Stack[\"1. Call Stack (Synchronous Code Runs Here First)\"]\n    Stack -->|Stack Becomes Empty| Micro[\"2. Microtask Queue (VIP: Promises & queueMicrotask)\"]\n    Micro -->|All Microtasks Drained| Macro[\"3. Macrotask Queue (setTimeout, setInterval, I/O)\"]\n    Macro -->|Next Iteration| Stack",
-    "diagramCaption": "JavaScript Event Loop Priority Pipeline: Stack -> Microtasks -> Macrotasks",
-    "expectedOutput": "Step 1: Starting operation for Internal Engine Execution & Microtask Synchronization of Async Generators & For-Await-Of Loop Iteration...\nStep 2: Operation evaluated successfully.\nStep 3: Cleanup completed deterministically.\nFinal Result: { ok: true, data: { status: 'SUCCESS' } }",
-    "videoUrl": "https://www.youtube-nocookie.com/embed/8aGhZQkoFbQ",
-    "videoTitle": "What the heck is the event loop anyway? (Philip Roberts)",
-    "standard_id": "ES8-MCQ-000010",
-    "questionNumber": 10,
-    "question_type": "mcq",
-    "question_hash": "qh_7e72f46c",
-    "options": [
-      {
-        "key": "A",
-        "text": "It enables deterministic behavior for Internal Engine Execution & Microtask Synchronization of Async Generators & For-Await-Of Loop Iteration per the official specification.",
-        "explanation": "Correct. Internal Engine Execution & Microtask Synchronization of Async Generators & For-Await-Of Loop Iteration provides standard, predictable execution in ES8."
-      },
-      {
-        "key": "B",
-        "text": "It forces an immediate full synchronous DOM reflow and redraws the operating system desktop.",
-        "explanation": "Incorrect. Web engines isolate styling and computation to the document view."
-      },
-      {
-        "key": "C",
-        "text": "It disables the JavaScript microtask queue and switches the browser to single-process mode.",
-        "explanation": "Incorrect. Browser process architecture and task scheduling are not disabled by Internal Engine Execution & Microtask Synchronization of Async Generators & For-Await-Of Loop Iteration."
-      },
-      {
-        "key": "D",
-        "text": "It converts all variables to global strings and clears browser localStorage.",
-        "explanation": "Incorrect. Scope rules and client storage remain strictly governed by standards."
-      }
-    ],
-    "correctAnswer": "A",
-    "mcqExplanation": "In ES8, Internal Engine Execution & Microtask Synchronization of Async Generators & For-Await-Of Loop Iteration ensures standards-compliant execution and predictable runtime characteristics.",
-    "wrongOptionExplanations": {
-      "B": "Layout and rendering engines maintain isolated graphical compositing layers.",
-      "C": "The JavaScript event loop and microtask queue operate independently of this syntax.",
-      "D": "Client storage APIs and variable scopes maintain strict sandboxed boundaries."
-    },
-    "codeExplanationSpeech": "This code demonstrates the implementation of Internal Engine Execution & Microtask Synchronization of Async Generators & For-Await-Of Loop Iteration with clear input and output handling.",
-    "status": "published",
-    "simpleExplanation": "V8 Compilation Pipeline: Modern V8 parses source text into an Abstract Syntax Tree (AST). The Ignition bytecode interpreter produces compact bytecode, while TurboFan JIT compiler optimizes hot code paths into machine assembly. Execution Context & Scoping: When code runs, the engine creates an Execution Context containing a Lexical Environment (let/const bindings in TDZ until evaluated) and a Variable Environment (var declarations hoisted)."
+    "interviewTips": [],
+    "interviewAnswer": "ECMAScript 2017 (ES8) introduced async/await, Object.values(), Object.entries(), Object.getOwnPropertyDescriptors(), String.prototype.padStart() & padEnd(), trailing commas in function parameter lists, and SharedArrayBuffer with Atomics.",
+    "realWorldExample": "",
+    "experienceLevel": "1_3_YEARS"
   }
 ]

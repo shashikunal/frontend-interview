@@ -2,1006 +2,391 @@
   {
     "id": "iq-es7-0001",
     "subject": "es7",
-    "topic": "ECMAScript 2016",
-    "subtopic": "Internal Engine Execution & Microtask Synchronization of Array.prototype.includes() & SameValueZero Search Semantics",
-    "concept": "Internal Engine Execution & Microtask Synchronization of Array.prototype.includes() & SameValueZero Search Semantics",
+    "topic": "Array Methods",
+    "concept": "Array.prototype.includes() & SameValueZero Search Semantics",
     "difficulty": "EASY",
-    "questionType": "DEBUGGING",
-    "experienceLevel": "3_5_YEARS",
-    "isHighFrequency": true,
-    "companyTags": [
-      "Amazon",
-      "Uber"
+    "questionType": "CONCEPTUAL",
+    "questionNumber": 1,
+    "question": "How does Array.prototype.includes() work and how does it compare to indexOf?",
+    "shortAnswer": "Array.prototype.includes(value, fromIndex) returns true if an array contains a specified element, and false otherwise. Unlike indexOf, it returns a clear boolean and uses the SameValueZero algorithm, enabling it to correctly detect NaN.",
+    "detailedAnswer": "Introduced in ECMAScript 2016 (ES7), Array.prototype.includes() solves the shortcomings of indexOf():\n\n1. Boolean Output: Returns true/false directly instead of requiring arr.indexOf(x) !== -1.\n\n2. NaN Detection: NaN !== NaN in strict equality, so [NaN].indexOf(NaN) returns -1. includes() uses SameValueZero comparison, successfully returning true.\n\n3. Negative fromIndex: Treats negative indices as offsets from the end (arr.length + fromIndex).\n\n4. Sparse Arrays: Treats missing holes in sparse arrays as undefined.",
+    "codeExample": "const list = [10, 20, NaN, 40];\n\n// 1. Boolean check\nconsole.log(list.includes(20)); // true\n\n// 2. NaN lookup (indexOf fails, includes succeeds)\nconsole.log(list.indexOf(NaN));  // -1\nconsole.log(list.includes(NaN)); // true\n\n// 3. fromIndex offset\nconsole.log(list.includes(10, 1)); // false (starts scanning from index 1)",
+    "followUpQuestions": [
+      "How does Array.prototype.includes treat +0 and -0?",
+      "What is the difference between SameValueZero and Object.is (SameValue)?"
+    ],
+    "followUpAnswers": [
+      "SameValueZero considers +0 and -0 strictly equal, returning true for either.",
+      "Object.is differentiates +0 and -0 (Object.is(+0, -0) is false), whereas SameValueZero considers +0 and -0 equal."
     ],
     "tags": [
       "es7",
-      "es7",
-      "Amazon",
-      "Uber",
-      "interview-prep"
+      "javascript",
+      "arrays",
+      "methods"
     ],
-    "question": "Array.prototype.includes() & SameValueZero Search Semantics",
-    "shortAnswer": "Internal Engine Execution & Microtask Synchronization of Array.prototype.includes() & SameValueZero Search Semantics is a standardized ECMAScript feature that enhances language expressiveness and code maintainability. It simplifies asynchronous operations and eliminates common pitfalls in JavaScript development.",
-    "interviewAnswer": "Internal Engine Execution & Microtask Synchronization of Array.prototype.includes() & SameValueZero Search Semantics is a standardized ECMAScript feature that enhances language expressiveness and code maintainability. It simplifies asynchronous operations and eliminates common pitfalls in JavaScript development.\n\nIn practical production projects, mastering this ensures predictable state management, high runtime performance, and clean maintainability across our team.",
-    "detailedExplanation": "### Deep Technical Dive: JavaScript V8 Engine & Execution Lifecycle for Internal Engine Execution & Microtask Synchronization of Array.prototype.includes() & SameValueZero Search Semantics\n\n1. **V8 Compilation Pipeline**: Modern V8 parses source text into an Abstract Syntax Tree (AST). The **Ignition** bytecode interpreter produces compact bytecode, while **TurboFan** JIT compiler optimizes hot code paths into machine assembly.\n2. **Execution Context & Scoping**: When code runs, the engine creates an Execution Context containing a Lexical Environment (let/const bindings in TDZ until evaluated) and a Variable Environment (var declarations hoisted). Closures capture parent lexical scopes in the memory heap.\n3. **Event Loop & Microtask Priority**: Synchronous code executes on the single-threaded Call Stack. Microtasks (Promise resolutions, queueMicrotask) run immediately when the call stack empties, preceding macrotasks (setTimeout, DOM events) in the Event Loop cycle.",
-    "why": "Why does Internal Engine Execution & Microtask Synchronization of Array.prototype.includes() & SameValueZero Search Semantics exist in modern JavaScript?\n1. Eliminates error-prone legacy patterns (callback hell, global scope pollution, hoisting bugs).\n2. Enhances developer ergonomics with declarative, expressive, and self-documenting syntax.\n3. Enables V8 and other modern engines to apply runtime JIT optimizations and efficient garbage collection.",
-    "howItWorks": "",
-    "realWorldExample": "Production Scenario: Real-time fintech stock price ticker or dashboard where data streams are processed asynchronously, cached safely in scope without memory leaks, and rendered to users with sub-millisecond latency.",
-    "example": "// Practical Demonstration: Internal Engine Execution & Microtask Synchronization of Array.prototype.includes() & SameValueZero Search Semantics\nfunction executeFeature() {\n  console.log(\"Step 1: Initializing demonstration for Internal Engine Execution & Microtask Synchronization of Array.prototype.includes() & SameValueZero Search Semantics...\");\n\n  const data = {\n    title: \"Internal Engine Execution & Microtask Synchronization of Array.prototype.includes() & SameValueZero Search Semantics\",\n    status: \"ACTIVE\",\n    timestamp: new Date().toLocaleTimeString()\n  };\n\n  console.log(\"Step 2: Processing data:\", data);\n  return { success: true, payload: data };\n}\n\nconst outcome = executeFeature();\nconsole.log(\"Step 3: Execution completed successfully:\", outcome);",
-    "codeSnippet": "// Practical Demonstration: Internal Engine Execution & Microtask Synchronization of Array.prototype.includes() & SameValueZero Search Semantics\nfunction executeFeature() {\n  console.log(\"Step 1: Initializing demonstration for Internal Engine Execution & Microtask Synchronization of Array.prototype.includes() & SameValueZero Search Semantics...\");\n\n  const data = {\n    title: \"Internal Engine Execution & Microtask Synchronization of Array.prototype.includes() & SameValueZero Search Semantics\",\n    status: \"ACTIVE\",\n    timestamp: new Date().toLocaleTimeString()\n  };\n\n  console.log(\"Step 2: Processing data:\", data);\n  return { success: true, payload: data };\n}\n\nconst outcome = executeFeature();\nconsole.log(\"Step 3: Execution completed successfully:\", outcome);",
-    "lineByLineExplanation": [
-      {
-        "line": 1,
-        "code": "// Feature Initialization",
-        "explanation": "Initializes execution in current lexical scope."
-      },
-      {
-        "line": 2,
-        "code": "const result = await processData();",
-        "explanation": "Pauses execution in async function; pushes continuation to microtask queue upon resolution."
-      },
-      {
-        "line": 3,
-        "code": "return { success: true, payload: result };",
-        "explanation": "Returns immutable data payload to caller."
-      }
-    ],
-    "executionFlow": [],
-    "commonMistakes": [
-      "Confusing synchronous execution with asynchronous microtask scheduling in the event loop.",
-      "Accidentally creating memory leaks by retaining references in closures or uncleared event listeners.",
-      "Assuming 'this' binding is lexical in regular functions instead of dynamically determined at call time."
-    ],
-    "interviewTraps": [
-      "Interviewer presents code mixing Promise.resolve(), setTimeout(..., 0), and synchronous console.log to test exact queue order.",
-      "How closures retain access to outer variables even after the outer function has completed execution and returned.",
-      "Temporal Dead Zone (TDZ): accessing let/const before initialization throws ReferenceError, unlike var which is initialized to undefined."
-    ],
-    "interviewTips": [
-      "Clearly articulate the phases: Creation Phase (hoisting) vs Execution Phase.",
-      "Explain the Event Loop clearly: Call Stack -> Microtask Queue (Promises) -> Macrotask Queue (Timers).",
-      "Highlight immutability, pure functions, and predictable state transformations."
-    ],
+    "detailedExplanation": "Introduced in ECMAScript 2016 (ES7), Array.prototype.includes() solves the shortcomings of indexOf():\n\n1. Boolean Output: Returns true/false directly instead of requiring arr.indexOf(x) !== -1.\n\n2. NaN Detection: NaN !== NaN in strict equality, so [NaN].indexOf(NaN) returns -1. includes() uses SameValueZero comparison, successfully returning true.\n\n3. Negative fromIndex: Treats negative indices as offsets from the end (arr.length + fromIndex).\n\n4. Sparse Arrays: Treats missing holes in sparse arrays as undefined.",
+    "simpleExplanation": "Array.prototype.includes(value, fromIndex) returns true if an array contains a specified element, and false otherwise. Unlike indexOf, it returns a clear boolean and uses the SameValueZero algorithm, enabling it to correctly detect NaN.",
+    "example": "const list = [10, 20, NaN, 40];\n\n// 1. Boolean check\nconsole.log(list.includes(20)); // true\n\n// 2. NaN lookup (indexOf fails, includes succeeds)\nconsole.log(list.indexOf(NaN));  // -1\nconsole.log(list.includes(NaN)); // true\n\n// 3. fromIndex offset\nconsole.log(list.includes(10, 1)); // false (starts scanning from index 1)",
+    "codeSnippet": "const list = [10, 20, NaN, 40];\n\n// 1. Boolean check\nconsole.log(list.includes(20)); // true\n\n// 2. NaN lookup (indexOf fails, includes succeeds)\nconsole.log(list.indexOf(NaN));  // -1\nconsole.log(list.includes(NaN)); // true\n\n// 3. fromIndex offset\nconsole.log(list.includes(10, 1)); // false (starts scanning from index 1)",
     "followUps": [
-      "What is the difference between the Microtask Queue and the Macrotask (Callback) Queue?",
-      "How does the V8 garbage collector detect and clean up unreferenced memory in closures?",
-      "What is the Temporal Dead Zone (TDZ) and why was it introduced in ES6?"
+      "How does Array.prototype.includes treat +0 and -0?",
+      "What is the difference between SameValueZero and Object.is (SameValue)?"
     ],
-    "followUpAnswers": [
-      "Microtasks (Promise.then, queueMicrotask) have higher priority and run completely to exhaustion after every call stack frame, whereas Macrotasks (setTimeout, setInterval) run one per event loop tick.",
-      "V8 uses a Generational Garbage Collector (Scavenger for young generation, Mark-Sweep-Compact for old generation) tracing reachability from roots (window/global).",
-      "The TDZ is the period between entering scope and variable declaration evaluation; accessing let/const during TDZ throws a ReferenceError to prevent accessing uninitialized state."
-    ],
-    "diagram": "flowchart TD\n    Stack[\"1. Call Stack (Synchronous Code Runs Here First)\"]\n    Stack -->|Stack Becomes Empty| Micro[\"2. Microtask Queue (VIP: Promises & queueMicrotask)\"]\n    Micro -->|All Microtasks Drained| Macro[\"3. Macrotask Queue (setTimeout, setInterval, I/O)\"]\n    Macro -->|Next Iteration| Stack",
-    "diagramCaption": "JavaScript Event Loop Priority Pipeline: Stack -> Microtasks -> Macrotasks",
-    "expectedOutput": "Step 1: Starting operation for Internal Engine Execution & Microtask Synchronization of Array.prototype.includes() & SameValueZero Search Semantics...\nStep 2: Operation evaluated successfully.\nStep 3: Cleanup completed deterministically.\nFinal Result: { ok: true, data: { status: 'SUCCESS' } }",
-    "videoUrl": "https://www.youtube-nocookie.com/embed/8aGhZQkoFbQ",
-    "videoTitle": "What the heck is the event loop anyway? (Philip Roberts)",
-    "standard_id": "ES7-000001",
-    "questionNumber": 1,
-    "question_type": "concept",
-    "question_hash": "qh_40865fae",
-    "codeExplanationSpeech": "This code demonstrates the implementation of Internal Engine Execution & Microtask Synchronization of Array.prototype.includes() & SameValueZero Search Semantics with clear input and output handling.",
-    "status": "published",
-    "simpleExplanation": "V8 Compilation Pipeline: Modern V8 parses source text into an Abstract Syntax Tree (AST). The Ignition bytecode interpreter produces compact bytecode, while TurboFan JIT compiler optimizes hot code paths into machine assembly. Execution Context & Scoping: When code runs, the engine creates an Execution Context containing a Lexical Environment (let/const bindings in TDZ until evaluated) and a Variable Environment (var declarations hoisted)."
+    "interviewTips": [],
+    "interviewAnswer": "Array.prototype.includes(value, fromIndex) returns true if an array contains a specified element, and false otherwise. Unlike indexOf, it returns a clear boolean and uses the SameValueZero algorithm, enabling it to correctly detect NaN.",
+    "realWorldExample": "",
+    "experienceLevel": "1_3_YEARS"
   },
   {
     "id": "iq-es7-0002",
     "subject": "es7",
-    "topic": "ECMAScript 2016",
-    "subtopic": "Internal Engine Execution & Microtask Synchronization of Strict Equality (===) vs SameValueZero Comparison",
-    "concept": "Internal Engine Execution & Microtask Synchronization of Strict Equality (===) vs SameValueZero Comparison",
+    "topic": "Equality & Types",
+    "concept": "Strict Equality (===) vs SameValueZero Comparison",
     "difficulty": "INTERMEDIATE",
-    "questionType": "MCQ",
-    "experienceLevel": "5_8_YEARS",
-    "isHighFrequency": false,
-    "companyTags": [
-      "Microsoft",
-      "Apple"
+    "questionType": "CONCEPTUAL",
+    "questionNumber": 2,
+    "question": "What is the difference between Strict Equality (===) and SameValueZero in JavaScript?",
+    "shortAnswer": "Strict Equality (===) and SameValueZero are identical except in their treatment of NaN. Under ===, NaN === NaN is false. Under SameValueZero (used in Map, Set, and Array.prototype.includes), NaN equals NaN. Both consider +0 and -0 equal.",
+    "detailedAnswer": "JavaScript defines 4 equality comparison algorithms:\n\n1. Abstract Equality (==): Coerces operand types before comparing.\n\n2. Strict Equality (===): Compares without coercion; +0 === -0 is true, but NaN === NaN is false.\n\n3. SameValueZero: Used in Map keys, Set values, and Array.prototype.includes(). Compares without coercion, considers +0 and -0 equal, and treats NaN as equal to NaN.\n\n4. SameValue (Object.is): No coercion; treats NaN as equal to NaN, but differentiates +0 from -0 (Object.is(+0, -0) is false).",
+    "codeExample": "// Strict Equality (===)\nconsole.log(NaN === NaN); // false\nconsole.log(+0 === -0);   // true\n\n// SameValueZero (Array.includes / Map / Set)\nconsole.log([NaN].includes(NaN)); // true\n\nconst set = new Set();\nset.add(NaN);\nset.add(NaN);\nconsole.log(set.size); // 1 (SameValueZero prevents duplicates)\n\n// SameValue (Object.is)\nconsole.log(Object.is(+0, -0)); // false",
+    "followUpQuestions": [
+      "Which native JavaScript collections use the SameValueZero algorithm?",
+      "Why didn't Array.prototype.includes use Object.is instead of SameValueZero?"
+    ],
+    "followUpAnswers": [
+      "Map keys, Set values, and Array.prototype.includes() all employ SameValueZero.",
+      "In practically all business use-cases, developers expect +0 and -0 to be treated as identical values; distinguishing them would cause confusing bugs."
     ],
     "tags": [
       "es7",
-      "es7",
-      "Microsoft",
-      "Apple",
-      "interview-prep"
+      "javascript",
+      "equality",
+      "samevaluezero"
     ],
-    "question": "Strict Equality (===) vs SameValueZero Comparison",
-    "shortAnswer": "In ES7, Internal Engine Execution & Microtask Synchronization of Strict Equality (===) vs SameValueZero Comparison ensures standards-compliant execution and predictable runtime characteristics.",
-    "interviewAnswer": "In ES7, Internal Engine Execution & Microtask Synchronization of Strict Equality (===) vs SameValueZero Comparison ensures standards-compliant execution and predictable runtime characteristics.\n\nIn practical production projects, mastering this ensures predictable state management, high runtime performance, and clean maintainability across our team.",
-    "detailedExplanation": "### Deep Technical Dive: JavaScript V8 Engine & Execution Lifecycle for Internal Engine Execution & Microtask Synchronization of Strict Equality (===) vs SameValueZero Comparison\n\n1. **V8 Compilation Pipeline**: Modern V8 parses source text into an Abstract Syntax Tree (AST). The **Ignition** bytecode interpreter produces compact bytecode, while **TurboFan** JIT compiler optimizes hot code paths into machine assembly.\n2. **Execution Context & Scoping**: When code runs, the engine creates an Execution Context containing a Lexical Environment (let/const bindings in TDZ until evaluated) and a Variable Environment (var declarations hoisted). Closures capture parent lexical scopes in the memory heap.\n3. **Event Loop & Microtask Priority**: Synchronous code executes on the single-threaded Call Stack. Microtasks (Promise resolutions, queueMicrotask) run immediately when the call stack empties, preceding macrotasks (setTimeout, DOM events) in the Event Loop cycle.",
-    "why": "Why does Internal Engine Execution & Microtask Synchronization of Strict Equality (===) vs SameValueZero Comparison exist in modern JavaScript?\n1. Eliminates error-prone legacy patterns (callback hell, global scope pollution, hoisting bugs).\n2. Enhances developer ergonomics with declarative, expressive, and self-documenting syntax.\n3. Enables V8 and other modern engines to apply runtime JIT optimizations and efficient garbage collection.",
-    "howItWorks": "",
-    "realWorldExample": "Production Scenario: Real-time fintech stock price ticker or dashboard where data streams are processed asynchronously, cached safely in scope without memory leaks, and rendered to users with sub-millisecond latency.",
-    "example": "// Practical Demonstration: Internal Engine Execution & Microtask Synchronization of Strict Equality (===) vs SameValueZero Comparison\nfunction executeFeature() {\n  console.log(\"Step 1: Initializing demonstration for Internal Engine Execution & Microtask Synchronization of Strict Equality (===) vs SameValueZero Comparison...\");\n\n  const data = {\n    title: \"Internal Engine Execution & Microtask Synchronization of Strict Equality (===) vs SameValueZero Comparison\",\n    status: \"ACTIVE\",\n    timestamp: new Date().toLocaleTimeString()\n  };\n\n  console.log(\"Step 2: Processing data:\", data);\n  return { success: true, payload: data };\n}\n\nconst outcome = executeFeature();\nconsole.log(\"Step 3: Execution completed successfully:\", outcome);",
-    "codeSnippet": "// Practical Demonstration: Internal Engine Execution & Microtask Synchronization of Strict Equality (===) vs SameValueZero Comparison\nfunction executeFeature() {\n  console.log(\"Step 1: Initializing demonstration for Internal Engine Execution & Microtask Synchronization of Strict Equality (===) vs SameValueZero Comparison...\");\n\n  const data = {\n    title: \"Internal Engine Execution & Microtask Synchronization of Strict Equality (===) vs SameValueZero Comparison\",\n    status: \"ACTIVE\",\n    timestamp: new Date().toLocaleTimeString()\n  };\n\n  console.log(\"Step 2: Processing data:\", data);\n  return { success: true, payload: data };\n}\n\nconst outcome = executeFeature();\nconsole.log(\"Step 3: Execution completed successfully:\", outcome);",
-    "lineByLineExplanation": [
-      {
-        "line": 1,
-        "code": "// Feature Initialization",
-        "explanation": "Initializes execution in current lexical scope."
-      },
-      {
-        "line": 2,
-        "code": "const result = await processData();",
-        "explanation": "Pauses execution in async function; pushes continuation to microtask queue upon resolution."
-      },
-      {
-        "line": 3,
-        "code": "return { success: true, payload: result };",
-        "explanation": "Returns immutable data payload to caller."
-      }
-    ],
-    "executionFlow": [],
-    "commonMistakes": [
-      "Confusing synchronous execution with asynchronous microtask scheduling in the event loop.",
-      "Accidentally creating memory leaks by retaining references in closures or uncleared event listeners.",
-      "Assuming 'this' binding is lexical in regular functions instead of dynamically determined at call time."
-    ],
-    "interviewTraps": [
-      "Interviewer presents code mixing Promise.resolve(), setTimeout(..., 0), and synchronous console.log to test exact queue order.",
-      "How closures retain access to outer variables even after the outer function has completed execution and returned.",
-      "Temporal Dead Zone (TDZ): accessing let/const before initialization throws ReferenceError, unlike var which is initialized to undefined."
-    ],
-    "interviewTips": [
-      "Clearly articulate the phases: Creation Phase (hoisting) vs Execution Phase.",
-      "Explain the Event Loop clearly: Call Stack -> Microtask Queue (Promises) -> Macrotask Queue (Timers).",
-      "Highlight immutability, pure functions, and predictable state transformations."
-    ],
+    "detailedExplanation": "JavaScript defines 4 equality comparison algorithms:\n\n1. Abstract Equality (==): Coerces operand types before comparing.\n\n2. Strict Equality (===): Compares without coercion; +0 === -0 is true, but NaN === NaN is false.\n\n3. SameValueZero: Used in Map keys, Set values, and Array.prototype.includes(). Compares without coercion, considers +0 and -0 equal, and treats NaN as equal to NaN.\n\n4. SameValue (Object.is): No coercion; treats NaN as equal to NaN, but differentiates +0 from -0 (Object.is(+0, -0) is false).",
+    "simpleExplanation": "Strict Equality (===) and SameValueZero are identical except in their treatment of NaN. Under ===, NaN === NaN is false. Under SameValueZero (used in Map, Set, and Array.prototype.includes), NaN equals NaN. Both consider +0 and -0 equal.",
+    "example": "// Strict Equality (===)\nconsole.log(NaN === NaN); // false\nconsole.log(+0 === -0);   // true\n\n// SameValueZero (Array.includes / Map / Set)\nconsole.log([NaN].includes(NaN)); // true\n\nconst set = new Set();\nset.add(NaN);\nset.add(NaN);\nconsole.log(set.size); // 1 (SameValueZero prevents duplicates)\n\n// SameValue (Object.is)\nconsole.log(Object.is(+0, -0)); // false",
+    "codeSnippet": "// Strict Equality (===)\nconsole.log(NaN === NaN); // false\nconsole.log(+0 === -0);   // true\n\n// SameValueZero (Array.includes / Map / Set)\nconsole.log([NaN].includes(NaN)); // true\n\nconst set = new Set();\nset.add(NaN);\nset.add(NaN);\nconsole.log(set.size); // 1 (SameValueZero prevents duplicates)\n\n// SameValue (Object.is)\nconsole.log(Object.is(+0, -0)); // false",
     "followUps": [
-      "What is the difference between the Microtask Queue and the Macrotask (Callback) Queue?",
-      "How does the V8 garbage collector detect and clean up unreferenced memory in closures?",
-      "What is the Temporal Dead Zone (TDZ) and why was it introduced in ES6?"
+      "Which native JavaScript collections use the SameValueZero algorithm?",
+      "Why didn't Array.prototype.includes use Object.is instead of SameValueZero?"
     ],
-    "followUpAnswers": [
-      "Microtasks (Promise.then, queueMicrotask) have higher priority and run completely to exhaustion after every call stack frame, whereas Macrotasks (setTimeout, setInterval) run one per event loop tick.",
-      "V8 uses a Generational Garbage Collector (Scavenger for young generation, Mark-Sweep-Compact for old generation) tracing reachability from roots (window/global).",
-      "The TDZ is the period between entering scope and variable declaration evaluation; accessing let/const during TDZ throws a ReferenceError to prevent accessing uninitialized state."
-    ],
-    "diagram": "flowchart TD\n    Stack[\"1. Call Stack (Synchronous Code Runs Here First)\"]\n    Stack -->|Stack Becomes Empty| Micro[\"2. Microtask Queue (VIP: Promises & queueMicrotask)\"]\n    Micro -->|All Microtasks Drained| Macro[\"3. Macrotask Queue (setTimeout, setInterval, I/O)\"]\n    Macro -->|Next Iteration| Stack",
-    "diagramCaption": "JavaScript Event Loop Priority Pipeline: Stack -> Microtasks -> Macrotasks",
-    "expectedOutput": "Step 1: Starting operation for Internal Engine Execution & Microtask Synchronization of Strict Equality (===) vs SameValueZero Comparison...\nStep 2: Operation evaluated successfully.\nStep 3: Cleanup completed deterministically.\nFinal Result: { ok: true, data: { status: 'SUCCESS' } }",
-    "videoUrl": "https://www.youtube-nocookie.com/embed/8aGhZQkoFbQ",
-    "videoTitle": "What the heck is the event loop anyway? (Philip Roberts)",
-    "standard_id": "ES7-MCQ-000002",
-    "questionNumber": 2,
-    "question_type": "mcq",
-    "question_hash": "qh_376a7fcd",
-    "options": [
-      {
-        "key": "A",
-        "text": "It enables deterministic behavior for Internal Engine Execution & Microtask Synchronization of Strict Equality (===) vs SameValueZero Comparison per the official specification.",
-        "explanation": "Correct. Internal Engine Execution & Microtask Synchronization of Strict Equality (===) vs SameValueZero Comparison provides standard, predictable execution in ES7."
-      },
-      {
-        "key": "B",
-        "text": "It forces an immediate full synchronous DOM reflow and redraws the operating system desktop.",
-        "explanation": "Incorrect. Web engines isolate styling and computation to the document view."
-      },
-      {
-        "key": "C",
-        "text": "It disables the JavaScript microtask queue and switches the browser to single-process mode.",
-        "explanation": "Incorrect. Browser process architecture and task scheduling are not disabled by Internal Engine Execution & Microtask Synchronization of Strict Equality (===) vs SameValueZero Comparison."
-      },
-      {
-        "key": "D",
-        "text": "It converts all variables to global strings and clears browser localStorage.",
-        "explanation": "Incorrect. Scope rules and client storage remain strictly governed by standards."
-      }
-    ],
-    "correctAnswer": "A",
-    "mcqExplanation": "In ES7, Internal Engine Execution & Microtask Synchronization of Strict Equality (===) vs SameValueZero Comparison ensures standards-compliant execution and predictable runtime characteristics.",
-    "wrongOptionExplanations": {
-      "B": "Layout and rendering engines maintain isolated graphical compositing layers.",
-      "C": "The JavaScript event loop and microtask queue operate independently of this syntax.",
-      "D": "Client storage APIs and variable scopes maintain strict sandboxed boundaries."
-    },
-    "codeExplanationSpeech": "This code demonstrates the implementation of Internal Engine Execution & Microtask Synchronization of Strict Equality (===) vs SameValueZero Comparison with clear input and output handling.",
-    "status": "published",
-    "simpleExplanation": "V8 Compilation Pipeline: Modern V8 parses source text into an Abstract Syntax Tree (AST). The Ignition bytecode interpreter produces compact bytecode, while TurboFan JIT compiler optimizes hot code paths into machine assembly. Execution Context & Scoping: When code runs, the engine creates an Execution Context containing a Lexical Environment (let/const bindings in TDZ until evaluated) and a Variable Environment (var declarations hoisted)."
+    "interviewTips": [],
+    "interviewAnswer": "Strict Equality (===) and SameValueZero are identical except in their treatment of NaN. Under ===, NaN === NaN is false. Under SameValueZero (used in Map, Set, and Array.prototype.includes), NaN equals NaN. Both consider +0 and -0 equal.",
+    "realWorldExample": "",
+    "experienceLevel": "1_3_YEARS"
   },
   {
     "id": "iq-es7-0003",
     "subject": "es7",
-    "topic": "ECMAScript 2016",
-    "subtopic": "Internal Engine Execution & Microtask Synchronization of NaN Handling in Array Lookups (includes vs indexOf)",
-    "concept": "Internal Engine Execution & Microtask Synchronization of NaN Handling in Array Lookups (includes vs indexOf)",
-    "difficulty": "DIFFICULT",
+    "topic": "Array Methods",
+    "concept": "NaN Handling in Array Lookups (includes vs indexOf)",
+    "difficulty": "EASY",
     "questionType": "CONCEPTUAL",
-    "experienceLevel": "FRESHER",
-    "isHighFrequency": true,
-    "companyTags": [
-      "Netflix",
-      "Airbnb"
+    "questionNumber": 3,
+    "question": "Why does [NaN].indexOf(NaN) return -1 while [NaN].includes(NaN) returns true?",
+    "shortAnswer": "Array.prototype.indexOf() relies on the Strict Equality Comparison algorithm (===), which specifies that NaN is not equal to anything, including itself. Array.prototype.includes() uses SameValueZero, which considers NaN equal to NaN.",
+    "detailedAnswer": "The IEEE 754 floating-point standard dictates that NaN is never equal to itself (NaN === NaN evaluates to false).\n\nBecause indexOf() uses === internally, searching for NaN in an array always yields -1. Prior to ES7, developers had to use Array.prototype.findIndex(Number.isNaN) to find NaN.\n\nES7 added includes(), which explicitly uses the SameValueZero algorithm to handle NaN lookups intuitively.",
+    "codeExample": "const numbers = [1, 2, NaN, 4];\n\n// Fails with indexOf:\nconsole.log(numbers.indexOf(NaN)); // -1\n\n// Pre-ES7 workaround:\nconsole.log(numbers.findIndex(n => Number.isNaN(n))); // 2\n\n// Modern ES7 solution:\nconsole.log(numbers.includes(NaN)); // true",
+    "followUpQuestions": [
+      "What is the difference between global isNaN() and Number.isNaN()?",
+      "How do you check if an array contains an object reference using includes()?"
+    ],
+    "followUpAnswers": [
+      "global isNaN() coerces values to numbers first (isNaN('foo') is true), while Number.isNaN() strictly checks without coercion (Number.isNaN('foo') is false).",
+      "includes() checks object references by pointer identity; two different object literals { a: 1 } will not match even if their properties are identical."
     ],
     "tags": [
       "es7",
-      "es7",
-      "Netflix",
-      "Airbnb",
-      "interview-prep"
+      "javascript",
+      "nan",
+      "arrays"
     ],
-    "question": "NaN Handling in Array Lookups (includes vs indexOf)",
-    "shortAnswer": "Internal Engine Execution & Microtask Synchronization of NaN Handling in Array Lookups (includes vs indexOf) is a standardized ECMAScript feature that enhances language expressiveness and code maintainability. It simplifies asynchronous operations and eliminates common pitfalls in JavaScript development.",
-    "interviewAnswer": "Internal Engine Execution & Microtask Synchronization of NaN Handling in Array Lookups (includes vs indexOf) is a standardized ECMAScript feature that enhances language expressiveness and code maintainability. It simplifies asynchronous operations and eliminates common pitfalls in JavaScript development.\n\nIn practical production projects, mastering this ensures predictable state management, high runtime performance, and clean maintainability across our team.",
-    "detailedExplanation": "### Deep Technical Dive: JavaScript V8 Engine & Execution Lifecycle for Internal Engine Execution & Microtask Synchronization of NaN Handling in Array Lookups (includes vs indexOf)\n\n1. **V8 Compilation Pipeline**: Modern V8 parses source text into an Abstract Syntax Tree (AST). The **Ignition** bytecode interpreter produces compact bytecode, while **TurboFan** JIT compiler optimizes hot code paths into machine assembly.\n2. **Execution Context & Scoping**: When code runs, the engine creates an Execution Context containing a Lexical Environment (let/const bindings in TDZ until evaluated) and a Variable Environment (var declarations hoisted). Closures capture parent lexical scopes in the memory heap.\n3. **Event Loop & Microtask Priority**: Synchronous code executes on the single-threaded Call Stack. Microtasks (Promise resolutions, queueMicrotask) run immediately when the call stack empties, preceding macrotasks (setTimeout, DOM events) in the Event Loop cycle.",
-    "why": "Why does Internal Engine Execution & Microtask Synchronization of NaN Handling in Array Lookups (includes vs indexOf) exist in modern JavaScript?\n1. Eliminates error-prone legacy patterns (callback hell, global scope pollution, hoisting bugs).\n2. Enhances developer ergonomics with declarative, expressive, and self-documenting syntax.\n3. Enables V8 and other modern engines to apply runtime JIT optimizations and efficient garbage collection.",
-    "howItWorks": "",
-    "realWorldExample": "Production Scenario: Real-time fintech stock price ticker or dashboard where data streams are processed asynchronously, cached safely in scope without memory leaks, and rendered to users with sub-millisecond latency.",
-    "example": "// Practical Demonstration: Internal Engine Execution & Microtask Synchronization of NaN Handling in Array Lookups (includes vs indexOf)\nfunction executeFeature() {\n  console.log(\"Step 1: Initializing demonstration for Internal Engine Execution & Microtask Synchronization of NaN Handling in Array Lookups (includes vs indexOf)...\");\n\n  const data = {\n    title: \"Internal Engine Execution & Microtask Synchronization of NaN Handling in Array Lookups (includes vs indexOf)\",\n    status: \"ACTIVE\",\n    timestamp: new Date().toLocaleTimeString()\n  };\n\n  console.log(\"Step 2: Processing data:\", data);\n  return { success: true, payload: data };\n}\n\nconst outcome = executeFeature();\nconsole.log(\"Step 3: Execution completed successfully:\", outcome);",
-    "codeSnippet": "// Practical Demonstration: Internal Engine Execution & Microtask Synchronization of NaN Handling in Array Lookups (includes vs indexOf)\nfunction executeFeature() {\n  console.log(\"Step 1: Initializing demonstration for Internal Engine Execution & Microtask Synchronization of NaN Handling in Array Lookups (includes vs indexOf)...\");\n\n  const data = {\n    title: \"Internal Engine Execution & Microtask Synchronization of NaN Handling in Array Lookups (includes vs indexOf)\",\n    status: \"ACTIVE\",\n    timestamp: new Date().toLocaleTimeString()\n  };\n\n  console.log(\"Step 2: Processing data:\", data);\n  return { success: true, payload: data };\n}\n\nconst outcome = executeFeature();\nconsole.log(\"Step 3: Execution completed successfully:\", outcome);",
-    "lineByLineExplanation": [
-      {
-        "line": 1,
-        "code": "// Feature Initialization",
-        "explanation": "Initializes execution in current lexical scope."
-      },
-      {
-        "line": 2,
-        "code": "const result = await processData();",
-        "explanation": "Pauses execution in async function; pushes continuation to microtask queue upon resolution."
-      },
-      {
-        "line": 3,
-        "code": "return { success: true, payload: result };",
-        "explanation": "Returns immutable data payload to caller."
-      }
-    ],
-    "executionFlow": [],
-    "commonMistakes": [
-      "Confusing synchronous execution with asynchronous microtask scheduling in the event loop.",
-      "Accidentally creating memory leaks by retaining references in closures or uncleared event listeners.",
-      "Assuming 'this' binding is lexical in regular functions instead of dynamically determined at call time."
-    ],
-    "interviewTraps": [
-      "Interviewer presents code mixing Promise.resolve(), setTimeout(..., 0), and synchronous console.log to test exact queue order.",
-      "How closures retain access to outer variables even after the outer function has completed execution and returned.",
-      "Temporal Dead Zone (TDZ): accessing let/const before initialization throws ReferenceError, unlike var which is initialized to undefined."
-    ],
-    "interviewTips": [
-      "Clearly articulate the phases: Creation Phase (hoisting) vs Execution Phase.",
-      "Explain the Event Loop clearly: Call Stack -> Microtask Queue (Promises) -> Macrotask Queue (Timers).",
-      "Highlight immutability, pure functions, and predictable state transformations."
-    ],
+    "detailedExplanation": "The IEEE 754 floating-point standard dictates that NaN is never equal to itself (NaN === NaN evaluates to false).\n\nBecause indexOf() uses === internally, searching for NaN in an array always yields -1. Prior to ES7, developers had to use Array.prototype.findIndex(Number.isNaN) to find NaN.\n\nES7 added includes(), which explicitly uses the SameValueZero algorithm to handle NaN lookups intuitively.",
+    "simpleExplanation": "Array.prototype.indexOf() relies on the Strict Equality Comparison algorithm (===), which specifies that NaN is not equal to anything, including itself. Array.prototype.includes() uses SameValueZero, which considers NaN equal to NaN.",
+    "example": "const numbers = [1, 2, NaN, 4];\n\n// Fails with indexOf:\nconsole.log(numbers.indexOf(NaN)); // -1\n\n// Pre-ES7 workaround:\nconsole.log(numbers.findIndex(n => Number.isNaN(n))); // 2\n\n// Modern ES7 solution:\nconsole.log(numbers.includes(NaN)); // true",
+    "codeSnippet": "const numbers = [1, 2, NaN, 4];\n\n// Fails with indexOf:\nconsole.log(numbers.indexOf(NaN)); // -1\n\n// Pre-ES7 workaround:\nconsole.log(numbers.findIndex(n => Number.isNaN(n))); // 2\n\n// Modern ES7 solution:\nconsole.log(numbers.includes(NaN)); // true",
     "followUps": [
-      "What is the difference between the Microtask Queue and the Macrotask (Callback) Queue?",
-      "How does the V8 garbage collector detect and clean up unreferenced memory in closures?",
-      "What is the Temporal Dead Zone (TDZ) and why was it introduced in ES6?"
+      "What is the difference between global isNaN() and Number.isNaN()?",
+      "How do you check if an array contains an object reference using includes()?"
     ],
-    "followUpAnswers": [
-      "Microtasks (Promise.then, queueMicrotask) have higher priority and run completely to exhaustion after every call stack frame, whereas Macrotasks (setTimeout, setInterval) run one per event loop tick.",
-      "V8 uses a Generational Garbage Collector (Scavenger for young generation, Mark-Sweep-Compact for old generation) tracing reachability from roots (window/global).",
-      "The TDZ is the period between entering scope and variable declaration evaluation; accessing let/const during TDZ throws a ReferenceError to prevent accessing uninitialized state."
-    ],
-    "diagram": "flowchart TD\n    Stack[\"1. Call Stack (Synchronous Code Runs Here First)\"]\n    Stack -->|Stack Becomes Empty| Micro[\"2. Microtask Queue (VIP: Promises & queueMicrotask)\"]\n    Micro -->|All Microtasks Drained| Macro[\"3. Macrotask Queue (setTimeout, setInterval, I/O)\"]\n    Macro -->|Next Iteration| Stack",
-    "diagramCaption": "JavaScript Event Loop Priority Pipeline: Stack -> Microtasks -> Macrotasks",
-    "expectedOutput": "Step 1: Starting operation for Internal Engine Execution & Microtask Synchronization of NaN Handling in Array Lookups (includes vs indexOf)...\nStep 2: Operation evaluated successfully.\nStep 3: Cleanup completed deterministically.\nFinal Result: { ok: true, data: { status: 'SUCCESS' } }",
-    "videoUrl": "https://www.youtube-nocookie.com/embed/8aGhZQkoFbQ",
-    "videoTitle": "What the heck is the event loop anyway? (Philip Roberts)",
-    "standard_id": "ES7-000003",
-    "questionNumber": 3,
-    "question_type": "concept",
-    "question_hash": "qh_3b974f2",
-    "codeExplanationSpeech": "This code demonstrates the implementation of Internal Engine Execution & Microtask Synchronization of NaN Handling in Array Lookups (includes vs indexOf) with clear input and output handling.",
-    "status": "published",
-    "simpleExplanation": "V8 Compilation Pipeline: Modern V8 parses source text into an Abstract Syntax Tree (AST). The Ignition bytecode interpreter produces compact bytecode, while TurboFan JIT compiler optimizes hot code paths into machine assembly. Execution Context & Scoping: When code runs, the engine creates an Execution Context containing a Lexical Environment (let/const bindings in TDZ until evaluated) and a Variable Environment (var declarations hoisted)."
+    "interviewTips": [],
+    "interviewAnswer": "Array.prototype.indexOf() relies on the Strict Equality Comparison algorithm (===), which specifies that NaN is not equal to anything, including itself. Array.prototype.includes() uses SameValueZero, which considers NaN equal to NaN.",
+    "realWorldExample": "",
+    "experienceLevel": "1_3_YEARS"
   },
   {
     "id": "iq-es7-0004",
     "subject": "es7",
-    "topic": "ECMAScript 2016",
-    "subtopic": "Internal Engine Execution & Microtask Synchronization of Exponentiation Operator (**) Syntax & Precedence Rules",
-    "concept": "Internal Engine Execution & Microtask Synchronization of Exponentiation Operator (**) Syntax & Precedence Rules",
+    "topic": "Operators",
+    "concept": "Exponentiation Operator (**)",
     "difficulty": "EASY",
-    "questionType": "MCQ",
-    "experienceLevel": "1_3_YEARS",
-    "isHighFrequency": false,
-    "companyTags": [
-      "Uber",
-      "Google"
+    "questionType": "CONCEPTUAL",
+    "questionNumber": 4,
+    "question": "What is the exponentiation operator (**) in ES7 and how does it work?",
+    "shortAnswer": "The exponentiation operator (**) raises the first operand to the power of the second operand (base ** exponent). It is an infix operator that serves as cleaner syntactic sugar for Math.pow(), and supports BigInt operations.",
+    "detailedAnswer": "In ECMAScript 2016, ** was introduced for mathematical exponentiation:\n\n1. Infix Syntax: x ** y is cleaner and matches languages like Python and Ruby.\n\n2. Right-Associativity: Chained exponentiations evaluate from right to left: a ** b ** c is equal to a ** (b ** c).\n\n3. Assignment Operator: Supports shorthand **= (e.g. x **= 2).\n\n4. BigInt Compatibility: Works with BigInt values (e.g. 2n ** 64n), whereas Math.pow() throws a TypeError on BigInts.",
+    "codeExample": "// Basic exponentiation\nconsole.log(2 ** 3); // 8\nconsole.log(Math.pow(2, 3)); // 8\n\n// Right-associative chaining\nconsole.log(2 ** 2 ** 3); // 256 (2 ** (2 ** 3) = 2 ** 8 = 256)\n\n// BigInt support\nconsole.log(2n ** 10n); // 1024n\n\n// Assignment operator\nlet val = 5;\nval **= 2;\nconsole.log(val); // 25",
+    "followUpQuestions": [
+      "Why does -2 ** 2 produce a SyntaxError in JavaScript?",
+      "Does Math.pow support BigInts?"
+    ],
+    "followUpAnswers": [
+      "To prevent ambiguity between -(2 ** 2) = -4 and (-2) ** 2 = 4, the specification mandates parentheses around unary expressions: (-2) ** 2.",
+      "No. Math.pow converts arguments to standard Number primitives, throwing a TypeError if passed BigInts."
     ],
     "tags": [
       "es7",
-      "es7",
-      "Uber",
-      "Google",
-      "interview-prep"
+      "javascript",
+      "operators",
+      "math"
     ],
-    "question": "Exponentiation Operator (**) Syntax & Precedence Rules",
-    "shortAnswer": "In ES7, Internal Engine Execution & Microtask Synchronization of Exponentiation Operator (**) Syntax & Precedence Rules ensures standards-compliant execution and predictable runtime characteristics.",
-    "interviewAnswer": "In ES7, Internal Engine Execution & Microtask Synchronization of Exponentiation Operator (**) Syntax & Precedence Rules ensures standards-compliant execution and predictable runtime characteristics.\n\nIn practical production projects, mastering this ensures predictable state management, high runtime performance, and clean maintainability across our team.",
-    "detailedExplanation": "### Deep Technical Dive: JavaScript V8 Engine & Execution Lifecycle for Internal Engine Execution & Microtask Synchronization of Exponentiation Operator (**) Syntax & Precedence Rules\n\n1. **V8 Compilation Pipeline**: Modern V8 parses source text into an Abstract Syntax Tree (AST). The **Ignition** bytecode interpreter produces compact bytecode, while **TurboFan** JIT compiler optimizes hot code paths into machine assembly.\n2. **Execution Context & Scoping**: When code runs, the engine creates an Execution Context containing a Lexical Environment (let/const bindings in TDZ until evaluated) and a Variable Environment (var declarations hoisted). Closures capture parent lexical scopes in the memory heap.\n3. **Event Loop & Microtask Priority**: Synchronous code executes on the single-threaded Call Stack. Microtasks (Promise resolutions, queueMicrotask) run immediately when the call stack empties, preceding macrotasks (setTimeout, DOM events) in the Event Loop cycle.",
-    "why": "Why does Internal Engine Execution & Microtask Synchronization of Exponentiation Operator (**) Syntax & Precedence Rules exist in modern JavaScript?\n1. Eliminates error-prone legacy patterns (callback hell, global scope pollution, hoisting bugs).\n2. Enhances developer ergonomics with declarative, expressive, and self-documenting syntax.\n3. Enables V8 and other modern engines to apply runtime JIT optimizations and efficient garbage collection.",
-    "howItWorks": "",
-    "realWorldExample": "Production Scenario: Real-time fintech stock price ticker or dashboard where data streams are processed asynchronously, cached safely in scope without memory leaks, and rendered to users with sub-millisecond latency.",
-    "example": "// Practical Demonstration: Internal Engine Execution & Microtask Synchronization of Exponentiation Operator (**) Syntax & Precedence Rules\nfunction executeFeature() {\n  console.log(\"Step 1: Initializing demonstration for Internal Engine Execution & Microtask Synchronization of Exponentiation Operator (**) Syntax & Precedence Rules...\");\n\n  const data = {\n    title: \"Internal Engine Execution & Microtask Synchronization of Exponentiation Operator (**) Syntax & Precedence Rules\",\n    status: \"ACTIVE\",\n    timestamp: new Date().toLocaleTimeString()\n  };\n\n  console.log(\"Step 2: Processing data:\", data);\n  return { success: true, payload: data };\n}\n\nconst outcome = executeFeature();\nconsole.log(\"Step 3: Execution completed successfully:\", outcome);",
-    "codeSnippet": "// Practical Demonstration: Internal Engine Execution & Microtask Synchronization of Exponentiation Operator (**) Syntax & Precedence Rules\nfunction executeFeature() {\n  console.log(\"Step 1: Initializing demonstration for Internal Engine Execution & Microtask Synchronization of Exponentiation Operator (**) Syntax & Precedence Rules...\");\n\n  const data = {\n    title: \"Internal Engine Execution & Microtask Synchronization of Exponentiation Operator (**) Syntax & Precedence Rules\",\n    status: \"ACTIVE\",\n    timestamp: new Date().toLocaleTimeString()\n  };\n\n  console.log(\"Step 2: Processing data:\", data);\n  return { success: true, payload: data };\n}\n\nconst outcome = executeFeature();\nconsole.log(\"Step 3: Execution completed successfully:\", outcome);",
-    "lineByLineExplanation": [
-      {
-        "line": 1,
-        "code": "// Feature Initialization",
-        "explanation": "Initializes execution in current lexical scope."
-      },
-      {
-        "line": 2,
-        "code": "const result = await processData();",
-        "explanation": "Pauses execution in async function; pushes continuation to microtask queue upon resolution."
-      },
-      {
-        "line": 3,
-        "code": "return { success: true, payload: result };",
-        "explanation": "Returns immutable data payload to caller."
-      }
-    ],
-    "executionFlow": [],
-    "commonMistakes": [
-      "Confusing synchronous execution with asynchronous microtask scheduling in the event loop.",
-      "Accidentally creating memory leaks by retaining references in closures or uncleared event listeners.",
-      "Assuming 'this' binding is lexical in regular functions instead of dynamically determined at call time."
-    ],
-    "interviewTraps": [
-      "Interviewer presents code mixing Promise.resolve(), setTimeout(..., 0), and synchronous console.log to test exact queue order.",
-      "How closures retain access to outer variables even after the outer function has completed execution and returned.",
-      "Temporal Dead Zone (TDZ): accessing let/const before initialization throws ReferenceError, unlike var which is initialized to undefined."
-    ],
-    "interviewTips": [
-      "Clearly articulate the phases: Creation Phase (hoisting) vs Execution Phase.",
-      "Explain the Event Loop clearly: Call Stack -> Microtask Queue (Promises) -> Macrotask Queue (Timers).",
-      "Highlight immutability, pure functions, and predictable state transformations."
-    ],
+    "detailedExplanation": "In ECMAScript 2016, ** was introduced for mathematical exponentiation:\n\n1. Infix Syntax: x ** y is cleaner and matches languages like Python and Ruby.\n\n2. Right-Associativity: Chained exponentiations evaluate from right to left: a ** b ** c is equal to a ** (b ** c).\n\n3. Assignment Operator: Supports shorthand **= (e.g. x **= 2).\n\n4. BigInt Compatibility: Works with BigInt values (e.g. 2n ** 64n), whereas Math.pow() throws a TypeError on BigInts.",
+    "simpleExplanation": "The exponentiation operator (**) raises the first operand to the power of the second operand (base ** exponent). It is an infix operator that serves as cleaner syntactic sugar for Math.pow(), and supports BigInt operations.",
+    "example": "// Basic exponentiation\nconsole.log(2 ** 3); // 8\nconsole.log(Math.pow(2, 3)); // 8\n\n// Right-associative chaining\nconsole.log(2 ** 2 ** 3); // 256 (2 ** (2 ** 3) = 2 ** 8 = 256)\n\n// BigInt support\nconsole.log(2n ** 10n); // 1024n\n\n// Assignment operator\nlet val = 5;\nval **= 2;\nconsole.log(val); // 25",
+    "codeSnippet": "// Basic exponentiation\nconsole.log(2 ** 3); // 8\nconsole.log(Math.pow(2, 3)); // 8\n\n// Right-associative chaining\nconsole.log(2 ** 2 ** 3); // 256 (2 ** (2 ** 3) = 2 ** 8 = 256)\n\n// BigInt support\nconsole.log(2n ** 10n); // 1024n\n\n// Assignment operator\nlet val = 5;\nval **= 2;\nconsole.log(val); // 25",
     "followUps": [
-      "What is the difference between the Microtask Queue and the Macrotask (Callback) Queue?",
-      "How does the V8 garbage collector detect and clean up unreferenced memory in closures?",
-      "What is the Temporal Dead Zone (TDZ) and why was it introduced in ES6?"
+      "Why does -2 ** 2 produce a SyntaxError in JavaScript?",
+      "Does Math.pow support BigInts?"
     ],
-    "followUpAnswers": [
-      "Microtasks (Promise.then, queueMicrotask) have higher priority and run completely to exhaustion after every call stack frame, whereas Macrotasks (setTimeout, setInterval) run one per event loop tick.",
-      "V8 uses a Generational Garbage Collector (Scavenger for young generation, Mark-Sweep-Compact for old generation) tracing reachability from roots (window/global).",
-      "The TDZ is the period between entering scope and variable declaration evaluation; accessing let/const during TDZ throws a ReferenceError to prevent accessing uninitialized state."
-    ],
-    "diagram": "flowchart TD\n    Stack[\"1. Call Stack (Synchronous Code Runs Here First)\"]\n    Stack -->|Stack Becomes Empty| Micro[\"2. Microtask Queue (VIP: Promises & queueMicrotask)\"]\n    Micro -->|All Microtasks Drained| Macro[\"3. Macrotask Queue (setTimeout, setInterval, I/O)\"]\n    Macro -->|Next Iteration| Stack",
-    "diagramCaption": "JavaScript Event Loop Priority Pipeline: Stack -> Microtasks -> Macrotasks",
-    "expectedOutput": "Step 1: Starting operation for Internal Engine Execution & Microtask Synchronization of Exponentiation Operator (**) Syntax & Precedence Rules...\nStep 2: Operation evaluated successfully.\nStep 3: Cleanup completed deterministically.\nFinal Result: { ok: true, data: { status: 'SUCCESS' } }",
-    "videoUrl": "https://www.youtube-nocookie.com/embed/8aGhZQkoFbQ",
-    "videoTitle": "What the heck is the event loop anyway? (Philip Roberts)",
-    "standard_id": "ES7-MCQ-000004",
-    "questionNumber": 4,
-    "question_type": "mcq",
-    "question_hash": "qh_23ab7c47",
-    "options": [
-      {
-        "key": "A",
-        "text": "It enables deterministic behavior for Internal Engine Execution & Microtask Synchronization of Exponentiation Operator (**) Syntax & Precedence Rules per the official specification.",
-        "explanation": "Correct. Internal Engine Execution & Microtask Synchronization of Exponentiation Operator (**) Syntax & Precedence Rules provides standard, predictable execution in ES7."
-      },
-      {
-        "key": "B",
-        "text": "It forces an immediate full synchronous DOM reflow and redraws the operating system desktop.",
-        "explanation": "Incorrect. Web engines isolate styling and computation to the document view."
-      },
-      {
-        "key": "C",
-        "text": "It disables the JavaScript microtask queue and switches the browser to single-process mode.",
-        "explanation": "Incorrect. Browser process architecture and task scheduling are not disabled by Internal Engine Execution & Microtask Synchronization of Exponentiation Operator (**) Syntax & Precedence Rules."
-      },
-      {
-        "key": "D",
-        "text": "It converts all variables to global strings and clears browser localStorage.",
-        "explanation": "Incorrect. Scope rules and client storage remain strictly governed by standards."
-      }
-    ],
-    "correctAnswer": "A",
-    "mcqExplanation": "In ES7, Internal Engine Execution & Microtask Synchronization of Exponentiation Operator (**) Syntax & Precedence Rules ensures standards-compliant execution and predictable runtime characteristics.",
-    "wrongOptionExplanations": {
-      "B": "Layout and rendering engines maintain isolated graphical compositing layers.",
-      "C": "The JavaScript event loop and microtask queue operate independently of this syntax.",
-      "D": "Client storage APIs and variable scopes maintain strict sandboxed boundaries."
-    },
-    "codeExplanationSpeech": "This code demonstrates the implementation of Internal Engine Execution & Microtask Synchronization of Exponentiation Operator (**) Syntax & Precedence Rules with clear input and output handling.",
-    "status": "published",
-    "simpleExplanation": "V8 Compilation Pipeline: Modern V8 parses source text into an Abstract Syntax Tree (AST). The Ignition bytecode interpreter produces compact bytecode, while TurboFan JIT compiler optimizes hot code paths into machine assembly. Execution Context & Scoping: When code runs, the engine creates an Execution Context containing a Lexical Environment (let/const bindings in TDZ until evaluated) and a Variable Environment (var declarations hoisted)."
+    "interviewTips": [],
+    "interviewAnswer": "The exponentiation operator (**) raises the first operand to the power of the second operand (base ** exponent). It is an infix operator that serves as cleaner syntactic sugar for Math.pow(), and supports BigInt operations.",
+    "realWorldExample": "",
+    "experienceLevel": "1_3_YEARS"
   },
   {
     "id": "iq-es7-0005",
     "subject": "es7",
-    "topic": "ECMAScript 2016",
-    "subtopic": "Internal Engine Execution & Microtask Synchronization of Right-Associative Evaluation of Exponentiation (**)",
-    "concept": "Internal Engine Execution & Microtask Synchronization of Right-Associative Evaluation of Exponentiation (**)",
+    "topic": "Operators",
+    "concept": "Math.pow() vs ** (Exponentiation Operator)",
     "difficulty": "INTERMEDIATE",
-    "questionType": "DEBUGGING",
-    "experienceLevel": "3_5_YEARS",
-    "isHighFrequency": true,
-    "companyTags": [
-      "Apple",
-      "Meta"
+    "questionType": "CONCEPTUAL",
+    "questionNumber": 5,
+    "question": "What are the key technical differences between Math.pow() and the ** exponentiation operator?",
+    "shortAnswer": "The ** operator supports BigInts, allows the shorthand assignment **=, and evaluates right-to-left when chained. Math.pow() converts all inputs to standard Numbers (failing on BigInts) and requires nested function calls for chaining.",
+    "detailedAnswer": "Key differences:\n\n1. BigInt Support: 2n ** 3n returns 8n. Math.pow(2n, 3n) throws TypeError: Cannot convert a BigInt value to a number.\n\n2. Operator Chaining: 2 ** 3 ** 2 evaluates as 2 ** (3 ** 2) = 512 cleanly, whereas Math.pow requires nested calls Math.pow(2, Math.pow(3, 2)).\n\n3. Syntax Ambiguity Guard: -2 ** 2 throws a SyntaxError, forcing developers to write (-2) ** 2 or -(2 ** 2). Math.pow(-2, 2) succeeds without error.\n\n4. Assignment Shorthand: x **= y has no Math.pow equivalent.",
+    "codeExample": "// 1. Chaining comparison\nconst r1 = 2 ** 3 ** 2; // 512\nconst r2 = Math.pow(2, Math.pow(3, 2)); // 512\n\n// 2. BigInt compatibility\nconst big = 2n ** 32n;\nconsole.log(big); // 4294967296n\n\n// Math.pow(2n, 32n) -> TypeError\n\n// 3. Unary negation syntax rule\n// console.log(-2 ** 2); // SyntaxError: Unparenthesized unary expression can't appear on the LHS of '**'\nconsole.log((-2) ** 2); // 4\nconsole.log(-(2 ** 2)); // -4",
+    "followUpQuestions": [
+      "What is the operator precedence of ** compared to multiplication and division?",
+      "Can the exponent in ** be a fractional or negative number?"
+    ],
+    "followUpAnswers": [
+      "** has higher precedence than multiplication (*), division (/), and modulo (%).",
+      "Yes. 4 ** 0.5 evaluates to 2 (square root), and 2 ** -1 evaluates to 0.5."
     ],
     "tags": [
       "es7",
-      "es7",
-      "Apple",
-      "Meta",
-      "interview-prep"
+      "javascript",
+      "math",
+      "operators"
     ],
-    "question": "Right-Associative Evaluation of Exponentiation (**)",
-    "shortAnswer": "Internal Engine Execution & Microtask Synchronization of Right-Associative Evaluation of Exponentiation (**) is a standardized ECMAScript feature that enhances language expressiveness and code maintainability. It simplifies asynchronous operations and eliminates common pitfalls in JavaScript development.",
-    "interviewAnswer": "Internal Engine Execution & Microtask Synchronization of Right-Associative Evaluation of Exponentiation (**) is a standardized ECMAScript feature that enhances language expressiveness and code maintainability. It simplifies asynchronous operations and eliminates common pitfalls in JavaScript development.\n\nIn practical production projects, mastering this ensures predictable state management, high runtime performance, and clean maintainability across our team.",
-    "detailedExplanation": "### Deep Technical Dive: JavaScript V8 Engine & Execution Lifecycle for Internal Engine Execution & Microtask Synchronization of Right-Associative Evaluation of Exponentiation (**)\n\n1. **V8 Compilation Pipeline**: Modern V8 parses source text into an Abstract Syntax Tree (AST). The **Ignition** bytecode interpreter produces compact bytecode, while **TurboFan** JIT compiler optimizes hot code paths into machine assembly.\n2. **Execution Context & Scoping**: When code runs, the engine creates an Execution Context containing a Lexical Environment (let/const bindings in TDZ until evaluated) and a Variable Environment (var declarations hoisted). Closures capture parent lexical scopes in the memory heap.\n3. **Event Loop & Microtask Priority**: Synchronous code executes on the single-threaded Call Stack. Microtasks (Promise resolutions, queueMicrotask) run immediately when the call stack empties, preceding macrotasks (setTimeout, DOM events) in the Event Loop cycle.",
-    "why": "Why does Internal Engine Execution & Microtask Synchronization of Right-Associative Evaluation of Exponentiation (**) exist in modern JavaScript?\n1. Eliminates error-prone legacy patterns (callback hell, global scope pollution, hoisting bugs).\n2. Enhances developer ergonomics with declarative, expressive, and self-documenting syntax.\n3. Enables V8 and other modern engines to apply runtime JIT optimizations and efficient garbage collection.",
-    "howItWorks": "",
-    "realWorldExample": "Production Scenario: Real-time fintech stock price ticker or dashboard where data streams are processed asynchronously, cached safely in scope without memory leaks, and rendered to users with sub-millisecond latency.",
-    "example": "// Practical Demonstration: Internal Engine Execution & Microtask Synchronization of Right-Associative Evaluation of Exponentiation (**)\nfunction executeFeature() {\n  console.log(\"Step 1: Initializing demonstration for Internal Engine Execution & Microtask Synchronization of Right-Associative Evaluation of Exponentiation (**)...\");\n\n  const data = {\n    title: \"Internal Engine Execution & Microtask Synchronization of Right-Associative Evaluation of Exponentiation (**)\",\n    status: \"ACTIVE\",\n    timestamp: new Date().toLocaleTimeString()\n  };\n\n  console.log(\"Step 2: Processing data:\", data);\n  return { success: true, payload: data };\n}\n\nconst outcome = executeFeature();\nconsole.log(\"Step 3: Execution completed successfully:\", outcome);",
-    "codeSnippet": "// Practical Demonstration: Internal Engine Execution & Microtask Synchronization of Right-Associative Evaluation of Exponentiation (**)\nfunction executeFeature() {\n  console.log(\"Step 1: Initializing demonstration for Internal Engine Execution & Microtask Synchronization of Right-Associative Evaluation of Exponentiation (**)...\");\n\n  const data = {\n    title: \"Internal Engine Execution & Microtask Synchronization of Right-Associative Evaluation of Exponentiation (**)\",\n    status: \"ACTIVE\",\n    timestamp: new Date().toLocaleTimeString()\n  };\n\n  console.log(\"Step 2: Processing data:\", data);\n  return { success: true, payload: data };\n}\n\nconst outcome = executeFeature();\nconsole.log(\"Step 3: Execution completed successfully:\", outcome);",
-    "lineByLineExplanation": [
-      {
-        "line": 1,
-        "code": "// Feature Initialization",
-        "explanation": "Initializes execution in current lexical scope."
-      },
-      {
-        "line": 2,
-        "code": "const result = await processData();",
-        "explanation": "Pauses execution in async function; pushes continuation to microtask queue upon resolution."
-      },
-      {
-        "line": 3,
-        "code": "return { success: true, payload: result };",
-        "explanation": "Returns immutable data payload to caller."
-      }
-    ],
-    "executionFlow": [],
-    "commonMistakes": [
-      "Confusing synchronous execution with asynchronous microtask scheduling in the event loop.",
-      "Accidentally creating memory leaks by retaining references in closures or uncleared event listeners.",
-      "Assuming 'this' binding is lexical in regular functions instead of dynamically determined at call time."
-    ],
-    "interviewTraps": [
-      "Interviewer presents code mixing Promise.resolve(), setTimeout(..., 0), and synchronous console.log to test exact queue order.",
-      "How closures retain access to outer variables even after the outer function has completed execution and returned.",
-      "Temporal Dead Zone (TDZ): accessing let/const before initialization throws ReferenceError, unlike var which is initialized to undefined."
-    ],
-    "interviewTips": [
-      "Clearly articulate the phases: Creation Phase (hoisting) vs Execution Phase.",
-      "Explain the Event Loop clearly: Call Stack -> Microtask Queue (Promises) -> Macrotask Queue (Timers).",
-      "Highlight immutability, pure functions, and predictable state transformations."
-    ],
+    "detailedExplanation": "Key differences:\n\n1. BigInt Support: 2n ** 3n returns 8n. Math.pow(2n, 3n) throws TypeError: Cannot convert a BigInt value to a number.\n\n2. Operator Chaining: 2 ** 3 ** 2 evaluates as 2 ** (3 ** 2) = 512 cleanly, whereas Math.pow requires nested calls Math.pow(2, Math.pow(3, 2)).\n\n3. Syntax Ambiguity Guard: -2 ** 2 throws a SyntaxError, forcing developers to write (-2) ** 2 or -(2 ** 2). Math.pow(-2, 2) succeeds without error.\n\n4. Assignment Shorthand: x **= y has no Math.pow equivalent.",
+    "simpleExplanation": "The ** operator supports BigInts, allows the shorthand assignment **=, and evaluates right-to-left when chained. Math.pow() converts all inputs to standard Numbers (failing on BigInts) and requires nested function calls for chaining.",
+    "example": "// 1. Chaining comparison\nconst r1 = 2 ** 3 ** 2; // 512\nconst r2 = Math.pow(2, Math.pow(3, 2)); // 512\n\n// 2. BigInt compatibility\nconst big = 2n ** 32n;\nconsole.log(big); // 4294967296n\n\n// Math.pow(2n, 32n) -> TypeError\n\n// 3. Unary negation syntax rule\n// console.log(-2 ** 2); // SyntaxError: Unparenthesized unary expression can't appear on the LHS of '**'\nconsole.log((-2) ** 2); // 4\nconsole.log(-(2 ** 2)); // -4",
+    "codeSnippet": "// 1. Chaining comparison\nconst r1 = 2 ** 3 ** 2; // 512\nconst r2 = Math.pow(2, Math.pow(3, 2)); // 512\n\n// 2. BigInt compatibility\nconst big = 2n ** 32n;\nconsole.log(big); // 4294967296n\n\n// Math.pow(2n, 32n) -> TypeError\n\n// 3. Unary negation syntax rule\n// console.log(-2 ** 2); // SyntaxError: Unparenthesized unary expression can't appear on the LHS of '**'\nconsole.log((-2) ** 2); // 4\nconsole.log(-(2 ** 2)); // -4",
     "followUps": [
-      "What is the difference between the Microtask Queue and the Macrotask (Callback) Queue?",
-      "How does the V8 garbage collector detect and clean up unreferenced memory in closures?",
-      "What is the Temporal Dead Zone (TDZ) and why was it introduced in ES6?"
+      "What is the operator precedence of ** compared to multiplication and division?",
+      "Can the exponent in ** be a fractional or negative number?"
     ],
-    "followUpAnswers": [
-      "Microtasks (Promise.then, queueMicrotask) have higher priority and run completely to exhaustion after every call stack frame, whereas Macrotasks (setTimeout, setInterval) run one per event loop tick.",
-      "V8 uses a Generational Garbage Collector (Scavenger for young generation, Mark-Sweep-Compact for old generation) tracing reachability from roots (window/global).",
-      "The TDZ is the period between entering scope and variable declaration evaluation; accessing let/const during TDZ throws a ReferenceError to prevent accessing uninitialized state."
-    ],
-    "diagram": "flowchart TD\n    Stack[\"1. Call Stack (Synchronous Code Runs Here First)\"]\n    Stack -->|Stack Becomes Empty| Micro[\"2. Microtask Queue (VIP: Promises & queueMicrotask)\"]\n    Micro -->|All Microtasks Drained| Macro[\"3. Macrotask Queue (setTimeout, setInterval, I/O)\"]\n    Macro -->|Next Iteration| Stack",
-    "diagramCaption": "JavaScript Event Loop Priority Pipeline: Stack -> Microtasks -> Macrotasks",
-    "expectedOutput": "Step 1: Starting operation for Internal Engine Execution & Microtask Synchronization of Right-Associative Evaluation of Exponentiation (**)...\nStep 2: Operation evaluated successfully.\nStep 3: Cleanup completed deterministically.\nFinal Result: { ok: true, data: { status: 'SUCCESS' } }",
-    "videoUrl": "https://www.youtube-nocookie.com/embed/8aGhZQkoFbQ",
-    "videoTitle": "What the heck is the event loop anyway? (Philip Roberts)",
-    "standard_id": "ES7-000005",
-    "questionNumber": 5,
-    "question_type": "concept",
-    "question_hash": "qh_616bd1d3",
-    "codeExplanationSpeech": "This code demonstrates the implementation of Internal Engine Execution & Microtask Synchronization of Right-Associative Evaluation of Exponentiation (**) with clear input and output handling.",
-    "status": "published",
-    "simpleExplanation": "V8 Compilation Pipeline: Modern V8 parses source text into an Abstract Syntax Tree (AST). The Ignition bytecode interpreter produces compact bytecode, while TurboFan JIT compiler optimizes hot code paths into machine assembly. Execution Context & Scoping: When code runs, the engine creates an Execution Context containing a Lexical Environment (let/const bindings in TDZ until evaluated) and a Variable Environment (var declarations hoisted)."
+    "interviewTips": [],
+    "interviewAnswer": "The ** operator supports BigInts, allows the shorthand assignment **=, and evaluates right-to-left when chained. Math.pow() converts all inputs to standard Numbers (failing on BigInts) and requires nested function calls for chaining.",
+    "realWorldExample": "",
+    "experienceLevel": "1_3_YEARS"
   },
   {
     "id": "iq-es7-0006",
     "subject": "es7",
-    "topic": "ECMAScript 2016",
-    "subtopic": "Internal Engine Execution & Microtask Synchronization of Math.pow() vs ** V8 Engine Optimization",
-    "concept": "Internal Engine Execution & Microtask Synchronization of Math.pow() vs ** V8 Engine Optimization",
-    "difficulty": "DIFFICULT",
-    "questionType": "MCQ",
-    "experienceLevel": "5_8_YEARS",
-    "isHighFrequency": false,
-    "companyTags": [
-      "Airbnb",
-      "Amazon"
+    "topic": "Array Methods",
+    "concept": "Array.prototype.includes with fromIndex",
+    "difficulty": "EASY",
+    "questionType": "CONCEPTUAL",
+    "questionNumber": 6,
+    "question": "How does the optional fromIndex parameter work in Array.prototype.includes()?",
+    "shortAnswer": "fromIndex indicates the zero-based position to start searching. If positive, search starts at that index. If negative, it is computed as array.length + fromIndex. If greater than or equal to array.length, false is returned immediately without searching.",
+    "detailedAnswer": "Syntax: arr.includes(valueToFind, fromIndex)\n- Default: 0\n\n- Positive value: Search begins at arr[fromIndex].\n\n- Negative value: Treated as an offset from the end (arr.length + fromIndex). If the calculated offset is negative (< 0), the entire array is searched.\n\n- Greater than or equal to length: Returns false immediately.",
+    "codeExample": "const letters = ['a', 'b', 'c', 'd', 'e'];\n\nconsole.log(letters.includes('c', 2));  // true (starts at index 2)\nconsole.log(letters.includes('a', 1));  // false (starts at index 1)\n\n// Negative fromIndex (5 + (-2) = index 3)\nconsole.log(letters.includes('d', -2)); // true\nconsole.log(letters.includes('a', -2)); // false\n\n// fromIndex >= length\nconsole.log(letters.includes('a', 10)); // false",
+    "followUpQuestions": [
+      "What happens if fromIndex is less than -array.length?",
+      "Does includes() search forward or backward when fromIndex is negative?"
+    ],
+    "followUpAnswers": [
+      "If fromIndex <= -array.length, the entire array is searched from index 0.",
+      "includes() always searches forward (towards the end of the array), regardless of whether fromIndex is positive or negative."
     ],
     "tags": [
       "es7",
-      "es7",
-      "Airbnb",
-      "Amazon",
-      "interview-prep"
+      "javascript",
+      "arrays",
+      "methods"
     ],
-    "question": "Math.pow() vs ** V8 Engine Optimization",
-    "shortAnswer": "In ES7, Internal Engine Execution & Microtask Synchronization of Math.pow() vs ** V8 Engine Optimization ensures standards-compliant execution and predictable runtime characteristics.",
-    "interviewAnswer": "In ES7, Internal Engine Execution & Microtask Synchronization of Math.pow() vs ** V8 Engine Optimization ensures standards-compliant execution and predictable runtime characteristics.\n\nIn practical production projects, mastering this ensures predictable state management, high runtime performance, and clean maintainability across our team.",
-    "detailedExplanation": "### Deep Technical Dive: JavaScript V8 Engine & Execution Lifecycle for Internal Engine Execution & Microtask Synchronization of Math.pow() vs ** V8 Engine Optimization\n\n1. **V8 Compilation Pipeline**: Modern V8 parses source text into an Abstract Syntax Tree (AST). The **Ignition** bytecode interpreter produces compact bytecode, while **TurboFan** JIT compiler optimizes hot code paths into machine assembly.\n2. **Execution Context & Scoping**: When code runs, the engine creates an Execution Context containing a Lexical Environment (let/const bindings in TDZ until evaluated) and a Variable Environment (var declarations hoisted). Closures capture parent lexical scopes in the memory heap.\n3. **Event Loop & Microtask Priority**: Synchronous code executes on the single-threaded Call Stack. Microtasks (Promise resolutions, queueMicrotask) run immediately when the call stack empties, preceding macrotasks (setTimeout, DOM events) in the Event Loop cycle.",
-    "why": "Why does Internal Engine Execution & Microtask Synchronization of Math.pow() vs ** V8 Engine Optimization exist in modern JavaScript?\n1. Eliminates error-prone legacy patterns (callback hell, global scope pollution, hoisting bugs).\n2. Enhances developer ergonomics with declarative, expressive, and self-documenting syntax.\n3. Enables V8 and other modern engines to apply runtime JIT optimizations and efficient garbage collection.",
-    "howItWorks": "",
-    "realWorldExample": "Production Scenario: Real-time fintech stock price ticker or dashboard where data streams are processed asynchronously, cached safely in scope without memory leaks, and rendered to users with sub-millisecond latency.",
-    "example": "// Practical Demonstration: Internal Engine Execution & Microtask Synchronization of Math.pow() vs ** V8 Engine Optimization\nfunction executeFeature() {\n  console.log(\"Step 1: Initializing demonstration for Internal Engine Execution & Microtask Synchronization of Math.pow() vs ** V8 Engine Optimization...\");\n\n  const data = {\n    title: \"Internal Engine Execution & Microtask Synchronization of Math.pow() vs ** V8 Engine Optimization\",\n    status: \"ACTIVE\",\n    timestamp: new Date().toLocaleTimeString()\n  };\n\n  console.log(\"Step 2: Processing data:\", data);\n  return { success: true, payload: data };\n}\n\nconst outcome = executeFeature();\nconsole.log(\"Step 3: Execution completed successfully:\", outcome);",
-    "codeSnippet": "// Practical Demonstration: Internal Engine Execution & Microtask Synchronization of Math.pow() vs ** V8 Engine Optimization\nfunction executeFeature() {\n  console.log(\"Step 1: Initializing demonstration for Internal Engine Execution & Microtask Synchronization of Math.pow() vs ** V8 Engine Optimization...\");\n\n  const data = {\n    title: \"Internal Engine Execution & Microtask Synchronization of Math.pow() vs ** V8 Engine Optimization\",\n    status: \"ACTIVE\",\n    timestamp: new Date().toLocaleTimeString()\n  };\n\n  console.log(\"Step 2: Processing data:\", data);\n  return { success: true, payload: data };\n}\n\nconst outcome = executeFeature();\nconsole.log(\"Step 3: Execution completed successfully:\", outcome);",
-    "lineByLineExplanation": [
-      {
-        "line": 1,
-        "code": "// Feature Initialization",
-        "explanation": "Initializes execution in current lexical scope."
-      },
-      {
-        "line": 2,
-        "code": "const result = await processData();",
-        "explanation": "Pauses execution in async function; pushes continuation to microtask queue upon resolution."
-      },
-      {
-        "line": 3,
-        "code": "return { success: true, payload: result };",
-        "explanation": "Returns immutable data payload to caller."
-      }
-    ],
-    "executionFlow": [],
-    "commonMistakes": [
-      "Confusing synchronous execution with asynchronous microtask scheduling in the event loop.",
-      "Accidentally creating memory leaks by retaining references in closures or uncleared event listeners.",
-      "Assuming 'this' binding is lexical in regular functions instead of dynamically determined at call time."
-    ],
-    "interviewTraps": [
-      "Interviewer presents code mixing Promise.resolve(), setTimeout(..., 0), and synchronous console.log to test exact queue order.",
-      "How closures retain access to outer variables even after the outer function has completed execution and returned.",
-      "Temporal Dead Zone (TDZ): accessing let/const before initialization throws ReferenceError, unlike var which is initialized to undefined."
-    ],
-    "interviewTips": [
-      "Clearly articulate the phases: Creation Phase (hoisting) vs Execution Phase.",
-      "Explain the Event Loop clearly: Call Stack -> Microtask Queue (Promises) -> Macrotask Queue (Timers).",
-      "Highlight immutability, pure functions, and predictable state transformations."
-    ],
+    "detailedExplanation": "Syntax: arr.includes(valueToFind, fromIndex)\n- Default: 0\n\n- Positive value: Search begins at arr[fromIndex].\n\n- Negative value: Treated as an offset from the end (arr.length + fromIndex). If the calculated offset is negative (< 0), the entire array is searched.\n\n- Greater than or equal to length: Returns false immediately.",
+    "simpleExplanation": "fromIndex indicates the zero-based position to start searching. If positive, search starts at that index. If negative, it is computed as array.length + fromIndex. If greater than or equal to array.length, false is returned immediately without searching.",
+    "example": "const letters = ['a', 'b', 'c', 'd', 'e'];\n\nconsole.log(letters.includes('c', 2));  // true (starts at index 2)\nconsole.log(letters.includes('a', 1));  // false (starts at index 1)\n\n// Negative fromIndex (5 + (-2) = index 3)\nconsole.log(letters.includes('d', -2)); // true\nconsole.log(letters.includes('a', -2)); // false\n\n// fromIndex >= length\nconsole.log(letters.includes('a', 10)); // false",
+    "codeSnippet": "const letters = ['a', 'b', 'c', 'd', 'e'];\n\nconsole.log(letters.includes('c', 2));  // true (starts at index 2)\nconsole.log(letters.includes('a', 1));  // false (starts at index 1)\n\n// Negative fromIndex (5 + (-2) = index 3)\nconsole.log(letters.includes('d', -2)); // true\nconsole.log(letters.includes('a', -2)); // false\n\n// fromIndex >= length\nconsole.log(letters.includes('a', 10)); // false",
     "followUps": [
-      "What is the difference between the Microtask Queue and the Macrotask (Callback) Queue?",
-      "How does the V8 garbage collector detect and clean up unreferenced memory in closures?",
-      "What is the Temporal Dead Zone (TDZ) and why was it introduced in ES6?"
+      "What happens if fromIndex is less than -array.length?",
+      "Does includes() search forward or backward when fromIndex is negative?"
     ],
-    "followUpAnswers": [
-      "Microtasks (Promise.then, queueMicrotask) have higher priority and run completely to exhaustion after every call stack frame, whereas Macrotasks (setTimeout, setInterval) run one per event loop tick.",
-      "V8 uses a Generational Garbage Collector (Scavenger for young generation, Mark-Sweep-Compact for old generation) tracing reachability from roots (window/global).",
-      "The TDZ is the period between entering scope and variable declaration evaluation; accessing let/const during TDZ throws a ReferenceError to prevent accessing uninitialized state."
-    ],
-    "diagram": "flowchart TD\n    Stack[\"1. Call Stack (Synchronous Code Runs Here First)\"]\n    Stack -->|Stack Becomes Empty| Micro[\"2. Microtask Queue (VIP: Promises & queueMicrotask)\"]\n    Micro -->|All Microtasks Drained| Macro[\"3. Macrotask Queue (setTimeout, setInterval, I/O)\"]\n    Macro -->|Next Iteration| Stack",
-    "diagramCaption": "JavaScript Event Loop Priority Pipeline: Stack -> Microtasks -> Macrotasks",
-    "expectedOutput": "Step 1: Starting operation for Internal Engine Execution & Microtask Synchronization of Math.pow() vs ** V8 Engine Optimization...\nStep 2: Operation evaluated successfully.\nStep 3: Cleanup completed deterministically.\nFinal Result: { ok: true, data: { status: 'SUCCESS' } }",
-    "videoUrl": "https://www.youtube-nocookie.com/embed/8aGhZQkoFbQ",
-    "videoTitle": "What the heck is the event loop anyway? (Philip Roberts)",
-    "standard_id": "ES7-MCQ-000006",
-    "questionNumber": 6,
-    "question_type": "mcq",
-    "question_hash": "qh_1cec16",
-    "options": [
-      {
-        "key": "A",
-        "text": "It enables deterministic behavior for Internal Engine Execution & Microtask Synchronization of Math.pow() vs ** V8 Engine Optimization per the official specification.",
-        "explanation": "Correct. Internal Engine Execution & Microtask Synchronization of Math.pow() vs ** V8 Engine Optimization provides standard, predictable execution in ES7."
-      },
-      {
-        "key": "B",
-        "text": "It forces an immediate full synchronous DOM reflow and redraws the operating system desktop.",
-        "explanation": "Incorrect. Web engines isolate styling and computation to the document view."
-      },
-      {
-        "key": "C",
-        "text": "It disables the JavaScript microtask queue and switches the browser to single-process mode.",
-        "explanation": "Incorrect. Browser process architecture and task scheduling are not disabled by Internal Engine Execution & Microtask Synchronization of Math.pow() vs ** V8 Engine Optimization."
-      },
-      {
-        "key": "D",
-        "text": "It converts all variables to global strings and clears browser localStorage.",
-        "explanation": "Incorrect. Scope rules and client storage remain strictly governed by standards."
-      }
-    ],
-    "correctAnswer": "A",
-    "mcqExplanation": "In ES7, Internal Engine Execution & Microtask Synchronization of Math.pow() vs ** V8 Engine Optimization ensures standards-compliant execution and predictable runtime characteristics.",
-    "wrongOptionExplanations": {
-      "B": "Layout and rendering engines maintain isolated graphical compositing layers.",
-      "C": "The JavaScript event loop and microtask queue operate independently of this syntax.",
-      "D": "Client storage APIs and variable scopes maintain strict sandboxed boundaries."
-    },
-    "codeExplanationSpeech": "This code demonstrates the implementation of Internal Engine Execution & Microtask Synchronization of Math.pow() vs ** V8 Engine Optimization with clear input and output handling.",
-    "status": "published",
-    "simpleExplanation": "V8 Compilation Pipeline: Modern V8 parses source text into an Abstract Syntax Tree (AST). The Ignition bytecode interpreter produces compact bytecode, while TurboFan JIT compiler optimizes hot code paths into machine assembly. Execution Context & Scoping: When code runs, the engine creates an Execution Context containing a Lexical Environment (let/const bindings in TDZ until evaluated) and a Variable Environment (var declarations hoisted)."
+    "interviewTips": [],
+    "interviewAnswer": "fromIndex indicates the zero-based position to start searching. If positive, search starts at that index. If negative, it is computed as array.length + fromIndex. If greater than or equal to array.length, false is returned immediately without searching.",
+    "realWorldExample": "",
+    "experienceLevel": "1_3_YEARS"
   },
   {
     "id": "iq-es7-0007",
     "subject": "es7",
-    "topic": "ECMAScript 2016",
-    "subtopic": "Internal Engine Execution & Microtask Synchronization of TC39 Stage Process: Stage 0 to Stage 4 Finalization",
-    "concept": "Internal Engine Execution & Microtask Synchronization of TC39 Stage Process: Stage 0 to Stage 4 Finalization",
-    "difficulty": "EASY",
+    "topic": "Array Methods",
+    "concept": "includes() on Sparse Arrays",
+    "difficulty": "INTERMEDIATE",
     "questionType": "CONCEPTUAL",
-    "experienceLevel": "FRESHER",
-    "isHighFrequency": true,
-    "companyTags": [
-      "Google",
-      "Microsoft"
+    "questionNumber": 7,
+    "question": "How does Array.prototype.includes() behave on sparse arrays with missing slots (holes)?",
+    "shortAnswer": "Array.prototype.includes() visits empty slots in sparse arrays and treats them as undefined. Consequently, calling arr.includes(undefined) on an array with holes returns true.",
+    "detailedAnswer": "In JavaScript, sparse arrays contain holes (unassigned indices where hasOwnProperty is false).\n\nMethods like indexOf, map, forEach, and filter skip these unassigned indices entirely. However, includes() treats missing indices as undefined, allowing detection of uninitialized array elements.",
+    "codeExample": "const sparse = [1, , 3]; // index 1 is an unallocated hole\n\nconsole.log(1 in sparse); // false\nconsole.log(sparse[1]);   // undefined\n\n// indexOf skips holes:\nconsole.log(sparse.indexOf(undefined)); // -1\n\n// includes reads holes as undefined:\nconsole.log(sparse.includes(undefined)); // true",
+    "followUpQuestions": [
+      "How does Array.from() treat sparse array holes compared to Array.prototype.slice()?",
+      "How can you convert a sparse array into a dense array with true undefined values?"
+    ],
+    "followUpAnswers": [
+      "Array.from([1, , 3]) converts holes into real undefined values, while slice() preserves the holes.",
+      "Spread syntax [...sparse] or Array.from(sparse) converts holes into dense elements containing undefined."
     ],
     "tags": [
       "es7",
-      "es7",
-      "Google",
-      "Microsoft",
-      "interview-prep"
+      "javascript",
+      "sparse-arrays",
+      "arrays"
     ],
-    "question": "TC39 Stage Process: Stage 0 to Stage 4 Finalization",
-    "shortAnswer": "Internal Engine Execution & Microtask Synchronization of TC39 Stage Process: Stage 0 to Stage 4 Finalization is a standardized ECMAScript feature that enhances language expressiveness and code maintainability. It simplifies asynchronous operations and eliminates common pitfalls in JavaScript development.",
-    "interviewAnswer": "Internal Engine Execution & Microtask Synchronization of TC39 Stage Process: Stage 0 to Stage 4 Finalization is a standardized ECMAScript feature that enhances language expressiveness and code maintainability. It simplifies asynchronous operations and eliminates common pitfalls in JavaScript development.\n\nIn practical production projects, mastering this ensures predictable state management, high runtime performance, and clean maintainability across our team.",
-    "detailedExplanation": "### Deep Technical Dive: JavaScript V8 Engine & Execution Lifecycle for Internal Engine Execution & Microtask Synchronization of TC39 Stage Process: Stage 0 to Stage 4 Finalization\n\n1. **V8 Compilation Pipeline**: Modern V8 parses source text into an Abstract Syntax Tree (AST). The **Ignition** bytecode interpreter produces compact bytecode, while **TurboFan** JIT compiler optimizes hot code paths into machine assembly.\n2. **Execution Context & Scoping**: When code runs, the engine creates an Execution Context containing a Lexical Environment (let/const bindings in TDZ until evaluated) and a Variable Environment (var declarations hoisted). Closures capture parent lexical scopes in the memory heap.\n3. **Event Loop & Microtask Priority**: Synchronous code executes on the single-threaded Call Stack. Microtasks (Promise resolutions, queueMicrotask) run immediately when the call stack empties, preceding macrotasks (setTimeout, DOM events) in the Event Loop cycle.",
-    "why": "Why does Internal Engine Execution & Microtask Synchronization of TC39 Stage Process: Stage 0 to Stage 4 Finalization exist in modern JavaScript?\n1. Eliminates error-prone legacy patterns (callback hell, global scope pollution, hoisting bugs).\n2. Enhances developer ergonomics with declarative, expressive, and self-documenting syntax.\n3. Enables V8 and other modern engines to apply runtime JIT optimizations and efficient garbage collection.",
-    "howItWorks": "",
-    "realWorldExample": "Production Scenario: Real-time fintech stock price ticker or dashboard where data streams are processed asynchronously, cached safely in scope without memory leaks, and rendered to users with sub-millisecond latency.",
-    "example": "// Practical Demonstration: Internal Engine Execution & Microtask Synchronization of TC39 Stage Process: Stage 0 to Stage 4 Finalization\nfunction executeFeature() {\n  console.log(\"Step 1: Initializing demonstration for Internal Engine Execution & Microtask Synchronization of TC39 Stage Process: Stage 0 to Stage 4 Finalization...\");\n\n  const data = {\n    title: \"Internal Engine Execution & Microtask Synchronization of TC39 Stage Process: Stage 0 to Stage 4 Finalization\",\n    status: \"ACTIVE\",\n    timestamp: new Date().toLocaleTimeString()\n  };\n\n  console.log(\"Step 2: Processing data:\", data);\n  return { success: true, payload: data };\n}\n\nconst outcome = executeFeature();\nconsole.log(\"Step 3: Execution completed successfully:\", outcome);",
-    "codeSnippet": "// Practical Demonstration: Internal Engine Execution & Microtask Synchronization of TC39 Stage Process: Stage 0 to Stage 4 Finalization\nfunction executeFeature() {\n  console.log(\"Step 1: Initializing demonstration for Internal Engine Execution & Microtask Synchronization of TC39 Stage Process: Stage 0 to Stage 4 Finalization...\");\n\n  const data = {\n    title: \"Internal Engine Execution & Microtask Synchronization of TC39 Stage Process: Stage 0 to Stage 4 Finalization\",\n    status: \"ACTIVE\",\n    timestamp: new Date().toLocaleTimeString()\n  };\n\n  console.log(\"Step 2: Processing data:\", data);\n  return { success: true, payload: data };\n}\n\nconst outcome = executeFeature();\nconsole.log(\"Step 3: Execution completed successfully:\", outcome);",
-    "lineByLineExplanation": [
-      {
-        "line": 1,
-        "code": "// Feature Initialization",
-        "explanation": "Initializes execution in current lexical scope."
-      },
-      {
-        "line": 2,
-        "code": "const result = await processData();",
-        "explanation": "Pauses execution in async function; pushes continuation to microtask queue upon resolution."
-      },
-      {
-        "line": 3,
-        "code": "return { success: true, payload: result };",
-        "explanation": "Returns immutable data payload to caller."
-      }
-    ],
-    "executionFlow": [],
-    "commonMistakes": [
-      "Confusing synchronous execution with asynchronous microtask scheduling in the event loop.",
-      "Accidentally creating memory leaks by retaining references in closures or uncleared event listeners.",
-      "Assuming 'this' binding is lexical in regular functions instead of dynamically determined at call time."
-    ],
-    "interviewTraps": [
-      "Interviewer presents code mixing Promise.resolve(), setTimeout(..., 0), and synchronous console.log to test exact queue order.",
-      "How closures retain access to outer variables even after the outer function has completed execution and returned.",
-      "Temporal Dead Zone (TDZ): accessing let/const before initialization throws ReferenceError, unlike var which is initialized to undefined."
-    ],
-    "interviewTips": [
-      "Clearly articulate the phases: Creation Phase (hoisting) vs Execution Phase.",
-      "Explain the Event Loop clearly: Call Stack -> Microtask Queue (Promises) -> Macrotask Queue (Timers).",
-      "Highlight immutability, pure functions, and predictable state transformations."
-    ],
+    "detailedExplanation": "In JavaScript, sparse arrays contain holes (unassigned indices where hasOwnProperty is false).\n\nMethods like indexOf, map, forEach, and filter skip these unassigned indices entirely. However, includes() treats missing indices as undefined, allowing detection of uninitialized array elements.",
+    "simpleExplanation": "Array.prototype.includes() visits empty slots in sparse arrays and treats them as undefined. Consequently, calling arr.includes(undefined) on an array with holes returns true.",
+    "example": "const sparse = [1, , 3]; // index 1 is an unallocated hole\n\nconsole.log(1 in sparse); // false\nconsole.log(sparse[1]);   // undefined\n\n// indexOf skips holes:\nconsole.log(sparse.indexOf(undefined)); // -1\n\n// includes reads holes as undefined:\nconsole.log(sparse.includes(undefined)); // true",
+    "codeSnippet": "const sparse = [1, , 3]; // index 1 is an unallocated hole\n\nconsole.log(1 in sparse); // false\nconsole.log(sparse[1]);   // undefined\n\n// indexOf skips holes:\nconsole.log(sparse.indexOf(undefined)); // -1\n\n// includes reads holes as undefined:\nconsole.log(sparse.includes(undefined)); // true",
     "followUps": [
-      "What is the difference between the Microtask Queue and the Macrotask (Callback) Queue?",
-      "How does the V8 garbage collector detect and clean up unreferenced memory in closures?",
-      "What is the Temporal Dead Zone (TDZ) and why was it introduced in ES6?"
+      "How does Array.from() treat sparse array holes compared to Array.prototype.slice()?",
+      "How can you convert a sparse array into a dense array with true undefined values?"
     ],
-    "followUpAnswers": [
-      "Microtasks (Promise.then, queueMicrotask) have higher priority and run completely to exhaustion after every call stack frame, whereas Macrotasks (setTimeout, setInterval) run one per event loop tick.",
-      "V8 uses a Generational Garbage Collector (Scavenger for young generation, Mark-Sweep-Compact for old generation) tracing reachability from roots (window/global).",
-      "The TDZ is the period between entering scope and variable declaration evaluation; accessing let/const during TDZ throws a ReferenceError to prevent accessing uninitialized state."
-    ],
-    "diagram": "flowchart TD\n    Stack[\"1. Call Stack (Synchronous Code Runs Here First)\"]\n    Stack -->|Stack Becomes Empty| Micro[\"2. Microtask Queue (VIP: Promises & queueMicrotask)\"]\n    Micro -->|All Microtasks Drained| Macro[\"3. Macrotask Queue (setTimeout, setInterval, I/O)\"]\n    Macro -->|Next Iteration| Stack",
-    "diagramCaption": "JavaScript Event Loop Priority Pipeline: Stack -> Microtasks -> Macrotasks",
-    "expectedOutput": "Step 1: Starting operation for Internal Engine Execution & Microtask Synchronization of TC39 Stage Process: Stage 0 to Stage 4 Finalization...\nStep 2: Operation evaluated successfully.\nStep 3: Cleanup completed deterministically.\nFinal Result: { ok: true, data: { status: 'SUCCESS' } }",
-    "videoUrl": "https://www.youtube-nocookie.com/embed/8aGhZQkoFbQ",
-    "videoTitle": "What the heck is the event loop anyway? (Philip Roberts)",
-    "standard_id": "ES7-000007",
-    "questionNumber": 7,
-    "question_type": "concept",
-    "question_hash": "qh_2af6095",
-    "codeExplanationSpeech": "This code demonstrates the implementation of Internal Engine Execution & Microtask Synchronization of TC39 Stage Process: Stage 0 to Stage 4 Finalization with clear input and output handling.",
-    "status": "published",
-    "simpleExplanation": "V8 Compilation Pipeline: Modern V8 parses source text into an Abstract Syntax Tree (AST). The Ignition bytecode interpreter produces compact bytecode, while TurboFan JIT compiler optimizes hot code paths into machine assembly. Execution Context & Scoping: When code runs, the engine creates an Execution Context containing a Lexical Environment (let/const bindings in TDZ until evaluated) and a Variable Environment (var declarations hoisted)."
+    "interviewTips": [],
+    "interviewAnswer": "Array.prototype.includes() visits empty slots in sparse arrays and treats them as undefined. Consequently, calling arr.includes(undefined) on an array with holes returns true.",
+    "realWorldExample": "",
+    "experienceLevel": "1_3_YEARS"
   },
   {
     "id": "iq-es7-0008",
     "subject": "es7",
-    "topic": "ECMAScript 2016",
-    "subtopic": "Internal Engine Execution & Microtask Synchronization of Annual Cadence Release Cycle of ECMAScript Standards",
-    "concept": "Internal Engine Execution & Microtask Synchronization of Annual Cadence Release Cycle of ECMAScript Standards",
+    "topic": "Operators",
+    "concept": "Exponentiation Operator Precedence and Associativity",
     "difficulty": "INTERMEDIATE",
-    "questionType": "MCQ",
-    "experienceLevel": "1_3_YEARS",
-    "isHighFrequency": false,
-    "companyTags": [
-      "Meta",
-      "Netflix"
+    "questionType": "CONCEPTUAL",
+    "questionNumber": 8,
+    "question": "Explain the operator precedence and associativity of the exponentiation operator (**).",
+    "shortAnswer": "The exponentiation operator (**) has higher precedence than multiplication and division, and is right-associative (evaluates from right to left). For example, 2 ** 3 ** 2 evaluates as 2 ** (3 ** 2) = 512.",
+    "detailedAnswer": "Most binary operators in JavaScript are left-associative (e.g. a - b - c evaluates as (a - b) - c).\n\nExponentiation (**) is one of the few right-associative operators in JavaScript (along with assignment operators and ternary).\n\nPrecedence hierarchy:\n\n1. Parentheses ()\n\n2. Exponentiation ** (right-to-left)\n\n3. Multiplication *, Division /, Remainder %\n\n4. Addition +, Subtraction -",
+    "codeExample": "// Right-associative evaluation:\nconsole.log(2 ** 3 ** 2); // 512\n// Equivalent to:\nconsole.log(2 ** (3 ** 2)); // 2 ** 9 = 512\n\n// To enforce left-to-right, use grouping:\nconsole.log((2 ** 3) ** 2); // 8 ** 2 = 64\n\n// Precedence with multiplication:\nconsole.log(2 * 3 ** 2); // 18 (2 * 9, not 6 ** 2)",
+    "followUpQuestions": [
+      "Which other operators in JavaScript evaluate with right-to-left associativity?",
+      "Can unary operators like typeof or ! be used directly on the left-hand side of **?"
+    ],
+    "followUpAnswers": [
+      "Assignment operators (=, +=, **=) and the ternary conditional operator (?:) evaluate right-to-left.",
+      "No. Unary operators on the LHS of ** cause a SyntaxError unless wrapped in parentheses (e.g. (!x) ** 2)."
     ],
     "tags": [
       "es7",
-      "es7",
-      "Meta",
-      "Netflix",
-      "interview-prep"
+      "javascript",
+      "precedence",
+      "associativity"
     ],
-    "question": "Annual Cadence Release Cycle of ECMAScript Standards",
-    "shortAnswer": "In ES7, Internal Engine Execution & Microtask Synchronization of Annual Cadence Release Cycle of ECMAScript Standards ensures standards-compliant execution and predictable runtime characteristics.",
-    "interviewAnswer": "In ES7, Internal Engine Execution & Microtask Synchronization of Annual Cadence Release Cycle of ECMAScript Standards ensures standards-compliant execution and predictable runtime characteristics.\n\nIn practical production projects, mastering this ensures predictable state management, high runtime performance, and clean maintainability across our team.",
-    "detailedExplanation": "### Deep Technical Dive: JavaScript V8 Engine & Execution Lifecycle for Internal Engine Execution & Microtask Synchronization of Annual Cadence Release Cycle of ECMAScript Standards\n\n1. **V8 Compilation Pipeline**: Modern V8 parses source text into an Abstract Syntax Tree (AST). The **Ignition** bytecode interpreter produces compact bytecode, while **TurboFan** JIT compiler optimizes hot code paths into machine assembly.\n2. **Execution Context & Scoping**: When code runs, the engine creates an Execution Context containing a Lexical Environment (let/const bindings in TDZ until evaluated) and a Variable Environment (var declarations hoisted). Closures capture parent lexical scopes in the memory heap.\n3. **Event Loop & Microtask Priority**: Synchronous code executes on the single-threaded Call Stack. Microtasks (Promise resolutions, queueMicrotask) run immediately when the call stack empties, preceding macrotasks (setTimeout, DOM events) in the Event Loop cycle.",
-    "why": "Why does Internal Engine Execution & Microtask Synchronization of Annual Cadence Release Cycle of ECMAScript Standards exist in modern JavaScript?\n1. Eliminates error-prone legacy patterns (callback hell, global scope pollution, hoisting bugs).\n2. Enhances developer ergonomics with declarative, expressive, and self-documenting syntax.\n3. Enables V8 and other modern engines to apply runtime JIT optimizations and efficient garbage collection.",
-    "howItWorks": "",
-    "realWorldExample": "Production Scenario: Real-time fintech stock price ticker or dashboard where data streams are processed asynchronously, cached safely in scope without memory leaks, and rendered to users with sub-millisecond latency.",
-    "example": "// Practical Demonstration: Internal Engine Execution & Microtask Synchronization of Annual Cadence Release Cycle of ECMAScript Standards\nfunction executeFeature() {\n  console.log(\"Step 1: Initializing demonstration for Internal Engine Execution & Microtask Synchronization of Annual Cadence Release Cycle of ECMAScript Standards...\");\n\n  const data = {\n    title: \"Internal Engine Execution & Microtask Synchronization of Annual Cadence Release Cycle of ECMAScript Standards\",\n    status: \"ACTIVE\",\n    timestamp: new Date().toLocaleTimeString()\n  };\n\n  console.log(\"Step 2: Processing data:\", data);\n  return { success: true, payload: data };\n}\n\nconst outcome = executeFeature();\nconsole.log(\"Step 3: Execution completed successfully:\", outcome);",
-    "codeSnippet": "// Practical Demonstration: Internal Engine Execution & Microtask Synchronization of Annual Cadence Release Cycle of ECMAScript Standards\nfunction executeFeature() {\n  console.log(\"Step 1: Initializing demonstration for Internal Engine Execution & Microtask Synchronization of Annual Cadence Release Cycle of ECMAScript Standards...\");\n\n  const data = {\n    title: \"Internal Engine Execution & Microtask Synchronization of Annual Cadence Release Cycle of ECMAScript Standards\",\n    status: \"ACTIVE\",\n    timestamp: new Date().toLocaleTimeString()\n  };\n\n  console.log(\"Step 2: Processing data:\", data);\n  return { success: true, payload: data };\n}\n\nconst outcome = executeFeature();\nconsole.log(\"Step 3: Execution completed successfully:\", outcome);",
-    "lineByLineExplanation": [
-      {
-        "line": 1,
-        "code": "// Feature Initialization",
-        "explanation": "Initializes execution in current lexical scope."
-      },
-      {
-        "line": 2,
-        "code": "const result = await processData();",
-        "explanation": "Pauses execution in async function; pushes continuation to microtask queue upon resolution."
-      },
-      {
-        "line": 3,
-        "code": "return { success: true, payload: result };",
-        "explanation": "Returns immutable data payload to caller."
-      }
-    ],
-    "executionFlow": [],
-    "commonMistakes": [
-      "Confusing synchronous execution with asynchronous microtask scheduling in the event loop.",
-      "Accidentally creating memory leaks by retaining references in closures or uncleared event listeners.",
-      "Assuming 'this' binding is lexical in regular functions instead of dynamically determined at call time."
-    ],
-    "interviewTraps": [
-      "Interviewer presents code mixing Promise.resolve(), setTimeout(..., 0), and synchronous console.log to test exact queue order.",
-      "How closures retain access to outer variables even after the outer function has completed execution and returned.",
-      "Temporal Dead Zone (TDZ): accessing let/const before initialization throws ReferenceError, unlike var which is initialized to undefined."
-    ],
-    "interviewTips": [
-      "Clearly articulate the phases: Creation Phase (hoisting) vs Execution Phase.",
-      "Explain the Event Loop clearly: Call Stack -> Microtask Queue (Promises) -> Macrotask Queue (Timers).",
-      "Highlight immutability, pure functions, and predictable state transformations."
-    ],
+    "detailedExplanation": "Most binary operators in JavaScript are left-associative (e.g. a - b - c evaluates as (a - b) - c).\n\nExponentiation (**) is one of the few right-associative operators in JavaScript (along with assignment operators and ternary).\n\nPrecedence hierarchy:\n\n1. Parentheses ()\n\n2. Exponentiation ** (right-to-left)\n\n3. Multiplication *, Division /, Remainder %\n\n4. Addition +, Subtraction -",
+    "simpleExplanation": "The exponentiation operator (**) has higher precedence than multiplication and division, and is right-associative (evaluates from right to left). For example, 2 ** 3 ** 2 evaluates as 2 ** (3 ** 2) = 512.",
+    "example": "// Right-associative evaluation:\nconsole.log(2 ** 3 ** 2); // 512\n// Equivalent to:\nconsole.log(2 ** (3 ** 2)); // 2 ** 9 = 512\n\n// To enforce left-to-right, use grouping:\nconsole.log((2 ** 3) ** 2); // 8 ** 2 = 64\n\n// Precedence with multiplication:\nconsole.log(2 * 3 ** 2); // 18 (2 * 9, not 6 ** 2)",
+    "codeSnippet": "// Right-associative evaluation:\nconsole.log(2 ** 3 ** 2); // 512\n// Equivalent to:\nconsole.log(2 ** (3 ** 2)); // 2 ** 9 = 512\n\n// To enforce left-to-right, use grouping:\nconsole.log((2 ** 3) ** 2); // 8 ** 2 = 64\n\n// Precedence with multiplication:\nconsole.log(2 * 3 ** 2); // 18 (2 * 9, not 6 ** 2)",
     "followUps": [
-      "What is the difference between the Microtask Queue and the Macrotask (Callback) Queue?",
-      "How does the V8 garbage collector detect and clean up unreferenced memory in closures?",
-      "What is the Temporal Dead Zone (TDZ) and why was it introduced in ES6?"
+      "Which other operators in JavaScript evaluate with right-to-left associativity?",
+      "Can unary operators like typeof or ! be used directly on the left-hand side of **?"
     ],
-    "followUpAnswers": [
-      "Microtasks (Promise.then, queueMicrotask) have higher priority and run completely to exhaustion after every call stack frame, whereas Macrotasks (setTimeout, setInterval) run one per event loop tick.",
-      "V8 uses a Generational Garbage Collector (Scavenger for young generation, Mark-Sweep-Compact for old generation) tracing reachability from roots (window/global).",
-      "The TDZ is the period between entering scope and variable declaration evaluation; accessing let/const during TDZ throws a ReferenceError to prevent accessing uninitialized state."
-    ],
-    "diagram": "flowchart TD\n    Stack[\"1. Call Stack (Synchronous Code Runs Here First)\"]\n    Stack -->|Stack Becomes Empty| Micro[\"2. Microtask Queue (VIP: Promises & queueMicrotask)\"]\n    Micro -->|All Microtasks Drained| Macro[\"3. Macrotask Queue (setTimeout, setInterval, I/O)\"]\n    Macro -->|Next Iteration| Stack",
-    "diagramCaption": "JavaScript Event Loop Priority Pipeline: Stack -> Microtasks -> Macrotasks",
-    "expectedOutput": "Step 1: Starting operation for Internal Engine Execution & Microtask Synchronization of Annual Cadence Release Cycle of ECMAScript Standards...\nStep 2: Operation evaluated successfully.\nStep 3: Cleanup completed deterministically.\nFinal Result: { ok: true, data: { status: 'SUCCESS' } }",
-    "videoUrl": "https://www.youtube-nocookie.com/embed/8aGhZQkoFbQ",
-    "videoTitle": "What the heck is the event loop anyway? (Philip Roberts)",
-    "standard_id": "ES7-MCQ-000008",
-    "questionNumber": 8,
-    "question_type": "mcq",
-    "question_hash": "qh_385d6fd3",
-    "options": [
-      {
-        "key": "A",
-        "text": "It enables deterministic behavior for Internal Engine Execution & Microtask Synchronization of Annual Cadence Release Cycle of ECMAScript Standards per the official specification.",
-        "explanation": "Correct. Internal Engine Execution & Microtask Synchronization of Annual Cadence Release Cycle of ECMAScript Standards provides standard, predictable execution in ES7."
-      },
-      {
-        "key": "B",
-        "text": "It forces an immediate full synchronous DOM reflow and redraws the operating system desktop.",
-        "explanation": "Incorrect. Web engines isolate styling and computation to the document view."
-      },
-      {
-        "key": "C",
-        "text": "It disables the JavaScript microtask queue and switches the browser to single-process mode.",
-        "explanation": "Incorrect. Browser process architecture and task scheduling are not disabled by Internal Engine Execution & Microtask Synchronization of Annual Cadence Release Cycle of ECMAScript Standards."
-      },
-      {
-        "key": "D",
-        "text": "It converts all variables to global strings and clears browser localStorage.",
-        "explanation": "Incorrect. Scope rules and client storage remain strictly governed by standards."
-      }
-    ],
-    "correctAnswer": "A",
-    "mcqExplanation": "In ES7, Internal Engine Execution & Microtask Synchronization of Annual Cadence Release Cycle of ECMAScript Standards ensures standards-compliant execution and predictable runtime characteristics.",
-    "wrongOptionExplanations": {
-      "B": "Layout and rendering engines maintain isolated graphical compositing layers.",
-      "C": "The JavaScript event loop and microtask queue operate independently of this syntax.",
-      "D": "Client storage APIs and variable scopes maintain strict sandboxed boundaries."
-    },
-    "codeExplanationSpeech": "This code demonstrates the implementation of Internal Engine Execution & Microtask Synchronization of Annual Cadence Release Cycle of ECMAScript Standards with clear input and output handling.",
-    "status": "published",
-    "simpleExplanation": "V8 Compilation Pipeline: Modern V8 parses source text into an Abstract Syntax Tree (AST). The Ignition bytecode interpreter produces compact bytecode, while TurboFan JIT compiler optimizes hot code paths into machine assembly. Execution Context & Scoping: When code runs, the engine creates an Execution Context containing a Lexical Environment (let/const bindings in TDZ until evaluated) and a Variable Environment (var declarations hoisted)."
+    "interviewTips": [],
+    "interviewAnswer": "The exponentiation operator (**) has higher precedence than multiplication and division, and is right-associative (evaluates from right to left). For example, 2 ** 3 ** 2 evaluates as 2 ** (3 ** 2) = 512.",
+    "realWorldExample": "",
+    "experienceLevel": "1_3_YEARS"
   },
   {
     "id": "iq-es7-0009",
     "subject": "es7",
-    "topic": "ECMAScript 2016",
-    "subtopic": "Internal Engine Execution & Microtask Synchronization of Polyfilling & Transpilation Strategies for ES2016 Features",
-    "concept": "Internal Engine Execution & Microtask Synchronization of Polyfilling & Transpilation Strategies for ES2016 Features",
-    "difficulty": "DIFFICULT",
-    "questionType": "DEBUGGING",
-    "experienceLevel": "3_5_YEARS",
-    "isHighFrequency": true,
-    "companyTags": [
-      "Amazon",
-      "Uber"
+    "topic": "Array Methods",
+    "concept": "includes() vs indexOf() Performance and Readability",
+    "difficulty": "EASY",
+    "questionType": "CONCEPTUAL",
+    "questionNumber": 9,
+    "question": "When should you use Array.prototype.includes() instead of indexOf() in modern JavaScript?",
+    "shortAnswer": "Use includes() whenever you only need to determine if an element exists in an array (boolean result). Use indexOf() only when you specifically need the numeric index of the element for slicing or mutation.",
+    "detailedAnswer": "Why includes() is preferred for membership tests:\n\n1. Expressive intent: if (items.includes(item)) reads like natural language compared to if (items.indexOf(item) !== -1).\n\n2. Fewer subtle bugs: Developers frequently make off-by-one errors with indexOf (e.g. if (items.indexOf(item)) which fails for index 0 because 0 is falsy in JavaScript).\n\n3. Handles NaN correctly: indexOf(NaN) returns -1, causing silent false negatives.",
+    "codeExample": "const roles = ['admin', 'editor', 'viewer'];\n\n// Buggy legacy pattern (index 0 is falsy!):\nif (roles.indexOf('admin')) { // evaluates to 0, which is FALSE!\n  // Never executes for 'admin'!\n}\n\n// Safe legacy pattern:\nif (roles.indexOf('admin') !== -1) {\n  console.log('Access granted');\n}\n\n// Modern, clean, bug-free ES7 pattern:\nif (roles.includes('admin')) {\n  console.log('Access granted');\n}",
+    "followUpQuestions": [
+      "What is the time complexity of Array.prototype.includes()?",
+      "How do you test for element presence in O(1) time instead of O(n)?"
+    ],
+    "followUpAnswers": [
+      "Array.prototype.includes() performs a linear scan with O(n) time complexity.",
+      "Use a Set: new Set(array).has(item) provides constant O(1) average lookup time for large datasets."
     ],
     "tags": [
       "es7",
-      "es7",
-      "Amazon",
-      "Uber",
-      "interview-prep"
+      "javascript",
+      "clean-code",
+      "arrays"
     ],
-    "question": "Polyfilling & Transpilation Strategies for ES2016 Features",
-    "shortAnswer": "Internal Engine Execution & Microtask Synchronization of Polyfilling & Transpilation Strategies for ES2016 Features is a standardized ECMAScript feature that enhances language expressiveness and code maintainability. It simplifies asynchronous operations and eliminates common pitfalls in JavaScript development.",
-    "interviewAnswer": "Internal Engine Execution & Microtask Synchronization of Polyfilling & Transpilation Strategies for ES2016 Features is a standardized ECMAScript feature that enhances language expressiveness and code maintainability. It simplifies asynchronous operations and eliminates common pitfalls in JavaScript development.\n\nIn practical production projects, mastering this ensures predictable state management, high runtime performance, and clean maintainability across our team.",
-    "detailedExplanation": "### Deep Technical Dive: JavaScript V8 Engine & Execution Lifecycle for Internal Engine Execution & Microtask Synchronization of Polyfilling & Transpilation Strategies for ES2016 Features\n\n1. **V8 Compilation Pipeline**: Modern V8 parses source text into an Abstract Syntax Tree (AST). The **Ignition** bytecode interpreter produces compact bytecode, while **TurboFan** JIT compiler optimizes hot code paths into machine assembly.\n2. **Execution Context & Scoping**: When code runs, the engine creates an Execution Context containing a Lexical Environment (let/const bindings in TDZ until evaluated) and a Variable Environment (var declarations hoisted). Closures capture parent lexical scopes in the memory heap.\n3. **Event Loop & Microtask Priority**: Synchronous code executes on the single-threaded Call Stack. Microtasks (Promise resolutions, queueMicrotask) run immediately when the call stack empties, preceding macrotasks (setTimeout, DOM events) in the Event Loop cycle.",
-    "why": "Why does Internal Engine Execution & Microtask Synchronization of Polyfilling & Transpilation Strategies for ES2016 Features exist in modern JavaScript?\n1. Eliminates error-prone legacy patterns (callback hell, global scope pollution, hoisting bugs).\n2. Enhances developer ergonomics with declarative, expressive, and self-documenting syntax.\n3. Enables V8 and other modern engines to apply runtime JIT optimizations and efficient garbage collection.",
-    "howItWorks": "",
-    "realWorldExample": "Production Scenario: Real-time fintech stock price ticker or dashboard where data streams are processed asynchronously, cached safely in scope without memory leaks, and rendered to users with sub-millisecond latency.",
-    "example": "// Practical Demonstration: Internal Engine Execution & Microtask Synchronization of Polyfilling & Transpilation Strategies for ES2016 Features\nfunction executeFeature() {\n  console.log(\"Step 1: Initializing demonstration for Internal Engine Execution & Microtask Synchronization of Polyfilling & Transpilation Strategies for ES2016 Features...\");\n\n  const data = {\n    title: \"Internal Engine Execution & Microtask Synchronization of Polyfilling & Transpilation Strategies for ES2016 Features\",\n    status: \"ACTIVE\",\n    timestamp: new Date().toLocaleTimeString()\n  };\n\n  console.log(\"Step 2: Processing data:\", data);\n  return { success: true, payload: data };\n}\n\nconst outcome = executeFeature();\nconsole.log(\"Step 3: Execution completed successfully:\", outcome);",
-    "codeSnippet": "// Practical Demonstration: Internal Engine Execution & Microtask Synchronization of Polyfilling & Transpilation Strategies for ES2016 Features\nfunction executeFeature() {\n  console.log(\"Step 1: Initializing demonstration for Internal Engine Execution & Microtask Synchronization of Polyfilling & Transpilation Strategies for ES2016 Features...\");\n\n  const data = {\n    title: \"Internal Engine Execution & Microtask Synchronization of Polyfilling & Transpilation Strategies for ES2016 Features\",\n    status: \"ACTIVE\",\n    timestamp: new Date().toLocaleTimeString()\n  };\n\n  console.log(\"Step 2: Processing data:\", data);\n  return { success: true, payload: data };\n}\n\nconst outcome = executeFeature();\nconsole.log(\"Step 3: Execution completed successfully:\", outcome);",
-    "lineByLineExplanation": [
-      {
-        "line": 1,
-        "code": "// Feature Initialization",
-        "explanation": "Initializes execution in current lexical scope."
-      },
-      {
-        "line": 2,
-        "code": "const result = await processData();",
-        "explanation": "Pauses execution in async function; pushes continuation to microtask queue upon resolution."
-      },
-      {
-        "line": 3,
-        "code": "return { success: true, payload: result };",
-        "explanation": "Returns immutable data payload to caller."
-      }
-    ],
-    "executionFlow": [],
-    "commonMistakes": [
-      "Confusing synchronous execution with asynchronous microtask scheduling in the event loop.",
-      "Accidentally creating memory leaks by retaining references in closures or uncleared event listeners.",
-      "Assuming 'this' binding is lexical in regular functions instead of dynamically determined at call time."
-    ],
-    "interviewTraps": [
-      "Interviewer presents code mixing Promise.resolve(), setTimeout(..., 0), and synchronous console.log to test exact queue order.",
-      "How closures retain access to outer variables even after the outer function has completed execution and returned.",
-      "Temporal Dead Zone (TDZ): accessing let/const before initialization throws ReferenceError, unlike var which is initialized to undefined."
-    ],
-    "interviewTips": [
-      "Clearly articulate the phases: Creation Phase (hoisting) vs Execution Phase.",
-      "Explain the Event Loop clearly: Call Stack -> Microtask Queue (Promises) -> Macrotask Queue (Timers).",
-      "Highlight immutability, pure functions, and predictable state transformations."
-    ],
+    "detailedExplanation": "Why includes() is preferred for membership tests:\n\n1. Expressive intent: if (items.includes(item)) reads like natural language compared to if (items.indexOf(item) !== -1).\n\n2. Fewer subtle bugs: Developers frequently make off-by-one errors with indexOf (e.g. if (items.indexOf(item)) which fails for index 0 because 0 is falsy in JavaScript).\n\n3. Handles NaN correctly: indexOf(NaN) returns -1, causing silent false negatives.",
+    "simpleExplanation": "Use includes() whenever you only need to determine if an element exists in an array (boolean result). Use indexOf() only when you specifically need the numeric index of the element for slicing or mutation.",
+    "example": "const roles = ['admin', 'editor', 'viewer'];\n\n// Buggy legacy pattern (index 0 is falsy!):\nif (roles.indexOf('admin')) { // evaluates to 0, which is FALSE!\n  // Never executes for 'admin'!\n}\n\n// Safe legacy pattern:\nif (roles.indexOf('admin') !== -1) {\n  console.log('Access granted');\n}\n\n// Modern, clean, bug-free ES7 pattern:\nif (roles.includes('admin')) {\n  console.log('Access granted');\n}",
+    "codeSnippet": "const roles = ['admin', 'editor', 'viewer'];\n\n// Buggy legacy pattern (index 0 is falsy!):\nif (roles.indexOf('admin')) { // evaluates to 0, which is FALSE!\n  // Never executes for 'admin'!\n}\n\n// Safe legacy pattern:\nif (roles.indexOf('admin') !== -1) {\n  console.log('Access granted');\n}\n\n// Modern, clean, bug-free ES7 pattern:\nif (roles.includes('admin')) {\n  console.log('Access granted');\n}",
     "followUps": [
-      "What is the difference between the Microtask Queue and the Macrotask (Callback) Queue?",
-      "How does the V8 garbage collector detect and clean up unreferenced memory in closures?",
-      "What is the Temporal Dead Zone (TDZ) and why was it introduced in ES6?"
+      "What is the time complexity of Array.prototype.includes()?",
+      "How do you test for element presence in O(1) time instead of O(n)?"
     ],
-    "followUpAnswers": [
-      "Microtasks (Promise.then, queueMicrotask) have higher priority and run completely to exhaustion after every call stack frame, whereas Macrotasks (setTimeout, setInterval) run one per event loop tick.",
-      "V8 uses a Generational Garbage Collector (Scavenger for young generation, Mark-Sweep-Compact for old generation) tracing reachability from roots (window/global).",
-      "The TDZ is the period between entering scope and variable declaration evaluation; accessing let/const during TDZ throws a ReferenceError to prevent accessing uninitialized state."
-    ],
-    "diagram": "flowchart TD\n    Stack[\"1. Call Stack (Synchronous Code Runs Here First)\"]\n    Stack -->|Stack Becomes Empty| Micro[\"2. Microtask Queue (VIP: Promises & queueMicrotask)\"]\n    Micro -->|All Microtasks Drained| Macro[\"3. Macrotask Queue (setTimeout, setInterval, I/O)\"]\n    Macro -->|Next Iteration| Stack",
-    "diagramCaption": "JavaScript Event Loop Priority Pipeline: Stack -> Microtasks -> Macrotasks",
-    "expectedOutput": "Step 1: Starting operation for Internal Engine Execution & Microtask Synchronization of Polyfilling & Transpilation Strategies for ES2016 Features...\nStep 2: Operation evaluated successfully.\nStep 3: Cleanup completed deterministically.\nFinal Result: { ok: true, data: { status: 'SUCCESS' } }",
-    "videoUrl": "https://www.youtube-nocookie.com/embed/8aGhZQkoFbQ",
-    "videoTitle": "What the heck is the event loop anyway? (Philip Roberts)",
-    "standard_id": "ES7-000009",
-    "questionNumber": 9,
-    "question_type": "concept",
-    "question_hash": "qh_3fcc9a9d",
-    "codeExplanationSpeech": "This code demonstrates the implementation of Internal Engine Execution & Microtask Synchronization of Polyfilling & Transpilation Strategies for ES2016 Features with clear input and output handling.",
-    "status": "published",
-    "simpleExplanation": "V8 Compilation Pipeline: Modern V8 parses source text into an Abstract Syntax Tree (AST). The Ignition bytecode interpreter produces compact bytecode, while TurboFan JIT compiler optimizes hot code paths into machine assembly. Execution Context & Scoping: When code runs, the engine creates an Execution Context containing a Lexical Environment (let/const bindings in TDZ until evaluated) and a Variable Environment (var declarations hoisted)."
+    "interviewTips": [],
+    "interviewAnswer": "Use includes() whenever you only need to determine if an element exists in an array (boolean result). Use indexOf() only when you specifically need the numeric index of the element for slicing or mutation.",
+    "realWorldExample": "",
+    "experienceLevel": "1_3_YEARS"
   },
   {
     "id": "iq-es7-0010",
     "subject": "es7",
-    "topic": "ECMAScript 2016",
-    "subtopic": "Internal Engine Execution & Microtask Synchronization of Negative Number Base Exponentiation Edge Cases (-2 ** 2)",
-    "concept": "Internal Engine Execution & Microtask Synchronization of Negative Number Base Exponentiation Edge Cases (-2 ** 2)",
+    "topic": "ECMAScript Specifications",
+    "concept": "ECMAScript 2016 (ES7) Release Scope & Philosophy",
     "difficulty": "EASY",
-    "questionType": "MCQ",
-    "experienceLevel": "5_8_YEARS",
-    "isHighFrequency": false,
-    "companyTags": [
-      "Microsoft",
-      "Apple"
+    "questionType": "CONCEPTUAL",
+    "questionNumber": 10,
+    "question": "What was the significance of the ECMAScript 2016 (ES7) release in the evolution of JavaScript?",
+    "shortAnswer": "ECMAScript 2016 was the first release under TC39's modern annual release cycle. It established the pattern of releasing small, incremental, finished features yearly rather than holding back updates for multi-year monolithic releases.",
+    "detailedAnswer": "After ES6 (ES2015) took six years to finalize and introduced sweeping changes, TC39 shifted to an annual release cadence.\n\nUnder this process:\n\n1. Features advance through Stage 0 to Stage 4 based on implementation and consensus.\n\n2. Any feature reaching Stage 4 by the annual freeze date is included in that year's ECMAScript edition.\n\n3. ES7 included only two mature features: Array.prototype.includes and the exponentiation operator (**), proving the viability of yearly releases.",
+    "codeExample": "// The entire feature set of ECMAScript 2016 (ES7):\n\n// 1. Array.prototype.includes\nconst fruits = ['apple', 'banana', 'mango'];\nconsole.log(fruits.includes('banana')); // true\n\n// 2. Exponentiation Operator (**)\nconst power = 3 ** 4; // 81\nconsole.log(power);",
+    "followUpQuestions": [
+      "What are the four TC39 proposal stages?",
+      "Which features were introduced in ECMAScript 2017 (ES8) following ES7?"
+    ],
+    "followUpAnswers": [
+      "Stage 0 (Strawman), Stage 1 (Proposal), Stage 2 (Draft), Stage 3 (Candidate), and Stage 4 (Finished/Ready for Spec).",
+      "ES8 introduced async/await, Object.entries/values, String padding (padStart/padEnd), and SharedArrayBuffer/Atomics."
     ],
     "tags": [
       "es7",
-      "es7",
-      "Microsoft",
-      "Apple",
-      "interview-prep"
+      "javascript",
+      "tc39",
+      "ecmascript"
     ],
-    "question": "Negative Number Base Exponentiation Edge Cases (-2 ** 2)",
-    "shortAnswer": "In ES7, Internal Engine Execution & Microtask Synchronization of Negative Number Base Exponentiation Edge Cases (-2 ** 2) ensures standards-compliant execution and predictable runtime characteristics.",
-    "interviewAnswer": "In ES7, Internal Engine Execution & Microtask Synchronization of Negative Number Base Exponentiation Edge Cases (-2 ** 2) ensures standards-compliant execution and predictable runtime characteristics.\n\nIn practical production projects, mastering this ensures predictable state management, high runtime performance, and clean maintainability across our team.",
-    "detailedExplanation": "### Deep Technical Dive: JavaScript V8 Engine & Execution Lifecycle for Internal Engine Execution & Microtask Synchronization of Negative Number Base Exponentiation Edge Cases (-2 ** 2)\n\n1. **V8 Compilation Pipeline**: Modern V8 parses source text into an Abstract Syntax Tree (AST). The **Ignition** bytecode interpreter produces compact bytecode, while **TurboFan** JIT compiler optimizes hot code paths into machine assembly.\n2. **Execution Context & Scoping**: When code runs, the engine creates an Execution Context containing a Lexical Environment (let/const bindings in TDZ until evaluated) and a Variable Environment (var declarations hoisted). Closures capture parent lexical scopes in the memory heap.\n3. **Event Loop & Microtask Priority**: Synchronous code executes on the single-threaded Call Stack. Microtasks (Promise resolutions, queueMicrotask) run immediately when the call stack empties, preceding macrotasks (setTimeout, DOM events) in the Event Loop cycle.",
-    "why": "Why does Internal Engine Execution & Microtask Synchronization of Negative Number Base Exponentiation Edge Cases (-2 ** 2) exist in modern JavaScript?\n1. Eliminates error-prone legacy patterns (callback hell, global scope pollution, hoisting bugs).\n2. Enhances developer ergonomics with declarative, expressive, and self-documenting syntax.\n3. Enables V8 and other modern engines to apply runtime JIT optimizations and efficient garbage collection.",
-    "howItWorks": "",
-    "realWorldExample": "Production Scenario: Real-time fintech stock price ticker or dashboard where data streams are processed asynchronously, cached safely in scope without memory leaks, and rendered to users with sub-millisecond latency.",
-    "example": "// Practical Demonstration: Internal Engine Execution & Microtask Synchronization of Negative Number Base Exponentiation Edge Cases (-2 ** 2)\nfunction executeFeature() {\n  console.log(\"Step 1: Initializing demonstration for Internal Engine Execution & Microtask Synchronization of Negative Number Base Exponentiation Edge Cases (-2 ** 2)...\");\n\n  const data = {\n    title: \"Internal Engine Execution & Microtask Synchronization of Negative Number Base Exponentiation Edge Cases (-2 ** 2)\",\n    status: \"ACTIVE\",\n    timestamp: new Date().toLocaleTimeString()\n  };\n\n  console.log(\"Step 2: Processing data:\", data);\n  return { success: true, payload: data };\n}\n\nconst outcome = executeFeature();\nconsole.log(\"Step 3: Execution completed successfully:\", outcome);",
-    "codeSnippet": "// Practical Demonstration: Internal Engine Execution & Microtask Synchronization of Negative Number Base Exponentiation Edge Cases (-2 ** 2)\nfunction executeFeature() {\n  console.log(\"Step 1: Initializing demonstration for Internal Engine Execution & Microtask Synchronization of Negative Number Base Exponentiation Edge Cases (-2 ** 2)...\");\n\n  const data = {\n    title: \"Internal Engine Execution & Microtask Synchronization of Negative Number Base Exponentiation Edge Cases (-2 ** 2)\",\n    status: \"ACTIVE\",\n    timestamp: new Date().toLocaleTimeString()\n  };\n\n  console.log(\"Step 2: Processing data:\", data);\n  return { success: true, payload: data };\n}\n\nconst outcome = executeFeature();\nconsole.log(\"Step 3: Execution completed successfully:\", outcome);",
-    "lineByLineExplanation": [
-      {
-        "line": 1,
-        "code": "// Feature Initialization",
-        "explanation": "Initializes execution in current lexical scope."
-      },
-      {
-        "line": 2,
-        "code": "const result = await processData();",
-        "explanation": "Pauses execution in async function; pushes continuation to microtask queue upon resolution."
-      },
-      {
-        "line": 3,
-        "code": "return { success: true, payload: result };",
-        "explanation": "Returns immutable data payload to caller."
-      }
-    ],
-    "executionFlow": [],
-    "commonMistakes": [
-      "Confusing synchronous execution with asynchronous microtask scheduling in the event loop.",
-      "Accidentally creating memory leaks by retaining references in closures or uncleared event listeners.",
-      "Assuming 'this' binding is lexical in regular functions instead of dynamically determined at call time."
-    ],
-    "interviewTraps": [
-      "Interviewer presents code mixing Promise.resolve(), setTimeout(..., 0), and synchronous console.log to test exact queue order.",
-      "How closures retain access to outer variables even after the outer function has completed execution and returned.",
-      "Temporal Dead Zone (TDZ): accessing let/const before initialization throws ReferenceError, unlike var which is initialized to undefined."
-    ],
-    "interviewTips": [
-      "Clearly articulate the phases: Creation Phase (hoisting) vs Execution Phase.",
-      "Explain the Event Loop clearly: Call Stack -> Microtask Queue (Promises) -> Macrotask Queue (Timers).",
-      "Highlight immutability, pure functions, and predictable state transformations."
-    ],
+    "detailedExplanation": "After ES6 (ES2015) took six years to finalize and introduced sweeping changes, TC39 shifted to an annual release cadence.\n\nUnder this process:\n\n1. Features advance through Stage 0 to Stage 4 based on implementation and consensus.\n\n2. Any feature reaching Stage 4 by the annual freeze date is included in that year's ECMAScript edition.\n\n3. ES7 included only two mature features: Array.prototype.includes and the exponentiation operator (**), proving the viability of yearly releases.",
+    "simpleExplanation": "ECMAScript 2016 was the first release under TC39's modern annual release cycle. It established the pattern of releasing small, incremental, finished features yearly rather than holding back updates for multi-year monolithic releases.",
+    "example": "// The entire feature set of ECMAScript 2016 (ES7):\n\n// 1. Array.prototype.includes\nconst fruits = ['apple', 'banana', 'mango'];\nconsole.log(fruits.includes('banana')); // true\n\n// 2. Exponentiation Operator (**)\nconst power = 3 ** 4; // 81\nconsole.log(power);",
+    "codeSnippet": "// The entire feature set of ECMAScript 2016 (ES7):\n\n// 1. Array.prototype.includes\nconst fruits = ['apple', 'banana', 'mango'];\nconsole.log(fruits.includes('banana')); // true\n\n// 2. Exponentiation Operator (**)\nconst power = 3 ** 4; // 81\nconsole.log(power);",
     "followUps": [
-      "What is the difference between the Microtask Queue and the Macrotask (Callback) Queue?",
-      "How does the V8 garbage collector detect and clean up unreferenced memory in closures?",
-      "What is the Temporal Dead Zone (TDZ) and why was it introduced in ES6?"
+      "What are the four TC39 proposal stages?",
+      "Which features were introduced in ECMAScript 2017 (ES8) following ES7?"
     ],
-    "followUpAnswers": [
-      "Microtasks (Promise.then, queueMicrotask) have higher priority and run completely to exhaustion after every call stack frame, whereas Macrotasks (setTimeout, setInterval) run one per event loop tick.",
-      "V8 uses a Generational Garbage Collector (Scavenger for young generation, Mark-Sweep-Compact for old generation) tracing reachability from roots (window/global).",
-      "The TDZ is the period between entering scope and variable declaration evaluation; accessing let/const during TDZ throws a ReferenceError to prevent accessing uninitialized state."
-    ],
-    "diagram": "flowchart TD\n    Stack[\"1. Call Stack (Synchronous Code Runs Here First)\"]\n    Stack -->|Stack Becomes Empty| Micro[\"2. Microtask Queue (VIP: Promises & queueMicrotask)\"]\n    Micro -->|All Microtasks Drained| Macro[\"3. Macrotask Queue (setTimeout, setInterval, I/O)\"]\n    Macro -->|Next Iteration| Stack",
-    "diagramCaption": "JavaScript Event Loop Priority Pipeline: Stack -> Microtasks -> Macrotasks",
-    "expectedOutput": "Step 1: Starting operation for Internal Engine Execution & Microtask Synchronization of Negative Number Base Exponentiation Edge Cases (-2 ** 2)...\nStep 2: Operation evaluated successfully.\nStep 3: Cleanup completed deterministically.\nFinal Result: { ok: true, data: { status: 'SUCCESS' } }",
-    "videoUrl": "https://www.youtube-nocookie.com/embed/8aGhZQkoFbQ",
-    "videoTitle": "What the heck is the event loop anyway? (Philip Roberts)",
-    "standard_id": "ES7-MCQ-000010",
-    "questionNumber": 10,
-    "question_type": "mcq",
-    "question_hash": "qh_3227f700",
-    "options": [
-      {
-        "key": "A",
-        "text": "It enables deterministic behavior for Internal Engine Execution & Microtask Synchronization of Negative Number Base Exponentiation Edge Cases (-2 ** 2) per the official specification.",
-        "explanation": "Correct. Internal Engine Execution & Microtask Synchronization of Negative Number Base Exponentiation Edge Cases (-2 ** 2) provides standard, predictable execution in ES7."
-      },
-      {
-        "key": "B",
-        "text": "It forces an immediate full synchronous DOM reflow and redraws the operating system desktop.",
-        "explanation": "Incorrect. Web engines isolate styling and computation to the document view."
-      },
-      {
-        "key": "C",
-        "text": "It disables the JavaScript microtask queue and switches the browser to single-process mode.",
-        "explanation": "Incorrect. Browser process architecture and task scheduling are not disabled by Internal Engine Execution & Microtask Synchronization of Negative Number Base Exponentiation Edge Cases (-2 ** 2)."
-      },
-      {
-        "key": "D",
-        "text": "It converts all variables to global strings and clears browser localStorage.",
-        "explanation": "Incorrect. Scope rules and client storage remain strictly governed by standards."
-      }
-    ],
-    "correctAnswer": "A",
-    "mcqExplanation": "In ES7, Internal Engine Execution & Microtask Synchronization of Negative Number Base Exponentiation Edge Cases (-2 ** 2) ensures standards-compliant execution and predictable runtime characteristics.",
-    "wrongOptionExplanations": {
-      "B": "Layout and rendering engines maintain isolated graphical compositing layers.",
-      "C": "The JavaScript event loop and microtask queue operate independently of this syntax.",
-      "D": "Client storage APIs and variable scopes maintain strict sandboxed boundaries."
-    },
-    "codeExplanationSpeech": "This code demonstrates the implementation of Internal Engine Execution & Microtask Synchronization of Negative Number Base Exponentiation Edge Cases (-2 ** 2) with clear input and output handling.",
-    "status": "published",
-    "simpleExplanation": "V8 Compilation Pipeline: Modern V8 parses source text into an Abstract Syntax Tree (AST). The Ignition bytecode interpreter produces compact bytecode, while TurboFan JIT compiler optimizes hot code paths into machine assembly. Execution Context & Scoping: When code runs, the engine creates an Execution Context containing a Lexical Environment (let/const bindings in TDZ until evaluated) and a Variable Environment (var declarations hoisted)."
+    "interviewTips": [],
+    "interviewAnswer": "ECMAScript 2016 was the first release under TC39's modern annual release cycle. It established the pattern of releasing small, incremental, finished features yearly rather than holding back updates for multi-year monolithic releases.",
+    "realWorldExample": "",
+    "experienceLevel": "1_3_YEARS"
   }
 ]
