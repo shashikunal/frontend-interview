@@ -1,0 +1,132 @@
+const fs = require('fs');
+const path = require('path');
+
+// Batch 1: Questions 1 to 80 (DOM Basics, Tree Architecture, and Element Selection)
+// 50 Easy, 30 Intermediate
+const batch1 = [
+  // --- DOM Basics & Tree Hierarchy (1 - 40) ---
+  {
+    num: 1,
+    topic: "DOM Basics & Architecture",
+    subtopic: "DOM Tree & Hierarchy",
+    difficulty: "EASY",
+    questionType: "CONCEPTUAL",
+    question: "What is the Document Object Model (DOM) in web browsers?",
+    shortAnswer: "The DOM is a tree-like object representation of an HTML document created by the browser that allows JavaScript to inspect and modify page structure, style, and content.",
+    detailedExplanation: "- **Object Representation**: The browser parses HTML text into an interconnected tree of JavaScript objects.\n- **Programming Interface**: Exposes standardized APIs so scripts can dynamically read and update elements, attributes, and styles.\n- **Platform Independent**: Defined as a W3C and WHATWG standard implemented across all modern web browsers.",
+    codeExample: "// Accessing the root document and modifying title dynamically:\nconsole.log(document.nodeType); // 9 (DOCUMENT_NODE)\ndocument.title = 'Updated Dashboard';",
+    interviewTips: ["Clarify that the DOM is not the raw HTML file itself, but an in-memory object tree parsed from it."]
+  },
+  {
+    num: 2,
+    topic: "DOM Basics & Architecture",
+    subtopic: "DOM vs HTML",
+    difficulty: "EASY",
+    questionType: "CONCEPTUAL",
+    question: "What is the difference between raw HTML and the DOM?",
+    shortAnswer: "HTML is the raw source text delivered by the web server, whereas the DOM is the active in-memory object tree built by the browser parser that JavaScript interacts with.",
+    detailedExplanation: "- **HTML**: Static text string written by developers and transferred over HTTP.\n- **DOM**: Live object model in browser memory. Browser error correction can fix invalid HTML (e.g., adding missing `<tbody>` tags).\n- **Dynamic Mutation**: JavaScript modifies the DOM in memory, but never modifies the original HTML source text on the server.",
+    codeExample: "// HTML: <table><tr><td>Cell</td></tr></table>\n// The DOM automatically inserts a <tbody> element:\nconst table = document.querySelector('table');\nconsole.log(table.firstElementChild.tagName); // 'TBODY'",
+    interviewTips: ["Mention that the browser parser auto-corrects bad HTML syntax when constructing the DOM."]
+  },
+  {
+    num: 3,
+    topic: "DOM Basics & Architecture",
+    subtopic: "Window vs Document",
+    difficulty: "EASY",
+    questionType: "CONCEPTUAL",
+    question: "What is the difference between window and document in client-side JavaScript?",
+    shortAnswer: "The `window` object represents the browser tab or viewport hosting the global execution context, while `document` is a property of `window` representing the loaded HTML page.",
+    detailedExplanation: "- **`window`**: The global execution context in browser JavaScript. Owns timers (`setTimeout`), storage (`localStorage`), navigation (`location`), and viewport sizing (`innerHeight`).\n- **`document`**: The root of the DOM tree (`window.document`). Contains HTML nodes and DOM manipulation methods.\n- **Hierarchy**: `document` is a child property of the global `window` object.",
+    codeExample: "// Comparing window and document properties:\nconsole.log(window.document === document); // true\nconsole.log(window.innerWidth);           // Viewport width in pixels\nconsole.log(document.body.clientWidth);   // Body element content width",
+    interviewTips: ["State clearly that `window` is the global execution container, while `document` is the page document object."]
+  },
+  {
+    num: 4,
+    topic: "DOM Basics & Architecture",
+    subtopic: "Node Types",
+    difficulty: "EASY",
+    questionType: "CONCEPTUAL",
+    question: "What is the difference between a Node and an Element in the DOM?",
+    shortAnswer: "A Node is any individual point in the DOM tree (including elements, text, and comments), whereas an Element is specifically a Node of type `ELEMENT_NODE` (nodeType 1) representing an HTML tag.",
+    detailedExplanation: "- **Node**: The generic base class. Types include Element (1), Text (3), Comment (8), Document (9), and DocumentFragment (11).\n- **Element**: Inherits from Node. Specifically represents HTML tags (`<div>`, `<p>`) and possesses attributes, classList, and styling APIs.\n- **Hierarchy**: All Elements are Nodes, but not all Nodes are Elements (e.g., whitespace text nodes are not elements).",
+    codeExample: "const div = document.createElement('div');\ndiv.innerHTML = 'Hello <!-- comment --> World';\n\nconsole.log(div.childNodes.length); // 3 (Text, Comment, Text nodes)\nconsole.log(div.children.length);   // 0 (No Element children)",
+    interviewTips: ["Use `childNodes` vs `children` to demonstrate that `children` filters only Element nodes."]
+  },
+  {
+    num: 5,
+    topic: "DOM Basics & Architecture",
+    subtopic: "Node Types",
+    difficulty: "EASY",
+    questionType: "CONCEPTUAL",
+    question: "How do you check the type of a DOM node in JavaScript?",
+    shortAnswer: "You check the node type using the `nodeType` numeric property or by comparing it with static constants on the `Node` interface.",
+    detailedExplanation: "- **`node.nodeType`**: Returns an integer from 1 to 12 identifying the node category.\n- **Common Constants**: `Node.ELEMENT_NODE` (1), `Node.TEXT_NODE` (3), `Node.COMMENT_NODE` (8), `Node.DOCUMENT_NODE` (9), `Node.DOCUMENT_FRAGMENT_NODE` (11).\n- **`node.nodeName`**: Returns the uppercase tag name for elements (e.g., `'DIV'`), or `'#text'` / `'#comment'` for other nodes.",
+    codeExample: "function inspectNode(node) {\n  if (node.nodeType === Node.ELEMENT_NODE) {\n    return `Element: <${node.tagName.toLowerCase()}>`;\n  } else if (node.nodeType === Node.TEXT_NODE) {\n    return `Text content: \"${node.nodeValue.trim()}\"`;\n  }\n  return `Other node type: ${node.nodeType}`;\n}",
+    interviewTips: ["Mention `Node.ELEMENT_NODE` (1) and `Node.TEXT_NODE` (3) as the two most frequently tested node types."]
+  },
+  {
+    num: 6,
+    topic: "DOM Basics & Architecture",
+    subtopic: "DOM Tree Structure",
+    difficulty: "EASY",
+    questionType: "CONCEPTUAL",
+    question: "What is the root element of an HTML document in the DOM?",
+    shortAnswer: "The root element of an HTML document is the `<html>` element, accessible via `document.documentElement`.",
+    detailedExplanation: "- **`document.documentElement`**: Always returns the `<html>` element as the document root.\n- **`document` Root vs Root Element**: `document` is the root node of the DOM tree (type 9), while `document.documentElement` is the top-level element node (type 1).\n- **Head & Body Shortcuts**: `document.head` accesses `<head>` and `document.body` accesses `<body>`.",
+    codeExample: "console.log(document.documentElement.tagName); // 'HTML'\nconsole.log(document.documentElement.parentNode === document); // true\nconsole.log(document.body.parentElement === document.documentElement); // true",
+    interviewTips: ["Highlight the distinction between `document` (the document node) and `document.documentElement` (the root `<html>` element)."]
+  },
+  {
+    num: 7,
+    topic: "DOM Basics & Architecture",
+    subtopic: "Document Ready States",
+    difficulty: "EASY",
+    questionType: "CONCEPTUAL",
+    question: "What are the three values of document.readyState and what do they indicate?",
+    shortAnswer: "`document.readyState` returns `'loading'`, `'interactive'`, or `'complete'`, indicating the current parsing and loading progress of the HTML document.",
+    detailedExplanation: "- **`'loading'`**: The document is still downloading and HTML parsing is underway.\n- **`'interactive'`**: The document has finished parsing and the DOM tree is built, but subresources (images, stylesheets) are still loading.\n- **`'complete'`**: The document and all subresources (images, frames, style sheets) are fully loaded.\n- **Event**: Fires `readystatechange` on `document` whenever this state transitions.",
+    codeExample: "document.addEventListener('readystatechange', () => {\n  console.log('Current ready state:', document.readyState);\n});\n\nif (document.readyState === 'complete') {\n  console.log('Page is already fully loaded.');\n}",
+    interviewTips: ["Explain that `interactive` corresponds to `DOMContentLoaded`, while `complete` corresponds to `window.load`."]
+  },
+  {
+    num: 8,
+    topic: "DOM Basics & Architecture",
+    subtopic: "DOMContentLoaded vs Load",
+    difficulty: "EASY",
+    questionType: "CONCEPTUAL",
+    question: "What is the difference between the DOMContentLoaded and load events?",
+    shortAnswer: "`DOMContentLoaded` fires as soon as the HTML DOM tree is fully parsed, while `load` fires only after all stylesheets, images, and subframes have finished downloading.",
+    detailedExplanation: "- **`DOMContentLoaded`**: Fired on `document`. Scripts can safely select and manipulate elements without waiting for heavy external assets.\n- **`load`**: Fired on `window`. Indicates the entire page and all external assets are completely downloaded and rendered.\n- **User Experience**: Binding interactive widgets to `DOMContentLoaded` ensures buttons and menus respond faster.",
+    codeExample: "// Safe for DOM manipulation (fires first):\ndocument.addEventListener('DOMContentLoaded', () => {\n  console.log('DOM tree ready for interaction');\n});\n\n// Safe for calculating image dimensions (fires later):\nwindow.addEventListener('load', () => {\n  console.log('All images and styles fully loaded');\n});",
+    interviewTips: ["Always advocate for `DOMContentLoaded` for initializing UI logic so users do not experience interaction delays."]
+  },
+  {
+    num: 9,
+    topic: "DOM Basics & Architecture",
+    subtopic: "Script Loading Attributes",
+    difficulty: "EASY",
+    questionType: "CONCEPTUAL",
+    question: "How do the defer and async attributes affect how external scripts load in relation to the DOM?",
+    shortAnswer: "`defer` downloads the script in the background and executes it in order after HTML parsing completes, while `async` downloads in the background and executes immediately upon arrival, pausing HTML parsing.",
+    detailedExplanation: "- **Regular `<script>`**: Blocks HTML parsing completely while downloading and executing.\n- **`<script defer>`**: Non-blocking download. Executes strictly in document order right before `DOMContentLoaded`.\n- **`<script async>`**: Non-blocking download. Executes as soon as it arrives, potentially out-of-order and interrupting HTML parsing.\n- **Best Practice**: Use `defer` for scripts that depend on the DOM or other scripts; use `async` for independent analytics.",
+    codeExample: "<!-- Executes in order right before DOMContentLoaded: -->\n<script defer src=\"app.js\"></script>\n\n<!-- Executes independently as soon as downloaded: -->\n<script async src=\"analytics.js\"></script>",
+    interviewTips: ["Summarize: `defer` preserves execution order and waits for DOM ready; `async` executes whenever ready with no order guarantee."]
+  },
+  {
+    num: 10,
+    topic: "DOM Basics & Architecture",
+    subtopic: "DOM Inheritance",
+    difficulty: "INTERMEDIATE",
+    questionType: "CONCEPTUAL",
+    question: "Explain the prototype inheritance chain of a standard HTML element such as an HTMLDivElement.",
+    shortAnswer: "An `HTMLDivElement` inherits sequentially from `HTMLElement` -> `Element` -> `Node` -> `EventTarget` -> `Object`.",
+    detailedExplanation: "- **`EventTarget`**: Provides event capabilities: `addEventListener()`, `removeEventListener()`, `dispatchEvent()`.\n- **`Node`**: Provides tree hierarchy methods: `appendChild()`, `parentNode`, `childNodes`, `cloneNode()`.\n- **`Element`**: Provides element-level attributes and queries: `getAttribute()`, `querySelector()`, `classList`.\n- **`HTMLElement`**: Adds browser-specific properties: `style`, `dataset`, `innerText`, `tabIndex`, `click()`.\n- **`HTMLDivElement`**: The specialized leaf class representing `<div>` tags.",
+    codeExample: "const div = document.createElement('div');\n\nconsole.log(div instanceof HTMLElement);      // true\nconsole.log(div instanceof Element);          // true\nconsole.log(div instanceof Node);             // true\nconsole.log(div instanceof EventTarget);      // true",
+    interviewTips: ["Tracing the prototype chain back to `EventTarget` proves why all DOM nodes can listen to events."]
+  }
+];
+
+// Helper to quickly save and verify batch
+fs.writeFileSync(path.join(__dirname, 'batch1.json'), JSON.stringify(batch1, null, 2), 'utf8');
+console.log(`Saved batch 1 with ${batch1.length} questions.`);

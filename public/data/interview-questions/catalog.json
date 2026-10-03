@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-10-01T17:09:17.888Z",
-  "totalQuestions": 1233,
+  "generatedAt": "2026-10-03T06:40:49.856Z",
+  "totalQuestions": 2419,
   "totalSubjects": 35,
   "subjects": [
     {
@@ -10,25 +10,28 @@
       "badge": "HTML5",
       "color": "#e34f26",
       "accentGradient": "linear-gradient(135deg, #e34f26 0%, #f06529 100%)",
-      "description": "Master semantic layout, accessibility (ARIA/WCAG), HTML parser pipeline, DOM generation, web components, forms, SEO, and security headers.",
-      "totalQuestions": 40,
+      "description": "Master semantic layout, accessibility (ARIA/WCAG), HTML parser pipeline, DOM generation, web components, forms, SEO, and security headers with AI interview tips.",
+      "totalQuestions": 93,
       "topics": [
-        "HTML Fundamentals",
-        "Semantic HTML",
-        "Accessibility & Media",
-        "Links & Navigation",
-        "Security & Navigation",
-        "Forms & Inputs",
-        "Tables",
-        "HTML & Browser Performance",
-        "Web Storage & APIs",
-        "Modern HTML5 APIs",
-        "Graphics & Media",
+        "Accessibility & ARIA",
         "Accessibility & Keyboard Navigation",
-        "Performance & Media",
+        "Accessibility & Media",
+        "Browser Engine & Performance",
+        "Forms & Accessibility",
+        "Forms & Inputs",
+        "Graphics & Media",
+        "HTML & Browser Performance",
+        "HTML Fundamentals",
+        "Links & Navigation",
+        "Metadata & SEO",
         "Security & Embedding",
+        "Security & Navigation",
+        "Semantic HTML",
+        "Semantic HTML & Layout",
         "SEO & Social Sharing",
-        "Forms & Accessibility"
+        "Tables",
+        "Web Storage & APIs",
+        "Web Storage & Offline"
       ]
     },
     {
@@ -38,10 +41,18 @@
       "badge": "CSS3/4",
       "color": "#1572b6",
       "accentGradient": "linear-gradient(135deg, #1572b6 0%, #33a9dc 100%)",
-      "description": "Deep-dive into the CSS Cascade, specificity calculations, Stacking Contexts, Flexbox, Grid, Container Queries, GPU compositing, animations, and zero-runtime architecture.",
-      "totalQuestions": 125,
+      "description": "Deep-dive into the CSS Cascade, specificity calculations, Stacking Contexts, Flexbox, Grid, Container Queries, GPU compositing, animations, and zero-runtime architecture with AI interview tips.",
+      "totalQuestions": 295,
       "topics": [
-        "CSS Layout & Architecture"
+        "Architecture & Modern Standards",
+        "CSS Layout & Architecture",
+        "CSS Layout & Box Model",
+        "Flexbox & Modern Grid",
+        "Performance & GPU Compositing",
+        "Positioning & Stacking Context",
+        "Responsive Design & Container Queries",
+        "Selectors, Specificity & Cascade",
+        "Transitions & Animations"
       ]
     },
     {
@@ -54,17 +65,17 @@
       "description": "V8 engine internals, Execution Contexts, Lexical Scope, Closures, Prototypal Inheritance, Event Loop, Microtask Queue, Memory Profiling, and Garbage Collection.",
       "totalQuestions": 518,
       "topics": [
-        "Objects & Prototypes",
-        "Functions & Closures",
-        "Security & Web Platform",
         "Array & String Methods",
-        "Core JavaScript",
-        "Scope & Hoisting",
-        "ES6+ Modules & Syntax",
-        "DOM & Browser",
         "Async & Event Loop",
-        "Types & Coercion",
-        "Memory & Performance"
+        "Core JavaScript",
+        "DOM & Browser",
+        "ES6+ Modules & Syntax",
+        "Functions & Closures",
+        "Memory & Performance",
+        "Objects & Prototypes",
+        "Scope & Hoisting",
+        "Security & Web Platform",
+        "Types & Coercion"
       ]
     },
     {
@@ -90,7 +101,10 @@
       "description": "ECMAScript 2016 additions: Array.prototype.includes, the exponentiation operator (**), and tighter Math functions with interview-focused explanations.",
       "totalQuestions": 10,
       "topics": [
-        "ECMAScript 2016"
+        "Array Methods",
+        "ECMAScript Specifications",
+        "Equality & Types",
+        "Operators"
       ]
     },
     {
@@ -103,7 +117,12 @@
       "description": "ECMAScript 2017 additions: async/await, Object.values/entries, String padding, SharedArrayBuffer, and Atomics with interview-focused explanations.",
       "totalQuestions": 10,
       "topics": [
-        "ECMAScript 2017"
+        "Async JavaScript",
+        "Concurrency & Memory",
+        "ECMAScript Specifications",
+        "Object Methods",
+        "String Methods",
+        "Syntax Enhancements"
       ]
     },
     {
@@ -114,9 +133,27 @@
       "color": "#10b981",
       "accentGradient": "linear-gradient(135deg, #10b981 0%, #34d399 100%)",
       "description": "Document tree traversal, Node vs Element, live collections, Layout Thrashing, reflow/repaint triggers, MutationObserver, and high-frequency DOM manipulation.",
-      "totalQuestions": 61,
+      "totalQuestions": 500,
       "topics": [
-        "DOM Architecture"
+        "Attributes & Dataset",
+        "Content & Text Manipulation",
+        "Document Lifecycle & Window APIs",
+        "DOM Basics & Architecture",
+        "DOM Edge Cases & Quirks",
+        "DOM Performance, Reflow & Repaint",
+        "DOM Security & XSS Prevention",
+        "DOM Traversal & Navigation",
+        "Element Selection & Collections",
+        "Event System & Propagation",
+        "Event Types & Interactions",
+        "Forms & Interactive Components",
+        "Node Creation & Insertion",
+        "Node Removal & Replacement",
+        "Observers (Mutation, Intersection, Resize)",
+        "Practical Scenarios & Production Patterns",
+        "Range and Selection APIs",
+        "Shadow DOM & Web Components",
+        "Styles, Classes & CSS OM"
       ]
     },
     {
@@ -142,8 +179,8 @@
       "description": "Fetch API with AbortController, Web Workers, Service Workers & Offline PWA, Cache API, IndexedDB, WebSockets, WebRTC, Streams, and Web Crypto.",
       "totalQuestions": 113,
       "topics": [
-        "Networking & Web APIs",
-        "Hardware & System Web APIs"
+        "Hardware & System Web APIs",
+        "Networking & Web APIs"
       ]
     },
     {
@@ -154,20 +191,32 @@
       "color": "#0769ad",
       "accentGradient": "linear-gradient(135deg, #0769ad 0%, #1b8cd8 100%)",
       "description": "Fundamentals, the $ alias, selectors, DOM manipulation, traversal, event delegation, AJAX, animation, plugins, $.extend(), legacy enterprise apps, and jQuery-to-React migration.",
-      "totalQuestions": 71,
+      "totalQuestions": 169,
       "topics": [
-        "jQuery Fundamentals",
-        "jQuery Selectors",
-        "jQuery Core & Chaining",
-        "jQuery Events",
-        "jQuery DOM Manipulation",
-        "jQuery Attributes & Properties",
+        "jQuery Advanced Selectors",
         "jQuery AJAX",
-        "jQuery to Modern Frameworks",
-        "jQuery Plugins",
+        "jQuery and ECMAScript",
         "jQuery Attributes & CSS",
-        "jQuery Traversal",
+        "jQuery Attributes & Properties",
+        "jQuery Best Practices",
+        "jQuery Content Manipulation",
+        "jQuery Core & Chaining",
+        "jQuery DOM Manipulation",
         "jQuery Effects & Animations",
+        "jQuery Effects and Animations",
+        "jQuery Events",
+        "jQuery Form Handling",
+        "jQuery Fundamentals",
+        "jQuery Mobile",
+        "jQuery Optimization Techniques",
+        "jQuery Plugin Development",
+        "jQuery Plugins",
+        "jQuery Selectors",
+        "jQuery to Modern Frameworks",
+        "jQuery Traversal",
+        "jQuery Traversing the DOM",
+        "jQuery Troubleshooting and Debugging",
+        "jQuery UI Interaction",
         "jQuery Utilities & Plugins",
         "Modern Migration & Performance"
       ]
@@ -192,10 +241,29 @@
       "badge": "React 19",
       "color": "#61dafb",
       "accentGradient": "linear-gradient(135deg, #61dafb 0%, #22b8cf 100%)",
-      "description": "React 19, JSX internals, Fiber Work Loop, Reconciliation, Hooks deep mechanics (useState, useEffect, useMemo), Suspense, Error Boundaries, and Server Components.",
-      "totalQuestions": 28,
+      "description": "Curated from the industry-standard SudheerJ React collection (454 Questions): Core React, React 18/19, Hooks, Redux Toolkit, React Router, Lifecycles, Fiber, Performance, Portals, and Architecture.",
+      "totalQuestions": 454,
       "topics": [
-        "React Architecture"
+        "Advanced Component Patterns",
+        "Classic React & Class Components",
+        "Code Splitting & Suspense",
+        "Component Lifecycle",
+        "Context API & State Sharing",
+        "Core React & JSX",
+        "Error Boundaries & Resilience",
+        "Forms & Controlled Inputs",
+        "Internationalization (i18n)",
+        "Modern React (18 & 19)",
+        "Performance Optimization",
+        "React Architecture & Practices",
+        "React Hooks Deep Dive",
+        "React Native",
+        "React Portals",
+        "React Router",
+        "React Testing",
+        "Redux & State Architecture",
+        "Refs & Direct DOM Access",
+        "Synthetic Events & Handling"
       ]
     },
     {
@@ -221,11 +289,11 @@
       "description": "Client-side routing architecture, createBrowserRouter, nested routes, loaders, actions, defer, useSearchParams, and layout transitions.",
       "totalQuestions": 7,
       "topics": [
-        "Routing Architecture",
         "Data Loaders & Actions",
-        "Nested Layouts",
         "Dynamic Routes & Navigation",
-        "Error Boundaries & Fallbacks"
+        "Error Boundaries & Fallbacks",
+        "Nested Layouts",
+        "Routing Architecture"
       ]
     },
     {
@@ -238,11 +306,11 @@
       "description": "Server state management, background refetching, stale-while-revalidate, mutations, optimistic updates, query key factories, and caching mechanics.",
       "totalQuestions": 6,
       "topics": [
-        "Server State vs Client State",
         "Caching & Invalidation",
         "Mutations & Optimistic UI",
+        "Pagination & Infinite Queries",
         "Query Keys Architecture",
-        "Pagination & Infinite Queries"
+        "Server State vs Client State"
       ]
     },
     {
@@ -255,11 +323,11 @@
       "description": "App Router, Server Components (RSC), Client Components ('use client'), Server Actions, SSR, SSG, ISR, Streaming with Suspense, and SEO optimization.",
       "totalQuestions": 6,
       "topics": [
-        "Server vs Client Components",
+        "App Router Architecture",
+        "Data Caching & Revalidation",
         "Rendering Strategies (SSR/SSG/ISR)",
         "Server Actions & Mutations",
-        "Data Caching & Revalidation",
-        "App Router Architecture"
+        "Server vs Client Components"
       ]
     },
     {
@@ -272,10 +340,10 @@
       "description": "HTTP request/response lifecycle, HTTP/1.1 vs HTTP/2 vs HTTP/3 (QUIC), status codes, headers, caching (ETag, Cache-Control), CORS, and TCP/TLS handshakes.",
       "totalQuestions": 6,
       "topics": [
-        "HTTP Evolution (1.1, 2, 3)",
-        "Status Codes & Semantics",
         "Caching Headers & ETag",
         "CORS Preflight & Security",
+        "HTTP Evolution (1.1, 2, 3)",
+        "Status Codes & Semantics",
         "TCP & TLS Handshake"
       ]
     },
@@ -289,10 +357,10 @@
       "description": "REST architectural constraints, HTTP verbs (GET, POST, PUT, PATCH, DELETE), idempotency, HATEOAS, API versioning, error payload standards, and pagination.",
       "totalQuestions": 6,
       "topics": [
-        "PUT vs PATCH Semantics",
+        "Error Handling & Status Codes",
         "Idempotency & HTTP Methods",
         "Pagination Strategies",
-        "Error Handling & Status Codes",
+        "PUT vs PATCH Semantics",
         "REST Constraints & Principles"
       ]
     },
@@ -306,11 +374,11 @@
       "description": "Full-duplex bi-directional communication, WebSocket handshake (HTTP 101 Switching Protocols), heartbeat ping/pong, reconnection backoff, and SSE vs WebSockets.",
       "totalQuestions": 6,
       "topics": [
-        "WebSocket Lifecycle & Handshake",
         "Full-Duplex vs HTTP Polling",
-        "Server-Sent Events (SSE) vs WS",
+        "Heartbeats & Ping/Pong",
         "Reconnection Strategies",
-        "Heartbeats & Ping/Pong"
+        "Server-Sent Events (SSE) vs WS",
+        "WebSocket Lifecycle & Handshake"
       ]
     },
     {
@@ -325,9 +393,9 @@
       "topics": [
         "Critical Rendering Path (CRP)",
         "DOM & CSSOM Construction",
-        "Reflow vs Repaint",
         "GPU Layer Compositing",
-        "Layout Thrashing & Batching"
+        "Layout Thrashing & Batching",
+        "Reflow vs Repaint"
       ]
     },
     {
@@ -340,10 +408,10 @@
       "description": "Core Web Vitals (LCP, INP, CLS), asset optimization, code-splitting, tree-shaking, lazy loading, resource hints (preload, preconnect, dns-prefetch), and bundle analysis.",
       "totalQuestions": 6,
       "topics": [
-        "Core Web Vitals (LCP, INP, CLS)",
         "Asset Optimization & Compression",
-        "Resource Hints (preload, prefetch)",
         "Code Splitting & Dynamic Imports",
+        "Core Web Vitals (LCP, INP, CLS)",
+        "Resource Hints (preload, prefetch)",
         "Virtualization & Memory Profiling"
       ]
     },
@@ -357,9 +425,9 @@
       "description": "WCAG 2.2 guidelines, semantic HTML vs ARIA, keyboard accessibility (tabindex, focus trap), screen reader compatibility, color contrast, and live regions.",
       "totalQuestions": 6,
       "topics": [
+        "Accessible Forms & Error Announcements",
         "ARIA Roles & Attributes",
         "Keyboard Navigation & Focus Management",
-        "Accessible Forms & Error Announcements",
         "Screen Reader Testing",
         "WCAG 2.2 Principles (POUR)"
       ]
@@ -374,11 +442,11 @@
       "description": "Search engine crawler architecture, Open Graph & Twitter cards, JSON-LD Schema structured data, canonical URLs, robots.txt, sitemaps, and SSR for indexing.",
       "totalQuestions": 6,
       "topics": [
-        "Structured Data (JSON-LD)",
-        "Open Graph & Social Metadata",
         "Canonicalization & Duplicate Content",
+        "Open Graph & Social Metadata",
+        "Search Engine Indexing Pipeline",
         "Sitemaps & robots.txt",
-        "Search Engine Indexing Pipeline"
+        "Structured Data (JSON-LD)"
       ]
     },
     {
@@ -391,11 +459,11 @@
       "description": "Cross-Site Scripting (XSS), Cross-Site Request Forgery (CSRF), Content Security Policy (CSP), secure cookie flags (HttpOnly, Secure, SameSite), and Clickjacking.",
       "totalQuestions": 6,
       "topics": [
-        "XSS (Stored, Reflected, DOM)",
-        "CSRF & SameSite Cookies",
+        "Clickjacking & Framing Protections",
         "Content Security Policy (CSP)",
+        "CSRF & SameSite Cookies",
         "Secure Token Storage (LocalStorage vs Cookies)",
-        "Clickjacking & Framing Protections"
+        "XSS (Stored, Reflected, DOM)"
       ]
     },
     {
@@ -408,11 +476,11 @@
       "description": "Testing Trophy vs Testing Pyramid, Vitest, Jest, React Testing Library (RTL), Playwright, Cypress, mocking network calls (MSW), and accessibility testing.",
       "totalQuestions": 6,
       "topics": [
-        "React Testing Library Principles",
-        "Mock Service Worker (MSW)",
         "End-to-End (E2E) with Playwright",
-        "Visual Regression & a11y Testing",
-        "Testing Trophy & Philosophy"
+        "Mock Service Worker (MSW)",
+        "React Testing Library Principles",
+        "Testing Trophy & Philosophy",
+        "Visual Regression & a11y Testing"
       ]
     },
     {
@@ -425,11 +493,11 @@
       "description": "Git object model (blobs, trees, commits), merge vs rebase, interactive rebase, cherry-pick, git bisect, stash, merge conflict resolution, and trunk-based development.",
       "totalQuestions": 6,
       "topics": [
-        "Merge vs Rebase Strategies",
-        "Interactive Rebase & Squashing",
         "Debugging with Git Bisect",
-        "Trunk-Based vs GitFlow",
-        "Git Internals (Blobs, Trees, Commits)"
+        "Git Internals (Blobs, Trees, Commits)",
+        "Interactive Rebase & Squashing",
+        "Merge vs Rebase Strategies",
+        "Trunk-Based vs GitFlow"
       ]
     },
     {
@@ -442,11 +510,11 @@
       "description": "Vite, esbuild, Rollup, Webpack 5, Turbopack, Rspack, native ES modules (ESM), Hot Module Replacement (HMR), tree-shaking, and code splitting.",
       "totalQuestions": 6,
       "topics": [
-        "Vite vs Webpack Architecture",
-        "Native ESM & Dev Server Mechanics",
-        "Tree Shaking & Side Effects",
         "Code Splitting & Dynamic Chunks",
-        "Rust/Go Tooling (esbuild, Rspack)"
+        "Native ESM & Dev Server Mechanics",
+        "Rust/Go Tooling (esbuild, Rspack)",
+        "Tree Shaking & Side Effects",
+        "Vite vs Webpack Architecture"
       ]
     },
     {
@@ -459,11 +527,11 @@
       "description": "Micro frontend architecture, Webpack 5 Module Federation, iframe isolation, single-spa, shared dependencies, cross-app communication, and independent deployments.",
       "totalQuestions": 6,
       "topics": [
-        "Module Federation Architecture",
-        "Host vs Remote Applications",
-        "Shared Dependencies & Versioning",
         "Cross-Micro-Frontend Communication",
-        "Routing & State Isolation"
+        "Host vs Remote Applications",
+        "Module Federation Architecture",
+        "Routing & State Isolation",
+        "Shared Dependencies & Versioning"
       ]
     },
     {
@@ -477,10 +545,10 @@
       "totalQuestions": 6,
       "topics": [
         "Compound Component Pattern",
-        "Provider Pattern & React Context",
-        "SOLID Principles in Frontend",
         "Container / Presentational Pattern",
-        "Observer Pattern & Event Emitters"
+        "Observer Pattern & Event Emitters",
+        "Provider Pattern & React Context",
+        "SOLID Principles in Frontend"
       ]
     },
     {
@@ -493,11 +561,11 @@
       "description": "Feature-sliced design, modular monorepos (Turborepo, Nx), state management boundaries, API abstraction layers, error handling strategies, and design systems.",
       "totalQuestions": 6,
       "topics": [
-        "Feature-Sliced Architecture (FSD)",
-        "Monorepos & Workspace Tooling",
         "API Layer & Repository Pattern",
+        "Design System Governance",
         "Error Boundaries & Fallback Strategies",
-        "Design System Governance"
+        "Feature-Sliced Architecture (FSD)",
+        "Monorepos & Workspace Tooling"
       ]
     },
     {
@@ -512,9 +580,9 @@
       "topics": [
         "Autocomplete / Typeahead Search",
         "Infinite Scroll with IntersectionObserver",
-        "Virtualized List from Scratch",
+        "Nested Comment Tree",
         "Star Rating & Feedback Component",
-        "Nested Comment Tree"
+        "Virtualized List from Scratch"
       ]
     },
     {
@@ -527,11 +595,11 @@
       "description": "End-to-end frontend architecture for large-scale systems: Design Google Docs, Design Netflix Video Streaming, Design WhatsApp Web, Design Infinite Newsfeed, and Design E-commerce Checkout.",
       "totalQuestions": 6,
       "topics": [
+        "Design E-Commerce Shopping & Checkout",
         "Design Google Docs (Collaborative Editing)",
-        "Design Netflix Web (Video & Adaptive Bitrate)",
-        "Design WhatsApp / Messenger Web",
         "Design Infinite Newsfeed (Twitter/Facebook)",
-        "Design E-Commerce Shopping & Checkout"
+        "Design Netflix Web (Video & Adaptive Bitrate)",
+        "Design WhatsApp / Messenger Web"
       ]
     },
     {
@@ -544,11 +612,11 @@
       "description": "Practical frontend algorithms and JavaScript implementations: Custom Promise.all, Deep Clone, Flatten Array/Object, Event Emitter, Memoize, Curry, and LRU Cache.",
       "totalQuestions": 6,
       "topics": [
-        "Implement Promise.all / Promise.allSettled",
         "Deep Clone with Circular References",
         "Flatten Nested Arrays and Objects",
         "Implement Custom Event Emitter",
-        "Implement LRU Cache from Scratch"
+        "Implement LRU Cache from Scratch",
+        "Implement Promise.all / Promise.allSettled"
       ]
     },
     {
@@ -562,10 +630,10 @@
       "totalQuestions": 6,
       "topics": [
         "Debugging Memory Leaks in Single Page Apps",
-        "Handling API Race Conditions in Fast Typing",
         "Diagnosing 60 FPS Animation Jitter",
-        "Zero-Downtime Static Asset Deployments",
-        "Handling Offline Mode & Conflict Resolution"
+        "Handling API Race Conditions in Fast Typing",
+        "Handling Offline Mode & Conflict Resolution",
+        "Zero-Downtime Static Asset Deployments"
       ]
     },
     {
@@ -578,9 +646,9 @@
       "description": "Verified interview rounds, coding challenges, and system architecture questions asked at Google, Meta, Amazon, Microsoft, Netflix, Uber, and Apple.",
       "totalQuestions": 6,
       "topics": [
+        "Amazon Customer Experience (CX) Rounds",
         "Google Frontend Engineering Rounds",
         "Meta (Facebook) Frontend Rounds",
-        "Amazon Customer Experience (CX) Rounds",
         "Microsoft Web Platform Rounds",
         "Netflix High-Performance UI Rounds"
       ]
