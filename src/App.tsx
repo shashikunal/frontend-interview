@@ -45,6 +45,8 @@ import UserProfile from './components/profile/UserProfile'
 import UserManagementStudio from './components/usermanagement/UserManagementStudio'
 import AdminDashboard from './components/dashboard/AdminDashboard'
 import { PlacementApp } from './features/placement'
+import AssessmentRunner from './components/assessment/AssessmentRunner'
+import CandidateAssessments from './components/dashboard/CandidateAssessments'
 const MachineCodingStudio = lazy(() => import('./components/machinecoding/MachineCodingStudio'))
 const DSAStudio = lazy(() => import('./components/dsa/DSAStudio'))
 const CoreProgrammingStudio = lazy(() => import('./components/coreprogramming/CoreProgrammingStudio'))
@@ -308,6 +310,22 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/assessment-runner"
+            element={
+              <ProtectedRoute>
+                <AssessmentRunner />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/assessments"
+            element={
+              <ProtectedRoute>
+                <CandidateAssessments />
               </ProtectedRoute>
             }
           />

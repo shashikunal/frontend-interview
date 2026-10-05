@@ -24,6 +24,7 @@ import AdminMeetingManagementTab from './admin/AdminMeetingManagementTab'
 import AdminNotificationMonitorTab from './admin/AdminNotificationMonitorTab'
 import AdminTracksTab, { type TrackStat } from './admin/AdminTracksTab'
 import AdminLiveSessionsTab from './admin/AdminLiveSessionsTab'
+import AdminAssessmentsTab from './admin/AdminAssessmentsTab'
 import AdminCandidateManagementTab from '../../features/performance-history/components/admin/AdminCandidateManagementTab'
 import AdminCandidatePerformancePage from '../../features/performance-history/components/admin/AdminCandidatePerformancePage'
 import AdminBackupButton from './admin/AdminBackupButton'
@@ -76,6 +77,7 @@ export type AdminTab =
   | 'audit'
   | 'health'
   | 'profile'
+  | 'assessments'
 
 export default function AdminDashboard() {
   const { user, isAuthenticated, hasPermission } = useAuth()
@@ -129,6 +131,7 @@ export default function AdminDashboard() {
     if (clean === 'telemetry' || clean === 'audit') return 'audit'
     if (clean === 'health' || clean === 'system-health' || clean === 'system_health' || clean === 'observability') return 'health'
     if (clean === 'profile') return 'profile'
+    if (clean === 'assessments' || clean === 'assessment') return 'assessments'
     return 'overview'
   }, [searchParams, urlTab, isCandidatePerformanceRoute])
 
@@ -931,6 +934,15 @@ export default function AdminDashboard() {
 
           <button
             type="button"
+            className={`h-nav-item ${activeTab === 'assessments' ? 'active' : ''}`}
+            onClick={() => { setActiveTab('assessments'); setIsMobileSidebarOpen(false); }}
+          >
+            <span className="h-nav-icon">📝</span>
+            <span>Assessments</span>
+          </button>
+
+          <button
+            type="button"
             className={`h-nav-item ${activeTab === 'requests' ? 'active' : ''}`}
             onClick={() => { setActiveTab('requests'); setIsMobileSidebarOpen(false); }}
           >
@@ -1703,6 +1715,15 @@ export default function AdminDashboard() {
             questionsStatsList={questionsStatsList}
             progressMap={progressMap}
           />
+        </div>
+      )}
+
+      {/* ================================================================ */}
+      {/* TAB: ASSESSMENT MANAGEMENT */}
+      {/* ================================================================ */}
+      {activeTab === 'assessments' && (
+        <div className="admin-tab-content">
+          <AdminAssessmentsTab />
         </div>
       )}
 

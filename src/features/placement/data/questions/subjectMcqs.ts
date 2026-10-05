@@ -961,7 +961,7 @@ export const SUBJECT_MCQS: PlacementQuestionRecord[] = [
       { key: 'D', text: 'Relative is deprecated' },
     ],
     correctAnswer: 'B',
-    explanation: 'position: relative offsets from the element's normal position. position: absolute positions relative to the nearest positioned ancestor.',
+    explanation: "position: relative offsets from the element's normal position. position: absolute positions relative to the nearest positioned ancestor.",
     expectedTimeSeconds: 60,
     points: 15,
     tags: ['css', 'positioning', 'layout'],

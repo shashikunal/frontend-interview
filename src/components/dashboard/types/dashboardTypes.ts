@@ -1,4 +1,4 @@
-export type DashboardView = 'overview' | 'activity' | 'progress' | 'analytics' | 'upcoming' | 'profile';
+export type DashboardView = 'overview' | 'activity' | 'progress' | 'analytics' | 'upcoming' | 'profile' | 'assessments';
 
 export interface DashboardViewConfig {
   id: DashboardView;
@@ -44,6 +44,12 @@ export const DASHBOARD_VIEWS: Record<DashboardView, DashboardViewConfig> = {
     label: 'Profile',
     icon: '👤',
     description: 'User settings, study targets, and candidate achievements',
+  },
+  assessments: {
+    id: 'assessments',
+    label: 'Assessments',
+    icon: '📝',
+    description: 'Assigned tests, quizzes, and certification exams',
   },
 };
 
